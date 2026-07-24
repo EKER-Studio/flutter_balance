@@ -1,0 +1,206 @@
+import 'package:flutter_test/flutter_test.dart';
+import 'package:pure_weight/core/utils/csv_importer.dart';
+
+void main() {
+  group('CsvImporter.parse', () {
+    test('parses valid CSV with comma delimiter and Polish headers', () {
+      const csvContent = '''
+ID,Data,Waga (kg),BMI,Notatka
+1,2024-01-15,75.2,23.1,
+2,2024-01-16,75.0,23.0,Notowanie poranne
+3,2024-01-17,74.8,22.9,
+''';
+
+      final entries = CsvImporter.parse(csvContent);
+
+      expect(entries.length, 3);
+      expect(entries[0].weightKg, 75.2);
+      expect(entries[0].dateTime, DateTime(2024, 1, 15));
+      expect(entries[0].note, '');
+
+      expect(entries[1].weightKg, 75.0);
+      expect(entries[1].dateTime, DateTime(2024, 1, 16));
+      expect(entries[1].note, 'Notowanie poranne');
+
+      expect(entries[2].weightKg, 74.8);
+      expect(entries[2].dateTime, DateTime(2024, 1, 17));
+      expect(entries[2].note, '');
+    });
+
+    test('parses valid CSV with semicolon delimiter and English headers', () {
+      const csvContent = '''
+ID;Date;Weight;BMI;Note
+1;2024-02-01;80.5;24.0;
+2;2024-02-02;80.0;23.8;Evening weigh-in
+''';
+
+      final entries = CsvImporter.parse(csvContent);
+
+      expect(entries.length, 2);
+      expect(entries[0].weightKg, 80.5);
+      expect(entries[0].dateTime, DateTime(2024, 2, 1));
+
+      expect(entries[1].weightKg, 80.0);
+      expect(entries[1].dateTime, DateTime(2024, 2, 2));
+      expect(entries[1].note, 'Evening weigh-in');
+    });
+
+    test('parses CSV without optional note column', () {
+      const csvContent = '''
+ID,Data,Waga (kg),BMI
+1,2024-03-01,70.0,22.0
+2,2024-03-02,70.5,22.1
+''';
+
+      final entries = CsvImporter.parse(csvContent);
+
+      expect(entries.length, 2);
+      expect(entries[0].weightKg, 70.0);
+      expect(entries[0].note, null);
+      expect(entries[1].weightKg, 70.5);
+      expect(entries[1].note, null);
+    });
+
+    test('skips malformed rows gracefully', () {
+      const csvContent = '''
+ID,Data,Waga (kg),BMI,Notatka
+1,2024-01-15,75.2,23.1,
+2,not-a-date,75.0,23.0,Bad date
+3,2024-01-17,abc,22.9,Bad weight
+4,2024-01-18,74.8,22.8,Valid entry
+5,2024-01-19,-5.0,22.7,Negative weight
+6,2024-01-20,600.0,22.8,Unrealistic weight
+''';
+
+      final entries = CsvImporter.parse(csvContent);
+
+      expect(entries.length, 2);
+      expect(entries[0].dateTime, DateTime(2024, 1, 15));
+      expect(entries[0].weightKg, 75.2);
+      expect(entries[1].dateTime, DateTime(2024, 1, 18));
+      expect(entries[1].weightKg, 74.8);
+      expect(entries[1].note, 'Valid entry');
+    });
+
+    test('throws FormatException for empty CSV content', () {
+      expect(() => CsvImporter.parse(''), throwsFormatException);
+    });
+
+    test('throws FormatException for CSV with no header', () {
+      const csvContent = '''
+2024-01-15,75.2,
+2024-01-16,75.0,
+''';
+
+      expect(() => CsvImporter.parse(csvContent), throwsFormatException);
+    });
+
+    test('throws FormatException for CSV with missing required columns', () {
+      const csvContent = '''
+ID,Wiek,Waga (kg)
+1,30,75.0
+2,31,76.0
+''';
+
+      expect(
+        () => CsvImporter.parse(csvContent),
+        throwsA(isA<FormatException>()),
+      );
+    });
+
+    test('handles quoted fields with commas inside', () {
+      const csvContent = '''
+ID,Data,Waga (kg),BMI,Notatka
+1,2024-01-15,75.2,23.1,"Notatka z przecinkiem"
+2,2024-01-16,75.0,23.0,"Waga ""poranna"" 7:00"
+''';
+
+      final entries = CsvImporter.parse(csvContent);
+
+      expect(entries.length, 2);
+      expect(entries[0].note, 'Notatka z przecinkiem');
+      expect(entries[1].note, 'Waga "poranna" 7:00');
+    });
+
+    test('handles CSV with Windows-style line endings', () {
+      const csvContent =
+          'ID,Data,Waga (kg),BMI,Notatka\r\n1,2024-01-15,75.2,23.1,\r\n2,2024-01-16,75.0,23.0,Test\r\n';
+
+      final entries = CsvImporter.parse(csvContent);
+
+      expect(entries.length, 2);
+      expect(entries[0].weightKg, 75.2);
+      expect(entries[1].weightKg, 75.0);
+      expect(entries[1].note, 'Test');
+    });
+
+    test('handles CSV with extra whitespace in fields', () {
+      const csvContent = '''
+  ID  ,  Data  ,  Waga (kg)  ,  BMI  ,  Notatka  
+  1  ,  2024-01-15  ,  75.2  ,  23.1  ,  Trimmed note  
+  2  ,  2024-01-16  ,  75.0  ,  23.0  ,  
+''';
+
+      final entries = CsvImporter.parse(csvContent);
+
+      expect(entries.length, 2);
+      expect(entries[0].weightKg, 75.2);
+      expect(entries[0].note, 'Trimmed note');
+      expect(entries[1].weightKg, 75.0);
+      expect(entries[1].note, '');
+    });
+
+    test('parses CSV with time component in date', () {
+      const csvContent = '''
+ID,Data,Waga (kg),BMI,Notatka
+1,2024-01-15 07:30,75.2,23.1,
+2,2024-01-16T19:45:00,75.0,23.0,
+''';
+
+      final entries = CsvImporter.parse(csvContent);
+
+      expect(entries.length, 2);
+      expect(entries[0].dateTime.hour, 7);
+      expect(entries[0].dateTime.minute, 30);
+      expect(entries[1].dateTime.hour, 19);
+      expect(entries[1].dateTime.minute, 45);
+    });
+
+    test('handles CSV with only header row (no data)', () {
+      const csvContent = 'ID,Data,Waga (kg),BMI,Notatka';
+
+      final entries = CsvImporter.parse(csvContent);
+
+      expect(entries, isEmpty);
+    });
+
+    test('parses CSV with weight at boundary values', () {
+      const csvContent = '''
+ID,Data,Waga (kg),BMI,Notatka
+1,2024-01-15,0.1,23.1,Minimum weight
+2,2024-01-16,499.9,23.0,Maximum weight
+''';
+
+      final entries = CsvImporter.parse(csvContent);
+
+      expect(entries.length, 2);
+      expect(entries[0].weightKg, 0.1);
+      expect(entries[1].weightKg, 499.9);
+    });
+
+    test('parses CSV with ID column not used', () {
+      const csvContent = '''
+ID,Data,Waga (kg),BMI,Notatka
+999,2024-01-15,75.2,23.1,
+1000,2024-01-16,75.0,23.0,
+''';
+
+      final entries = CsvImporter.parse(csvContent);
+
+      expect(entries.length, 2);
+      // ID is not stored in WeightEntry (it's auto-assigned)
+      expect(entries[0].weightKg, 75.2);
+      expect(entries[1].weightKg, 75.0);
+    });
+  });
+}

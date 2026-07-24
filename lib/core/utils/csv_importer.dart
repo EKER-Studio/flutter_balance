@@ -81,6 +81,11 @@ class CsvImporter {
   }
 
   /// Finds the column indices for required fields in the header.
+  ///
+  /// Supports both Polish (exported) and English headers:
+  /// - Date: `Data`, `data`, `Date`, `date`, `data_date`
+  /// - Weight: `Waga (kg)`, `waga`, `Weight`, `weight`, `waga_kg`
+  /// - Note: `Notatka`, `komentarz`, `Note`, `note`, `komentarz_note`
   static Map<String, int?> _findColumnIndices(List<String> header) {
     final indices = <String, int?>{};
     for (int i = 0; i < header.length; i++) {
@@ -90,10 +95,12 @@ class CsvImporter {
           normalized == 'data_date') {
         indices['data'] = i;
       } else if (normalized == 'waga' ||
+          normalized == 'waga (kg)' ||
           normalized == 'weight' ||
           normalized == 'waga_kg') {
         indices['waga'] = i;
-      } else if (normalized == 'komentarz' ||
+      } else if (normalized == 'notatka' ||
+          normalized == 'komentarz' ||
           normalized == 'note' ||
           normalized == 'komentarz_note') {
         indices['komentarz'] = i;
