@@ -1,14 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:pure_weight/features/weight/domain/entities/weight_entry.dart';
 import 'package:pure_weight/core/utils/csv_exporter.dart';
+import 'package:pure_weight/features/weight/domain/entities/weight_entry.dart';
 import 'package:pure_weight/features/weight/presentation/bloc/weight_bloc.dart';
 import 'package:pure_weight/features/weight/presentation/bloc/weight_event.dart';
 import 'package:pure_weight/features/weight/presentation/bloc/weight_state.dart';
 import 'package:pure_weight/features/weight/presentation/widgets/add_weight_sheet.dart';
+import 'package:pure_weight/l10n/app_localizations.dart';
+import 'package:pure_weight/presentation/bloc/settings/app_settings_state.dart';
 import 'package:pure_weight/presentation/core/clamped_layout.dart';
 import 'package:pure_weight/presentation/screens/settings_screen.dart';
 import 'package:pure_weight/presentation/bloc/settings/app_settings_bloc.dart';
+import 'package:pure_weight/presentation/bloc/settings/bmi_category.dart';
 import 'package:pure_weight/features/weight/presentation/widgets/health_summary_card.dart';
 import 'package:pure_weight/presentation/widgets/weight_chart.dart';
 
@@ -442,7 +445,11 @@ class WeightSummaryCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bmi = entry.bmi;
-    final interpretation = bmi != null ? _interpretBmi(bmi) : null;
+    final category = bmi != null ? _bmiCategory(bmi) : null;
+    final localization = AppLocalizations.of(context);
+    final interpretation = category != null && localization != null
+        ? _interpretBmi(category, localization)
+        : null;
     final bmiColor = bmi != null ? _bmiColor(bmi) : null;
 
     return Card(
@@ -492,11 +499,18 @@ class WeightSummaryCard extends StatelessWidget {
     );
   }
 
-  String _interpretBmi(double bmi) {
-    if (bmi < 18.5) return 'Underweight';
-    if (bmi < 25.0) return 'Normal';
-    if (bmi < 30.0) return 'Overweight';
-    return 'Obese';
+  BmiCategory _bmiCategory(double bmi) {
+    final state = AppSettingsState();
+    return state.getBmiCategory(bmi);
+  }
+
+  String _interpretBmi(BmiCategory category, AppLocalizations l10n) {
+    return switch (category) {
+      BmiCategory.underweight => l10n.bmiCategoryUnderweight,
+      BmiCategory.normal => l10n.bmiCategoryNormal,
+      BmiCategory.overweight => l10n.bmiCategoryOverweight,
+      BmiCategory.obese => l10n.bmiCategoryObese,
+    };
   }
 
   Color _bmiColor(double bmi) {

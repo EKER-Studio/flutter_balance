@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:pure_weight/l10n/app_localizations.dart';
 import 'package:pure_weight/presentation/bloc/settings/app_settings_bloc.dart';
 import 'package:pure_weight/presentation/bloc/settings/app_settings_event.dart';
 import 'package:pure_weight/presentation/bloc/settings/measurement_unit.dart';
@@ -26,14 +28,21 @@ void main() {
     await tester.pumpWidget(
       BlocProvider.value(
         value: bloc,
-        child: const MaterialApp(
+        child: MaterialApp(
+          localizationsDelegates: const [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+          ],
+          supportedLocales: AppLocalizations.supportedLocales,
           home: Scaffold(body: HealthSummaryCard(latestWeightKg: 72.0)),
         ),
       ),
     );
 
     expect(find.text('Goal not set'), findsOneWidget);
-    expect(find.textContaining('BMI'), findsOneWidget);
+    expect(find.textContaining('BMI'), findsAtLeastNWidgets(1));
 
     bloc.add(const TargetWeightChanged(70.0));
     await tester.pump();
@@ -50,7 +59,14 @@ void main() {
     await tester.pumpWidget(
       BlocProvider.value(
         value: bloc,
-        child: const MaterialApp(
+        child: MaterialApp(
+          localizationsDelegates: const [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+          ],
+          supportedLocales: AppLocalizations.supportedLocales,
           home: Scaffold(body: HealthSummaryCard(latestWeightKg: 160.0)),
         ),
       ),

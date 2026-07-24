@@ -1,4 +1,24 @@
 {
   "@@locale": "pl",
-  "appTitle": "PureWeight"
+  "appTitle": "PureWeight",
+  "bmiCategoryUnderweight": "Niedowaga",
+  "bmiCategoryNormal": "Norma",
+  "bmiCategoryOverweight": "Nadwaga",
+  "bmiCategoryObese": "Otyłość",
+  "bmiCategoryDescriptionUnderweight": "BMI poniżej 18,5 — warto schudnąć",
+  "bmiCategoryDescriptionNormal": "BMI między 18,5 a 24,9 — zakres zdrowy",
+  "bmiCategoryDescriptionOverweight": "BMI między 25,0 a 29,9 — niewielki nadmiar wagi",
+  "bmiCategoryDescriptionObese": "BMI 30,0 lub więcej — warto skonsultować się ze specjalistą",
+  "@bmiCategoryDescriptionUnderweight": {
+    "description": "Description for the Underweight BMI category"
+  },
+  "@bmiCategoryDescriptionNormal": {
+    "description": "Description for the Normal BMI category"
+  },
+  "@bmiCategoryDescriptionOverweight": {
+    "description": "Description for the Overweight BMI category"
+  },
+  "@bmiCategoryDescriptionObese": {
+    "description": "Description for the Obese BMI category"
+  }
 }

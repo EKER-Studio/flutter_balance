@@ -10,4 +10,32 @@ class AppLocalizationsPl extends AppLocalizations {
 
   @override
   String get appTitle => 'PureWeight';
+
+  @override
+  String get bmiCategoryUnderweight => 'Niedowaga';
+
+  @override
+  String get bmiCategoryNormal => 'Norma';
+
+  @override
+  String get bmiCategoryOverweight => 'Nadwaga';
+
+  @override
+  String get bmiCategoryObese => 'Otyłość';
+
+  @override
+  String get bmiCategoryDescriptionUnderweight =>
+      'BMI poniżej 18,5 — warto schudnąć';
+
+  @override
+  String get bmiCategoryDescriptionNormal =>
+      'BMI między 18,5 a 24,9 — zakres zdrowy';
+
+  @override
+  String get bmiCategoryDescriptionOverweight =>
+      'BMI między 25,0 a 29,9 — niewielki nadmiar wagi';
+
+  @override
+  String get bmiCategoryDescriptionObese =>
+      'BMI 30,0 lub więcej — warto skonsultować się ze specjalistą';
 }

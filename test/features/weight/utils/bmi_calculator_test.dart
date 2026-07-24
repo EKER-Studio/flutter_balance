@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pure_weight/presentation/bloc/settings/app_settings_state.dart';
+import 'package:pure_weight/presentation/bloc/settings/bmi_category.dart';
 import 'package:pure_weight/presentation/bloc/settings/measurement_unit.dart';
 import 'package:pure_weight/core/utils/unit_converter.dart';
 
@@ -110,55 +111,55 @@ void main() {
     });
 
     group('BMI category classification', () {
-      test('BMI below 18.5 returns Underweight', () {
-        expect(state.getBmiCategory(18.49), 'Underweight');
-        expect(state.getBmiCategory(0.0), 'Underweight');
-        expect(state.getBmiCategory(10.0), 'Underweight');
+      test('BMI below 18.5 returns underweight', () {
+        expect(state.getBmiCategory(18.49), BmiCategory.underweight);
+        expect(state.getBmiCategory(0.0), BmiCategory.underweight);
+        expect(state.getBmiCategory(10.0), BmiCategory.underweight);
       });
 
-      test('BMI exactly 18.5 returns Normal', () {
-        expect(state.getBmiCategory(18.5), 'Normal');
+      test('BMI exactly 18.5 returns normal', () {
+        expect(state.getBmiCategory(18.5), BmiCategory.normal);
       });
 
-      test('BMI between 18.5 and 25 returns Normal', () {
-        expect(state.getBmiCategory(20.0), 'Normal');
-        expect(state.getBmiCategory(24.99), 'Normal');
+      test('BMI between 18.5 and 25 returns normal', () {
+        expect(state.getBmiCategory(20.0), BmiCategory.normal);
+        expect(state.getBmiCategory(24.99), BmiCategory.normal);
       });
 
-      test('BMI exactly 25.0 returns Overweight', () {
-        expect(state.getBmiCategory(25.0), 'Overweight');
+      test('BMI exactly 25.0 returns overweight', () {
+        expect(state.getBmiCategory(25.0), BmiCategory.overweight);
       });
 
-      test('BMI between 25 and 30 returns Overweight', () {
-        expect(state.getBmiCategory(26.0), 'Overweight');
-        expect(state.getBmiCategory(29.99), 'Overweight');
+      test('BMI between 25 and 30 returns overweight', () {
+        expect(state.getBmiCategory(26.0), BmiCategory.overweight);
+        expect(state.getBmiCategory(29.99), BmiCategory.overweight);
       });
 
-      test('BMI exactly 30.0 returns Obese', () {
-        expect(state.getBmiCategory(30.0), 'Obese');
+      test('BMI exactly 30.0 returns obese', () {
+        expect(state.getBmiCategory(30.0), BmiCategory.obese);
       });
 
-      test('BMI above 30 returns Obese', () {
-        expect(state.getBmiCategory(35.0), 'Obese');
-        expect(state.getBmiCategory(50.0), 'Obese');
-        expect(state.getBmiCategory(100.0), 'Obese');
+      test('BMI above 30 returns obese', () {
+        expect(state.getBmiCategory(35.0), BmiCategory.obese);
+        expect(state.getBmiCategory(50.0), BmiCategory.obese);
+        expect(state.getBmiCategory(100.0), BmiCategory.obese);
       });
 
-      test('BMI from zero height returns Underweight (not Obese)', () {
-        // After fix: zero height returns BMI = 0.0, which is Underweight
+      test('BMI from zero height returns underweight (not obese)', () {
+        // After fix: zero height returns BMI = 0.0, which is underweight
         final zeroHeightState = const AppSettingsState(height: 0.0);
         final bmi = zeroHeightState.calculateBmi(70.0);
         final category = zeroHeightState.getBmiCategory(bmi);
         expect(bmi, equals(0.0));
-        expect(category, 'Underweight');
+        expect(category, BmiCategory.underweight);
       });
 
-      test('BMI from negative height returns Underweight (not Obese)', () {
+      test('BMI from negative height returns underweight (not obese)', () {
         final negativeHeightState = const AppSettingsState(height: -50.0);
         final bmi = negativeHeightState.calculateBmi(70.0);
         final category = negativeHeightState.getBmiCategory(bmi);
         expect(bmi, equals(0.0));
-        expect(category, 'Underweight');
+        expect(category, BmiCategory.underweight);
       });
     });
 
@@ -175,8 +176,6 @@ void main() {
       test('Same BMI at different height/weight combinations', () {
         // 70kg at 175cm: 70 / 3.0625 = 22.857
         // 100kg at 202.37cm: 100 / 4.0954 = 24.42
-        final state1 = const AppSettingsState(height: 175.0);
-        final bmi1 = state1.calculateBmi(70.0);
         final state2 = const AppSettingsState(height: 200.0);
         final bmi2 = state2.calculateBmi(90.0);
         // 90 / 4 = 22.5
@@ -248,7 +247,10 @@ void main() {
 
     test('Imperial format shows lbs with 1 decimal', () {
       final lbs = kgToLbs(70.0);
-      expect(formatWeight(70.0, MeasurementUnit.imperial), '${lbs.toStringAsFixed(1)} lbs');
+      expect(
+        formatWeight(70.0, MeasurementUnit.imperial),
+        '${lbs.toStringAsFixed(1)} lbs',
+      );
     });
 
     test('Metric height format shows cm as integer', () {

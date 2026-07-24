@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pure_weight/core/utils/unit_converter.dart';
+import 'package:pure_weight/l10n/app_localizations.dart';
 import 'package:pure_weight/presentation/bloc/settings/app_settings_bloc.dart';
 import 'package:pure_weight/presentation/bloc/settings/app_settings_state.dart';
+import 'package:pure_weight/presentation/bloc/settings/bmi_category.dart';
 import 'package:pure_weight/presentation/bloc/settings/measurement_unit.dart';
 
 /// A compact health summary card showing BMI and goal progress.
@@ -20,9 +22,12 @@ class HealthSummaryCard extends StatelessWidget {
         final heightCm = state.height;
         final targetWeight = state.targetWeight;
         final weightUnit = state.measurementUnit;
+        final localization = AppLocalizations.of(context);
         final bmi = _calculateBmi(latestWeightKg, heightCm);
-        final category = _bmiCategory(bmi);
-        final badgeColor = _badgeColorForCategory(category);
+        final category = bmi.isFinite ? _bmiCategory(bmi) : null;
+        final badgeColor = category != null
+            ? _badgeColorForCategory(category)
+            : Colors.blue;
         final goalText = _goalText(targetWeight, latestWeightKg, weightUnit);
 
         return Card(
@@ -70,7 +75,9 @@ class HealthSummaryCard extends StatelessWidget {
                               borderRadius: BorderRadius.circular(999),
                             ),
                             child: Text(
-                              category,
+                              category != null && localization != null
+                                  ? _interpretBmi(category, localization)
+                                  : '',
                               style: Theme.of(context).textTheme.labelMedium
                                   ?.copyWith(
                                     color: badgeColor,
@@ -130,26 +137,26 @@ class HealthSummaryCard extends StatelessWidget {
     return weightKg / (heightInMeters * heightInMeters);
   }
 
-  String _bmiCategory(double bmi) {
-    if (bmi < 18.5) {
-      return 'Underweight';
-    }
-    if (bmi < 25.0) {
-      return 'Normal';
-    }
-    if (bmi < 30.0) {
-      return 'Overweight';
-    }
-    return 'Obese';
+  BmiCategory _bmiCategory(double bmi) {
+    final state = AppSettingsState();
+    return state.getBmiCategory(bmi);
   }
 
-  Color _badgeColorForCategory(String category) {
+  Color _badgeColorForCategory(BmiCategory category) {
     return switch (category) {
-      'Underweight' => Colors.blue,
-      'Normal' => Colors.green,
-      'Overweight' => Colors.orange,
-      'Obese' => Colors.red,
-      _ => Colors.blue,
+      BmiCategory.underweight => Colors.blue,
+      BmiCategory.normal => Colors.green,
+      BmiCategory.overweight => Colors.orange,
+      BmiCategory.obese => Colors.red,
+    };
+  }
+
+  String _interpretBmi(BmiCategory category, AppLocalizations l10n) {
+    return switch (category) {
+      BmiCategory.underweight => l10n.bmiCategoryUnderweight,
+      BmiCategory.normal => l10n.bmiCategoryNormal,
+      BmiCategory.overweight => l10n.bmiCategoryOverweight,
+      BmiCategory.obese => l10n.bmiCategoryObese,
     };
   }
 

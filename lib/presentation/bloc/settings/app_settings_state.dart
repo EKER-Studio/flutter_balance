@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pure_weight/presentation/bloc/settings/app_theme_mode.dart';
+import 'package:pure_weight/presentation/bloc/settings/bmi_category.dart';
 import 'package:pure_weight/presentation/bloc/settings/measurement_unit.dart';
 
 /// Persistent app settings state.
@@ -117,17 +118,17 @@ extension AppSettingsX on AppSettingsState {
     return currentWeightKg / (heightInMeters * heightInMeters);
   }
 
-  /// Maps a BMI value to a human-readable category.
-  String getBmiCategory(double bmi) {
+  /// Maps a BMI value to a structured category.
+  BmiCategory getBmiCategory(double bmi) {
     if (bmi < 18.5) {
-      return 'Underweight';
+      return BmiCategory.underweight;
     }
     if (bmi < 25.0) {
-      return 'Normal';
+      return BmiCategory.normal;
     }
     if (bmi < 30.0) {
-      return 'Overweight';
+      return BmiCategory.overweight;
     }
-    return 'Obese';
+    return BmiCategory.obese;
   }
 }

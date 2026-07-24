@@ -103,6 +103,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'PureWeight'**
   String get appTitle;
+
+  /// No description provided for @bmiCategoryUnderweight.
+  ///
+  /// In en, this message translates to:
+  /// **'Underweight'**
+  String get bmiCategoryUnderweight;
+
+  /// No description provided for @bmiCategoryNormal.
+  ///
+  /// In en, this message translates to:
+  /// **'Normal'**
+  String get bmiCategoryNormal;
+
+  /// No description provided for @bmiCategoryOverweight.
+  ///
+  /// In en, this message translates to:
+  /// **'Overweight'**
+  String get bmiCategoryOverweight;
+
+  /// No description provided for @bmiCategoryObese.
+  ///
+  /// In en, this message translates to:
+  /// **'Obese'**
+  String get bmiCategoryObese;
+
+  /// Description for the Underweight BMI category
+  ///
+  /// In en, this message translates to:
+  /// **'BMI below 18.5 — you may need to gain weight'**
+  String get bmiCategoryDescriptionUnderweight;
+
+  /// Description for the Normal BMI category
+  ///
+  /// In en, this message translates to:
+  /// **'BMI between 18.5 and 24.9 — healthy range'**
+  String get bmiCategoryDescriptionNormal;
+
+  /// Description for the Overweight BMI category
+  ///
+  /// In en, this message translates to:
+  /// **'BMI between 25.0 and 29.9 — slight excess weight'**
+  String get bmiCategoryDescriptionOverweight;
+
+  /// Description for the Obese BMI category
+  ///
+  /// In en, this message translates to:
+  /// **'BMI 30.0 or higher — consider consulting a professional'**
+  String get bmiCategoryDescriptionObese;
 }
 
 class _AppLocalizationsDelegate

@@ -4,6 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:pure_weight/presentation/bloc/settings/app_settings_bloc.dart';
+import 'package:pure_weight/presentation/bloc/settings/bmi_category.dart';
 import 'package:pure_weight/presentation/bloc/settings/app_settings_event.dart';
 import 'package:pure_weight/presentation/bloc/settings/app_settings_state.dart';
 import 'package:pure_weight/presentation/bloc/settings/app_theme_mode.dart';
@@ -39,19 +40,19 @@ void main() {
         expect(state.calculateBmi(75.0), closeTo(23.15, 0.01));
       });
 
-      test('returns infinity for invalid height values', () {
+      test('returns 0.0 for invalid height values', () {
         const state = AppSettingsState(height: 0.0);
 
-        expect(state.calculateBmi(75.0), double.infinity);
+        expect(state.calculateBmi(75.0), equals(0.0));
       });
 
       test('maps BMI values to the expected category', () {
         const state = AppSettingsState();
 
-        expect(state.getBmiCategory(17.0), 'Underweight');
-        expect(state.getBmiCategory(22.0), 'Normal');
-        expect(state.getBmiCategory(27.0), 'Overweight');
-        expect(state.getBmiCategory(31.0), 'Obese');
+        expect(state.getBmiCategory(17.0), BmiCategory.underweight);
+        expect(state.getBmiCategory(22.0), BmiCategory.normal);
+        expect(state.getBmiCategory(27.0), BmiCategory.overweight);
+        expect(state.getBmiCategory(31.0), BmiCategory.obese);
       });
     });
 

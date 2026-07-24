@@ -1,4 +1,24 @@
 {
   "@@locale": "en",
-  "appTitle": "PureWeight"
+  "appTitle": "PureWeight",
+  "bmiCategoryUnderweight": "Underweight",
+  "bmiCategoryNormal": "Normal",
+  "bmiCategoryOverweight": "Overweight",
+  "bmiCategoryObese": "Obese",
+  "bmiCategoryDescriptionUnderweight": "BMI below 18.5 — you may need to gain weight",
+  "bmiCategoryDescriptionNormal": "BMI between 18.5 and 24.9 — healthy range",
+  "bmiCategoryDescriptionOverweight": "BMI between 25.0 and 29.9 — slight excess weight",
+  "bmiCategoryDescriptionObese": "BMI 30.0 or higher — consider consulting a professional",
+  "@bmiCategoryDescriptionUnderweight": {
+    "description": "Description for the Underweight BMI category"
+  },
+  "@bmiCategoryDescriptionNormal": {
+    "description": "Description for the Normal BMI category"
+  },
+  "@bmiCategoryDescriptionOverweight": {
+    "description": "Description for the Overweight BMI category"
+  },
+  "@bmiCategoryDescriptionObese": {
+    "description": "Description for the Obese BMI category"
+  }
 }
