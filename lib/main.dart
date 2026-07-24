@@ -4,7 +4,6 @@ import 'package:path_provider/path_provider.dart';
 import 'package:pure_weight/app.dart';
 import 'package:pure_weight/core/database/database_module.dart';
 import 'package:pure_weight/features/weight/data/repositories/isar_weight_repository.dart';
-import 'package:pure_weight/features/weight/presentation/bloc/weight_bloc.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -18,7 +17,6 @@ Future<void> main() async {
 
   final isar = await DatabaseModule.initialize();
   final repository = IsarWeightRepository(isar: isar);
-  final bloc = WeightBloc(repository: repository);
 
-  runApp(App(bloc: bloc));
+  runApp(App(repository: repository));
 }

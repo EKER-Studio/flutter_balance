@@ -23,9 +23,6 @@ class _WeightDashboardScreenState extends State<WeightDashboardScreen> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<WeightBloc>().add(const SubscribeToWeightChanges());
-    });
   }
 
   @override
