@@ -35,6 +35,7 @@ dependencies:
 
   cupertino_icons: ^1.0.9
   flutter_bloc: ^9.1.1
+  hydrated_bloc: ^10.0.0
   get_it: ^9.2.1
   injectable: ^3.0.0
   isar_community: ^3.3.2

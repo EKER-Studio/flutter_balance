@@ -1,0 +1,40 @@
+/// Events dispatched to [WeightBloc].
+sealed class WeightEvent {
+  const WeightEvent();
+}
+
+/// Triggers subscription to the reactive weight stream.
+final class SubscribeToWeightChanges extends WeightEvent {
+  /// Creates [SubscribeToWeightChanges].
+  const SubscribeToWeightChanges();
+}
+
+/// Updates the user's height (in cm), persisted via HydratedBloc.
+final class UpdateUserHeight extends WeightEvent {
+  /// Height in centimetres.
+  final double heightCm;
+
+  /// Creates [UpdateUserHeight] with the given [heightCm].
+  const UpdateUserHeight(this.heightCm);
+}
+
+/// Adds a new weight measurement; BMI is auto-calculated from stored height.
+final class AddWeight extends WeightEvent {
+  /// Weight in kilograms.
+  final double weightKg;
+
+  /// Optional note attached to this measurement.
+  final String? note;
+
+  /// Creates [AddWeight] with the given [weightKg] and optional [note].
+  const AddWeight({required this.weightKg, this.note});
+}
+
+/// Removes the entry with the given [id].
+final class DeleteWeight extends WeightEvent {
+  /// Identifier of the entry to remove.
+  final int id;
+
+  /// Creates [DeleteWeight] targeting [id].
+  const DeleteWeight(this.id);
+}
