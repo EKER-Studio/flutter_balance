@@ -1,13 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:pure_weight/core/database/database_module.dart';
+import 'package:pure_weight/core/utils/csv_importer.dart';
+import 'package:pure_weight/features/weight/domain/repositories/weight_repository.dart';
+import 'package:pure_weight/features/weight/presentation/bloc/weight_bloc.dart';
+import 'package:pure_weight/features/weight/presentation/bloc/weight_event.dart';
 import 'package:pure_weight/presentation/bloc/settings/app_settings_bloc.dart';
 import 'package:pure_weight/presentation/bloc/settings/app_settings_event.dart';
 import 'package:pure_weight/presentation/bloc/settings/app_settings_state.dart';
 import 'package:pure_weight/presentation/bloc/settings/app_theme_mode.dart';
 import 'package:pure_weight/presentation/bloc/settings/measurement_unit.dart';
+import 'package:get_it/get_it.dart';
 import 'dart:io';
 
 /// Settings screen for theme, measurement unit, and database management.
@@ -68,6 +74,17 @@ class SettingsScreen extends StatelessWidget {
                 context,
                 title: 'Database',
                 children: [
+                  ListTile(
+                    leading: const Icon(
+                      Icons.file_upload_outlined,
+                      color: Colors.blue,
+                    ),
+                    title: const Text('Importuj dane z CSV'),
+                    subtitle: const Text(
+                      'Import weight entries from a previously exported CSV file.',
+                    ),
+                    onTap: () => _importCsv(context),
+                  ),
                   ListTile(
                     leading: const Icon(
                       Icons.delete_forever,
@@ -198,6 +215,66 @@ class SettingsScreen extends StatelessWidget {
         ScaffoldMessenger.of(
           context,
         ).showSnackBar(SnackBar(content: Text('Error wiping data: $e')));
+      }
+    }
+  }
+
+  Future<void> _importCsv(BuildContext context) async {
+    try {
+      final result = await FilePicker.platform.pickFiles(
+        type: FileType.custom,
+        allowedExtensions: ['csv'],
+      );
+
+      if (result == null || result.files.single.path == null) {
+        return;
+      }
+
+      final filePath = result.files.single.path!;
+      final fileContent = await File(filePath).readAsString();
+
+      final entries = CsvImporter.parse(fileContent);
+
+      if (entries.isEmpty) {
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Nie znaleziono danych do zaimportowania.'),
+              backgroundColor: Colors.orange,
+            ),
+          );
+        }
+        return;
+      }
+
+      final repository = GetIt.I<WeightRepository>();
+      final importedCount = await repository.bulkImportEntries(entries);
+
+      if (context.mounted) {
+        if (importedCount > 0) {
+          // Trigger a fresh read to ensure UI reflects the latest data.
+          context.read<WeightBloc>().add(const RefreshWeightData());
+
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Zaimportowano $importedCount wpisów.'),
+              backgroundColor: Colors.green,
+            ),
+          );
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Nie udało się zaimportować danych.'),
+              backgroundColor: Colors.orange,
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Błąd importu: $e')));
       }
     }
   }

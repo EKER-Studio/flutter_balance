@@ -62,3 +62,12 @@ final class ChangeChartFilter extends WeightEvent {
   /// Creates [ChangeChartFilter] with the given [period].
   const ChangeChartFilter(this.period);
 }
+
+/// Requests a fresh read of all weight entries from the repository.
+///
+/// Useful after external data mutations (e.g. CSV import) to ensure the
+/// UI reflects the latest database state.
+final class RefreshWeightData extends WeightEvent {
+  /// Creates [RefreshWeightData].
+  const RefreshWeightData();
+}

@@ -18,6 +18,7 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
     on<AddWeight>(_onAddWeight);
     on<DeleteWeight>(_onDeleteWeight);
     on<ChangeChartFilter>(_onChangeChartFilter);
+    on<RefreshWeightData>(_onRefreshWeightData);
   }
 
   List<WeightEntry> _filterEntries(
@@ -219,6 +220,24 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
         timePeriod: event.period,
         entries: entries,
         filteredEntries: _filterEntries(entries, event.period),
+      ),
+    );
+  }
+
+  Future<void> _onRefreshWeightData(
+    RefreshWeightData event,
+    Emitter<WeightState> emit,
+  ) async {
+    final entries = await repository.getAllEntries();
+    final heightCm = state.heightCm;
+    final timePeriod = state.timePeriod;
+
+    emit(
+      WeightLoaded(
+        heightCm: heightCm,
+        timePeriod: timePeriod,
+        entries: entries,
+        filteredEntries: _filterEntries(entries, timePeriod),
       ),
     );
   }

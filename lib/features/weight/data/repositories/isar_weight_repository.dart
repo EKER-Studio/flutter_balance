@@ -20,6 +20,12 @@ class IsarWeightRepository implements WeightRepository {
   }
 
   @override
+  Future<List<WeightEntry>> getAllEntries() async {
+    final models = await isar.weightEntryModels.where().findAll();
+    return models.map((m) => m.toEntity()).toList();
+  }
+
+  @override
   Future<void> addEntry(WeightEntry entry) async {
     final model = WeightEntryModel.fromEntity(entry);
     await isar.writeTxn(() async {
@@ -32,5 +38,18 @@ class IsarWeightRepository implements WeightRepository {
     await isar.writeTxn(() async {
       await isar.weightEntryModels.delete(id);
     });
+  }
+
+  @override
+  Future<int> bulkImportEntries(List<WeightEntry> entries) async {
+    int inserted = 0;
+    await isar.writeTxn(() async {
+      for (final entry in entries) {
+        final model = WeightEntryModel.fromEntity(entry);
+        await isar.weightEntryModels.put(model);
+        inserted++;
+      }
+    });
+    return inserted;
   }
 }
