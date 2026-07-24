@@ -6,6 +6,7 @@ import 'package:pure_weight/features/weight/presentation/bloc/weight_event.dart'
 import 'package:pure_weight/features/weight/presentation/bloc/weight_state.dart';
 import 'package:pure_weight/features/weight/presentation/widgets/add_weight_sheet.dart';
 import 'package:pure_weight/presentation/core/clamped_layout.dart';
+import 'package:pure_weight/presentation/widgets/weight_chart.dart';
 
 /// Main dashboard screen showing weight summary, history, and height config.
 class WeightDashboardScreen extends StatefulWidget {
@@ -42,7 +43,7 @@ class _WeightDashboardScreenState extends State<WeightDashboardScreen> {
           body: SafeArea(
             child: ClampedLayout(
               padding: const EdgeInsets.all(16),
-              child: _buildBody(state),
+              child: _buildBody(context, state),
             ),
           ),
           floatingActionButton: _showFab(state)
@@ -59,20 +60,42 @@ class _WeightDashboardScreenState extends State<WeightDashboardScreen> {
   bool _showFab(WeightState state) =>
       state is WeightLoaded || state is WeightError;
 
-  Widget _buildBody(WeightState state) {
+  Widget _buildBody(BuildContext context, WeightState state) {
     return switch (state) {
       WeightInitial() => const Center(child: CircularProgressIndicator()),
       WeightLoading() => const Center(child: CircularProgressIndicator()),
-      WeightLoaded(:final entries, :final heightCm) => _buildContent(
-        entries,
-        heightCm,
-      ),
-      WeightError(:final message, :final entries, :final heightCm) =>
-        _buildError(message, entries, heightCm),
+      WeightLoaded(
+        :final entries,
+        :final filteredEntries,
+        :final timePeriod,
+        :final heightCm,
+      ) =>
+        _buildContent(context, entries, filteredEntries, timePeriod, heightCm),
+      WeightError(
+        :final message,
+        :final entries,
+        :final filteredEntries,
+        :final timePeriod,
+        :final heightCm,
+      ) =>
+        _buildError(
+          context,
+          message,
+          entries,
+          filteredEntries,
+          timePeriod,
+          heightCm,
+        ),
     };
   }
 
-  Widget _buildContent(List<WeightEntry> entries, double? heightCm) {
+  Widget _buildContent(
+    BuildContext context,
+    List<WeightEntry> entries,
+    List<WeightEntry> filteredEntries,
+    TimePeriod timePeriod,
+    double? heightCm,
+  ) {
     final sorted = List<WeightEntry>.from(entries)
       ..sort((a, b) => b.dateTime.compareTo(a.dateTime));
 
@@ -83,6 +106,13 @@ class _WeightDashboardScreenState extends State<WeightDashboardScreen> {
           if (heightCm == null) _buildHeightConfig(),
           if (sorted.isNotEmpty) WeightSummaryCard(entry: sorted.first),
           const SizedBox(height: 16),
+          WeightChart(
+            entries: filteredEntries,
+            period: timePeriod,
+            onPeriodChanged: (period) =>
+                context.read<WeightBloc>().add(ChangeChartFilter(period)),
+          ),
+          const SizedBox(height: 16),
           _buildHistorySection(sorted, heightCm),
         ],
       ),
@@ -90,8 +120,11 @@ class _WeightDashboardScreenState extends State<WeightDashboardScreen> {
   }
 
   Widget _buildError(
+    BuildContext context,
     String message,
     List<WeightEntry> entries,
+    List<WeightEntry> filteredEntries,
+    TimePeriod timePeriod,
     double? heightCm,
   ) {
     return RefreshIndicator(
@@ -122,8 +155,16 @@ class _WeightDashboardScreenState extends State<WeightDashboardScreen> {
             const SizedBox(height: 16),
             if (heightCm == null)
               _buildHeightConfig()
-            else
+            else ...[
+              WeightChart(
+                entries: filteredEntries,
+                period: timePeriod,
+                onPeriodChanged: (period) =>
+                    context.read<WeightBloc>().add(ChangeChartFilter(period)),
+              ),
+              const SizedBox(height: 16),
               _buildHistorySection(entries, heightCm),
+            ],
           ],
         ),
       ),

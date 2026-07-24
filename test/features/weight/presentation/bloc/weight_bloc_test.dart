@@ -61,7 +61,8 @@ void main() {
     blocTest<WeightBloc, WeightState>(
       'emits [WeightLoaded] with updated heightCm after UpdateUserHeight',
       build: () => WeightBloc(repository: repository),
-      seed: () => const WeightLoaded(entries: [], heightCm: null),
+      seed: () =>
+          const WeightLoaded(entries: [], filteredEntries: [], heightCm: null),
       act: (bloc) => bloc.add(const UpdateUserHeight(175)),
       expect: () => [
         isA<WeightLoaded>().having((s) => s.heightCm, 'heightCm', 175),
@@ -73,6 +74,14 @@ void main() {
       build: () => WeightBloc(repository: repository),
       seed: () => WeightLoaded(
         entries: [
+          WeightEntry(
+            id: 1,
+            weightKg: 70,
+            bmi: 22.86,
+            dateTime: DateTime(2025, 1, 1),
+          ),
+        ],
+        filteredEntries: [
           WeightEntry(
             id: 1,
             weightKg: 70,
@@ -93,7 +102,8 @@ void main() {
     blocTest<WeightBloc, WeightState>(
       'calls repository.addEntry with correct BMI on AddWeight when height is set',
       build: () => WeightBloc(repository: repository),
-      seed: () => const WeightLoaded(entries: [], heightCm: 170),
+      seed: () =>
+          const WeightLoaded(entries: [], filteredEntries: [], heightCm: 170),
       act: (bloc) => bloc.add(const AddWeight(weightKg: 72)),
       verify: (_) {
         final captured = verify(

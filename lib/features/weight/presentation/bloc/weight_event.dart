@@ -3,6 +3,21 @@ sealed class WeightEvent {
   const WeightEvent();
 }
 
+/// Defines the selected time period for the chart filter.
+enum TimePeriod {
+  /// Last 7 days.
+  week,
+
+  /// Last 30 days.
+  month,
+
+  /// Last 365 days.
+  year,
+
+  /// All time.
+  all,
+}
+
 /// Triggers subscription to the reactive weight stream.
 final class SubscribeToWeightChanges extends WeightEvent {
   /// Creates [SubscribeToWeightChanges].
@@ -37,4 +52,13 @@ final class DeleteWeight extends WeightEvent {
 
   /// Creates [DeleteWeight] targeting [id].
   const DeleteWeight(this.id);
+}
+
+/// Changes the active time filter for the weight chart.
+final class ChangeChartFilter extends WeightEvent {
+  /// The newly selected time period.
+  final TimePeriod period;
+
+  /// Creates [ChangeChartFilter] with the given [period].
+  const ChangeChartFilter(this.period);
 }

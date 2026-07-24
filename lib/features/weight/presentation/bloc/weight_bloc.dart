@@ -17,21 +17,43 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
     on<UpdateUserHeight>(_onUpdateUserHeight);
     on<AddWeight>(_onAddWeight);
     on<DeleteWeight>(_onDeleteWeight);
+    on<ChangeChartFilter>(_onChangeChartFilter);
+  }
+
+  List<WeightEntry> _filterEntries(
+    List<WeightEntry> entries,
+    TimePeriod period,
+  ) {
+    if (period == TimePeriod.all) return entries;
+    final now = DateTime.now();
+    final limit = switch (period) {
+      TimePeriod.week => now.subtract(const Duration(days: 7)),
+      TimePeriod.month => now.subtract(const Duration(days: 30)),
+      TimePeriod.year => now.subtract(const Duration(days: 365)),
+      TimePeriod.all => now,
+    };
+    return entries.where((e) => e.dateTime.isAfter(limit)).toList();
   }
 
   Future<void> _onSubscribeToWeightChanges(
     SubscribeToWeightChanges event,
     Emitter<WeightState> emit,
   ) async {
-    emit(WeightLoading(heightCm: state.heightCm));
+    emit(WeightLoading(heightCm: state.heightCm, timePeriod: state.timePeriod));
     await emit.forEach<List<WeightEntry>>(
       repository.watchAllEntries(),
-      onData: (entries) =>
-          WeightLoaded(heightCm: state.heightCm, entries: entries),
+      onData: (entries) => WeightLoaded(
+        heightCm: state.heightCm,
+        timePeriod: state.timePeriod,
+        entries: entries,
+        filteredEntries: _filterEntries(entries, state.timePeriod),
+      ),
       onError: (error, _) => WeightError(
         message: error.toString(),
         heightCm: state.heightCm,
+        timePeriod: state.timePeriod,
         entries: const [],
+        filteredEntries: const [],
       ),
     );
   }
@@ -42,7 +64,14 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
       WeightError(:final entries) => entries,
       _ => <WeightEntry>[],
     };
-    emit(WeightLoaded(heightCm: event.heightCm, entries: entries));
+    emit(
+      WeightLoaded(
+        heightCm: event.heightCm,
+        timePeriod: state.timePeriod,
+        entries: entries,
+        filteredEntries: _filterEntries(entries, state.timePeriod),
+      ),
+    );
   }
 
   Future<void> _onAddWeight(AddWeight event, Emitter<WeightState> emit) async {
@@ -58,7 +87,9 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
         WeightError(
           message: 'Set your height first.',
           heightCm: heightCm,
+          timePeriod: state.timePeriod,
           entries: entries,
+          filteredEntries: _filterEntries(entries, state.timePeriod),
         ),
       );
       return;
@@ -79,7 +110,9 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
         WeightError(
           message: 'Failed to add entry: $e',
           heightCm: heightCm,
+          timePeriod: state.timePeriod,
           entries: entries,
+          filteredEntries: _filterEntries(entries, state.timePeriod),
         ),
       );
     }
@@ -101,19 +134,52 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
         WeightError(
           message: 'Failed to delete entry: $e',
           heightCm: state.heightCm,
+          timePeriod: state.timePeriod,
           entries: entries,
+          filteredEntries: _filterEntries(entries, state.timePeriod),
         ),
       );
     }
   }
 
+  void _onChangeChartFilter(
+    ChangeChartFilter event,
+    Emitter<WeightState> emit,
+  ) {
+    final entries = switch (state) {
+      WeightLoaded(:final entries) => entries,
+      WeightError(:final entries) => entries,
+      _ => <WeightEntry>[],
+    };
+
+    emit(
+      WeightLoaded(
+        heightCm: state.heightCm,
+        timePeriod: event.period,
+        entries: entries,
+        filteredEntries: _filterEntries(entries, event.period),
+      ),
+    );
+  }
+
   @override
   WeightState? fromJson(Map<String, dynamic> json) {
-    return WeightInitial(heightCm: json['heightCm'] as double?);
+    final periodString = json['timePeriod'] as String?;
+    final period = periodString != null
+        ? TimePeriod.values.firstWhere(
+            (e) => e.name == periodString,
+            orElse: () => TimePeriod.week,
+          )
+        : TimePeriod.week;
+
+    return WeightInitial(
+      heightCm: json['heightCm'] as double?,
+      timePeriod: period,
+    );
   }
 
   @override
   Map<String, dynamic>? toJson(WeightState state) {
-    return {'heightCm': state.heightCm};
+    return {'heightCm': state.heightCm, 'timePeriod': state.timePeriod.name};
   }
 }
