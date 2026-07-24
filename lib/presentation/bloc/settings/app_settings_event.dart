@@ -53,6 +53,15 @@ final class UpdateNotificationTime extends AppSettingsEvent {
 }
 
 /// Updates the user's target weight in kg.
+final class TargetWeightChanged extends AppSettingsEvent {
+  /// The new target weight in kg (null to clear).
+  final double? weight;
+
+  /// Creates [TargetWeightChanged] with the given [weight].
+  const TargetWeightChanged(this.weight);
+}
+
+/// Legacy target-weight event retained for existing callers.
 final class UpdateTargetWeight extends AppSettingsEvent {
   /// The new target weight in kg (null to clear).
   final double? targetWeight;

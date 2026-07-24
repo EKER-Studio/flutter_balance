@@ -32,6 +32,29 @@ void main() {
       expect(bloc.state.notificationTime, const TimeOfDay(hour: 8, minute: 0));
     });
 
+    group('AppSettingsX', () {
+      test('calculates BMI from the configured height in centimeters', () {
+        const state = AppSettingsState(height: 180.0);
+
+        expect(state.calculateBmi(75.0), closeTo(23.15, 0.01));
+      });
+
+      test('returns infinity for invalid height values', () {
+        const state = AppSettingsState(height: 0.0);
+
+        expect(state.calculateBmi(75.0), double.infinity);
+      });
+
+      test('maps BMI values to the expected category', () {
+        const state = AppSettingsState();
+
+        expect(state.getBmiCategory(17.0), 'Underweight');
+        expect(state.getBmiCategory(22.0), 'Normal');
+        expect(state.getBmiCategory(27.0), 'Overweight');
+        expect(state.getBmiCategory(31.0), 'Obese');
+      });
+    });
+
     blocTest<AppSettingsBloc, AppSettingsState>(
       'emits updated state on UpdateTheme',
       build: () => AppSettingsBloc(),

@@ -6,6 +6,8 @@ import 'package:pure_weight/presentation/bloc/settings/measurement_unit.dart';
 ///
 /// All fields are persisted across app restarts via [HydratedBloc].
 final class AppSettingsState {
+  static const Object _targetWeightSentinel = Object();
+
   /// The selected theme mode.
   final AppThemeMode themeMode;
 
@@ -45,7 +47,7 @@ final class AppSettingsState {
     double? height,
     bool? notificationsEnabled,
     TimeOfDay? notificationTime,
-    double? targetWeight,
+    Object? targetWeight = _targetWeightSentinel,
     bool? isBiometricLockEnabled,
   }) {
     return AppSettingsState(
@@ -54,7 +56,9 @@ final class AppSettingsState {
       height: height ?? this.height,
       notificationsEnabled: notificationsEnabled ?? this.notificationsEnabled,
       notificationTime: notificationTime ?? this.notificationTime,
-      targetWeight: targetWeight,
+      targetWeight: targetWeight == _targetWeightSentinel
+          ? this.targetWeight
+          : targetWeight as double?,
       isBiometricLockEnabled:
           isBiometricLockEnabled ?? this.isBiometricLockEnabled,
     );
@@ -98,5 +102,32 @@ final class AppSettingsState {
       'targetWeight': targetWeight,
       'isBiometricLockEnabled': isBiometricLockEnabled,
     };
+  }
+}
+
+/// Helper methods for BMI-related app settings behavior.
+extension AppSettingsX on AppSettingsState {
+  /// Calculates the user's BMI from the current configured height and a weight.
+  double calculateBmi(double currentWeightKg) {
+    if (height <= 0) {
+      return double.infinity;
+    }
+
+    final heightInMeters = height / 100;
+    return currentWeightKg / (heightInMeters * heightInMeters);
+  }
+
+  /// Maps a BMI value to a human-readable category.
+  String getBmiCategory(double bmi) {
+    if (bmi < 18.5) {
+      return 'Underweight';
+    }
+    if (bmi < 25.0) {
+      return 'Normal';
+    }
+    if (bmi < 30.0) {
+      return 'Overweight';
+    }
+    return 'Obese';
   }
 }
