@@ -34,7 +34,25 @@ class _WeightDashboardScreenState extends State<WeightDashboardScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<WeightBloc, WeightState>(
+    return BlocConsumer<WeightBloc, WeightState>(
+      listenWhen: (previous, current) => current is WeightError,
+      listener: (context, state) {
+        if (state is WeightError) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(state.message),
+              action: SnackBarAction(
+                label: 'Spróbuj ponownie',
+                onPressed: () {
+                  context.read<WeightBloc>().add(
+                    const SubscribeToWeightChanges(),
+                  );
+                },
+              ),
+            ),
+          );
+        }
+      },
       builder: (context, state) {
         return Scaffold(
           appBar: AppBar(
@@ -125,15 +143,17 @@ class _WeightDashboardScreenState extends State<WeightDashboardScreen> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           if (heightCm == null) _buildHeightConfig(),
-          if (sorted.isNotEmpty) WeightSummaryCard(entry: sorted.first),
-          const SizedBox(height: 16),
-          WeightChart(
-            entries: filteredEntries,
-            period: timePeriod,
-            onPeriodChanged: (period) =>
-                context.read<WeightBloc>().add(ChangeChartFilter(period)),
-          ),
-          const SizedBox(height: 16),
+          if (sorted.isNotEmpty) ...[
+            WeightSummaryCard(entry: sorted.first),
+            const SizedBox(height: 16),
+            WeightChart(
+              entries: filteredEntries,
+              period: timePeriod,
+              onPeriodChanged: (period) =>
+                  context.read<WeightBloc>().add(ChangeChartFilter(period)),
+            ),
+            const SizedBox(height: 16),
+          ],
           _buildHistorySection(sorted, heightCm),
         ],
       ),
@@ -246,13 +266,9 @@ class _WeightDashboardScreenState extends State<WeightDashboardScreen> {
               ),
               const SizedBox(height: 16),
               Text(
-                'No entries yet',
+                'Brak wpisów. Dodaj swój pierwszy pomiar poniżej!',
                 style: Theme.of(context).textTheme.titleMedium,
-              ),
-              const SizedBox(height: 8),
-              Text(
-                'Tap + to add your first weight.',
-                style: Theme.of(context).textTheme.bodyMedium,
+                textAlign: TextAlign.center,
               ),
             ],
           ),

@@ -55,12 +55,17 @@ class _AddWeightSheetState extends State<AddWeightSheet> {
               ),
               autofocus: true,
               validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Please enter weight';
+                if (value == null || value.trim().isEmpty) {
+                  return 'Waga nie może być pusta';
                 }
-                final weight = double.tryParse(value);
-                if (weight == null || weight <= 0) {
-                  return 'Please enter a valid weight';
+                final weight = double.tryParse(
+                  value.trim().replaceAll(',', '.'),
+                );
+                if (weight == null) {
+                  return 'Wprowadź poprawną liczbę';
+                }
+                if (weight < 20 || weight > 300) {
+                  return 'Waga musi być z zakresu od 20 do 300 kg';
                 }
                 return null;
               },

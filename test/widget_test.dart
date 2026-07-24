@@ -40,7 +40,10 @@ void main() {
     // Verify UI state
     expect(find.text('PureWeight'), findsOneWidget);
     expect(find.text('Set Your Height'), findsOneWidget);
-    expect(find.text('No entries yet'), findsOneWidget);
+    expect(
+      find.text('Brak wpisów. Dodaj swój pierwszy pomiar poniżej!'),
+      findsOneWidget,
+    );
     expect(find.byType(FloatingActionButton), findsOneWidget);
   });
 }
