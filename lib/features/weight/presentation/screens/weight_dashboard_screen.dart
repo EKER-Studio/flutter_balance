@@ -7,6 +7,7 @@ import 'package:pure_weight/features/weight/presentation/bloc/weight_event.dart'
 import 'package:pure_weight/features/weight/presentation/bloc/weight_state.dart';
 import 'package:pure_weight/features/weight/presentation/widgets/add_weight_sheet.dart';
 import 'package:pure_weight/presentation/core/clamped_layout.dart';
+import 'package:pure_weight/presentation/screens/settings_screen.dart';
 import 'package:pure_weight/presentation/widgets/weight_chart.dart';
 
 /// Main dashboard screen showing weight summary, history, and height config.
@@ -58,6 +59,13 @@ class _WeightDashboardScreenState extends State<WeightDashboardScreen> {
           appBar: AppBar(
             title: const Text('PureWeight'),
             actions: [
+              IconButton(
+                icon: const Icon(Icons.settings_outlined),
+                tooltip: 'Settings',
+                onPressed: () => Navigator.of(context).push(
+                  MaterialPageRoute(builder: (_) => const SettingsScreen()),
+                ),
+              ),
               if (_hasEntries(state))
                 IconButton(
                   icon: const Icon(Icons.file_download_outlined),

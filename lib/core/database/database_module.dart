@@ -15,7 +15,7 @@ import 'package:pure_weight/features/weight/data/models/weight_entry_model.dart'
 ///    copy the records, then close and delete the old file.
 class DatabaseModule {
   /// The versioned database name. Increment suffix on breaking schema changes.
-  static const String _dbName = 'pure_weight_v1';
+  static const String dbName = 'pure_weight_v1';
 
   /// Opens and returns an [Isar] instance with all registered schemas.
   ///
@@ -26,7 +26,7 @@ class DatabaseModule {
     return Isar.open(
       [WeightEntryModelSchema],
       directory: dir.path,
-      name: _dbName,
+      name: dbName,
       compactOnLaunch: const CompactCondition(
         minFileSize: 10 * 1024 * 1024, // 10 MB
         minRatio: 1.25,
