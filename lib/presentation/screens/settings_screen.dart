@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pure_weight/core/utils/unit_converter.dart';
 import 'package:file_picker/file_picker.dart';
@@ -99,12 +100,19 @@ class SettingsScreen extends StatelessWidget {
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16),
                     child: TextFormField(
+                      key: ValueKey(state.measurementUnit.name),
                       initialValue:
                           state.targetWeight?.toStringAsFixed(1) ?? '',
                       keyboardType: const TextInputType.numberWithOptions(
                         decimal: true,
                         signed: false,
                       ),
+                      textInputAction: TextInputAction.done,
+                      inputFormatters: [
+                        FilteringTextInputFormatter.allow(
+                          RegExp(r'^\d+(\.\d{0,1})?'),
+                        ),
+                      ],
                       decoration: InputDecoration(
                         labelText:
                             state.measurementUnit == MeasurementUnit.imperial
@@ -113,6 +121,10 @@ class SettingsScreen extends StatelessWidget {
                         hintText: 'e.g. 70.0',
                         prefixIcon: const Icon(Icons.monitor_weight_outlined),
                         border: const OutlineInputBorder(),
+                        suffixText:
+                            state.measurementUnit == MeasurementUnit.imperial
+                            ? 'lb'
+                            : 'kg',
                       ),
                       validator: (value) {
                         if (value == null || value.trim().isEmpty) {

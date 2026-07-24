@@ -138,9 +138,11 @@ class WeightChart extends StatelessWidget {
                         horizontalLines: [
                           HorizontalLine(
                             y: safeTargetY,
-                            color: Theme.of(context).colorScheme.primary,
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.secondary.withValues(alpha: 0.6),
                             strokeWidth: 2,
-                            dashArray: [8, 4],
+                            dashArray: [5, 5],
                             label: HorizontalLineLabel(
                               show: true,
                               style: TextStyle(
@@ -152,7 +154,7 @@ class WeightChart extends StatelessWidget {
                                 horizontal: 6,
                                 vertical: 2,
                               ),
-                              labelResolver: (line) => 'Goal',
+                              labelResolver: (line) => 'Cel',
                               alignment: Alignment.topRight,
                             ),
                           ),

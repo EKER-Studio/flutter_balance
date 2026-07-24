@@ -9,7 +9,7 @@ import 'package:pure_weight/features/weight/presentation/widgets/add_weight_shee
 import 'package:pure_weight/presentation/core/clamped_layout.dart';
 import 'package:pure_weight/presentation/screens/settings_screen.dart';
 import 'package:pure_weight/presentation/bloc/settings/app_settings_bloc.dart';
-import 'package:pure_weight/presentation/widgets/health_summary_card.dart';
+import 'package:pure_weight/features/weight/presentation/widgets/health_summary_card.dart';
 import 'package:pure_weight/presentation/widgets/weight_chart.dart';
 
 /// Main dashboard screen showing weight summary, history, and height config.
@@ -148,7 +148,7 @@ class _WeightDashboardScreenState extends State<WeightDashboardScreen> {
     final sorted = List<WeightEntry>.from(entries)
       ..sort((a, b) => b.dateTime.compareTo(a.dateTime));
 
-    final targetWeight = context.read<AppSettingsBloc>().state.targetWeight;
+    final targetWeight = context.watch<AppSettingsBloc>().state.targetWeight;
 
     return OrientationBuilder(
       builder: (context, orientation) {
@@ -226,7 +226,7 @@ class _WeightDashboardScreenState extends State<WeightDashboardScreen> {
                 onPeriodChanged: (period) =>
                     context.read<WeightBloc>().add(ChangeChartFilter(period)),
                 targetWeight: context
-                    .read<AppSettingsBloc>()
+                    .watch<AppSettingsBloc>()
                     .state
                     .targetWeight,
               ),
