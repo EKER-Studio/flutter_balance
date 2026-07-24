@@ -6,6 +6,7 @@ import 'package:pure_weight/features/weight/presentation/bloc/weight_bloc.dart';
 import 'package:pure_weight/features/weight/presentation/bloc/weight_event.dart';
 import 'package:pure_weight/features/weight/presentation/screens/weight_dashboard_screen.dart';
 import 'package:pure_weight/l10n/app_localizations.dart';
+import 'package:pure_weight/presentation/theme/app_theme.dart';
 
 /// Root widget of the PureWeight application.
 class App extends StatelessWidget {
@@ -25,10 +26,9 @@ class App extends StatelessWidget {
               ..add(const SubscribeToWeightChanges()),
         child: MaterialApp(
           title: 'PureWeight',
-          theme: ThemeData(
-            colorScheme: ColorScheme.fromSeed(seedColor: Colors.indigo),
-            useMaterial3: true,
-          ),
+          theme: AppTheme.lightTheme,
+          darkTheme: AppTheme.darkTheme,
+          themeMode: ThemeMode.system,
           localizationsDelegates: const [
             AppLocalizations.delegate,
             GlobalMaterialLocalizations.delegate,
