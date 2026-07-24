@@ -1,8 +1,12 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import 'package:pure_weight/core/utils/unit_converter.dart';
 import 'package:pure_weight/features/weight/domain/entities/weight_entry.dart';
 import 'package:pure_weight/features/weight/presentation/bloc/weight_event.dart';
+import 'package:pure_weight/presentation/bloc/settings/app_settings_bloc.dart';
+import 'package:pure_weight/presentation/bloc/settings/measurement_unit.dart';
 
 /// A chart widget that displays weight history over time.
 class WeightChart extends StatelessWidget {
@@ -43,10 +47,16 @@ class WeightChart extends StatelessWidget {
     // Sort entries by date
     final sortedEntries = List<WeightEntry>.from(entries)
       ..sort((a, b) => a.dateTime.compareTo(b.dateTime));
-
+    final unit = context.watch<AppSettingsBloc>().state.measurementUnit;
     final minWeight = sortedEntries
         .map((e) => e.weightKg)
         .reduce((a, b) => a < b ? a : b);
+    final targetY = targetWeight == null
+        ? null
+        : (unit == MeasurementUnit.imperial
+              ? kgToLbs(targetWeight!)
+              : targetWeight!);
+    final safeTargetY = targetY ?? minWeight;
     final maxWeight = sortedEntries
         .map((e) => e.weightKg)
         .reduce((a, b) => a > b ? a : b);
@@ -123,11 +133,11 @@ class WeightChart extends StatelessWidget {
                   ),
                 ),
                 borderData: FlBorderData(show: false),
-                extraLinesData: targetWeight != null
+                extraLinesData: targetY != null
                     ? ExtraLinesData(
                         horizontalLines: [
                           HorizontalLine(
-                            y: targetWeight!,
+                            y: safeTargetY,
                             color: Theme.of(context).colorScheme.primary,
                             strokeWidth: 2,
                             dashArray: [8, 4],
@@ -142,7 +152,8 @@ class WeightChart extends StatelessWidget {
                                 horizontal: 6,
                                 vertical: 2,
                               ),
-                              labelResolver: (line) => 'Target',
+                              labelResolver: (line) => 'Goal',
+                              alignment: Alignment.topRight,
                             ),
                           ),
                         ],
@@ -195,10 +206,13 @@ class WeightChart extends StatelessWidget {
                           ).colorScheme.onSecondaryContainer,
                           fontWeight: FontWeight.bold,
                         );
-                        return LineTooltipItem(
-                          '${touchedSpot.y} kg',
-                          textStyle,
-                        );
+                        final formattedValue = unit == MeasurementUnit.imperial
+                            ? formatWeight(
+                                touchedSpot.y,
+                                MeasurementUnit.imperial,
+                              )
+                            : '${touchedSpot.y.toStringAsFixed(1)} kg';
+                        return LineTooltipItem(formattedValue, textStyle);
                       }).toList();
                     },
                   ),

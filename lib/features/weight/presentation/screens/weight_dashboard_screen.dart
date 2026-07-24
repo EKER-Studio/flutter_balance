@@ -9,6 +9,7 @@ import 'package:pure_weight/features/weight/presentation/widgets/add_weight_shee
 import 'package:pure_weight/presentation/core/clamped_layout.dart';
 import 'package:pure_weight/presentation/screens/settings_screen.dart';
 import 'package:pure_weight/presentation/bloc/settings/app_settings_bloc.dart';
+import 'package:pure_weight/presentation/widgets/health_summary_card.dart';
 import 'package:pure_weight/presentation/widgets/weight_chart.dart';
 
 /// Main dashboard screen showing weight summary, history, and height config.
@@ -160,7 +161,7 @@ class _WeightDashboardScreenState extends State<WeightDashboardScreen> {
             children: [
               if (heightCm == null) _buildHeightConfig(),
               if (sorted.isNotEmpty) ...[
-                WeightSummaryCard(entry: sorted.first),
+                HealthSummaryCard(latestWeightKg: sorted.first.weightKg),
                 const SizedBox(height: 16),
                 WeightChart(
                   entries: filteredEntries,

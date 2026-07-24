@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:pure_weight/core/utils/unit_converter.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:path_provider/path_provider.dart';
@@ -83,12 +84,48 @@ class SettingsScreen extends StatelessWidget {
                     title: const Text('Target Weight'),
                     subtitle: Text(
                       state.targetWeight != null
-                          ? '${state.targetWeight!.toStringAsFixed(1)} kg'
+                          ? formatWeight(
+                              state.targetWeight!,
+                              state.measurementUnit,
+                            )
                           : 'Not set',
                     ),
                     trailing: IconButton(
                       icon: const Icon(Icons.edit_outlined),
                       onPressed: () => _showTargetWeightDialog(context),
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: TextFormField(
+                      initialValue:
+                          state.targetWeight?.toStringAsFixed(1) ?? '',
+                      keyboardType: const TextInputType.numberWithOptions(
+                        decimal: true,
+                        signed: false,
+                      ),
+                      decoration: InputDecoration(
+                        labelText:
+                            state.measurementUnit == MeasurementUnit.imperial
+                            ? 'Target weight (lb)'
+                            : 'Target weight (kg)',
+                        hintText: 'e.g. 70.0',
+                        prefixIcon: const Icon(Icons.monitor_weight_outlined),
+                        border: const OutlineInputBorder(),
+                      ),
+                      validator: (value) {
+                        if (value == null || value.trim().isEmpty) {
+                          return null;
+                        }
+                        final parsed = double.tryParse(value);
+                        if (parsed == null || parsed <= 0) {
+                          return 'Enter a positive number';
+                        }
+                        return null;
+                      },
+                      onFieldSubmitted: (value) =>
+                          _submitTargetWeight(context, value),
                     ),
                   ),
                 ],
@@ -217,8 +254,29 @@ class SettingsScreen extends StatelessWidget {
     };
   }
 
+  void _submitTargetWeight(BuildContext context, String value) {
+    final text = value.trim();
+    if (text.isEmpty) {
+      context.read<AppSettingsBloc>().add(const TargetWeightChanged(null));
+      return;
+    }
+
+    final parsed = double.tryParse(text);
+    if (parsed != null && parsed > 0) {
+      context.read<AppSettingsBloc>().add(TargetWeightChanged(parsed));
+    } else if (context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please enter a valid positive number.'),
+          backgroundColor: Colors.orange,
+        ),
+      );
+    }
+  }
+
   void _showTargetWeightDialog(BuildContext context) {
     final currentTarget = context.read<AppSettingsBloc>().state.targetWeight;
+    final unit = context.read<AppSettingsBloc>().state.measurementUnit;
 
     final controller = TextEditingController(
       text: currentTarget?.toString() ?? '',
@@ -238,8 +296,10 @@ class SettingsScreen extends StatelessWidget {
                 signed: false,
               ),
               autofocus: true,
-              decoration: const InputDecoration(
-                labelText: 'Weight in kg',
+              decoration: InputDecoration(
+                labelText: unit == MeasurementUnit.imperial
+                    ? 'Weight in lb'
+                    : 'Weight in kg',
                 hintText: 'e.g. 75.5',
               ),
             ),
@@ -258,13 +318,13 @@ class SettingsScreen extends StatelessWidget {
               final text = controller.text.trim();
               if (text.isEmpty) {
                 context.read<AppSettingsBloc>().add(
-                  const UpdateTargetWeight(null),
+                  const TargetWeightChanged(null),
                 );
               } else {
                 final parsed = double.tryParse(text);
                 if (parsed != null && parsed > 0) {
                   context.read<AppSettingsBloc>().add(
-                    UpdateTargetWeight(parsed),
+                    TargetWeightChanged(parsed),
                   );
                 } else if (context.mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
