@@ -1,0 +1,322 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:pure_weight/features/weight/domain/entities/weight_entry.dart';
+import 'package:pure_weight/features/weight/presentation/bloc/weight_bloc.dart';
+import 'package:pure_weight/features/weight/presentation/bloc/weight_event.dart';
+import 'package:pure_weight/features/weight/presentation/bloc/weight_state.dart';
+import 'package:pure_weight/features/weight/presentation/widgets/add_weight_sheet.dart';
+import 'package:pure_weight/presentation/core/clamped_layout.dart';
+
+/// Main dashboard screen showing weight summary, history, and height config.
+class WeightDashboardScreen extends StatefulWidget {
+  /// Creates [WeightDashboardScreen].
+  const WeightDashboardScreen({super.key});
+
+  @override
+  State<WeightDashboardScreen> createState() => _WeightDashboardScreenState();
+}
+
+class _WeightDashboardScreenState extends State<WeightDashboardScreen> {
+  final _heightController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<WeightBloc>().add(const SubscribeToWeightChanges());
+    });
+  }
+
+  @override
+  void dispose() {
+    _heightController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<WeightBloc, WeightState>(
+      builder: (context, state) {
+        return Scaffold(
+          appBar: AppBar(title: const Text('PureWeight')),
+          body: SafeArea(
+            child: ClampedLayout(
+              padding: const EdgeInsets.all(16),
+              child: _buildBody(state),
+            ),
+          ),
+          floatingActionButton: _showFab(state)
+              ? FloatingActionButton(
+                  onPressed: () => _showAddWeightSheet(context),
+                  child: const Icon(Icons.add),
+                )
+              : null,
+        );
+      },
+    );
+  }
+
+  bool _showFab(WeightState state) =>
+      state is WeightLoaded || state is WeightError;
+
+  Widget _buildBody(WeightState state) {
+    return switch (state) {
+      WeightInitial() => const Center(child: CircularProgressIndicator()),
+      WeightLoading() => const Center(child: CircularProgressIndicator()),
+      WeightLoaded(:final entries, :final heightCm) => _buildContent(
+        entries,
+        heightCm,
+      ),
+      WeightError(:final message, :final entries, :final heightCm) =>
+        _buildError(message, entries, heightCm),
+    };
+  }
+
+  Widget _buildContent(List<WeightEntry> entries, double? heightCm) {
+    final sorted = List<WeightEntry>.from(entries)
+      ..sort((a, b) => b.dateTime.compareTo(a.dateTime));
+
+    return SingleChildScrollView(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          if (heightCm == null) _buildHeightConfig(),
+          if (sorted.isNotEmpty) WeightSummaryCard(entry: sorted.first),
+          const SizedBox(height: 16),
+          _buildHistorySection(sorted, heightCm),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildError(
+    String message,
+    List<WeightEntry> entries,
+    double? heightCm,
+  ) {
+    return RefreshIndicator(
+      onRefresh: () async {
+        context.read<WeightBloc>().add(const SubscribeToWeightChanges());
+      },
+      child: SingleChildScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Card(
+              color: Theme.of(context).colorScheme.errorContainer,
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.error_outline,
+                      color: Theme.of(context).colorScheme.error,
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(child: Text(message)),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+            if (heightCm == null)
+              _buildHeightConfig()
+            else
+              _buildHistorySection(entries, heightCm),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildHeightConfig() {
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text(
+              'Set Your Height',
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+            const SizedBox(height: 12),
+            TextField(
+              controller: _heightController,
+              decoration: const InputDecoration(
+                labelText: 'Height (cm)',
+                border: OutlineInputBorder(),
+              ),
+              keyboardType: const TextInputType.numberWithOptions(
+                decimal: true,
+              ),
+            ),
+            const SizedBox(height: 12),
+            FilledButton(
+              onPressed: () {
+                final text = _heightController.text.trim();
+                final height = double.tryParse(text);
+                if (height != null && height > 0) {
+                  context.read<WeightBloc>().add(UpdateUserHeight(height));
+                  _heightController.clear();
+                }
+              },
+              child: const Text('Save'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildHistorySection(List<WeightEntry> entries, double? heightCm) {
+    if (entries.isEmpty) {
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 48),
+          child: Column(
+            children: [
+              Icon(
+                Icons.monitor_weight_outlined,
+                size: 64,
+                color: Theme.of(context).colorScheme.outline,
+              ),
+              const SizedBox(height: 16),
+              Text(
+                'No entries yet',
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'Tap + to add your first weight.',
+                style: Theme.of(context).textTheme.bodyMedium,
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text('History', style: Theme.of(context).textTheme.titleMedium),
+        const SizedBox(height: 8),
+        ...entries.map(_buildEntryTile),
+      ],
+    );
+  }
+
+  Widget _buildEntryTile(WeightEntry entry) {
+    final dateStr =
+        '${entry.dateTime.day}/${entry.dateTime.month}/${entry.dateTime.year} '
+        '${entry.dateTime.hour.toString().padLeft(2, '0')}:'
+        '${entry.dateTime.minute.toString().padLeft(2, '0')}';
+
+    return Card(
+      child: ListTile(
+        title: Text('${entry.weightKg.toStringAsFixed(1)} kg'),
+        subtitle: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(dateStr),
+            if (entry.bmi != null)
+              Text('BMI: ${entry.bmi!.toStringAsFixed(1)}'),
+            if (entry.note != null && entry.note!.isNotEmpty) Text(entry.note!),
+          ],
+        ),
+        trailing: IconButton(
+          icon: const Icon(Icons.delete_outline),
+          onPressed: () {
+            context.read<WeightBloc>().add(DeleteWeight(entry.id));
+          },
+        ),
+      ),
+    );
+  }
+
+  void _showAddWeightSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (_) => const AddWeightSheet(),
+    );
+  }
+}
+
+/// Card displaying the latest weight entry summary and BMI interpretation.
+class WeightSummaryCard extends StatelessWidget {
+  /// The latest [WeightEntry] to display.
+  final WeightEntry entry;
+
+  /// Creates [WeightSummaryCard] with the given [entry].
+  const WeightSummaryCard({super.key, required this.entry});
+
+  @override
+  Widget build(BuildContext context) {
+    final bmi = entry.bmi;
+    final interpretation = bmi != null ? _interpretBmi(bmi) : null;
+    final bmiColor = bmi != null ? _bmiColor(bmi) : null;
+
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Row(
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    '${entry.weightKg.toStringAsFixed(1)} kg',
+                    style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    'Latest measurement',
+                    style: Theme.of(context).textTheme.bodySmall,
+                  ),
+                ],
+              ),
+            ),
+            if (bmi != null)
+              Column(
+                children: [
+                  Text(
+                    bmi.toStringAsFixed(1),
+                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                      color: bmiColor,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  Text(
+                    interpretation!,
+                    style: Theme.of(
+                      context,
+                    ).textTheme.bodySmall?.copyWith(color: bmiColor),
+                  ),
+                ],
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  String _interpretBmi(double bmi) {
+    if (bmi < 18.5) return 'Underweight';
+    if (bmi < 25.0) return 'Normal';
+    if (bmi < 30.0) return 'Overweight';
+    return 'Obese';
+  }
+
+  Color _bmiColor(double bmi) {
+    if (bmi < 18.5) return Colors.orange;
+    if (bmi < 25.0) return Colors.green;
+    if (bmi < 30.0) return Colors.orange;
+    return Colors.red;
+  }
+}
