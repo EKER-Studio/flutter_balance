@@ -60,3 +60,12 @@ final class UpdateTargetWeight extends AppSettingsEvent {
   /// Creates [UpdateTargetWeight] with the given [targetWeight].
   const UpdateTargetWeight(this.targetWeight);
 }
+
+/// Updates the biometric lock enabled state.
+final class UpdateBiometricLock extends AppSettingsEvent {
+  /// Whether biometric lock should be enabled.
+  final bool enabled;
+
+  /// Creates [UpdateBiometricLock] with the given [enabled].
+  const UpdateBiometricLock(this.enabled);
+}

@@ -4,6 +4,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:pure_weight/core/database/database_module.dart';
+import 'package:pure_weight/core/services/biometric_service.dart';
 import 'package:pure_weight/core/utils/csv_importer.dart';
 import 'package:pure_weight/features/weight/domain/repositories/weight_repository.dart';
 import 'package:pure_weight/features/weight/presentation/bloc/weight_bloc.dart';
@@ -89,6 +90,42 @@ class SettingsScreen extends StatelessWidget {
                       icon: const Icon(Icons.edit_outlined),
                       onPressed: () => _showTargetWeightDialog(context),
                     ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 24),
+              _buildSection(
+                context,
+                title: 'Security',
+                children: [
+                  FutureBuilder<bool>(
+                    future: BiometricService.instance.isAvailable(),
+                    builder: (context, snapshot) {
+                      final isAvailable = snapshot.data ?? false;
+                      final isLoading =
+                          snapshot.connectionState == ConnectionState.waiting;
+                      return SwitchListTile(
+                        title: const Text('Biometric Lock'),
+                        subtitle: Text(
+                          isAvailable
+                              ? 'Require Face ID or fingerprint on app launch'
+                              : 'Biometrics not available on this device',
+                        ),
+                        value: isAvailable
+                            ? state.isBiometricLockEnabled
+                            : false,
+                        onChanged: isLoading
+                            ? null
+                            : (value) async {
+                                if (isAvailable) {
+                                  context.read<AppSettingsBloc>().add(
+                                    UpdateBiometricLock(value),
+                                  );
+                                }
+                              },
+                        secondary: const Icon(Icons.fingerprint),
+                      );
+                    },
                   ),
                 ],
               ),

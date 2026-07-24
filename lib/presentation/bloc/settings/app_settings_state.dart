@@ -24,6 +24,9 @@ final class AppSettingsState {
   /// The user's target weight in kg (null means no target set).
   final double? targetWeight;
 
+  /// Whether biometric lock is enabled for app unlock.
+  final bool isBiometricLockEnabled;
+
   /// Creates [AppSettingsState] with the given parameters.
   const AppSettingsState({
     this.themeMode = AppThemeMode.system,
@@ -32,6 +35,7 @@ final class AppSettingsState {
     this.notificationsEnabled = true,
     this.notificationTime = const TimeOfDay(hour: 8, minute: 0),
     this.targetWeight,
+    this.isBiometricLockEnabled = false,
   });
 
   /// Creates a copy of this state with the given fields replaced.
@@ -42,6 +46,7 @@ final class AppSettingsState {
     bool? notificationsEnabled,
     TimeOfDay? notificationTime,
     double? targetWeight,
+    bool? isBiometricLockEnabled,
   }) {
     return AppSettingsState(
       themeMode: themeMode ?? this.themeMode,
@@ -50,6 +55,8 @@ final class AppSettingsState {
       notificationsEnabled: notificationsEnabled ?? this.notificationsEnabled,
       notificationTime: notificationTime ?? this.notificationTime,
       targetWeight: targetWeight,
+      isBiometricLockEnabled:
+          isBiometricLockEnabled ?? this.isBiometricLockEnabled,
     );
   }
 
@@ -73,6 +80,7 @@ final class AppSettingsState {
             )
           : const TimeOfDay(hour: 8, minute: 0),
       targetWeight: (json['targetWeight'] as num?)?.toDouble(),
+      isBiometricLockEnabled: json['isBiometricLockEnabled'] as bool? ?? false,
     );
   }
 
@@ -88,6 +96,7 @@ final class AppSettingsState {
         'minute': notificationTime.minute,
       },
       'targetWeight': targetWeight,
+      'isBiometricLockEnabled': isBiometricLockEnabled,
     };
   }
 }
