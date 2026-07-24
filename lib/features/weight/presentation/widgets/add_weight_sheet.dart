@@ -89,7 +89,9 @@ class _AddWeightSheetState extends State<AddWeightSheet> {
 
   void _onSave() {
     if (_formKey.currentState!.validate()) {
-      final weight = double.parse(_weightController.text);
+      final weight = double.parse(
+        _weightController.text.trim().replaceAll(',', '.'),
+      );
       final note = _noteController.text.isEmpty ? null : _noteController.text;
       context.read<WeightBloc>().add(AddWeight(weightKg: weight, note: note));
       Navigator.of(context).pop();
