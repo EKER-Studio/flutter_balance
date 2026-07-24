@@ -110,7 +110,7 @@ extension AppSettingsX on AppSettingsState {
   /// Calculates the user's BMI from the current configured height and a weight.
   double calculateBmi(double currentWeightKg) {
     if (height <= 0) {
-      return double.infinity;
+      return 0.0;
     }
 
     final heightInMeters = height / 100;
