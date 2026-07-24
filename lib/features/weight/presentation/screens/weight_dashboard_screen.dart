@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pure_weight/features/weight/domain/entities/weight_entry.dart';
+import 'package:pure_weight/core/utils/csv_exporter.dart';
 import 'package:pure_weight/features/weight/presentation/bloc/weight_bloc.dart';
 import 'package:pure_weight/features/weight/presentation/bloc/weight_event.dart';
 import 'package:pure_weight/features/weight/presentation/bloc/weight_state.dart';
@@ -36,7 +37,18 @@ class _WeightDashboardScreenState extends State<WeightDashboardScreen> {
     return BlocBuilder<WeightBloc, WeightState>(
       builder: (context, state) {
         return Scaffold(
-          appBar: AppBar(title: const Text('PureWeight')),
+          appBar: AppBar(
+            title: const Text('PureWeight'),
+            actions: [
+              if (_hasEntries(state))
+                IconButton(
+                  icon: const Icon(Icons.file_download_outlined),
+                  tooltip: 'Export CSV',
+                  onPressed: () =>
+                      CsvExporter.exportAndShare(_getEntries(state)),
+                ),
+            ],
+          ),
           body: SafeArea(
             child: ClampedLayout(
               padding: const EdgeInsets.all(16),
@@ -56,6 +68,18 @@ class _WeightDashboardScreenState extends State<WeightDashboardScreen> {
 
   bool _showFab(WeightState state) =>
       state is WeightLoaded || state is WeightError;
+
+  bool _hasEntries(WeightState state) {
+    if (state is WeightLoaded) return state.entries.isNotEmpty;
+    if (state is WeightError) return state.entries.isNotEmpty;
+    return false;
+  }
+
+  List<WeightEntry> _getEntries(WeightState state) {
+    if (state is WeightLoaded) return state.entries;
+    if (state is WeightError) return state.entries;
+    return const [];
+  }
 
   Widget _buildBody(BuildContext context, WeightState state) {
     return switch (state) {
