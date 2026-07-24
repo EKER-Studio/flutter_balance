@@ -24,15 +24,76 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
     List<WeightEntry> entries,
     TimePeriod period,
   ) {
-    if (period == TimePeriod.all) return entries;
-    final now = DateTime.now();
-    final limit = switch (period) {
-      TimePeriod.week => now.subtract(const Duration(days: 7)),
-      TimePeriod.month => now.subtract(const Duration(days: 30)),
-      TimePeriod.year => now.subtract(const Duration(days: 365)),
-      TimePeriod.all => now,
+    final filtered = switch (period) {
+      TimePeriod.all => entries,
+      TimePeriod.week =>
+        entries
+            .where(
+              (e) => e.dateTime.isAfter(
+                DateTime.now().subtract(const Duration(days: 7)),
+              ),
+            )
+            .toList(),
+      TimePeriod.month =>
+        entries
+            .where(
+              (e) => e.dateTime.isAfter(
+                DateTime.now().subtract(const Duration(days: 30)),
+              ),
+            )
+            .toList(),
+      TimePeriod.year =>
+        entries
+            .where(
+              (e) => e.dateTime.isAfter(
+                DateTime.now().subtract(const Duration(days: 365)),
+              ),
+            )
+            .toList(),
     };
-    return entries.where((e) => e.dateTime.isAfter(limit)).toList();
+    return _aggregateByDay(filtered);
+  }
+
+  /// Aggregates [entries] so that multiple measurements on the same calendar
+  /// day are collapsed into a single averaged data point.
+  ///
+  /// The merged entry carries the mean [WeightEntry.weightKg] and
+  /// [WeightEntry.bmi] for that day, with [WeightEntry.dateTime] set to noon
+  /// (12:00) of the day to keep the X-axis positions stable across re-renders.
+  List<WeightEntry> _aggregateByDay(List<WeightEntry> entries) {
+    if (entries.length <= 1) return entries;
+
+    // Group by date (year-month-day)
+    final Map<String, List<WeightEntry>> grouped = {};
+    for (final e in entries) {
+      final key = '${e.dateTime.year}-${e.dateTime.month}-${e.dateTime.day}';
+      grouped.putIfAbsent(key, () => []).add(e);
+    }
+
+    return grouped.entries.map((group) {
+      final dayEntries = group.value;
+      final avgWeight =
+          dayEntries.map((e) => e.weightKg).reduce((a, b) => a + b) /
+          dayEntries.length;
+      final avgBmi = dayEntries.every((e) => e.bmi != null)
+          ? dayEntries.map((e) => e.bmi!).reduce((a, b) => a + b) /
+                dayEntries.length
+          : null;
+      // Use noon on that day as the canonical timestamp for stable X positions.
+      final representative = dayEntries.first.dateTime;
+      final noonDate = DateTime(
+        representative.year,
+        representative.month,
+        representative.day,
+        12,
+      );
+      return WeightEntry(
+        id: dayEntries.first.id,
+        weightKg: double.parse(avgWeight.toStringAsFixed(2)),
+        bmi: avgBmi != null ? double.parse(avgBmi.toStringAsFixed(2)) : null,
+        dateTime: noonDate,
+      );
+    }).toList()..sort((a, b) => a.dateTime.compareTo(b.dateTime));
   }
 
   Future<void> _onSubscribeToWeightChanges(
