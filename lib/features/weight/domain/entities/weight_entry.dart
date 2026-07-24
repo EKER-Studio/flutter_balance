@@ -1,3 +1,6 @@
+import 'package:pure_weight/core/utils/unit_converter.dart';
+import 'package:pure_weight/presentation/bloc/settings/measurement_unit.dart';
+
 /// Pure domain entity representing a weight measurement entry.
 class WeightEntry {
   /// Unique identifier, 0 for unsaved entries.
@@ -45,5 +48,19 @@ class WeightEntry {
       dateTime: dateTime,
       note: note,
     );
+  }
+}
+
+/// Extensions for formatting [WeightEntry] values in the selected unit system.
+extension WeightEntryFormatting on WeightEntry {
+  /// Returns the weight formatted as a string (e.g. "70.0 kg" or "154.3 lbs").
+  String formattedWeight(MeasurementUnit unit) => formatWeight(weightKg, unit);
+
+  /// Returns the BMI formatted with one decimal place.
+  ///
+  /// Returns `null` if BMI is not set.
+  String? formattedBmi() {
+    if (bmi == null) return null;
+    return bmi!.toStringAsFixed(1);
   }
 }
