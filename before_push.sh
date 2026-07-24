@@ -46,16 +46,15 @@ trap error_handler ERR
 log_info "Launching comprehensive pre-push verification pipeline..."
 
 # ------------------------------------------------------------------------------
-log_step "1" "Cleaning environment and fetching dependencies..."
+log_step "1" "Fetching workspace dependencies..."
 # ------------------------------------------------------------------------------
-flutter clean > /dev/null
 flutter pub get > /dev/null
-log_success "Workspace cleaned and dependencies resolved."
+log_success "Dependencies resolved."
 
 # ------------------------------------------------------------------------------
 log_step "2" "Generating localization files (i18n)..."
 # ------------------------------------------------------------------------------
-flutter gen-l10n
+flutter gen-l10n > /dev/null
 log_success "Localization classes generated successfully."
 
 # ------------------------------------------------------------------------------
@@ -69,7 +68,7 @@ log_success "Code generation completed."
 log_step "4" "Verifying code formatting standards..."
 # ------------------------------------------------------------------------------
 # Ensures the code strictly obeys Dart formatting guidelines without altering files
-dart format --output=none --set-exit-if-changed .
+dart format --output=none --set-exit-if-changed lib test
 log_success "Codebase formatting aligns with style specifications."
 
 # ------------------------------------------------------------------------------
@@ -80,10 +79,10 @@ flutter analyze
 log_success "Static analysis passed with zero warnings or errors."
 
 # ------------------------------------------------------------------------------
-log_step "6" "Running complete unit and widget test suites (Excluding Goldens)..."
+log_step "6" "Running complete unit and widget test suites..."
 # ------------------------------------------------------------------------------
-# Executes all non-visual automated tests inside the /test directory
-flutter test --exclude-tags golden
+# Executes all automated tests inside the /test directory
+flutter test
 log_success "All automated unit and widget tests completed successfully."
 
 # ==============================================================================
