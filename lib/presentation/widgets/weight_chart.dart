@@ -21,14 +21,18 @@ class WeightChart extends StatelessWidget {
     required this.entries,
     required this.period,
     required this.onPeriodChanged,
+    this.chartHeight = 280,
   });
+
+  /// Optional fixed height for the chart canvas. Defaults to 280px.
+  final double chartHeight;
 
   @override
   Widget build(BuildContext context) {
     if (entries.isEmpty) {
-      return const SizedBox(
-        height: 300,
-        child: Center(child: Text('Not enough data to display chart.')),
+      return SizedBox(
+        height: chartHeight,
+        child: const Center(child: Text('Not enough data to display chart.')),
       );
     }
 
@@ -53,7 +57,7 @@ class WeightChart extends StatelessWidget {
         _buildFilterChips(context),
         const SizedBox(height: 16),
         SizedBox(
-          height: 300,
+          height: chartHeight,
           child: Padding(
             padding: const EdgeInsets.only(right: 16.0, left: 8.0),
             child: LineChart(

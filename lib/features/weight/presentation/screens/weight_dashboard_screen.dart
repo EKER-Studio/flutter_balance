@@ -138,25 +138,33 @@ class _WeightDashboardScreenState extends State<WeightDashboardScreen> {
     final sorted = List<WeightEntry>.from(entries)
       ..sort((a, b) => b.dateTime.compareTo(a.dateTime));
 
-    return SingleChildScrollView(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          if (heightCm == null) _buildHeightConfig(),
-          if (sorted.isNotEmpty) ...[
-            WeightSummaryCard(entry: sorted.first),
-            const SizedBox(height: 16),
-            WeightChart(
-              entries: filteredEntries,
-              period: timePeriod,
-              onPeriodChanged: (period) =>
-                  context.read<WeightBloc>().add(ChangeChartFilter(period)),
-            ),
-            const SizedBox(height: 16),
-          ],
-          _buildHistorySection(sorted, heightCm),
-        ],
-      ),
+    return OrientationBuilder(
+      builder: (context, orientation) {
+        final chartHeight = orientation == Orientation.landscape
+            ? 160.0
+            : 280.0;
+        return SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              if (heightCm == null) _buildHeightConfig(),
+              if (sorted.isNotEmpty) ...[
+                WeightSummaryCard(entry: sorted.first),
+                const SizedBox(height: 16),
+                WeightChart(
+                  entries: filteredEntries,
+                  period: timePeriod,
+                  chartHeight: chartHeight,
+                  onPeriodChanged: (period) =>
+                      context.read<WeightBloc>().add(ChangeChartFilter(period)),
+                ),
+                const SizedBox(height: 16),
+              ],
+              _buildHistorySection(sorted, heightCm),
+            ],
+          ),
+        );
+      },
     );
   }
 
