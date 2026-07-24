@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:pure_weight/app.dart';
 import 'package:pure_weight/features/weight/domain/entities/weight_entry.dart';
 import 'package:pure_weight/features/weight/domain/repositories/weight_repository.dart';
+import 'package:pure_weight/features/weight/presentation/bloc/weight_bloc.dart';
+import 'package:pure_weight/features/weight/presentation/bloc/weight_event.dart';
+import 'package:pure_weight/presentation/bloc/settings/app_settings_bloc.dart';
 
 class MockWeightRepository extends Mock implements WeightRepository {}
 
@@ -29,7 +33,19 @@ void main() {
   testWidgets('Dashboard renders height config and empty state', (
     tester,
   ) async {
-    await tester.pumpWidget(App(repository: repository));
+    await tester.pumpWidget(
+      MultiBlocProvider(
+        providers: [
+          BlocProvider(create: (_) => AppSettingsBloc()),
+          BlocProvider(
+            create: (context) =>
+                WeightBloc(repository: repository)
+                  ..add(const SubscribeToWeightChanges()),
+          ),
+        ],
+        child: App(repository: repository),
+      ),
+    );
     // Let the BlocProvider's create method and streams settle
     await tester.pump();
     await tester.runAsync(

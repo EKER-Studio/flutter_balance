@@ -116,10 +116,10 @@ class SettingsScreen extends StatelessWidget {
     required String label,
   }) {
     return ListTile(
-      leading: Radio<T>(
-        value: value,
+      leading: RadioGroup<T>(
         groupValue: groupValue,
         onChanged: onChanged,
+        child: Radio<T>(value: value),
       ),
       title: Text(label),
     );
