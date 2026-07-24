@@ -13,6 +13,7 @@ class AppSettingsBloc extends HydratedBloc<AppSettingsEvent, AppSettingsState> {
     on<UpdateHeight>(_onUpdateHeight);
     on<ToggleNotifications>(_onToggleNotifications);
     on<UpdateNotificationTime>(_onUpdateNotificationTime);
+    on<UpdateTargetWeight>(_onUpdateTargetWeight);
   }
 
   void _onUpdateTheme(UpdateTheme event, Emitter<AppSettingsState> emit) {
@@ -42,6 +43,13 @@ class AppSettingsBloc extends HydratedBloc<AppSettingsEvent, AppSettingsState> {
     Emitter<AppSettingsState> emit,
   ) {
     emit(state.copyWith(notificationTime: event.notificationTime));
+  }
+
+  void _onUpdateTargetWeight(
+    UpdateTargetWeight event,
+    Emitter<AppSettingsState> emit,
+  ) {
+    emit(state.copyWith(targetWeight: event.targetWeight));
   }
 
   @override

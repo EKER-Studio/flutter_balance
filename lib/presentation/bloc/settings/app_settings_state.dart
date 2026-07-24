@@ -21,6 +21,9 @@ final class AppSettingsState {
   /// The time of day for the daily reminder (default: 08:00).
   final TimeOfDay notificationTime;
 
+  /// The user's target weight in kg (null means no target set).
+  final double? targetWeight;
+
   /// Creates [AppSettingsState] with the given parameters.
   const AppSettingsState({
     this.themeMode = AppThemeMode.system,
@@ -28,6 +31,7 @@ final class AppSettingsState {
     this.height = 170.0,
     this.notificationsEnabled = true,
     this.notificationTime = const TimeOfDay(hour: 8, minute: 0),
+    this.targetWeight,
   });
 
   /// Creates a copy of this state with the given fields replaced.
@@ -37,6 +41,7 @@ final class AppSettingsState {
     double? height,
     bool? notificationsEnabled,
     TimeOfDay? notificationTime,
+    double? targetWeight,
   }) {
     return AppSettingsState(
       themeMode: themeMode ?? this.themeMode,
@@ -44,6 +49,7 @@ final class AppSettingsState {
       height: height ?? this.height,
       notificationsEnabled: notificationsEnabled ?? this.notificationsEnabled,
       notificationTime: notificationTime ?? this.notificationTime,
+      targetWeight: targetWeight,
     );
   }
 
@@ -66,6 +72,7 @@ final class AppSettingsState {
               minute: json['notificationTime']['minute'] as int,
             )
           : const TimeOfDay(hour: 8, minute: 0),
+      targetWeight: (json['targetWeight'] as num?)?.toDouble(),
     );
   }
 
@@ -80,6 +87,7 @@ final class AppSettingsState {
         'hour': notificationTime.hour,
         'minute': notificationTime.minute,
       },
+      'targetWeight': targetWeight,
     };
   }
 }

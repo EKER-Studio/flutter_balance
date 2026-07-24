@@ -8,6 +8,7 @@ import 'package:pure_weight/features/weight/presentation/bloc/weight_state.dart'
 import 'package:pure_weight/features/weight/presentation/widgets/add_weight_sheet.dart';
 import 'package:pure_weight/presentation/core/clamped_layout.dart';
 import 'package:pure_weight/presentation/screens/settings_screen.dart';
+import 'package:pure_weight/presentation/bloc/settings/app_settings_bloc.dart';
 import 'package:pure_weight/presentation/widgets/weight_chart.dart';
 
 /// Main dashboard screen showing weight summary, history, and height config.
@@ -146,6 +147,8 @@ class _WeightDashboardScreenState extends State<WeightDashboardScreen> {
     final sorted = List<WeightEntry>.from(entries)
       ..sort((a, b) => b.dateTime.compareTo(a.dateTime));
 
+    final targetWeight = context.read<AppSettingsBloc>().state.targetWeight;
+
     return OrientationBuilder(
       builder: (context, orientation) {
         final chartHeight = orientation == Orientation.landscape
@@ -165,7 +168,10 @@ class _WeightDashboardScreenState extends State<WeightDashboardScreen> {
                   chartHeight: chartHeight,
                   onPeriodChanged: (period) =>
                       context.read<WeightBloc>().add(ChangeChartFilter(period)),
+                  targetWeight: targetWeight,
                 ),
+                const SizedBox(height: 16),
+                _buildStatsSection(sorted, targetWeight),
                 const SizedBox(height: 16),
               ],
               _buildHistorySection(sorted, heightCm),
@@ -218,6 +224,10 @@ class _WeightDashboardScreenState extends State<WeightDashboardScreen> {
                 period: timePeriod,
                 onPeriodChanged: (period) =>
                     context.read<WeightBloc>().add(ChangeChartFilter(period)),
+                targetWeight: context
+                    .read<AppSettingsBloc>()
+                    .state
+                    .targetWeight,
               ),
               const SizedBox(height: 16),
               _buildHistorySection(entries, heightCm),
@@ -335,6 +345,87 @@ class _WeightDashboardScreenState extends State<WeightDashboardScreen> {
       context: context,
       isScrollControlled: true,
       builder: (_) => const AddWeightSheet(),
+    );
+  }
+
+  Widget _buildStatsSection(List<WeightEntry> entries, double? targetWeight) {
+    final weights = entries.map((e) => e.weightKg).toList();
+    final minWeight = weights.isEmpty
+        ? null
+        : weights.reduce((a, b) => a < b ? a : b);
+    final maxWeight = weights.isEmpty
+        ? null
+        : weights.reduce((a, b) => a > b ? a : b);
+    final lastWeight = entries.isEmpty ? null : entries.first.weightKg;
+
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Stats', style: Theme.of(context).textTheme.titleMedium),
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                Expanded(
+                  child: _buildStatTile(
+                    label: 'Lowest',
+                    value: minWeight != null
+                        ? '${minWeight.toStringAsFixed(1)} kg'
+                        : '—',
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: _buildStatTile(
+                    label: 'Highest',
+                    value: maxWeight != null
+                        ? '${maxWeight.toStringAsFixed(1)} kg'
+                        : '—',
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: _buildStatTile(
+                    label: 'To Goal',
+                    value: _formatToGoal(lastWeight, targetWeight),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  String _formatToGoal(double? lastWeight, double? targetWeight) {
+    if (lastWeight == null || targetWeight == null) return '—';
+    final diff = lastWeight - targetWeight;
+    if (diff.abs() < 0.05) return 'Reached!';
+    final sign = diff > 0 ? '+' : '-';
+    return '$sign${diff.abs().toStringAsFixed(1)} kg';
+  }
+
+  Widget _buildStatTile({required String label, required String value}) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
+          ),
+        ),
+        const SizedBox(height: 4),
+        Text(
+          value,
+          style: Theme.of(
+            context,
+          ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+        ),
+      ],
     );
   }
 }

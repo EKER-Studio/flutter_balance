@@ -72,6 +72,29 @@ class SettingsScreen extends StatelessWidget {
               const SizedBox(height: 24),
               _buildSection(
                 context,
+                title: 'Goal',
+                children: [
+                  ListTile(
+                    leading: const Icon(
+                      Icons.flag_outlined,
+                      color: Colors.green,
+                    ),
+                    title: const Text('Target Weight'),
+                    subtitle: Text(
+                      state.targetWeight != null
+                          ? '${state.targetWeight!.toStringAsFixed(1)} kg'
+                          : 'Not set',
+                    ),
+                    trailing: IconButton(
+                      icon: const Icon(Icons.edit_outlined),
+                      onPressed: () => _showTargetWeightDialog(context),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 24),
+              _buildSection(
+                context,
                 title: 'Database',
                 children: [
                   ListTile(
@@ -155,6 +178,74 @@ class SettingsScreen extends StatelessWidget {
       MeasurementUnit.metric => 'Metric (kg, cm)',
       MeasurementUnit.imperial => 'Imperial (lb, ft/in)',
     };
+  }
+
+  void _showTargetWeightDialog(BuildContext context) {
+    final currentTarget = context.read<AppSettingsBloc>().state.targetWeight;
+
+    final controller = TextEditingController(
+      text: currentTarget?.toString() ?? '',
+    );
+
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Target Weight'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(
+              controller: controller,
+              keyboardType: const TextInputType.numberWithOptions(
+                decimal: true,
+                signed: false,
+              ),
+              autofocus: true,
+              decoration: const InputDecoration(
+                labelText: 'Weight in kg',
+                hintText: 'e.g. 75.5',
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              controller.dispose();
+              Navigator.pop(ctx);
+            },
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () {
+              final text = controller.text.trim();
+              if (text.isEmpty) {
+                context.read<AppSettingsBloc>().add(
+                  const UpdateTargetWeight(null),
+                );
+              } else {
+                final parsed = double.tryParse(text);
+                if (parsed != null && parsed > 0) {
+                  context.read<AppSettingsBloc>().add(
+                    UpdateTargetWeight(parsed),
+                  );
+                } else if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Please enter a valid positive number.'),
+                      backgroundColor: Colors.orange,
+                    ),
+                  );
+                }
+              }
+              controller.dispose();
+              Navigator.pop(ctx);
+            },
+            child: const Text('Save'),
+          ),
+        ],
+      ),
+    );
   }
 
   void _showWipeConfirmation(BuildContext context) {

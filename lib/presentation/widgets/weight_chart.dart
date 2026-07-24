@@ -15,6 +15,9 @@ class WeightChart extends StatelessWidget {
   /// Callback fired when the user selects a new time period.
   final ValueChanged<TimePeriod> onPeriodChanged;
 
+  /// Optional target weight to display as a horizontal reference line.
+  final double? targetWeight;
+
   /// Creates a [WeightChart] with [entries], [period], and [onPeriodChanged].
   const WeightChart({
     super.key,
@@ -22,6 +25,7 @@ class WeightChart extends StatelessWidget {
     required this.period,
     required this.onPeriodChanged,
     this.chartHeight = 280,
+    this.targetWeight,
   });
 
   /// Optional fixed height for the chart canvas. Defaults to 280px.
@@ -119,6 +123,31 @@ class WeightChart extends StatelessWidget {
                   ),
                 ),
                 borderData: FlBorderData(show: false),
+                extraLinesData: targetWeight != null
+                    ? ExtraLinesData(
+                        horizontalLines: [
+                          HorizontalLine(
+                            y: targetWeight!,
+                            color: Theme.of(context).colorScheme.primary,
+                            strokeWidth: 2,
+                            dashArray: [8, 4],
+                            label: HorizontalLineLabel(
+                              show: true,
+                              style: TextStyle(
+                                color: Theme.of(context).colorScheme.onSurface,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 11,
+                              ),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 6,
+                                vertical: 2,
+                              ),
+                              labelResolver: (line) => 'Target',
+                            ),
+                          ),
+                        ],
+                      )
+                    : null,
                 lineBarsData: [
                   LineChartBarData(
                     spots: _getSpots(sortedEntries),
