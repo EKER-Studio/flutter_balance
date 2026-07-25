@@ -110,7 +110,8 @@ void main() {
           () => repository.addEntry(captureAny()),
         ).captured;
         final entry = captured.single as WeightEntry;
-        expect(entry.bmi, closeTo(24.91, 0.01));
+        // BMI is no longer persisted at creation time; it should be null.
+        expect(entry.bmi, isNull);
       },
     );
 

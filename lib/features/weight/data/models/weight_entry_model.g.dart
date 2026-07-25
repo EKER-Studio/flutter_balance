@@ -17,15 +17,14 @@ const WeightEntryModelSchema = CollectionSchema(
   name: r'WeightEntryModel',
   id: 7313730065132991878,
   properties: {
-    r'bmi': PropertySchema(id: 0, name: r'bmi', type: IsarType.double),
     r'dateTime': PropertySchema(
-      id: 1,
+      id: 0,
       name: r'dateTime',
       type: IsarType.dateTime,
     ),
-    r'note': PropertySchema(id: 2, name: r'note', type: IsarType.string),
+    r'note': PropertySchema(id: 1, name: r'note', type: IsarType.string),
     r'weightKg': PropertySchema(
-      id: 3,
+      id: 2,
       name: r'weightKg',
       type: IsarType.double,
     ),
@@ -67,10 +66,9 @@ void _weightEntryModelSerialize(
   List<int> offsets,
   Map<Type, List<int>> allOffsets,
 ) {
-  writer.writeDouble(offsets[0], object.bmi);
-  writer.writeDateTime(offsets[1], object.dateTime);
-  writer.writeString(offsets[2], object.note);
-  writer.writeDouble(offsets[3], object.weightKg);
+  writer.writeDateTime(offsets[0], object.dateTime);
+  writer.writeString(offsets[1], object.note);
+  writer.writeDouble(offsets[2], object.weightKg);
 }
 
 WeightEntryModel _weightEntryModelDeserialize(
@@ -80,11 +78,10 @@ WeightEntryModel _weightEntryModelDeserialize(
   Map<Type, List<int>> allOffsets,
 ) {
   final object = WeightEntryModel();
-  object.bmi = reader.readDoubleOrNull(offsets[0]);
-  object.dateTime = reader.readDateTime(offsets[1]);
+  object.dateTime = reader.readDateTime(offsets[0]);
   object.id = id;
-  object.note = reader.readStringOrNull(offsets[2]);
-  object.weightKg = reader.readDouble(offsets[3]);
+  object.note = reader.readStringOrNull(offsets[1]);
+  object.weightKg = reader.readDouble(offsets[2]);
   return object;
 }
 
@@ -96,12 +93,10 @@ P _weightEntryModelDeserializeProp<P>(
 ) {
   switch (propertyId) {
     case 0:
-      return (reader.readDoubleOrNull(offset)) as P;
-    case 1:
       return (reader.readDateTime(offset)) as P;
-    case 2:
+    case 1:
       return (reader.readStringOrNull(offset)) as P;
-    case 3:
+    case 2:
       return (reader.readDouble(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -205,99 +200,6 @@ extension WeightEntryModelQueryWhere
 
 extension WeightEntryModelQueryFilter
     on QueryBuilder<WeightEntryModel, WeightEntryModel, QFilterCondition> {
-  QueryBuilder<WeightEntryModel, WeightEntryModel, QAfterFilterCondition>
-  bmiIsNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        const FilterCondition.isNull(property: r'bmi'),
-      );
-    });
-  }
-
-  QueryBuilder<WeightEntryModel, WeightEntryModel, QAfterFilterCondition>
-  bmiIsNotNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        const FilterCondition.isNotNull(property: r'bmi'),
-      );
-    });
-  }
-
-  QueryBuilder<WeightEntryModel, WeightEntryModel, QAfterFilterCondition>
-  bmiEqualTo(double? value, {double epsilon = Query.epsilon}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        FilterCondition.equalTo(
-          property: r'bmi',
-          value: value,
-
-          epsilon: epsilon,
-        ),
-      );
-    });
-  }
-
-  QueryBuilder<WeightEntryModel, WeightEntryModel, QAfterFilterCondition>
-  bmiGreaterThan(
-    double? value, {
-    bool include = false,
-    double epsilon = Query.epsilon,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        FilterCondition.greaterThan(
-          include: include,
-          property: r'bmi',
-          value: value,
-
-          epsilon: epsilon,
-        ),
-      );
-    });
-  }
-
-  QueryBuilder<WeightEntryModel, WeightEntryModel, QAfterFilterCondition>
-  bmiLessThan(
-    double? value, {
-    bool include = false,
-    double epsilon = Query.epsilon,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        FilterCondition.lessThan(
-          include: include,
-          property: r'bmi',
-          value: value,
-
-          epsilon: epsilon,
-        ),
-      );
-    });
-  }
-
-  QueryBuilder<WeightEntryModel, WeightEntryModel, QAfterFilterCondition>
-  bmiBetween(
-    double? lower,
-    double? upper, {
-    bool includeLower = true,
-    bool includeUpper = true,
-    double epsilon = Query.epsilon,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        FilterCondition.between(
-          property: r'bmi',
-          lower: lower,
-          includeLower: includeLower,
-          upper: upper,
-          includeUpper: includeUpper,
-
-          epsilon: epsilon,
-        ),
-      );
-    });
-  }
-
   QueryBuilder<WeightEntryModel, WeightEntryModel, QAfterFilterCondition>
   dateTimeEqualTo(DateTime value) {
     return QueryBuilder.apply(this, (query) {
@@ -651,19 +553,6 @@ extension WeightEntryModelQueryLinks
 
 extension WeightEntryModelQuerySortBy
     on QueryBuilder<WeightEntryModel, WeightEntryModel, QSortBy> {
-  QueryBuilder<WeightEntryModel, WeightEntryModel, QAfterSortBy> sortByBmi() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'bmi', Sort.asc);
-    });
-  }
-
-  QueryBuilder<WeightEntryModel, WeightEntryModel, QAfterSortBy>
-  sortByBmiDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'bmi', Sort.desc);
-    });
-  }
-
   QueryBuilder<WeightEntryModel, WeightEntryModel, QAfterSortBy>
   sortByDateTime() {
     return QueryBuilder.apply(this, (query) {
@@ -708,19 +597,6 @@ extension WeightEntryModelQuerySortBy
 
 extension WeightEntryModelQuerySortThenBy
     on QueryBuilder<WeightEntryModel, WeightEntryModel, QSortThenBy> {
-  QueryBuilder<WeightEntryModel, WeightEntryModel, QAfterSortBy> thenByBmi() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'bmi', Sort.asc);
-    });
-  }
-
-  QueryBuilder<WeightEntryModel, WeightEntryModel, QAfterSortBy>
-  thenByBmiDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'bmi', Sort.desc);
-    });
-  }
-
   QueryBuilder<WeightEntryModel, WeightEntryModel, QAfterSortBy>
   thenByDateTime() {
     return QueryBuilder.apply(this, (query) {
@@ -778,12 +654,6 @@ extension WeightEntryModelQuerySortThenBy
 
 extension WeightEntryModelQueryWhereDistinct
     on QueryBuilder<WeightEntryModel, WeightEntryModel, QDistinct> {
-  QueryBuilder<WeightEntryModel, WeightEntryModel, QDistinct> distinctByBmi() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'bmi');
-    });
-  }
-
   QueryBuilder<WeightEntryModel, WeightEntryModel, QDistinct>
   distinctByDateTime() {
     return QueryBuilder.apply(this, (query) {
@@ -812,12 +682,6 @@ extension WeightEntryModelQueryProperty
   QueryBuilder<WeightEntryModel, int, QQueryOperations> idProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'id');
-    });
-  }
-
-  QueryBuilder<WeightEntryModel, double?, QQueryOperations> bmiProperty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'bmi');
     });
   }
 

@@ -22,6 +22,12 @@ Future<void> main() async {
   final isar = await DatabaseModule.initialize();
   final repository = IsarWeightRepository(isar: isar);
 
+  // Run one-time migration to remove stored BMI values from DB entries.
+  // This rewrites all entries without the `bmi` field so old stored values
+  // are purged. It's safe to call on each startup; it simply re-inserts
+  // records using the current schema.
+  await repository.removeStoredBmiFromDb();
+
   await NotificationService.instance.initialize();
 
   final settingsBloc = AppSettingsBloc();

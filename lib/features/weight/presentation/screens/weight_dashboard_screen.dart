@@ -75,8 +75,10 @@ class _WeightDashboardScreenState extends State<WeightDashboardScreen> {
                 IconButton(
                   icon: const Icon(Icons.file_download_outlined),
                   tooltip: 'Export CSV',
-                  onPressed: () =>
-                      CsvExporter.exportAndShare(_getEntries(state)),
+                  onPressed: () => CsvExporter.exportAndShare(
+                    _getEntries(state),
+                    context.read<AppSettingsBloc>().state.height,
+                  ),
                 ),
             ],
           ),
@@ -306,21 +308,26 @@ class _WeightDashboardScreenState extends State<WeightDashboardScreen> {
       );
     }
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text('History', style: Theme.of(context).textTheme.titleMedium),
-        const SizedBox(height: 8),
-        ...entries.map(_buildEntryTile),
-      ],
+    return BlocBuilder<AppSettingsBloc, AppSettingsState>(
+      builder: (context, settingsState) {
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('History', style: Theme.of(context).textTheme.titleMedium),
+            const SizedBox(height: 8),
+            ...entries.map((entry) => _buildEntryTile(entry, settingsState)),
+          ],
+        );
+      },
     );
   }
 
-  Widget _buildEntryTile(WeightEntry entry) {
+  Widget _buildEntryTile(WeightEntry entry, AppSettingsState settingsState) {
     final dateStr =
         '${entry.dateTime.day}/${entry.dateTime.month}/${entry.dateTime.year} '
         '${entry.dateTime.hour.toString().padLeft(2, '0')}:'
         '${entry.dateTime.minute.toString().padLeft(2, '0')}';
+    final dynamicBmi = settingsState.calculateBmi(entry.weightKg);
 
     return Card(
       child: ListTile(
@@ -329,8 +336,7 @@ class _WeightDashboardScreenState extends State<WeightDashboardScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(dateStr),
-            if (entry.bmi != null)
-              Text('BMI: ${entry.bmi!.toStringAsFixed(1)}'),
+            Text('BMI: ${dynamicBmi.toStringAsFixed(1)}'),
             if (entry.note != null && entry.note!.isNotEmpty) Text(entry.note!),
           ],
         ),

@@ -15,9 +15,6 @@ class WeightEntryModel {
   /// Body weight in kilograms.
   double weightKg = 0.0;
 
-  /// Pre-calculated Body Mass Index.
-  double? bmi;
-
   /// Timestamp of the measurement.
   late DateTime dateTime;
 
@@ -29,7 +26,7 @@ class WeightEntryModel {
     return WeightEntry(
       id: id,
       weightKg: weightKg,
-      bmi: bmi,
+      bmi: null,
       dateTime: dateTime,
       note: note,
     );
@@ -40,7 +37,6 @@ class WeightEntryModel {
     return WeightEntryModel()
       ..id = entity.id
       ..weightKg = entity.weightKg
-      ..bmi = entity.bmi
       ..dateTime = entity.dateTime
       ..note = entity.note;
   }

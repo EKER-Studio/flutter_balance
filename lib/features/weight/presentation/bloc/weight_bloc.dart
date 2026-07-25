@@ -76,10 +76,20 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
       final avgWeight =
           dayEntries.map((e) => e.weightKg).reduce((a, b) => a + b) /
           dayEntries.length;
-      final avgBmi = dayEntries.every((e) => e.bmi != null)
-          ? dayEntries.map((e) => e.bmi!).reduce((a, b) => a + b) /
-                dayEntries.length
-          : null;
+
+      // Calculate average BMI from the averaged weight and the current
+      // persisted user height stored in the bloc state. BMI is not stored
+      // permanently in the DB so we compute it dynamically here so that
+      // changes to height immediately reflect in aggregated values.
+      double? avgBmi;
+      final heightCm = state.heightCm;
+      if (heightCm != null && heightCm > 0) {
+        final heightM = heightCm / 100.0;
+        final bmiValue = WeightEntry.calculateBmi(avgWeight, heightM);
+        avgBmi = double.parse(bmiValue.toStringAsFixed(2));
+      } else {
+        avgBmi = null;
+      }
       // Use noon on that day as the canonical timestamp for stable X positions.
       final representative = dayEntries.first.dateTime;
       final noonDate = DateTime(
@@ -91,7 +101,7 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
       return WeightEntry(
         id: dayEntries.first.id,
         weightKg: double.parse(avgWeight.toStringAsFixed(2)),
-        bmi: avgBmi != null ? double.parse(avgBmi.toStringAsFixed(2)) : null,
+        bmi: avgBmi,
         dateTime: noonDate,
       );
     }).toList()..sort((a, b) => a.dateTime.compareTo(b.dateTime));
@@ -157,10 +167,8 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
       return;
     }
 
-    final heightM = heightCm / 100.0;
-    final entry = WeightEntry.withBmi(
+    final entry = WeightEntry(
       weightKg: event.weightKg,
-      heightMeters: heightM,
       dateTime: DateTime.now(),
       note: event.note,
     );
