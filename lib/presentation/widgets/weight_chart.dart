@@ -2,6 +2,7 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import 'package:pure_weight/l10n/app_localizations.dart';
 import 'package:pure_weight/core/utils/unit_converter.dart';
 import 'package:pure_weight/features/weight/domain/entities/weight_entry.dart';
 import 'package:pure_weight/features/weight/presentation/bloc/weight_event.dart';
@@ -40,7 +41,7 @@ class WeightChart extends StatelessWidget {
     if (entries.isEmpty) {
       return SizedBox(
         height: chartHeight,
-        child: const Center(child: Text('Not enough data to display chart.')),
+        child: Center(child: Text(AppLocalizations.of(context).chartEmpty)),
       );
     }
 
@@ -154,7 +155,8 @@ class WeightChart extends StatelessWidget {
                                 horizontal: 6,
                                 vertical: 2,
                               ),
-                              labelResolver: (line) => 'Cel',
+                              labelResolver: (line) =>
+                                  AppLocalizations.of(context).chartTargetLabel,
                               alignment: Alignment.topRight,
                             ),
                           ),
@@ -228,12 +230,13 @@ class WeightChart extends StatelessWidget {
   }
 
   Widget _buildFilterChips(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Wrap(
       spacing: 8,
       alignment: WrapAlignment.center,
       children: TimePeriod.values.map((p) {
         return ChoiceChip(
-          label: Text(_getPeriodName(p)),
+          label: Text(_getPeriodName(p, l10n)),
           selected: period == p,
           onSelected: (selected) {
             if (selected) {
@@ -245,16 +248,16 @@ class WeightChart extends StatelessWidget {
     );
   }
 
-  String _getPeriodName(TimePeriod p) {
+  String _getPeriodName(TimePeriod p, AppLocalizations l10n) {
     switch (p) {
       case TimePeriod.week:
-        return 'Week';
+        return l10n.week;
       case TimePeriod.month:
-        return 'Month';
+        return l10n.month;
       case TimePeriod.year:
-        return 'Year';
+        return l10n.year;
       case TimePeriod.all:
-        return 'All';
+        return l10n.all;
     }
   }
 

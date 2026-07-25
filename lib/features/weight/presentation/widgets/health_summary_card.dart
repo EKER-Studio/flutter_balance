@@ -28,7 +28,12 @@ class HealthSummaryCard extends StatelessWidget {
         final badgeColor = category != null
             ? _badgeColorForCategory(category)
             : Colors.blue;
-        final goalText = _goalText(targetWeight, latestWeightKg, weightUnit);
+        final goalText = _goalText(
+          targetWeight,
+          latestWeightKg,
+          weightUnit,
+          localization,
+        );
 
         return Card(
           elevation: 0,
@@ -48,7 +53,7 @@ class HealthSummaryCard extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'BMI',
+                        localization.bmi,
                         style: Theme.of(context).textTheme.labelMedium
                             ?.copyWith(
                               color: Theme.of(
@@ -89,7 +94,7 @@ class HealthSummaryCard extends StatelessWidget {
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        'Based on your height and latest weight',
+                        localization.bmiSubtitle,
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
                           color: Theme.of(context).colorScheme.onSurfaceVariant,
                         ),
@@ -103,7 +108,7 @@ class HealthSummaryCard extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Weight Goal',
+                        localization.weightGoal,
                         style: Theme.of(context).textTheme.labelMedium
                             ?.copyWith(
                               color: Theme.of(
@@ -164,21 +169,22 @@ class HealthSummaryCard extends StatelessWidget {
     double? targetWeight,
     double currentWeightKg,
     MeasurementUnit unit,
+    AppLocalizations l10n,
   ) {
     if (targetWeight == null) {
-      return 'Goal not set';
+      return l10n.goalNotSet;
     }
 
     if (currentWeightKg <= targetWeight) {
-      return 'Goal achieved! 🎉';
+      return l10n.goalAchieved;
     }
 
     final difference = currentWeightKg - targetWeight;
-    final displayedDifference = unit == MeasurementUnit.imperial
+    final displayed = unit == MeasurementUnit.imperial
         ? kgToLbs(difference)
         : difference;
-    final unitLabel = unit == MeasurementUnit.imperial ? 'lbs' : 'kg';
+    final unitLabel = unit == MeasurementUnit.imperial ? 'lb' : 'kg';
 
-    return '${displayedDifference.toStringAsFixed(1)} $unitLabel to target';
+    return '${displayed.toStringAsFixed(1)} $unitLabel ${l10n.toTarget}';
   }
 }

@@ -41,7 +41,7 @@ class HealthSummaryCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'BMI',
+                    l10n.bmi,
                     style: Theme.of(context).textTheme.labelMedium?.copyWith(
                       color: Theme.of(context).colorScheme.onSurfaceVariant,
                     ),
@@ -91,21 +91,21 @@ class HealthSummaryCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Weight Goal',
+                    l10n.weightGoal,
                     style: Theme.of(context).textTheme.labelMedium?.copyWith(
                       color: Theme.of(context).colorScheme.onSurfaceVariant,
                     ),
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    _goalText(targetWeight, latestWeightKg, unit),
+                    _goalText(targetWeight, latestWeightKg, unit, l10n),
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    _goalSubtitle(targetWeight, latestWeightKg, unit),
+                    _goalSubtitle(targetWeight, latestWeightKg, unit, l10n),
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
                       color: Theme.of(context).colorScheme.onSurfaceVariant,
                     ),
@@ -123,14 +123,15 @@ class HealthSummaryCard extends StatelessWidget {
     double? targetWeight,
     double currentWeightKg,
     MeasurementUnit unit,
+    AppLocalizations l10n,
   ) {
     if (targetWeight == null) {
-      return 'Goal not set';
+      return l10n.goalNotSet;
     }
 
     final difference = currentWeightKg - targetWeight;
     if (difference <= 0.05 && difference >= -0.05) {
-      return 'Goal achieved! 🎉';
+      return l10n.goalAchieved;
     }
 
     final absDifference = difference.abs();
@@ -138,29 +139,29 @@ class HealthSummaryCard extends StatelessWidget {
         ? kgToLbs(absDifference)
         : absDifference;
     final unitLabel = unit == MeasurementUnit.imperial ? 'lb' : 'kg';
-    final direction = difference > 0 ? 'to target' : 'to target';
-    return '${displayed.toStringAsFixed(1)} $unitLabel $direction';
+    return '${displayed.toStringAsFixed(1)} $unitLabel ${l10n.toTarget}';
   }
 
   String _goalSubtitle(
     double? targetWeight,
     double currentWeightKg,
     MeasurementUnit unit,
+    AppLocalizations l10n,
   ) {
     if (targetWeight == null) {
-      return 'Set a goal to stay motivated';
+      return l10n.setGoalMotivation;
     }
 
     final difference = currentWeightKg - targetWeight;
     if (difference <= 0.05 && difference >= -0.05) {
-      return 'You are right on target';
+      return l10n.rightOnTarget;
     }
 
     final displayed = unit == MeasurementUnit.imperial
         ? kgToLbs(targetWeight)
         : targetWeight;
     final unitLabel = unit == MeasurementUnit.imperial ? 'lbs' : 'kg';
-    return 'Target: ${displayed.toStringAsFixed(1)} $unitLabel';
+    return '${l10n.targetLabel} ${displayed.toStringAsFixed(1)} $unitLabel';
   }
 
   Color _badgeColorForCategory(BmiCategory category) {

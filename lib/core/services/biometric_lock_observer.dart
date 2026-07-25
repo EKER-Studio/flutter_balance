@@ -8,8 +8,14 @@ class BiometricLockObserver with WidgetsBindingObserver {
   /// The [AppSettingsBloc] used to read current settings state.
   final AppSettingsBloc settingsBloc;
 
+  /// Localized reason displayed in the biometric auth dialog.
+  final String localizedReason;
+
   /// Creates a [BiometricLockObserver].
-  BiometricLockObserver({required this.settingsBloc});
+  BiometricLockObserver({
+    required this.settingsBloc,
+    this.localizedReason = 'Authenticate to access PureWeight',
+  });
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
@@ -29,7 +35,7 @@ class BiometricLockObserver with WidgetsBindingObserver {
 
     try {
       final authenticated = await BiometricService.instance.authenticate(
-        localizedReason: 'Authenticate to access PureWeight',
+        localizedReason: localizedReason,
       );
 
       if (!authenticated) {

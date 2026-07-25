@@ -12,6 +12,234 @@ class AppLocalizationsPl extends AppLocalizations {
   String get appTitle => 'PureWeight';
 
   @override
+  String get settingsTitle => 'Ustawienia';
+
+  @override
+  String get metricUnit => 'Metryczny (kg, cm)';
+
+  @override
+  String get imperialUnit => 'Imperialny (lb, ft/in)';
+
+  @override
+  String get height => 'Wzrost';
+
+  @override
+  String get goal => 'Cel';
+
+  @override
+  String get targetWeight => 'Waga docelowa';
+
+  @override
+  String get notSet => 'Nie ustawiono';
+
+  @override
+  String get security => 'Bezpieczeństwo';
+
+  @override
+  String get biometricLock => 'Blokada biometryczna';
+
+  @override
+  String get biometricDesc =>
+      'Wymagaj Face ID lub odcisku palca przy uruchamianiu';
+
+  @override
+  String get database => 'Baza danych';
+
+  @override
+  String get importCsv => 'Importuj dane z CSV';
+
+  @override
+  String get importCsvDesc =>
+      'Importuj wpisy wagi z poprzednio wyeksportowanego pliku CSV.';
+
+  @override
+  String get wipeData => 'Wyczyść wszystkie dane';
+
+  @override
+  String get wipeDataDesc =>
+      'To trwale usunie wszystkie wpisy wagi i zresetuje ustawienia aplikacji.';
+
+  @override
+  String get cancel => 'Anuluj';
+
+  @override
+  String get save => 'Zapisz';
+
+  @override
+  String get retry => 'Spróbuj ponownie';
+
+  @override
+  String get invalidPositiveNumber => 'Wprowadź poprawną liczbę dodatnią.';
+
+  @override
+  String get heightDialogTitle => 'Ustaw wzrost';
+
+  @override
+  String get heightCmLabel => 'Wzrost (cm)';
+
+  @override
+  String get heightHint => 'np. 177';
+
+  @override
+  String get targetWeightDialogTitle => 'Waga docelowa';
+
+  @override
+  String get weightInKgLabel => 'Waga (kg)';
+
+  @override
+  String get weightInLbLabel => 'Waga w lb';
+
+  @override
+  String get weightHint => 'np. 75,5';
+
+  @override
+  String get noteLabel => 'Notatka (opcjonalnie)';
+
+  @override
+  String get theme => 'Motyw';
+
+  @override
+  String get system => 'Systemowy';
+
+  @override
+  String get light => 'Jasny';
+
+  @override
+  String get dark => 'Ciemny';
+
+  @override
+  String get measurementUnit => 'Jednostka miary';
+
+  @override
+  String get biometricsNotAvailable =>
+      'Biometria niedostępna na tym urządzeniu';
+
+  @override
+  String get wipeDataContent =>
+      'To trwale usunie wszystkie wpisy wagi i zresetuje ustawienia aplikacji. Tej operacji nie można cofnąć.';
+
+  @override
+  String get wipeDataButton => 'Wyczyść dane';
+
+  @override
+  String get dataWipedSuccess =>
+      'Wszystkie dane zostały wyczyszczone. Uruchom aplikację ponownie.';
+
+  @override
+  String errorWipingData(Object error) {
+    return 'Błąd podczas czyszczenia danych: $error';
+  }
+
+  @override
+  String get importNoDataFound =>
+      'Nie znaleziono poprawnych wpisów wagi w zaimportowanym pliku.';
+
+  @override
+  String importSuccess(Object count) {
+    return 'Zaimportowano $count wpisów.';
+  }
+
+  @override
+  String get importFailed => 'Nie udało się zaimportować danych.';
+
+  @override
+  String importError(Object error) {
+    return 'Błąd importu: $error';
+  }
+
+  @override
+  String get exportCsv => 'Eksportuj CSV';
+
+  @override
+  String get setYourHeightTitle => 'Ustaw swój wzrost';
+
+  @override
+  String get emptyState => 'Brak wpisów. Dodaj swój pierwszy pomiar poniżej!';
+
+  @override
+  String get history => 'Historia';
+
+  @override
+  String get stats => 'Statystyki';
+
+  @override
+  String get lowest => 'Najniższa';
+
+  @override
+  String get highest => 'Najwyższa';
+
+  @override
+  String get toGoal => 'Do celu';
+
+  @override
+  String get reached => 'Osiągnięto!';
+
+  @override
+  String get latestMeasurement => 'Ostatni pomiar';
+
+  @override
+  String get addWeight => 'Dodaj wagę';
+
+  @override
+  String get weightCannotBeEmpty => 'Waga nie może być pusta';
+
+  @override
+  String get enterValidNumber => 'Wprowadź poprawną liczbę';
+
+  @override
+  String get weightRangeError => 'Waga musi być z zakresu od 20 do 300 kg';
+
+  @override
+  String get bmi => 'BMI';
+
+  @override
+  String bmiValue(Object value) {
+    return 'BMI: $value';
+  }
+
+  @override
+  String get bmiSubtitle => 'Na podstawie Twojego wzrostu i ostatniej wagi';
+
+  @override
+  String get weightGoal => 'Cel wagowy';
+
+  @override
+  String get goalNotSet => 'Cel nie ustawiony';
+
+  @override
+  String get goalAchieved => 'Cel osiągnięty!';
+
+  @override
+  String get toTarget => 'do celu';
+
+  @override
+  String get setGoalMotivation => 'Ustaw cel, aby zachować motywację';
+
+  @override
+  String get rightOnTarget => 'Jesteś dokładnie przy celu';
+
+  @override
+  String get targetLabel => 'Cel:';
+
+  @override
+  String get chartEmpty => 'Za mało danych, aby wyświetlić wykres.';
+
+  @override
+  String get week => 'Tydzień';
+
+  @override
+  String get month => 'Miesiąc';
+
+  @override
+  String get year => 'Rok';
+
+  @override
+  String get all => 'Wszystkie';
+
+  @override
+  String get chartTargetLabel => 'Cel';
+
+  @override
   String get bmiCategoryUnderweight => 'Niedowaga';
 
   @override

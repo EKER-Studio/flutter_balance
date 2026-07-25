@@ -57,7 +57,7 @@ void main() {
     expect(find.text('PureWeight'), findsOneWidget);
     expect(find.text('Set Your Height'), findsOneWidget);
     expect(
-      find.text('Brak wpisów. Dodaj swój pierwszy pomiar poniżej!'),
+      find.text('No entries yet. Add your first measurement below!'),
       findsOneWidget,
     );
     expect(find.byType(FloatingActionButton), findsOneWidget);

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:pure_weight/l10n/app_localizations.dart';
 import 'package:pure_weight/core/utils/unit_converter.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
@@ -54,8 +55,8 @@ class _HeightDialogState extends State<_HeightDialog> {
     if (text.isEmpty || height == null || height <= 0) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please enter a valid positive number.'),
+        SnackBar(
+          content: Text(AppLocalizations.of(context).invalidPositiveNumber),
           backgroundColor: Colors.orange,
         ),
       );
@@ -67,8 +68,9 @@ class _HeightDialogState extends State<_HeightDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return AlertDialog(
-      title: const Text('Set Height'),
+      title: Text(l10n.heightDialogTitle),
       content: SingleChildScrollView(
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -80,9 +82,9 @@ class _HeightDialogState extends State<_HeightDialog> {
                 signed: false,
               ),
               autofocus: true,
-              decoration: const InputDecoration(
-                labelText: 'Height (cm)',
-                hintText: 'e.g. 177',
+              decoration: InputDecoration(
+                labelText: l10n.heightCmLabel,
+                hintText: l10n.heightHint,
               ),
               onSubmitted: (_) => _handleSave(),
             ),
@@ -92,9 +94,9 @@ class _HeightDialogState extends State<_HeightDialog> {
       actions: [
         TextButton(
           onPressed: () => Navigator.of(context).pop(),
-          child: const Text('Cancel'),
+          child: Text(l10n.cancel),
         ),
-        FilledButton(onPressed: _handleSave, child: const Text('Save')),
+        FilledButton(onPressed: _handleSave, child: Text(l10n.save)),
       ],
     );
   }
@@ -142,8 +144,8 @@ class _TargetWeightDialogState extends State<_TargetWeightDialog> {
     } else {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please enter a valid positive number.'),
+        SnackBar(
+          content: Text(AppLocalizations.of(context).invalidPositiveNumber),
           backgroundColor: Colors.orange,
         ),
       );
@@ -152,8 +154,9 @@ class _TargetWeightDialogState extends State<_TargetWeightDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return AlertDialog(
-      title: const Text('Target Weight'),
+      title: Text(l10n.targetWeightDialogTitle),
       content: SingleChildScrollView(
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -167,9 +170,9 @@ class _TargetWeightDialogState extends State<_TargetWeightDialog> {
               autofocus: true,
               decoration: InputDecoration(
                 labelText: widget.unit == MeasurementUnit.imperial
-                    ? 'Weight in lb'
-                    : 'Weight in kg',
-                hintText: 'e.g. 75.5',
+                    ? l10n.weightInLbLabel
+                    : l10n.weightInKgLabel,
+                hintText: l10n.weightHint,
               ),
               onSubmitted: (_) => _handleSave(),
             ),
@@ -179,9 +182,9 @@ class _TargetWeightDialogState extends State<_TargetWeightDialog> {
       actions: [
         TextButton(
           onPressed: () => Navigator.of(context).pop(),
-          child: const Text('Cancel'),
+          child: Text(l10n.cancel),
         ),
-        FilledButton(onPressed: _handleSave, child: const Text('Save')),
+        FilledButton(onPressed: _handleSave, child: Text(l10n.save)),
       ],
     );
   }
@@ -210,15 +213,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Settings')),
+      appBar: AppBar(title: Text(AppLocalizations.of(context).settingsTitle)),
       body: BlocBuilder<AppSettingsBloc, AppSettingsState>(
         builder: (context, state) {
+          final l10n = AppLocalizations.of(context);
           return ListView(
             padding: const EdgeInsets.all(16),
             children: [
               _buildSection(
                 context,
-                title: 'Theme',
+                title: l10n.theme,
                 children: AppThemeMode.values
                     .map(
                       (mode) => _buildRadioTile(
@@ -230,7 +234,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             UpdateTheme(value!),
                           );
                         },
-                        label: _themeLabel(mode),
+                        label: _themeLabel(mode, l10n),
                       ),
                     )
                     .toList(),
@@ -238,7 +242,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               const SizedBox(height: 24),
               _buildSection(
                 context,
-                title: 'Measurement Unit',
+                title: l10n.measurementUnit,
                 children: MeasurementUnit.values
                     .map(
                       (unit) => _buildRadioTile(
@@ -250,7 +254,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             UpdateMeasurementUnit(value!),
                           );
                         },
-                        label: _unitLabel(unit),
+                        label: _unitLabel(unit, l10n),
                       ),
                     )
                     .toList(),
@@ -258,15 +262,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
               const SizedBox(height: 24),
               _buildSection(
                 context,
-                title: 'Height',
+                title: l10n.height,
                 children: [
                   ListTile(
                     leading: const Icon(Icons.height, color: Colors.blue),
-                    title: const Text('Height'),
+                    title: Text(l10n.height),
                     subtitle: Text(
                       state.height > 0
                           ? '${state.height.toStringAsFixed(0)} cm'
-                          : 'Not set',
+                          : l10n.notSet,
                     ),
                     trailing: IconButton(
                       icon: const Icon(Icons.edit_outlined),
@@ -278,21 +282,21 @@ class _SettingsScreenState extends State<SettingsScreen> {
               const SizedBox(height: 24),
               _buildSection(
                 context,
-                title: 'Goal',
+                title: l10n.goal,
                 children: [
                   ListTile(
                     leading: const Icon(
                       Icons.flag_outlined,
                       color: Colors.green,
                     ),
-                    title: const Text('Target Weight'),
+                    title: Text(l10n.targetWeight),
                     subtitle: Text(
                       state.targetWeight != null
                           ? formatWeight(
                               state.targetWeight!,
                               state.measurementUnit,
                             )
-                          : 'Not set',
+                          : l10n.notSet,
                     ),
                     trailing: IconButton(
                       icon: const Icon(Icons.edit_outlined),
@@ -304,7 +308,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               const SizedBox(height: 24),
               _buildSection(
                 context,
-                title: 'Security',
+                title: l10n.security,
                 children: [
                   FutureBuilder<bool>(
                     future: BiometricService.instance.isAvailable(),
@@ -313,11 +317,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       final isLoading =
                           snapshot.connectionState == ConnectionState.waiting;
                       return SwitchListTile(
-                        title: const Text('Biometric Lock'),
+                        title: Text(l10n.biometricLock),
                         subtitle: Text(
                           isAvailable
-                              ? 'Require Face ID or fingerprint on app launch'
-                              : 'Biometrics not available on this device',
+                              ? l10n.biometricDesc
+                              : l10n.biometricsNotAvailable,
                         ),
                         value: isAvailable
                             ? state.isBiometricLockEnabled
@@ -340,17 +344,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
               const SizedBox(height: 24),
               _buildSection(
                 context,
-                title: 'Database',
+                title: l10n.database,
                 children: [
                   ListTile(
                     leading: const Icon(
                       Icons.file_upload_outlined,
                       color: Colors.blue,
                     ),
-                    title: const Text('Importuj dane z CSV'),
-                    subtitle: const Text(
-                      'Import weight entries from a previously exported CSV file.',
-                    ),
+                    title: Text(l10n.importCsv),
+                    subtitle: Text(l10n.importCsvDesc),
                     onTap: () => _importCsv(context),
                   ),
                   ListTile(
@@ -358,10 +360,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       Icons.delete_forever,
                       color: Colors.red,
                     ),
-                    title: const Text('Wipe All Data'),
-                    subtitle: const Text(
-                      'This will permanently delete all your weight entries and reset app settings.',
-                    ),
+                    title: Text(l10n.wipeData),
+                    subtitle: Text(l10n.wipeDataDesc),
                     onTap: () => _showWipeConfirmation(context),
                   ),
                 ],
@@ -410,18 +410,18 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
-  String _themeLabel(AppThemeMode mode) {
+  String _themeLabel(AppThemeMode mode, AppLocalizations l10n) {
     return switch (mode) {
-      AppThemeMode.system => 'System',
-      AppThemeMode.light => 'Light',
-      AppThemeMode.dark => 'Dark',
+      AppThemeMode.system => l10n.system,
+      AppThemeMode.light => l10n.light,
+      AppThemeMode.dark => l10n.dark,
     };
   }
 
-  String _unitLabel(MeasurementUnit unit) {
+  String _unitLabel(MeasurementUnit unit, AppLocalizations l10n) {
     return switch (unit) {
-      MeasurementUnit.metric => 'Metric (kg, cm)',
-      MeasurementUnit.imperial => 'Imperial (lb, ft/in)',
+      MeasurementUnit.metric => l10n.metricUnit,
+      MeasurementUnit.imperial => l10n.imperialUnit,
     };
   }
 
@@ -463,17 +463,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   void _showWipeConfirmation(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Wipe All Data'),
-        content: const Text(
-          'This will permanently delete all your weight entries and reset app settings. This action cannot be undone.',
-        ),
+        title: Text(l10n.wipeData),
+        content: Text(l10n.wipeDataContent),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: const Text('Cancel'),
+            child: Text(l10n.cancel),
           ),
           FilledButton(
             onPressed: () async {
@@ -483,7 +482,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             style: FilledButton.styleFrom(
               backgroundColor: Theme.of(context).colorScheme.error,
             ),
-            child: const Text('Wipe Data'),
+            child: Text(l10n.wipeDataButton),
           ),
         ],
       ),
@@ -492,11 +491,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   Future<void> _wipeDatabase(BuildContext context) async {
     try {
-      // Delete the Isar database file from disk.
       final dir = await getApplicationDocumentsDirectory();
       final dbPath = '${dir.path}/${DatabaseModule.dbName}';
 
-      // Delete all Isar-related files (main file, indexes, etc.).
       for (final suffix in ['', '.index', '.wal', '.shm']) {
         final file = File('$dbPath$suffix');
         if (await file.exists()) {
@@ -504,22 +501,25 @@ class _SettingsScreenState extends State<SettingsScreen> {
         }
       }
 
-      // Reset HydratedBloc storage to clear persisted settings.
       await HydratedBloc.storage.clear();
 
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('All data has been wiped. Restart the app.'),
+          SnackBar(
+            content: Text(AppLocalizations.of(context).dataWipedSuccess),
             backgroundColor: Colors.green,
           ),
         );
       }
     } catch (e) {
       if (context.mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Error wiping data: $e')));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              AppLocalizations.of(context).errorWipingData(e.toString()),
+            ),
+          ),
+        );
       }
     }
   }
@@ -543,8 +543,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
       if (entries.isEmpty) {
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Nie znaleziono danych do zaimportowania.'),
+            SnackBar(
+              content: Text(AppLocalizations.of(context).importNoDataFound),
               backgroundColor: Colors.orange,
             ),
           );
@@ -557,19 +557,20 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
       if (context.mounted) {
         if (importedCount > 0) {
-          // Trigger a fresh read to ensure UI reflects the latest data.
           context.read<WeightBloc>().add(const RefreshWeightData());
 
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('Zaimportowano $importedCount wpisów.'),
+              content: Text(
+                AppLocalizations.of(context).importSuccess(importedCount),
+              ),
               backgroundColor: Colors.green,
             ),
           );
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Nie udało się zaimportować danych.'),
+            SnackBar(
+              content: Text(AppLocalizations.of(context).importFailed),
               backgroundColor: Colors.orange,
             ),
           );
@@ -577,9 +578,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
       }
     } catch (e) {
       if (context.mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Błąd importu: $e')));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              AppLocalizations.of(context).importError(e.toString()),
+            ),
+          ),
+        );
       }
     }
   }

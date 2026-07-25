@@ -104,6 +104,432 @@ abstract class AppLocalizations {
   /// **'PureWeight'**
   String get appTitle;
 
+  /// No description provided for @settingsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Settings'**
+  String get settingsTitle;
+
+  /// No description provided for @metricUnit.
+  ///
+  /// In en, this message translates to:
+  /// **'Metric (kg, cm)'**
+  String get metricUnit;
+
+  /// No description provided for @imperialUnit.
+  ///
+  /// In en, this message translates to:
+  /// **'Imperial (lb, ft/in)'**
+  String get imperialUnit;
+
+  /// No description provided for @height.
+  ///
+  /// In en, this message translates to:
+  /// **'Height'**
+  String get height;
+
+  /// No description provided for @goal.
+  ///
+  /// In en, this message translates to:
+  /// **'Goal'**
+  String get goal;
+
+  /// No description provided for @targetWeight.
+  ///
+  /// In en, this message translates to:
+  /// **'Target Weight'**
+  String get targetWeight;
+
+  /// No description provided for @notSet.
+  ///
+  /// In en, this message translates to:
+  /// **'Not set'**
+  String get notSet;
+
+  /// No description provided for @security.
+  ///
+  /// In en, this message translates to:
+  /// **'Security'**
+  String get security;
+
+  /// No description provided for @biometricLock.
+  ///
+  /// In en, this message translates to:
+  /// **'Biometric Lock'**
+  String get biometricLock;
+
+  /// No description provided for @biometricDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Require Face ID or fingerprint on app launch'**
+  String get biometricDesc;
+
+  /// No description provided for @database.
+  ///
+  /// In en, this message translates to:
+  /// **'Database'**
+  String get database;
+
+  /// No description provided for @importCsv.
+  ///
+  /// In en, this message translates to:
+  /// **'Import data from CSV'**
+  String get importCsv;
+
+  /// No description provided for @importCsvDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Import weight entries from a previously exported CSV file.'**
+  String get importCsvDesc;
+
+  /// No description provided for @wipeData.
+  ///
+  /// In en, this message translates to:
+  /// **'Wipe All Data'**
+  String get wipeData;
+
+  /// No description provided for @wipeDataDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'This will permanently delete all your weight entries and reset app settings.'**
+  String get wipeDataDesc;
+
+  /// No description provided for @cancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get cancel;
+
+  /// No description provided for @save.
+  ///
+  /// In en, this message translates to:
+  /// **'Save'**
+  String get save;
+
+  /// No description provided for @retry.
+  ///
+  /// In en, this message translates to:
+  /// **'Try again'**
+  String get retry;
+
+  /// No description provided for @invalidPositiveNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a valid positive number.'**
+  String get invalidPositiveNumber;
+
+  /// No description provided for @heightDialogTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Set Height'**
+  String get heightDialogTitle;
+
+  /// No description provided for @heightCmLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Height (cm)'**
+  String get heightCmLabel;
+
+  /// No description provided for @heightHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. 177'**
+  String get heightHint;
+
+  /// No description provided for @targetWeightDialogTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Target Weight'**
+  String get targetWeightDialogTitle;
+
+  /// No description provided for @weightInKgLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Weight (kg)'**
+  String get weightInKgLabel;
+
+  /// No description provided for @weightInLbLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Weight in lb'**
+  String get weightInLbLabel;
+
+  /// No description provided for @weightHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. 75.5'**
+  String get weightHint;
+
+  /// No description provided for @noteLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Note (optional)'**
+  String get noteLabel;
+
+  /// No description provided for @theme.
+  ///
+  /// In en, this message translates to:
+  /// **'Theme'**
+  String get theme;
+
+  /// No description provided for @system.
+  ///
+  /// In en, this message translates to:
+  /// **'System'**
+  String get system;
+
+  /// No description provided for @light.
+  ///
+  /// In en, this message translates to:
+  /// **'Light'**
+  String get light;
+
+  /// No description provided for @dark.
+  ///
+  /// In en, this message translates to:
+  /// **'Dark'**
+  String get dark;
+
+  /// No description provided for @measurementUnit.
+  ///
+  /// In en, this message translates to:
+  /// **'Measurement Unit'**
+  String get measurementUnit;
+
+  /// No description provided for @biometricsNotAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Biometrics not available on this device'**
+  String get biometricsNotAvailable;
+
+  /// No description provided for @wipeDataContent.
+  ///
+  /// In en, this message translates to:
+  /// **'This will permanently delete all your weight entries and reset app settings. This action cannot be undone.'**
+  String get wipeDataContent;
+
+  /// No description provided for @wipeDataButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Wipe Data'**
+  String get wipeDataButton;
+
+  /// No description provided for @dataWipedSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'All data has been wiped. Restart the app.'**
+  String get dataWipedSuccess;
+
+  /// No description provided for @errorWipingData.
+  ///
+  /// In en, this message translates to:
+  /// **'Error wiping data: {error}'**
+  String errorWipingData(Object error);
+
+  /// No description provided for @importNoDataFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No valid weight entries found in the imported file.'**
+  String get importNoDataFound;
+
+  /// No description provided for @importSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Imported {count} entries.'**
+  String importSuccess(Object count);
+
+  /// No description provided for @importFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to import data.'**
+  String get importFailed;
+
+  /// No description provided for @importError.
+  ///
+  /// In en, this message translates to:
+  /// **'Import error: {error}'**
+  String importError(Object error);
+
+  /// No description provided for @exportCsv.
+  ///
+  /// In en, this message translates to:
+  /// **'Export CSV'**
+  String get exportCsv;
+
+  /// No description provided for @setYourHeightTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Set Your Height'**
+  String get setYourHeightTitle;
+
+  /// No description provided for @emptyState.
+  ///
+  /// In en, this message translates to:
+  /// **'No entries yet. Add your first measurement below!'**
+  String get emptyState;
+
+  /// No description provided for @history.
+  ///
+  /// In en, this message translates to:
+  /// **'History'**
+  String get history;
+
+  /// No description provided for @stats.
+  ///
+  /// In en, this message translates to:
+  /// **'Stats'**
+  String get stats;
+
+  /// No description provided for @lowest.
+  ///
+  /// In en, this message translates to:
+  /// **'Lowest'**
+  String get lowest;
+
+  /// No description provided for @highest.
+  ///
+  /// In en, this message translates to:
+  /// **'Highest'**
+  String get highest;
+
+  /// No description provided for @toGoal.
+  ///
+  /// In en, this message translates to:
+  /// **'To Goal'**
+  String get toGoal;
+
+  /// No description provided for @reached.
+  ///
+  /// In en, this message translates to:
+  /// **'Reached!'**
+  String get reached;
+
+  /// No description provided for @latestMeasurement.
+  ///
+  /// In en, this message translates to:
+  /// **'Latest measurement'**
+  String get latestMeasurement;
+
+  /// No description provided for @addWeight.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Weight'**
+  String get addWeight;
+
+  /// No description provided for @weightCannotBeEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'Weight cannot be empty'**
+  String get weightCannotBeEmpty;
+
+  /// No description provided for @enterValidNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a valid number'**
+  String get enterValidNumber;
+
+  /// No description provided for @weightRangeError.
+  ///
+  /// In en, this message translates to:
+  /// **'Weight must be between 20 and 300 kg'**
+  String get weightRangeError;
+
+  /// No description provided for @bmi.
+  ///
+  /// In en, this message translates to:
+  /// **'BMI'**
+  String get bmi;
+
+  /// No description provided for @bmiValue.
+  ///
+  /// In en, this message translates to:
+  /// **'BMI: {value}'**
+  String bmiValue(Object value);
+
+  /// No description provided for @bmiSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Based on your height and latest weight'**
+  String get bmiSubtitle;
+
+  /// No description provided for @weightGoal.
+  ///
+  /// In en, this message translates to:
+  /// **'Weight Goal'**
+  String get weightGoal;
+
+  /// No description provided for @goalNotSet.
+  ///
+  /// In en, this message translates to:
+  /// **'Goal not set'**
+  String get goalNotSet;
+
+  /// No description provided for @goalAchieved.
+  ///
+  /// In en, this message translates to:
+  /// **'Goal achieved!'**
+  String get goalAchieved;
+
+  /// No description provided for @toTarget.
+  ///
+  /// In en, this message translates to:
+  /// **'to target'**
+  String get toTarget;
+
+  /// No description provided for @setGoalMotivation.
+  ///
+  /// In en, this message translates to:
+  /// **'Set a goal to stay motivated'**
+  String get setGoalMotivation;
+
+  /// No description provided for @rightOnTarget.
+  ///
+  /// In en, this message translates to:
+  /// **'You are right on target'**
+  String get rightOnTarget;
+
+  /// No description provided for @targetLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Target:'**
+  String get targetLabel;
+
+  /// No description provided for @chartEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'Not enough data to display chart.'**
+  String get chartEmpty;
+
+  /// No description provided for @week.
+  ///
+  /// In en, this message translates to:
+  /// **'Week'**
+  String get week;
+
+  /// No description provided for @month.
+  ///
+  /// In en, this message translates to:
+  /// **'Month'**
+  String get month;
+
+  /// No description provided for @year.
+  ///
+  /// In en, this message translates to:
+  /// **'Year'**
+  String get year;
+
+  /// No description provided for @all.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get all;
+
+  /// No description provided for @chartTargetLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Target'**
+  String get chartTargetLabel;
+
   /// No description provided for @bmiCategoryUnderweight.
   ///
   /// In en, this message translates to:

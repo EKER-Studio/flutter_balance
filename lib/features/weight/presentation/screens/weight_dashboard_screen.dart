@@ -49,7 +49,7 @@ class _WeightDashboardScreenState extends State<WeightDashboardScreen> {
             SnackBar(
               content: Text(state.message),
               action: SnackBarAction(
-                label: 'Spróbuj ponownie',
+                label: AppLocalizations.of(context).retry,
                 onPressed: () {
                   context.read<WeightBloc>().add(
                     const SubscribeToWeightChanges(),
@@ -63,11 +63,11 @@ class _WeightDashboardScreenState extends State<WeightDashboardScreen> {
       builder: (context, state) {
         return Scaffold(
           appBar: AppBar(
-            title: const Text('PureWeight'),
+            title: Text(AppLocalizations.of(context).appTitle),
             actions: [
               IconButton(
                 icon: const Icon(Icons.settings_outlined),
-                tooltip: 'Settings',
+                tooltip: AppLocalizations.of(context).settingsTitle,
                 onPressed: () => Navigator.of(context).push(
                   MaterialPageRoute(builder: (_) => const SettingsScreen()),
                 ),
@@ -75,7 +75,7 @@ class _WeightDashboardScreenState extends State<WeightDashboardScreen> {
               if (_hasEntries(state))
                 IconButton(
                   icon: const Icon(Icons.file_download_outlined),
-                  tooltip: 'Export CSV',
+                  tooltip: AppLocalizations.of(context).exportCsv,
                   onPressed: () => CsvExporter.exportAndShare(
                     _getEntries(state),
                     context.read<AppSettingsBloc>().state.height,
@@ -246,6 +246,7 @@ class _WeightDashboardScreenState extends State<WeightDashboardScreen> {
   }
 
   Widget _buildHeightConfig() {
+    final l10n = AppLocalizations.of(context);
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -253,15 +254,15 @@ class _WeightDashboardScreenState extends State<WeightDashboardScreen> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Text(
-              'Set Your Height',
+              l10n.setYourHeightTitle,
               style: Theme.of(context).textTheme.titleMedium,
             ),
             const SizedBox(height: 12),
             TextField(
               controller: _heightController,
-              decoration: const InputDecoration(
-                labelText: 'Height (cm)',
-                border: OutlineInputBorder(),
+              decoration: InputDecoration(
+                labelText: l10n.heightCmLabel,
+                border: const OutlineInputBorder(),
               ),
               keyboardType: const TextInputType.numberWithOptions(
                 decimal: true,
@@ -278,7 +279,7 @@ class _WeightDashboardScreenState extends State<WeightDashboardScreen> {
                   _heightController.clear();
                 }
               },
-              child: const Text('Save'),
+              child: Text(l10n.save),
             ),
           ],
         ),
@@ -300,7 +301,7 @@ class _WeightDashboardScreenState extends State<WeightDashboardScreen> {
               ),
               const SizedBox(height: 16),
               Text(
-                'Brak wpisów. Dodaj swój pierwszy pomiar poniżej!',
+                AppLocalizations.of(context).emptyState,
                 style: Theme.of(context).textTheme.titleMedium,
                 textAlign: TextAlign.center,
               ),
@@ -315,7 +316,10 @@ class _WeightDashboardScreenState extends State<WeightDashboardScreen> {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('History', style: Theme.of(context).textTheme.titleMedium),
+            Text(
+              AppLocalizations.of(context).history,
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
             const SizedBox(height: 8),
             ...entries.map((entry) => _buildEntryTile(entry, settingsState)),
           ],
@@ -338,7 +342,11 @@ class _WeightDashboardScreenState extends State<WeightDashboardScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(dateStr),
-            Text('BMI: ${dynamicBmi.toStringAsFixed(1)}'),
+            Text(
+              AppLocalizations.of(
+                context,
+              ).bmiValue(dynamicBmi.toStringAsFixed(1)),
+            ),
             if (entry.note != null && entry.note!.isNotEmpty) Text(entry.note!),
           ],
         ),
@@ -376,13 +384,16 @@ class _WeightDashboardScreenState extends State<WeightDashboardScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Stats', style: Theme.of(context).textTheme.titleMedium),
+            Text(
+              AppLocalizations.of(context).stats,
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
             const SizedBox(height: 12),
             Row(
               children: [
                 Expanded(
                   child: _buildStatTile(
-                    label: 'Lowest',
+                    label: AppLocalizations.of(context).lowest,
                     value: minWeight != null
                         ? '${minWeight.toStringAsFixed(1)} kg'
                         : '—',
@@ -391,7 +402,7 @@ class _WeightDashboardScreenState extends State<WeightDashboardScreen> {
                 const SizedBox(width: 8),
                 Expanded(
                   child: _buildStatTile(
-                    label: 'Highest',
+                    label: AppLocalizations.of(context).highest,
                     value: maxWeight != null
                         ? '${maxWeight.toStringAsFixed(1)} kg'
                         : '—',
@@ -400,8 +411,12 @@ class _WeightDashboardScreenState extends State<WeightDashboardScreen> {
                 const SizedBox(width: 8),
                 Expanded(
                   child: _buildStatTile(
-                    label: 'To Goal',
-                    value: _formatToGoal(lastWeight, targetWeight),
+                    label: AppLocalizations.of(context).toGoal,
+                    value: _formatToGoal(
+                      lastWeight,
+                      targetWeight,
+                      AppLocalizations.of(context),
+                    ),
                   ),
                 ),
               ],
@@ -412,10 +427,14 @@ class _WeightDashboardScreenState extends State<WeightDashboardScreen> {
     );
   }
 
-  String _formatToGoal(double? lastWeight, double? targetWeight) {
+  String _formatToGoal(
+    double? lastWeight,
+    double? targetWeight,
+    AppLocalizations l10n,
+  ) {
     if (lastWeight == null || targetWeight == null) return '—';
     final diff = lastWeight - targetWeight;
-    if (diff.abs() < 0.05) return 'Reached!';
+    if (diff.abs() < 0.05) return l10n.reached;
     final sign = diff > 0 ? '+' : '-';
     return '$sign${diff.abs().toStringAsFixed(1)} kg';
   }
@@ -477,7 +496,7 @@ class WeightSummaryCard extends StatelessWidget {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    'Latest measurement',
+                    AppLocalizations.of(context).latestMeasurement,
                     style: Theme.of(context).textTheme.bodySmall,
                   ),
                 ],

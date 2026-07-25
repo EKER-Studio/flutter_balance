@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:pure_weight/l10n/app_localizations.dart';
 import 'package:pure_weight/features/weight/presentation/bloc/weight_bloc.dart';
 import 'package:pure_weight/features/weight/presentation/bloc/weight_event.dart';
 
@@ -26,6 +27,7 @@ class _AddWeightSheetState extends State<AddWeightSheet> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Padding(
       padding: EdgeInsets.fromLTRB(
         16,
@@ -40,15 +42,15 @@ class _AddWeightSheetState extends State<AddWeightSheet> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Text(
-              'Add Weight',
+              l10n.addWeight,
               style: Theme.of(context).textTheme.headlineSmall,
             ),
             const SizedBox(height: 16),
             TextFormField(
               controller: _weightController,
-              decoration: const InputDecoration(
-                labelText: 'Weight (kg)',
-                border: OutlineInputBorder(),
+              decoration: InputDecoration(
+                labelText: l10n.weightInKgLabel,
+                border: const OutlineInputBorder(),
               ),
               keyboardType: const TextInputType.numberWithOptions(
                 decimal: true,
@@ -56,16 +58,16 @@ class _AddWeightSheetState extends State<AddWeightSheet> {
               autofocus: true,
               validator: (value) {
                 if (value == null || value.trim().isEmpty) {
-                  return 'Waga nie może być pusta';
+                  return l10n.weightCannotBeEmpty;
                 }
                 final weight = double.tryParse(
                   value.trim().replaceAll(',', '.'),
                 );
                 if (weight == null) {
-                  return 'Wprowadź poprawną liczbę';
+                  return l10n.enterValidNumber;
                 }
                 if (weight < 20 || weight > 300) {
-                  return 'Waga musi być z zakresu od 20 do 300 kg';
+                  return l10n.weightRangeError;
                 }
                 return null;
               },
@@ -73,14 +75,14 @@ class _AddWeightSheetState extends State<AddWeightSheet> {
             const SizedBox(height: 12),
             TextFormField(
               controller: _noteController,
-              decoration: const InputDecoration(
-                labelText: 'Note (optional)',
-                border: OutlineInputBorder(),
+              decoration: InputDecoration(
+                labelText: l10n.noteLabel,
+                border: const OutlineInputBorder(),
               ),
               maxLines: 2,
             ),
             const SizedBox(height: 16),
-            FilledButton(onPressed: _onSave, child: const Text('Save')),
+            FilledButton(onPressed: _onSave, child: Text(l10n.save)),
           ],
         ),
       ),

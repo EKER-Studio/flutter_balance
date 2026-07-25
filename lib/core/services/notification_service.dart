@@ -61,11 +61,14 @@ class NotificationService {
   /// Schedules (or replaces) a repeating daily reminder at [time].
   ///
   /// The notification fires every day at the given [TimeOfDay] in the device's
-  /// local timezone. Any previously scheduled reminder is cancelled first.
-  Future<void> scheduleDailyReminder(TimeOfDay time) async {
+  /// localtime zone. Any previously scheduled reminder is cancelled first.
+  Future<void> scheduleDailyReminder(
+    TimeOfDay time, {
+    String title = 'Time to weigh yourself! ⚖️',
+    String body = 'Log your weight today and stay on track with PureWeight.',
+  }) async {
     assert(_initialized, 'Call initialize() before scheduleDailyReminder().');
 
-    // Cancel any existing daily reminder before scheduling a new one.
     await _plugin.cancel(id: _dailyReminderId);
 
     final tz.TZDateTime scheduledDate = _nextInstanceOfTime(time);
@@ -89,8 +92,8 @@ class NotificationService {
         ),
       ),
       androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
-      title: 'Time to weigh yourself! ⚖️',
-      body: 'Log your weight today and stay on track with PureWeight.',
+      title: title,
+      body: body,
       matchDateTimeComponents: DateTimeComponents.time,
     );
   }
