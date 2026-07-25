@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pure_weight/core/utils/unit_converter.dart';
 import 'package:file_picker/file_picker.dart';
@@ -18,6 +17,88 @@ import 'package:pure_weight/presentation/bloc/settings/app_theme_mode.dart';
 import 'package:pure_weight/presentation/bloc/settings/measurement_unit.dart';
 import 'package:get_it/get_it.dart';
 import 'dart:io';
+
+/// Dialog for setting the height.
+class _HeightDialog extends StatefulWidget {
+  final double currentValue;
+
+  const _HeightDialog({required this.currentValue});
+
+  @override
+  State<_HeightDialog> createState() => _HeightDialogState();
+}
+
+class _HeightDialogState extends State<_HeightDialog> {
+  late final TextEditingController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = TextEditingController(
+      text: widget.currentValue > 0
+          ? widget.currentValue.toStringAsFixed(0)
+          : '',
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  void _handleSave() {
+    final text = _controller.text.trim();
+    final height = double.tryParse(text);
+
+    if (text.isEmpty || height == null || height <= 0) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please enter a valid positive number.'),
+          backgroundColor: Colors.orange,
+        ),
+      );
+      return;
+    }
+
+    Navigator.of(context).pop(height);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: const Text('Set Height'),
+      content: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(
+              controller: _controller,
+              keyboardType: const TextInputType.numberWithOptions(
+                decimal: true,
+                signed: false,
+              ),
+              autofocus: true,
+              decoration: const InputDecoration(
+                labelText: 'Height (cm)',
+                hintText: 'e.g. 177',
+              ),
+              onSubmitted: (_) => _handleSave(),
+            ),
+          ],
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(),
+          child: const Text('Cancel'),
+        ),
+        FilledButton(onPressed: _handleSave, child: const Text('Save')),
+      ],
+    );
+  }
+}
 
 /// Dialog for setting the target weight with proper lifecycle management.
 class _TargetWeightDialog extends StatefulWidget {
@@ -116,25 +197,13 @@ class SettingsScreen extends StatefulWidget {
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
-  late final TextEditingController _heightController;
-  late final TextEditingController _inlineTargetWeightController;
-
   @override
   void initState() {
     super.initState();
-    _heightController = TextEditingController();
-    _inlineTargetWeightController = TextEditingController();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      final state = context.read<AppSettingsBloc>().state;
-      _inlineTargetWeightController.text =
-          state.targetWeight?.toStringAsFixed(1) ?? '';
-    });
   }
 
   @override
   void dispose() {
-    _inlineTargetWeightController.dispose();
-    _heightController.dispose();
     super.dispose();
   }
 
@@ -142,236 +211,164 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Settings')),
-      body: BlocListener<AppSettingsBloc, AppSettingsState>(
-        listenWhen: (previous, current) => previous.height != current.height,
-        listener: (context, state) {
-          if (_heightController.text != state.height.toStringAsFixed(0)) {
-            _heightController.text = state.height.toStringAsFixed(0);
-          }
-        },
-        child: BlocBuilder<AppSettingsBloc, AppSettingsState>(
-          builder: (context, state) {
-            return ListView(
-              padding: const EdgeInsets.all(16),
-              children: [
-                _buildSection(
-                  context,
-                  title: 'Theme',
-                  children: AppThemeMode.values
-                      .map(
-                        (mode) => _buildRadioTile(
-                          context,
-                          value: mode,
-                          groupValue: state.themeMode,
-                          onChanged: (value) {
-                            context.read<AppSettingsBloc>().add(
-                              UpdateTheme(value!),
-                            );
-                          },
-                          label: _themeLabel(mode),
-                        ),
-                      )
-                      .toList(),
-                ),
-                const SizedBox(height: 24),
-                _buildSection(
-                  context,
-                  title: 'Measurement Unit',
-                  children: MeasurementUnit.values
-                      .map(
-                        (unit) => _buildRadioTile(
-                          context,
-                          value: unit,
-                          groupValue: state.measurementUnit,
-                          onChanged: (value) {
-                            context.read<AppSettingsBloc>().add(
-                              UpdateMeasurementUnit(value!),
-                            );
-                          },
-                          label: _unitLabel(unit),
-                        ),
-                      )
-                      .toList(),
-                ),
-                const SizedBox(height: 24),
-                _buildSection(
-                  context,
-                  title: 'Height',
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      child: TextFormField(
-                        controller: _heightController,
-                        keyboardType: const TextInputType.numberWithOptions(
-                          decimal: true,
-                          signed: false,
-                        ),
-                        textInputAction: TextInputAction.done,
-                        inputFormatters: [
-                          FilteringTextInputFormatter.allow(
-                            RegExp(r'^\d+(\.\d{0,1})?'),
-                          ),
-                        ],
-                        decoration: const InputDecoration(
-                          labelText: 'Height (cm)',
-                          hintText: 'e.g. 177',
-                          prefixIcon: Icon(Icons.height),
-                          border: OutlineInputBorder(),
-                          suffixText: 'cm',
-                        ),
-                        onFieldSubmitted: (value) =>
-                            _submitHeight(context, value),
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      child: FilledButton(
-                        onPressed: () =>
-                            _submitHeight(context, _heightController.text),
-                        child: const Text('Save Height'),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 24),
-                _buildSection(
-                  context,
-                  title: 'Goal',
-                  children: [
-                    ListTile(
-                      leading: const Icon(
-                        Icons.flag_outlined,
-                        color: Colors.green,
-                      ),
-                      title: const Text('Target Weight'),
-                      subtitle: Text(
-                        state.targetWeight != null
-                            ? formatWeight(
-                                state.targetWeight!,
-                                state.measurementUnit,
-                              )
-                            : 'Not set',
-                      ),
-                      trailing: IconButton(
-                        icon: const Icon(Icons.edit_outlined),
-                        onPressed: () => _showTargetWeightDialog(context),
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      child: TextFormField(
-                        key: ValueKey(state.measurementUnit.name),
-                        controller: _inlineTargetWeightController,
-                        keyboardType: const TextInputType.numberWithOptions(
-                          decimal: true,
-                          signed: false,
-                        ),
-                        textInputAction: TextInputAction.done,
-                        inputFormatters: [
-                          FilteringTextInputFormatter.allow(
-                            RegExp(r'^\d+(\.\d{0,1})?'),
-                          ),
-                        ],
-                        decoration: InputDecoration(
-                          labelText:
-                              state.measurementUnit == MeasurementUnit.imperial
-                              ? 'Target weight (lb)'
-                              : 'Target weight (kg)',
-                          hintText: 'e.g. 70.0',
-                          prefixIcon: const Icon(Icons.monitor_weight_outlined),
-                          border: const OutlineInputBorder(),
-                          suffixText:
-                              state.measurementUnit == MeasurementUnit.imperial
-                              ? 'lb'
-                              : 'kg',
-                        ),
-                        validator: (value) {
-                          if (value == null || value.trim().isEmpty) {
-                            return null;
-                          }
-                          final parsed = double.tryParse(value);
-                          if (parsed == null || parsed <= 0) {
-                            return 'Enter a positive number';
-                          }
-                          return null;
+      body: BlocBuilder<AppSettingsBloc, AppSettingsState>(
+        builder: (context, state) {
+          return ListView(
+            padding: const EdgeInsets.all(16),
+            children: [
+              _buildSection(
+                context,
+                title: 'Theme',
+                children: AppThemeMode.values
+                    .map(
+                      (mode) => _buildRadioTile(
+                        context,
+                        value: mode,
+                        groupValue: state.themeMode,
+                        onChanged: (value) {
+                          context.read<AppSettingsBloc>().add(
+                            UpdateTheme(value!),
+                          );
                         },
-                        onFieldSubmitted: (value) =>
-                            _submitTargetWeight(context, value),
+                        label: _themeLabel(mode),
                       ),
+                    )
+                    .toList(),
+              ),
+              const SizedBox(height: 24),
+              _buildSection(
+                context,
+                title: 'Measurement Unit',
+                children: MeasurementUnit.values
+                    .map(
+                      (unit) => _buildRadioTile(
+                        context,
+                        value: unit,
+                        groupValue: state.measurementUnit,
+                        onChanged: (value) {
+                          context.read<AppSettingsBloc>().add(
+                            UpdateMeasurementUnit(value!),
+                          );
+                        },
+                        label: _unitLabel(unit),
+                      ),
+                    )
+                    .toList(),
+              ),
+              const SizedBox(height: 24),
+              _buildSection(
+                context,
+                title: 'Height',
+                children: [
+                  ListTile(
+                    leading: const Icon(Icons.height, color: Colors.blue),
+                    title: const Text('Height'),
+                    subtitle: Text(
+                      state.height > 0
+                          ? '${state.height.toStringAsFixed(0)} cm'
+                          : 'Not set',
                     ),
-                  ],
-                ),
-                const SizedBox(height: 24),
-                _buildSection(
-                  context,
-                  title: 'Security',
-                  children: [
-                    FutureBuilder<bool>(
-                      future: BiometricService.instance.isAvailable(),
-                      builder: (context, snapshot) {
-                        final isAvailable = snapshot.data ?? false;
-                        final isLoading =
-                            snapshot.connectionState == ConnectionState.waiting;
-                        return SwitchListTile(
-                          title: const Text('Biometric Lock'),
-                          subtitle: Text(
-                            isAvailable
-                                ? 'Require Face ID or fingerprint on app launch'
-                                : 'Biometrics not available on this device',
-                          ),
-                          value: isAvailable
-                              ? state.isBiometricLockEnabled
-                              : false,
-                          onChanged: isLoading
-                              ? null
-                              : (value) async {
-                                  if (isAvailable) {
-                                    context.read<AppSettingsBloc>().add(
-                                      UpdateBiometricLock(value),
-                                    );
-                                  }
-                                },
-                          secondary: const Icon(Icons.fingerprint),
-                        );
-                      },
+                    trailing: IconButton(
+                      icon: const Icon(Icons.edit_outlined),
+                      onPressed: () => _showHeightDialog(context),
                     ),
-                  ],
-                ),
-                const SizedBox(height: 24),
-                _buildSection(
-                  context,
-                  title: 'Database',
-                  children: [
-                    ListTile(
-                      leading: const Icon(
-                        Icons.file_upload_outlined,
-                        color: Colors.blue,
-                      ),
-                      title: const Text('Importuj dane z CSV'),
-                      subtitle: const Text(
-                        'Import weight entries from a previously exported CSV file.',
-                      ),
-                      onTap: () => _importCsv(context),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 24),
+              _buildSection(
+                context,
+                title: 'Goal',
+                children: [
+                  ListTile(
+                    leading: const Icon(
+                      Icons.flag_outlined,
+                      color: Colors.green,
                     ),
-                    ListTile(
-                      leading: const Icon(
-                        Icons.delete_forever,
-                        color: Colors.red,
-                      ),
-                      title: const Text('Wipe All Data'),
-                      subtitle: const Text(
-                        'This will permanently delete all your weight entries and reset app settings.',
-                      ),
-                      onTap: () => _showWipeConfirmation(context),
+                    title: const Text('Target Weight'),
+                    subtitle: Text(
+                      state.targetWeight != null
+                          ? formatWeight(
+                              state.targetWeight!,
+                              state.measurementUnit,
+                            )
+                          : 'Not set',
                     ),
-                  ],
-                ),
-              ],
-            );
-          },
-        ),
+                    trailing: IconButton(
+                      icon: const Icon(Icons.edit_outlined),
+                      onPressed: () => _showTargetWeightDialog(context),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 24),
+              _buildSection(
+                context,
+                title: 'Security',
+                children: [
+                  FutureBuilder<bool>(
+                    future: BiometricService.instance.isAvailable(),
+                    builder: (context, snapshot) {
+                      final isAvailable = snapshot.data ?? false;
+                      final isLoading =
+                          snapshot.connectionState == ConnectionState.waiting;
+                      return SwitchListTile(
+                        title: const Text('Biometric Lock'),
+                        subtitle: Text(
+                          isAvailable
+                              ? 'Require Face ID or fingerprint on app launch'
+                              : 'Biometrics not available on this device',
+                        ),
+                        value: isAvailable
+                            ? state.isBiometricLockEnabled
+                            : false,
+                        onChanged: isLoading
+                            ? null
+                            : (value) async {
+                                if (isAvailable) {
+                                  context.read<AppSettingsBloc>().add(
+                                    UpdateBiometricLock(value),
+                                  );
+                                }
+                              },
+                        secondary: const Icon(Icons.fingerprint),
+                      );
+                    },
+                  ),
+                ],
+              ),
+              const SizedBox(height: 24),
+              _buildSection(
+                context,
+                title: 'Database',
+                children: [
+                  ListTile(
+                    leading: const Icon(
+                      Icons.file_upload_outlined,
+                      color: Colors.blue,
+                    ),
+                    title: const Text('Importuj dane z CSV'),
+                    subtitle: const Text(
+                      'Import weight entries from a previously exported CSV file.',
+                    ),
+                    onTap: () => _importCsv(context),
+                  ),
+                  ListTile(
+                    leading: const Icon(
+                      Icons.delete_forever,
+                      color: Colors.red,
+                    ),
+                    title: const Text('Wipe All Data'),
+                    subtitle: const Text(
+                      'This will permanently delete all your weight entries and reset app settings.',
+                    ),
+                    onTap: () => _showWipeConfirmation(context),
+                  ),
+                ],
+              ),
+            ],
+          );
+        },
       ),
     );
   }
@@ -428,52 +425,20 @@ class _SettingsScreenState extends State<SettingsScreen> {
     };
   }
 
-  void _submitTargetWeight(BuildContext context, String value) {
-    final text = value.trim();
-    if (text.isEmpty) {
-      context.read<AppSettingsBloc>().add(const TargetWeightChanged(null));
-      return;
-    }
+  void _showHeightDialog(BuildContext context) async {
+    final currentHeight = context.read<AppSettingsBloc>().state.height;
 
-    final parsed = double.tryParse(text);
-    if (parsed != null && parsed > 0) {
-      context.read<AppSettingsBloc>().add(TargetWeightChanged(parsed));
-    } else if (context.mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please enter a valid positive number.'),
-          backgroundColor: Colors.orange,
-        ),
-      );
-    }
-  }
+    final result = await showDialog<double>(
+      context: context,
+      builder: (ctx) => _HeightDialog(currentValue: currentHeight),
+    );
 
-  void _submitHeight(BuildContext context, String value) {
-    final text = value.trim();
-    final parsed = double.tryParse(text);
-    if (parsed != null && parsed > 0) {
-      context.read<AppSettingsBloc>().add(UpdateHeight(parsed));
-      context.read<WeightBloc>().add(UpdateUserHeight(parsed));
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Height updated.'),
-            backgroundColor: Colors.green,
-          ),
-        );
-      }
-      _heightController.clear();
-      return;
-    }
+    if (result == null || !mounted) return;
 
-    if (context.mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please enter a valid positive height.'),
-          backgroundColor: Colors.orange,
-        ),
-      );
-    }
+    // ignore: use_build_context_synchronously
+    context.read<AppSettingsBloc>().add(UpdateHeight(result));
+    // ignore: use_build_context_synchronously
+    context.read<WeightBloc>().add(UpdateUserHeight(result));
   }
 
   void _showTargetWeightDialog(BuildContext context) async {
