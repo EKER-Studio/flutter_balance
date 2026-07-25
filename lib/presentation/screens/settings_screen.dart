@@ -20,9 +20,22 @@ import 'package:get_it/get_it.dart';
 import 'dart:io';
 
 /// Settings screen for theme, measurement unit, and database management.
-class SettingsScreen extends StatelessWidget {
+class SettingsScreen extends StatefulWidget {
   /// Creates [SettingsScreen].
   const SettingsScreen({super.key});
+
+  @override
+  State<SettingsScreen> createState() => _SettingsScreenState();
+}
+
+class _SettingsScreenState extends State<SettingsScreen> {
+  final _heightController = TextEditingController();
+
+  @override
+  void dispose() {
+    _heightController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -30,6 +43,9 @@ class SettingsScreen extends StatelessWidget {
       appBar: AppBar(title: const Text('Settings')),
       body: BlocBuilder<AppSettingsBloc, AppSettingsState>(
         builder: (context, state) {
+          if (_heightController.text.isEmpty) {
+            _heightController.text = state.height.toStringAsFixed(0);
+          }
           return ListView(
             padding: const EdgeInsets.all(16),
             children: [
@@ -71,6 +87,47 @@ class SettingsScreen extends StatelessWidget {
                       ),
                     )
                     .toList(),
+              ),
+              const SizedBox(height: 24),
+              _buildSection(
+                context,
+                title: 'Height',
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: TextFormField(
+                      controller: _heightController,
+                      keyboardType: const TextInputType.numberWithOptions(
+                        decimal: true,
+                        signed: false,
+                      ),
+                      textInputAction: TextInputAction.done,
+                      inputFormatters: [
+                        FilteringTextInputFormatter.allow(
+                          RegExp(r'^\d+(\.\d{0,1})?'),
+                        ),
+                      ],
+                      decoration: const InputDecoration(
+                        labelText: 'Height (cm)',
+                        hintText: 'e.g. 177',
+                        prefixIcon: Icon(Icons.height),
+                        border: OutlineInputBorder(),
+                        suffixText: 'cm',
+                      ),
+                      onFieldSubmitted: (value) =>
+                          _submitHeight(context, value),
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: FilledButton(
+                      onPressed: () =>
+                          _submitHeight(context, _heightController.text),
+                      child: const Text('Save Height'),
+                    ),
+                  ),
+                ],
               ),
               const SizedBox(height: 24),
               _buildSection(
@@ -280,6 +337,34 @@ class SettingsScreen extends StatelessWidget {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Please enter a valid positive number.'),
+          backgroundColor: Colors.orange,
+        ),
+      );
+    }
+  }
+
+  void _submitHeight(BuildContext context, String value) {
+    final text = value.trim();
+    final parsed = double.tryParse(text);
+    if (parsed != null && parsed > 0) {
+      context.read<AppSettingsBloc>().add(UpdateHeight(parsed));
+      context.read<WeightBloc>().add(UpdateUserHeight(parsed));
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Height updated.'),
+            backgroundColor: Colors.green,
+          ),
+        );
+      }
+      _heightController.clear();
+      return;
+    }
+
+    if (context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please enter a valid positive height.'),
           backgroundColor: Colors.orange,
         ),
       );

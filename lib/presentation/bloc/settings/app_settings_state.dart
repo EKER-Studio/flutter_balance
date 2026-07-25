@@ -67,6 +67,8 @@ final class AppSettingsState {
 
   /// Deserializes [AppSettingsState] from a JSON map.
   factory AppSettingsState.fromJson(Map<String, dynamic> json) {
+    final heightValue = json['heightCm'] ?? json['height'];
+
     return AppSettingsState(
       themeMode: AppThemeMode.values.firstWhere(
         (e) => e.name == json['themeMode'],
@@ -76,7 +78,7 @@ final class AppSettingsState {
         (e) => e.name == json['measurementUnit'],
         orElse: () => MeasurementUnit.metric,
       ),
-      height: (json['height'] as num?)?.toDouble() ?? 170.0,
+      height: (heightValue as num?)?.toDouble() ?? 170.0,
       notificationsEnabled: json['notificationsEnabled'] as bool? ?? true,
       notificationTime: json['notificationTime'] != null
           ? TimeOfDay(
@@ -94,7 +96,7 @@ final class AppSettingsState {
     return {
       'themeMode': themeMode.name,
       'measurementUnit': measurementUnit.name,
-      'height': height,
+      'heightCm': height,
       'notificationsEnabled': notificationsEnabled,
       'notificationTime': {
         'hour': notificationTime.hour,

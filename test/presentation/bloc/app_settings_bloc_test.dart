@@ -211,7 +211,7 @@ void main() {
 
       expect(json['themeMode'], 'dark');
       expect(json['measurementUnit'], 'imperial');
-      expect(json['height'], 175.5);
+      expect(json['heightCm'], 175.5);
       expect(json['notificationsEnabled'], false);
       expect(json['notificationTime']['hour'], 14);
       expect(json['notificationTime']['minute'], 30);
@@ -224,7 +224,7 @@ void main() {
 
       expect(json['themeMode'], 'system');
       expect(json['measurementUnit'], 'metric');
-      expect(json['height'], 170.0);
+      expect(json['heightCm'], 170.0);
       expect(json['notificationsEnabled'], true);
       expect(json['notificationTime']['hour'], 8);
       expect(json['notificationTime']['minute'], 0);
