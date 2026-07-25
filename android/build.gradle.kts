@@ -22,3 +22,25 @@ subprojects {
 tasks.register<Delete>("clean") {
     delete(rootProject.layout.buildDirectory)
 }
+
+subprojects {
+    val configureAndroidSDK = Action<Project> {
+        extensions.findByName("android")?.let { androidExtension ->
+            try {
+                val setCompileSdkMethod = androidExtension.javaClass.getMethod("setCompileSdk", java.lang.Integer::class.java)
+                setCompileSdkMethod.invoke(androidExtension, 36)
+            } catch (e: NoSuchMethodException) {
+                val compileSdkVersionMethod = androidExtension.javaClass.getMethod("compileSdkVersion", Int::class.javaPrimitiveType)
+                compileSdkVersionMethod.invoke(androidExtension, 36)
+            }
+        }
+    }
+
+    if (state.executed) {
+        configureAndroidSDK.execute(this)
+    } else {
+        afterEvaluate {
+            configureAndroidSDK.execute(this)
+        }
+    }
+}
