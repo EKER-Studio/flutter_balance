@@ -75,7 +75,7 @@ class HealthSummaryCard extends StatelessWidget {
                               borderRadius: BorderRadius.circular(999),
                             ),
                             child: Text(
-                              category != null && localization != null
+                              category != null
                                   ? _interpretBmi(category, localization)
                                   : '',
                               style: Theme.of(context).textTheme.labelMedium

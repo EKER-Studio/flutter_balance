@@ -447,7 +447,7 @@ class WeightSummaryCard extends StatelessWidget {
     final bmi = entry.bmi;
     final category = bmi != null ? _bmiCategory(bmi) : null;
     final localization = AppLocalizations.of(context);
-    final interpretation = category != null && localization != null
+    final interpretation = category != null
         ? _interpretBmi(category, localization)
         : null;
     final bmiColor = bmi != null ? _bmiColor(bmi) : null;

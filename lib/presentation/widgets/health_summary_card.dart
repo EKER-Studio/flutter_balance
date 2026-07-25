@@ -20,7 +20,7 @@ class HealthSummaryCard extends StatelessWidget {
     final state = context.watch<AppSettingsBloc>().state;
     final bmi = state.calculateBmi(latestWeightKg);
     final category = state.getBmiCategory(bmi);
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final badgeColor = _badgeColorForCategory(category);
     final targetWeight = state.targetWeight;
     final unit = state.measurementUnit;
