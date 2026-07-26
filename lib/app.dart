@@ -34,7 +34,8 @@ class App extends StatelessWidget {
               AppThemeMode.dark => ThemeMode.dark,
             };
             return MaterialApp(
-              title: AppLocalizations.of(context).appTitle,
+              onGenerateTitle: (context) =>
+                  AppLocalizations.of(context).appTitle,
               theme: AppTheme.lightTheme,
               darkTheme: AppTheme.darkTheme,
               themeMode: themeMode,
