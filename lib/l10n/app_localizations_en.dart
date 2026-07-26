@@ -264,4 +264,7 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get bmiCategoryDescriptionObese =>
       'BMI 30.0 or higher — consider consulting a professional';
+
+  @override
+  String get biometricAuthReason => 'Authenticate to access PureWeight';
 }

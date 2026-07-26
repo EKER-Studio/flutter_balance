@@ -577,6 +577,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'BMI 30.0 or higher — consider consulting a professional'**
   String get bmiCategoryDescriptionObese;
+
+  /// No description provided for @biometricAuthReason.
+  ///
+  /// In en, this message translates to:
+  /// **'Authenticate to access PureWeight'**
+  String get biometricAuthReason;
 }
 
 class _AppLocalizationsDelegate

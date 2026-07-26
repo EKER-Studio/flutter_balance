@@ -253,7 +253,7 @@ class AppLocalizationsPl extends AppLocalizations {
 
   @override
   String get bmiCategoryDescriptionUnderweight =>
-      'BMI poniżej 18,5 — warto schudnąć';
+      'BMI poniżej 18,5 — warto zyskać na wadze';
 
   @override
   String get bmiCategoryDescriptionNormal =>
@@ -266,4 +266,8 @@ class AppLocalizationsPl extends AppLocalizations {
   @override
   String get bmiCategoryDescriptionObese =>
       'BMI 30,0 lub więcej — warto skonsultować się ze specjalistą';
+
+  @override
+  String get biometricAuthReason =>
+      'Zautentyfikuj się, aby uzyskać dostęp do PureWeight';
 }
