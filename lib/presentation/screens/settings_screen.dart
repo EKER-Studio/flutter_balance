@@ -526,7 +526,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   Future<void> _importCsv(BuildContext context) async {
     try {
-      final result = await FilePicker.platform.pickFiles(
+      final result = await FilePicker.pickFiles(
         type: FileType.custom,
         allowedExtensions: ['csv'],
       );
