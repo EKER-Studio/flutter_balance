@@ -128,11 +128,13 @@ class WeightChart extends StatelessWidget {
                       showTitles: true,
                       reservedSize: 45,
                       getTitlesWidget: (value, meta) {
-                        final unitLabel = unit == MeasurementUnit.imperial
-                            ? 'lbs'
-                            : 'kg';
+                        // Convert back to kg if in imperial to use unified formatter
+                        final originalKg = unit == MeasurementUnit.imperial
+                            ? lbsToKg(value)
+                            : value;
+                        final formatted = formatWeight(originalKg, unit);
                         return Text(
-                          '${value.toStringAsFixed(1)} $unitLabel',
+                          formatted,
                           style: Theme.of(context).textTheme.bodySmall
                               ?.copyWith(
                                 color: Theme.of(
@@ -221,10 +223,11 @@ class WeightChart extends StatelessWidget {
                           ).colorScheme.onSecondaryContainer,
                           fontWeight: FontWeight.bold,
                         );
-                        final formattedValue = _formatWeight(
-                          touchedSpot.y,
-                          unit,
-                        );
+                        // Convert back to kg if currently in imperial for proper formatting
+                        final originalKg = unit == MeasurementUnit.imperial
+                            ? lbsToKg(touchedSpot.y)
+                            : touchedSpot.y;
+                        final formattedValue = formatWeight(originalKg, unit);
                         return LineTooltipItem(formattedValue, textStyle);
                       }).toList();
                     },
@@ -332,13 +335,5 @@ class WeightChart extends StatelessWidget {
         ),
       ),
     );
-  }
-
-  String _formatWeight(double value, MeasurementUnit unit) {
-    if (unit == MeasurementUnit.imperial) {
-      return '${value.toStringAsFixed(1)} lbs';
-    } else {
-      return '${value.toStringAsFixed(1)} kg';
-    }
   }
 }
