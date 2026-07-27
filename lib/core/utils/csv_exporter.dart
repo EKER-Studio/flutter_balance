@@ -48,6 +48,6 @@ class CsvExporter {
       ]);
     }
 
-    return Csv().encode(rows);
+    return Csv(lineDelimiter: '\n').encode(rows);
   }
 }

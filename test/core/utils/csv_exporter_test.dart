@@ -21,7 +21,7 @@ void main() {
     ];
 
     final csv = CsvExporter.generateCsv(entries);
-    final rows = csv.split('\r\n');
+    final rows = csv.split('\n');
 
     expect(rows.length, greaterThanOrEqualTo(3));
     expect(rows[0], 'ID,Data,Waga (kg),BMI,Notatka');
