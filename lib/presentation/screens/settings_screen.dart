@@ -538,8 +538,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
       final filePath = result.files.single.path!;
       final fileContent = await File(filePath).readAsString();
 
+      // Parse CSV and obtain both entries and skipped rows count.
       final csvResult = CsvImporter.parse(fileContent);
       final entries = csvResult.entries;
+      final skippedRows = csvResult.skippedRows;
 
       if (entries.isEmpty) {
         if (context.mounted) {
@@ -568,6 +570,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
               backgroundColor: Colors.green,
             ),
           );
+
+          // Inform user about any rows that were skipped due to validation errors.
+          if (skippedRows > 0) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('Skipped $skippedRows rows'),
+                backgroundColor: Colors.orange,
+              ),
+            );
+          }
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(

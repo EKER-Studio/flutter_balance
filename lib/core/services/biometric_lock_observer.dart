@@ -1,10 +1,9 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
-
 
 import 'package:pure_weight/core/services/biometric_service.dart';
 import 'package:pure_weight/presentation/bloc/settings/app_settings_state.dart';
 import 'package:pure_weight/presentation/bloc/settings/app_settings_bloc.dart';
-
 
 import 'package:pure_weight/presentation/bloc/settings/app_settings_event.dart';
 
@@ -16,12 +15,22 @@ class BiometricLockObserver with WidgetsBindingObserver {
   /// Localized reason displayed in the biometric auth dialog.
   final String localizedReason;
 
+  bool _isBiometricLockEnabled = false;
+  StreamSubscription<AppSettingsState>? _subscription;
+
   /// Creates a [BiometricLockObserver] and registers it as a WidgetsBinding observer.
   BiometricLockObserver({
     required this.settingsBloc,
     this.localizedReason = 'Authenticate to access PureWeight',
   }) {
+    // Register observer for app lifecycle
     WidgetsBinding.instance.addObserver(this);
+    // Initialize with current state
+    _isBiometricLockEnabled = settingsBloc.state.isBiometricLockEnabled;
+    // Listen to future changes reactively
+    _subscription = settingsBloc.stream.listen((state) {
+      _isBiometricLockEnabled = state.isBiometricLockEnabled;
+    });
   }
 
   @override
@@ -32,7 +41,7 @@ class BiometricLockObserver with WidgetsBindingObserver {
   }
 
   Future<void> _checkBiometricLock() async {
-    if (!settingsBloc.state.isBiometricLockEnabled) return;
+    if (!_isBiometricLockEnabled) return;
 
     final isAvailable = await BiometricService.instance.isAvailable();
     if (!isAvailable) return;
@@ -56,8 +65,9 @@ class BiometricLockObserver with WidgetsBindingObserver {
     }
   }
 
-  /// Removes this observer.
+  /// Removes this observer and cancels the settings stream subscription.
   void removeThisObserver() {
+    _subscription?.cancel();
     WidgetsBinding.instance.removeObserver(this);
   }
 }
