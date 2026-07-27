@@ -90,6 +90,7 @@ class _AddWeightSheetState extends State<AddWeightSheet> {
   }
 
   void _onSave() {
+    FocusScope.of(context).unfocus();
     if (_formKey.currentState!.validate()) {
       final weight = double.parse(
         _weightController.text.trim().replaceAll(',', '.'),
