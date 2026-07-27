@@ -61,9 +61,9 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
   /// Aggregates [entries] so that multiple measurements on the same calendar
   /// day are collapsed into a single averaged data point.
   ///
-  /// The merged entry carries the mean [WeightEntry.weightKg] and
-  /// [WeightEntry.bmi] for that day, with [WeightEntry.dateTime] set to noon
+  /// The merged entry carries the mean [WeightEntry.weightKg] for that day, with [WeightEntry.dateTime] set to noon
   /// (12:00) of the day to keep the X-axis positions stable across re-renders.
+
   List<WeightEntry> _aggregateByDay(List<WeightEntry> entries) {
     if (entries.length <= 1) return entries;
 

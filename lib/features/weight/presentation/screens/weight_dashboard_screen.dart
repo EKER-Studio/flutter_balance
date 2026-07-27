@@ -507,10 +507,11 @@ class WeightSummaryCard extends StatelessWidget {
                     const SizedBox(height: 8),
                     Text(
                       bmi.toStringAsFixed(1),
-                      style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                        color: bmiColor,
-                        fontWeight: FontWeight.bold,
-                      ),
+                      style: Theme.of(context).textTheme.headlineMedium
+                          ?.copyWith(
+                            color: bmiColor,
+                            fontWeight: FontWeight.bold,
+                          ),
                     ),
                     const SizedBox(height: 4),
                     Text(
