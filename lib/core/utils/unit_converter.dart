@@ -3,7 +3,7 @@
 /// All conversions use fixed precision constants.
 library;
 
-import 'package:pure_weight/presentation/bloc/settings/measurement_unit.dart';
+import 'package:pure_weight/core/models/measurement_unit.dart';
 
 /// Converts kilograms to pounds.
 double kgToLbs(double kg) => kg * 2.20462;

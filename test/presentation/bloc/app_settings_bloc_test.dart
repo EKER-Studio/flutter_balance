@@ -8,7 +8,7 @@ import 'package:pure_weight/presentation/bloc/settings/bmi_category.dart';
 import 'package:pure_weight/presentation/bloc/settings/app_settings_event.dart';
 import 'package:pure_weight/presentation/bloc/settings/app_settings_state.dart';
 import 'package:pure_weight/presentation/bloc/settings/app_theme_mode.dart';
-import 'package:pure_weight/presentation/bloc/settings/measurement_unit.dart';
+import 'package:pure_weight/core/models/measurement_unit.dart';
 
 class MockHydratedStorage extends Mock implements HydratedStorage {}
 

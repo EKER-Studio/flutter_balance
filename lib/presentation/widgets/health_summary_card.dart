@@ -5,7 +5,7 @@ import 'package:pure_weight/l10n/app_localizations.dart';
 import 'package:pure_weight/presentation/bloc/settings/app_settings_bloc.dart';
 import 'package:pure_weight/presentation/bloc/settings/app_settings_state.dart';
 import 'package:pure_weight/presentation/bloc/settings/bmi_category.dart';
-import 'package:pure_weight/presentation/bloc/settings/measurement_unit.dart';
+import 'package:pure_weight/core/models/measurement_unit.dart';
 
 /// A compact summary card for BMI and target weight progress.
 class HealthSummaryCard extends StatelessWidget {

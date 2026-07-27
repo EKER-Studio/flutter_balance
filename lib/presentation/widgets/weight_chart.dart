@@ -7,7 +7,7 @@ import 'package:pure_weight/core/utils/unit_converter.dart';
 import 'package:pure_weight/features/weight/domain/entities/weight_entry.dart';
 import 'package:pure_weight/features/weight/presentation/bloc/weight_event.dart';
 import 'package:pure_weight/presentation/bloc/settings/app_settings_bloc.dart';
-import 'package:pure_weight/presentation/bloc/settings/measurement_unit.dart';
+import 'package:pure_weight/core/models/measurement_unit.dart';
 
 /// A chart widget that displays weight history over time.
 class WeightChart extends StatelessWidget {
