@@ -1,5 +1,5 @@
 import 'dart:io';
-import 'package:csv/csv.dart' as csv;
+import 'package:csv/csv.dart';
 import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:pure_weight/features/weight/domain/entities/weight_entry.dart';
@@ -48,6 +48,6 @@ class CsvExporter {
       ]);
     }
 
-    return csv.ListToCsvConverter(eol: '\n').convert(rows);
+    return ListToCsvConverter(eol: '\n').convert(rows);
   }
 }

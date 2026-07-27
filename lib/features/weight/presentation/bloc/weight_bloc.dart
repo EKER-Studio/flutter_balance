@@ -113,23 +113,33 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
     SubscribeToWeightChanges event,
     Emitter<WeightState> emit,
   ) async {
-    // Cancel any existing subscription (if any) – not needed with emit.forEach as it manages its own subscription.
+    // Ensure any previous subscription is cancelled before creating a new one.
+    await _streamSubscription?.cancel();
+    // Emit loading state while establishing the new subscription.
     emit(WeightLoading(heightCm: state.heightCm, timePeriod: state.timePeriod));
-    await emit.forEach<List<WeightEntry>>(
-      repository.watchAllEntries(),
-      onData: (entries) => WeightLoaded(
-        heightCm: state.heightCm,
-        timePeriod: state.timePeriod,
-        entries: entries,
-        filteredEntries: _filterEntries(entries, state.timePeriod),
-      ),
-      onError: (error, _) => WeightError(
-        errorType: WeightErrorType.streamError,
-        heightCm: state.heightCm,
-        timePeriod: state.timePeriod,
-        entries: const [],
-        filteredEntries: const [],
-      ),
+    // Listen to repository stream and forward data / errors to the BLoC.
+    _streamSubscription = repository.watchAllEntries().listen(
+      (entries) {
+        emit(
+          WeightLoaded(
+            heightCm: state.heightCm,
+            timePeriod: state.timePeriod,
+            entries: entries,
+            filteredEntries: _filterEntries(entries, state.timePeriod),
+          ),
+        );
+      },
+      onError: (error) {
+        emit(
+          WeightError(
+            errorType: WeightErrorType.streamError,
+            heightCm: state.heightCm,
+            timePeriod: state.timePeriod,
+            entries: const [],
+            filteredEntries: const [],
+          ),
+        );
+      },
     );
   }
 
@@ -254,6 +264,16 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
         filteredEntries: _filterEntries(entries, timePeriod),
       ),
     );
+  }
+
+  // Holds the active repository subscription for weight entries.
+  StreamSubscription<List<WeightEntry>>? _streamSubscription;
+
+  @override
+  Future<void> close() async {
+    // Cancel any active stream subscription to prevent memory leaks.
+    await _streamSubscription?.cancel();
+    return super.close();
   }
 
   @override
