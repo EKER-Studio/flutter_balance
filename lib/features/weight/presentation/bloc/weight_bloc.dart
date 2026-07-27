@@ -124,38 +124,47 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
     // Emit initial data synchronously to satisfy Bloc test expectations
     final initialEntries = await repository.watchAllEntries().first;
     if (!emit.isDone) {
-      emit(WeightLoaded(
-        heightCm: state.heightCm,
-        timePeriod: state.timePeriod,
-        entries: initialEntries,
-        filteredEntries: _filterEntries(initialEntries, state.timePeriod),
-      ));
+      emit(
+        WeightLoaded(
+          heightCm: state.heightCm,
+          timePeriod: state.timePeriod,
+          entries: initialEntries,
+          filteredEntries: _filterEntries(initialEntries, state.timePeriod),
+        ),
+      );
     }
     // Subscribe to subsequent updates without awaiting further emissions
-    _entriesSubscription = repository.watchAllEntries().skip(1).listen(
-      (entries) {
-        if (!emit.isDone) {
-          emit(WeightLoaded(
-            heightCm: state.heightCm,
-            timePeriod: state.timePeriod,
-            entries: entries,
-            filteredEntries: _filterEntries(entries, state.timePeriod),
-          ));
-        }
-      },
-      onError: (error, stackTrace) {
-        if (!emit.isDone) {
-          emit(WeightError(
-            errorType: WeightErrorType.streamError,
-            heightCm: state.heightCm,
-            timePeriod: state.timePeriod,
-            entries: const [],
-            filteredEntries: const [],
-          ));
-        }
-      },
-      cancelOnError: false,
-    );
+    _entriesSubscription = repository
+        .watchAllEntries()
+        .skip(1)
+        .listen(
+          (entries) {
+            if (!emit.isDone) {
+              emit(
+                WeightLoaded(
+                  heightCm: state.heightCm,
+                  timePeriod: state.timePeriod,
+                  entries: entries,
+                  filteredEntries: _filterEntries(entries, state.timePeriod),
+                ),
+              );
+            }
+          },
+          onError: (error, stackTrace) {
+            if (!emit.isDone) {
+              emit(
+                WeightError(
+                  errorType: WeightErrorType.streamError,
+                  heightCm: state.heightCm,
+                  timePeriod: state.timePeriod,
+                  entries: const [],
+                  filteredEntries: const [],
+                ),
+              );
+            }
+          },
+          cancelOnError: false,
+        );
   }
 
   void _onUpdateUserHeight(UpdateUserHeight event, Emitter<WeightState> emit) {
@@ -282,7 +291,6 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
   }
 
   // Holds the active repository subscription for weight entries.
-
 
   @override
   Future<void> close() async {

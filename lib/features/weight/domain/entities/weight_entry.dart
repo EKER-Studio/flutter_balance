@@ -1,7 +1,6 @@
 import 'package:pure_weight/core/utils/unit_converter.dart';
 import 'package:pure_weight/presentation/bloc/settings/measurement_unit.dart';
 
-
 /// Domain entity representing an individual body weight measurement.
 ///
 /// Encapsulates core domain data for weight tracking, including weight in
