@@ -1,6 +1,7 @@
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:pure_weight/features/weight/domain/entities/weight_entry.dart';
 import 'package:pure_weight/features/weight/domain/repositories/weight_repository.dart';
+import 'package:pure_weight/features/weight/domain/weight_error_type.dart';
 import 'package:pure_weight/features/weight/presentation/bloc/weight_event.dart';
 import 'package:pure_weight/features/weight/presentation/bloc/weight_state.dart';
 
@@ -121,7 +122,7 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
         filteredEntries: _filterEntries(entries, state.timePeriod),
       ),
       onError: (error, _) => WeightError(
-        message: error.toString(),
+        errorType: WeightErrorType.streamError,
         heightCm: state.heightCm,
         timePeriod: state.timePeriod,
         entries: const [],

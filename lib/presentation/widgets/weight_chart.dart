@@ -49,22 +49,27 @@ class WeightChart extends StatelessWidget {
     final sortedEntries = List<WeightEntry>.from(entries)
       ..sort((a, b) => a.dateTime.compareTo(b.dateTime));
     final unit = context.watch<AppSettingsBloc>().state.measurementUnit;
-    final minWeight = sortedEntries
-        .map((e) => e.weightKg)
-        .reduce((a, b) => a < b ? a : b);
+    final weightsInDisplayUnit = sortedEntries
+        .map(
+          (e) => unit == MeasurementUnit.imperial
+              ? kgToLbs(e.weightKg)
+              : e.weightKg,
+        )
+        .toList();
+    final minWeight = weightsInDisplayUnit.reduce((a, b) => a < b ? a : b);
+    final maxWeight = weightsInDisplayUnit.reduce((a, b) => a > b ? a : b);
     final targetY = targetWeight == null
         ? null
         : (unit == MeasurementUnit.imperial
               ? kgToLbs(targetWeight!)
               : targetWeight!);
     final safeTargetY = targetY ?? minWeight;
-    final maxWeight = sortedEntries
-        .map((e) => e.weightKg)
-        .reduce((a, b) => a > b ? a : b);
 
-    // Add some padding to Y axis
-    final minY = (minWeight - 2).floorToDouble();
-    final maxY = (maxWeight + 2).ceilToDouble();
+    // Proportional Y-axis padding: 5% of range, minimum 1 unit.
+    final range = maxWeight - minWeight;
+    final padding = (range * 0.05).clamp(1.0, double.infinity);
+    final minY = (minWeight - padding).floorToDouble();
+    final maxY = (maxWeight + padding).ceilToDouble();
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -118,10 +123,13 @@ class WeightChart extends StatelessWidget {
                   leftTitles: AxisTitles(
                     sideTitles: SideTitles(
                       showTitles: true,
-                      reservedSize: 40,
+                      reservedSize: 45,
                       getTitlesWidget: (value, meta) {
+                        final unitLabel = unit == MeasurementUnit.imperial
+                            ? 'lbs'
+                            : 'kg';
                         return Text(
-                          value.toInt().toString(),
+                          '${value.toInt()} $unitLabel',
                           style: Theme.of(context).textTheme.bodySmall
                               ?.copyWith(
                                 color: Theme.of(
@@ -165,7 +173,7 @@ class WeightChart extends StatelessWidget {
                     : null,
                 lineBarsData: [
                   LineChartBarData(
-                    spots: _getSpots(sortedEntries),
+                    spots: _getSpots(sortedEntries, unit),
                     isCurved: true,
                     color: Theme.of(context).colorScheme.primary,
                     barWidth: 3,
@@ -210,12 +218,11 @@ class WeightChart extends StatelessWidget {
                           ).colorScheme.onSecondaryContainer,
                           fontWeight: FontWeight.bold,
                         );
-                        final formattedValue = unit == MeasurementUnit.imperial
-                            ? formatWeight(
-                                touchedSpot.y,
-                                MeasurementUnit.imperial,
-                              )
-                            : '${touchedSpot.y.toStringAsFixed(1)} kg';
+                        final unitLabel = unit == MeasurementUnit.imperial
+                            ? 'lbs'
+                            : 'kg';
+                        final formattedValue =
+                            '${touchedSpot.y.toStringAsFixed(1)} $unitLabel';
                         return LineTooltipItem(formattedValue, textStyle);
                       }).toList();
                     },
@@ -261,9 +268,15 @@ class WeightChart extends StatelessWidget {
     }
   }
 
-  List<FlSpot> _getSpots(List<WeightEntry> sortedEntries) {
+  List<FlSpot> _getSpots(
+    List<WeightEntry> sortedEntries,
+    MeasurementUnit unit,
+  ) {
     return sortedEntries.map((e) {
-      return FlSpot(e.dateTime.millisecondsSinceEpoch.toDouble(), e.weightKg);
+      final y = unit == MeasurementUnit.imperial
+          ? kgToLbs(e.weightKg)
+          : e.weightKg;
+      return FlSpot(e.dateTime.millisecondsSinceEpoch.toDouble(), y);
     }).toList();
   }
 
