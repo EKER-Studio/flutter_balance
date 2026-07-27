@@ -538,7 +538,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
       final filePath = result.files.single.path!;
       final fileContent = await File(filePath).readAsString();
 
-      final entries = CsvImporter.parse(fileContent);
+      final csvResult = CsvImporter.parse(fileContent);
+      final entries = csvResult.entries;
 
       if (entries.isEmpty) {
         if (context.mounted) {

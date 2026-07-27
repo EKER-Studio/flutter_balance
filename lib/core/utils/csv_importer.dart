@@ -1,3 +1,4 @@
+import 'package:intl/intl.dart';
 import 'package:pure_weight/features/weight/domain/entities/weight_entry.dart';
 
 /// Parses CSV file content and converts it into a list of [WeightEntry].
@@ -11,11 +12,22 @@ import 'package:pure_weight/features/weight/domain/entities/weight_entry.dart';
 ///
 /// Supports both comma and semicolon delimiters (auto-detected).
 class CsvImporter {
-  /// Parses [csvContent] and returns a list of [WeightEntry].
+  /// Attempted date formats in order of precedence.
+  static final List<DateFormat> _dateFormats = [
+    DateFormat('yyyy-MM-dd'),
+    DateFormat('dd.MM.yyyy'),
+    DateFormat('dd/MM/yyyy'),
+  ];
+
+  /// Parses [csvContent] and returns a record of parsed entries and skipped
+  /// row count.
   ///
-  /// Returns a list of successfully parsed entries, ignoring malformed rows.
-  /// Throws [FormatException] if the CSV has no valid header row.
-  static List<WeightEntry> parse(String csvContent) {
+  /// [entries] contains the successfully parsed rows; [skippedRows] counts
+  /// rows that failed validation. Throws [FormatException] if the CSV has
+  /// no valid header row.
+  static ({List<WeightEntry> entries, int skippedRows}) parse(
+    String csvContent,
+  ) {
     final lines = csvContent
         .split('\n')
         .map((e) => e.trim())
@@ -51,33 +63,42 @@ class CsvImporter {
       final dateString = fields[columnIndex['data']!].trim();
       final weightString = fields[columnIndex['waga']!].trim();
 
-      try {
-        final date = DateTime.parse(dateString);
-        final weight = double.parse(weightString);
-
-        if (weight <= 0 || weight > 500) {
-          skippedRows++;
-          continue;
+      DateTime? date;
+      for (final format in _dateFormats) {
+        try {
+          date = format.parseStrict(dateString);
+          break;
+        } on FormatException {
+          // Try next pattern
         }
-
-        final note =
-            columnIndex['komentarz'] != null &&
-                fields.length > columnIndex['komentarz']!
-            ? fields[columnIndex['komentarz']!].trim()
-            : null;
-
-        entries.add(WeightEntry(dateTime: date, weightKg: weight, note: note));
-      } on FormatException {
-        skippedRows++;
       }
+
+      // Fallback for ISO-8601 with time component (e.g. 2024-01-15 07:30)
+      date ??= DateTime.tryParse(dateString);
+
+      if (date == null) {
+        skippedRows++;
+        continue;
+      }
+
+      final normalizedWeight = weightString.replaceAll(',', '.');
+      final weight = double.tryParse(normalizedWeight);
+
+      if (weight == null || weight <= 0 || weight > 500) {
+        skippedRows++;
+        continue;
+      }
+
+      final note =
+          columnIndex['komentarz'] != null &&
+              fields.length > columnIndex['komentarz']!
+          ? fields[columnIndex['komentarz']!].trim()
+          : null;
+
+      entries.add(WeightEntry(dateTime: date, weightKg: weight, note: note));
     }
 
-    if (skippedRows > 0) {
-      // Log skipped rows count for debugging (no logging infrastructure available)
-      // In a real app, would use a logger.
-    }
-
-    return entries;
+    return (entries: entries, skippedRows: skippedRows);
   }
 
   /// Finds the column indices for required fields in the header.

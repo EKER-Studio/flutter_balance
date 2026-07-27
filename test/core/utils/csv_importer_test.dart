@@ -11,9 +11,11 @@ ID,Data,Waga (kg),BMI,Notatka
 3,2024-01-17,74.8,22.9,
 ''';
 
-      final entries = CsvImporter.parse(csvContent);
+      final result = CsvImporter.parse(csvContent);
+      final entries = result.entries;
 
       expect(entries.length, 3);
+      expect(result.skippedRows, 0);
       expect(entries[0].weightKg, 75.2);
       expect(entries[0].dateTime, DateTime(2024, 1, 15));
       expect(entries[0].note, '');
@@ -34,9 +36,11 @@ ID;Date;Weight;BMI;Note
 2;2024-02-02;80.0;23.8;Evening weigh-in
 ''';
 
-      final entries = CsvImporter.parse(csvContent);
+      final result = CsvImporter.parse(csvContent);
+      final entries = result.entries;
 
       expect(entries.length, 2);
+      expect(result.skippedRows, 0);
       expect(entries[0].weightKg, 80.5);
       expect(entries[0].dateTime, DateTime(2024, 2, 1));
 
@@ -52,9 +56,11 @@ ID,Data,Waga (kg),BMI
 2,2024-03-02,70.5,22.1
 ''';
 
-      final entries = CsvImporter.parse(csvContent);
+      final result = CsvImporter.parse(csvContent);
+      final entries = result.entries;
 
       expect(entries.length, 2);
+      expect(result.skippedRows, 0);
       expect(entries[0].weightKg, 70.0);
       expect(entries[0].note, null);
       expect(entries[1].weightKg, 70.5);
@@ -72,9 +78,11 @@ ID,Data,Waga (kg),BMI,Notatka
 6,2024-01-20,600.0,22.8,Unrealistic weight
 ''';
 
-      final entries = CsvImporter.parse(csvContent);
+      final result = CsvImporter.parse(csvContent);
+      final entries = result.entries;
 
       expect(entries.length, 2);
+      expect(result.skippedRows, 4);
       expect(entries[0].dateTime, DateTime(2024, 1, 15));
       expect(entries[0].weightKg, 75.2);
       expect(entries[1].dateTime, DateTime(2024, 1, 18));
@@ -115,9 +123,11 @@ ID,Data,Waga (kg),BMI,Notatka
 2,2024-01-16,75.0,23.0,"Waga ""poranna"" 7:00"
 ''';
 
-      final entries = CsvImporter.parse(csvContent);
+      final result = CsvImporter.parse(csvContent);
+      final entries = result.entries;
 
       expect(entries.length, 2);
+      expect(result.skippedRows, 0);
       expect(entries[0].note, 'Notatka z przecinkiem');
       expect(entries[1].note, 'Waga "poranna" 7:00');
     });
@@ -126,9 +136,11 @@ ID,Data,Waga (kg),BMI,Notatka
       const csvContent =
           'ID,Data,Waga (kg),BMI,Notatka\r\n1,2024-01-15,75.2,23.1,\r\n2,2024-01-16,75.0,23.0,Test\r\n';
 
-      final entries = CsvImporter.parse(csvContent);
+      final result = CsvImporter.parse(csvContent);
+      final entries = result.entries;
 
       expect(entries.length, 2);
+      expect(result.skippedRows, 0);
       expect(entries[0].weightKg, 75.2);
       expect(entries[1].weightKg, 75.0);
       expect(entries[1].note, 'Test');
@@ -141,9 +153,11 @@ ID,Data,Waga (kg),BMI,Notatka
   2  ,  2024-01-16  ,  75.0  ,  23.0  ,  
 ''';
 
-      final entries = CsvImporter.parse(csvContent);
+      final result = CsvImporter.parse(csvContent);
+      final entries = result.entries;
 
       expect(entries.length, 2);
+      expect(result.skippedRows, 0);
       expect(entries[0].weightKg, 75.2);
       expect(entries[0].note, 'Trimmed note');
       expect(entries[1].weightKg, 75.0);
@@ -157,9 +171,11 @@ ID,Data,Waga (kg),BMI,Notatka
 2,2024-01-16T19:45:00,75.0,23.0,
 ''';
 
-      final entries = CsvImporter.parse(csvContent);
+      final result = CsvImporter.parse(csvContent);
+      final entries = result.entries;
 
       expect(entries.length, 2);
+      expect(result.skippedRows, 0);
       expect(entries[0].dateTime.hour, 7);
       expect(entries[0].dateTime.minute, 30);
       expect(entries[1].dateTime.hour, 19);
@@ -169,9 +185,11 @@ ID,Data,Waga (kg),BMI,Notatka
     test('handles CSV with only header row (no data)', () {
       const csvContent = 'ID,Data,Waga (kg),BMI,Notatka';
 
-      final entries = CsvImporter.parse(csvContent);
+      final result = CsvImporter.parse(csvContent);
+      final entries = result.entries;
 
       expect(entries, isEmpty);
+      expect(result.skippedRows, 0);
     });
 
     test('parses CSV with weight at boundary values', () {
@@ -181,9 +199,11 @@ ID,Data,Waga (kg),BMI,Notatka
 2,2024-01-16,499.9,23.0,Maximum weight
 ''';
 
-      final entries = CsvImporter.parse(csvContent);
+      final result = CsvImporter.parse(csvContent);
+      final entries = result.entries;
 
       expect(entries.length, 2);
+      expect(result.skippedRows, 0);
       expect(entries[0].weightKg, 0.1);
       expect(entries[1].weightKg, 499.9);
     });
@@ -195,12 +215,67 @@ ID,Data,Waga (kg),BMI,Notatka
 1000,2024-01-16,75.0,23.0,
 ''';
 
-      final entries = CsvImporter.parse(csvContent);
+      final result = CsvImporter.parse(csvContent);
+      final entries = result.entries;
 
       expect(entries.length, 2);
+      expect(result.skippedRows, 0);
       // ID is not stored in WeightEntry (it's auto-assigned)
       expect(entries[0].weightKg, 75.2);
       expect(entries[1].weightKg, 75.0);
+    });
+
+    test('parses European date format dd.MM.yyyy', () {
+      const csvContent = '''
+Data,Waga
+15.01.2024,75.2
+03.02.2024,80.0
+''';
+
+      final result = CsvImporter.parse(csvContent);
+      final entries = result.entries;
+
+      expect(entries.length, 2);
+      expect(result.skippedRows, 0);
+      expect(entries[0].dateTime, DateTime(2024, 1, 15));
+      expect(entries[0].weightKg, 75.2);
+      expect(entries[1].dateTime, DateTime(2024, 2, 3));
+      expect(entries[1].weightKg, 80.0);
+    });
+
+    test('parses European date format dd/MM/yyyy', () {
+      const csvContent = '''
+Date,Weight
+15/01/2024,75.2
+03/02/2024,80.0
+''';
+
+      final result = CsvImporter.parse(csvContent);
+      final entries = result.entries;
+
+      expect(entries.length, 2);
+      expect(result.skippedRows, 0);
+      expect(entries[0].dateTime, DateTime(2024, 1, 15));
+      expect(entries[0].weightKg, 75.2);
+      expect(entries[1].dateTime, DateTime(2024, 2, 3));
+      expect(entries[1].weightKg, 80.0);
+    });
+
+    test('parses European weight format with comma as decimal separator', () {
+      // European CSV uses semicolons when comma is the decimal separator
+      const csvContent = '''
+Data;Waga
+2024-01-15;75,2
+2024-01-16;80,0
+''';
+
+      final result = CsvImporter.parse(csvContent);
+      final entries = result.entries;
+
+      expect(entries.length, 2);
+      expect(result.skippedRows, 0);
+      expect(entries[0].weightKg, 75.2);
+      expect(entries[1].weightKg, 80.0);
     });
   });
 }
