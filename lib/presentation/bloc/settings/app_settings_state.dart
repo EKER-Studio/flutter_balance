@@ -30,6 +30,9 @@ final class AppSettingsState {
   /// Whether biometric lock is enabled for app unlock.
   final bool isBiometricLockEnabled;
 
+  /// Whether the app is currently locked behind the biometric shield.
+  final bool isLocked;
+
   /// Creates [AppSettingsState] with the given parameters.
   const AppSettingsState({
     this.themeMode = AppThemeMode.system,
@@ -39,6 +42,7 @@ final class AppSettingsState {
     this.notificationTime = const TimeOfDay(hour: 8, minute: 0),
     this.targetWeight,
     this.isBiometricLockEnabled = false,
+    this.isLocked = false,
   });
 
   /// Creates a copy of this state with the given fields replaced.
@@ -50,6 +54,7 @@ final class AppSettingsState {
     TimeOfDay? notificationTime,
     Object? targetWeight = _targetWeightSentinel,
     bool? isBiometricLockEnabled,
+    bool? isLocked,
   }) {
     return AppSettingsState(
       themeMode: themeMode ?? this.themeMode,
@@ -62,6 +67,7 @@ final class AppSettingsState {
           : targetWeight as double?,
       isBiometricLockEnabled:
           isBiometricLockEnabled ?? this.isBiometricLockEnabled,
+      isLocked: isLocked ?? this.isLocked,
     );
   }
 

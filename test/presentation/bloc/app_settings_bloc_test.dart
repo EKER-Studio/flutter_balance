@@ -31,6 +31,7 @@ void main() {
       expect(bloc.state.height, 170.0);
       expect(bloc.state.notificationsEnabled, true);
       expect(bloc.state.notificationTime, const TimeOfDay(hour: 8, minute: 0));
+      expect(bloc.state.isLocked, false);
     });
 
     group('AppSettingsX', () {
@@ -118,6 +119,25 @@ void main() {
           'notificationTime',
           const TimeOfDay(hour: 12, minute: 30),
         ),
+      ],
+    );
+
+    blocTest<AppSettingsBloc, AppSettingsState>(
+      'emits locked state on SetLocked(true)',
+      build: () => AppSettingsBloc(),
+      act: (bloc) => bloc.add(const SetLocked(true)),
+      expect: () => [
+        isA<AppSettingsState>().having((s) => s.isLocked, 'isLocked', true),
+      ],
+    );
+
+    blocTest<AppSettingsBloc, AppSettingsState>(
+      'clears locked state on SetLocked(false)',
+      build: () => AppSettingsBloc(),
+      seed: () => const AppSettingsState(isLocked: true),
+      act: (bloc) => bloc.add(const SetLocked(false)),
+      expect: () => [
+        isA<AppSettingsState>().having((s) => s.isLocked, 'isLocked', false),
       ],
     );
 

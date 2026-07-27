@@ -78,3 +78,12 @@ final class UpdateBiometricLock extends AppSettingsEvent {
   /// Creates [UpdateBiometricLock] with the given [enabled].
   const UpdateBiometricLock(this.enabled);
 }
+
+/// Sets the app-wide locked state for the biometric shield.
+final class SetLocked extends AppSettingsEvent {
+  /// Whether the app should be locked.
+  final bool locked;
+
+  /// Creates [SetLocked] with the given [locked].
+  const SetLocked(this.locked);
+}

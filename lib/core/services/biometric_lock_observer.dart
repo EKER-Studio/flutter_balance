@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 import 'package:pure_weight/core/services/biometric_service.dart';
 import 'package:pure_weight/presentation/bloc/settings/app_settings_bloc.dart';
+import 'package:pure_weight/presentation/bloc/settings/app_settings_event.dart';
 import 'package:pure_weight/presentation/bloc/settings/app_settings_state.dart';
 
 /// Lifecycle observer that enforces biometric lock when the app resumes.
@@ -45,12 +46,17 @@ class BiometricLockObserver with WidgetsBindingObserver {
         localizedReason: localizedReason,
       );
 
-      if (!authenticated) {
-        // User cancelled or authentication failed — allow access for now.
-        // A dedicated lock screen can be added later.
+      if (authenticated) {
+        settingsBloc.add(const SetLocked(false));
+      } else {
+        debugPrint(
+          '[BiometricLockObserver] Authentication returned false — locking app.',
+        );
+        settingsBloc.add(const SetLocked(true));
       }
-    } catch (_) {
-      // Authentication error — allow access gracefully.
+    } catch (e, stack) {
+      debugPrint('[BiometricLockObserver] Authentication threw: $e\n$stack');
+      settingsBloc.add(const SetLocked(true));
     }
   }
 
