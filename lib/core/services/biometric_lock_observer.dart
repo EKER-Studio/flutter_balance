@@ -4,8 +4,10 @@ import 'package:flutter/material.dart';
 
 import 'package:pure_weight/core/services/biometric_service.dart';
 import 'package:pure_weight/presentation/bloc/settings/app_settings_bloc.dart';
-import 'package:pure_weight/presentation/bloc/settings/app_settings_event.dart';
 import 'package:pure_weight/presentation/bloc/settings/app_settings_state.dart';
+
+import 'package:pure_weight/presentation/bloc/settings/app_settings_event.dart';
+
 
 /// Lifecycle observer that enforces biometric lock when the app resumes.
 class BiometricLockObserver with WidgetsBindingObserver {
