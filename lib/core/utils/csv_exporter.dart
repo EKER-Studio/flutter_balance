@@ -26,24 +26,16 @@ class CsvExporter {
   /// Generates a CSV formatted string from the given [entries].
   static String generateCsv(List<WeightEntry> entries, [double? heightCm]) {
     final List<List<dynamic>> rows = [
-      ['ID', 'Data', 'Waga (kg)', 'BMI', 'Notatka'],
+      ['ID', 'Data', 'Waga (kg)', 'Notatka'],
     ];
 
     final dateFormat = DateFormat('yyyy-MM-dd HH:mm');
 
     for (final entry in entries) {
-      final bmiString = (heightCm != null && heightCm > 0)
-          ? WeightEntry.calculateBmi(
-              entry.weightKg,
-              heightCm / 100,
-            ).toStringAsFixed(1)
-          : (entry.bmi != null ? entry.bmi!.toStringAsFixed(1) : '');
-
       rows.add([
         entry.id,
         dateFormat.format(entry.dateTime),
         entry.weightKg.toStringAsFixed(1),
-        bmiString,
         entry.note ?? '',
       ]);
     }

@@ -26,7 +26,6 @@ class WeightEntryModel {
     return WeightEntry(
       id: id,
       weightKg: weightKg,
-      bmi: null,
       dateTime: dateTime,
       note: note,
     );
