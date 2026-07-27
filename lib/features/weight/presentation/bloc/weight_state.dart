@@ -1,4 +1,5 @@
 import 'package:pure_weight/features/weight/domain/entities/weight_entry.dart';
+import 'package:pure_weight/features/weight/domain/weight_error_type.dart';
 import 'package:pure_weight/features/weight/presentation/bloc/weight_event.dart';
 
 /// Possible states of [WeightBloc].
@@ -41,10 +42,10 @@ final class WeightLoaded extends WeightState {
   });
 }
 
-/// Error state with a descriptive [message] and last known [entries].
+/// Error state with a typed [errorType] and last known [entries].
 final class WeightError extends WeightState {
-  /// Human-readable error description.
-  final String message;
+  /// The reason for the error.
+  final WeightErrorType errorType;
 
   /// Last known entries preserved for display.
   final List<WeightEntry> entries;
@@ -52,11 +53,11 @@ final class WeightError extends WeightState {
   /// Last known filtered entries preserved for display.
   final List<WeightEntry> filteredEntries;
 
-  /// Creates [WeightError] with [message], [entries], and optional [heightCm].
+  /// Creates [WeightError] with [errorType], [entries], and optional [heightCm].
   const WeightError({
     super.heightCm,
     super.timePeriod,
-    required this.message,
+    required this.errorType,
     required this.entries,
     required this.filteredEntries,
   });
