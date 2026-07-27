@@ -48,10 +48,7 @@ class CsvExporter {
       ]);
     }
 
-    // Manually construct CSV string
-    return rows.map((row) => row.map((field) {
-      final escaped = field.toString().replaceAll('"', '""');
-      return '"$escaped"';
-    }).join(',')).join('\n');
+    // Manually construct CSV string without quoting fields
+    return rows.map((row) => row.map((field) => field.toString()).join(',')).join('\n');
   }
 }

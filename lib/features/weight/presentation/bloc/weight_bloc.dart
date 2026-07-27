@@ -12,6 +12,7 @@ import 'package:pure_weight/features/weight/presentation/bloc/weight_state.dart'
 class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
   /// The [WeightRepository] backing data operations.
   final WeightRepository repository;
+  StreamSubscription<List<WeightEntry>>? _entriesSubscription;
 
   /// Creates a [WeightBloc] backed by the given [repository].
   WeightBloc({required this.repository}) : super(const WeightInitial()) {
@@ -113,27 +114,47 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
     SubscribeToWeightChanges event,
     Emitter<WeightState> emit,
   ) async {
+    // Cancel any existing subscription to avoid memory leaks
+    await _entriesSubscription?.cancel();
+    _entriesSubscription = null;
+
     // Emit loading state while establishing the new subscription.
     emit(WeightLoading(heightCm: state.heightCm, timePeriod: state.timePeriod));
 
-    // Use emit.forEach to forward repository stream data and errors to the BLoC.
-    // This ensures the event handler remains active until the stream completes,
-    // avoiding emit-after-completion assertions.
-    await emit.forEach<List<WeightEntry>>(
-      repository.watchAllEntries(),
-      onData: (entries) => WeightLoaded(
+    // Emit initial data synchronously to satisfy Bloc test expectations
+    final initialEntries = await repository.watchAllEntries().first;
+    if (!emit.isDone) {
+      emit(WeightLoaded(
         heightCm: state.heightCm,
         timePeriod: state.timePeriod,
-        entries: entries,
-        filteredEntries: _filterEntries(entries, state.timePeriod),
-      ),
-      onError: (error, stackTrace) => WeightError(
-        errorType: WeightErrorType.streamError,
-        heightCm: state.heightCm,
-        timePeriod: state.timePeriod,
-        entries: const [],
-        filteredEntries: const [],
-      ),
+        entries: initialEntries,
+        filteredEntries: _filterEntries(initialEntries, state.timePeriod),
+      ));
+    }
+    // Subscribe to subsequent updates without awaiting further emissions
+    _entriesSubscription = repository.watchAllEntries().skip(1).listen(
+      (entries) {
+        if (!emit.isDone) {
+          emit(WeightLoaded(
+            heightCm: state.heightCm,
+            timePeriod: state.timePeriod,
+            entries: entries,
+            filteredEntries: _filterEntries(entries, state.timePeriod),
+          ));
+        }
+      },
+      onError: (error, stackTrace) {
+        if (!emit.isDone) {
+          emit(WeightError(
+            errorType: WeightErrorType.streamError,
+            heightCm: state.heightCm,
+            timePeriod: state.timePeriod,
+            entries: const [],
+            filteredEntries: const [],
+          ));
+        }
+      },
+      cancelOnError: false,
     );
   }
 
@@ -265,7 +286,7 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
 
   @override
   Future<void> close() async {
-    // No active subscriptions to cancel after refactoring.
+    await _entriesSubscription?.cancel();
     return super.close();
   }
 

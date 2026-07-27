@@ -1,6 +1,7 @@
 import 'package:pure_weight/core/utils/unit_converter.dart';
 import 'package:pure_weight/presentation/bloc/settings/measurement_unit.dart';
 
+
 /// Domain entity representing an individual body weight measurement.
 ///
 /// Encapsulates core domain data for weight tracking, including weight in
@@ -68,15 +69,10 @@ class WeightEntry {
 extension WeightEntryFormatting on WeightEntry {
   /// Formats [weightKg] into a display string based on the active [unit] measurement system.
   ///
-  /// Converts raw kilogram value to [unit] system (kilograms or pounds) and appends
-  /// the appropriate unit symbol suffix.
+  /// Converts raw kilogram value to [unit] system (kilograms or pounds) and appends the appropriate unit symbol suffix.
   String formattedWeight(MeasurementUnit unit) => formatWeight(weightKg, unit);
 
   /// Formats the entity's [bmi] value into a rounded string representation.
-  ///
   /// Returns a [String] formatted to one decimal place, or `null` if [bmi] is not present.
-  String? formattedBmi() {
-    if (bmi == null) return null;
-    return bmi!.toStringAsFixed(1);
-  }
+  String? formattedBmi() => bmi?.toStringAsFixed(1);
 }
