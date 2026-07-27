@@ -47,7 +47,7 @@ class _WeightDashboardScreenState extends State<WeightDashboardScreen> {
         if (state is WeightError) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text(state.message),
+              content: Text(state.message ?? ''),
               action: SnackBarAction(
                 label: AppLocalizations.of(context).retry,
                 onPressed: () {
@@ -191,7 +191,7 @@ class _WeightDashboardScreenState extends State<WeightDashboardScreen> {
 
   Widget _buildError(
     BuildContext context,
-    String message,
+    String? message,
     List<WeightEntry> entries,
     List<WeightEntry> filteredEntries,
     TimePeriod timePeriod,
@@ -217,7 +217,7 @@ class _WeightDashboardScreenState extends State<WeightDashboardScreen> {
                       color: Theme.of(context).colorScheme.error,
                     ),
                     const SizedBox(width: 12),
-                    Expanded(child: Text(message)),
+                    Expanded(child: Text(message ?? '')),
                   ],
                 ),
               ),

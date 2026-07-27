@@ -42,10 +42,14 @@ final class WeightLoaded extends WeightState {
   });
 }
 
-/// Error state with a typed [errorType] and last known [entries].
+/// Error state with a typed [errorType], user-facing [message], and last known
+/// [entries].
 final class WeightError extends WeightState {
   /// The reason for the error.
   final WeightErrorType errorType;
+
+  /// Human-readable error description.
+  final String? message;
 
   /// Last known entries preserved for display.
   final List<WeightEntry> entries;
@@ -58,6 +62,7 @@ final class WeightError extends WeightState {
     super.heightCm,
     super.timePeriod,
     required this.errorType,
+    this.message,
     required this.entries,
     required this.filteredEntries,
   });

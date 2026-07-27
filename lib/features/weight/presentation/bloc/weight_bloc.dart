@@ -158,6 +158,7 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
     if (heightCm == null || heightCm <= 0) {
       emit(
         WeightError(
+          errorType: WeightErrorType.heightNotSet,
           message: 'Set your height first.',
           heightCm: heightCm,
           timePeriod: state.timePeriod,
@@ -179,6 +180,7 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
     } catch (e) {
       emit(
         WeightError(
+          errorType: WeightErrorType.addEntryFailed,
           message: 'Failed to add entry: $e',
           heightCm: heightCm,
           timePeriod: state.timePeriod,
@@ -203,6 +205,7 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
       };
       emit(
         WeightError(
+          errorType: WeightErrorType.deleteEntryFailed,
           message: 'Failed to delete entry: $e',
           heightCm: state.heightCm,
           timePeriod: state.timePeriod,
