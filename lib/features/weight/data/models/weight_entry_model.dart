@@ -34,10 +34,11 @@ class WeightEntryModel {
 
   /// Creates a model from a domain [WeightEntry].
   factory WeightEntryModel.fromEntity(WeightEntry entity) {
-    return WeightEntryModel()
-      ..id = entity.id
+    final model = WeightEntryModel()
+      ..id = entity.id == 0 ? Isar.autoIncrement : entity.id
       ..weightKg = entity.weightKg
       ..dateTime = entity.dateTime
       ..note = entity.note;
+    return model;
   }
 }

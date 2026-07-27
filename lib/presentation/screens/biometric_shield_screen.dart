@@ -5,6 +5,7 @@ import 'package:pure_weight/core/services/biometric_service.dart';
 import 'package:pure_weight/presentation/bloc/settings/app_settings_bloc.dart';
 import 'package:pure_weight/presentation/bloc/settings/app_settings_state.dart';
 import 'package:pure_weight/presentation/bloc/settings/app_settings_event.dart';
+
 /// Full-screen overlay shown when the app is locked due to a failed
 /// biometric authentication attempt.
 class BiometricShieldScreen extends StatelessWidget {

@@ -12,7 +12,6 @@ import 'package:pure_weight/features/weight/presentation/bloc/weight_state.dart'
 class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
   /// The [WeightRepository] backing data operations.
   final WeightRepository repository;
-  StreamSubscription<List<WeightEntry>>? _weightSubscription;
 
   /// Creates a [WeightBloc] backed by the given [repository].
   WeightBloc({required this.repository}) : super(const WeightInitial()) {
@@ -131,8 +130,8 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
         entries: const [],
         filteredEntries: const [],
       ),
-    );  }
-
+    );
+  }
 
   void _onUpdateUserHeight(UpdateUserHeight event, Emitter<WeightState> emit) {
     final entries = switch (state) {

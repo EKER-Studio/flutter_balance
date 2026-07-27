@@ -1,13 +1,12 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 
+
 import 'package:pure_weight/core/services/biometric_service.dart';
-import 'package:pure_weight/presentation/bloc/settings/app_settings_bloc.dart';
 import 'package:pure_weight/presentation/bloc/settings/app_settings_state.dart';
+import 'package:pure_weight/presentation/bloc/settings/app_settings_bloc.dart';
+
 
 import 'package:pure_weight/presentation/bloc/settings/app_settings_event.dart';
-
 
 /// Lifecycle observer that enforces biometric lock when the app resumes.
 class BiometricLockObserver with WidgetsBindingObserver {
@@ -16,18 +15,13 @@ class BiometricLockObserver with WidgetsBindingObserver {
 
   /// Localized reason displayed in the biometric auth dialog.
   final String localizedReason;
-  bool _isBiometricLockEnabled = false;
-  StreamSubscription<AppSettingsState>? _subscription;
 
-  /// Creates a [BiometricLockObserver].
+  /// Creates a [BiometricLockObserver] and registers it as a WidgetsBinding observer.
   BiometricLockObserver({
     required this.settingsBloc,
     this.localizedReason = 'Authenticate to access PureWeight',
   }) {
-    _isBiometricLockEnabled = settingsBloc.state.isBiometricLockEnabled;
-    _subscription = settingsBloc.stream.listen(
-      (state) => _isBiometricLockEnabled = state.isBiometricLockEnabled,
-    );
+    WidgetsBinding.instance.addObserver(this);
   }
 
   @override
@@ -38,7 +32,7 @@ class BiometricLockObserver with WidgetsBindingObserver {
   }
 
   Future<void> _checkBiometricLock() async {
-    if (!_isBiometricLockEnabled) return;
+    if (!settingsBloc.state.isBiometricLockEnabled) return;
 
     final isAvailable = await BiometricService.instance.isAvailable();
     if (!isAvailable) return;
@@ -62,9 +56,8 @@ class BiometricLockObserver with WidgetsBindingObserver {
     }
   }
 
-  /// Removes this observer and cancels the settings stream subscription.
+  /// Removes this observer.
   void removeThisObserver() {
-    _subscription?.cancel();
     WidgetsBinding.instance.removeObserver(this);
   }
 }
