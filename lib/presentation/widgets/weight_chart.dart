@@ -132,7 +132,7 @@ class WeightChart extends StatelessWidget {
                             ? 'lbs'
                             : 'kg';
                         return Text(
-                          '${value.toStringAsFixed(0)} $unitLabel',
+                          '${value.toStringAsFixed(1)} $unitLabel',
                           style: Theme.of(context).textTheme.bodySmall
                               ?.copyWith(
                                 color: Theme.of(
@@ -221,11 +221,10 @@ class WeightChart extends StatelessWidget {
                           ).colorScheme.onSecondaryContainer,
                           fontWeight: FontWeight.bold,
                         );
-                        final unitLabel = unit == MeasurementUnit.imperial
-                            ? 'lbs'
-                            : 'kg';
-                        final formattedValue =
-                            '${touchedSpot.y.toStringAsFixed(1)} $unitLabel';
+                        final formattedValue = _formatWeight(
+                          touchedSpot.y,
+                          unit,
+                        );
                         return LineTooltipItem(formattedValue, textStyle);
                       }).toList();
                     },
@@ -333,5 +332,13 @@ class WeightChart extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  String _formatWeight(double value, MeasurementUnit unit) {
+    if (unit == MeasurementUnit.imperial) {
+      return '${value.toStringAsFixed(1)} lbs';
+    } else {
+      return '${value.toStringAsFixed(1)} kg';
+    }
   }
 }
