@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:pure_weight/features/weight/domain/entities/weight_entry.dart';
 import 'package:pure_weight/features/weight/domain/repositories/weight_repository.dart';
@@ -11,6 +12,7 @@ import 'package:pure_weight/features/weight/presentation/bloc/weight_state.dart'
 class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
   /// The [WeightRepository] backing data operations.
   final WeightRepository repository;
+  StreamSubscription<List<WeightEntry>>? _weightSubscription;
 
   /// Creates a [WeightBloc] backed by the given [repository].
   WeightBloc({required this.repository}) : super(const WeightInitial()) {
@@ -112,6 +114,7 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
     SubscribeToWeightChanges event,
     Emitter<WeightState> emit,
   ) async {
+    // Cancel any existing subscription (if any) – not needed with emit.forEach as it manages its own subscription.
     emit(WeightLoading(heightCm: state.heightCm, timePeriod: state.timePeriod));
     await emit.forEach<List<WeightEntry>>(
       repository.watchAllEntries(),
@@ -128,8 +131,8 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
         entries: const [],
         filteredEntries: const [],
       ),
-    );
-  }
+    );  }
+
 
   void _onUpdateUserHeight(UpdateUserHeight event, Emitter<WeightState> emit) {
     final entries = switch (state) {
