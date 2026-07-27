@@ -471,7 +471,11 @@ class WeightSummaryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bmi = entry.bmi;
+    final settingsState = context.watch<AppSettingsBloc>().state;
+    final heightCm = settingsState.height;
+    final double? bmi = heightCm > 0
+        ? WeightEntry.calculateBmi(entry.weightKg, heightCm / 100)
+        : null;
     final category = bmi != null ? _bmiCategory(bmi) : null;
     final localization = AppLocalizations.of(context);
     final interpretation = category != null
@@ -499,27 +503,24 @@ class WeightSummaryCard extends StatelessWidget {
                     AppLocalizations.of(context).latestMeasurement,
                     style: Theme.of(context).textTheme.bodySmall,
                   ),
+                  if (bmi != null) ...[
+                    const SizedBox(height: 8),
+                    Text(
+                      bmi.toStringAsFixed(1),
+                      style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                        color: bmiColor,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      interpretation ?? '',
+                      style: Theme.of(context).textTheme.bodySmall,
+                    ),
+                  ],
                 ],
               ),
             ),
-            if (bmi != null)
-              Column(
-                children: [
-                  Text(
-                    bmi.toStringAsFixed(1),
-                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                      color: bmiColor,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  Text(
-                    interpretation!,
-                    style: Theme.of(
-                      context,
-                    ).textTheme.bodySmall?.copyWith(color: bmiColor),
-                  ),
-                ],
-              ),
           ],
         ),
       ),
@@ -527,23 +528,29 @@ class WeightSummaryCard extends StatelessWidget {
   }
 
   BmiCategory _bmiCategory(double bmi) {
-    final state = AppSettingsState();
-    return state.getBmiCategory(bmi);
+    if (bmi < 18.5) return BmiCategory.underweight;
+    if (bmi < 25) return BmiCategory.normal;
+    if (bmi < 30) return BmiCategory.overweight;
+    return BmiCategory.obese;
   }
 
   String _interpretBmi(BmiCategory category, AppLocalizations l10n) {
-    return switch (category) {
-      BmiCategory.underweight => l10n.bmiCategoryUnderweight,
-      BmiCategory.normal => l10n.bmiCategoryNormal,
-      BmiCategory.overweight => l10n.bmiCategoryOverweight,
-      BmiCategory.obese => l10n.bmiCategoryObese,
-    };
+    switch (category) {
+      case BmiCategory.underweight:
+        return l10n.bmiCategoryDescriptionUnderweight;
+      case BmiCategory.normal:
+        return l10n.bmiCategoryDescriptionNormal;
+      case BmiCategory.overweight:
+        return l10n.bmiCategoryDescriptionOverweight;
+      case BmiCategory.obese:
+        return l10n.bmiCategoryDescriptionObese;
+    }
   }
 
   Color _bmiColor(double bmi) {
-    if (bmi < 18.5) return Colors.orange;
-    if (bmi < 25.0) return Colors.green;
-    if (bmi < 30.0) return Colors.orange;
+    if (bmi < 18.5) return Colors.blue;
+    if (bmi < 25) return Colors.green;
+    if (bmi < 30) return Colors.orange;
     return Colors.red;
   }
 }

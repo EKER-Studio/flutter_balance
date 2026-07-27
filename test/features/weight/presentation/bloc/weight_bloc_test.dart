@@ -74,20 +74,10 @@ void main() {
       build: () => WeightBloc(repository: repository),
       seed: () => WeightLoaded(
         entries: [
-          WeightEntry(
-            id: 1,
-            weightKg: 70,
-            bmi: 22.86,
-            dateTime: DateTime(2025, 1, 1),
-          ),
+          WeightEntry(id: 1, weightKg: 70, dateTime: DateTime(2025, 1, 1)),
         ],
         filteredEntries: [
-          WeightEntry(
-            id: 1,
-            weightKg: 70,
-            bmi: 22.86,
-            dateTime: DateTime(2025, 1, 1),
-          ),
+          WeightEntry(id: 1, weightKg: 70, dateTime: DateTime(2025, 1, 1)),
         ],
         heightCm: null,
       ),
@@ -110,8 +100,7 @@ void main() {
           () => repository.addEntry(captureAny()),
         ).captured;
         final entry = captured.single as WeightEntry;
-        // BMI is no longer persisted at creation time; it should be null.
-        expect(entry.bmi, isNull);
+        expect(entry.weightKg, 72);
       },
     );
 

@@ -24,30 +24,5 @@ void main() {
         expect(bmi, double.infinity);
       });
     });
-
-    group('withBmi factory', () {
-      test('creates entry with auto-calculated BMI', () {
-        final entry = WeightEntry.withBmi(
-          weightKg: 70,
-          heightMeters: 1.75,
-          dateTime: DateTime(2025, 1, 1),
-        );
-        expect(entry.weightKg, 70);
-        expect(entry.bmi, closeTo(22.86, 0.01));
-        expect(entry.dateTime, DateTime(2025, 1, 1));
-        expect(entry.note, isNull);
-      });
-
-      test('creates entry with note', () {
-        final entry = WeightEntry.withBmi(
-          weightKg: 80,
-          heightMeters: 1.80,
-          dateTime: DateTime(2025, 6, 15),
-          note: 'Morning weight',
-        );
-        expect(entry.note, 'Morning weight');
-        expect(entry.bmi, closeTo(24.69, 0.01));
-      });
-    });
   });
 }
