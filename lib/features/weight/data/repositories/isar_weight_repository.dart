@@ -42,15 +42,11 @@ class IsarWeightRepository implements WeightRepository {
 
   @override
   Future<int> bulkImportEntries(List<WeightEntry> entries) async {
-    int inserted = 0;
+    final models = entries.map(WeightEntryModel.fromEntity).toList();
     await isar.writeTxn(() async {
-      for (final entry in entries) {
-        final model = WeightEntryModel.fromEntity(entry);
-        await isar.weightEntryModels.put(model);
-        inserted++;
-      }
+      await isar.weightEntryModels.putAll(models);
     });
-    return inserted;
+    return models.length;
   }
 
   /// Removes any stored BMI values by re-writing all entries without BMI.
