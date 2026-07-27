@@ -1,22 +1,34 @@
 import 'package:pure_weight/features/weight/domain/entities/weight_entry.dart';
 
-/// Interface for weight data access.
+/// Domain repository interface for managing persistent weight entries.
+///
+/// Serves as the abstraction boundary between domain logic and persistence implementations.
+/// Provides methods for querying, watching real-time changes, adding, deleting, and bulk-importing [WeightEntry] entities.
 abstract class WeightRepository {
-  /// Returns a reactive stream that emits the full list of entries on every change.
+  /// Watches all persisted weight records as a real-time reactive stream.
+  ///
+  /// Emits a new [List] of [WeightEntry] objects immediately upon subscription and
+  /// whenever any entry is created, modified, or deleted in the underlying data store.
   Stream<List<WeightEntry>> watchAllEntries();
 
-  /// Returns all stored weight entries as a single synchronous list.
+  /// Fetches all stored weight entries as a static single-shot list.
+  ///
+  /// Returns a [Future] that resolves to a [List] containing all [WeightEntry] entities.
   Future<List<WeightEntry>> getAllEntries();
 
-  /// Persists a new [entry] and returns the generated id.
+  /// Persists a new or updated [entry] into the storage system.
+  ///
+  /// Returns a [Future] that completes when [entry] is successfully saved.
   Future<void> addEntry(WeightEntry entry);
 
-  /// Deletes the entry identified by [id].
+  /// Removes the weight entry associated with the given [id].
+  ///
+  /// Returns a [Future] that completes when the entry corresponding to [id] is deleted.
   Future<void> deleteEntry(int id);
 
-  /// Bulk imports [entries] into the database within a single transaction.
+  /// Bulk imports a collection of [entries] within a single transactional operation.
   ///
-  /// Entries with matching IDs are updated; new entries are inserted.
-  /// Returns the number of successfully imported entries.
+  /// Updates existing entries matching primary keys and inserts new entries.
+  /// Returns a [Future] completing with the total number of [WeightEntry] items imported.
   Future<int> bulkImportEntries(List<WeightEntry> entries);
 }

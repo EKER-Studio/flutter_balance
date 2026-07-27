@@ -1,24 +1,32 @@
 import 'package:pure_weight/core/utils/unit_converter.dart';
 import 'package:pure_weight/presentation/bloc/settings/measurement_unit.dart';
 
-/// Pure domain entity representing a weight measurement entry.
+/// Domain entity representing an individual body weight measurement.
+///
+/// Encapsulates core domain data for weight tracking, including weight in
+/// kilograms, optional pre-calculated Body Mass Index (BMI), measurement timestamp,
+/// and an optional user note.
 class WeightEntry {
-  /// Unique identifier, 0 for unsaved entries.
+  /// Unique database primary key identifier, defaulting to 0 for unpersisted entries.
   final int id;
 
-  /// Body weight in kilograms.
+  /// Recorded body weight value in kilograms.
   final double weightKg;
 
-  /// Pre-calculated Body Mass Index, derived from weight and height.
+  /// Pre-calculated Body Mass Index (BMI), derived from [weightKg] and user height in meters.
   final double? bmi;
 
-  /// Timestamp of the measurement.
+  /// Date and time when the weight measurement was recorded.
   final DateTime dateTime;
 
-  /// Optional user-provided note.
+  /// Optional user-provided text note accompanying the weight record.
   final String? note;
 
-  /// All fields are required except [id] (auto-assigned) and [note].
+  /// Creates an immutable [WeightEntry] domain model instance.
+  ///
+  /// The [weightKg] and [dateTime] parameters are mandatory.
+  /// Parameter [id] defaults to 0 for new unsaved entries.
+  /// Parameters [bmi] and [note] are optional.
   const WeightEntry({
     this.id = 0,
     required this.weightKg,
@@ -27,13 +35,18 @@ class WeightEntry {
     this.note,
   });
 
-  /// Calculates BMI from weight in kilograms and height in meters.
-  /// Formula: BMI = mass_kg / (height_m^2)
+  /// Calculates Body Mass Index (BMI) from [weightKg] and user [heightMeters].
+  ///
+  /// Uses the standard formula: `BMI = weightKg / (heightMeters * heightMeters)`.
+  /// Returns the calculated BMI as a [double].
   static double calculateBmi(double weightKg, double heightMeters) {
     return weightKg / (heightMeters * heightMeters);
   }
 
-  /// Creates a [WeightEntry] with BMI auto-calculated from [heightMeters].
+  /// Creates a [WeightEntry] with BMI automatically computed from user [heightMeters].
+  ///
+  /// Takes [id], [weightKg], [heightMeters], [dateTime], and optional [note].
+  /// Returns a new [WeightEntry] instance containing the computed [bmi].
   factory WeightEntry.withBmi({
     int id = 0,
     required double weightKg,
@@ -51,14 +64,17 @@ class WeightEntry {
   }
 }
 
-/// Extensions for formatting [WeightEntry] values in the selected unit system.
+/// Utility formatting extensions on [WeightEntry] for presentation conversion.
 extension WeightEntryFormatting on WeightEntry {
-  /// Returns the weight formatted as a string (e.g. "70.0 kg" or "154.3 lbs").
+  /// Formats [weightKg] into a display string based on the active [unit] measurement system.
+  ///
+  /// Converts raw kilogram value to [unit] system (kilograms or pounds) and appends
+  /// the appropriate unit symbol suffix.
   String formattedWeight(MeasurementUnit unit) => formatWeight(weightKg, unit);
 
-  /// Returns the BMI formatted with one decimal place.
+  /// Formats the entity's [bmi] value into a rounded string representation.
   ///
-  /// Returns `null` if BMI is not set.
+  /// Returns a [String] formatted to one decimal place, or `null` if [bmi] is not present.
   String? formattedBmi() {
     if (bmi == null) return null;
     return bmi!.toStringAsFixed(1);

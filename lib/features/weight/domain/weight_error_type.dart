@@ -1,18 +1,17 @@
-/// Typed error reasons emitted by [WeightBloc].
+/// Domain enumeration representing categorized failure modes in weight management workflows.
 ///
-/// Used instead of raw [String] messages so the presentation layer can map
-/// each reason to a localized user-facing string without introducing a
-/// [BuildContext] dependency into the Bloc layer.
+/// Emitted by weight domain logic and state management (e.g. BLoC) instead of raw exception
+/// messages to decouple presentation layers from error strings and enable type-safe localization.
 enum WeightErrorType {
-  /// The stream subscription failed.
+  /// Indicates an unrecoverable failure while listening to the real-time weight entries stream.
   streamError,
 
-  /// User attempted to add a weight entry without setting their height first.
+  /// Indicates that a weight entry submission failed because the user's height parameter is missing or invalid.
   heightNotSet,
 
-  /// The repository threw when persisting a new entry.
+  /// Indicates a persistence failure while adding a new weight record to the repository.
   addEntryFailed,
 
-  /// The repository threw when removing an entry.
+  /// Indicates a deletion failure while attempting to remove a weight record from the repository.
   deleteEntryFailed,
 }
