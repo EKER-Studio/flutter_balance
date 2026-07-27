@@ -65,9 +65,12 @@ class WeightChart extends StatelessWidget {
               : targetWeight!);
     final safeTargetY = targetY ?? minWeight;
 
-    // Proportional Y-axis padding: 5% of range, minimum 1 unit.
+    // Proportional Y-axis padding: 5% of range, minimum unit-aware floor.
     final range = maxWeight - minWeight;
-    final padding = (range * 0.05).clamp(1.0, double.infinity);
+    // Ensure a minimum padding of 2 units in the display system so the chart
+    // always has breathing room even when the weight range is tiny.
+    final minPadding = unit == MeasurementUnit.imperial ? 2.0 : 1.0;
+    final padding = (range * 0.05).clamp(minPadding, double.infinity);
     final minY = (minWeight - padding).floorToDouble();
     final maxY = (maxWeight + padding).ceilToDouble();
 
@@ -129,7 +132,7 @@ class WeightChart extends StatelessWidget {
                             ? 'lbs'
                             : 'kg';
                         return Text(
-                          '${value.toInt()} $unitLabel',
+                          '${value.toStringAsFixed(0)} $unitLabel',
                           style: Theme.of(context).textTheme.bodySmall
                               ?.copyWith(
                                 color: Theme.of(
