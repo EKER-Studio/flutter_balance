@@ -127,6 +127,8 @@ class CsvImporter {
       } else if (normalized == 'waga' ||
           normalized == 'waga (kg)' ||
           normalized == 'weight' ||
+          normalized == 'weight (kg)' ||
+          normalized == 'weight_kg' ||
           normalized == 'waga_kg') {
         indices['waga'] = i;
       } else if (normalized == 'notatka' ||

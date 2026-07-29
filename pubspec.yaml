@@ -41,7 +41,6 @@ dependencies:
   isar_community: ^3.3.2
   isar_community_flutter_libs: ^3.3.2
   path_provider: ^2.1.6
-  dio: ^5.10.0
   intl: ^0.20.2
   fl_chart: ^1.2.0
   csv: ^8.0.0
@@ -66,7 +65,6 @@ dev_dependencies:
 
 dependency_overrides:
   analyzer: 10.2.0
-  dart_style: 3.1.7
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
