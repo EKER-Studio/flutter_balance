@@ -39,11 +39,7 @@ class _WeightDashboardScreenState extends State<WeightDashboardScreen> {
     super.dispose();
   }
 
-  String _getErrorMessage(
-    BuildContext context,
-    WeightErrorType errorType,
-    String? message,
-  ) {
+  String _getErrorMessage(BuildContext context, WeightErrorType errorType) {
     final l10n = AppLocalizations.of(context);
     return switch (errorType) {
       WeightErrorType.streamError => l10n.errorStream,
@@ -61,9 +57,7 @@ class _WeightDashboardScreenState extends State<WeightDashboardScreen> {
         if (state is WeightError) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text(
-                _getErrorMessage(context, state.errorType, state.message),
-              ),
+              content: Text(_getErrorMessage(context, state.errorType)),
               action: SnackBarAction(
                 label: AppLocalizations.of(context).retry,
                 onPressed: () {
@@ -144,7 +138,6 @@ class _WeightDashboardScreenState extends State<WeightDashboardScreen> {
         _buildContent(context, entries, filteredEntries, timePeriod, heightCm),
       WeightError(
         :final errorType,
-        :final message,
         :final entries,
         :final filteredEntries,
         :final timePeriod,
@@ -153,7 +146,6 @@ class _WeightDashboardScreenState extends State<WeightDashboardScreen> {
         _buildError(
           context,
           errorType,
-          message,
           entries,
           filteredEntries,
           timePeriod,
@@ -210,7 +202,6 @@ class _WeightDashboardScreenState extends State<WeightDashboardScreen> {
   Widget _buildError(
     BuildContext context,
     WeightErrorType errorType,
-    String? message,
     List<WeightEntry> entries,
     List<WeightEntry> filteredEntries,
     TimePeriod timePeriod,
@@ -236,11 +227,7 @@ class _WeightDashboardScreenState extends State<WeightDashboardScreen> {
                       color: Theme.of(context).colorScheme.error,
                     ),
                     const SizedBox(width: 12),
-                    Expanded(
-                      child: Text(
-                        _getErrorMessage(context, errorType, message),
-                      ),
-                    ),
+                    Expanded(child: Text(_getErrorMessage(context, errorType))),
                   ],
                 ),
               ),

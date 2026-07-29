@@ -26,3 +26,6 @@ enum BmiCategory {
     return BmiCategory.obese;
   }
 }
+
+/// Calculates the [BmiCategory] corresponding to a numeric BMI value.
+BmiCategory getBmiCategory(double bmi) => BmiCategory.fromBmi(bmi);

@@ -24,7 +24,7 @@ class HealthSummaryCard extends StatelessWidget {
         final weightUnit = state.measurementUnit;
         final localization = AppLocalizations.of(context);
         final bmi = _calculateBmi(latestWeightKg, heightCm);
-        final category = bmi.isFinite ? _bmiCategory(bmi) : null;
+        final category = bmi.isFinite ? getBmiCategory(bmi) : null;
         final badgeColor = category != null
             ? _badgeColorForCategory(context, category)
             : Theme.of(context).colorScheme.primary;
@@ -162,8 +162,6 @@ class HealthSummaryCard extends StatelessWidget {
     final heightInMeters = heightCm / 100;
     return weightKg / (heightInMeters * heightInMeters);
   }
-
-  BmiCategory _bmiCategory(double bmi) => BmiCategory.fromBmi(bmi);
 
   Color _badgeColorForCategory(BuildContext context, BmiCategory category) {
     final cs = Theme.of(context).colorScheme;
