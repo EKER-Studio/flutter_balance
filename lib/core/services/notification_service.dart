@@ -6,7 +6,7 @@ import 'package:timezone/timezone.dart' as tz;
 
 /// Singleton service for managing local scheduled notifications.
 ///
-/// Call [initialize] once during app startup before invoking any other method.
+/// Must be initialized via [initialize] during app startup before invoking scheduling APIs.
 class NotificationService {
   NotificationService._();
 
@@ -24,9 +24,11 @@ class NotificationService {
 
   bool _initialized = false;
 
-  /// Initialises the plugin and timezone database.
+  /// Initializes the local notification plugin and timezone database.
   ///
-  /// Must be called after [WidgetsFlutterBinding.ensureInitialized].
+  /// Must be called after `WidgetsFlutterBinding.ensureInitialized()`.
+  /// Safe to call multiple times; subsequent invocations no-op if already initialized.
+  /// Catches and logs non-fatal setup exceptions.
   Future<void> initialize() async {
     if (_initialized) return;
     try {
@@ -64,8 +66,11 @@ class NotificationService {
 
   /// Schedules (or replaces) a repeating daily reminder at [time].
   ///
-  /// The notification fires every day at the given [TimeOfDay] in the device's
-  /// localtime zone. Any previously scheduled reminder is cancelled first.
+  /// Takes a mandatory [TimeOfDay] [time] specifying when the daily reminder should fire.
+  /// Takes optional [title] and [body] strings for notification display.
+  /// The notification fires every day at [time] in the device's local time zone.
+  /// Any previously scheduled reminder is cancelled first.
+  /// Catches and logs non-fatal notification scheduling errors.
   Future<void> scheduleDailyReminder(
     TimeOfDay time, {
     String title = 'Time to weigh yourself! ⚖️',
@@ -103,7 +108,10 @@ class NotificationService {
     }
   }
 
-  /// Cancels the active daily reminder, if any.
+  /// Cancels the active daily weight reminder notification, if any.
+  ///
+  /// Returns a [Future] that completes when cancellation is registered.
+  /// Catches and logs non-fatal cancellation errors.
   Future<void> cancelDailyReminder() async {
     if (!_initialized) return;
     try {

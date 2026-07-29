@@ -1,19 +1,26 @@
-/// Pure utility functions for converting between metric and imperial units.
-///
-/// All conversions use fixed precision constants.
+/// Pure utility functions for converting and formatting metric and imperial units.
 library;
 
 import 'package:pure_weight/core/models/measurement_unit.dart';
 
-/// Converts kilograms to pounds.
+/// Converts a body weight from kilograms to pounds (lbs).
+///
+/// Takes [kg] in kilograms.
+/// Multiplies by constant factor 2.20462.
+/// Returns calculated weight in pounds as a [double].
 double kgToLbs(double kg) => kg * 2.20462;
 
-/// Converts pounds to kilograms.
+/// Converts a body weight from pounds (lbs) to kilograms.
+///
+/// Takes [lbs] in pounds.
+/// Divides by constant factor 2.20462.
+/// Returns calculated weight in kilograms as a [double].
 double lbsToKg(double lbs) => lbs / 2.20462;
 
-/// Parses a height in centimeters into feet and inches.
+/// Converts a height in centimeters into feet and remaining inches.
 ///
-/// Returns a list of two doubles: `[feet, inches]`.
+/// Takes [cm] in centimeters.
+/// Returns a [List] of two doubles `[feet, remainingInches]`.
 List<double> cmToFeetInches(double cm) {
   final totalInches = cm / 2.54;
   final feet = (totalInches / 12).floorToDouble();
@@ -21,7 +28,11 @@ List<double> cmToFeetInches(double cm) {
   return [feet, remainingInches];
 }
 
-/// Formats a weight value with the appropriate unit label.
+/// Formats a body weight stored in kilograms for user display according to [unit].
+///
+/// Takes [weightKg] in kilograms and target [MeasurementUnit] system [unit].
+/// Formats as `X.X kg` for metric or `X.X lbs` for imperial.
+/// Returns a formatted string representation.
 String formatWeight(double weightKg, MeasurementUnit unit) {
   if (unit == MeasurementUnit.imperial) {
     final lbs = kgToLbs(weightKg);
@@ -30,7 +41,11 @@ String formatWeight(double weightKg, MeasurementUnit unit) {
   return '${weightKg.toStringAsFixed(1)} kg';
 }
 
-/// Formats a height value (stored in cm) with the appropriate unit label.
+/// Formats a height stored in centimeters for user display according to [unit].
+///
+/// Takes [heightCm] in centimeters and target [MeasurementUnit] system [unit].
+/// Formats as `X cm` for metric or `X'Y"` for imperial.
+/// Returns a formatted string representation.
 String formatHeight(double heightCm, MeasurementUnit unit) {
   if (unit == MeasurementUnit.imperial) {
     final [feet, inches] = cmToFeetInches(heightCm);

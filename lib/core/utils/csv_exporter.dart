@@ -6,9 +6,15 @@ import 'package:path_provider/path_provider.dart';
 import 'package:pure_weight/features/weight/domain/entities/weight_entry.dart';
 import 'package:share_plus/share_plus.dart';
 
-/// A utility class for exporting and sharing weight data as a CSV file.
+/// Utility class for exporting and sharing weight measurements as formatted CSV files.
 class CsvExporter {
-  /// Generates a CSV file from [entries] and shares it via the system dialog.
+  /// Generates a CSV file from [entries] and shares it via the native system share sheet.
+  ///
+  /// Takes a mandatory list of [WeightEntry] records [entries] to export.
+  /// Takes an optional [heightCm] value for user height reference.
+  /// Writes the output file to the system temporary directory and invokes platform sharing.
+  /// Returns a [Future] that completes when sharing dialog is invoked.
+  /// May throw a file system error if temporary storage is unwriteable.
   static Future<void> exportAndShare(
     List<WeightEntry> entries, [
     double? heightCm,
@@ -24,7 +30,11 @@ class CsvExporter {
     );
   }
 
-  /// Generates a CSV formatted string from the given [entries].
+  /// Generates a CSV-formatted string from [entries].
+  ///
+  /// Takes a list of [WeightEntry] objects [entries] and an optional user height in cm [heightCm].
+  /// Formats column headers as `['ID', 'Date', 'Weight (kg)', 'Note']` and formats timestamps as `yyyy-MM-dd HH:mm`.
+  /// Returns a [String] containing the encoded CSV data rows separated by newlines (`\n`).
   static String generateCsv(List<WeightEntry> entries, [double? heightCm]) {
     final List<List<dynamic>> rows = [
       ['ID', 'Date', 'Weight (kg)', 'Note'],

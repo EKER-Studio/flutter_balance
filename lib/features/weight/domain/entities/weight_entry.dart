@@ -15,7 +15,7 @@ class WeightEntry {
   /// Optional user-provided text note accompanying the weight record.
   final String? note;
 
-  /// Creates an immutable [WeightEntry] domain model instance.
+  /// Creates an immutable [WeightEntry] domain entity instance.
   ///
   /// The [weightKg] and [dateTime] parameters are mandatory.
   /// Parameter [id] defaults to 0 for new unsaved entries.
@@ -27,8 +27,11 @@ class WeightEntry {
     this.note,
   });
 
-  /// Uses the standard formula: `BMI = weightKg / (heightMeters * heightMeters)`.
-  /// Returns the calculated BMI as a [double].
+  /// Calculates Body Mass Index (BMI) using body weight in kilograms and height in meters.
+  ///
+  /// Takes [weightKg] in kilograms and [heightMeters] in meters.
+  /// Uses formula: `BMI = weightKg / (heightMeters * heightMeters)`.
+  /// Returns calculated BMI as a [double] or [double.infinity] if [heightMeters] is zero.
   static double calculateBmi(double weightKg, double heightMeters) {
     return weightKg / (heightMeters * heightMeters);
   }

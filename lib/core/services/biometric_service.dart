@@ -1,8 +1,8 @@
 import 'package:flutter/foundation.dart';
 import 'package:local_auth/local_auth.dart';
 
-/// Service for checking biometric hardware availability and authenticating
-/// the user with Face ID / Touch ID / fingerprint.
+/// Singleton service for checking biometric hardware availability and authenticating
+/// the user via Face ID, Touch ID, or fingerprint.
 class BiometricService {
   BiometricService._();
 
@@ -11,8 +11,11 @@ class BiometricService {
 
   final LocalAuthentication _authentication = LocalAuthentication();
 
-  /// Whether the device has biometric hardware and the user has enrolled
-  /// at least one credential.
+  /// Checks whether the device has active biometric hardware and enrolled credentials.
+  ///
+  /// Returns a [Future] resolving to `true` if biometric sensors can be checked and
+  /// credentials are enrolled, `false` otherwise.
+  /// Catches hardware or platform exceptions safely and logs errors.
   Future<bool> isAvailable() async {
     try {
       return await _authentication.canCheckBiometrics;
@@ -22,7 +25,11 @@ class BiometricService {
     }
   }
 
-  /// Returns whether biometric authentication is supported on the device.
+  /// Checks whether biometric authentication is fully supported on the device.
+  ///
+  /// Returns a [Future] resolving to `true` if biometrics are both available and
+  /// supported by OS hardware abstractions, `false` otherwise.
+  /// Catches platform exceptions safely and logs errors.
   Future<bool> isSupported() async {
     try {
       final available = await isAvailable();
@@ -36,9 +43,11 @@ class BiometricService {
 
   /// Prompts the user for biometric authentication.
   ///
-  /// Returns `true` if the user was successfully authenticated.
-  /// Returns `false` if the user cancelled, failed, or the device doesn't
-  /// support biometrics.
+  /// Takes a mandatory [localizedReason] string explaining the authentication request.
+  /// Takes an optional [opsRequired] boolean flag for OS requirement configuration.
+  /// Returns a [Future] resolving to `true` if authentication succeeded, `false` if
+  /// cancelled, rejected, or unsupported.
+  /// Catches platform lockout or security exceptions safely and logs errors.
   Future<bool> authenticate({
     required String localizedReason,
     bool opsRequired = false,
