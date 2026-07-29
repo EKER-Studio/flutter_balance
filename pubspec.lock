@@ -9,30 +9,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "96.0.0"
-  analysis_server_plugin:
-    dependency: transitive
-    description:
-      name: analysis_server_plugin
-      sha256: "0ba6a701c8d926f548a736ac3da8536f63f75fd49ad803f9dfcd091b869ef753"
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.3.20"
   analyzer:
-    dependency: "direct overridden"
+    dependency: transitive
     description:
       name: analyzer
       sha256: "0c516bc4ad36a1a75759e54d5047cb9d15cded4459df01aa35a0b5ec7db2c2a0"
       url: "https://pub.dev"
     source: hosted
     version: "10.2.0"
-  analyzer_plugin:
-    dependency: transitive
-    description:
-      name: analyzer_plugin
-      sha256: "8c988c96836e59db019930c603dd1493797a7aaf97ba71469ea13724602be4dd"
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.14.14"
   ansicolor:
     dependency: transitive
     description:
@@ -153,14 +137,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.2.0"
-  cli_util:
-    dependency: transitive
-    description:
-      name: cli_util
-      sha256: ff6785f7e9e3c38ac98b2fb035701789de90154024a75b6cb926445e83197d1c
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.4.2"
   clock:
     dependency: transitive
     description:
@@ -509,14 +485,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "11.0.0"
-  import_lint:
-    dependency: "direct dev"
-    description:
-      name: import_lint
-      sha256: "963d025d5f1323a41c0bdc9c9082d5f4f4b2b1268b64fd9006798022f54b3f31"
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.0.0"
   injectable:
     dependency: "direct main"
     description:
@@ -1266,14 +1234,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.1.3"
-  yaml_edit:
-    dependency: transitive
-    description:
-      name: yaml_edit
-      sha256: "07c9e63ba42519745182b88ca12264a7ba2484d8239958778dfe4d44fe760488"
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.2.4"
 sdks:
   dart: ">=3.12.2 <4.0.0"
   flutter: ">=3.44.0"
