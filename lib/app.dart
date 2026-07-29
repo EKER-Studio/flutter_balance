@@ -11,8 +11,11 @@ import 'package:pure_weight/presentation/bloc/settings/app_theme_mode.dart';
 import 'package:pure_weight/presentation/screens/biometric_shield_screen.dart';
 import 'package:pure_weight/presentation/theme/app_theme.dart';
 
+import 'package:pure_weight/core/services/biometric_lock_observer.dart';
+import 'package:pure_weight/presentation/bloc/settings/app_settings_event.dart';
+
 /// Root widget of the PureWeight application.
-class App extends StatelessWidget {
+class App extends StatefulWidget {
   /// The [WeightRepository] backing the application.
   final WeightRepository repository;
 
@@ -20,9 +23,35 @@ class App extends StatelessWidget {
   const App({super.key, required this.repository});
 
   @override
+  State<App> createState() => _AppState();
+}
+
+class _AppState extends State<App> {
+  BiometricLockObserver? _observer;
+
+  @override
+  void initState() {
+    super.initState();
+    final settingsBloc = context.read<AppSettingsBloc>();
+    _observer = BiometricLockObserver(
+      isBiometricLockEnabled: () => settingsBloc.state.isBiometricLockEnabled,
+      lockEnabledStream: settingsBloc.stream.map(
+        (s) => s.isBiometricLockEnabled,
+      ),
+      onLockStateChanged: (locked) => settingsBloc.add(SetLocked(locked)),
+    );
+  }
+
+  @override
+  void dispose() {
+    _observer?.removeThisObserver();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return RepositoryProvider.value(
-      value: repository,
+      value: widget.repository,
       child: BlocProvider(
         create: (context) =>
             WeightBloc(repository: context.read<WeightRepository>())

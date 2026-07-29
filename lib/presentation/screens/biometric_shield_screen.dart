@@ -14,18 +14,24 @@ class BiometricShieldScreen extends StatelessWidget {
 
   Future<void> _handleUnlock(AppSettingsBloc bloc) async {
     try {
-      bloc.add(const SetLocked(true));
+      if (!bloc.state.isLocked) {
+        bloc.add(const SetLocked(true));
+      }
       final authenticated = await BiometricService.instance.authenticate(
         localizedReason: 'Authenticate to access PureWeight',
       );
       if (authenticated) {
         bloc.add(const SetLocked(false));
       } else {
-        bloc.add(const SetLocked(true));
+        if (!bloc.state.isLocked) {
+          bloc.add(const SetLocked(true));
+        }
       }
     } catch (e, stack) {
       debugPrint('[BiometricShieldScreen] Authentication threw: $e\n$stack');
-      bloc.add(const SetLocked(true));
+      if (!bloc.state.isLocked) {
+        bloc.add(const SetLocked(true));
+      }
     }
   }
 

@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:local_auth/local_auth.dart';
 
 /// Service for checking biometric hardware availability and authenticating
@@ -15,7 +16,8 @@ class BiometricService {
   Future<bool> isAvailable() async {
     try {
       return await _authentication.canCheckBiometrics;
-    } catch (_) {
+    } catch (e, stack) {
+      debugPrint('[BiometricService] isAvailable error: $e\n$stack');
       return false;
     }
   }
@@ -26,7 +28,8 @@ class BiometricService {
       final available = await isAvailable();
       if (!available) return false;
       return await _authentication.isDeviceSupported();
-    } catch (_) {
+    } catch (e, stack) {
+      debugPrint('[BiometricService] isSupported error: $e\n$stack');
       return false;
     }
   }
@@ -49,7 +52,8 @@ class BiometricService {
         biometricOnly: true,
         persistAcrossBackgrounding: true,
       );
-    } catch (_) {
+    } catch (e, stack) {
+      debugPrint('[BiometricService] authenticate error: $e\n$stack');
       return false;
     }
   }
