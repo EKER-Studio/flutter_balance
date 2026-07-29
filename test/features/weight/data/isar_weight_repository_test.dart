@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:isar_community/isar.dart';
@@ -10,6 +11,7 @@ void main() {
   late Directory tempDir;
   Isar? isar;
   IsarWeightRepository? repository;
+  final testKey = Uint8List.fromList(List.generate(32, (i) => i));
 
   setUp(() async {
     tempDir = Directory.systemTemp.createTempSync('isar_test_');
@@ -22,7 +24,7 @@ void main() {
     } catch (_) {
       return;
     }
-    repository = IsarWeightRepository(isar: isar!);
+    repository = IsarWeightRepository(isar: isar!, encryptionKey: testKey);
   });
 
   tearDown(() async {
@@ -33,27 +35,39 @@ void main() {
   });
 
   group('IsarWeightRepository', () {
-    test('addEntry persists an entry and getAllEntries returns it', () async {
-      if (isar == null) {
-        markTestSkipped(
-          'Isar native library not available in this environment',
+    test(
+      'addEntry encrypts weight and note on disk and decrypts on read',
+      () async {
+        if (isar == null) {
+          markTestSkipped(
+            'Isar native library not available in this environment',
+          );
+          return;
+        }
+        final entry = WeightEntry(
+          weightKg: 70.5,
+          dateTime: DateTime(2025, 1, 15, 10, 30),
+          note: 'Secret Note',
         );
-        return;
-      }
-      final entry = WeightEntry(
-        weightKg: 70.5,
-        dateTime: DateTime(2025, 1, 15, 10, 30),
-      );
 
-      await repository!.addEntry(entry);
+        await repository!.addEntry(entry);
 
-      final entries = await repository!.getAllEntries();
-      expect(entries.length, 1);
-      expect(entries.first.weightKg, 70.5);
-      expect(entries.first.dateTime, DateTime(2025, 1, 15, 10, 30));
-    });
+        // Verify physical disk/Isar model contains encrypted strings
+        final models = await isar!.weightEntryModels.where().findAll();
+        expect(models.length, 1);
+        expect(models.first.encryptedWeight, isNot(contains('70.5')));
+        expect(models.first.encryptedNote, isNot(contains('Secret Note')));
 
-    test('watchAllEntries emits entries after addEntry', () async {
+        // Verify repository decodes to original entity
+        final entries = await repository!.getAllEntries();
+        expect(entries.length, 1);
+        expect(entries.first.weightKg, 70.5);
+        expect(entries.first.note, 'Secret Note');
+        expect(entries.first.dateTime, DateTime(2025, 1, 15, 10, 30));
+      },
+    );
+
+    test('watchAllEntries emits decrypted entries after addEntry', () async {
       if (isar == null) {
         markTestSkipped(
           'Isar native library not available in this environment',
@@ -63,13 +77,44 @@ void main() {
       final stream = repository!.watchAllEntries();
 
       await repository!.addEntry(
-        WeightEntry(weightKg: 80.0, dateTime: DateTime(2025, 2, 1)),
+        WeightEntry(
+          weightKg: 80.0,
+          dateTime: DateTime(2025, 2, 1),
+          note: 'Active stream note',
+        ),
       );
 
       final entries = await stream.first;
       expect(entries.length, 1);
       expect(entries.first.weightKg, 80.0);
+      expect(entries.first.note, 'Active stream note');
     });
+
+    test(
+      'decryption error logs and returns safe fallback without crashing',
+      () async {
+        if (isar == null) {
+          markTestSkipped(
+            'Isar native library not available in this environment',
+          );
+          return;
+        }
+        // Write corrupted/unencrypted data directly to Isar
+        final corruptedModel = WeightEntryModel()
+          ..encryptedWeight = 'corrupted_payload'
+          ..encryptedNote = 'corrupted_note'
+          ..dateTime = DateTime(2025, 2, 1);
+
+        await isar!.writeTxn(() async {
+          await isar!.weightEntryModels.put(corruptedModel);
+        });
+
+        final entries = await repository!.getAllEntries();
+        expect(entries.length, 1);
+        expect(entries.first.weightKg, 0.0);
+        expect(entries.first.note, isNull);
+      },
+    );
 
     test('deleteEntry removes an entry', () async {
       if (isar == null) {
@@ -94,7 +139,7 @@ void main() {
       expect(entries, isEmpty);
     });
 
-    test('bulkImportEntries persists multiple entries', () async {
+    test('bulkImportEntries persists multiple entries encrypted', () async {
       if (isar == null) {
         markTestSkipped(
           'Isar native library not available in this environment',
@@ -112,6 +157,9 @@ void main() {
 
       final stored = await repository!.getAllEntries();
       expect(stored.length, 3);
+      expect(stored[0].weightKg, 60.0);
+      expect(stored[1].weightKg, 61.0);
+      expect(stored[2].weightKg, 62.0);
     });
 
     test('clearAllData removes all entries', () async {

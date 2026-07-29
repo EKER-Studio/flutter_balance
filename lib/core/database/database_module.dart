@@ -27,7 +27,7 @@ class DatabaseModule {
       const FlutterSecureStorage();
 
   /// Retrieves or generates a 256-bit AES encryption key from secure storage.
-  static Future<Uint8List> _getEncryptionKey() async {
+  static Future<Uint8List> getEncryptionKey() async {
     final stored = await _secureStorage.read(key: _encryptionKeyKey);
     if (stored != null) {
       return Uint8List.fromList(base64Decode(stored));
@@ -45,10 +45,7 @@ class DatabaseModule {
   /// Opens and returns an [Isar] instance with all registered schemas.
   ///
   /// Features:
-  /// - Encryption-at-Rest key managed via platform secure storage (isar_community
-  ///   does not yet expose the `encryptionKey` parameter on [Isar.open]; the key
-  ///   is generated and persisted in `flutter_secure_storage` so it can be
-  ///   passed as soon as the upstream library adds support)
+  /// - Field-Level Encryption key managed via platform secure storage
   /// - Automatic compactOnLaunch when file exceeds threshold
   /// - Instance reuse check for hot reload / re-init safety
   /// - Graceful fallback & automatic DB backup/reset on schema corruption
@@ -61,10 +58,8 @@ class DatabaseModule {
       return existingInstance;
     }
 
-    // Generate / retrieve a 256-bit AES key for future Encryption-at-Rest.
-    // The key is persisted via flutter_secure_storage and ready to be
-    // passed as encryptionKey when isar_community adds the parameter.
-    await _getEncryptionKey();
+    // Ensure 256-bit AES key is generated and persisted in secure storage.
+    await getEncryptionKey();
 
     try {
       return await _openIsar(dir.path);

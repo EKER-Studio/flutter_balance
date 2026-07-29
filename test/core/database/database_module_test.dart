@@ -120,7 +120,7 @@ void main() {
         );
 
         final model = WeightEntryModel()
-          ..weightKg = 72.5
+          ..encryptedWeight = 'test_encrypted_payload'
           ..dateTime = DateTime(2026, 7, 29, 8, 0);
         await isar.writeTxn(() async {
           await isar.weightEntryModels.put(model);
@@ -131,7 +131,10 @@ void main() {
             .watch(fireImmediately: true)
             .first;
         expect(entriesFromWatch.length, 1);
-        expect(entriesFromWatch.first.weightKg, 72.5);
+        expect(
+          entriesFromWatch.first.encryptedWeight,
+          'test_encrypted_payload',
+        );
 
         final dbFilePath = '${tempDir.path}/$dbName.isar';
         expect(File(dbFilePath).existsSync(), isTrue);
@@ -150,7 +153,10 @@ void main() {
             .where()
             .findAll();
         expect(persistedEntries.length, 1);
-        expect(persistedEntries.first.weightKg, 72.5);
+        expect(
+          persistedEntries.first.encryptedWeight,
+          'test_encrypted_payload',
+        );
 
         reopenedIsar.close();
       },

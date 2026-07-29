@@ -1,44 +1,23 @@
 import 'package:isar_community/isar.dart';
-import 'package:pure_weight/features/weight/domain/entities/weight_entry.dart';
 
 part 'weight_entry_model.g.dart';
 
-/// Isar collection model mapped to [WeightEntry].
+/// Isar collection model storing encrypted health data.
 @collection
 class WeightEntryModel {
   /// Creates an empty model with default values.
   WeightEntryModel();
 
-  /// Isar auto-increment identifier.
+  /// Isar auto-increment identifier (kept in plaintext).
   Id id = Isar.autoIncrement;
 
-  /// Body weight in kilograms.
-  double weightKg = 0.0;
+  /// Encrypted body weight in kg (Base64 string containing IV + AES-256 ciphertext).
+  String encryptedWeight = '';
 
-  /// Timestamp of the measurement.
+  /// Timestamp of the measurement (kept in plaintext with index for fast sorting/filtering).
   @Index()
   late DateTime dateTime;
 
-  /// Optional user-provided note.
-  String? note;
-
-  /// Maps this model to a domain [WeightEntry].
-  WeightEntry toEntity() {
-    return WeightEntry(
-      id: id,
-      weightKg: weightKg,
-      dateTime: dateTime,
-      note: note,
-    );
-  }
-
-  /// Creates a model from a domain [WeightEntry].
-  factory WeightEntryModel.fromEntity(WeightEntry entity) {
-    final model = WeightEntryModel()
-      ..id = entity.id == 0 ? Isar.autoIncrement : entity.id
-      ..weightKg = entity.weightKg
-      ..dateTime = entity.dateTime
-      ..note = entity.note;
-    return model;
-  }
+  /// Encrypted optional user note (Base64 string containing IV + AES-256 ciphertext).
+  String? encryptedNote;
 }

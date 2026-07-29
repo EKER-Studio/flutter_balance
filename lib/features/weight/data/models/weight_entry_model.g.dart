@@ -22,11 +22,15 @@ const WeightEntryModelSchema = CollectionSchema(
       name: r'dateTime',
       type: IsarType.dateTime,
     ),
-    r'note': PropertySchema(id: 1, name: r'note', type: IsarType.string),
-    r'weightKg': PropertySchema(
+    r'encryptedNote': PropertySchema(
+      id: 1,
+      name: r'encryptedNote',
+      type: IsarType.string,
+    ),
+    r'encryptedWeight': PropertySchema(
       id: 2,
-      name: r'weightKg',
-      type: IsarType.double,
+      name: r'encryptedWeight',
+      type: IsarType.string,
     ),
   },
 
@@ -66,11 +70,12 @@ int _weightEntryModelEstimateSize(
 ) {
   var bytesCount = offsets.last;
   {
-    final value = object.note;
+    final value = object.encryptedNote;
     if (value != null) {
       bytesCount += 3 + value.length * 3;
     }
   }
+  bytesCount += 3 + object.encryptedWeight.length * 3;
   return bytesCount;
 }
 
@@ -81,8 +86,8 @@ void _weightEntryModelSerialize(
   Map<Type, List<int>> allOffsets,
 ) {
   writer.writeDateTime(offsets[0], object.dateTime);
-  writer.writeString(offsets[1], object.note);
-  writer.writeDouble(offsets[2], object.weightKg);
+  writer.writeString(offsets[1], object.encryptedNote);
+  writer.writeString(offsets[2], object.encryptedWeight);
 }
 
 WeightEntryModel _weightEntryModelDeserialize(
@@ -93,9 +98,9 @@ WeightEntryModel _weightEntryModelDeserialize(
 ) {
   final object = WeightEntryModel();
   object.dateTime = reader.readDateTime(offsets[0]);
+  object.encryptedNote = reader.readStringOrNull(offsets[1]);
+  object.encryptedWeight = reader.readString(offsets[2]);
   object.id = id;
-  object.note = reader.readStringOrNull(offsets[1]);
-  object.weightKg = reader.readDouble(offsets[2]);
   return object;
 }
 
@@ -111,7 +116,7 @@ P _weightEntryModelDeserializeProp<P>(
     case 1:
       return (reader.readStringOrNull(offset)) as P;
     case 2:
-      return (reader.readDouble(offset)) as P;
+      return (reader.readString(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
   }
@@ -378,6 +383,306 @@ extension WeightEntryModelQueryFilter
   }
 
   QueryBuilder<WeightEntryModel, WeightEntryModel, QAfterFilterCondition>
+  encryptedNoteIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        const FilterCondition.isNull(property: r'encryptedNote'),
+      );
+    });
+  }
+
+  QueryBuilder<WeightEntryModel, WeightEntryModel, QAfterFilterCondition>
+  encryptedNoteIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        const FilterCondition.isNotNull(property: r'encryptedNote'),
+      );
+    });
+  }
+
+  QueryBuilder<WeightEntryModel, WeightEntryModel, QAfterFilterCondition>
+  encryptedNoteEqualTo(String? value, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.equalTo(
+          property: r'encryptedNote',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<WeightEntryModel, WeightEntryModel, QAfterFilterCondition>
+  encryptedNoteGreaterThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'encryptedNote',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<WeightEntryModel, WeightEntryModel, QAfterFilterCondition>
+  encryptedNoteLessThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'encryptedNote',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<WeightEntryModel, WeightEntryModel, QAfterFilterCondition>
+  encryptedNoteBetween(
+    String? lower,
+    String? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'encryptedNote',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<WeightEntryModel, WeightEntryModel, QAfterFilterCondition>
+  encryptedNoteStartsWith(String value, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.startsWith(
+          property: r'encryptedNote',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<WeightEntryModel, WeightEntryModel, QAfterFilterCondition>
+  encryptedNoteEndsWith(String value, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.endsWith(
+          property: r'encryptedNote',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<WeightEntryModel, WeightEntryModel, QAfterFilterCondition>
+  encryptedNoteContains(String value, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.contains(
+          property: r'encryptedNote',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<WeightEntryModel, WeightEntryModel, QAfterFilterCondition>
+  encryptedNoteMatches(String pattern, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.matches(
+          property: r'encryptedNote',
+          wildcard: pattern,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<WeightEntryModel, WeightEntryModel, QAfterFilterCondition>
+  encryptedNoteIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'encryptedNote', value: ''),
+      );
+    });
+  }
+
+  QueryBuilder<WeightEntryModel, WeightEntryModel, QAfterFilterCondition>
+  encryptedNoteIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(property: r'encryptedNote', value: ''),
+      );
+    });
+  }
+
+  QueryBuilder<WeightEntryModel, WeightEntryModel, QAfterFilterCondition>
+  encryptedWeightEqualTo(String value, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.equalTo(
+          property: r'encryptedWeight',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<WeightEntryModel, WeightEntryModel, QAfterFilterCondition>
+  encryptedWeightGreaterThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'encryptedWeight',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<WeightEntryModel, WeightEntryModel, QAfterFilterCondition>
+  encryptedWeightLessThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'encryptedWeight',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<WeightEntryModel, WeightEntryModel, QAfterFilterCondition>
+  encryptedWeightBetween(
+    String lower,
+    String upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'encryptedWeight',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<WeightEntryModel, WeightEntryModel, QAfterFilterCondition>
+  encryptedWeightStartsWith(String value, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.startsWith(
+          property: r'encryptedWeight',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<WeightEntryModel, WeightEntryModel, QAfterFilterCondition>
+  encryptedWeightEndsWith(String value, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.endsWith(
+          property: r'encryptedWeight',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<WeightEntryModel, WeightEntryModel, QAfterFilterCondition>
+  encryptedWeightContains(String value, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.contains(
+          property: r'encryptedWeight',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<WeightEntryModel, WeightEntryModel, QAfterFilterCondition>
+  encryptedWeightMatches(String pattern, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.matches(
+          property: r'encryptedWeight',
+          wildcard: pattern,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<WeightEntryModel, WeightEntryModel, QAfterFilterCondition>
+  encryptedWeightIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'encryptedWeight', value: ''),
+      );
+    });
+  }
+
+  QueryBuilder<WeightEntryModel, WeightEntryModel, QAfterFilterCondition>
+  encryptedWeightIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(property: r'encryptedWeight', value: ''),
+      );
+    });
+  }
+
+  QueryBuilder<WeightEntryModel, WeightEntryModel, QAfterFilterCondition>
   idEqualTo(Id value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
@@ -431,240 +736,6 @@ extension WeightEntryModelQueryFilter
       );
     });
   }
-
-  QueryBuilder<WeightEntryModel, WeightEntryModel, QAfterFilterCondition>
-  noteIsNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        const FilterCondition.isNull(property: r'note'),
-      );
-    });
-  }
-
-  QueryBuilder<WeightEntryModel, WeightEntryModel, QAfterFilterCondition>
-  noteIsNotNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        const FilterCondition.isNotNull(property: r'note'),
-      );
-    });
-  }
-
-  QueryBuilder<WeightEntryModel, WeightEntryModel, QAfterFilterCondition>
-  noteEqualTo(String? value, {bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        FilterCondition.equalTo(
-          property: r'note',
-          value: value,
-          caseSensitive: caseSensitive,
-        ),
-      );
-    });
-  }
-
-  QueryBuilder<WeightEntryModel, WeightEntryModel, QAfterFilterCondition>
-  noteGreaterThan(
-    String? value, {
-    bool include = false,
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        FilterCondition.greaterThan(
-          include: include,
-          property: r'note',
-          value: value,
-          caseSensitive: caseSensitive,
-        ),
-      );
-    });
-  }
-
-  QueryBuilder<WeightEntryModel, WeightEntryModel, QAfterFilterCondition>
-  noteLessThan(
-    String? value, {
-    bool include = false,
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        FilterCondition.lessThan(
-          include: include,
-          property: r'note',
-          value: value,
-          caseSensitive: caseSensitive,
-        ),
-      );
-    });
-  }
-
-  QueryBuilder<WeightEntryModel, WeightEntryModel, QAfterFilterCondition>
-  noteBetween(
-    String? lower,
-    String? upper, {
-    bool includeLower = true,
-    bool includeUpper = true,
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        FilterCondition.between(
-          property: r'note',
-          lower: lower,
-          includeLower: includeLower,
-          upper: upper,
-          includeUpper: includeUpper,
-          caseSensitive: caseSensitive,
-        ),
-      );
-    });
-  }
-
-  QueryBuilder<WeightEntryModel, WeightEntryModel, QAfterFilterCondition>
-  noteStartsWith(String value, {bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        FilterCondition.startsWith(
-          property: r'note',
-          value: value,
-          caseSensitive: caseSensitive,
-        ),
-      );
-    });
-  }
-
-  QueryBuilder<WeightEntryModel, WeightEntryModel, QAfterFilterCondition>
-  noteEndsWith(String value, {bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        FilterCondition.endsWith(
-          property: r'note',
-          value: value,
-          caseSensitive: caseSensitive,
-        ),
-      );
-    });
-  }
-
-  QueryBuilder<WeightEntryModel, WeightEntryModel, QAfterFilterCondition>
-  noteContains(String value, {bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        FilterCondition.contains(
-          property: r'note',
-          value: value,
-          caseSensitive: caseSensitive,
-        ),
-      );
-    });
-  }
-
-  QueryBuilder<WeightEntryModel, WeightEntryModel, QAfterFilterCondition>
-  noteMatches(String pattern, {bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        FilterCondition.matches(
-          property: r'note',
-          wildcard: pattern,
-          caseSensitive: caseSensitive,
-        ),
-      );
-    });
-  }
-
-  QueryBuilder<WeightEntryModel, WeightEntryModel, QAfterFilterCondition>
-  noteIsEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        FilterCondition.equalTo(property: r'note', value: ''),
-      );
-    });
-  }
-
-  QueryBuilder<WeightEntryModel, WeightEntryModel, QAfterFilterCondition>
-  noteIsNotEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        FilterCondition.greaterThan(property: r'note', value: ''),
-      );
-    });
-  }
-
-  QueryBuilder<WeightEntryModel, WeightEntryModel, QAfterFilterCondition>
-  weightKgEqualTo(double value, {double epsilon = Query.epsilon}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        FilterCondition.equalTo(
-          property: r'weightKg',
-          value: value,
-
-          epsilon: epsilon,
-        ),
-      );
-    });
-  }
-
-  QueryBuilder<WeightEntryModel, WeightEntryModel, QAfterFilterCondition>
-  weightKgGreaterThan(
-    double value, {
-    bool include = false,
-    double epsilon = Query.epsilon,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        FilterCondition.greaterThan(
-          include: include,
-          property: r'weightKg',
-          value: value,
-
-          epsilon: epsilon,
-        ),
-      );
-    });
-  }
-
-  QueryBuilder<WeightEntryModel, WeightEntryModel, QAfterFilterCondition>
-  weightKgLessThan(
-    double value, {
-    bool include = false,
-    double epsilon = Query.epsilon,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        FilterCondition.lessThan(
-          include: include,
-          property: r'weightKg',
-          value: value,
-
-          epsilon: epsilon,
-        ),
-      );
-    });
-  }
-
-  QueryBuilder<WeightEntryModel, WeightEntryModel, QAfterFilterCondition>
-  weightKgBetween(
-    double lower,
-    double upper, {
-    bool includeLower = true,
-    bool includeUpper = true,
-    double epsilon = Query.epsilon,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        FilterCondition.between(
-          property: r'weightKg',
-          lower: lower,
-          includeLower: includeLower,
-          upper: upper,
-          includeUpper: includeUpper,
-
-          epsilon: epsilon,
-        ),
-      );
-    });
-  }
 }
 
 extension WeightEntryModelQueryObject
@@ -689,30 +760,31 @@ extension WeightEntryModelQuerySortBy
     });
   }
 
-  QueryBuilder<WeightEntryModel, WeightEntryModel, QAfterSortBy> sortByNote() {
+  QueryBuilder<WeightEntryModel, WeightEntryModel, QAfterSortBy>
+  sortByEncryptedNote() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'note', Sort.asc);
+      return query.addSortBy(r'encryptedNote', Sort.asc);
     });
   }
 
   QueryBuilder<WeightEntryModel, WeightEntryModel, QAfterSortBy>
-  sortByNoteDesc() {
+  sortByEncryptedNoteDesc() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'note', Sort.desc);
+      return query.addSortBy(r'encryptedNote', Sort.desc);
     });
   }
 
   QueryBuilder<WeightEntryModel, WeightEntryModel, QAfterSortBy>
-  sortByWeightKg() {
+  sortByEncryptedWeight() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'weightKg', Sort.asc);
+      return query.addSortBy(r'encryptedWeight', Sort.asc);
     });
   }
 
   QueryBuilder<WeightEntryModel, WeightEntryModel, QAfterSortBy>
-  sortByWeightKgDesc() {
+  sortByEncryptedWeightDesc() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'weightKg', Sort.desc);
+      return query.addSortBy(r'encryptedWeight', Sort.desc);
     });
   }
 }
@@ -733,6 +805,34 @@ extension WeightEntryModelQuerySortThenBy
     });
   }
 
+  QueryBuilder<WeightEntryModel, WeightEntryModel, QAfterSortBy>
+  thenByEncryptedNote() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'encryptedNote', Sort.asc);
+    });
+  }
+
+  QueryBuilder<WeightEntryModel, WeightEntryModel, QAfterSortBy>
+  thenByEncryptedNoteDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'encryptedNote', Sort.desc);
+    });
+  }
+
+  QueryBuilder<WeightEntryModel, WeightEntryModel, QAfterSortBy>
+  thenByEncryptedWeight() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'encryptedWeight', Sort.asc);
+    });
+  }
+
+  QueryBuilder<WeightEntryModel, WeightEntryModel, QAfterSortBy>
+  thenByEncryptedWeightDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'encryptedWeight', Sort.desc);
+    });
+  }
+
   QueryBuilder<WeightEntryModel, WeightEntryModel, QAfterSortBy> thenById() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'id', Sort.asc);
@@ -743,33 +843,6 @@ extension WeightEntryModelQuerySortThenBy
   thenByIdDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'id', Sort.desc);
-    });
-  }
-
-  QueryBuilder<WeightEntryModel, WeightEntryModel, QAfterSortBy> thenByNote() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'note', Sort.asc);
-    });
-  }
-
-  QueryBuilder<WeightEntryModel, WeightEntryModel, QAfterSortBy>
-  thenByNoteDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'note', Sort.desc);
-    });
-  }
-
-  QueryBuilder<WeightEntryModel, WeightEntryModel, QAfterSortBy>
-  thenByWeightKg() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'weightKg', Sort.asc);
-    });
-  }
-
-  QueryBuilder<WeightEntryModel, WeightEntryModel, QAfterSortBy>
-  thenByWeightKgDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'weightKg', Sort.desc);
     });
   }
 }
@@ -783,18 +856,23 @@ extension WeightEntryModelQueryWhereDistinct
     });
   }
 
-  QueryBuilder<WeightEntryModel, WeightEntryModel, QDistinct> distinctByNote({
-    bool caseSensitive = true,
-  }) {
+  QueryBuilder<WeightEntryModel, WeightEntryModel, QDistinct>
+  distinctByEncryptedNote({bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'note', caseSensitive: caseSensitive);
+      return query.addDistinctBy(
+        r'encryptedNote',
+        caseSensitive: caseSensitive,
+      );
     });
   }
 
   QueryBuilder<WeightEntryModel, WeightEntryModel, QDistinct>
-  distinctByWeightKg() {
+  distinctByEncryptedWeight({bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'weightKg');
+      return query.addDistinctBy(
+        r'encryptedWeight',
+        caseSensitive: caseSensitive,
+      );
     });
   }
 }
@@ -814,15 +892,17 @@ extension WeightEntryModelQueryProperty
     });
   }
 
-  QueryBuilder<WeightEntryModel, String?, QQueryOperations> noteProperty() {
+  QueryBuilder<WeightEntryModel, String?, QQueryOperations>
+  encryptedNoteProperty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'note');
+      return query.addPropertyName(r'encryptedNote');
     });
   }
 
-  QueryBuilder<WeightEntryModel, double, QQueryOperations> weightKgProperty() {
+  QueryBuilder<WeightEntryModel, String, QQueryOperations>
+  encryptedWeightProperty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'weightKg');
+      return query.addPropertyName(r'encryptedWeight');
     });
   }
 }
