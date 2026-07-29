@@ -43,7 +43,7 @@ lib/
 - **Feature-First**: Features encapsulate data, domain, and presentation boundaries.
 - **Dependency Inversion**: Domain defines repository contracts; data layer provides concrete implementations.
 - **State Management**: `flutter_bloc` with `hydrated_bloc` for persistent application configuration.
-- **Dependency Injection**: `get_it` and `injectable` form standardized core infrastructure baselines.
+- **Dependency Injection**: Manual DI in `main.dart` — dependencies instantiated explicitly and passed down via widget constructors and BLoC providers.
 
 ## Tech Stack
 
@@ -51,7 +51,7 @@ lib/
 |----------|---------|---------|
 | **Framework** | Flutter 3.44 | Cross-platform UI framework |
 | **State Management** | flutter_bloc, hydrated_bloc | BLoC pattern with automated JSON hydration |
-| **Dependency Injection** | get_it, injectable | Service locator and DI infrastructure baselines |
+| **Dependency Injection** | Manual DI | Dependencies wired explicitly in `main.dart`, passed via constructors and BLoC providers |
 | **Database** | isar_community | High-performance local NoSQL database |
 | **Charts** | fl_chart | Interactive weight history visualizations |
 | **Biometrics** | local_auth | Native biometric authentication (Face ID, Touch ID, fingerprint) |

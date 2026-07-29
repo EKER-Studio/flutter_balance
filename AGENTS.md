@@ -73,7 +73,7 @@ For every public class/method, add a doc comment following the language's standa
 
 ### Architecture & Layer Boundaries
 This is a Local-First, AI-Native boilerplate utilizing Clean Architecture under a Feature-First approach, structured as:
-- **Domain Layer** (`lib/features/<feature>/domain/`): Pure Dart logic — entities, repository interfaces, use cases. NO Flutter, BLoC, or GetIt imports allowed here.
+- **Domain Layer** (`lib/features/<feature>/domain/`): Pure Dart logic — entities, repository interfaces, use cases. NO Flutter or BLoC imports allowed here.
 - **Data Layer** (`lib/features/<feature>/data/`): Repository implementations and local storage handlers utilizing `isar_community`.
 - **Presentation Layer** (`lib/features/<feature>/presentation/`): UI (`StatelessWidget`/`StatefulWidget`) and state management via BLoC (`flutter_bloc`).
 - **DI:** Manual dependency injection at app startup (`main.dart`) passed down via widget constructors and BLoC providers.
