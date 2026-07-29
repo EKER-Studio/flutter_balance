@@ -13,7 +13,6 @@ import 'package:pure_weight/features/weight/presentation/bloc/weight_state.dart'
 class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
   /// The [WeightRepository] backing data operations.
   final WeightRepository repository;
-  StreamSubscription<List<WeightEntry>>? _entriesSubscription;
 
   List<WeightEntry>? _memoEntries;
   TimePeriod _memoPeriod = TimePeriod.week;
@@ -114,82 +113,32 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
     SubscribeToWeightChanges event,
     Emitter<WeightState> emit,
   ) async {
-    // Cancel any existing subscription to avoid memory leaks
-    await _entriesSubscription?.cancel();
-    _entriesSubscription = null;
-
     // Emit loading state while establishing the new subscription.
     emit(WeightLoading(heightCm: state.heightCm, timePeriod: state.timePeriod));
 
-    try {
-      // Emit initial data synchronously to satisfy Bloc test expectations
-      final initialEntries = await repository.watchAllEntries().first;
-      if (!emit.isDone) {
-        emit(
-          WeightLoaded(
-            heightCm: state.heightCm,
-            timePeriod: state.timePeriod,
-            entries: initialEntries,
-            filteredEntries: _filterEntries(initialEntries, state.timePeriod),
-          ),
+    await emit.forEach<List<WeightEntry>>(
+      repository.watchAllEntries(),
+      onData: (entries) => WeightLoaded(
+        heightCm: state.heightCm,
+        timePeriod: state.timePeriod,
+        entries: entries,
+        filteredEntries: _filterEntries(entries, state.timePeriod),
+      ),
+      onError: (Object error, StackTrace stackTrace) {
+        if (kDebugMode) {
+          debugPrint(
+            '[WeightBloc] Database stream emitted an infrastructure error: $error\n$stackTrace',
+          );
+        }
+        return WeightError(
+          errorType: WeightErrorType.streamError,
+          heightCm: state.heightCm,
+          timePeriod: state.timePeriod,
+          entries: const [],
+          filteredEntries: const [],
         );
-      }
-    } catch (error, stackTrace) {
-      if (kDebugMode) {
-        debugPrint(
-          '[WeightBloc] Initial stream fetch failed: $error\n$stackTrace',
-        );
-      }
-      if (!emit.isDone) {
-        emit(
-          WeightError(
-            errorType: WeightErrorType.streamError,
-            heightCm: state.heightCm,
-            timePeriod: state.timePeriod,
-            entries: const [],
-            filteredEntries: const [],
-          ),
-        );
-      }
-    }
-
-    // Subscribe to subsequent updates without awaiting further emissions
-    _entriesSubscription = repository
-        .watchAllEntries()
-        .skip(1)
-        .listen(
-          (entries) {
-            if (!emit.isDone) {
-              emit(
-                WeightLoaded(
-                  heightCm: state.heightCm,
-                  timePeriod: state.timePeriod,
-                  entries: entries,
-                  filteredEntries: _filterEntries(entries, state.timePeriod),
-                ),
-              );
-            }
-          },
-          onError: (Object error, StackTrace stackTrace) {
-            if (kDebugMode) {
-              debugPrint(
-                '[WeightBloc] Database stream emitted an infrastructure error: $error\n$stackTrace',
-              );
-            }
-            if (!emit.isDone) {
-              emit(
-                WeightError(
-                  errorType: WeightErrorType.streamError,
-                  heightCm: state.heightCm,
-                  timePeriod: state.timePeriod,
-                  entries: const [],
-                  filteredEntries: const [],
-                ),
-              );
-            }
-          },
-          cancelOnError: false,
-        );
+      },
+    );
   }
 
   void _onUpdateUserHeight(UpdateUserHeight event, Emitter<WeightState> emit) {
@@ -316,14 +265,6 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
         filteredEntries: _filterEntries(entries, timePeriod),
       ),
     );
-  }
-
-  // Holds the active repository subscription for weight entries.
-
-  @override
-  Future<void> close() async {
-    await _entriesSubscription?.cancel();
-    return super.close();
   }
 
   @override
