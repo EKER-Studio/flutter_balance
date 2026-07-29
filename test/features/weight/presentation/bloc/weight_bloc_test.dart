@@ -6,6 +6,7 @@ import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:pure_weight/features/weight/domain/entities/weight_entry.dart';
 import 'package:pure_weight/features/weight/domain/repositories/weight_repository.dart';
+import 'package:pure_weight/features/weight/domain/weight_error_type.dart';
 import 'package:pure_weight/features/weight/presentation/bloc/weight_bloc.dart';
 import 'package:pure_weight/features/weight/presentation/bloc/weight_event.dart';
 import 'package:pure_weight/features/weight/presentation/bloc/weight_state.dart';
@@ -55,6 +56,24 @@ void main() {
       expect: () => [
         isA<WeightLoading>(),
         isA<WeightLoaded>().having((s) => s.entries, 'entries', isEmpty),
+      ],
+    );
+
+    blocTest<WeightBloc, WeightState>(
+      'emits [WeightLoading, WeightError] when stream emits an error',
+      build: () => WeightBloc(repository: repository),
+      act: (bloc) async {
+        bloc.add(const SubscribeToWeightChanges());
+        await Future.delayed(Duration.zero);
+        streamController.addError(Exception('Disk read failure'));
+      },
+      expect: () => [
+        isA<WeightLoading>(),
+        isA<WeightError>().having(
+          (s) => s.errorType,
+          'errorType',
+          WeightErrorType.streamError,
+        ),
       ],
     );
 

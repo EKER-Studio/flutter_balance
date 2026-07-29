@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:flutter/foundation.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:pure_weight/features/weight/domain/entities/weight_entry.dart';
 import 'package:pure_weight/features/weight/domain/repositories/weight_repository.dart';
@@ -112,18 +113,37 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
     // Emit loading state while establishing the new subscription.
     emit(WeightLoading(heightCm: state.heightCm, timePeriod: state.timePeriod));
 
-    // Emit initial data synchronously to satisfy Bloc test expectations
-    final initialEntries = await repository.watchAllEntries().first;
-    if (!emit.isDone) {
-      emit(
-        WeightLoaded(
-          heightCm: state.heightCm,
-          timePeriod: state.timePeriod,
-          entries: initialEntries,
-          filteredEntries: _filterEntries(initialEntries, state.timePeriod),
-        ),
+    try {
+      // Emit initial data synchronously to satisfy Bloc test expectations
+      final initialEntries = await repository.watchAllEntries().first;
+      if (!emit.isDone) {
+        emit(
+          WeightLoaded(
+            heightCm: state.heightCm,
+            timePeriod: state.timePeriod,
+            entries: initialEntries,
+            filteredEntries: _filterEntries(initialEntries, state.timePeriod),
+          ),
+        );
+      }
+    } catch (error, stackTrace) {
+      debugPrint(
+        '[WeightBloc] Initial stream fetch failed: $error\n$stackTrace',
       );
+      if (!emit.isDone) {
+        emit(
+          WeightError(
+            errorType: WeightErrorType.streamError,
+            message: 'Database stream error: $error',
+            heightCm: state.heightCm,
+            timePeriod: state.timePeriod,
+            entries: const [],
+            filteredEntries: const [],
+          ),
+        );
+      }
     }
+
     // Subscribe to subsequent updates without awaiting further emissions
     _entriesSubscription = repository
         .watchAllEntries()
@@ -141,11 +161,15 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
               );
             }
           },
-          onError: (error, stackTrace) {
+          onError: (Object error, StackTrace stackTrace) {
+            debugPrint(
+              '[WeightBloc] Database stream emitted an infrastructure error: $error\n$stackTrace',
+            );
             if (!emit.isDone) {
               emit(
                 WeightError(
                   errorType: WeightErrorType.streamError,
+                  message: 'Database stream error: $error',
                   heightCm: state.heightCm,
                   timePeriod: state.timePeriod,
                   entries: const [],
