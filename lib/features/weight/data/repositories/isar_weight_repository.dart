@@ -1,9 +1,9 @@
 import 'dart:convert';
 
-import 'package:encrypt/encrypt.dart' as enc;
 import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:isar_community/isar.dart';
+import 'package:pure_weight/core/utils/field_cipher.dart';
 import 'package:pure_weight/features/weight/data/models/weight_entry_model.dart';
 import 'package:pure_weight/features/weight/domain/entities/weight_entry.dart';
 import 'package:pure_weight/features/weight/domain/repositories/weight_repository.dart';
@@ -57,41 +57,12 @@ class IsarWeightRepository implements WeightRepository {
     );
   }
 
-  String _encrypt(String plainText, Uint8List keyBytes) {
-    final encKey = enc.Key(keyBytes);
-    final iv = enc.IV.fromSecureRandom(16);
-    final encrypter = enc.Encrypter(enc.AES(encKey, mode: enc.AESMode.cbc));
-    final encrypted = encrypter.encrypt(plainText, iv: iv);
-
-    final combined = Uint8List(16 + encrypted.bytes.length);
-    combined.setRange(0, 16, iv.bytes);
-    combined.setRange(16, combined.length, encrypted.bytes);
-
-    return base64Encode(combined);
-  }
-
-  String _decrypt(String base64String, Uint8List keyBytes) {
-    final combined = base64Decode(base64String);
-    if (combined.length < 16) {
-      throw const FormatException('Encrypted payload too short');
-    }
-    final ivBytes = combined.sublist(0, 16);
-    final cipherBytes = combined.sublist(16);
-
-    final encKey = enc.Key(keyBytes);
-    final iv = enc.IV(ivBytes);
-    final encrypted = enc.Encrypted(cipherBytes);
-    final encrypter = enc.Encrypter(enc.AES(encKey, mode: enc.AESMode.cbc));
-
-    return encrypter.decrypt(encrypted, iv: iv);
-  }
-
   WeightEntry _modelToEntity(WeightEntryModel model, Uint8List key) {
     double weight = 0.0;
     String? note;
 
     try {
-      final decryptedStr = _decrypt(model.encryptedWeight, key);
+      final decryptedStr = FieldCipher.decrypt(model.encryptedWeight, key);
       weight = double.tryParse(decryptedStr) ?? 0.0;
     } catch (e, stack) {
       if (kDebugMode) {
@@ -104,7 +75,7 @@ class IsarWeightRepository implements WeightRepository {
 
     if (model.encryptedNote != null && model.encryptedNote!.isNotEmpty) {
       try {
-        note = _decrypt(model.encryptedNote!, key);
+        note = FieldCipher.decrypt(model.encryptedNote!, key);
       } catch (e, stack) {
         if (kDebugMode) {
           debugPrint(
@@ -127,10 +98,10 @@ class IsarWeightRepository implements WeightRepository {
     final model = WeightEntryModel()
       ..id = entity.id == 0 ? Isar.autoIncrement : entity.id
       ..dateTime = entity.dateTime
-      ..encryptedWeight = _encrypt(entity.weightKg.toString(), key);
+      ..encryptedWeight = FieldCipher.encrypt(entity.weightKg.toString(), key);
 
     if (entity.note != null && entity.note!.isNotEmpty) {
-      model.encryptedNote = _encrypt(entity.note!, key);
+      model.encryptedNote = FieldCipher.encrypt(entity.note!, key);
     } else {
       model.encryptedNote = null;
     }
