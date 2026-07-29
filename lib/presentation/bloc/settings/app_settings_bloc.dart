@@ -14,7 +14,6 @@ class AppSettingsBloc extends HydratedBloc<AppSettingsEvent, AppSettingsState> {
     on<ToggleNotifications>(_onToggleNotifications);
     on<UpdateNotificationTime>(_onUpdateNotificationTime);
     on<TargetWeightChanged>(_onTargetWeightChanged);
-    on<UpdateTargetWeight>(_onUpdateTargetWeight);
     on<UpdateBiometricLock>(_onUpdateBiometricLock);
     on<SetLocked>(_onSetLocked);
   }
@@ -53,13 +52,6 @@ class AppSettingsBloc extends HydratedBloc<AppSettingsEvent, AppSettingsState> {
     Emitter<AppSettingsState> emit,
   ) {
     emit(state.copyWith(targetWeight: event.weight));
-  }
-
-  void _onUpdateTargetWeight(
-    UpdateTargetWeight event,
-    Emitter<AppSettingsState> emit,
-  ) {
-    emit(state.copyWith(targetWeight: event.targetWeight));
   }
 
   void _onUpdateBiometricLock(

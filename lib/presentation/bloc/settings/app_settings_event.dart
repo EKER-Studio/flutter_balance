@@ -61,15 +61,6 @@ final class TargetWeightChanged extends AppSettingsEvent {
   const TargetWeightChanged(this.weight);
 }
 
-/// Legacy target-weight event retained for existing callers.
-final class UpdateTargetWeight extends AppSettingsEvent {
-  /// The new target weight in kg (null to clear).
-  final double? targetWeight;
-
-  /// Creates [UpdateTargetWeight] with the given [targetWeight].
-  const UpdateTargetWeight(this.targetWeight);
-}
-
 /// Updates the biometric lock enabled state.
 final class UpdateBiometricLock extends AppSettingsEvent {
   /// Whether biometric lock should be enabled.
