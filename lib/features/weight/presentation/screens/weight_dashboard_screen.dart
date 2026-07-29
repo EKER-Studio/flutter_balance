@@ -15,6 +15,7 @@ import 'package:pure_weight/presentation/screens/settings_screen.dart';
 import 'package:pure_weight/presentation/bloc/settings/app_settings_bloc.dart';
 import 'package:pure_weight/features/weight/presentation/widgets/health_summary_card.dart';
 import 'package:pure_weight/presentation/widgets/weight_chart.dart';
+import 'package:intl/intl.dart';
 
 /// Main dashboard screen showing weight summary, history, and height config.
 class WeightDashboardScreen extends StatefulWidget {
@@ -167,8 +168,6 @@ class _WeightDashboardScreenState extends State<WeightDashboardScreen> {
     final sorted = List<WeightEntry>.from(entries)
       ..sort((a, b) => b.dateTime.compareTo(a.dateTime));
 
-    final targetWeight = context.watch<AppSettingsBloc>().state.targetWeight;
-
     return OrientationBuilder(
       builder: (context, orientation) {
         final chartHeight = orientation == Orientation.landscape
@@ -182,16 +181,24 @@ class _WeightDashboardScreenState extends State<WeightDashboardScreen> {
               if (sorted.isNotEmpty) ...[
                 HealthSummaryCard(latestWeightKg: sorted.first.weightKg),
                 const SizedBox(height: 16),
-                WeightChart(
-                  entries: filteredEntries,
-                  period: timePeriod,
-                  chartHeight: chartHeight,
-                  onPeriodChanged: (period) =>
-                      context.read<WeightBloc>().add(ChangeChartFilter(period)),
-                  targetWeight: targetWeight,
+                BlocSelector<AppSettingsBloc, AppSettingsState, double?>(
+                  selector: (state) => state.targetWeight,
+                  builder: (context, targetWeight) => Column(
+                    children: [
+                      WeightChart(
+                        entries: filteredEntries,
+                        period: timePeriod,
+                        chartHeight: chartHeight,
+                        onPeriodChanged: (period) => context
+                            .read<WeightBloc>()
+                            .add(ChangeChartFilter(period)),
+                        targetWeight: targetWeight,
+                      ),
+                      const SizedBox(height: 16),
+                      _buildStatsSection(sorted, targetWeight),
+                    ],
+                  ),
                 ),
-                const SizedBox(height: 16),
-                _buildStatsSection(sorted, targetWeight),
                 const SizedBox(height: 16),
               ],
               _buildHistorySection(sorted, heightCm),
@@ -239,15 +246,15 @@ class _WeightDashboardScreenState extends State<WeightDashboardScreen> {
             if (heightCm == null)
               _buildHeightConfig()
             else ...[
-              WeightChart(
-                entries: filteredEntries,
-                period: timePeriod,
-                onPeriodChanged: (period) =>
-                    context.read<WeightBloc>().add(ChangeChartFilter(period)),
-                targetWeight: context
-                    .watch<AppSettingsBloc>()
-                    .state
-                    .targetWeight,
+              BlocSelector<AppSettingsBloc, AppSettingsState, double?>(
+                selector: (state) => state.targetWeight,
+                builder: (context, targetWeight) => WeightChart(
+                  entries: filteredEntries,
+                  period: timePeriod,
+                  onPeriodChanged: (period) =>
+                      context.read<WeightBloc>().add(ChangeChartFilter(period)),
+                  targetWeight: targetWeight,
+                ),
               ),
               const SizedBox(height: 16),
               _buildHistorySection(entries, heightCm),
@@ -344,10 +351,9 @@ class _WeightDashboardScreenState extends State<WeightDashboardScreen> {
   }
 
   Widget _buildEntryTile(WeightEntry entry, AppSettingsState settingsState) {
-    final dateStr =
-        '${entry.dateTime.day}/${entry.dateTime.month}/${entry.dateTime.year} '
-        '${entry.dateTime.hour.toString().padLeft(2, '0')}:'
-        '${entry.dateTime.minute.toString().padLeft(2, '0')}';
+    final dateStr = DateFormat.yMd(
+      Localizations.localeOf(context).toString(),
+    ).add_jm().format(entry.dateTime);
     final dynamicBmi = settingsState.calculateBmi(entry.weightKg);
 
     return Card(
