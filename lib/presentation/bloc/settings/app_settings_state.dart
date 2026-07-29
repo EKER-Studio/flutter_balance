@@ -115,6 +115,7 @@ final class AppSettingsState {
       },
       'targetWeight': targetWeight,
       'isBiometricLockEnabled': isBiometricLockEnabled,
+      'isLocked': isLocked,
     };
   }
 }
