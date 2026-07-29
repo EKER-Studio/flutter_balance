@@ -32,6 +32,7 @@ void main() {
     when(
       () => repository.watchAllEntries(),
     ).thenAnswer((_) => streamController.stream);
+    when(() => repository.getAllEntries()).thenAnswer((_) async => []);
     when(() => repository.addEntry(any())).thenAnswer((_) async {});
     when(() => repository.deleteEntry(any())).thenAnswer((_) async {});
 
@@ -60,13 +61,14 @@ void main() {
     );
 
     blocTest<WeightBloc, WeightState>(
-      'emits [WeightLoading, WeightError] when stream emits an error',
-      build: () => WeightBloc(repository: repository),
-      act: (bloc) async {
-        bloc.add(const SubscribeToWeightChanges());
-        await Future.delayed(Duration.zero);
-        streamController.addError(Exception('Disk read failure'));
+      'emits [WeightLoading, WeightError] when initial stream throws an error',
+      build: () {
+        when(() => repository.watchAllEntries()).thenAnswer(
+          (_) => Stream.error(Exception('Database initialization failure')),
+        );
+        return WeightBloc(repository: repository);
       },
+      act: (bloc) => bloc.add(const SubscribeToWeightChanges()),
       expect: () => [
         isA<WeightLoading>(),
         isA<WeightError>().having(
@@ -124,6 +126,83 @@ void main() {
     );
 
     blocTest<WeightBloc, WeightState>(
+      'emits WeightError when repository.addEntry fails',
+      build: () {
+        when(
+          () => repository.addEntry(any()),
+        ).thenThrow(Exception('Write failed'));
+        return WeightBloc(repository: repository);
+      },
+      seed: () =>
+          const WeightLoaded(entries: [], filteredEntries: [], heightCm: 170),
+      act: (bloc) => bloc.add(const AddWeight(weightKg: 72)),
+      expect: () => [
+        isA<WeightError>().having(
+          (s) => s.errorType,
+          'errorType',
+          WeightErrorType.addEntryFailed,
+        ),
+      ],
+    );
+
+    blocTest<WeightBloc, WeightState>(
+      'emits WeightError when repository.deleteEntry fails',
+      build: () {
+        when(
+          () => repository.deleteEntry(any()),
+        ).thenThrow(Exception('Delete failed'));
+        return WeightBloc(repository: repository);
+      },
+      seed: () =>
+          const WeightLoaded(entries: [], filteredEntries: [], heightCm: 170),
+      act: (bloc) => bloc.add(const DeleteWeight(1)),
+      expect: () => [
+        isA<WeightError>().having(
+          (s) => s.errorType,
+          'errorType',
+          WeightErrorType.deleteEntryFailed,
+        ),
+      ],
+    );
+
+    blocTest<WeightBloc, WeightState>(
+      'updates timePeriod on ChangeChartFilter',
+      build: () => WeightBloc(repository: repository),
+      seed: () =>
+          const WeightLoaded(entries: [], filteredEntries: [], heightCm: 170),
+      act: (bloc) => bloc.add(const ChangeChartFilter(TimePeriod.year)),
+      expect: () => [
+        isA<WeightLoaded>().having(
+          (s) => s.timePeriod,
+          'timePeriod',
+          TimePeriod.year,
+        ),
+      ],
+    );
+
+    blocTest<WeightBloc, WeightState>(
+      'fetches entries on RefreshWeightData',
+      build: () {
+        when(() => repository.getAllEntries()).thenAnswer(
+          (_) async => [
+            WeightEntry(id: 1, weightKg: 75, dateTime: DateTime(2025, 1, 1)),
+          ],
+        );
+        return WeightBloc(repository: repository);
+      },
+      seed: () =>
+          const WeightLoaded(entries: [], filteredEntries: [], heightCm: 170),
+      act: (bloc) => bloc.add(const RefreshWeightData()),
+      expect: () => [
+        isA<WeightLoaded>().having(
+          (s) => s.entries.length,
+          'entries length',
+          1,
+        ),
+      ],
+    );
+
+    blocTest<WeightBloc, WeightState>(
       'emits WeightError on AddWeight when height is not set',
       build: () => WeightBloc(repository: repository),
       seed: () => const WeightInitial(),
@@ -166,6 +245,11 @@ void main() {
       expect(state, isA<WeightInitial>());
       expect(state!.heightCm, 180.0);
       expect(state.timePeriod, TimePeriod.year);
+    });
+
+    test('close cancels stream subscription cleanly', () async {
+      final bloc = WeightBloc(repository: repository);
+      await bloc.close();
     });
   });
 }
