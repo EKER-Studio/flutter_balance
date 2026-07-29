@@ -233,6 +233,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         value: mode,
                         groupValue: state.themeMode,
                         onChanged: (value) {
+                          // Radio always passes the selected value when the
+                          // groupValue type is non-nullable.
                           context.read<AppSettingsBloc>().add(
                             UpdateTheme(value!),
                           );
@@ -253,6 +255,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         value: unit,
                         groupValue: state.measurementUnit,
                         onChanged: (value) {
+                          // Radio always passes the selected value when the
+                          // groupValue type is non-nullable.
                           context.read<AppSettingsBloc>().add(
                             UpdateMeasurementUnit(value!),
                           );
@@ -299,6 +303,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     subtitle: Text(
                       state.targetWeight != null
                           ? formatWeight(
+                              // Guarded by the != null check above.
                               state.targetWeight!,
                               state.measurementUnit,
                             )
@@ -567,6 +572,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         return;
       }
 
+      // Guarded by the path == null check (early return) above.
       final filePath = result.files.single.path!;
       final fileContent = await File(filePath).readAsString();
 
