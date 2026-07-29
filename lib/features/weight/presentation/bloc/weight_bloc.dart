@@ -300,13 +300,15 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
         : TimePeriod.week;
 
     return WeightInitial(
-      heightCm: json['heightCm'] as double?,
+      heightCm: (json['heightCm'] as num?)?.toDouble(),
       timePeriod: period,
     );
   }
 
   @override
   Map<String, dynamic>? toJson(WeightState state) {
+    // Omit dynamic data collections (entries & filteredEntries) from JSON persistence
+    // to prevent redundant disk I/O. Only lightweight user preferences are serialized.
     return {'heightCm': state.heightCm, 'timePeriod': state.timePeriod.name};
   }
 }

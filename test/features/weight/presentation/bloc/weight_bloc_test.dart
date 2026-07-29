@@ -117,5 +117,36 @@ void main() {
         ),
       ],
     );
+
+    test(
+      'toJson serializes only lightweight configuration and omits entries',
+      () {
+        final bloc = WeightBloc(repository: repository);
+        final state = WeightLoaded(
+          entries: [
+            WeightEntry(id: 1, weightKg: 70, dateTime: DateTime(2025, 1, 1)),
+          ],
+          filteredEntries: [
+            WeightEntry(id: 1, weightKg: 70, dateTime: DateTime(2025, 1, 1)),
+          ],
+          heightCm: 175,
+          timePeriod: TimePeriod.month,
+        );
+
+        final json = bloc.toJson(state);
+        expect(json, {'heightCm': 175.0, 'timePeriod': 'month'});
+        expect(json!.containsKey('entries'), isFalse);
+        expect(json.containsKey('filteredEntries'), isFalse);
+      },
+    );
+
+    test('fromJson restores config and initializes state as WeightInitial', () {
+      final bloc = WeightBloc(repository: repository);
+      final state = bloc.fromJson({'heightCm': 180, 'timePeriod': 'year'});
+
+      expect(state, isA<WeightInitial>());
+      expect(state!.heightCm, 180.0);
+      expect(state.timePeriod, TimePeriod.year);
+    });
   });
 }
