@@ -93,7 +93,7 @@ class CsvImporter {
       final normalizedWeight = weightString.replaceAll(',', '.');
       final weight = double.tryParse(normalizedWeight);
 
-      if (weight == null || weight <= 0 || weight > 500) {
+      if (weight == null || weight <= 0 || weight > 300) {
         skippedRows++;
         continue;
       }

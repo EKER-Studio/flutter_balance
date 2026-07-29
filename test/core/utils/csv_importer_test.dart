@@ -199,7 +199,7 @@ ID,Data,Waga (kg),BMI,Notatka
       const csvContent = '''
 ID,Data,Waga (kg),BMI,Notatka
 1,2024-01-15,0.1,23.1,Minimum weight
-2,2024-01-16,499.9,23.0,Maximum weight
+2,2024-01-16,299.9,23.0,Maximum weight
 ''';
 
       final result = await CsvImporter.parse(csvContent);
@@ -208,7 +208,7 @@ ID,Data,Waga (kg),BMI,Notatka
       expect(entries.length, 2);
       expect(result.skippedRows, 0);
       expect(entries[0].weightKg, 0.1);
-      expect(entries[1].weightKg, 499.9);
+      expect(entries[1].weightKg, 299.9);
     });
 
     test('parses CSV with ID column not used', () async {
