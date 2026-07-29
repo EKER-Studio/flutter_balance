@@ -96,9 +96,17 @@ class _AddWeightSheetState extends State<AddWeightSheet> {
   void _onSave() {
     FocusScope.of(context).unfocus();
     if (_formKey.currentState!.validate()) {
-      final weight = double.parse(
+      final weight = double.tryParse(
         _weightController.text.trim().replaceAll(',', '.'),
       );
+      if (weight == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(AppLocalizations.of(context).enterValidNumber),
+          ),
+        );
+        return;
+      }
       final note = _noteController.text.isEmpty ? null : _noteController.text;
       context.read<WeightBloc>().add(AddWeight(weightKg: weight, note: note));
       Navigator.of(context).pop();

@@ -19,6 +19,7 @@ class BiometricLockObserver with WidgetsBindingObserver {
   final String localizedReason;
 
   bool _isLockEnabled = false;
+  bool _disposed = false;
   StreamSubscription<bool>? _subscription;
 
   /// Creates a [BiometricLockObserver] and registers it as a WidgetsBinding observer.
@@ -28,8 +29,8 @@ class BiometricLockObserver with WidgetsBindingObserver {
     this.lockEnabledStream,
     this.localizedReason = 'Authenticate to access PureWeight',
   }) {
-    WidgetsBinding.instance.addObserver(this);
     _isLockEnabled = isBiometricLockEnabled();
+    WidgetsBinding.instance.addObserver(this);
     _subscription = lockEnabledStream?.listen((enabled) {
       _isLockEnabled = enabled;
     });
@@ -85,12 +86,16 @@ class BiometricLockObserver with WidgetsBindingObserver {
   }
 
   /// Disposes this observer and cancels the settings stream subscription.
+  /// Safe to call multiple times — subsequent calls are no-ops.
   void dispose() {
+    if (_disposed) return;
+    _disposed = true;
     _subscription?.cancel();
     _subscription = null;
     WidgetsBinding.instance.removeObserver(this);
   }
 
   /// Removes this observer and cancels the settings stream subscription.
+  /// Convenience alias for [dispose].
   void removeThisObserver() => dispose();
 }
