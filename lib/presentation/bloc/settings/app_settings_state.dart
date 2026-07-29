@@ -132,16 +132,5 @@ extension AppSettingsX on AppSettingsState {
   }
 
   /// Maps a BMI value to a structured category.
-  BmiCategory getBmiCategory(double bmi) {
-    if (bmi < 18.5) {
-      return BmiCategory.underweight;
-    }
-    if (bmi < 25.0) {
-      return BmiCategory.normal;
-    }
-    if (bmi < 30.0) {
-      return BmiCategory.overweight;
-    }
-    return BmiCategory.obese;
-  }
+  BmiCategory getBmiCategory(double bmi) => BmiCategory.fromBmi(bmi);
 }

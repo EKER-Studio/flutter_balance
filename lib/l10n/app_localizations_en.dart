@@ -292,4 +292,16 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get openSettings => 'Settings';
+
+  @override
+  String get errorStream => 'Database stream error.';
+
+  @override
+  String get errorHeightNotSet => 'Set your height first.';
+
+  @override
+  String get errorAddEntryFailed => 'Failed to add weight entry.';
+
+  @override
+  String get errorDeleteEntryFailed => 'Failed to delete weight entry.';
 }

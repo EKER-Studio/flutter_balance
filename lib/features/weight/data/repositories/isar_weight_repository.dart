@@ -55,22 +55,4 @@ class IsarWeightRepository implements WeightRepository {
       await isar.clear();
     });
   }
-
-  @override
-  Future<void> clearAllEntries() => clearAllData();
-
-  /// Removes any stored BMI values by re-writing all entries without BMI.
-  ///
-  /// This reads all entries, clears the collection and re-inserts entries
-  /// using the current model mapping (which no longer includes `bmi`).
-  /// Use this as a one-time migration helper after schema changes that
-  /// removed the `bmi` property.
-  Future<void> removeStoredBmiFromDb() async {
-    final entries = await getAllEntries();
-    final models = entries.map(WeightEntryModel.fromEntity).toList();
-    await isar.writeTxn(() async {
-      await isar.weightEntryModels.where().deleteAll();
-      await isar.weightEntryModels.putAll(models);
-    });
-  }
 }

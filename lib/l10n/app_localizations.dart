@@ -631,6 +631,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Settings'**
   String get openSettings;
+
+  /// No description provided for @errorStream.
+  ///
+  /// In en, this message translates to:
+  /// **'Database stream error.'**
+  String get errorStream;
+
+  /// No description provided for @errorHeightNotSet.
+  ///
+  /// In en, this message translates to:
+  /// **'Set your height first.'**
+  String get errorHeightNotSet;
+
+  /// No description provided for @errorAddEntryFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to add weight entry.'**
+  String get errorAddEntryFailed;
+
+  /// No description provided for @errorDeleteEntryFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to delete weight entry.'**
+  String get errorDeleteEntryFailed;
 }
 
 class _AppLocalizationsDelegate

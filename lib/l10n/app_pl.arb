@@ -89,6 +89,10 @@
   "reminderTime": "Godzina przypomnienia",
   "notificationsDisabledOs": "Powiadomienia są wyłączone w ustawieniach systemu.",
   "openSettings": "Ustawienia",
+  "errorStream": "Błąd połączenia z bazą danych.",
+  "errorHeightNotSet": "Najpierw ustaw swój wzrost.",
+  "errorAddEntryFailed": "Nie udało się dodać pomiaru.",
+  "errorDeleteEntryFailed": "Nie udało się usunąć pomiaru.",
   "@bmiCategoryDescriptionUnderweight": {
     "description": "Description for the Underweight BMI category"
   },

@@ -295,4 +295,16 @@ class AppLocalizationsPl extends AppLocalizations {
 
   @override
   String get openSettings => 'Ustawienia';
+
+  @override
+  String get errorStream => 'Błąd połączenia z bazą danych.';
+
+  @override
+  String get errorHeightNotSet => 'Najpierw ustaw swój wzrost.';
+
+  @override
+  String get errorAddEntryFailed => 'Nie udało się dodać pomiaru.';
+
+  @override
+  String get errorDeleteEntryFailed => 'Nie udało się usunąć pomiaru.';
 }

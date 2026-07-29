@@ -44,9 +44,4 @@ abstract class WeightRepository {
   /// Returns a [Future] that completes when all collections are wiped.
   /// May throw a database error if collection transaction fails.
   Future<void> clearAllData();
-
-  /// Alias method for clearing all entries.
-  ///
-  /// Delegates directly to [clearAllData].
-  Future<void> clearAllEntries();
 }

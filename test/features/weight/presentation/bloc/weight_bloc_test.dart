@@ -209,9 +209,9 @@ void main() {
       act: (bloc) => bloc.add(const AddWeight(weightKg: 72)),
       expect: () => [
         isA<WeightError>().having(
-          (s) => s.message,
-          'message',
-          'Set your height first.',
+          (s) => s.errorType,
+          'errorType',
+          WeightErrorType.heightNotSet,
         ),
       ],
     );

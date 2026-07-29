@@ -6,6 +6,7 @@ import 'package:pure_weight/features/weight/presentation/bloc/weight_bloc.dart';
 import 'package:pure_weight/features/weight/presentation/bloc/weight_event.dart';
 import 'package:pure_weight/features/weight/presentation/bloc/weight_state.dart';
 import 'package:pure_weight/presentation/bloc/settings/app_settings_event.dart';
+import 'package:pure_weight/features/weight/domain/weight_error_type.dart';
 import 'package:pure_weight/features/weight/presentation/widgets/add_weight_sheet.dart';
 import 'package:pure_weight/l10n/app_localizations.dart';
 import 'package:pure_weight/presentation/bloc/settings/app_settings_state.dart';
@@ -38,6 +39,20 @@ class _WeightDashboardScreenState extends State<WeightDashboardScreen> {
     super.dispose();
   }
 
+  String _getErrorMessage(
+    BuildContext context,
+    WeightErrorType errorType,
+    String? message,
+  ) {
+    final l10n = AppLocalizations.of(context);
+    return switch (errorType) {
+      WeightErrorType.streamError => l10n.errorStream,
+      WeightErrorType.heightNotSet => l10n.errorHeightNotSet,
+      WeightErrorType.addEntryFailed => l10n.errorAddEntryFailed,
+      WeightErrorType.deleteEntryFailed => l10n.errorDeleteEntryFailed,
+    };
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<WeightBloc, WeightState>(
@@ -46,7 +61,9 @@ class _WeightDashboardScreenState extends State<WeightDashboardScreen> {
         if (state is WeightError) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text(state.message ?? ''),
+              content: Text(
+                _getErrorMessage(context, state.errorType, state.message),
+              ),
               action: SnackBarAction(
                 label: AppLocalizations.of(context).retry,
                 onPressed: () {
@@ -126,6 +143,7 @@ class _WeightDashboardScreenState extends State<WeightDashboardScreen> {
       ) =>
         _buildContent(context, entries, filteredEntries, timePeriod, heightCm),
       WeightError(
+        :final errorType,
         :final message,
         :final entries,
         :final filteredEntries,
@@ -134,6 +152,7 @@ class _WeightDashboardScreenState extends State<WeightDashboardScreen> {
       ) =>
         _buildError(
           context,
+          errorType,
           message,
           entries,
           filteredEntries,
@@ -190,6 +209,7 @@ class _WeightDashboardScreenState extends State<WeightDashboardScreen> {
 
   Widget _buildError(
     BuildContext context,
+    WeightErrorType errorType,
     String? message,
     List<WeightEntry> entries,
     List<WeightEntry> filteredEntries,
@@ -216,7 +236,11 @@ class _WeightDashboardScreenState extends State<WeightDashboardScreen> {
                       color: Theme.of(context).colorScheme.error,
                     ),
                     const SizedBox(width: 12),
-                    Expanded(child: Text(message ?? '')),
+                    Expanded(
+                      child: Text(
+                        _getErrorMessage(context, errorType, message),
+                      ),
+                    ),
                   ],
                 ),
               ),

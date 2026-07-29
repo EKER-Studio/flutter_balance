@@ -10,5 +10,19 @@ enum BmiCategory {
   overweight,
 
   /// BMI 30.0 or above.
-  obese,
+  obese;
+
+  /// Maps a numeric BMI value to its corresponding [BmiCategory].
+  static BmiCategory fromBmi(double bmi) {
+    if (bmi < 18.5) {
+      return BmiCategory.underweight;
+    }
+    if (bmi < 25.0) {
+      return BmiCategory.normal;
+    }
+    if (bmi < 30.0) {
+      return BmiCategory.overweight;
+    }
+    return BmiCategory.obese;
+  }
 }

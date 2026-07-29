@@ -89,6 +89,10 @@
   "reminderTime": "Reminder Time",
   "notificationsDisabledOs": "Notifications are disabled at the system level.",
   "openSettings": "Settings",
+  "errorStream": "Database stream error.",
+  "errorHeightNotSet": "Set your height first.",
+  "errorAddEntryFailed": "Failed to add weight entry.",
+  "errorDeleteEntryFailed": "Failed to delete weight entry.",
   "@bmiCategoryDescriptionUnderweight": {
     "description": "Description for the Underweight BMI category"
   },

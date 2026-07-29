@@ -134,7 +134,6 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
         emit(
           WeightError(
             errorType: WeightErrorType.streamError,
-            message: 'Database stream error: $error',
             heightCm: state.heightCm,
             timePeriod: state.timePeriod,
             entries: const [],
@@ -169,7 +168,6 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
               emit(
                 WeightError(
                   errorType: WeightErrorType.streamError,
-                  message: 'Database stream error: $error',
                   heightCm: state.heightCm,
                   timePeriod: state.timePeriod,
                   entries: const [],
@@ -210,7 +208,6 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
       emit(
         WeightError(
           errorType: WeightErrorType.heightNotSet,
-          message: 'Set your height first.',
           heightCm: heightCm,
           timePeriod: state.timePeriod,
           entries: entries,
@@ -228,11 +225,11 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
 
     try {
       await repository.addEntry(entry);
-    } catch (e) {
+    } catch (e, stack) {
+      debugPrint('[WeightBloc] Failed to add entry: $e\n$stack');
       emit(
         WeightError(
           errorType: WeightErrorType.addEntryFailed,
-          message: 'Failed to add entry: $e',
           heightCm: heightCm,
           timePeriod: state.timePeriod,
           entries: entries,
@@ -248,7 +245,8 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
   ) async {
     try {
       await repository.deleteEntry(event.id);
-    } catch (e) {
+    } catch (e, stack) {
+      debugPrint('[WeightBloc] Failed to delete entry: $e\n$stack');
       final entries = switch (state) {
         WeightLoaded(:final entries) => entries,
         WeightError(:final entries) => entries,
@@ -257,7 +255,6 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
       emit(
         WeightError(
           errorType: WeightErrorType.deleteEntryFailed,
-          message: 'Failed to delete entry: $e',
           heightCm: state.heightCm,
           timePeriod: state.timePeriod,
           entries: entries,

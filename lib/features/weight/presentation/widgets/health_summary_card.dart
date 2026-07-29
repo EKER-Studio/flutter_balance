@@ -163,10 +163,7 @@ class HealthSummaryCard extends StatelessWidget {
     return weightKg / (heightInMeters * heightInMeters);
   }
 
-  BmiCategory _bmiCategory(double bmi) {
-    final state = AppSettingsState();
-    return state.getBmiCategory(bmi);
-  }
+  BmiCategory _bmiCategory(double bmi) => BmiCategory.fromBmi(bmi);
 
   Color _badgeColorForCategory(BmiCategory category) {
     return switch (category) {
