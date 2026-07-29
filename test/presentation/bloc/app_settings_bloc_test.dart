@@ -191,6 +191,18 @@ void main() {
       expect(state.notificationTime, const TimeOfDay(hour: 14, minute: 30));
     });
 
+    test(
+      'fromJson enforces isLocked true when isBiometricLockEnabled is true',
+      () {
+        final json = {'isBiometricLockEnabled': true, 'isLocked': false};
+
+        final state = AppSettingsState.fromJson(json);
+
+        expect(state.isBiometricLockEnabled, isTrue);
+        expect(state.isLocked, isTrue);
+      },
+    );
+
     test('fromJson uses defaults for invalid enum values', () {
       final json = {
         'themeMode': 'invalid',

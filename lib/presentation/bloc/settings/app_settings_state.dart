@@ -74,6 +74,8 @@ final class AppSettingsState {
   /// Deserializes [AppSettingsState] from a JSON map.
   factory AppSettingsState.fromJson(Map<String, dynamic> json) {
     final heightValue = json['heightCm'] ?? json['height'];
+    final biometricLockEnabled =
+        json['isBiometricLockEnabled'] as bool? ?? false;
 
     return AppSettingsState(
       themeMode: AppThemeMode.values.firstWhere(
@@ -93,7 +95,10 @@ final class AppSettingsState {
             )
           : const TimeOfDay(hour: 8, minute: 0),
       targetWeight: (json['targetWeight'] as num?)?.toDouble(),
-      isBiometricLockEnabled: json['isBiometricLockEnabled'] as bool? ?? false,
+      isBiometricLockEnabled: biometricLockEnabled,
+      isLocked: biometricLockEnabled
+          ? true
+          : (json['isLocked'] as bool? ?? false),
     );
   }
 

@@ -33,6 +33,9 @@ class _AppState extends State<App> {
   void initState() {
     super.initState();
     final settingsBloc = context.read<AppSettingsBloc>();
+    if (settingsBloc.state.isBiometricLockEnabled) {
+      settingsBloc.add(const SetLocked(true));
+    }
     _observer = BiometricLockObserver(
       isBiometricLockEnabled: () => settingsBloc.state.isBiometricLockEnabled,
       lockEnabledStream: settingsBloc.stream.map(
