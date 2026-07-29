@@ -1,8 +1,9 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:pure_weight/core/database/database_module.dart';
 import 'package:pure_weight/core/services/biometric_service.dart';
 
-/// Lifecycle observer that enforces biometric lock when the app resumes.
+/// Lifecycle observer that enforces biometric lock and verifies database integrity when the app resumes.
 class BiometricLockObserver with WidgetsBindingObserver {
   /// Callback returning whether biometric lock is enabled.
   final bool Function() isBiometricLockEnabled;
@@ -36,7 +37,18 @@ class BiometricLockObserver with WidgetsBindingObserver {
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) {
+      _verifyDatabaseIntegrity();
       _checkBiometricLock();
+    }
+  }
+
+  Future<void> _verifyDatabaseIntegrity() async {
+    try {
+      await DatabaseModule.ensureInstanceIntegrity();
+    } catch (e, stack) {
+      debugPrint(
+        '[BiometricLockObserver] Database integrity check on resumption failed: $e\n$stack',
+      );
     }
   }
 

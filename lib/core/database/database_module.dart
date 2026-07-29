@@ -58,6 +58,28 @@ class DatabaseModule {
     }
   }
 
+  /// Verifies database integrity upon application resumption from background state.
+  ///
+  /// Checks if the active Isar instance handle is open and valid. If closed or evicted
+  /// by OS low-memory termination while backgrounded, attempts a clean auto-reconnect.
+  static Future<Isar?> ensureInstanceIntegrity() async {
+    try {
+      final instance = Isar.getInstance(dbName);
+      if (instance == null || !instance.isOpen) {
+        debugPrint(
+          '[DatabaseModule] Isar instance invalid or closed on app resumption. Re-initializing...',
+        );
+        return await initialize();
+      }
+      return instance;
+    } catch (e, stack) {
+      debugPrint(
+        '[DatabaseModule] Error verifying Isar instance integrity on resumption: $e\n$stack',
+      );
+      return await initialize();
+    }
+  }
+
   static Future<Isar> _openIsar(String directoryPath) {
     return Isar.open(
       [WeightEntryModelSchema],
