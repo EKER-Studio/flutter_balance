@@ -15,6 +15,10 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
   final WeightRepository repository;
   StreamSubscription<List<WeightEntry>>? _entriesSubscription;
 
+  List<WeightEntry>? _memoEntries;
+  TimePeriod _memoPeriod = TimePeriod.week;
+  List<WeightEntry> _memoResult = const [];
+
   /// Creates a [WeightBloc] backed by the given [repository].
   WeightBloc({required this.repository}) : super(const WeightInitial()) {
     on<SubscribeToWeightChanges>(_onSubscribeToWeightChanges);
@@ -29,6 +33,9 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
     List<WeightEntry> entries,
     TimePeriod period,
   ) {
+    if (identical(entries, _memoEntries) && period == _memoPeriod) {
+      return _memoResult;
+    }
     final filtered = switch (period) {
       TimePeriod.all => entries,
       TimePeriod.week =>
@@ -56,7 +63,11 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
             )
             .toList(),
     };
-    return _aggregateByDay(filtered);
+    final result = _aggregateByDay(filtered);
+    _memoEntries = entries;
+    _memoPeriod = period;
+    _memoResult = result;
+    return result;
   }
 
   /// Aggregates [entries] so that multiple measurements on the same calendar
@@ -75,18 +86,13 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
       grouped.putIfAbsent(key, () => []).add(e);
     }
 
-    return grouped.entries.map((group) {
-      final dayEntries = group.value;
+    final sortedKeys = grouped.keys.toList()..sort();
+    return sortedKeys.map((key) {
+      final dayEntries = grouped[key]!;
       final avgWeight =
           dayEntries.map((e) => e.weightKg).reduce((a, b) => a + b) /
           dayEntries.length;
 
-      // Calculate average BMI from the averaged weight and the current
-      // persisted user height stored in the bloc state. BMI is not stored
-      // permanently in the DB so we compute it dynamically here so that
-      // changes to height immediately reflect in aggregated values.
-
-      // Use noon on that day as the canonical timestamp for stable X positions.
       final representative = dayEntries.first.dateTime;
       final noonDate = DateTime(
         representative.year,
@@ -99,7 +105,7 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
         weightKg: double.parse(avgWeight.toStringAsFixed(2)),
         dateTime: noonDate,
       );
-    }).toList()..sort((a, b) => a.dateTime.compareTo(b.dateTime));
+    }).toList();
   }
 
   Future<void> _onSubscribeToWeightChanges(

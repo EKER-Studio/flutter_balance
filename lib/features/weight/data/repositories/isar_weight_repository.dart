@@ -15,6 +15,7 @@ class IsarWeightRepository implements WeightRepository {
   Stream<List<WeightEntry>> watchAllEntries() {
     return isar.weightEntryModels
         .where()
+        .sortByDateTimeDesc()
         .watch(fireImmediately: true)
         .map((models) => models.map((m) => m.toEntity()).toList());
   }

@@ -56,7 +56,7 @@ class _HeightDialogState extends State<_HeightDialog> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(AppLocalizations.of(context).invalidPositiveNumber),
-          backgroundColor: Colors.orange,
+          backgroundColor: Theme.of(context).colorScheme.error,
         ),
       );
       return;
@@ -146,7 +146,7 @@ class _TargetWeightDialogState extends State<_TargetWeightDialog> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(AppLocalizations.of(context).invalidPositiveNumber),
-          backgroundColor: Colors.orange,
+          backgroundColor: Theme.of(context).colorScheme.error,
         ),
       );
     }
@@ -268,7 +268,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 title: l10n.height,
                 children: [
                   ListTile(
-                    leading: const Icon(Icons.height, color: Colors.blue),
+                    leading: Icon(
+                      Icons.height,
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
                     title: Text(l10n.height),
                     subtitle: Text(
                       state.height > 0
@@ -288,9 +291,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 title: l10n.goal,
                 children: [
                   ListTile(
-                    leading: const Icon(
+                    leading: Icon(
                       Icons.flag_outlined,
-                      color: Colors.green,
+                      color: Theme.of(context).colorScheme.tertiary,
                     ),
                     title: Text(l10n.targetWeight),
                     subtitle: Text(
@@ -350,9 +353,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 title: l10n.notifications,
                 children: [
                   SwitchListTile(
-                    secondary: const Icon(
+                    secondary: Icon(
                       Icons.notifications_outlined,
-                      color: Colors.amber,
+                      color: Theme.of(context).colorScheme.secondary,
                     ),
                     title: Text(l10n.dailyReminder),
                     subtitle: Text(l10n.dailyReminderDesc),
@@ -362,9 +365,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   ),
                   if (state.notificationsEnabled)
                     ListTile(
-                      leading: const Icon(
+                      leading: Icon(
                         Icons.access_time_outlined,
-                        color: Colors.amber,
+                        color: Theme.of(context).colorScheme.secondary,
                       ),
                       title: Text(l10n.reminderTime),
                       subtitle: Text(state.notificationTime.format(context)),
@@ -384,18 +387,18 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 title: l10n.database,
                 children: [
                   ListTile(
-                    leading: const Icon(
+                    leading: Icon(
                       Icons.file_upload_outlined,
-                      color: Colors.blue,
+                      color: Theme.of(context).colorScheme.primary,
                     ),
                     title: Text(l10n.importCsv),
                     subtitle: Text(l10n.importCsvDesc),
                     onTap: () => _importCsv(context),
                   ),
                   ListTile(
-                    leading: const Icon(
+                    leading: Icon(
                       Icons.delete_forever,
-                      color: Colors.red,
+                      color: Theme.of(context).colorScheme.error,
                     ),
                     title: Text(l10n.wipeData),
                     subtitle: Text(l10n.wipeDataDesc),
@@ -535,7 +538,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(AppLocalizations.of(context).dataWipedSuccess),
-            backgroundColor: Colors.green,
+            backgroundColor: Theme.of(context).colorScheme.tertiary,
           ),
         );
       }
@@ -577,7 +580,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(AppLocalizations.of(context).importNoDataFound),
-              backgroundColor: Colors.orange,
             ),
           );
         }
@@ -595,27 +597,22 @@ class _SettingsScreenState extends State<SettingsScreen> {
               content: Text(
                 AppLocalizations.of(context).importSuccess(importedCount),
               ),
-              backgroundColor: Colors.green,
+              backgroundColor: Theme.of(context).colorScheme.tertiary,
             ),
           );
 
-          // Inform user about any rows that were skipped due to validation errors.
           if (skippedRows > 0) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(
                   AppLocalizations.of(context).skippedRows(skippedRows),
                 ),
-                backgroundColor: Colors.orange,
               ),
             );
           }
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(AppLocalizations.of(context).importFailed),
-              backgroundColor: Colors.orange,
-            ),
+            SnackBar(content: Text(AppLocalizations.of(context).importFailed)),
           );
         }
       }

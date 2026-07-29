@@ -26,8 +26,8 @@ class HealthSummaryCard extends StatelessWidget {
         final bmi = _calculateBmi(latestWeightKg, heightCm);
         final category = bmi.isFinite ? _bmiCategory(bmi) : null;
         final badgeColor = category != null
-            ? _badgeColorForCategory(category)
-            : Colors.blue;
+            ? _badgeColorForCategory(context, category)
+            : Theme.of(context).colorScheme.primary;
         final goalText = _goalText(
           targetWeight,
           latestWeightKg,
@@ -165,12 +165,13 @@ class HealthSummaryCard extends StatelessWidget {
 
   BmiCategory _bmiCategory(double bmi) => BmiCategory.fromBmi(bmi);
 
-  Color _badgeColorForCategory(BmiCategory category) {
+  Color _badgeColorForCategory(BuildContext context, BmiCategory category) {
+    final cs = Theme.of(context).colorScheme;
     return switch (category) {
-      BmiCategory.underweight => Colors.blue,
-      BmiCategory.normal => Colors.green,
-      BmiCategory.overweight => Colors.orange,
-      BmiCategory.obese => Colors.red,
+      BmiCategory.underweight => cs.primary,
+      BmiCategory.normal => cs.tertiary,
+      BmiCategory.overweight => cs.secondary,
+      BmiCategory.obese => cs.error,
     };
   }
 

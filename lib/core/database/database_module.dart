@@ -45,7 +45,7 @@ class DatabaseModule {
       }
 
       try {
-        await _backupCorruptedDatabase(dir.path);
+        await backupCorruptedDatabase(dir.path);
       } catch (backupError) {
         if (kDebugMode) {
           debugPrint('[DatabaseModule] Database backup failed: $backupError');
@@ -106,7 +106,8 @@ class DatabaseModule {
 
   /// Backs up corrupted or incompatible database files to a timestamped backup file
   /// and removes the old database file to allow clean recovery.
-  static Future<void> _backupCorruptedDatabase(String directoryPath) async {
+  @visibleForTesting
+  static Future<void> backupCorruptedDatabase(String directoryPath) async {
     final dbFile = File('$directoryPath/$dbName.isar');
     final lockFile = File('$directoryPath/$dbName.isar.lock');
 
