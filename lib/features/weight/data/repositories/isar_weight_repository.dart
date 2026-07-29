@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:isar_community/isar.dart';
 import 'package:pure_weight/features/weight/data/models/weight_entry_model.dart';
 import 'package:pure_weight/features/weight/domain/entities/weight_entry.dart';
@@ -22,41 +23,90 @@ class IsarWeightRepository implements WeightRepository {
 
   @override
   Future<List<WeightEntry>> getAllEntries() async {
-    final models = await isar.weightEntryModels
-        .where()
-        .sortByDateTimeDesc()
-        .findAll();
-    return models.map((m) => m.toEntity()).toList();
+    try {
+      final models = await isar.weightEntryModels
+          .where()
+          .sortByDateTimeDesc()
+          .findAll();
+      return models.map((m) => m.toEntity()).toList();
+    } on IsarError catch (e, stack) {
+      if (kDebugMode) {
+        debugPrint(
+          '[IsarWeightRepository] getAllEntries IsarError: $e\n$stack',
+        );
+      }
+      throw Exception('Database read failure: ${e.message}');
+    } catch (e) {
+      rethrow;
+    }
   }
 
   @override
   Future<void> addEntry(WeightEntry entry) async {
-    final model = WeightEntryModel.fromEntity(entry);
-    await isar.writeTxn(() async {
-      await isar.weightEntryModels.put(model);
-    });
+    try {
+      final model = WeightEntryModel.fromEntity(entry);
+      await isar.writeTxn(() async {
+        await isar.weightEntryModels.put(model);
+      });
+    } on IsarError catch (e, stack) {
+      if (kDebugMode) {
+        debugPrint('[IsarWeightRepository] addEntry IsarError: $e\n$stack');
+      }
+      throw Exception('Database write failure: ${e.message}');
+    } catch (e) {
+      rethrow;
+    }
   }
 
   @override
   Future<void> deleteEntry(int id) async {
-    await isar.writeTxn(() async {
-      await isar.weightEntryModels.delete(id);
-    });
+    try {
+      await isar.writeTxn(() async {
+        await isar.weightEntryModels.delete(id);
+      });
+    } on IsarError catch (e, stack) {
+      if (kDebugMode) {
+        debugPrint('[IsarWeightRepository] deleteEntry IsarError: $e\n$stack');
+      }
+      throw Exception('Database delete failure: ${e.message}');
+    } catch (e) {
+      rethrow;
+    }
   }
 
   @override
   Future<int> bulkImportEntries(List<WeightEntry> entries) async {
-    final models = entries.map(WeightEntryModel.fromEntity).toList();
-    await isar.writeTxn(() async {
-      await isar.weightEntryModels.putAll(models);
-    });
-    return models.length;
+    try {
+      final models = entries.map(WeightEntryModel.fromEntity).toList();
+      await isar.writeTxn(() async {
+        await isar.weightEntryModels.putAll(models);
+      });
+      return models.length;
+    } on IsarError catch (e, stack) {
+      if (kDebugMode) {
+        debugPrint(
+          '[IsarWeightRepository] bulkImportEntries IsarError: $e\n$stack',
+        );
+      }
+      throw Exception('Database bulk import failure: ${e.message}');
+    } catch (e) {
+      rethrow;
+    }
   }
 
   @override
   Future<void> clearAllData() async {
-    await isar.writeTxn(() async {
-      await isar.clear();
-    });
+    try {
+      await isar.writeTxn(() async {
+        await isar.clear();
+      });
+    } on IsarError catch (e, stack) {
+      if (kDebugMode) {
+        debugPrint('[IsarWeightRepository] clearAllData IsarError: $e\n$stack');
+      }
+      throw Exception('Database wipe failure: ${e.message}');
+    } catch (e) {
+      rethrow;
+    }
   }
 }
