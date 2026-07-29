@@ -1,5 +1,9 @@
+import 'dart:convert';
 import 'dart:io';
+import 'dart:math';
+
 import 'package:flutter/foundation.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:isar_community/isar.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:pure_weight/features/weight/data/models/weight_entry_model.dart';
@@ -17,9 +21,34 @@ class DatabaseModule {
   /// The versioned database name. Increment suffix on breaking schema changes.
   static const String dbName = 'pure_weight_v1';
 
+  static const String _encryptionKeyKey = 'isar_encryption_key';
+
+  static final FlutterSecureStorage _secureStorage =
+      const FlutterSecureStorage();
+
+  /// Retrieves or generates a 256-bit AES encryption key from secure storage.
+  static Future<Uint8List> _getEncryptionKey() async {
+    final stored = await _secureStorage.read(key: _encryptionKeyKey);
+    if (stored != null) {
+      return Uint8List.fromList(base64Decode(stored));
+    }
+    final key = Uint8List.fromList(
+      List<int>.generate(32, (_) => Random.secure().nextInt(256)),
+    );
+    await _secureStorage.write(
+      key: _encryptionKeyKey,
+      value: base64Encode(key),
+    );
+    return key;
+  }
+
   /// Opens and returns an [Isar] instance with all registered schemas.
   ///
   /// Features:
+  /// - Encryption-at-Rest key managed via platform secure storage (isar_community
+  ///   does not yet expose the `encryptionKey` parameter on [Isar.open]; the key
+  ///   is generated and persisted in `flutter_secure_storage` so it can be
+  ///   passed as soon as the upstream library adds support)
   /// - Automatic compactOnLaunch when file exceeds threshold
   /// - Instance reuse check for hot reload / re-init safety
   /// - Graceful fallback & automatic DB backup/reset on schema corruption
@@ -31,6 +60,11 @@ class DatabaseModule {
     if (existingInstance != null && existingInstance.isOpen) {
       return existingInstance;
     }
+
+    // Generate / retrieve a 256-bit AES key for future Encryption-at-Rest.
+    // The key is persisted via flutter_secure_storage and ready to be
+    // passed as encryptionKey when isar_community adds the parameter.
+    await _getEncryptionKey();
 
     try {
       return await _openIsar(dir.path);
