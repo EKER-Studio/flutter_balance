@@ -22,7 +22,10 @@ class IsarWeightRepository implements WeightRepository {
 
   @override
   Future<List<WeightEntry>> getAllEntries() async {
-    final models = await isar.weightEntryModels.where().findAll();
+    final models = await isar.weightEntryModels
+        .where()
+        .sortByDateTimeDesc()
+        .findAll();
     return models.map((m) => m.toEntity()).toList();
   }
 

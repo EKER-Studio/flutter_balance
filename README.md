@@ -8,73 +8,79 @@ Clean Architecture under a Feature-First layout:
 
 ```
 lib/
+├── app.dart                      # Root application widget
+├── main.dart                     # App entry point & database initialization
 ├── core/                         # Cross-cutting concerns
-│   ├── database/                 # Isar initialization & recovery
-│   ├── services/                 # Platform services (biometrics, notifications)
-│   └── utils/                    # Utilities (CSV import/export, unit conversion)
+│   ├── database/                 # Database module & recovery logic
+│   ├── models/                   # Core models (MeasurementUnit)
+│   ├── services/                 # Platform services (BiometricService, NotificationService, BiometricLockObserver)
+│   └── utils/                    # Utilities (CsvExporter, CsvImporter, UnitConverter)
 ├── features/
 │   └── weight/                   # Weight tracking feature
-│       ├── domain/
-│       │   ├── entities/         # WeightEntry entity
-│       │   ├── failures/         # Feature-specific failures
-│       │   └── repositories/     # WeightRepository interface
 │       ├── data/
-│       │   ├── models/           # Isar weight model
+│       │   ├── models/           # WeightEntryModel (Isar schema model)
 │       │   └── repositories/     # IsarWeightRepository implementation
+│       ├── domain/
+│       │   ├── entities/         # WeightEntry domain entity
+│       │   ├── repositories/     # WeightRepository interface contract
+│       │   └── weight_error_type.dart # Typed domain error enum
 │       └── presentation/
-│           ├── bloc/             # WeightBloc, events & states
-│           └── widgets/          # Weight-specific UI components
+│           ├── bloc/             # WeightBloc, WeightEvent & WeightState
+│           ├── screens/          # WeightDashboardScreen
+│           └── widgets/          # AddWeightSheet, HealthSummaryCard
+├── l10n/                         # Localization ARB assets (app_en.arb, app_pl.arb)
 └── presentation/
-    ├── bloc/                     # App-wide BLoCs (settings)
-    ├── screens/                  # App screens (settings)
-    ├── theme/                    # Material 3 theme definitions
-    └── widgets/                  # Shared widgets (chart, layouts)
+    ├── bloc/settings/            # AppSettingsBloc, AppSettingsEvent & AppSettingsState
+    ├── core/                     # ClampedLayout responsive wrapper
+    ├── screens/                  # SettingsScreen, BiometricShieldScreen
+    ├── theme/                    # AppTheme (Light & Dark Material 3)
+    └── widgets/                  # WeightChart
 ```
 
 ### Design Principles
 
-- **Local-first**: All data persists on-device using Isar (`isar_community`). No cloud sync.
-- **Feature-First**: Each feature encapsulates its own domain, data, and presentation layers.
-- **Dependency Inversion**: Domain defines repository interfaces; data layer implements them.
-- **State Management**: `flutter_bloc` with `hydrated_bloc` for persistent state across restarts.
-- **Dependency Injection**: Manual — `BlocProvider` and `RepositoryProvider.value` in the widget tree.
+- **Local-first**: All weight entries persist on-device using Isar (`isar_community`). No cloud dependency.
+- **Feature-First**: Features encapsulate data, domain, and presentation boundaries.
+- **Dependency Inversion**: Domain defines repository contracts; data layer provides concrete implementations.
+- **State Management**: `flutter_bloc` with `hydrated_bloc` for persistent application configuration.
+- **Dependency Injection**: `get_it` and `injectable` form standardized core infrastructure baselines.
 
 ## Tech Stack
 
 | Category | Package | Purpose |
 |----------|---------|---------|
-| **Framework** | Flutter 3.44 | Cross-platform UI |
-| **State Management** | flutter_bloc, hydrated_bloc | Reactive state with persistence |
-| **Database** | isar_community | Local NoSQL database |
-| **Charts** | fl_chart | Weight trend visualization |
-| **Biometrics** | local_auth | Device biometric lock |
-| **File Sharing** | share_plus | CSV export via system share sheet |
-| **CSV Parsing** | csv | CSV import/export |
-| **Localization** | flutter_localizations + gen-l10n | i18n support (EN, PL) |
-| **Notifications** | flutter_local_notifications | Daily weight reminders |
+| **Framework** | Flutter 3.44 | Cross-platform UI framework |
+| **State Management** | flutter_bloc, hydrated_bloc | BLoC pattern with automated JSON hydration |
+| **Dependency Injection** | get_it, injectable | Service locator and DI infrastructure baselines |
+| **Database** | isar_community | High-performance local NoSQL database |
+| **Charts** | fl_chart | Interactive weight history visualizations |
+| **Biometrics** | local_auth | Native biometric authentication (Face ID, Touch ID, fingerprint) |
+| **File Sharing** | share_plus | System share sheet integration for CSV exports |
+| **CSV Handling** | csv | CSV encoding and parsing pipeline |
+| **Localization** | flutter_localizations + gen-l10n | Internationalization (English, Polish) |
+| **Notifications** | flutter_local_notifications | Local scheduled daily reminders |
 
 ## Key Features
 
 ### Weight Tracking
-- Log daily weight entries with notes.
-- View trends via interactive `fl_chart` line chart with daily aggregation.
-- Filter data by time period (7d, 30d, 365d, all).
-- Statistical summary (average, min, max, latest, trend).
-- BMI auto-calculation from persisted height.
+- Log daily weight measurements with optional text notes.
+- Interactive line charts powered by `fl_chart` with daily entry aggregation.
+- Filter data by timeframe (`Week`, `Month`, `Year`, `All`).
+- Summary metrics: lowest weight, highest weight, and goal delta.
+- Automated BMI calculation from configured height.
 
 ### Data Management
-- **CSV Import**: Import weight data from CSV files via `CsvImporter`.
-- **CSV Export**: Export weight data to CSV via `CsvExporter` and share via the system share sheet.
-  - Column layout: `ID`, `Date`, `Weight (kg)`, `Note`
-- **Unit Conversion**: Toggle between metric (kg) and imperial (lbs) units.
+- **CSV Import**: Batch import entries via `CsvImporter` with row validation.
+- **CSV Export**: Export data via `CsvExporter` and share through system share sheets.
+  - Column format: `ID`, `Date`, `Weight (kg)`, `Note`
+- **Unit System**: Seamless switching between Metric (kg, cm) and Imperial (lb, ft/in).
 
-### Settings
-- Light / Dark / System theme selection.
-- Weight unit preference (kg / lbs).
+### Settings & Security
+- Theme options: Light, Dark, or System mode.
 - Height configuration (cm).
-- Target weight goal setting.
-- Notification preferences with configurable reminder time.
-- Biometric lock toggle (Face ID / Touch ID / fingerprint).
+- Target weight goal tracking.
+- Daily reminder notifications with custom time selection.
+- Native biometric lock shielding on app cold start and backgrounding.
 
 ## Getting Started
 
@@ -98,33 +104,22 @@ flutter run
 
 ## Project Conventions
 
-### Database
-- Isar schema versioning uses the `pure_weight_v1` naming convention.
-- The `DatabaseModule` handles initialization, lifecycle integrity checks, and automatic backup recovery on corruption.
-- On initialization failure the module creates a timestamped `.isar.bak` backup, removes stale lock files, and re-opens a fresh database.
-- `compactOnLaunch` is enabled (threshold: 10 MB, ratio: 1.25).
+### Database Engine
+- Isar schema configuration uses the `pure_weight_v1` store name.
+- `DatabaseModule` manages initialization, integrity verification, and fallback database recovery (`.isar.bak`).
+- Native database-level sorting via `.sortByDateTimeDesc()` runs directly inside Isar query streams.
 
 ### State Management
-- **`WeightBloc`**: Handles weight entry CRUD and time-period filtering.
+- **`WeightBloc`**: Controls weight entries and chart period filtering.
   - Events: `SubscribeToWeightChanges`, `UpdateUserHeight`, `AddWeight`, `DeleteWeight`, `ChangeChartFilter`, `RefreshWeightData`
   - States: `WeightInitial`, `WeightLoading`, `WeightLoaded`, `WeightError`
-- **`AppSettingsBloc`**: Manages persistent app settings via `HydratedBloc`.
+- **`AppSettingsBloc`**: Manages user configuration via `HydratedBloc`.
   - Events: `UpdateTheme`, `UpdateMeasurementUnit`, `UpdateHeight`, `TargetWeightChanged`, `UpdateBiometricLock`, `ToggleNotifications`, `UpdateNotificationTime`, `SetLocked`
-  - State: `AppSettingsState` (hydrated to disk automatically).
-
-### Repository Stream
-- `IsarWeightRepository.watchAllEntries()` returns a reactive stream with native database-level sorting via `.sortByDateTimeDesc()`, eliminating memory-sorting overhead in the BLoC layer.
-- `_filterEntries` in the BLoC uses a memoization cache to avoid redundant daily-aggregation computation on unrelated state mutations.
-
-### Dependency Injection
-No service locator or code-generated DI (no GetIt, Injectable, or Riverpod). Dependencies are wired manually:
-1. `DatabaseModule.initialize()` creates the `Isar` instance.
-2. `IsarWeightRepository(isar: isar)` wraps it.
-3. `App(repository: repository)` passes it via `RepositoryProvider.value`.
-4. `BlocProvider` provides `AppSettingsBloc` and `WeightBloc`.
+  - State: `AppSettingsState` (persisted to storage).
 
 ### Code Generation
-Only Isar collection models use `build_runner` to generate `.g.dart` files. No Freezed or Injectable annotations are present.
+
+Generate code for Isar schema models:
 
 ```bash
 dart run build_runner build
@@ -132,13 +127,21 @@ dart run build_runner build
 
 ## Testing
 
+Run full verification suite:
+
+```bash
+./before_push.sh
+```
+
+Or execute unit tests directly:
+
 ```bash
 flutter test
 ```
 
-## CSV Format
+## CSV Specifications
 
-Import and export use these 4 columns:
+CSV import and export conform to the following 4-column layout:
 
 ```csv
 ID,Date,Weight (kg),Note
@@ -146,16 +149,16 @@ ID,Date,Weight (kg),Note
 2,2026-07-28 08:00,73.0,
 ```
 
-- `ID`: Auto-increment primary key.
-- `Date`: ISO 8601 format (`yyyy-MM-dd HH:mm`).
-- `Weight (kg): Numeric value in kilograms.
-- `Note`: Optional user-provided text.
+- `ID`: Auto-increment integer primary key.
+- `Date`: Timestamp formatted as `yyyy-MM-dd HH:mm`.
+- `Weight (kg)`: Numeric value in kilograms (1 decimal place).
+- `Note`: Optional user note string.
 
-## Biometric Lock Setup
+## Biometric Security Setup
 
-**iOS**: Add `NSFaceIDUsageDescription` to `ios/Runner/Info.plist`.
+**iOS**: Include `NSFaceIDUsageDescription` in `ios/Runner/Info.plist`.
 
-**Android**: Add `<uses-permission android:name="android.permission.USE_BIOMETRIC" />` to `android/app/src/main/AndroidManifest.xml`.
+**Android**: Declare `<uses-permission android:name="android.permission.USE_BIOMETRIC" />` in `android/app/src/main/AndroidManifest.xml`.
 
 ## License
 

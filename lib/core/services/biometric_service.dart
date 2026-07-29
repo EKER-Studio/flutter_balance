@@ -63,7 +63,7 @@ class BiometricService {
       return await _authentication.authenticate(
         localizedReason: localizedReason,
         biometricOnly: true,
-        persistAcrossBackgrounding: true,
+        persistAcrossBackgrounding: false,
       );
     } catch (e, stack) {
       if (kDebugMode) {
