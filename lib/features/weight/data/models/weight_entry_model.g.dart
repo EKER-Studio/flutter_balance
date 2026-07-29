@@ -35,7 +35,21 @@ const WeightEntryModelSchema = CollectionSchema(
   deserialize: _weightEntryModelDeserialize,
   deserializeProp: _weightEntryModelDeserializeProp,
   idName: r'id',
-  indexes: {},
+  indexes: {
+    r'dateTime': IndexSchema(
+      id: -138851979697481250,
+      name: r'dateTime',
+      unique: false,
+      replace: false,
+      properties: [
+        IndexPropertySchema(
+          name: r'dateTime',
+          type: IndexType.value,
+          caseSensitive: false,
+        ),
+      ],
+    ),
+  },
   links: {},
   embeddedSchemas: {},
 
@@ -126,6 +140,14 @@ extension WeightEntryModelQueryWhereSort
       return query.addWhereClause(const IdWhereClause.any());
     });
   }
+
+  QueryBuilder<WeightEntryModel, WeightEntryModel, QAfterWhere> anyDateTime() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(
+        const IndexWhereClause.any(indexName: r'dateTime'),
+      );
+    });
+  }
 }
 
 extension WeightEntryModelQueryWhere
@@ -191,6 +213,106 @@ extension WeightEntryModelQueryWhere
           lower: lowerId,
           includeLower: includeLower,
           upper: upperId,
+          includeUpper: includeUpper,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<WeightEntryModel, WeightEntryModel, QAfterWhereClause>
+  dateTimeEqualTo(DateTime dateTime) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(
+        IndexWhereClause.equalTo(indexName: r'dateTime', value: [dateTime]),
+      );
+    });
+  }
+
+  QueryBuilder<WeightEntryModel, WeightEntryModel, QAfterWhereClause>
+  dateTimeNotEqualTo(DateTime dateTime) {
+    return QueryBuilder.apply(this, (query) {
+      if (query.whereSort == Sort.asc) {
+        return query
+            .addWhereClause(
+              IndexWhereClause.between(
+                indexName: r'dateTime',
+                lower: [],
+                upper: [dateTime],
+                includeUpper: false,
+              ),
+            )
+            .addWhereClause(
+              IndexWhereClause.between(
+                indexName: r'dateTime',
+                lower: [dateTime],
+                includeLower: false,
+                upper: [],
+              ),
+            );
+      } else {
+        return query
+            .addWhereClause(
+              IndexWhereClause.between(
+                indexName: r'dateTime',
+                lower: [dateTime],
+                includeLower: false,
+                upper: [],
+              ),
+            )
+            .addWhereClause(
+              IndexWhereClause.between(
+                indexName: r'dateTime',
+                lower: [],
+                upper: [dateTime],
+                includeUpper: false,
+              ),
+            );
+      }
+    });
+  }
+
+  QueryBuilder<WeightEntryModel, WeightEntryModel, QAfterWhereClause>
+  dateTimeGreaterThan(DateTime dateTime, {bool include = false}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(
+        IndexWhereClause.between(
+          indexName: r'dateTime',
+          lower: [dateTime],
+          includeLower: include,
+          upper: [],
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<WeightEntryModel, WeightEntryModel, QAfterWhereClause>
+  dateTimeLessThan(DateTime dateTime, {bool include = false}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(
+        IndexWhereClause.between(
+          indexName: r'dateTime',
+          lower: [],
+          upper: [dateTime],
+          includeUpper: include,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<WeightEntryModel, WeightEntryModel, QAfterWhereClause>
+  dateTimeBetween(
+    DateTime lowerDateTime,
+    DateTime upperDateTime, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(
+        IndexWhereClause.between(
+          indexName: r'dateTime',
+          lower: [lowerDateTime],
+          includeLower: includeLower,
+          upper: [upperDateTime],
           includeUpper: includeUpper,
         ),
       );

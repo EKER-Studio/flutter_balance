@@ -16,6 +16,7 @@ class WeightEntryModel {
   double weightKg = 0.0;
 
   /// Timestamp of the measurement.
+  @Index()
   late DateTime dateTime;
 
   /// Optional user-provided note.

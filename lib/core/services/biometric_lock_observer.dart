@@ -65,9 +65,13 @@ class BiometricLockObserver with WidgetsBindingObserver {
     }
   }
 
-  /// Removes this observer and cancels the settings stream subscription.
-  void removeThisObserver() {
+  /// Disposes this observer and cancels the settings stream subscription.
+  void dispose() {
     _subscription?.cancel();
+    _subscription = null;
     WidgetsBinding.instance.removeObserver(this);
   }
+
+  /// Removes this observer and cancels the settings stream subscription.
+  void removeThisObserver() => dispose();
 }

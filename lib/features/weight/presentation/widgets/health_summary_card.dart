@@ -34,6 +34,12 @@ class HealthSummaryCard extends StatelessWidget {
           weightUnit,
           localization,
         );
+        final goalSubtitle = _goalSubtitle(
+          targetWeight,
+          latestWeightKg,
+          weightUnit,
+          localization,
+        );
 
         return Card(
           elevation: 0,
@@ -122,6 +128,13 @@ class HealthSummaryCard extends StatelessWidget {
                         style: Theme.of(context).textTheme.titleMedium
                             ?.copyWith(fontWeight: FontWeight.bold),
                       ),
+                      const SizedBox(height: 8),
+                      Text(
+                        goalSubtitle,
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -186,5 +199,27 @@ class HealthSummaryCard extends StatelessWidget {
     final unitLabel = unit == MeasurementUnit.imperial ? 'lb' : 'kg';
 
     return '${displayed.toStringAsFixed(1)} $unitLabel ${l10n.toTarget}';
+  }
+
+  String _goalSubtitle(
+    double? targetWeight,
+    double currentWeightKg,
+    MeasurementUnit unit,
+    AppLocalizations l10n,
+  ) {
+    if (targetWeight == null) {
+      return l10n.setGoalMotivation;
+    }
+
+    final difference = currentWeightKg - targetWeight;
+    if (difference <= 0.05 && difference >= -0.05) {
+      return l10n.rightOnTarget;
+    }
+
+    final displayed = unit == MeasurementUnit.imperial
+        ? kgToLbs(targetWeight)
+        : targetWeight;
+    final unitLabel = unit == MeasurementUnit.imperial ? 'lbs' : 'kg';
+    return '${l10n.targetLabel} ${displayed.toStringAsFixed(1)} $unitLabel';
   }
 }

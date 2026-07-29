@@ -4,8 +4,6 @@ import 'package:pure_weight/l10n/app_localizations.dart';
 import 'package:pure_weight/core/utils/unit_converter.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:pure_weight/core/database/database_module.dart';
 import 'package:pure_weight/core/services/biometric_service.dart';
 import 'package:pure_weight/core/utils/csv_importer.dart';
 import 'package:pure_weight/features/weight/domain/repositories/weight_repository.dart';
@@ -16,7 +14,6 @@ import 'package:pure_weight/presentation/bloc/settings/app_settings_event.dart';
 import 'package:pure_weight/presentation/bloc/settings/app_settings_state.dart';
 import 'package:pure_weight/presentation/bloc/settings/app_theme_mode.dart';
 import 'package:pure_weight/core/models/measurement_unit.dart';
-import 'package:get_it/get_it.dart';
 import 'dart:io';
 
 /// Dialog for setting the height.
@@ -493,19 +490,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   Future<void> _wipeDatabase(BuildContext context) async {
     try {
-      final dir = await getApplicationDocumentsDirectory();
-      final dbPath = '${dir.path}/${DatabaseModule.dbName}';
-
-      for (final suffix in ['', '.index', '.wal', '.shm']) {
-        final file = File('$dbPath$suffix');
-        if (await file.exists()) {
-          await file.delete();
-        }
-      }
-
+      await context.read<WeightRepository>().clearAllEntries();
       await HydratedBloc.storage.clear();
 
       if (context.mounted) {
+        context.read<WeightBloc>().add(const RefreshWeightData());
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(AppLocalizations.of(context).dataWipedSuccess),
@@ -527,6 +516,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   Future<void> _importCsv(BuildContext context) async {
+    final repository = context.read<WeightRepository>();
     try {
       final result = await FilePicker.pickFiles(
         type: FileType.custom,
@@ -557,7 +547,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
         return;
       }
 
-      final repository = GetIt.I<WeightRepository>();
       final importedCount = await repository.bulkImportEntries(entries);
 
       if (context.mounted) {

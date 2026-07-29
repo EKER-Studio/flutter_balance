@@ -49,6 +49,13 @@ class IsarWeightRepository implements WeightRepository {
     return models.length;
   }
 
+  @override
+  Future<void> clearAllEntries() async {
+    await isar.writeTxn(() async {
+      await isar.clear();
+    });
+  }
+
   /// Removes any stored BMI values by re-writing all entries without BMI.
   ///
   /// This reads all entries, clears the collection and re-inserts entries

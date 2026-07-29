@@ -12,7 +12,6 @@ import 'package:pure_weight/presentation/bloc/settings/app_settings_state.dart';
 import 'package:pure_weight/presentation/core/clamped_layout.dart';
 import 'package:pure_weight/presentation/screens/settings_screen.dart';
 import 'package:pure_weight/presentation/bloc/settings/app_settings_bloc.dart';
-import 'package:pure_weight/presentation/bloc/settings/bmi_category.dart';
 import 'package:pure_weight/features/weight/presentation/widgets/health_summary_card.dart';
 import 'package:pure_weight/presentation/widgets/weight_chart.dart';
 
@@ -458,100 +457,5 @@ class _WeightDashboardScreenState extends State<WeightDashboardScreen> {
         ),
       ],
     );
-  }
-}
-
-/// Card displaying the latest weight entry summary and BMI interpretation.
-class WeightSummaryCard extends StatelessWidget {
-  /// The latest [WeightEntry] to display.
-  final WeightEntry entry;
-
-  /// Creates [WeightSummaryCard] with the given [entry].
-  const WeightSummaryCard({super.key, required this.entry});
-
-  @override
-  Widget build(BuildContext context) {
-    final settingsState = context.watch<AppSettingsBloc>().state;
-    final heightCm = settingsState.height;
-    final double? bmi = heightCm > 0
-        ? WeightEntry.calculateBmi(entry.weightKg, heightCm / 100)
-        : null;
-    final category = bmi != null ? _bmiCategory(bmi) : null;
-    final localization = AppLocalizations.of(context);
-    final interpretation = category != null
-        ? _interpretBmi(category, localization)
-        : null;
-    final bmiColor = bmi != null ? _bmiColor(bmi) : null;
-
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Row(
-          children: [
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    '${entry.weightKg.toStringAsFixed(1)} kg',
-                    style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    AppLocalizations.of(context).latestMeasurement,
-                    style: Theme.of(context).textTheme.bodySmall,
-                  ),
-                  if (bmi != null) ...[
-                    const SizedBox(height: 8),
-                    Text(
-                      bmi.toStringAsFixed(1),
-                      style: Theme.of(context).textTheme.headlineMedium
-                          ?.copyWith(
-                            color: bmiColor,
-                            fontWeight: FontWeight.bold,
-                          ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      interpretation ?? '',
-                      style: Theme.of(context).textTheme.bodySmall,
-                    ),
-                  ],
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  BmiCategory _bmiCategory(double bmi) {
-    if (bmi < 18.5) return BmiCategory.underweight;
-    if (bmi < 25) return BmiCategory.normal;
-    if (bmi < 30) return BmiCategory.overweight;
-    return BmiCategory.obese;
-  }
-
-  String _interpretBmi(BmiCategory category, AppLocalizations l10n) {
-    switch (category) {
-      case BmiCategory.underweight:
-        return l10n.bmiCategoryDescriptionUnderweight;
-      case BmiCategory.normal:
-        return l10n.bmiCategoryDescriptionNormal;
-      case BmiCategory.overweight:
-        return l10n.bmiCategoryDescriptionOverweight;
-      case BmiCategory.obese:
-        return l10n.bmiCategoryDescriptionObese;
-    }
-  }
-
-  Color _bmiColor(double bmi) {
-    if (bmi < 18.5) return Colors.blue;
-    if (bmi < 25) return Colors.green;
-    if (bmi < 30) return Colors.orange;
-    return Colors.red;
   }
 }

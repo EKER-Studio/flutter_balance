@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:csv/csv.dart';
 import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:pure_weight/features/weight/domain/entities/weight_entry.dart';
@@ -40,9 +41,6 @@ class CsvExporter {
       ]);
     }
 
-    // Manually construct CSV string without quoting fields
-    return rows
-        .map((row) => row.map((field) => field.toString()).join(','))
-        .join('\n');
+    return CsvEncoder(lineDelimiter: '\n').convert(rows);
   }
 }
