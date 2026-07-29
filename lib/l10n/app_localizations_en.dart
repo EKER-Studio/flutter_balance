@@ -306,6 +306,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get errorDeleteEntryFailed => 'Failed to delete weight entry.';
 
   @override
+  String get errorReadFailed => 'Failed to read weight data.';
+
+  @override
+  String get errorWriteFailed => 'Failed to save weight data.';
+
+  @override
+  String get errorWipeFailed => 'Failed to clear weight data.';
+
+  @override
   String get deleteEntryTooltip => 'Delete entry';
 
   @override

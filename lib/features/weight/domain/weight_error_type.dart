@@ -14,4 +14,36 @@ enum WeightErrorType {
 
   /// Indicates a deletion failure while attempting to remove a weight record from the repository.
   deleteEntryFailed,
+
+  /// Indicates a failure while reading weight entries from the database.
+  readFailed,
+
+  /// Indicates a failure while writing weight entries to the database.
+  writeFailed,
+
+  /// Indicates a failure while clearing all data from the database.
+  wipeFailed,
+}
+
+/// Domain exception thrown by [WeightRepository] implementations when a database
+/// operation fails. Carries a [WeightErrorType] so the presentation layer can map
+/// it to a user-facing error state without depending on infrastructure exception types.
+class WeightRepositoryException implements Exception {
+  /// Categorizes the failed operation.
+  final WeightErrorType type;
+
+  /// Human-readable description of what went wrong.
+  final String message;
+
+  /// The originating infrastructure exception, if available.
+  final Object? sourceError;
+
+  const WeightRepositoryException({
+    required this.type,
+    required this.message,
+    this.sourceError,
+  });
+
+  @override
+  String toString() => 'WeightRepositoryException($type): $message';
 }

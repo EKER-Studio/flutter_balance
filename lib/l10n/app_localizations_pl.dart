@@ -309,6 +309,15 @@ class AppLocalizationsPl extends AppLocalizations {
   String get errorDeleteEntryFailed => 'Nie udało się usunąć pomiaru.';
 
   @override
+  String get errorReadFailed => 'Nie udało się odczytać danych wagi.';
+
+  @override
+  String get errorWriteFailed => 'Nie udało się zapisać danych wagi.';
+
+  @override
+  String get errorWipeFailed => 'Nie udało się wyczyścić danych wagi.';
+
+  @override
   String get deleteEntryTooltip => 'Usuń wpis';
 
   @override

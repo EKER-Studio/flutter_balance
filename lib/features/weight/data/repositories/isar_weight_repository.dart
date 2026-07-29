@@ -3,6 +3,7 @@ import 'package:isar_community/isar.dart';
 import 'package:pure_weight/features/weight/data/models/weight_entry_model.dart';
 import 'package:pure_weight/features/weight/domain/entities/weight_entry.dart';
 import 'package:pure_weight/features/weight/domain/repositories/weight_repository.dart';
+import 'package:pure_weight/features/weight/domain/weight_error_type.dart';
 
 /// Isar-backed implementation of [WeightRepository].
 class IsarWeightRepository implements WeightRepository {
@@ -35,9 +36,22 @@ class IsarWeightRepository implements WeightRepository {
           '[IsarWeightRepository] getAllEntries IsarError: $e\n$stack',
         );
       }
-      throw Exception('Database read failure: ${e.message}');
-    } catch (e) {
-      rethrow;
+      throw WeightRepositoryException(
+        type: WeightErrorType.readFailed,
+        message: 'Database read failure: ${e.message}',
+        sourceError: e,
+      );
+    } catch (e, stack) {
+      if (kDebugMode) {
+        debugPrint(
+          '[IsarWeightRepository] getAllEntries unexpected error: $e\n$stack',
+        );
+      }
+      throw WeightRepositoryException(
+        type: WeightErrorType.readFailed,
+        message: 'Unexpected error while reading entries: $e',
+        sourceError: e,
+      );
     }
   }
 
@@ -52,9 +66,22 @@ class IsarWeightRepository implements WeightRepository {
       if (kDebugMode) {
         debugPrint('[IsarWeightRepository] addEntry IsarError: $e\n$stack');
       }
-      throw Exception('Database write failure: ${e.message}');
-    } catch (e) {
-      rethrow;
+      throw WeightRepositoryException(
+        type: WeightErrorType.writeFailed,
+        message: 'Database write failure: ${e.message}',
+        sourceError: e,
+      );
+    } catch (e, stack) {
+      if (kDebugMode) {
+        debugPrint(
+          '[IsarWeightRepository] addEntry unexpected error: $e\n$stack',
+        );
+      }
+      throw WeightRepositoryException(
+        type: WeightErrorType.writeFailed,
+        message: 'Unexpected error while adding entry: $e',
+        sourceError: e,
+      );
     }
   }
 
@@ -68,9 +95,22 @@ class IsarWeightRepository implements WeightRepository {
       if (kDebugMode) {
         debugPrint('[IsarWeightRepository] deleteEntry IsarError: $e\n$stack');
       }
-      throw Exception('Database delete failure: ${e.message}');
-    } catch (e) {
-      rethrow;
+      throw WeightRepositoryException(
+        type: WeightErrorType.deleteEntryFailed,
+        message: 'Database delete failure: ${e.message}',
+        sourceError: e,
+      );
+    } catch (e, stack) {
+      if (kDebugMode) {
+        debugPrint(
+          '[IsarWeightRepository] deleteEntry unexpected error: $e\n$stack',
+        );
+      }
+      throw WeightRepositoryException(
+        type: WeightErrorType.deleteEntryFailed,
+        message: 'Unexpected error while deleting entry: $e',
+        sourceError: e,
+      );
     }
   }
 
@@ -88,9 +128,22 @@ class IsarWeightRepository implements WeightRepository {
           '[IsarWeightRepository] bulkImportEntries IsarError: $e\n$stack',
         );
       }
-      throw Exception('Database bulk import failure: ${e.message}');
-    } catch (e) {
-      rethrow;
+      throw WeightRepositoryException(
+        type: WeightErrorType.writeFailed,
+        message: 'Database bulk import failure: ${e.message}',
+        sourceError: e,
+      );
+    } catch (e, stack) {
+      if (kDebugMode) {
+        debugPrint(
+          '[IsarWeightRepository] bulkImportEntries unexpected error: $e\n$stack',
+        );
+      }
+      throw WeightRepositoryException(
+        type: WeightErrorType.writeFailed,
+        message: 'Unexpected error during bulk import: $e',
+        sourceError: e,
+      );
     }
   }
 
@@ -104,9 +157,22 @@ class IsarWeightRepository implements WeightRepository {
       if (kDebugMode) {
         debugPrint('[IsarWeightRepository] clearAllData IsarError: $e\n$stack');
       }
-      throw Exception('Database wipe failure: ${e.message}');
-    } catch (e) {
-      rethrow;
+      throw WeightRepositoryException(
+        type: WeightErrorType.wipeFailed,
+        message: 'Database wipe failure: ${e.message}',
+        sourceError: e,
+      );
+    } catch (e, stack) {
+      if (kDebugMode) {
+        debugPrint(
+          '[IsarWeightRepository] clearAllData unexpected error: $e\n$stack',
+        );
+      }
+      throw WeightRepositoryException(
+        type: WeightErrorType.wipeFailed,
+        message: 'Unexpected error while clearing data: $e',
+        sourceError: e,
+      );
     }
   }
 }

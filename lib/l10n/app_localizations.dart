@@ -656,6 +656,24 @@ abstract class AppLocalizations {
   /// **'Failed to delete weight entry.'**
   String get errorDeleteEntryFailed;
 
+  /// No description provided for @errorReadFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to read weight data.'**
+  String get errorReadFailed;
+
+  /// No description provided for @errorWriteFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to save weight data.'**
+  String get errorWriteFailed;
+
+  /// No description provided for @errorWipeFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to clear weight data.'**
+  String get errorWipeFailed;
+
   /// No description provided for @deleteEntryTooltip.
   ///
   /// In en, this message translates to:

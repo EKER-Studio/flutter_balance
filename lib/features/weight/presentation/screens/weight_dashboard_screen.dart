@@ -46,6 +46,9 @@ class _WeightDashboardScreenState extends State<WeightDashboardScreen> {
       WeightErrorType.heightNotSet => l10n.errorHeightNotSet,
       WeightErrorType.addEntryFailed => l10n.errorAddEntryFailed,
       WeightErrorType.deleteEntryFailed => l10n.errorDeleteEntryFailed,
+      WeightErrorType.readFailed => l10n.errorReadFailed,
+      WeightErrorType.writeFailed => l10n.errorWriteFailed,
+      WeightErrorType.wipeFailed => l10n.errorWipeFailed,
     };
   }
 
