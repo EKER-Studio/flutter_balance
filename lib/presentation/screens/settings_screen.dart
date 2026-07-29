@@ -48,7 +48,7 @@ class _HeightDialogState extends State<_HeightDialog> {
 
   void _handleSave() {
     FocusScope.of(context).unfocus();
-    final text = _controller.text.trim();
+    final text = _controller.text.trim().replaceAll(',', '.');
     final height = double.tryParse(text);
 
     if (text.isEmpty || height == null || height <= 0) {
@@ -131,7 +131,7 @@ class _TargetWeightDialogState extends State<_TargetWeightDialog> {
 
   void _handleSave() {
     FocusScope.of(context).unfocus();
-    final text = _controller.text.trim();
+    final text = _controller.text.trim().replaceAll(',', '.');
     final weight = double.tryParse(text);
 
     if (text.isEmpty) {

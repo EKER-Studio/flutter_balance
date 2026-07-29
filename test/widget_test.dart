@@ -47,11 +47,7 @@ void main() {
       ),
     );
     // Let the BlocProvider's create method and streams settle
-    await tester.pump();
-    await tester.runAsync(
-      () => Future.delayed(const Duration(milliseconds: 50)),
-    );
-    await tester.pump();
+    await tester.pumpAndSettle();
 
     // Verify UI state
     expect(find.text('PureWeight'), findsOneWidget);

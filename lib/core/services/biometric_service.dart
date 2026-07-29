@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import 'package:local_auth/local_auth.dart';
 
 /// Singleton service for checking biometric hardware availability and authenticating
@@ -65,6 +66,36 @@ class BiometricService {
         biometricOnly: true,
         persistAcrossBackgrounding: false,
       );
+    } on PlatformException catch (e, stack) {
+      if (kDebugMode) {
+        switch (e.code) {
+          case 'LockedOut':
+            debugPrint(
+              '[BiometricService] Biometric authentication locked out: ${e.message}',
+            );
+          case 'PermanentlyLockedOut':
+            debugPrint(
+              '[BiometricService] Biometric authentication permanently locked out: ${e.message}',
+            );
+          case 'NotEnrolled':
+            debugPrint(
+              '[BiometricService] No biometric credentials enrolled: ${e.message}',
+            );
+          case 'PasscodeNotSet':
+            debugPrint(
+              '[BiometricService] Passcode not set on device: ${e.message}',
+            );
+          case 'NotAvailable':
+            debugPrint(
+              '[BiometricService] Biometrics not available: ${e.message}',
+            );
+          default:
+            debugPrint(
+              '[BiometricService] PlatformException (${e.code}): ${e.message}\n$stack',
+            );
+        }
+      }
+      return false;
     } catch (e, stack) {
       if (kDebugMode) {
         debugPrint('[BiometricService] authenticate error: $e\n$stack');
