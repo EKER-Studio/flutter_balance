@@ -595,6 +595,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Unlock'**
   String get unlock;
+
+  /// No description provided for @notifications.
+  ///
+  /// In en, this message translates to:
+  /// **'Notifications'**
+  String get notifications;
+
+  /// No description provided for @dailyReminder.
+  ///
+  /// In en, this message translates to:
+  /// **'Daily Reminder'**
+  String get dailyReminder;
+
+  /// No description provided for @dailyReminderDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Remind me to record weight daily'**
+  String get dailyReminderDesc;
+
+  /// No description provided for @reminderTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Reminder Time'**
+  String get reminderTime;
+
+  /// No description provided for @notificationsDisabledOs.
+  ///
+  /// In en, this message translates to:
+  /// **'Notifications are disabled at the system level.'**
+  String get notificationsDisabledOs;
+
+  /// No description provided for @openSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Settings'**
+  String get openSettings;
 }
 
 class _AppLocalizationsDelegate

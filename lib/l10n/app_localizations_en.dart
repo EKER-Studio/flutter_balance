@@ -273,4 +273,23 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get unlock => 'Unlock';
+
+  @override
+  String get notifications => 'Notifications';
+
+  @override
+  String get dailyReminder => 'Daily Reminder';
+
+  @override
+  String get dailyReminderDesc => 'Remind me to record weight daily';
+
+  @override
+  String get reminderTime => 'Reminder Time';
+
+  @override
+  String get notificationsDisabledOs =>
+      'Notifications are disabled at the system level.';
+
+  @override
+  String get openSettings => 'Settings';
 }

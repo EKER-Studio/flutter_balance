@@ -14,6 +14,7 @@ import 'package:pure_weight/presentation/bloc/settings/app_settings_event.dart';
 import 'package:pure_weight/presentation/bloc/settings/app_settings_state.dart';
 import 'package:pure_weight/presentation/bloc/settings/app_theme_mode.dart';
 import 'package:pure_weight/core/models/measurement_unit.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'dart:io';
 
 /// Dialog for setting the height.
@@ -343,6 +344,40 @@ class _SettingsScreenState extends State<SettingsScreen> {
               const SizedBox(height: 24),
               _buildSection(
                 context,
+                title: l10n.notifications,
+                children: [
+                  SwitchListTile(
+                    secondary: const Icon(
+                      Icons.notifications_outlined,
+                      color: Colors.amber,
+                    ),
+                    title: Text(l10n.dailyReminder),
+                    subtitle: Text(l10n.dailyReminderDesc),
+                    value: state.notificationsEnabled,
+                    onChanged: (value) =>
+                        _handleNotificationToggle(context, value),
+                  ),
+                  if (state.notificationsEnabled)
+                    ListTile(
+                      leading: const Icon(
+                        Icons.access_time_outlined,
+                        color: Colors.amber,
+                      ),
+                      title: Text(l10n.reminderTime),
+                      subtitle: Text(state.notificationTime.format(context)),
+                      trailing: IconButton(
+                        icon: const Icon(Icons.edit_outlined),
+                        onPressed: () => _selectNotificationTime(
+                          context,
+                          state.notificationTime,
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+              const SizedBox(height: 24),
+              _buildSection(
+                context,
                 title: l10n.database,
                 children: [
                   ListTile(
@@ -590,6 +625,53 @@ class _SettingsScreenState extends State<SettingsScreen> {
           ),
         );
       }
+    }
+  }
+
+  Future<void> _handleNotificationToggle(
+    BuildContext context,
+    bool enabled,
+  ) async {
+    final l10n = AppLocalizations.of(context);
+    final bloc = context.read<AppSettingsBloc>();
+
+    if (enabled) {
+      final status = await Permission.notification.request();
+
+      if (status.isDenied ||
+          status.isPermanentlyDenied ||
+          status.isRestricted) {
+        bloc.add(const ToggleNotifications(false));
+
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(l10n.notificationsDisabledOs),
+              behavior: SnackBarBehavior.floating,
+              action: SnackBarAction(
+                label: l10n.openSettings,
+                onPressed: () => openAppSettings(),
+              ),
+            ),
+          );
+        }
+        return;
+      }
+    }
+
+    bloc.add(ToggleNotifications(enabled));
+  }
+
+  Future<void> _selectNotificationTime(
+    BuildContext context,
+    TimeOfDay initialTime,
+  ) async {
+    final newTime = await showTimePicker(
+      context: context,
+      initialTime: initialTime,
+    );
+    if (newTime != null && context.mounted) {
+      context.read<AppSettingsBloc>().add(UpdateNotificationTime(newTime));
     }
   }
 }

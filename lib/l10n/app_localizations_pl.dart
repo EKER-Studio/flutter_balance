@@ -276,4 +276,23 @@ class AppLocalizationsPl extends AppLocalizations {
 
   @override
   String get unlock => 'Odblokuj';
+
+  @override
+  String get notifications => 'Powiadomienia';
+
+  @override
+  String get dailyReminder => 'Codzienne przypomnienie';
+
+  @override
+  String get dailyReminderDesc => 'Przypominaj codziennie o ważeniu';
+
+  @override
+  String get reminderTime => 'Godzina przypomnienia';
+
+  @override
+  String get notificationsDisabledOs =>
+      'Powiadomienia są wyłączone w ustawieniach systemu.';
+
+  @override
+  String get openSettings => 'Ustawienia';
 }

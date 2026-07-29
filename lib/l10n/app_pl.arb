@@ -83,6 +83,12 @@
   "biometricAuthReason": "Zautentyfikuj się, aby uzyskać dostęp do PureWeight",
   "appLocked": "Aplikacja zablokowana",
   "unlock": "Odblokuj",
+  "notifications": "Powiadomienia",
+  "dailyReminder": "Codzienne przypomnienie",
+  "dailyReminderDesc": "Przypominaj codziennie o ważeniu",
+  "reminderTime": "Godzina przypomnienia",
+  "notificationsDisabledOs": "Powiadomienia są wyłączone w ustawieniach systemu.",
+  "openSettings": "Ustawienia",
   "@bmiCategoryDescriptionUnderweight": {
     "description": "Description for the Underweight BMI category"
   },
