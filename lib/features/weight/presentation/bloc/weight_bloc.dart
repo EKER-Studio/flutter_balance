@@ -26,6 +26,8 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
     on<DeleteWeight>(_onDeleteWeight);
     on<ChangeChartFilter>(_onChangeChartFilter);
     on<RefreshWeightData>(_onRefreshWeightData);
+    on<ClearAllWeightData>(_onClearAllWeightData);
+    on<ImportWeightEntries>(_onImportWeightEntries);
   }
 
   List<WeightEntry> _filterEntries(
@@ -266,6 +268,72 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
         filteredEntries: _filterEntries(entries, timePeriod),
       ),
     );
+  }
+
+  Future<void> _onClearAllWeightData(
+    ClearAllWeightData event,
+    Emitter<WeightState> emit,
+  ) async {
+    try {
+      await repository.clearAllData();
+      emit(
+        WeightLoaded(
+          heightCm: state.heightCm,
+          timePeriod: state.timePeriod,
+          entries: const [],
+          filteredEntries: const [],
+        ),
+      );
+    } catch (e, stack) {
+      if (kDebugMode) {
+        debugPrint('[WeightBloc] Failed to clear data: $e\n$stack');
+      }
+      emit(
+        WeightError(
+          errorType: WeightErrorType.wipeFailed,
+          heightCm: state.heightCm,
+          timePeriod: state.timePeriod,
+          entries: const [],
+          filteredEntries: const [],
+        ),
+      );
+    }
+  }
+
+  Future<void> _onImportWeightEntries(
+    ImportWeightEntries event,
+    Emitter<WeightState> emit,
+  ) async {
+    try {
+      await repository.bulkImportEntries(event.entries);
+      final entries = await repository.getAllEntries();
+      emit(
+        WeightLoaded(
+          heightCm: state.heightCm,
+          timePeriod: state.timePeriod,
+          entries: entries,
+          filteredEntries: _filterEntries(entries, state.timePeriod),
+        ),
+      );
+    } catch (e, stack) {
+      if (kDebugMode) {
+        debugPrint('[WeightBloc] Failed to import entries: $e\n$stack');
+      }
+      final currentEntries = switch (state) {
+        WeightLoaded(:final entries) => entries,
+        WeightError(:final entries) => entries,
+        _ => <WeightEntry>[],
+      };
+      emit(
+        WeightError(
+          errorType: WeightErrorType.writeFailed,
+          heightCm: state.heightCm,
+          timePeriod: state.timePeriod,
+          entries: currentEntries,
+          filteredEntries: _filterEntries(currentEntries, state.timePeriod),
+        ),
+      );
+    }
   }
 
   @override

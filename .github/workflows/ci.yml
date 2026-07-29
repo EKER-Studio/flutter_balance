@@ -34,6 +34,14 @@ jobs:
           restore-keys: |
             pub-cache-${{ runner.os }}-
 
+      - name: Cache Build Runner / native artifacts
+        uses: actions/cache@v4
+        with:
+          path: .dart_tool
+          key: dart-tool-${{ runner.os }}-${{ hashFiles('pubspec.lock') }}
+          restore-keys: |
+            dart-tool-${{ runner.os }}-
+
       - name: Install dependencies
         run: flutter pub get
 
@@ -48,6 +56,15 @@ jobs:
 
       - name: Static analysis
         run: flutter analyze
+
+      - name: Import lint layer guardrail
+        run: |
+          OUTPUT="$(dart run import_lint 2>&1 || true)"
+          echo "$OUTPUT"
+          if echo "$OUTPUT" | grep -qE "^[1-9][0-9]* issues? found"; then
+            echo "::error::import_lint reported architecture boundary violations (see log above)."
+            exit 1
+          fi
 
       - name: Run unit and widget tests
         run: flutter test -j 1

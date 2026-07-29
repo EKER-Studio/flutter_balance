@@ -6,7 +6,6 @@ import 'package:file_picker/file_picker.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:pure_weight/core/services/biometric_service.dart';
 import 'package:pure_weight/core/utils/csv_importer.dart';
-import 'package:pure_weight/features/weight/domain/repositories/weight_repository.dart';
 import 'package:pure_weight/features/weight/presentation/bloc/weight_bloc.dart';
 import 'package:pure_weight/features/weight/presentation/bloc/weight_event.dart';
 import 'package:pure_weight/presentation/bloc/settings/app_settings_bloc.dart';
@@ -535,7 +534,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   Future<void> _wipeDatabase(BuildContext context) async {
     try {
-      await context.read<WeightRepository>().clearAllData();
+      context.read<WeightBloc>().add(const ClearAllWeightData());
       await HydratedBloc.storage.clear();
 
       if (context.mounted) {
@@ -561,7 +560,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   Future<void> _importCsv(BuildContext context) async {
-    final repository = context.read<WeightRepository>();
     try {
       final result = await FilePicker.pickFiles(
         type: FileType.custom,
@@ -592,33 +590,24 @@ class _SettingsScreenState extends State<SettingsScreen> {
         return;
       }
 
-      final importedCount = await repository.bulkImportEntries(entries);
-
       if (context.mounted) {
-        if (importedCount > 0) {
-          context.read<WeightBloc>().add(const RefreshWeightData());
+        context.read<WeightBloc>().add(ImportWeightEntries(entries));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              AppLocalizations.of(context).importSuccess(entries.length),
+            ),
+            backgroundColor: Theme.of(context).colorScheme.tertiary,
+          ),
+        );
 
+        if (skippedRows > 0) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(
-                AppLocalizations.of(context).importSuccess(importedCount),
+                AppLocalizations.of(context).skippedRows(skippedRows),
               ),
-              backgroundColor: Theme.of(context).colorScheme.tertiary,
             ),
-          );
-
-          if (skippedRows > 0) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(
-                  AppLocalizations.of(context).skippedRows(skippedRows),
-                ),
-              ),
-            );
-          }
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(AppLocalizations.of(context).importFailed)),
           );
         }
       }

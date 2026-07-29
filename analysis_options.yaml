@@ -32,7 +32,7 @@ analyzer:
 import_lint:
   rules:
     avoid_infrastructure_imports_in_presentation:
-      target: "package:pure_weight/features/**/presentation/**"
-      from: "package:pure_weight/features/**/data/**"
+      target: "package:flutter_bloc_boilerplate/features/**/presentation/**"
+      from: "package:flutter_bloc_boilerplate/features/**/data/**"
       except: []
       severity: error

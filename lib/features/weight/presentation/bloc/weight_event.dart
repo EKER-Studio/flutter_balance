@@ -1,3 +1,5 @@
+import 'package:pure_weight/features/weight/domain/entities/weight_entry.dart';
+
 /// Events dispatched to [WeightBloc].
 sealed class WeightEvent {
   const WeightEvent();
@@ -70,4 +72,19 @@ final class ChangeChartFilter extends WeightEvent {
 final class RefreshWeightData extends WeightEvent {
   /// Creates [RefreshWeightData].
   const RefreshWeightData();
+}
+
+/// Clears all weight entries from the database.
+final class ClearAllWeightData extends WeightEvent {
+  /// Creates [ClearAllWeightData].
+  const ClearAllWeightData();
+}
+
+/// Bulk imports weight entries into the database.
+final class ImportWeightEntries extends WeightEvent {
+  /// Entries to import.
+  final List<WeightEntry> entries;
+
+  /// Creates [ImportWeightEntries] with the given [entries].
+  const ImportWeightEntries(this.entries);
 }
