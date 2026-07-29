@@ -18,6 +18,7 @@ class IsarWeightRepository implements WeightRepository {
     return isar.weightEntryModels
         .where()
         .sortByDateTimeDesc()
+        .limit(500)
         .watch(fireImmediately: true)
         .map((models) => models.map((m) => m.toEntity()).toList());
   }
@@ -28,6 +29,7 @@ class IsarWeightRepository implements WeightRepository {
       final models = await isar.weightEntryModels
           .where()
           .sortByDateTimeDesc()
+          .limit(500)
           .findAll();
       return models.map((m) => m.toEntity()).toList();
     } on IsarError catch (e, stack) {
