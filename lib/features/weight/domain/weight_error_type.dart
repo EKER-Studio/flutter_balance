@@ -38,6 +38,7 @@ class WeightRepositoryException implements Exception {
   /// The originating infrastructure exception, if available.
   final Object? sourceError;
 
+  /// Creates a repository exception with error [type], descriptive [message], and optional [sourceError].
   const WeightRepositoryException({
     required this.type,
     required this.message,
