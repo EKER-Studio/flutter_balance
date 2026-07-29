@@ -531,7 +531,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       final fileContent = await File(filePath).readAsString();
 
       // Parse CSV and obtain both entries and skipped rows count.
-      final csvResult = CsvImporter.parse(fileContent);
+      final csvResult = await CsvImporter.parse(fileContent);
       final entries = csvResult.entries;
       final skippedRows = csvResult.skippedRows;
 

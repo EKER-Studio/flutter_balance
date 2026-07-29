@@ -1,3 +1,4 @@
+import 'dart:isolate';
 import 'package:intl/intl.dart';
 import 'package:pure_weight/features/weight/domain/entities/weight_entry.dart';
 
@@ -19,13 +20,19 @@ class CsvImporter {
     DateFormat('dd/MM/yyyy'),
   ];
 
-  /// Parses [csvContent] and returns a record of parsed entries and skipped
-  /// row count.
+  /// Asynchronously parses [csvContent] on a background isolate to prevent UI thread jank.
   ///
-  /// [entries] contains the successfully parsed rows; [skippedRows] counts
-  /// rows that failed validation. Throws [FormatException] if the CSV has
-  /// no valid header row.
-  static ({List<WeightEntry> entries, int skippedRows}) parse(
+  /// Passes the raw [csvContent] string across the isolate boundary and returns
+  /// the parsed [WeightEntry] entities and count of skipped invalid rows.
+  /// Throws [FormatException] if the CSV has no valid header row or is corrupted.
+  static Future<({List<WeightEntry> entries, int skippedRows})> parse(
+    String csvContent,
+  ) async {
+    return Isolate.run(() => _parseSync(csvContent));
+  }
+
+  /// Internal synchronous parsing logic executed within the background isolate.
+  static ({List<WeightEntry> entries, int skippedRows}) _parseSync(
     String csvContent,
   ) {
     final lines = csvContent
@@ -35,7 +42,7 @@ class CsvImporter {
         .toList();
 
     if (lines.isEmpty) {
-      throw FormatException('CSV content is empty');
+      throw const FormatException('CSV content is empty');
     }
 
     // Detect delimiter from header row
@@ -46,7 +53,9 @@ class CsvImporter {
     final columnIndex = _findColumnIndices(headerFields);
 
     if (columnIndex['data'] == null || columnIndex['waga'] == null) {
-      throw FormatException('CSV missing required columns: "data" and "waga"');
+      throw const FormatException(
+        'CSV missing required columns: "data" and "waga"',
+      );
     }
 
     final entries = <WeightEntry>[];
