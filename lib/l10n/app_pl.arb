@@ -81,6 +81,8 @@
   "bmiCategoryDescriptionOverweight": "BMI między 25,0 a 29,9 — niewielki nadmiar wagi",
   "bmiCategoryDescriptionObese": "BMI 30,0 lub więcej — warto skonsultować się ze specjalistą",
   "biometricAuthReason": "Zautentyfikuj się, aby uzyskać dostęp do PureWeight",
+  "appLocked": "Aplikacja zablokowana",
+  "unlock": "Odblokuj",
   "@bmiCategoryDescriptionUnderweight": {
     "description": "Description for the Underweight BMI category"
   },

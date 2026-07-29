@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:pure_weight/core/services/biometric_service.dart';
+import 'package:pure_weight/l10n/app_localizations.dart';
 import 'package:pure_weight/presentation/bloc/settings/app_settings_bloc.dart';
-import 'package:pure_weight/presentation/bloc/settings/app_settings_state.dart';
 import 'package:pure_weight/presentation/bloc/settings/app_settings_event.dart';
+import 'package:pure_weight/presentation/bloc/settings/app_settings_state.dart';
 
 /// Full-screen overlay shown when the app is locked due to a failed
 /// biometric authentication attempt.
@@ -12,13 +13,14 @@ class BiometricShieldScreen extends StatelessWidget {
   /// Creates a [BiometricShieldScreen].
   const BiometricShieldScreen({super.key});
 
-  Future<void> _handleUnlock(AppSettingsBloc bloc) async {
+  Future<void> _handleUnlock(BuildContext context, AppSettingsBloc bloc) async {
     try {
       if (!bloc.state.isLocked) {
         bloc.add(const SetLocked(true));
       }
+      final l10n = AppLocalizations.of(context);
       final authenticated = await BiometricService.instance.authenticate(
-        localizedReason: 'Authenticate to access PureWeight',
+        localizedReason: l10n.biometricAuthReason,
       );
       if (authenticated) {
         bloc.add(const SetLocked(false));
@@ -38,6 +40,7 @@ class BiometricShieldScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bloc = context.read<AppSettingsBloc>();
+    final l10n = AppLocalizations.of(context);
     return BlocBuilder<AppSettingsBloc, AppSettingsState>(
       builder: (context, state) {
         return Scaffold(
@@ -55,12 +58,12 @@ class BiometricShieldScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 24),
                   Text(
-                    'App Locked',
+                    l10n.appLocked,
                     style: Theme.of(context).textTheme.headlineSmall,
                   ),
                   const SizedBox(height: 12),
                   Text(
-                    'Authenticate to access PureWeight',
+                    l10n.biometricAuthReason,
                     textAlign: TextAlign.center,
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                       color: Theme.of(context).colorScheme.onSurfaceVariant,
@@ -68,9 +71,9 @@ class BiometricShieldScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 32),
                   FilledButton.icon(
-                    onPressed: () => _handleUnlock(bloc),
+                    onPressed: () => _handleUnlock(context, bloc),
                     icon: const Icon(Icons.fingerprint),
-                    label: const Text('Unlock'),
+                    label: Text(l10n.unlock),
                   ),
                 ],
               ),

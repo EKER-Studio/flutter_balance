@@ -22,7 +22,7 @@ void main() {
     final rows = csv.split('\n');
 
     expect(rows.length, greaterThanOrEqualTo(3));
-    expect(rows[0], 'ID,Data,Waga (kg),Notatka');
+    expect(rows[0], 'ID,Date,Weight (kg),Note');
     expect(rows[1], '1,2026-07-24 15:00,70.5,After lunch');
     expect(rows[2], '2,2026-07-25 08:30,69.0,');
   });

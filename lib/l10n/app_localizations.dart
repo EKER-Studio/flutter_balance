@@ -583,6 +583,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Authenticate to access PureWeight'**
   String get biometricAuthReason;
+
+  /// No description provided for @appLocked.
+  ///
+  /// In en, this message translates to:
+  /// **'App Locked'**
+  String get appLocked;
+
+  /// No description provided for @unlock.
+  ///
+  /// In en, this message translates to:
+  /// **'Unlock'**
+  String get unlock;
 }
 
 class _AppLocalizationsDelegate

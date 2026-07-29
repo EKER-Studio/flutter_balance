@@ -81,6 +81,8 @@
   "bmiCategoryDescriptionOverweight": "BMI between 25.0 and 29.9 — slight excess weight",
   "bmiCategoryDescriptionObese": "BMI 30.0 or higher — consider consulting a professional",
   "biometricAuthReason": "Authenticate to access PureWeight",
+  "appLocked": "App Locked",
+  "unlock": "Unlock",
   "@bmiCategoryDescriptionUnderweight": {
     "description": "Description for the Underweight BMI category"
   },

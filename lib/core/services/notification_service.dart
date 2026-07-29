@@ -71,7 +71,7 @@ class NotificationService {
     String title = 'Time to weigh yourself! ⚖️',
     String body = 'Log your weight today and stay on track with PureWeight.',
   }) async {
-    assert(_initialized, 'Call initialize() before scheduleDailyReminder().');
+    if (!_initialized) return;
     try {
       await _plugin.cancel(id: _dailyReminderId);
       final tz.TZDateTime scheduledDate = _nextInstanceOfTime(time);
@@ -105,6 +105,7 @@ class NotificationService {
 
   /// Cancels the active daily reminder, if any.
   Future<void> cancelDailyReminder() async {
+    if (!_initialized) return;
     try {
       await _plugin.cancel(id: _dailyReminderId);
     } catch (e) {

@@ -67,12 +67,10 @@ class IsarWeightRepository implements WeightRepository {
   /// removed the `bmi` property.
   Future<void> removeStoredBmiFromDb() async {
     final entries = await getAllEntries();
+    final models = entries.map(WeightEntryModel.fromEntity).toList();
     await isar.writeTxn(() async {
       await isar.weightEntryModels.where().deleteAll();
-      for (final entry in entries) {
-        final model = WeightEntryModel.fromEntity(entry);
-        await isar.weightEntryModels.put(model);
-      }
+      await isar.weightEntryModels.putAll(models);
     });
   }
 }

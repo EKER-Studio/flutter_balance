@@ -267,4 +267,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get biometricAuthReason => 'Authenticate to access PureWeight';
+
+  @override
+  String get appLocked => 'App Locked';
+
+  @override
+  String get unlock => 'Unlock';
 }

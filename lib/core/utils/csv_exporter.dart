@@ -27,7 +27,7 @@ class CsvExporter {
   /// Generates a CSV formatted string from the given [entries].
   static String generateCsv(List<WeightEntry> entries, [double? heightCm]) {
     final List<List<dynamic>> rows = [
-      ['ID', 'Data', 'Waga (kg)', 'Notatka'],
+      ['ID', 'Date', 'Weight (kg)', 'Note'],
     ];
 
     final dateFormat = DateFormat('yyyy-MM-dd HH:mm');

@@ -1,4 +1,5 @@
 import 'package:hydrated_bloc/hydrated_bloc.dart';
+import 'package:pure_weight/core/services/notification_service.dart';
 import 'package:pure_weight/presentation/bloc/settings/app_settings_event.dart';
 import 'package:pure_weight/presentation/bloc/settings/app_settings_state.dart';
 
@@ -33,18 +34,30 @@ class AppSettingsBloc extends HydratedBloc<AppSettingsEvent, AppSettingsState> {
     emit(state.copyWith(height: event.height));
   }
 
-  void _onToggleNotifications(
+  Future<void> _onToggleNotifications(
     ToggleNotifications event,
     Emitter<AppSettingsState> emit,
-  ) {
+  ) async {
     emit(state.copyWith(notificationsEnabled: event.enabled));
+    if (event.enabled) {
+      await NotificationService.instance.scheduleDailyReminder(
+        state.notificationTime,
+      );
+    } else {
+      await NotificationService.instance.cancelDailyReminder();
+    }
   }
 
-  void _onUpdateNotificationTime(
+  Future<void> _onUpdateNotificationTime(
     UpdateNotificationTime event,
     Emitter<AppSettingsState> emit,
-  ) {
+  ) async {
     emit(state.copyWith(notificationTime: event.notificationTime));
+    if (state.notificationsEnabled) {
+      await NotificationService.instance.scheduleDailyReminder(
+        event.notificationTime,
+      );
+    }
   }
 
   void _onTargetWeightChanged(
