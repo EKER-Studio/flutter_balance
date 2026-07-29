@@ -51,7 +51,7 @@ void main() {
       build: () => WeightBloc(repository: repository),
       act: (bloc) async {
         bloc.add(const SubscribeToWeightChanges());
-        await Future.delayed(Duration.zero);
+        await Future(() {});
         streamController.add([]);
       },
       expect: () => [

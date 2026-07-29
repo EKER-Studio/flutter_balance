@@ -35,7 +35,7 @@ void main() {
 
       // Emit stream update
       lockStreamController.add(true);
-      await Future.delayed(Duration.zero);
+      await pumpEventQueue();
       expect(lockStateEmitted, isFalse);
 
       // Dispose cleanly
@@ -69,7 +69,7 @@ void main() {
 
         // Trigger resumed state
         observer.didChangeAppLifecycleState(AppLifecycleState.resumed);
-        await Future.delayed(Duration.zero);
+        await pumpEventQueue();
 
         observer.dispose();
       },
