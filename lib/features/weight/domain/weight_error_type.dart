@@ -47,3 +47,6 @@ class WeightRepositoryException implements Exception {
   @override
   String toString() => 'WeightRepositoryException($type): $message';
 }
+
+/// Alias for [WeightRepositoryException] representing generic database persistence failures.
+typedef WeightDatabaseFailure = WeightRepositoryException;

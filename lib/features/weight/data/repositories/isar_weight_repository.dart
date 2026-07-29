@@ -4,7 +4,6 @@ import 'package:encrypt/encrypt.dart' as enc;
 import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:isar_community/isar.dart';
-import 'package:pure_weight/core/database/database_module.dart';
 import 'package:pure_weight/features/weight/data/models/weight_entry_model.dart';
 import 'package:pure_weight/features/weight/domain/entities/weight_entry.dart';
 import 'package:pure_weight/features/weight/domain/repositories/weight_repository.dart';
@@ -24,20 +23,38 @@ class IsarWeightRepository implements WeightRepository {
   /// Creates a repository backed by [isar] and managed secure storage.
   ///
   /// Takes an optional [secureStorage] handler.
-  /// Takes an optional [_encryptionKey] for testing override.
+  /// Takes an optional [encryptionKey] for testing override.
   IsarWeightRepository({
     required this.isar,
     this.secureStorage = const FlutterSecureStorage(),
-    Uint8List? encryptionKey,
+    this._encryptionKey,
   });
 
-  Future<Uint8List> _getOrLoadKey() async {
+  Future<Uint8List> _getOrLoadKey({bool isWrite = false}) async {
     if (_encryptionKey != null) {
       return _encryptionKey!;
     }
-    final key = await DatabaseModule.getEncryptionKey();
-    _encryptionKey = key;
-    return key;
+    String? stored;
+    try {
+      stored = await secureStorage.read(key: 'isar_encryption_key');
+    } catch (e, stack) {
+      if (kDebugMode) {
+        debugPrint(
+          '[IsarWeightRepository] Error reading key from secureStorage: $e\n$stack',
+        );
+      }
+    }
+
+    if (stored != null && stored.isNotEmpty) {
+      final key = Uint8List.fromList(base64Decode(stored));
+      _encryptionKey = key;
+      return key;
+    }
+
+    throw WeightRepositoryException(
+      type: isWrite ? WeightErrorType.writeFailed : WeightErrorType.readFailed,
+      message: 'Missing or inaccessible encryption key',
+    );
   }
 
   String _encrypt(String plainText, Uint8List keyBytes) {
@@ -94,7 +111,7 @@ class IsarWeightRepository implements WeightRepository {
             '[IsarWeightRepository] Decryption failed for note (id: ${model.id}): $e\n$stack',
           );
         }
-        note = null;
+        note = '[Decryption Error]';
       }
     }
 
@@ -129,7 +146,7 @@ class IsarWeightRepository implements WeightRepository {
         .limit(500)
         .watch(fireImmediately: true)
         .asyncMap((models) async {
-          final key = await _getOrLoadKey();
+          final key = await _getOrLoadKey(isWrite: false);
           return models.map((m) => _modelToEntity(m, key)).toList();
         });
   }
@@ -137,13 +154,15 @@ class IsarWeightRepository implements WeightRepository {
   @override
   Future<List<WeightEntry>> getAllEntries() async {
     try {
-      final key = await _getOrLoadKey();
+      final key = await _getOrLoadKey(isWrite: false);
       final models = await isar.weightEntryModels
           .where()
           .sortByDateTimeDesc()
           .limit(500)
           .findAll();
       return models.map((m) => _modelToEntity(m, key)).toList();
+    } on WeightRepositoryException {
+      rethrow;
     } on IsarError catch (e, stack) {
       if (kDebugMode) {
         debugPrint(
@@ -172,11 +191,13 @@ class IsarWeightRepository implements WeightRepository {
   @override
   Future<void> addEntry(WeightEntry entry) async {
     try {
-      final key = await _getOrLoadKey();
+      final key = await _getOrLoadKey(isWrite: true);
       final model = _entityToModel(entry, key);
       await isar.writeTxn(() async {
         await isar.weightEntryModels.put(model);
       });
+    } on WeightRepositoryException {
+      rethrow;
     } on IsarError catch (e, stack) {
       if (kDebugMode) {
         debugPrint('[IsarWeightRepository] addEntry IsarError: $e\n$stack');
@@ -232,12 +253,14 @@ class IsarWeightRepository implements WeightRepository {
   @override
   Future<int> bulkImportEntries(List<WeightEntry> entries) async {
     try {
-      final key = await _getOrLoadKey();
+      final key = await _getOrLoadKey(isWrite: true);
       final models = entries.map((e) => _entityToModel(e, key)).toList();
       await isar.writeTxn(() async {
         await isar.weightEntryModels.putAll(models);
       });
       return models.length;
+    } on WeightRepositoryException {
+      rethrow;
     } on IsarError catch (e, stack) {
       if (kDebugMode) {
         debugPrint(

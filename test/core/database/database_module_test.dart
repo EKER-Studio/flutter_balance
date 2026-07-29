@@ -99,11 +99,12 @@ void main() {
       'create record, watch broadcast, physical write check, reopen',
       () async {
         try {
-          await Isar.open(
+          final testDb = await Isar.open(
             [WeightEntryModelSchema],
             directory: tempDir.path,
             name: 'test_integration_db',
-          ).then((isar) => isar.close());
+          );
+          await testDb.close();
         } catch (_) {
           markTestSkipped(
             'Isar native library not available in this environment',
@@ -141,7 +142,7 @@ void main() {
         final fileSize = File(dbFilePath).lengthSync();
         expect(fileSize, greaterThan(0));
 
-        isar.close();
+        await isar.close();
 
         final reopenedIsar = await Isar.open(
           [WeightEntryModelSchema],
@@ -158,7 +159,7 @@ void main() {
           'test_encrypted_payload',
         );
 
-        reopenedIsar.close();
+        await reopenedIsar.close();
       },
     );
   });
