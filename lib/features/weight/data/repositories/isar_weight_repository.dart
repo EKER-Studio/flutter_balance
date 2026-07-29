@@ -50,11 +50,14 @@ class IsarWeightRepository implements WeightRepository {
   }
 
   @override
-  Future<void> clearAllEntries() async {
+  Future<void> clearAllData() async {
     await isar.writeTxn(() async {
       await isar.clear();
     });
   }
+
+  @override
+  Future<void> clearAllEntries() => clearAllData();
 
   /// Removes any stored BMI values by re-writing all entries without BMI.
   ///

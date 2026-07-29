@@ -8,6 +8,7 @@ import 'package:pure_weight/core/services/biometric_lock_observer.dart';
 import 'package:pure_weight/core/services/notification_service.dart';
 import 'package:pure_weight/features/weight/data/repositories/isar_weight_repository.dart';
 import 'package:pure_weight/presentation/bloc/settings/app_settings_bloc.dart';
+import 'package:pure_weight/presentation/bloc/settings/app_settings_event.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -27,7 +28,11 @@ Future<void> main() async {
   final settingsBloc = AppSettingsBloc();
 
   // BiometricLockObserver registers itself with WidgetsBinding Observer in constructor
-  BiometricLockObserver(settingsBloc: settingsBloc);
+  BiometricLockObserver(
+    isBiometricLockEnabled: () => settingsBloc.state.isBiometricLockEnabled,
+    lockEnabledStream: settingsBloc.stream.map((s) => s.isBiometricLockEnabled),
+    onLockStateChanged: (locked) => settingsBloc.add(SetLocked(locked)),
+  );
 
   runApp(
     BlocProvider(

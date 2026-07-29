@@ -490,7 +490,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   Future<void> _wipeDatabase(BuildContext context) async {
     try {
-      await context.read<WeightRepository>().clearAllEntries();
+      await context.read<WeightRepository>().clearAllData();
       await HydratedBloc.storage.clear();
 
       if (context.mounted) {

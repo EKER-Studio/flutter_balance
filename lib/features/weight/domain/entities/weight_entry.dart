@@ -1,11 +1,7 @@
-import 'package:pure_weight/core/utils/unit_converter.dart';
-import 'package:pure_weight/core/models/measurement_unit.dart';
-
 /// Domain entity representing an individual body weight measurement.
 ///
 /// Encapsulates core domain data for weight tracking, including weight in kilograms,
-/// measurement timestamp,
-/// and an optional user note.
+/// measurement timestamp, and an optional user note.
 class WeightEntry {
   /// Unique database primary key identifier, defaulting to 0 for unpersisted entries.
   final int id;
@@ -36,12 +32,4 @@ class WeightEntry {
   static double calculateBmi(double weightKg, double heightMeters) {
     return weightKg / (heightMeters * heightMeters);
   }
-}
-
-/// Utility formatting extensions on [WeightEntry] for presentation conversion.
-extension WeightEntryFormatting on WeightEntry {
-  /// Formats [weightKg] into a display string based on the active [unit] measurement system.
-  ///
-  /// Converts raw kilogram value to [unit] system (kilograms or pounds) and appends the appropriate unit symbol suffix.
-  String formattedWeight(MeasurementUnit unit) => formatWeight(weightKg, unit);
 }

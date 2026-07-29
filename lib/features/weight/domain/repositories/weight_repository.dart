@@ -32,8 +32,11 @@ abstract class WeightRepository {
   /// Returns a [Future] completing with the total number of [WeightEntry] items imported.
   Future<int> bulkImportEntries(List<WeightEntry> entries);
 
-  /// Removes all stored weight entries from the persistent storage.
+  /// Removes all stored weight data from persistent storage.
   ///
   /// Returns a [Future] that completes when all entries are deleted.
+  Future<void> clearAllData();
+
+  /// Legacy helper method for clearing entries.
   Future<void> clearAllEntries();
 }
