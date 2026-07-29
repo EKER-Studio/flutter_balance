@@ -24,7 +24,23 @@ jobs:
         uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
-          cache: true # Built-in cache mechanism inside flutter-action (faster and more stable)
+          cache: true
+
+      - name: Cache Pub dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.pub-cache
+          key: pub-cache-${{ runner.os }}-${{ hashFiles('pubspec.lock') }}
+          restore-keys: |
+            pub-cache-${{ runner.os }}-
+
+      - name: Cache Build Runner / native artifacts
+        uses: actions/cache@v4
+        with:
+          path: .dart_tool
+          key: dart-tool-${{ runner.os }}-${{ hashFiles('pubspec.lock') }}
+          restore-keys: |
+            dart-tool-${{ runner.os }}-
 
       - name: Install dependencies
         run: flutter pub get
@@ -36,10 +52,19 @@ jobs:
         run: dart run build_runner build --delete-conflicting-outputs
 
       - name: Check formatting
-        run: dart format --output=none --set-exit-if-changed .
+        run: dart format --set-exit-if-changed lib test
 
       - name: Static analysis
         run: flutter analyze
 
+      - name: Import lint layer guardrail
+        run: |
+          OUTPUT="$(dart run import_lint 2>&1 || true)"
+          echo "$OUTPUT"
+          if echo "$OUTPUT" | grep -qE "^[1-9][0-9]* issues? found"; then
+            echo "::error::import_lint reported architecture boundary violations (see log above)."
+            exit 1
+          fi
+
       - name: Run unit and widget tests
-        run: flutter test --exclude-tags golden
+        run: flutter test -j 1

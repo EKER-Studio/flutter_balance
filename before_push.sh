@@ -76,7 +76,18 @@ log_step "5" "Executing static analysis (Linter)..."
 # ------------------------------------------------------------------------------
 # Evaluates project architecture against analysis_options.yaml rules
 flutter analyze
-log_success "Static analysis passed with zero warnings or errors."
+# NOTE: `dart run import_lint` exits 0 even when it reports violations
+# (observed directly: "N issues found." followed by a zero exit code,
+# regardless of any `severity: error` setting on the rule). Do not rely on
+# its exit code. Instead, parse its own reported summary line, which is the
+# one part of its output we've verified to be stable and truthful.
+IMPORT_LINT_OUTPUT="$(dart run import_lint 2>&1 || true)"
+echo "$IMPORT_LINT_OUTPUT"
+if echo "$IMPORT_LINT_OUTPUT" | grep -qE "^[1-9][0-9]* issues? found"; then
+  echo -e "${RED}❌ [FAIL] import_lint reported architecture boundary violations (see above). Aborting push.${NC}"
+  exit 1
+fi
+log_success "Static analysis and import_lint layer boundaries passed with zero warnings or errors."
 
 # ------------------------------------------------------------------------------
 log_step "6" "Running complete unit and widget test suites..."

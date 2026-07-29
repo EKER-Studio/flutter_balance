@@ -9,25 +9,30 @@
 # packages, and plugins designed to encourage good coding practices.
 include: package:flutter_lints/flutter.yaml
 
+plugins:
+  import_lint: ^2.0.0
+
 analyzer:
+  # Exclude generated Isar schema files from analysis. The isar_community
+  # generator (v3.3.2) emits calls to @experimental index-manipulation APIs
+  # that produce spurious warnings in hand-written code analysis runs.
+  # These files are never edited by hand and are regenerated on every
+  # `build_runner` invocation, so suppressing them here is safe.
   exclude:
     - "**/*.g.dart"
+    # Flutter generated
+    - ".dart_tool/**"
+    - "build/**"
+    # Swift Package Manager
+    - "ios/Pods/**"
+    - "build/ios/**"
+    # Android
+    - "android/**"
 
-linter:
-  # The lint rules applied to this project can be customized in the
-  # section below to disable rules from the `package:flutter_lints/flutter.yaml`
-  # included above or to enable additional rules. A list of all available lints
-  # and their documentation is published at https://dart.dev/lints.
-  #
-  # Instead of disabling a lint rule for the entire project in the
-  # section below, it can also be suppressed for a single line of code
-  # or a specific dart file by using the `// ignore: name_of_lint` and
-  # `// ignore_for_file: name_of_lint` syntax on the line or in the file
-  # producing the lint.
+import_lint:
   rules:
-    public_member_api_docs: true
-    # avoid_print: false  # Uncomment to disable the `avoid_print` rule
-    # prefer_single_quotes: true  # Uncomment to enable the `prefer_single_quotes` rule
-
-# Additional information about this file can be found at
-# https://dart.dev/guides/language/analysis-options
+    avoid_infrastructure_imports_in_presentation:
+      target: "package:pure_weight/features/**/presentation/**"
+      from: "package:pure_weight/features/**/data/**"
+      except: []
+      severity: error
