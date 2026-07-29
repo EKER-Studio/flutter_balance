@@ -20,7 +20,9 @@ class BiometricService {
     try {
       return await _authentication.canCheckBiometrics;
     } catch (e, stack) {
-      debugPrint('[BiometricService] isAvailable error: $e\n$stack');
+      if (kDebugMode) {
+        debugPrint('[BiometricService] isAvailable error: $e\n$stack');
+      }
       return false;
     }
   }
@@ -36,7 +38,9 @@ class BiometricService {
       if (!available) return false;
       return await _authentication.isDeviceSupported();
     } catch (e, stack) {
-      debugPrint('[BiometricService] isSupported error: $e\n$stack');
+      if (kDebugMode) {
+        debugPrint('[BiometricService] isSupported error: $e\n$stack');
+      }
       return false;
     }
   }
@@ -62,7 +66,9 @@ class BiometricService {
         persistAcrossBackgrounding: true,
       );
     } catch (e, stack) {
-      debugPrint('[BiometricService] authenticate error: $e\n$stack');
+      if (kDebugMode) {
+        debugPrint('[BiometricService] authenticate error: $e\n$stack');
+      }
       return false;
     }
   }

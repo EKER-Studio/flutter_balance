@@ -127,9 +127,11 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
         );
       }
     } catch (error, stackTrace) {
-      debugPrint(
-        '[WeightBloc] Initial stream fetch failed: $error\n$stackTrace',
-      );
+      if (kDebugMode) {
+        debugPrint(
+          '[WeightBloc] Initial stream fetch failed: $error\n$stackTrace',
+        );
+      }
       if (!emit.isDone) {
         emit(
           WeightError(
@@ -161,9 +163,11 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
             }
           },
           onError: (Object error, StackTrace stackTrace) {
-            debugPrint(
-              '[WeightBloc] Database stream emitted an infrastructure error: $error\n$stackTrace',
-            );
+            if (kDebugMode) {
+              debugPrint(
+                '[WeightBloc] Database stream emitted an infrastructure error: $error\n$stackTrace',
+              );
+            }
             if (!emit.isDone) {
               emit(
                 WeightError(
@@ -226,7 +230,9 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
     try {
       await repository.addEntry(entry);
     } catch (e, stack) {
-      debugPrint('[WeightBloc] Failed to add entry: $e\n$stack');
+      if (kDebugMode) {
+        debugPrint('[WeightBloc] Failed to add entry: $e\n$stack');
+      }
       emit(
         WeightError(
           errorType: WeightErrorType.addEntryFailed,
@@ -246,7 +252,9 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
     try {
       await repository.deleteEntry(event.id);
     } catch (e, stack) {
-      debugPrint('[WeightBloc] Failed to delete entry: $e\n$stack');
+      if (kDebugMode) {
+        debugPrint('[WeightBloc] Failed to delete entry: $e\n$stack');
+      }
       final entries = switch (state) {
         WeightLoaded(:final entries) => entries,
         WeightError(:final entries) => entries,

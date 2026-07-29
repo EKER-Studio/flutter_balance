@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -60,7 +61,9 @@ class NotificationService {
 
       _initialized = true;
     } catch (e) {
-      debugPrint('NotificationService.initialize error: $e');
+      if (kDebugMode) {
+        debugPrint('NotificationService.initialize error: $e');
+      }
     }
   }
 
@@ -104,7 +107,9 @@ class NotificationService {
         matchDateTimeComponents: DateTimeComponents.time,
       );
     } catch (e) {
-      debugPrint('NotificationService.scheduleDailyReminder error: $e');
+      if (kDebugMode) {
+        debugPrint('NotificationService.scheduleDailyReminder error: $e');
+      }
     }
   }
 
@@ -117,7 +122,9 @@ class NotificationService {
     try {
       await _plugin.cancel(id: _dailyReminderId);
     } catch (e) {
-      debugPrint('NotificationService.cancelDailyReminder error: $e');
+      if (kDebugMode) {
+        debugPrint('NotificationService.cancelDailyReminder error: $e');
+      }
     }
   }
 

@@ -200,9 +200,12 @@ class SettingsScreen extends StatefulWidget {
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
+  late final Future<bool> _isBiometricAvailable;
+
   @override
   void initState() {
     super.initState();
+    _isBiometricAvailable = BiometricService.instance.isAvailable();
   }
 
   @override
@@ -311,7 +314,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 title: l10n.security,
                 children: [
                   FutureBuilder<bool>(
-                    future: BiometricService.instance.isAvailable(),
+                    future: _isBiometricAvailable,
                     builder: (context, snapshot) {
                       final isAvailable = snapshot.data ?? false;
                       final isLoading =
@@ -459,28 +462,29 @@ class _SettingsScreenState extends State<SettingsScreen> {
     };
   }
 
-  void _showHeightDialog(BuildContext context) async {
-    final currentHeight = context.read<AppSettingsBloc>().state.height;
+  void _showHeightDialog(BuildContext dialogContext) async {
+    final currentHeight = dialogContext.read<AppSettingsBloc>().state.height;
 
     final result = await showDialog<double>(
-      context: context,
+      context: dialogContext,
       builder: (ctx) => _HeightDialog(currentValue: currentHeight),
     );
 
     if (result == null || !mounted) return;
 
-    // ignore: use_build_context_synchronously
     context.read<AppSettingsBloc>().add(UpdateHeight(result));
-    // ignore: use_build_context_synchronously
     context.read<WeightBloc>().add(UpdateUserHeight(result));
   }
 
-  void _showTargetWeightDialog(BuildContext context) async {
-    final currentTarget = context.read<AppSettingsBloc>().state.targetWeight;
-    final unit = context.read<AppSettingsBloc>().state.measurementUnit;
+  void _showTargetWeightDialog(BuildContext dialogContext) async {
+    final currentTarget = dialogContext
+        .read<AppSettingsBloc>()
+        .state
+        .targetWeight;
+    final unit = dialogContext.read<AppSettingsBloc>().state.measurementUnit;
 
     final result = await showDialog<double>(
-      context: context,
+      context: dialogContext,
       builder: (ctx) =>
           _TargetWeightDialog(currentValue: currentTarget, unit: unit),
     );
@@ -488,10 +492,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
     if (!mounted) return;
 
     if (result != null) {
-      // ignore: use_build_context_synchronously
       context.read<AppSettingsBloc>().add(TargetWeightChanged(result));
     } else {
-      // ignore: use_build_context_synchronously
       context.read<AppSettingsBloc>().add(const TargetWeightChanged(null));
     }
   }
@@ -601,7 +603,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
           if (skippedRows > 0) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: Text('Skipped $skippedRows rows'),
+                content: Text(
+                  AppLocalizations.of(context).skippedRows(skippedRows),
+                ),
                 backgroundColor: Colors.orange,
               ),
             );

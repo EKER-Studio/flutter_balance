@@ -83,8 +83,10 @@ class WeightChart extends StatelessWidget {
         const SizedBox(height: 16),
         Semantics(
           container: true,
-          label:
-              'Weight history line chart for ${_getPeriodName(period, l10n)} period. Latest recorded weight is $formattedLatest.',
+          label: l10n.chartSemanticsTitle(
+            _getPeriodName(period, l10n),
+            formattedLatest,
+          ),
           child: SizedBox(
             height: chartHeight,
             child: Padding(
@@ -263,7 +265,7 @@ class WeightChart extends StatelessWidget {
           child: Semantics(
             button: true,
             selected: isSelected,
-            label: '$label filter',
+            label: '$label ${l10n.chartSemanticsFilter}',
             child: ChoiceChip(
               label: Text(label),
               selected: isSelected,

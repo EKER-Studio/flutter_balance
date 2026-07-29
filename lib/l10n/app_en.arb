@@ -93,6 +93,10 @@
   "errorHeightNotSet": "Set your height first.",
   "errorAddEntryFailed": "Failed to add weight entry.",
   "errorDeleteEntryFailed": "Failed to delete weight entry.",
+  "deleteEntryTooltip": "Delete entry",
+  "skippedRows": "Skipped {count} rows",
+  "chartSemanticsTitle": "Weight history line chart for {period} period. Latest recorded weight is {weight}.",
+  "chartSemanticsFilter": "filter",
   "@bmiCategoryDescriptionUnderweight": {
     "description": "Description for the Underweight BMI category"
   },

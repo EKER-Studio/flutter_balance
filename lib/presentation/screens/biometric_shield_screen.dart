@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -30,7 +31,9 @@ class BiometricShieldScreen extends StatelessWidget {
         }
       }
     } catch (e, stack) {
-      debugPrint('[BiometricShieldScreen] Authentication threw: $e\n$stack');
+      if (kDebugMode) {
+        debugPrint('[BiometricShieldScreen] Authentication threw: $e\n$stack');
+      }
       if (!bloc.state.isLocked) {
         bloc.add(const SetLocked(true));
       }

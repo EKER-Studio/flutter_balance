@@ -93,6 +93,10 @@
   "errorHeightNotSet": "Najpierw ustaw swój wzrost.",
   "errorAddEntryFailed": "Nie udało się dodać pomiaru.",
   "errorDeleteEntryFailed": "Nie udało się usunąć pomiaru.",
+  "deleteEntryTooltip": "Usuń wpis",
+  "skippedRows": "Pominięto {count} wierszy",
+  "chartSemanticsTitle": "Wykres liniowy historii wagi dla okresu {period}. Ostatni zarejestrowany wynik to {weight}.",
+  "chartSemanticsFilter": "filtr",
   "@bmiCategoryDescriptionUnderweight": {
     "description": "Description for the Underweight BMI category"
   },

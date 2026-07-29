@@ -307,4 +307,20 @@ class AppLocalizationsPl extends AppLocalizations {
 
   @override
   String get errorDeleteEntryFailed => 'Nie udało się usunąć pomiaru.';
+
+  @override
+  String get deleteEntryTooltip => 'Usuń wpis';
+
+  @override
+  String skippedRows(Object count) {
+    return 'Pominięto $count wierszy';
+  }
+
+  @override
+  String chartSemanticsTitle(Object period, Object weight) {
+    return 'Wykres liniowy historii wagi dla okresu $period. Ostatni zarejestrowany wynik to $weight.';
+  }
+
+  @override
+  String get chartSemanticsFilter => 'filtr';
 }

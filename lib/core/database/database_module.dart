@@ -35,24 +35,32 @@ class DatabaseModule {
     try {
       return await _openIsar(dir.path);
     } catch (e, stack) {
-      debugPrint('[DatabaseModule] Failed to open Isar database: $e\n$stack');
-      debugPrint(
-        '[DatabaseModule] Attempting database backup and safe recovery reset...',
-      );
+      if (kDebugMode) {
+        debugPrint('[DatabaseModule] Failed to open Isar database: $e\n$stack');
+      }
+      if (kDebugMode) {
+        debugPrint(
+          '[DatabaseModule] Attempting database backup and safe recovery reset...',
+        );
+      }
 
       try {
         await _backupCorruptedDatabase(dir.path);
       } catch (backupError) {
-        debugPrint('[DatabaseModule] Database backup failed: $backupError');
+        if (kDebugMode) {
+          debugPrint('[DatabaseModule] Database backup failed: $backupError');
+        }
       }
 
       // Re-attempt opening freshly initialized database after recovery cleanup
       try {
         return await _openIsar(dir.path);
       } catch (retryError, retryStack) {
-        debugPrint(
-          '[DatabaseModule] Recovery re-opening failed: $retryError\n$retryStack',
-        );
+        if (kDebugMode) {
+          debugPrint(
+            '[DatabaseModule] Recovery re-opening failed: $retryError\n$retryStack',
+          );
+        }
         rethrow;
       }
     }
@@ -66,16 +74,20 @@ class DatabaseModule {
     try {
       final instance = Isar.getInstance(dbName);
       if (instance == null || !instance.isOpen) {
-        debugPrint(
-          '[DatabaseModule] Isar instance invalid or closed on app resumption. Re-initializing...',
-        );
+        if (kDebugMode) {
+          debugPrint(
+            '[DatabaseModule] Isar instance invalid or closed on app resumption. Re-initializing...',
+          );
+        }
         return await initialize();
       }
       return instance;
     } catch (e, stack) {
-      debugPrint(
-        '[DatabaseModule] Error verifying Isar instance integrity on resumption: $e\n$stack',
-      );
+      if (kDebugMode) {
+        debugPrint(
+          '[DatabaseModule] Error verifying Isar instance integrity on resumption: $e\n$stack',
+        );
+      }
       return await initialize();
     }
   }
@@ -104,9 +116,11 @@ class DatabaseModule {
           '$directoryPath/${dbName}_corrupted_$timestamp.isar.bak';
       await dbFile.copy(backupPath);
       await dbFile.delete();
-      debugPrint(
-        '[DatabaseModule] Corrupted database backed up to $backupPath',
-      );
+      if (kDebugMode) {
+        debugPrint(
+          '[DatabaseModule] Corrupted database backed up to $backupPath',
+        );
+      }
     }
 
     if (await lockFile.exists()) {

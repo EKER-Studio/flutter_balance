@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:pure_weight/l10n/app_localizations.dart';
 import 'package:pure_weight/core/utils/csv_exporter.dart';
 import 'package:pure_weight/features/weight/domain/entities/weight_entry.dart';
 import 'package:pure_weight/features/weight/presentation/bloc/weight_bloc.dart';
@@ -8,7 +9,6 @@ import 'package:pure_weight/features/weight/presentation/bloc/weight_state.dart'
 import 'package:pure_weight/presentation/bloc/settings/app_settings_event.dart';
 import 'package:pure_weight/features/weight/domain/weight_error_type.dart';
 import 'package:pure_weight/features/weight/presentation/widgets/add_weight_sheet.dart';
-import 'package:pure_weight/l10n/app_localizations.dart';
 import 'package:pure_weight/presentation/bloc/settings/app_settings_state.dart';
 import 'package:pure_weight/presentation/core/clamped_layout.dart';
 import 'package:pure_weight/presentation/screens/settings_screen.dart';
@@ -379,7 +379,7 @@ class _WeightDashboardScreenState extends State<WeightDashboardScreen> {
           ),
           trailing: IconButton(
             icon: const Icon(Icons.delete_outline),
-            tooltip: 'Delete entry',
+            tooltip: AppLocalizations.of(context).deleteEntryTooltip,
             onPressed: () {
               context.read<WeightBloc>().add(DeleteWeight(entry.id));
             },

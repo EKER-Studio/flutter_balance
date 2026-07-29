@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:pure_weight/core/database/database_module.dart';
 import 'package:pure_weight/core/services/biometric_service.dart';
@@ -46,9 +47,11 @@ class BiometricLockObserver with WidgetsBindingObserver {
     try {
       await DatabaseModule.ensureInstanceIntegrity();
     } catch (e, stack) {
-      debugPrint(
-        '[BiometricLockObserver] Database integrity check on resumption failed: $e\n$stack',
-      );
+      if (kDebugMode) {
+        debugPrint(
+          '[BiometricLockObserver] Database integrity check on resumption failed: $e\n$stack',
+        );
+      }
     }
   }
 
@@ -66,13 +69,17 @@ class BiometricLockObserver with WidgetsBindingObserver {
       if (authenticated) {
         onLockStateChanged(false);
       } else {
-        debugPrint(
-          '[BiometricLockObserver] Authentication returned false — locking app.',
-        );
+        if (kDebugMode) {
+          debugPrint(
+            '[BiometricLockObserver] Authentication returned false — locking app.',
+          );
+        }
         onLockStateChanged(true);
       }
     } catch (e, stack) {
-      debugPrint('[BiometricLockObserver] Authentication threw: $e\n$stack');
+      if (kDebugMode) {
+        debugPrint('[BiometricLockObserver] Authentication threw: $e\n$stack');
+      }
       onLockStateChanged(true);
     }
   }

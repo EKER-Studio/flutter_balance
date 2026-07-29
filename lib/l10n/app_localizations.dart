@@ -655,6 +655,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Failed to delete weight entry.'**
   String get errorDeleteEntryFailed;
+
+  /// No description provided for @deleteEntryTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete entry'**
+  String get deleteEntryTooltip;
+
+  /// No description provided for @skippedRows.
+  ///
+  /// In en, this message translates to:
+  /// **'Skipped {count} rows'**
+  String skippedRows(Object count);
+
+  /// No description provided for @chartSemanticsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Weight history line chart for {period} period. Latest recorded weight is {weight}.'**
+  String chartSemanticsTitle(Object period, Object weight);
+
+  /// No description provided for @chartSemanticsFilter.
+  ///
+  /// In en, this message translates to:
+  /// **'filter'**
+  String get chartSemanticsFilter;
 }
 
 class _AppLocalizationsDelegate

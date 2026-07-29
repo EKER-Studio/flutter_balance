@@ -304,4 +304,20 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get errorDeleteEntryFailed => 'Failed to delete weight entry.';
+
+  @override
+  String get deleteEntryTooltip => 'Delete entry';
+
+  @override
+  String skippedRows(Object count) {
+    return 'Skipped $count rows';
+  }
+
+  @override
+  String chartSemanticsTitle(Object period, Object weight) {
+    return 'Weight history line chart for $period period. Latest recorded weight is $weight.';
+  }
+
+  @override
+  String get chartSemanticsFilter => 'filter';
 }
