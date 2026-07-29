@@ -33,7 +33,9 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
     List<WeightEntry> entries,
     TimePeriod period,
   ) {
-    if (identical(entries, _memoEntries) && period == _memoPeriod) {
+    if ((identical(entries, _memoEntries) ||
+            listEquals(entries, _memoEntries)) &&
+        period == _memoPeriod) {
       return _memoResult;
     }
     final filtered = switch (period) {

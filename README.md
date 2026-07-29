@@ -1,6 +1,6 @@
 # PureWeight
 
-A local-first weight tracking application built with Flutter.
+A local-first weight tracking application built with Flutter using Clean Architecture and BLoC.
 
 ## Architecture
 
@@ -30,7 +30,7 @@ lib/
 │           └── widgets/          # AddWeightSheet, HealthSummaryCard
 ├── l10n/                         # Localization ARB assets (app_en.arb, app_pl.arb)
 └── presentation/
-    ├── bloc/settings/            # AppSettingsBloc, AppSettingsEvent & AppSettingsState
+    ├── bloc/settings/            # AppSettingsBloc, AppSettingsEvent, AppSettingsState, AppThemeMode, BmiCategory
     ├── core/                     # ClampedLayout responsive wrapper
     ├── screens/                  # SettingsScreen, BiometricShieldScreen
     ├── theme/                    # AppTheme (Light & Dark Material 3)
@@ -66,7 +66,7 @@ lib/
 - Log daily weight measurements with optional text notes.
 - Interactive line charts powered by `fl_chart` with daily entry aggregation.
 - Filter data by timeframe (`Week`, `Month`, `Year`, `All`).
-- Summary metrics: lowest weight, highest weight, and goal delta.
+- Summary metrics: BMI calculation, BMI category badge, target weight progress, and remaining weight delta.
 - Automated BMI calculation from configured height.
 
 ### Data Management
@@ -80,7 +80,7 @@ lib/
 - Height configuration (cm).
 - Target weight goal tracking.
 - Daily reminder notifications with custom time selection.
-- Native biometric lock shielding on app cold start and backgrounding.
+- Native biometric lock shielding on app cold start and backgrounding with `persistAcrossBackgrounding` set to `false`.
 
 ## Getting Started
 
@@ -107,7 +107,7 @@ flutter run
 ### Database Engine
 - Isar schema configuration uses the `pure_weight_v1` store name.
 - `DatabaseModule` manages initialization, integrity verification, and fallback database recovery (`.isar.bak`).
-- Native database-level sorting via `.sortByDateTimeDesc()` runs directly inside Isar query streams.
+- Native database-level sorting via `.where().sortByDateTimeDesc()` runs directly inside Isar query streams.
 
 ### State Management
 - **`WeightBloc`**: Controls weight entries and chart period filtering.
