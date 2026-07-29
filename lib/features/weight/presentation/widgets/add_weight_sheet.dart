@@ -82,7 +82,11 @@ class _AddWeightSheetState extends State<AddWeightSheet> {
               maxLines: 2,
             ),
             const SizedBox(height: 16),
-            FilledButton(onPressed: _onSave, child: Text(l10n.save)),
+            FilledButton(
+              style: FilledButton.styleFrom(minimumSize: const Size(0, 48)),
+              onPressed: _onSave,
+              child: Text(l10n.save),
+            ),
           ],
         ),
       ),

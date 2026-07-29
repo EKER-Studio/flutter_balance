@@ -293,10 +293,12 @@ class _WeightDashboardScreenState extends State<WeightDashboardScreen> {
           padding: const EdgeInsets.symmetric(vertical: 48),
           child: Column(
             children: [
-              Icon(
-                Icons.monitor_weight_outlined,
-                size: 64,
-                color: Theme.of(context).colorScheme.outline,
+              ExcludeSemantics(
+                child: Icon(
+                  Icons.monitor_weight_outlined,
+                  size: 64,
+                  color: Theme.of(context).colorScheme.outline,
+                ),
               ),
               const SizedBox(height: 16),
               Text(
@@ -335,25 +337,29 @@ class _WeightDashboardScreenState extends State<WeightDashboardScreen> {
     final dynamicBmi = settingsState.calculateBmi(entry.weightKg);
 
     return Card(
-      child: ListTile(
-        title: Text('${entry.weightKg.toStringAsFixed(1)} kg'),
-        subtitle: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(dateStr),
-            Text(
-              AppLocalizations.of(
-                context,
-              ).bmiValue(dynamicBmi.toStringAsFixed(1)),
-            ),
-            if (entry.note != null && entry.note!.isNotEmpty) Text(entry.note!),
-          ],
-        ),
-        trailing: IconButton(
-          icon: const Icon(Icons.delete_outline),
-          onPressed: () {
-            context.read<WeightBloc>().add(DeleteWeight(entry.id));
-          },
+      child: MergeSemantics(
+        child: ListTile(
+          title: Text('${entry.weightKg.toStringAsFixed(1)} kg'),
+          subtitle: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(dateStr),
+              Text(
+                AppLocalizations.of(
+                  context,
+                ).bmiValue(dynamicBmi.toStringAsFixed(1)),
+              ),
+              if (entry.note != null && entry.note!.isNotEmpty)
+                Text(entry.note!),
+            ],
+          ),
+          trailing: IconButton(
+            icon: const Icon(Icons.delete_outline),
+            tooltip: 'Delete entry',
+            onPressed: () {
+              context.read<WeightBloc>().add(DeleteWeight(entry.id));
+            },
+          ),
         ),
       ),
     );
@@ -439,23 +445,25 @@ class _WeightDashboardScreenState extends State<WeightDashboardScreen> {
   }
 
   Widget _buildStatTile({required String label, required String value}) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          label,
-          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-            color: Theme.of(context).colorScheme.onSurfaceVariant,
+    return MergeSemantics(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            label,
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+            ),
           ),
-        ),
-        const SizedBox(height: 4),
-        Text(
-          value,
-          style: Theme.of(
-            context,
-          ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
-        ),
-      ],
+          const SizedBox(height: 4),
+          Text(
+            value,
+            style: Theme.of(
+              context,
+            ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+          ),
+        ],
+      ),
     );
   }
 }

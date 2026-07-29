@@ -51,10 +51,12 @@ class BiometricShieldScreen extends StatelessWidget {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(
-                    Icons.lock_outline,
-                    size: 80,
-                    color: Theme.of(context).colorScheme.primary,
+                  ExcludeSemantics(
+                    child: Icon(
+                      Icons.lock_outline,
+                      size: 80,
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
                   ),
                   const SizedBox(height: 24),
                   Text(
@@ -71,6 +73,9 @@ class BiometricShieldScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 32),
                   FilledButton.icon(
+                    style: FilledButton.styleFrom(
+                      minimumSize: const Size(0, 48),
+                    ),
                     onPressed: () => _handleUnlock(context, bloc),
                     icon: const Icon(Icons.fingerprint),
                     label: Text(l10n.unlock),

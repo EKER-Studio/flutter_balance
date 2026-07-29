@@ -38,10 +38,11 @@ class WeightChart extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     if (entries.isEmpty) {
       return SizedBox(
         height: chartHeight,
-        child: Center(child: Text(AppLocalizations.of(context).chartEmpty)),
+        child: Center(child: Text(l10n.chartEmpty)),
       );
     }
 
@@ -67,170 +68,177 @@ class WeightChart extends StatelessWidget {
 
     // Proportional Y-axis padding: 5% of range, minimum unit-aware floor.
     final range = maxWeight - minWeight;
-    // Ensure a minimum padding of 2 units in the display system so the chart
-    // always has breathing room even when the weight range is tiny.
     final minPadding = unit == MeasurementUnit.imperial ? 2.0 : 1.0;
     final padding = (range * 0.05).clamp(minPadding, double.infinity);
     final minY = (minWeight - padding).floorToDouble();
     final maxY = (maxWeight + padding).ceilToDouble();
+
+    final latestKg = sortedEntries.last.weightKg;
+    final formattedLatest = formatWeight(latestKg, unit);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         _buildFilterChips(context),
         const SizedBox(height: 16),
-        SizedBox(
-          height: chartHeight,
-          child: Padding(
-            padding: const EdgeInsets.only(right: 16.0, left: 8.0),
-            child: LineChart(
-              LineChartData(
-                minY: minY,
-                maxY: maxY,
-                gridData: FlGridData(
-                  show: true,
-                  drawVerticalLine: false,
-                  getDrawingHorizontalLine: (value) {
-                    return FlLine(
-                      color: Theme.of(context)
-                          .colorScheme
-                          .surfaceContainerHighest
-                          .withValues(alpha: 0.5),
-                      strokeWidth: 1,
-                    );
-                  },
-                ),
-                titlesData: FlTitlesData(
-                  show: true,
-                  rightTitles: const AxisTitles(
-                    sideTitles: SideTitles(showTitles: false),
+        Semantics(
+          container: true,
+          label:
+              'Weight history line chart for ${_getPeriodName(period, l10n)} period. Latest recorded weight is $formattedLatest.',
+          child: SizedBox(
+            height: chartHeight,
+            child: Padding(
+              padding: const EdgeInsets.only(right: 16.0, left: 8.0),
+              child: LineChart(
+                LineChartData(
+                  minY: minY,
+                  maxY: maxY,
+                  gridData: FlGridData(
+                    show: true,
+                    drawVerticalLine: false,
+                    getDrawingHorizontalLine: (value) {
+                      return FlLine(
+                        color: Theme.of(context)
+                            .colorScheme
+                            .surfaceContainerHighest
+                            .withValues(alpha: 0.5),
+                        strokeWidth: 1,
+                      );
+                    },
                   ),
-                  topTitles: const AxisTitles(
-                    sideTitles: SideTitles(showTitles: false),
-                  ),
-                  bottomTitles: AxisTitles(
-                    sideTitles: SideTitles(
-                      showTitles: true,
-                      reservedSize: 30,
-                      interval: _getBottomInterval(sortedEntries),
-                      getTitlesWidget: (value, meta) {
-                        return _buildBottomTitle(
-                          value,
-                          meta,
-                          sortedEntries,
-                          context,
-                        );
-                      },
+                  titlesData: FlTitlesData(
+                    show: true,
+                    rightTitles: const AxisTitles(
+                      sideTitles: SideTitles(showTitles: false),
                     ),
-                  ),
-                  leftTitles: AxisTitles(
-                    sideTitles: SideTitles(
-                      showTitles: true,
-                      reservedSize: 45,
-                      getTitlesWidget: (value, meta) {
-                        // Convert back to kg if in imperial to use unified formatter
-                        final originalKg = unit == MeasurementUnit.imperial
-                            ? lbsToKg(value)
-                            : value;
-                        final formatted = formatWeight(originalKg, unit);
-                        return Text(
-                          formatted,
-                          style: Theme.of(context).textTheme.bodySmall
-                              ?.copyWith(
-                                color: Theme.of(
-                                  context,
-                                ).colorScheme.onSurfaceVariant,
-                              ),
-                        );
-                      },
+                    topTitles: const AxisTitles(
+                      sideTitles: SideTitles(showTitles: false),
                     ),
-                  ),
-                ),
-                borderData: FlBorderData(show: false),
-                extraLinesData: targetY != null
-                    ? ExtraLinesData(
-                        horizontalLines: [
-                          HorizontalLine(
-                            y: safeTargetY,
-                            color: Theme.of(
-                              context,
-                            ).colorScheme.secondary.withValues(alpha: 0.6),
-                            strokeWidth: 2,
-                            dashArray: [5, 5],
-                            label: HorizontalLineLabel(
-                              show: true,
-                              style: TextStyle(
-                                color: Theme.of(context).colorScheme.onSurface,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 11,
-                              ),
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 6,
-                                vertical: 2,
-                              ),
-                              labelResolver: (line) =>
-                                  AppLocalizations.of(context).chartTargetLabel,
-                              alignment: Alignment.topRight,
-                            ),
-                          ),
-                        ],
-                      )
-                    : null,
-                lineBarsData: [
-                  LineChartBarData(
-                    spots: _getSpots(sortedEntries, unit),
-                    isCurved: true,
-                    color: Theme.of(context).colorScheme.primary,
-                    barWidth: 3,
-                    isStrokeCapRound: true,
-                    dotData: FlDotData(
-                      show: true,
-                      getDotPainter: (spot, percent, barData, index) {
-                        return FlDotCirclePainter(
-                          radius: 4,
-                          color: Theme.of(context).colorScheme.primary,
-                          strokeWidth: 2,
-                          strokeColor: Theme.of(context).colorScheme.surface,
-                        );
-                      },
-                    ),
-                    belowBarData: BarAreaData(
-                      show: true,
-                      gradient: LinearGradient(
-                        colors: [
-                          Theme.of(
+                    bottomTitles: AxisTitles(
+                      sideTitles: SideTitles(
+                        showTitles: true,
+                        reservedSize: 30,
+                        interval: _getBottomInterval(sortedEntries),
+                        getTitlesWidget: (value, meta) {
+                          return _buildBottomTitle(
+                            value,
+                            meta,
+                            sortedEntries,
                             context,
-                          ).colorScheme.primary.withValues(alpha: 0.3),
-                          Theme.of(
-                            context,
-                          ).colorScheme.primary.withValues(alpha: 0.0),
-                        ],
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
+                          );
+                        },
+                      ),
+                    ),
+                    leftTitles: AxisTitles(
+                      sideTitles: SideTitles(
+                        showTitles: true,
+                        reservedSize: 45,
+                        getTitlesWidget: (value, meta) {
+                          final originalKg = unit == MeasurementUnit.imperial
+                              ? lbsToKg(value)
+                              : value;
+                          final formatted = formatWeight(originalKg, unit);
+                          return Text(
+                            formatted,
+                            style: Theme.of(context).textTheme.bodySmall
+                                ?.copyWith(
+                                  color: Theme.of(
+                                    context,
+                                  ).colorScheme.onSurfaceVariant,
+                                ),
+                          );
+                        },
                       ),
                     ),
                   ),
-                ],
-                lineTouchData: LineTouchData(
-                  touchTooltipData: LineTouchTooltipData(
-                    getTooltipColor: (touchedSpot) =>
-                        Theme.of(context).colorScheme.secondaryContainer,
-                    getTooltipItems: (touchedSpots) {
-                      return touchedSpots.map((LineBarSpot touchedSpot) {
-                        final textStyle = TextStyle(
-                          color: Theme.of(
-                            context,
-                          ).colorScheme.onSecondaryContainer,
-                          fontWeight: FontWeight.bold,
-                        );
-                        // Convert back to kg if currently in imperial for proper formatting
-                        final originalKg = unit == MeasurementUnit.imperial
-                            ? lbsToKg(touchedSpot.y)
-                            : touchedSpot.y;
-                        final formattedValue = formatWeight(originalKg, unit);
-                        return LineTooltipItem(formattedValue, textStyle);
-                      }).toList();
-                    },
+                  borderData: FlBorderData(show: false),
+                  extraLinesData: targetY != null
+                      ? ExtraLinesData(
+                          horizontalLines: [
+                            HorizontalLine(
+                              y: safeTargetY,
+                              color: Theme.of(
+                                context,
+                              ).colorScheme.secondary.withValues(alpha: 0.6),
+                              strokeWidth: 2,
+                              dashArray: [5, 5],
+                              label: HorizontalLineLabel(
+                                show: true,
+                                style: TextStyle(
+                                  color: Theme.of(
+                                    context,
+                                  ).colorScheme.onSurface,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 11,
+                                ),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 6,
+                                  vertical: 2,
+                                ),
+                                labelResolver: (line) => AppLocalizations.of(
+                                  context,
+                                ).chartTargetLabel,
+                                alignment: Alignment.topRight,
+                              ),
+                            ),
+                          ],
+                        )
+                      : null,
+                  lineBarsData: [
+                    LineChartBarData(
+                      spots: _getSpots(sortedEntries, unit),
+                      isCurved: true,
+                      color: Theme.of(context).colorScheme.primary,
+                      barWidth: 3,
+                      isStrokeCapRound: true,
+                      dotData: FlDotData(
+                        show: true,
+                        getDotPainter: (spot, percent, barData, index) {
+                          return FlDotCirclePainter(
+                            radius: 4,
+                            color: Theme.of(context).colorScheme.primary,
+                            strokeWidth: 2,
+                            strokeColor: Theme.of(context).colorScheme.surface,
+                          );
+                        },
+                      ),
+                      belowBarData: BarAreaData(
+                        show: true,
+                        gradient: LinearGradient(
+                          colors: [
+                            Theme.of(
+                              context,
+                            ).colorScheme.primary.withValues(alpha: 0.3),
+                            Theme.of(
+                              context,
+                            ).colorScheme.primary.withValues(alpha: 0.0),
+                          ],
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                        ),
+                      ),
+                    ),
+                  ],
+                  lineTouchData: LineTouchData(
+                    touchTooltipData: LineTouchTooltipData(
+                      getTooltipColor: (touchedSpot) =>
+                          Theme.of(context).colorScheme.secondaryContainer,
+                      getTooltipItems: (touchedSpots) {
+                        return touchedSpots.map((LineBarSpot touchedSpot) {
+                          final textStyle = TextStyle(
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.onSecondaryContainer,
+                            fontWeight: FontWeight.bold,
+                          );
+                          final originalKg = unit == MeasurementUnit.imperial
+                              ? lbsToKg(touchedSpot.y)
+                              : touchedSpot.y;
+                          final formattedValue = formatWeight(originalKg, unit);
+                          return LineTooltipItem(formattedValue, textStyle);
+                        }).toList();
+                      },
+                    ),
                   ),
                 ),
               ),
@@ -245,16 +253,27 @@ class WeightChart extends StatelessWidget {
     final l10n = AppLocalizations.of(context);
     return Wrap(
       spacing: 8,
+      runSpacing: 8,
       alignment: WrapAlignment.center,
       children: TimePeriod.values.map((p) {
-        return ChoiceChip(
-          label: Text(_getPeriodName(p, l10n)),
-          selected: period == p,
-          onSelected: (selected) {
-            if (selected) {
-              onPeriodChanged(p);
-            }
-          },
+        final label = _getPeriodName(p, l10n);
+        final isSelected = period == p;
+        return ConstrainedBox(
+          constraints: const BoxConstraints(minWidth: 48, minHeight: 48),
+          child: Semantics(
+            button: true,
+            selected: isSelected,
+            label: '$label filter',
+            child: ChoiceChip(
+              label: Text(label),
+              selected: isSelected,
+              onSelected: (selected) {
+                if (selected) {
+                  onPeriodChanged(p);
+                }
+              },
+            ),
+          ),
         );
       }).toList(),
     );
@@ -291,7 +310,6 @@ class WeightChart extends StatelessWidget {
         sortedEntries.last.dateTime.millisecondsSinceEpoch -
         sortedEntries.first.dateTime.millisecondsSinceEpoch;
 
-    // Divide the time range into ~4-5 segments to not clutter the axis
     if (diff == 0) return 1;
     return diff / 4;
   }
@@ -307,7 +325,6 @@ class WeightChart extends StatelessWidget {
     final minTime = sortedEntries.first.dateTime.millisecondsSinceEpoch;
     final maxTime = sortedEntries.last.dateTime.millisecondsSinceEpoch;
 
-    // Don't show titles too close to the edges unless they are min/max
     if (value < minTime || value > maxTime) return const SizedBox.shrink();
 
     final date = DateTime.fromMillisecondsSinceEpoch(value.toInt());
@@ -315,14 +332,14 @@ class WeightChart extends StatelessWidget {
 
     switch (period) {
       case TimePeriod.week:
-        formattedDate = DateFormat('EEE').format(date); // Mon, Tue
+        formattedDate = DateFormat('EEE').format(date);
         break;
       case TimePeriod.month:
-        formattedDate = DateFormat('MMMd').format(date); // Oct 12
+        formattedDate = DateFormat('MMMd').format(date);
         break;
       case TimePeriod.year:
       case TimePeriod.all:
-        formattedDate = DateFormat('MMM yy').format(date); // Oct 23
+        formattedDate = DateFormat('MMM yy').format(date);
         break;
     }
 
