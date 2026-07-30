@@ -41,27 +41,11 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
     }
     final filtered = switch (period) {
       TimePeriod.all => entries,
-      TimePeriod.week =>
+      TimePeriod.week || TimePeriod.month || TimePeriod.year =>
         entries
             .where(
               (e) => e.dateTime.isAfter(
-                DateTime.now().subtract(const Duration(days: 7)),
-              ),
-            )
-            .toList(),
-      TimePeriod.month =>
-        entries
-            .where(
-              (e) => e.dateTime.isAfter(
-                DateTime.now().subtract(const Duration(days: 30)),
-              ),
-            )
-            .toList(),
-      TimePeriod.year =>
-        entries
-            .where(
-              (e) => e.dateTime.isAfter(
-                DateTime.now().subtract(const Duration(days: 365)),
+                DateTime.now().subtract(period.lookbackDuration),
               ),
             )
             .toList(),

@@ -602,7 +602,7 @@ class StatisticsScreen extends StatelessWidget {
   int _calculateMonthlyCompliance(List<WeightEntry> entries) {
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
-    final monthAgo = today.subtract(const Duration(days: 30));
+    final monthAgo = today.subtract(Duration(days: monthlyComplianceDays));
 
     final loggedDays = entries
         .where((e) => e.dateTime.isAfter(monthAgo))
@@ -610,6 +610,6 @@ class StatisticsScreen extends StatelessWidget {
         .toSet()
         .length;
 
-    return ((loggedDays / 30) * 100).round();
+    return ((loggedDays / monthlyComplianceDays) * 100).round();
   }
 }

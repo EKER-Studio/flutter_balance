@@ -17,8 +17,22 @@ enum TimePeriod {
   year,
 
   /// All time.
-  all,
+  all;
 }
+
+/// Extension providing domain-level constants for [TimePeriod].
+extension TimePeriodX on TimePeriod {
+  /// How far back this period looks from now.
+  Duration get lookbackDuration => switch (this) {
+    TimePeriod.week => const Duration(days: 7),
+    TimePeriod.month => const Duration(days: 30),
+    TimePeriod.year => const Duration(days: 365),
+    TimePeriod.all => Duration.zero,
+  };
+}
+
+/// Number of days used as the lookback window for monthly compliance.
+const int monthlyComplianceDays = 30;
 
 /// Triggers subscription to the reactive weight stream.
 final class SubscribeToWeightChanges extends WeightEvent {
