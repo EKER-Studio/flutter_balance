@@ -8,6 +8,7 @@ import 'package:pure_weight/features/weight/presentation/widgets/add_weight_shee
 import 'package:pure_weight/features/weight/presentation/widgets/calendar/calendar_day_empty_card.dart';
 import 'package:pure_weight/features/weight/presentation/widgets/calendar/calendar_day_entries_card.dart';
 import 'package:pure_weight/features/weight/presentation/widgets/calendar/calendar_day_future_card.dart';
+import 'package:pure_weight/features/weight/presentation/widgets/calendar/calendar_error_card.dart';
 import 'package:pure_weight/features/weight/presentation/widgets/calendar/calendar_grid.dart';
 import 'package:pure_weight/features/weight/presentation/widgets/calendar/calendar_month_header.dart';
 import 'package:pure_weight/features/weight/presentation/widgets/calendar/calendar_shimmer_skeleton.dart';
@@ -99,9 +100,15 @@ class _CalendarScreenState extends State<CalendarScreen> {
               );
             }
 
+            if (state is WeightError) {
+              return ClampedLayout(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                child: CalendarErrorCard(errorMessage: state.message ?? ''),
+              );
+            }
+
             final entries = switch (state) {
               WeightLoaded(:final entries) => entries,
-              WeightError(:final entries) => entries,
               _ => <WeightEntry>[],
             };
 

@@ -6,11 +6,13 @@ import 'package:mocktail/mocktail.dart';
 import 'package:pure_weight/features/weight/domain/entities/weight_entry.dart';
 import 'package:pure_weight/features/weight/domain/repositories/weight_repository.dart';
 import 'package:pure_weight/features/weight/presentation/bloc/weight_bloc.dart';
+import 'package:pure_weight/features/weight/presentation/bloc/weight_event.dart';
 import 'package:pure_weight/features/weight/presentation/screens/calendar_screen.dart';
 import 'package:pure_weight/features/weight/presentation/widgets/calendar/calendar_day_cell.dart';
 import 'package:pure_weight/features/weight/presentation/widgets/calendar/calendar_day_empty_card.dart';
 import 'package:pure_weight/features/weight/presentation/widgets/calendar/calendar_day_entries_card.dart';
 import 'package:pure_weight/features/weight/presentation/widgets/calendar/calendar_day_future_card.dart';
+import 'package:pure_weight/features/weight/presentation/widgets/calendar/calendar_error_card.dart';
 import 'package:pure_weight/features/weight/presentation/widgets/calendar/calendar_month_header.dart';
 import 'package:pure_weight/features/weight/presentation/widgets/calendar/calendar_shimmer_skeleton.dart';
 import 'package:pure_weight/features/weight/presentation/widgets/calendar/calendar_weekday_header.dart';
@@ -163,6 +165,20 @@ void main() {
     expect(todaySelected, isTrue);
   });
 
+  testWidgets('CalendarErrorCard renders error message and retry button', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      createTestWidget(
+        const CalendarErrorCard(errorMessage: 'Database connection failed'),
+      ),
+    );
+
+    expect(find.text('Błąd odczytu bazy danych'), findsOneWidget);
+    expect(find.text('Database connection failed'), findsOneWidget);
+    expect(find.text('Spróbuj ponownie'), findsOneWidget);
+  });
+
   testWidgets(
       'CalendarDayEntriesCard displays daily summary stats and goal banner when goal is reached', (
     tester,
@@ -199,18 +215,19 @@ void main() {
   });
 
   testWidgets(
-      'CalendarScreen renders shimmer skeleton during WeightInitial state', (
+      'CalendarScreen renders error card during WeightError state', (
     tester,
   ) async {
     when(() => repository.watchAllEntries())
-        .thenAnswer((_) => const Stream.empty());
+        .thenAnswer((_) => Stream.error(Exception('Database error')));
 
     await tester.pumpWidget(
       MultiBlocProvider(
         providers: [
           BlocProvider(create: (_) => AppSettingsBloc()),
           BlocProvider(
-            create: (context) => WeightBloc(repository: repository),
+            create: (context) => WeightBloc(repository: repository)
+              ..add(const SubscribeToWeightChanges()),
           ),
         ],
         child: const MaterialApp(
@@ -221,8 +238,8 @@ void main() {
       ),
     );
 
-    await tester.pump();
+    await tester.pumpAndSettle();
 
-    expect(find.byType(CalendarShimmerSkeleton), findsOneWidget);
+    expect(find.byType(CalendarErrorCard), findsOneWidget);
   });
 }
