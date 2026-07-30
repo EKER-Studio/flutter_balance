@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:pure_weight/features/weight/presentation/widgets/add_weight_sheet.dart';
 import 'package:pure_weight/l10n/app_localizations.dart';
 
@@ -87,9 +86,8 @@ class CalendarDayEmptyCard extends StatelessWidget {
             0,
           );
 
-    showModalBottomSheet(
+    showDialog(
       context: context,
-      isScrollControlled: true,
       builder: (_) => AddWeightSheet(initialDate: initialDateTime),
     );
   }

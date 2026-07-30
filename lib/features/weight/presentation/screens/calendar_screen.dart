@@ -166,9 +166,8 @@ class _CalendarScreenState extends State<CalendarScreen> {
   }
 
   void _showAddWeightSheet(BuildContext context) {
-    showModalBottomSheet(
+    showDialog(
       context: context,
-      isScrollControlled: true,
       builder: (_) => const AddWeightSheet(),
     );
   }

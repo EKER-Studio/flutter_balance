@@ -143,9 +143,8 @@ class CalendarDayDetailSheet extends StatelessWidget {
             0,
           );
 
-    showModalBottomSheet(
+    showDialog(
       context: context,
-      isScrollControlled: true,
       builder: (_) => AddWeightSheet(initialDate: initialDateTime),
     );
   }

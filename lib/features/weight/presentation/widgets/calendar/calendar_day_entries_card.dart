@@ -39,7 +39,7 @@ class CalendarDayEntriesCard extends StatelessWidget {
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
               itemCount: entries.length,
-              separatorBuilder: (_, __) => const Divider(height: 1),
+              separatorBuilder: (_, _) => const Divider(height: 1),
               itemBuilder: (context, index) {
                 final entry = entries[index];
                 final timeStr = DateFormat.jm(
@@ -111,9 +111,8 @@ class CalendarDayEntriesCard extends StatelessWidget {
             0,
           );
 
-    showModalBottomSheet(
+    showDialog(
       context: context,
-      isScrollControlled: true,
       builder: (_) => AddWeightSheet(initialDate: initialDateTime),
     );
   }

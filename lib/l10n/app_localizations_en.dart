@@ -186,7 +186,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get latestMeasurement => 'Latest measurement';
 
   @override
-  String get addWeight => 'Add Weight';
+  String get addWeight => 'Add measurement';
+
+  @override
+  String get measurementDate => 'Measurement date';
+
+  @override
+  String get measurementTime => 'Measurement time';
+
+  @override
+  String get futureDateError => 'Date and time cannot be in the future';
 
   @override
   String get weightCannotBeEmpty => 'Weight cannot be empty';

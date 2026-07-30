@@ -386,9 +386,8 @@ class _WeightDashboardScreenState extends State<WeightDashboardScreen> {
   }
 
   void _showAddWeightSheet(BuildContext context) {
-    showModalBottomSheet(
+    showDialog(
       context: context,
-      isScrollControlled: true,
       builder: (_) => const AddWeightSheet(),
     );
   }

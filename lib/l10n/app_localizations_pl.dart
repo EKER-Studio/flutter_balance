@@ -188,7 +188,16 @@ class AppLocalizationsPl extends AppLocalizations {
   String get latestMeasurement => 'Ostatni pomiar';
 
   @override
-  String get addWeight => 'Dodaj wagę';
+  String get addWeight => 'Dodaj pomiar';
+
+  @override
+  String get measurementDate => 'Data pomiaru';
+
+  @override
+  String get measurementTime => 'Godzina pomiaru';
+
+  @override
+  String get futureDateError => 'Data i godzina nie mogą być w przyszłości';
 
   @override
   String get weightCannotBeEmpty => 'Waga nie może być pusta';

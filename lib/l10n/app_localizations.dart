@@ -431,8 +431,26 @@ abstract class AppLocalizations {
   /// No description provided for @addWeight.
   ///
   /// In en, this message translates to:
-  /// **'Add Weight'**
+  /// **'Add measurement'**
   String get addWeight;
+
+  /// No description provided for @measurementDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Measurement date'**
+  String get measurementDate;
+
+  /// No description provided for @measurementTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Measurement time'**
+  String get measurementTime;
+
+  /// No description provided for @futureDateError.
+  ///
+  /// In en, this message translates to:
+  /// **'Date and time cannot be in the future'**
+  String get futureDateError;
 
   /// No description provided for @weightCannotBeEmpty.
   ///

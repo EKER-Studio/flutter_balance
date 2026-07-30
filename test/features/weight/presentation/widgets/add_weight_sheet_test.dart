@@ -1,0 +1,154 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:hydrated_bloc/hydrated_bloc.dart';
+import 'package:mocktail/mocktail.dart';
+import 'package:pure_weight/features/weight/presentation/bloc/weight_bloc.dart';
+import 'package:pure_weight/features/weight/presentation/bloc/weight_event.dart';
+import 'package:pure_weight/features/weight/presentation/bloc/weight_state.dart';
+import 'package:pure_weight/features/weight/presentation/widgets/add_weight_sheet.dart';
+import 'package:pure_weight/l10n/app_localizations.dart';
+import 'package:pure_weight/presentation/bloc/settings/app_settings_bloc.dart';
+
+class MockHydratedStorage extends Mock implements HydratedStorage {}
+
+class MockWeightBloc extends Mock implements WeightBloc {}
+
+void main() {
+  late MockHydratedStorage storage;
+  late MockWeightBloc weightBloc;
+  late AppSettingsBloc settingsBloc;
+
+  setUpAll(() {
+    registerFallbackValue(const AddWeight(weightKg: 70.0));
+  });
+
+  setUp(() {
+    storage = MockHydratedStorage();
+    HydratedBloc.storage = storage;
+    when(() => storage.read(any())).thenReturn(null);
+    when(() => storage.write(any(), any())).thenAnswer((_) async {});
+
+    weightBloc = MockWeightBloc();
+    when(() => weightBloc.state).thenReturn(
+      const WeightLoaded(
+        entries: [],
+        filteredEntries: [],
+        timePeriod: TimePeriod.month,
+        heightCm: 175.0,
+      ),
+    );
+    when(() => weightBloc.stream).thenAnswer(
+      (_) => Stream.value(
+        const WeightLoaded(
+          entries: [],
+          filteredEntries: [],
+          timePeriod: TimePeriod.month,
+          heightCm: 175.0,
+        ),
+      ),
+    );
+
+    settingsBloc = AppSettingsBloc();
+  });
+
+  Widget createTestWidget(Widget child) {
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider<WeightBloc>.value(value: weightBloc),
+        BlocProvider<AppSettingsBloc>.value(value: settingsBloc),
+      ],
+      child: MaterialApp(
+        localizationsDelegates: const [
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+        ],
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: Scaffold(body: child),
+      ),
+    );
+  }
+
+  testWidgets('renders date, time, weight, and note fields', (tester) async {
+    await tester.pumpWidget(createTestWidget(const AddWeightSheet()));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Measurement date'), findsOneWidget);
+    expect(find.text('Measurement time'), findsOneWidget);
+    expect(find.text('Weight (kg)'), findsOneWidget);
+    expect(find.text('Note (optional)'), findsOneWidget);
+  });
+
+  testWidgets('parses comma as decimal separator and dispatches AddWeight', (tester) async {
+    await tester.pumpWidget(createTestWidget(const AddWeightSheet()));
+    await tester.pumpAndSettle();
+
+    final weightField = find.byType(TextFormField).at(0);
+    await tester.enterText(weightField, '72,5');
+    await tester.pumpAndSettle();
+
+    final saveButton = find.text('Save');
+    await tester.tap(saveButton);
+    await tester.pumpAndSettle();
+
+    verify(
+      () => weightBloc.add(
+        any(
+          that: isA<AddWeight>().having(
+            (e) => e.weightKg,
+            'weightKg',
+            closeTo(72.5, 0.01),
+          ),
+        ),
+      ),
+    ).called(1);
+  });
+
+  testWidgets('parses dot as decimal separator and dispatches AddWeight', (tester) async {
+    await tester.pumpWidget(createTestWidget(const AddWeightSheet()));
+    await tester.pumpAndSettle();
+
+    final weightField = find.byType(TextFormField).at(0);
+    await tester.enterText(weightField, '72.5');
+    await tester.pumpAndSettle();
+
+    final saveButton = find.text('Save');
+    await tester.tap(saveButton);
+    await tester.pumpAndSettle();
+
+    verify(
+      () => weightBloc.add(
+        any(
+          that: isA<AddWeight>().having(
+            (e) => e.weightKg,
+            'weightKg',
+            closeTo(72.5, 0.01),
+          ),
+        ),
+      ),
+    ).called(1);
+  });
+
+  testWidgets('prevents saving when dateTime is in the future', (tester) async {
+    final futureDate = DateTime.now().add(const Duration(days: 10));
+
+    await tester.pumpWidget(
+      createTestWidget(AddWeightSheet(initialDate: futureDate)),
+    );
+    await tester.pumpAndSettle();
+
+    final weightField = find.byType(TextFormField).at(0);
+    await tester.enterText(weightField, '72.5');
+    await tester.pumpAndSettle();
+
+    final saveButton = find.text('Save');
+    await tester.tap(saveButton);
+    await tester.pumpAndSettle();
+
+    expect(find.text('Date and time cannot be in the future'), findsOneWidget);
+    verifyNever(() => weightBloc.add(any()));
+  });
+}
