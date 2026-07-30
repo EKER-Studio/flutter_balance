@@ -30,6 +30,14 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
     on<ImportWeightEntries>(_onImportWeightEntries);
   }
 
+  static List<WeightEntry> _entriesFromState(WeightState state) {
+    return switch (state) {
+      WeightLoaded(:final entries) => entries,
+      WeightError(:final entries) => entries,
+      _ => <WeightEntry>[],
+    };
+  }
+
   List<WeightEntry> _filterEntries(
     List<WeightEntry> entries,
     TimePeriod period,
@@ -129,11 +137,7 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
   }
 
   void _onUpdateUserHeight(UpdateUserHeight event, Emitter<WeightState> emit) {
-    final entries = switch (state) {
-      WeightLoaded(:final entries) => entries,
-      WeightError(:final entries) => entries,
-      _ => <WeightEntry>[],
-    };
+    final entries = _entriesFromState(state);
     emit(
       WeightLoaded(
         heightCm: event.heightCm,
@@ -146,11 +150,7 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
 
   Future<void> _onAddWeight(AddWeight event, Emitter<WeightState> emit) async {
     final heightCm = state.heightCm;
-    final entries = switch (state) {
-      WeightLoaded(:final entries) => entries,
-      WeightError(:final entries) => entries,
-      _ => <WeightEntry>[],
-    };
+    final entries = _entriesFromState(state);
 
     if (heightCm == null || heightCm <= 0) {
       emit(
@@ -199,11 +199,7 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
       if (kDebugMode) {
         debugPrint('[WeightBloc] Failed to delete entry: $e\n$stack');
       }
-      final entries = switch (state) {
-        WeightLoaded(:final entries) => entries,
-        WeightError(:final entries) => entries,
-        _ => <WeightEntry>[],
-      };
+      final entries = _entriesFromState(state);
       emit(
         WeightError(
           errorType: WeightErrorType.deleteEntryFailed,
@@ -220,11 +216,7 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
     ChangeChartFilter event,
     Emitter<WeightState> emit,
   ) {
-    final entries = switch (state) {
-      WeightLoaded(:final entries) => entries,
-      WeightError(:final entries) => entries,
-      _ => <WeightEntry>[],
-    };
+    final entries = _entriesFromState(state);
 
     emit(
       WeightLoaded(
@@ -303,11 +295,7 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
       if (kDebugMode) {
         debugPrint('[WeightBloc] Failed to import entries: $e\n$stack');
       }
-      final currentEntries = switch (state) {
-        WeightLoaded(:final entries) => entries,
-        WeightError(:final entries) => entries,
-        _ => <WeightEntry>[],
-      };
+      final currentEntries = _entriesFromState(state);
       emit(
         WeightError(
           errorType: WeightErrorType.writeFailed,
