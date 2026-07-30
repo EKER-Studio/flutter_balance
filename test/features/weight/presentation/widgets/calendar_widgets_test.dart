@@ -37,8 +37,9 @@ void main() {
     when(() => storage.read(any())).thenReturn(null);
     when(() => storage.write(any(), any())).thenAnswer((_) async {});
 
-    when(() => repository.watchAllEntries())
-        .thenAnswer((_) => Stream.value(<WeightEntry>[]));
+    when(
+      () => repository.watchAllEntries(),
+    ).thenAnswer((_) => Stream.value(<WeightEntry>[]));
   });
 
   Widget createTestWidget(
@@ -89,195 +90,207 @@ void main() {
   });
 
   testWidgets('CalendarWeekdayHeader renders day indicators', (tester) async {
-    await tester.pumpWidget(
-      createTestWidget(const CalendarWeekdayHeader()),
-    );
+    await tester.pumpWidget(createTestWidget(const CalendarWeekdayHeader()));
 
     expect(find.byType(CalendarWeekdayHeader), findsOneWidget);
   });
 
   testWidgets(
-      'CalendarDayCell renders day number, selection state, and handles tap', (
-    tester,
-  ) async {
-    var tapped = false;
+    'CalendarDayCell renders day number, selection state, and handles tap',
+    (tester) async {
+      var tapped = false;
 
-    await tester.pumpWidget(
-      createTestWidget(
-        CalendarDayCell(
-          date: DateTime(2026, 7, 15),
-          dayNumber: 15,
-          entries: const [],
-          isToday: false,
-          isSelected: true,
-          onTap: () => tapped = true,
+      await tester.pumpWidget(
+        createTestWidget(
+          CalendarDayCell(
+            date: DateTime(2026, 7, 15),
+            dayNumber: 15,
+            entries: const [],
+            isToday: false,
+            isSelected: true,
+            onTap: () => tapped = true,
+          ),
         ),
-      ),
-    );
+      );
 
-    expect(find.text('15'), findsOneWidget);
-    await tester.tap(find.text('15'));
-    expect(tapped, isTrue);
-  });
-
-  testWidgets('CalendarDayCell renders star badge when isGoalAchieved is true', (
-    tester,
-  ) async {
-    await tester.pumpWidget(
-      createTestWidget(
-        CalendarDayCell(
-          date: DateTime(2026, 7, 15),
-          dayNumber: 15,
-          entries: const [],
-          isToday: false,
-          isSelected: false,
-          isGoalAchieved: true,
-          onTap: () {},
-        ),
-      ),
-    );
-
-    expect(find.byIcon(Icons.star), findsOneWidget);
-  });
-
-  testWidgets('CalendarDayEmptyCard renders empty state UI in Polish and English', (
-    tester,
-  ) async {
-    await tester.pumpWidget(
-      createTestWidget(
-        CalendarDayEmptyCard(selectedDate: DateTime(2026, 7, 15)),
-        locale: const Locale('pl'),
-      ),
-    );
-
-    expect(find.text('Brak pomiarów w tym dniu'), findsOneWidget);
-    expect(find.byIcon(Icons.event_busy), findsOneWidget);
-    expect(find.text('Dodaj pomiar'), findsOneWidget);
-
-    await tester.pumpWidget(
-      createTestWidget(
-        CalendarDayEmptyCard(selectedDate: DateTime(2026, 7, 15)),
-        locale: const Locale('en'),
-      ),
-    );
-
-    expect(find.text('No measurements recorded for this day'), findsOneWidget);
-    expect(find.text('Add measurement'), findsOneWidget);
-  });
+      expect(find.text('15'), findsOneWidget);
+      await tester.tap(find.text('15'));
+      expect(tapped, isTrue);
+    },
+  );
 
   testWidgets(
-      'CalendarDayFutureCard renders future card in Polish and English', (
-    tester,
-  ) async {
-    var todaySelected = false;
-
-    await tester.pumpWidget(
-      createTestWidget(
-        CalendarDayFutureCard(
-          selectedDate: DateTime(2030, 1, 1),
-          onSelectToday: () => todaySelected = true,
+    'CalendarDayCell renders star badge when isGoalAchieved is true',
+    (tester) async {
+      await tester.pumpWidget(
+        createTestWidget(
+          CalendarDayCell(
+            date: DateTime(2026, 7, 15),
+            dayNumber: 15,
+            entries: const [],
+            isToday: false,
+            isSelected: false,
+            isGoalAchieved: true,
+            onTap: () {},
+          ),
         ),
-        locale: const Locale('pl'),
-      ),
-    );
+      );
 
-    expect(find.text('Przyszła data'), findsOneWidget);
-    expect(find.byIcon(Icons.schedule), findsOneWidget);
-    expect(find.text('Przejdź do dzisiaj'), findsOneWidget);
-
-    await tester.tap(find.text('Przejdź do dzisiaj'));
-    expect(todaySelected, isTrue);
-
-    await tester.pumpWidget(
-      createTestWidget(
-        CalendarDayFutureCard(
-          selectedDate: DateTime(2030, 1, 1),
-          onSelectToday: () {},
-        ),
-        locale: const Locale('en'),
-      ),
-    );
-
-    expect(find.text('Future date'), findsOneWidget);
-    expect(find.text('Go to today'), findsOneWidget);
-  });
-
-  testWidgets('CalendarErrorCard renders error message and retry button in Polish and English', (
-    tester,
-  ) async {
-    await tester.pumpWidget(
-      createTestWidget(
-        const CalendarErrorCard(errorMessage: 'Database connection failed'),
-        locale: const Locale('pl'),
-      ),
-    );
-
-    expect(find.text('Błąd odczytu bazy danych'), findsOneWidget);
-    expect(find.text('Database connection failed'), findsOneWidget);
-    expect(find.text('Spróbuj ponownie'), findsOneWidget);
-
-    await tester.pumpWidget(
-      createTestWidget(
-        const CalendarErrorCard(errorMessage: 'Database connection failed'),
-        locale: const Locale('en'),
-      ),
-    );
-
-    expect(find.text('Database read error'), findsOneWidget);
-    expect(find.text('Try again'), findsOneWidget);
-  });
+      expect(find.byIcon(Icons.star), findsOneWidget);
+    },
+  );
 
   testWidgets(
-      'CalendarDayEntriesCard displays single entry with note and time', (
-    tester,
-  ) async {
-    final entry = WeightEntry(
-      id: 1,
-      weightKg: 72.5,
-      dateTime: DateTime(2026, 7, 15, 8, 30),
-      note: 'Morning weight',
-    );
-
-    await tester.pumpWidget(
-      createTestWidget(
-        CalendarDayEntriesCard(
-          selectedDate: DateTime(2026, 7, 15),
-          entries: [entry],
+    'CalendarDayEmptyCard renders empty state UI in Polish and English',
+    (tester) async {
+      await tester.pumpWidget(
+        createTestWidget(
+          CalendarDayEmptyCard(selectedDate: DateTime(2026, 7, 15)),
+          locale: const Locale('pl'),
         ),
-      ),
-    );
+      );
 
-    expect(find.text('72.5 kg'), findsOneWidget);
-    expect(find.textContaining('Morning weight'), findsOneWidget);
-    expect(find.byIcon(Icons.delete_outline), findsOneWidget);
-    expect(find.byIcon(Icons.add), findsOneWidget);
-  });
+      expect(find.text('Brak pomiarów w tym dniu'), findsOneWidget);
+      expect(find.byIcon(Icons.event_busy), findsOneWidget);
+      expect(find.text('Dodaj pomiar'), findsOneWidget);
+
+      await tester.pumpWidget(
+        createTestWidget(
+          CalendarDayEmptyCard(selectedDate: DateTime(2026, 7, 15)),
+          locale: const Locale('en'),
+        ),
+      );
+
+      expect(
+        find.text('No measurements recorded for this day'),
+        findsOneWidget,
+      );
+      expect(find.text('Add measurement'), findsOneWidget);
+    },
+  );
 
   testWidgets(
-      'CalendarDayEntriesCard displays daily summary stats and goal banner when goal is reached', (
-    tester,
-  ) async {
-    final entries = [
-      WeightEntry(id: 1, weightKg: 72.0, dateTime: DateTime(2026, 7, 15, 8, 0)),
-      WeightEntry(id: 2, weightKg: 73.0, dateTime: DateTime(2026, 7, 15, 20, 0)),
-    ];
+    'CalendarDayFutureCard renders future card in Polish and English',
+    (tester) async {
+      var todaySelected = false;
 
-    await tester.pumpWidget(
-      createTestWidget(
-        CalendarDayEntriesCard(
-          selectedDate: DateTime(2026, 7, 15),
-          entries: entries,
-          targetWeight: 72.5,
+      await tester.pumpWidget(
+        createTestWidget(
+          CalendarDayFutureCard(
+            selectedDate: DateTime(2030, 1, 1),
+            onSelectToday: () => todaySelected = true,
+          ),
+          locale: const Locale('pl'),
         ),
-        locale: const Locale('pl'),
-      ),
-    );
+      );
 
-    expect(find.text('Podsumowanie dnia'), findsOneWidget);
-    expect(find.textContaining('Cel wagi został osiągnięty'), findsOneWidget);
-    expect(find.text('Średnia waga'), findsOneWidget);
-    expect(find.text('72.5 kg'), findsOneWidget);
-  });
+      expect(find.text('Przyszła data'), findsOneWidget);
+      expect(find.byIcon(Icons.schedule), findsOneWidget);
+      expect(find.text('Przejdź do dzisiaj'), findsOneWidget);
+
+      await tester.tap(find.text('Przejdź do dzisiaj'));
+      expect(todaySelected, isTrue);
+
+      await tester.pumpWidget(
+        createTestWidget(
+          CalendarDayFutureCard(
+            selectedDate: DateTime(2030, 1, 1),
+            onSelectToday: () {},
+          ),
+          locale: const Locale('en'),
+        ),
+      );
+
+      expect(find.text('Future date'), findsOneWidget);
+      expect(find.text('Go to today'), findsOneWidget);
+    },
+  );
+
+  testWidgets(
+    'CalendarErrorCard renders error message and retry button in Polish and English',
+    (tester) async {
+      await tester.pumpWidget(
+        createTestWidget(
+          const CalendarErrorCard(errorMessage: 'Database connection failed'),
+          locale: const Locale('pl'),
+        ),
+      );
+
+      expect(find.text('Błąd odczytu bazy danych'), findsOneWidget);
+      expect(find.text('Database connection failed'), findsOneWidget);
+      expect(find.text('Spróbuj ponownie'), findsOneWidget);
+
+      await tester.pumpWidget(
+        createTestWidget(
+          const CalendarErrorCard(errorMessage: 'Database connection failed'),
+          locale: const Locale('en'),
+        ),
+      );
+
+      expect(find.text('Database read error'), findsOneWidget);
+      expect(find.text('Try again'), findsOneWidget);
+    },
+  );
+
+  testWidgets(
+    'CalendarDayEntriesCard displays single entry with note and time',
+    (tester) async {
+      final entry = WeightEntry(
+        id: 1,
+        weightKg: 72.5,
+        dateTime: DateTime(2026, 7, 15, 8, 30),
+        note: 'Morning weight',
+      );
+
+      await tester.pumpWidget(
+        createTestWidget(
+          CalendarDayEntriesCard(
+            selectedDate: DateTime(2026, 7, 15),
+            entries: [entry],
+          ),
+        ),
+      );
+
+      expect(find.text('72.5 kg'), findsOneWidget);
+      expect(find.textContaining('Morning weight'), findsOneWidget);
+      expect(find.byIcon(Icons.delete_outline), findsOneWidget);
+      expect(find.byIcon(Icons.add), findsOneWidget);
+    },
+  );
+
+  testWidgets(
+    'CalendarDayEntriesCard displays daily summary stats and goal banner when goal is reached',
+    (tester) async {
+      final entries = [
+        WeightEntry(
+          id: 1,
+          weightKg: 72.0,
+          dateTime: DateTime(2026, 7, 15, 8, 0),
+        ),
+        WeightEntry(
+          id: 2,
+          weightKg: 73.0,
+          dateTime: DateTime(2026, 7, 15, 20, 0),
+        ),
+      ];
+
+      await tester.pumpWidget(
+        createTestWidget(
+          CalendarDayEntriesCard(
+            selectedDate: DateTime(2026, 7, 15),
+            entries: entries,
+            targetWeight: 72.5,
+          ),
+          locale: const Locale('pl'),
+        ),
+      );
+
+      expect(find.text('Podsumowanie dnia'), findsOneWidget);
+      expect(find.textContaining('Cel wagi został osiągnięty'), findsOneWidget);
+      expect(find.text('Średnia waga'), findsOneWidget);
+      expect(find.text('72.5 kg'), findsOneWidget);
+    },
+  );
 
   testWidgets('CalendarDayEntriesCard supports imperial units (lb)', (
     tester,
@@ -328,90 +341,94 @@ void main() {
   testWidgets('CalendarShimmerSkeleton renders pulsing placeholders', (
     tester,
   ) async {
-    await tester.pumpWidget(
-      createTestWidget(const CalendarShimmerSkeleton()),
-    );
+    await tester.pumpWidget(createTestWidget(const CalendarShimmerSkeleton()));
 
     expect(find.byType(CalendarShimmerSkeleton), findsOneWidget);
   });
 
   testWidgets(
-      'CalendarScreen renders month header, weekdays, grid, and day card in Dark Mode', (
-    tester,
-  ) async {
-    await tester.pumpWidget(
-      MultiBlocProvider(
-        providers: [
-          BlocProvider(create: (_) => AppSettingsBloc()),
-          BlocProvider(
-            create: (context) => WeightBloc(repository: repository)
-              ..add(const SubscribeToWeightChanges()),
+    'CalendarScreen renders month header, weekdays, grid, and day card in Dark Mode',
+    (tester) async {
+      await tester.pumpWidget(
+        MultiBlocProvider(
+          providers: [
+            BlocProvider(create: (_) => AppSettingsBloc()),
+            BlocProvider(
+              create: (context) =>
+                  WeightBloc(repository: repository)
+                    ..add(const SubscribeToWeightChanges()),
+            ),
+          ],
+          child: MaterialApp(
+            locale: const Locale('pl'),
+            themeMode: ThemeMode.dark,
+            darkTheme: ThemeData(
+              useMaterial3: true,
+              brightness: Brightness.dark,
+            ),
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            home: const Scaffold(body: CalendarScreen()),
           ),
-        ],
-        child: MaterialApp(
-          locale: const Locale('pl'),
-          themeMode: ThemeMode.dark,
-          darkTheme: ThemeData(useMaterial3: true, brightness: Brightness.dark),
-          localizationsDelegates: AppLocalizations.localizationsDelegates,
-          supportedLocales: AppLocalizations.supportedLocales,
-          home: const Scaffold(body: CalendarScreen()),
         ),
-      ),
-    );
+      );
 
-    await tester.pumpAndSettle();
+      await tester.pumpAndSettle();
 
-    expect(find.byType(CalendarScreen), findsOneWidget);
-    expect(find.byType(CalendarMonthHeader), findsOneWidget);
-    expect(find.byType(CalendarWeekdayHeader), findsOneWidget);
-    expect(find.byType(CalendarDayEmptyCard), findsOneWidget);
-    expect(find.byType(FloatingActionButton), findsOneWidget);
-  });
+      expect(find.byType(CalendarScreen), findsOneWidget);
+      expect(find.byType(CalendarMonthHeader), findsOneWidget);
+      expect(find.byType(CalendarWeekdayHeader), findsOneWidget);
+      expect(find.byType(CalendarDayEmptyCard), findsOneWidget);
+      expect(find.byType(FloatingActionButton), findsOneWidget);
+    },
+  );
 
   testWidgets(
-      'CalendarScreen opens AddWeightSheet when FloatingActionButton is tapped', (
-    tester,
-  ) async {
-    await tester.pumpWidget(
-      MultiBlocProvider(
-        providers: [
-          BlocProvider(create: (_) => AppSettingsBloc()),
-          BlocProvider(
-            create: (context) => WeightBloc(repository: repository)
-              ..add(const SubscribeToWeightChanges()),
+    'CalendarScreen opens AddWeightSheet when FloatingActionButton is tapped',
+    (tester) async {
+      await tester.pumpWidget(
+        MultiBlocProvider(
+          providers: [
+            BlocProvider(create: (_) => AppSettingsBloc()),
+            BlocProvider(
+              create: (context) =>
+                  WeightBloc(repository: repository)
+                    ..add(const SubscribeToWeightChanges()),
+            ),
+          ],
+          child: const MaterialApp(
+            locale: Locale('pl'),
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            home: CalendarScreen(),
           ),
-        ],
-        child: const MaterialApp(
-          locale: Locale('pl'),
-          localizationsDelegates: AppLocalizations.localizationsDelegates,
-          supportedLocales: AppLocalizations.supportedLocales,
-          home: CalendarScreen(),
         ),
-      ),
-    );
+      );
 
-    await tester.pumpAndSettle();
+      await tester.pumpAndSettle();
 
-    await tester.tap(find.byType(FloatingActionButton));
-    await tester.pumpAndSettle();
+      await tester.tap(find.byType(FloatingActionButton));
+      await tester.pumpAndSettle();
 
-    expect(find.byType(AddWeightSheet), findsOneWidget);
-  });
+      expect(find.byType(AddWeightSheet), findsOneWidget);
+    },
+  );
 
-  testWidgets(
-      'CalendarScreen renders error card during WeightError state', (
+  testWidgets('CalendarScreen renders error card during WeightError state', (
     tester,
   ) async {
-    when(() => repository.watchAllEntries())
-        .thenAnswer((_) => Stream.error(Exception('Database error')));
+    when(
+      () => repository.watchAllEntries(),
+    ).thenAnswer((_) => Stream.error(Exception('Database error')));
 
     await tester.pumpWidget(
       MultiBlocProvider(
         providers: [
           BlocProvider(create: (_) => AppSettingsBloc()),
           BlocProvider(
-            create: (context) => WeightBloc(repository: repository)
-              ..add(const SubscribeToWeightChanges()),
+            create: (context) =>
+                WeightBloc(repository: repository)
+                  ..add(const SubscribeToWeightChanges()),
           ),
         ],
         child: const MaterialApp(

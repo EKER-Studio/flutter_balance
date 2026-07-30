@@ -82,7 +82,8 @@ class TodayScreen extends StatelessWidget {
           listenWhen: (previous, current) => current is WeightError,
           listener: (context, state) {
             if (state is WeightError) {
-              final message = state.message ?? _getErrorMessage(context, state.errorType);
+              final message =
+                  state.message ?? _getErrorMessage(context, state.errorType);
               ScaffoldMessenger.of(context).hideCurrentSnackBar();
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
@@ -90,7 +91,9 @@ class TodayScreen extends StatelessWidget {
                   action: SnackBarAction(
                     label: l10n.retry,
                     onPressed: () {
-                      context.read<WeightBloc>().add(const SubscribeToWeightChanges());
+                      context.read<WeightBloc>().add(
+                        const SubscribeToWeightChanges(),
+                      );
                     },
                   ),
                 ),
@@ -113,8 +116,16 @@ class TodayScreen extends StatelessWidget {
 
             if (state is WeightError && entries.isEmpty) {
               return ClampedLayout(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                child: _buildErrorCard(context, state.errorType, state.message, l10n),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 12,
+                ),
+                child: _buildErrorCard(
+                  context,
+                  state.errorType,
+                  state.message,
+                  l10n,
+                ),
               );
             }
 
@@ -136,17 +147,27 @@ class TodayScreen extends StatelessWidget {
 
             return RefreshIndicator(
               onRefresh: () async {
-                context.read<WeightBloc>().add(const SubscribeToWeightChanges());
+                context.read<WeightBloc>().add(
+                  const SubscribeToWeightChanges(),
+                );
               },
               child: ClampedLayout(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 12,
+                ),
                 child: SingleChildScrollView(
                   physics: const AlwaysScrollableScrollPhysics(),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       if (state is WeightError) ...[
-                        _buildInlineErrorBanner(context, state.errorType, state.message, l10n),
+                        _buildInlineErrorBanner(
+                          context,
+                          state.errorType,
+                          state.message,
+                          l10n,
+                        ),
                         const SizedBox(height: 16),
                       ],
                       HealthSummaryCard(
@@ -184,7 +205,9 @@ class TodayScreen extends StatelessWidget {
             WeightError(:final entries) => entries,
             _ => <WeightEntry>[],
           };
-          if (entries.isEmpty || state is WeightInitial || state is WeightLoading) {
+          if (entries.isEmpty ||
+              state is WeightInitial ||
+              state is WeightLoading) {
             return const SizedBox.shrink();
           }
           return FloatingActionButton(
@@ -222,9 +245,9 @@ class TodayScreen extends StatelessWidget {
             child: Text(
               errorText,
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: Theme.of(context).colorScheme.onErrorContainer,
-                    fontWeight: FontWeight.w500,
-                  ),
+                color: Theme.of(context).colorScheme.onErrorContainer,
+                fontWeight: FontWeight.w500,
+              ),
             ),
           ),
           TextButton(
@@ -253,9 +276,7 @@ class TodayScreen extends StatelessWidget {
     return Card(
       elevation: 0,
       color: Theme.of(context).colorScheme.errorContainer,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(28),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
       child: Padding(
         padding: const EdgeInsets.all(24),
         child: Column(
@@ -270,23 +291,25 @@ class TodayScreen extends StatelessWidget {
             Text(
               l10n.errorReadFailed,
               style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: Theme.of(context).colorScheme.onErrorContainer,
-                  ),
+                fontWeight: FontWeight.bold,
+                color: Theme.of(context).colorScheme.onErrorContainer,
+              ),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 6),
             Text(
               errorText,
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: Theme.of(context).colorScheme.onErrorContainer,
-                  ),
+                color: Theme.of(context).colorScheme.onErrorContainer,
+              ),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 20),
             FilledButton.icon(
               onPressed: () {
-                context.read<WeightBloc>().add(const SubscribeToWeightChanges());
+                context.read<WeightBloc>().add(
+                  const SubscribeToWeightChanges(),
+                );
               },
               icon: const Icon(Icons.refresh, size: 18),
               label: Text(l10n.retry),
@@ -297,7 +320,10 @@ class TodayScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildColdStartEmptyState(BuildContext context, AppLocalizations l10n) {
+  Widget _buildColdStartEmptyState(
+    BuildContext context,
+    AppLocalizations l10n,
+  ) {
     return Center(
       child: SingleChildScrollView(
         child: Padding(
@@ -323,9 +349,9 @@ class TodayScreen extends StatelessWidget {
               Text(
                 l10n.welcomeTitle,
                 style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: Theme.of(context).colorScheme.onSurface,
-                    ),
+                  fontWeight: FontWeight.bold,
+                  color: Theme.of(context).colorScheme.onSurface,
+                ),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 12),
@@ -334,8 +360,8 @@ class TodayScreen extends StatelessWidget {
                 child: Text(
                   l10n.welcomeSubtitle,
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: Theme.of(context).colorScheme.onSurfaceVariant,
-                      ),
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  ),
                   textAlign: TextAlign.center,
                 ),
               ),
@@ -397,8 +423,8 @@ class TodayScreen extends StatelessWidget {
                   child: Text(
                     l10n.weightTrend,
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
                 WeightChart(
@@ -418,9 +444,6 @@ class TodayScreen extends StatelessWidget {
   }
 
   void _showAddWeightSheet(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (_) => const AddWeightSheet(),
-    );
+    showDialog(context: context, builder: (_) => const AddWeightSheet());
   }
 }

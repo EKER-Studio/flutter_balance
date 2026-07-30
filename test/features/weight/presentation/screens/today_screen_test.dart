@@ -52,9 +52,13 @@ void main() {
     );
   }
 
-  testWidgets('renders shimmer skeleton during WeightLoading state', (tester) async {
+  testWidgets('renders shimmer skeleton during WeightLoading state', (
+    tester,
+  ) async {
     when(() => weightBloc.state).thenReturn(const WeightLoading());
-    when(() => weightBloc.stream).thenAnswer((_) => Stream.value(const WeightLoading()));
+    when(
+      () => weightBloc.stream,
+    ).thenAnswer((_) => Stream.value(const WeightLoading()));
 
     await tester.pumpWidget(createTestWidget(const TodayScreen()));
     await tester.pump();
@@ -63,63 +67,71 @@ void main() {
     expect(find.byType(FloatingActionButton), findsNothing);
   });
 
-  testWidgets('renders error card with retry button during WeightError state with empty entries', (tester) async {
-    when(() => weightBloc.state).thenReturn(
-      const WeightError(
-        errorType: WeightErrorType.readFailed,
-        entries: [],
-        filteredEntries: [],
-      ),
-    );
-    when(() => weightBloc.stream).thenAnswer(
-      (_) => Stream.value(
+  testWidgets(
+    'renders error card with retry button during WeightError state with empty entries',
+    (tester) async {
+      when(() => weightBloc.state).thenReturn(
         const WeightError(
           errorType: WeightErrorType.readFailed,
           entries: [],
           filteredEntries: [],
         ),
-      ),
-    );
+      );
+      when(() => weightBloc.stream).thenAnswer(
+        (_) => Stream.value(
+          const WeightError(
+            errorType: WeightErrorType.readFailed,
+            entries: [],
+            filteredEntries: [],
+          ),
+        ),
+      );
 
-    await tester.pumpWidget(createTestWidget(const TodayScreen()));
-    await tester.pump();
+      await tester.pumpWidget(createTestWidget(const TodayScreen()));
+      await tester.pump();
 
-    expect(find.text('Failed to read weight data.'), findsWidgets);
-    expect(find.text('Try again'), findsWidgets);
-  });
+      expect(find.text('Failed to read weight data.'), findsWidgets);
+      expect(find.text('Try again'), findsWidgets);
+    },
+  );
 
-  testWidgets('renders inline error banner when WeightError state occurs with cached entries', (tester) async {
-    final entry = WeightEntry(
-      id: 1,
-      weightKg: 70.0,
-      dateTime: DateTime.now(),
-    );
+  testWidgets(
+    'renders inline error banner when WeightError state occurs with cached entries',
+    (tester) async {
+      final entry = WeightEntry(
+        id: 1,
+        weightKg: 70.0,
+        dateTime: DateTime.now(),
+      );
 
-    when(() => weightBloc.state).thenReturn(
-      WeightError(
-        errorType: WeightErrorType.writeFailed,
-        entries: [entry],
-        filteredEntries: [entry],
-      ),
-    );
-    when(() => weightBloc.stream).thenAnswer(
-      (_) => Stream.value(
+      when(() => weightBloc.state).thenReturn(
         WeightError(
           errorType: WeightErrorType.writeFailed,
           entries: [entry],
           filteredEntries: [entry],
         ),
-      ),
-    );
+      );
+      when(() => weightBloc.stream).thenAnswer(
+        (_) => Stream.value(
+          WeightError(
+            errorType: WeightErrorType.writeFailed,
+            entries: [entry],
+            filteredEntries: [entry],
+          ),
+        ),
+      );
 
-    await tester.pumpWidget(createTestWidget(const TodayScreen()));
-    await tester.pump();
+      await tester.pumpWidget(createTestWidget(const TodayScreen()));
+      await tester.pump();
 
-    expect(find.byIcon(Icons.warning_amber_rounded), findsOneWidget);
-    expect(find.text('Failed to save weight data.'), findsWidgets);
-  });
+      expect(find.byIcon(Icons.warning_amber_rounded), findsOneWidget);
+      expect(find.text('Failed to save weight data.'), findsWidgets);
+    },
+  );
 
-  testWidgets('renders cold start empty state when no weight entries exist', (tester) async {
+  testWidgets('renders cold start empty state when no weight entries exist', (
+    tester,
+  ) async {
     when(() => weightBloc.state).thenReturn(
       const WeightLoaded(
         entries: [],
@@ -147,12 +159,10 @@ void main() {
     expect(find.byType(FloatingActionButton), findsNothing);
   });
 
-  testWidgets('renders cards and FAB when weight entries exist', (tester) async {
-    final entry = WeightEntry(
-      id: 1,
-      weightKg: 72.5,
-      dateTime: DateTime.now(),
-    );
+  testWidgets('renders cards and FAB when weight entries exist', (
+    tester,
+  ) async {
+    final entry = WeightEntry(id: 1, weightKg: 72.5, dateTime: DateTime.now());
 
     when(() => weightBloc.state).thenReturn(
       WeightLoaded(

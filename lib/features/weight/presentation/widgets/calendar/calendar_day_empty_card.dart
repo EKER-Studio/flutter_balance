@@ -8,10 +8,7 @@ class CalendarDayEmptyCard extends StatelessWidget {
   final DateTime selectedDate;
 
   /// Creates [CalendarDayEmptyCard].
-  const CalendarDayEmptyCard({
-    super.key,
-    required this.selectedDate,
-  });
+  const CalendarDayEmptyCard({super.key, required this.selectedDate});
 
   @override
   Widget build(BuildContext context) {
@@ -21,9 +18,7 @@ class CalendarDayEmptyCard extends StatelessWidget {
     return Card(
       elevation: 0,
       color: cs.surfaceContainerLow,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(28),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
         child: Column(
@@ -41,17 +36,17 @@ class CalendarDayEmptyCard extends StatelessWidget {
             Text(
               l10n.noEntriesForDate,
               style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: cs.onSurface,
-                  ),
+                fontWeight: FontWeight.bold,
+                color: cs.onSurface,
+              ),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 8),
             Text(
               l10n.noEntriesForDateSubtitle,
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: cs.onSurfaceVariant,
-                  ),
+              style: Theme.of(
+                context,
+              ).textTheme.bodyMedium?.copyWith(color: cs.onSurfaceVariant),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 20),

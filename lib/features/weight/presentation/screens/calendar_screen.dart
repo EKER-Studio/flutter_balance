@@ -54,7 +54,8 @@ class _CalendarScreenState extends State<CalendarScreen> {
     setState(() {
       _selectedDate = date;
       // Focus month if selected date is in a different month
-      if (date.year != _focusedMonth.year || date.month != _focusedMonth.month) {
+      if (date.year != _focusedMonth.year ||
+          date.month != _focusedMonth.month) {
         _focusedMonth = DateTime(date.year, date.month, 1);
       }
     });
@@ -64,7 +65,9 @@ class _CalendarScreenState extends State<CalendarScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final locale = Localizations.localeOf(context).toString();
-    final formattedSelectedDate = DateFormat.MMMMd(locale).format(_selectedDate);
+    final formattedSelectedDate = DateFormat.MMMMd(
+      locale,
+    ).format(_selectedDate);
     final targetWeight = context.watch<AppSettingsBloc>().state.targetWeight;
 
     final now = DateTime.now();
@@ -102,7 +105,10 @@ class _CalendarScreenState extends State<CalendarScreen> {
 
             if (state is WeightError) {
               return ClampedLayout(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 12,
+                ),
                 child: CalendarErrorCard(errorMessage: state.message ?? ''),
               );
             }
@@ -113,10 +119,13 @@ class _CalendarScreenState extends State<CalendarScreen> {
             };
 
             // Filter entries for the selected day
-            final dayEntries = entries
-                .where((e) => DateUtils.isSameDay(e.dateTime, _selectedDate))
-                .toList()
-              ..sort((a, b) => b.dateTime.compareTo(a.dateTime));
+            final dayEntries =
+                entries
+                    .where(
+                      (e) => DateUtils.isSameDay(e.dateTime, _selectedDate),
+                    )
+                    .toList()
+                  ..sort((a, b) => b.dateTime.compareTo(a.dateTime));
 
             return ClampedLayout(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -160,13 +169,13 @@ class _CalendarScreenState extends State<CalendarScreen> {
                       padding: const EdgeInsets.only(left: 8, bottom: 8),
                       child: Text(
                         l10n.entriesFromDate(formattedSelectedDate),
-                        style:
-                            Theme.of(context).textTheme.titleMedium?.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                  color: Theme.of(context)
-                                      .colorScheme
-                                      .onSurfaceVariant,
-                                ),
+                        style: Theme.of(context).textTheme.titleMedium
+                            ?.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: Theme.of(
+                                context,
+                              ).colorScheme.onSurfaceVariant,
+                            ),
                       ),
                     ),
                     // Selected Day Details / Future / Empty State Card

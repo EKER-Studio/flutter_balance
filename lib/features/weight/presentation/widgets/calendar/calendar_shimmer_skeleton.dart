@@ -23,9 +23,10 @@ class _CalendarShimmerSkeletonState extends State<CalendarShimmerSkeleton>
       duration: const Duration(milliseconds: 1000),
     )..repeat(reverse: true);
 
-    _animation = Tween<double>(begin: 0.35, end: 0.85).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
-    );
+    _animation = Tween<double>(
+      begin: 0.35,
+      end: 0.85,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
   }
 
   @override
@@ -41,8 +42,9 @@ class _CalendarShimmerSkeletonState extends State<CalendarShimmerSkeleton>
     return AnimatedBuilder(
       animation: _animation,
       builder: (context, _) {
-        final shimmerColor =
-            cs.surfaceContainerHighest.withValues(alpha: _animation.value);
+        final shimmerColor = cs.surfaceContainerHighest.withValues(
+          alpha: _animation.value,
+        );
 
         return SingleChildScrollView(
           physics: const NeverScrollableScrollPhysics(),
@@ -113,11 +115,11 @@ class _CalendarShimmerSkeletonState extends State<CalendarShimmerSkeleton>
                         shrinkWrap: true,
                         gridDelegate:
                             const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 7,
-                          mainAxisSpacing: 8,
-                          crossAxisSpacing: 4,
-                          childAspectRatio: 1.0,
-                        ),
+                              crossAxisCount: 7,
+                              mainAxisSpacing: 8,
+                              crossAxisSpacing: 4,
+                              childAspectRatio: 1.0,
+                            ),
                         itemCount: 35,
                         itemBuilder: (context, index) {
                           return Center(
@@ -157,8 +159,10 @@ class _CalendarShimmerSkeletonState extends State<CalendarShimmerSkeleton>
                   borderRadius: BorderRadius.circular(28),
                 ),
                 child: Padding(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 24,
+                    vertical: 32,
+                  ),
                   child: Column(
                     children: [
                       Container(

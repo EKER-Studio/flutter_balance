@@ -23,9 +23,7 @@ class StatisticsScreen extends StatelessWidget {
     final l10n = AppLocalizations.of(context);
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(l10n.tabStats),
-      ),
+      appBar: AppBar(title: Text(l10n.tabStats)),
       body: SafeArea(
         child: BlocBuilder<WeightBloc, WeightState>(
           builder: (context, weightState) {
@@ -73,7 +71,9 @@ class StatisticsScreen extends StatelessWidget {
                         const SizedBox(height: 16),
                         _buildKeyMetricsGrid(
                           context,
-                          entries: filteredEntries.isNotEmpty ? filteredEntries : entries,
+                          entries: filteredEntries.isNotEmpty
+                              ? filteredEntries
+                              : entries,
                           unit: unit,
                           heightCm: heightCm,
                           l10n: l10n,
@@ -126,8 +126,11 @@ class StatisticsScreen extends StatelessWidget {
                         Expanded(
                           child: Text(
                             l10n.loggingStreak,
-                            style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                                  color: cs.onPrimaryContainer.withValues(alpha: 0.8),
+                            style: Theme.of(context).textTheme.labelMedium
+                                ?.copyWith(
+                                  color: cs.onPrimaryContainer.withValues(
+                                    alpha: 0.8,
+                                  ),
                                 ),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
@@ -138,7 +141,8 @@ class StatisticsScreen extends StatelessWidget {
                     const SizedBox(height: 8),
                     Text(
                       l10n.streakDays(streak),
-                      style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                      style: Theme.of(context).textTheme.headlineSmall
+                          ?.copyWith(
                             color: cs.onPrimaryContainer,
                             fontWeight: FontWeight.bold,
                           ),
@@ -167,16 +171,16 @@ class StatisticsScreen extends StatelessWidget {
                   children: [
                     Row(
                       children: [
-                        Icon(
-                          Icons.insights,
-                          color: cs.onSecondaryContainer,
-                        ),
+                        Icon(Icons.insights, color: cs.onSecondaryContainer),
                         const SizedBox(width: 6),
                         Expanded(
                           child: Text(
                             l10n.monthlyCompliance,
-                            style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                                  color: cs.onSecondaryContainer.withValues(alpha: 0.8),
+                            style: Theme.of(context).textTheme.labelMedium
+                                ?.copyWith(
+                                  color: cs.onSecondaryContainer.withValues(
+                                    alpha: 0.8,
+                                  ),
                                 ),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
@@ -187,7 +191,8 @@ class StatisticsScreen extends StatelessWidget {
                     const SizedBox(height: 8),
                     Text(
                       '$compliancePct%',
-                      style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                      style: Theme.of(context).textTheme.headlineSmall
+                          ?.copyWith(
                             color: cs.onSecondaryContainer,
                             fontWeight: FontWeight.bold,
                           ),
@@ -212,8 +217,12 @@ class StatisticsScreen extends StatelessWidget {
     required AppLocalizations l10n,
   }) {
     final cs = Theme.of(context).colorScheme;
-    final latestKg = filteredEntries.isNotEmpty ? filteredEntries.last.weightKg : null;
-    final formattedLatest = latestKg != null ? formatWeight(latestKg, unit) : '—';
+    final latestKg = filteredEntries.isNotEmpty
+        ? filteredEntries.last.weightKg
+        : null;
+    final formattedLatest = latestKg != null
+        ? formatWeight(latestKg, unit)
+        : '—';
     final unitLabel = unit == MeasurementUnit.imperial ? 'lb' : 'kg';
 
     final percentChange = _calculatePercentChange(filteredEntries);
@@ -224,9 +233,7 @@ class StatisticsScreen extends StatelessWidget {
       child: Card(
         elevation: 0,
         color: cs.surfaceContainerLow,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(28),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
         child: Padding(
           padding: const EdgeInsets.all(16),
           child: Column(
@@ -241,7 +248,8 @@ class StatisticsScreen extends StatelessWidget {
                     children: [
                       Text(
                         l10n.weightTrend,
-                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        style: Theme.of(context).textTheme.titleMedium
+                            ?.copyWith(
                               color: cs.onSurfaceVariant,
                               fontWeight: FontWeight.w500,
                             ),
@@ -253,7 +261,8 @@ class StatisticsScreen extends StatelessWidget {
                         children: [
                           Text(
                             formattedLatest,
-                            style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                            style: Theme.of(context).textTheme.headlineMedium
+                                ?.copyWith(
                                   color: cs.onSurface,
                                   fontWeight: FontWeight.bold,
                                 ),
@@ -262,9 +271,8 @@ class StatisticsScreen extends StatelessWidget {
                             const SizedBox(width: 4),
                             Text(
                               unitLabel,
-                              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                                    color: cs.onSurfaceVariant,
-                                  ),
+                              style: Theme.of(context).textTheme.titleMedium
+                                  ?.copyWith(color: cs.onSurfaceVariant),
                             ),
                           ],
                         ],
@@ -328,9 +336,9 @@ class StatisticsScreen extends StatelessWidget {
             Text(
               formattedValue,
               style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                    color: contentColor,
-                    fontWeight: FontWeight.bold,
-                  ),
+                color: contentColor,
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ],
         ),
@@ -367,20 +375,30 @@ class StatisticsScreen extends StatelessWidget {
     final unitLabel = unit == MeasurementUnit.imperial ? 'lb' : 'kg';
 
     final minDisplay = minWeightKg != null
-        ? (unit == MeasurementUnit.imperial ? kgToLbs(minWeightKg) : minWeightKg)
+        ? (unit == MeasurementUnit.imperial
+              ? kgToLbs(minWeightKg)
+              : minWeightKg)
         : null;
     final maxDisplay = maxWeightKg != null
-        ? (unit == MeasurementUnit.imperial ? kgToLbs(maxWeightKg) : maxWeightKg)
+        ? (unit == MeasurementUnit.imperial
+              ? kgToLbs(maxWeightKg)
+              : maxWeightKg)
         : null;
     final netChangeDisplay = netChangeKg != null
-        ? (unit == MeasurementUnit.imperial ? kgToLbs(netChangeKg) : netChangeKg)
+        ? (unit == MeasurementUnit.imperial
+              ? kgToLbs(netChangeKg)
+              : netChangeKg)
         : null;
 
     final bmi = (avgWeightKg != null && heightCm > 0)
         ? avgWeightKg / ((heightCm / 100) * (heightCm / 100))
         : null;
-    final bmiCategory = bmi != null && bmi.isFinite ? getBmiCategory(bmi) : null;
-    final bmiCategoryText = bmiCategory != null ? _interpretBmi(bmiCategory, l10n) : '—';
+    final bmiCategory = bmi != null && bmi.isFinite
+        ? getBmiCategory(bmi)
+        : null;
+    final bmiCategoryText = bmiCategory != null
+        ? _interpretBmi(bmiCategory, l10n)
+        : '—';
 
     return Column(
       children: [
@@ -394,7 +412,8 @@ class StatisticsScreen extends StatelessWidget {
                 subtitle: unitLabel,
                 icon: Icons.south_east,
                 iconColor: Theme.of(context).colorScheme.primary,
-                semanticLabel: '${l10n.lowest}: ${minDisplay != null ? "${minDisplay.toStringAsFixed(1)} $unitLabel" : "brak danych"}',
+                semanticLabel:
+                    '${l10n.lowest}: ${minDisplay != null ? "${minDisplay.toStringAsFixed(1)} $unitLabel" : "brak danych"}',
               ),
             ),
             const SizedBox(width: 12),
@@ -406,7 +425,8 @@ class StatisticsScreen extends StatelessWidget {
                 subtitle: unitLabel,
                 icon: Icons.north_east,
                 iconColor: Theme.of(context).colorScheme.error,
-                semanticLabel: '${l10n.highest}: ${maxDisplay != null ? "${maxDisplay.toStringAsFixed(1)} $unitLabel" : "brak danych"}',
+                semanticLabel:
+                    '${l10n.highest}: ${maxDisplay != null ? "${maxDisplay.toStringAsFixed(1)} $unitLabel" : "brak danych"}',
               ),
             ),
           ],
@@ -427,7 +447,8 @@ class StatisticsScreen extends StatelessWidget {
                 valueColor: netChangeDisplay != null && netChangeDisplay < 0
                     ? Theme.of(context).colorScheme.primary
                     : Theme.of(context).colorScheme.onSurface,
-                semanticLabel: '${l10n.totalProgress}: ${netChangeDisplay != null ? "${netChangeDisplay.toStringAsFixed(1)} $unitLabel" : "brak danych"}',
+                semanticLabel:
+                    '${l10n.totalProgress}: ${netChangeDisplay != null ? "${netChangeDisplay.toStringAsFixed(1)} $unitLabel" : "brak danych"}',
               ),
             ),
             const SizedBox(width: 12),
@@ -439,7 +460,8 @@ class StatisticsScreen extends StatelessWidget {
                 subtitle: bmiCategoryText,
                 icon: Icons.monitor_heart_outlined,
                 iconColor: Theme.of(context).colorScheme.secondary,
-                semanticLabel: '${l10n.bmi}: ${bmi != null ? "${bmi.toStringAsFixed(1)}, $bmiCategoryText" : "brak danych"}',
+                semanticLabel:
+                    '${l10n.bmi}: ${bmi != null ? "${bmi.toStringAsFixed(1)}, $bmiCategoryText" : "brak danych"}',
               ),
             ),
           ],
@@ -467,9 +489,7 @@ class StatisticsScreen extends StatelessWidget {
       child: Card(
         elevation: 0,
         color: cs.surfaceContainerLow,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(28),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
         child: Padding(
           padding: const EdgeInsets.all(16),
           child: Column(
@@ -484,9 +504,9 @@ class StatisticsScreen extends StatelessWidget {
                     child: Text(
                       title,
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                            color: cs.onSurface,
-                            fontWeight: FontWeight.w500,
-                          ),
+                        color: cs.onSurface,
+                        fontWeight: FontWeight.w500,
+                      ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
@@ -500,9 +520,9 @@ class StatisticsScreen extends StatelessWidget {
                   Text(
                     value,
                     style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                          color: valueColor ?? cs.onSurface,
-                          fontWeight: FontWeight.bold,
-                        ),
+                      color: valueColor ?? cs.onSurface,
+                      fontWeight: FontWeight.bold,
+                    ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -510,8 +530,8 @@ class StatisticsScreen extends StatelessWidget {
                   Text(
                     subtitle,
                     style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                          color: cs.onSurfaceVariant,
-                        ),
+                      color: cs.onSurfaceVariant,
+                    ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -543,11 +563,15 @@ class StatisticsScreen extends StatelessWidget {
   int _calculateStreak(List<WeightEntry> entries) {
     if (entries.isEmpty) return 0;
 
-    final dates = entries
-        .map((e) => DateTime(e.dateTime.year, e.dateTime.month, e.dateTime.day))
-        .toSet()
-        .toList()
-      ..sort((a, b) => b.compareTo(a));
+    final dates =
+        entries
+            .map(
+              (e) =>
+                  DateTime(e.dateTime.year, e.dateTime.month, e.dateTime.day),
+            )
+            .toSet()
+            .toList()
+          ..sort((a, b) => b.compareTo(a));
 
     final today = DateTime.now();
     final todayDate = DateTime(today.year, today.month, today.day);
@@ -592,4 +616,3 @@ class StatisticsScreen extends StatelessWidget {
     };
   }
 }
-

@@ -10,10 +10,7 @@ class CalendarErrorCard extends StatelessWidget {
   final String errorMessage;
 
   /// Creates a [CalendarErrorCard] widget with [errorMessage].
-  const CalendarErrorCard({
-    super.key,
-    required this.errorMessage,
-  });
+  const CalendarErrorCard({super.key, required this.errorMessage});
 
   @override
   Widget build(BuildContext context) {
@@ -23,9 +20,7 @@ class CalendarErrorCard extends StatelessWidget {
     return Card(
       elevation: 0,
       color: cs.errorContainer,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(28),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
         child: Column(
@@ -44,9 +39,9 @@ class CalendarErrorCard extends StatelessWidget {
             Text(
               l10n.databaseErrorTitle,
               style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: cs.onErrorContainer,
-                  ),
+                fontWeight: FontWeight.bold,
+                color: cs.onErrorContainer,
+              ),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 8),
@@ -55,8 +50,8 @@ class CalendarErrorCard extends StatelessWidget {
                   ? errorMessage
                   : l10n.databaseErrorDefaultMessage,
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: cs.onErrorContainer.withValues(alpha: 0.8),
-                  ),
+                color: cs.onErrorContainer.withValues(alpha: 0.8),
+              ),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 20),
@@ -69,8 +64,10 @@ class CalendarErrorCard extends StatelessWidget {
               style: FilledButton.styleFrom(
                 backgroundColor: cs.onErrorContainer,
                 foregroundColor: cs.errorContainer,
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 12,
+                ),
                 shape: const StadiumBorder(),
               ),
             ),

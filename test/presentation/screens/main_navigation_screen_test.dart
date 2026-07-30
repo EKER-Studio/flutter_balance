@@ -26,8 +26,9 @@ void main() {
     when(() => storage.write(any(), any())).thenAnswer((_) async {});
     HydratedBloc.storage = storage;
 
-    when(() => repository.watchAllEntries())
-        .thenAnswer((_) => Stream.value(<WeightEntry>[]));
+    when(
+      () => repository.watchAllEntries(),
+    ).thenAnswer((_) => Stream.value(<WeightEntry>[]));
   });
 
   testWidgets('MainNavigationScreen renders all 4 bottom navigation tabs', (
@@ -38,8 +39,9 @@ void main() {
         providers: [
           BlocProvider(create: (_) => AppSettingsBloc()),
           BlocProvider(
-            create: (_) => WeightBloc(repository: repository)
-              ..add(const SubscribeToWeightChanges()),
+            create: (_) =>
+                WeightBloc(repository: repository)
+                  ..add(const SubscribeToWeightChanges()),
           ),
         ],
         child: const MaterialApp(

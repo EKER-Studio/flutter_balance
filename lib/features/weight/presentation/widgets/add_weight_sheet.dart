@@ -46,12 +46,12 @@ class _AddWeightSheetState extends State<AddWeightSheet> {
   }
 
   DateTime get _combinedDateTime => DateTime(
-        _selectedDate.year,
-        _selectedDate.month,
-        _selectedDate.day,
-        _selectedTime.hour,
-        _selectedTime.minute,
-      );
+    _selectedDate.year,
+    _selectedDate.month,
+    _selectedDate.day,
+    _selectedTime.hour,
+    _selectedTime.minute,
+  );
 
   Future<void> _pickDate(BuildContext context) async {
     final now = DateTime.now();
@@ -105,9 +105,7 @@ class _AddWeightSheetState extends State<AddWeightSheet> {
 
     return Dialog(
       backgroundColor: Theme.of(context).colorScheme.surfaceContainerHigh,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(28),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
       insetPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
       child: ConstrainedBox(
         constraints: const BoxConstraints(maxWidth: 400),
@@ -130,7 +128,8 @@ class _AddWeightSheetState extends State<AddWeightSheet> {
                       const SizedBox(height: 12),
                       Text(
                         l10n.addWeight,
-                        style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                        style: Theme.of(context).textTheme.headlineMedium
+                            ?.copyWith(
                               fontWeight: FontWeight.bold,
                               color: Theme.of(context).colorScheme.onSurface,
                             ),
@@ -153,7 +152,10 @@ class _AddWeightSheetState extends State<AddWeightSheet> {
                             decoration: InputDecoration(
                               labelText: l10n.measurementDate,
                               border: const OutlineInputBorder(),
-                              suffixIcon: const Icon(Icons.calendar_today_outlined, size: 20),
+                              suffixIcon: const Icon(
+                                Icons.calendar_today_outlined,
+                                size: 20,
+                              ),
                             ),
                             child: Text(
                               dateStr,
@@ -176,7 +178,10 @@ class _AddWeightSheetState extends State<AddWeightSheet> {
                             decoration: InputDecoration(
                               labelText: l10n.measurementTime,
                               border: const OutlineInputBorder(),
-                              suffixIcon: const Icon(Icons.access_time_outlined, size: 20),
+                              suffixIcon: const Icon(
+                                Icons.access_time_outlined,
+                                size: 20,
+                              ),
                             ),
                             child: Text(
                               timeStr,
@@ -246,7 +251,10 @@ class _AddWeightSheetState extends State<AddWeightSheet> {
                     TextButton(
                       onPressed: () => Navigator.of(context).pop(),
                       style: TextButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 12,
+                        ),
                         minimumSize: const Size(48, 48),
                       ),
                       child: Text(l10n.cancel),
@@ -255,7 +263,10 @@ class _AddWeightSheetState extends State<AddWeightSheet> {
                     FilledButton(
                       onPressed: _onSave,
                       style: FilledButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 20,
+                          vertical: 12,
+                        ),
                         minimumSize: const Size(48, 48),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(20),
@@ -296,16 +307,16 @@ class _AddWeightSheetState extends State<AddWeightSheet> {
       }
 
       final unit = context.read<AppSettingsBloc>().state.measurementUnit;
-      final weightKg = unit == MeasurementUnit.imperial ? lbsToKg(parsed) : parsed;
-      final note = _noteController.text.trim().isEmpty ? null : _noteController.text.trim();
+      final weightKg = unit == MeasurementUnit.imperial
+          ? lbsToKg(parsed)
+          : parsed;
+      final note = _noteController.text.trim().isEmpty
+          ? null
+          : _noteController.text.trim();
 
       context.read<WeightBloc>().add(
-            AddWeight(
-              weightKg: weightKg,
-              note: note,
-              dateTime: _combinedDateTime,
-            ),
-          );
+        AddWeight(weightKg: weightKg, note: note, dateTime: _combinedDateTime),
+      );
 
       Navigator.of(context).pop();
     }

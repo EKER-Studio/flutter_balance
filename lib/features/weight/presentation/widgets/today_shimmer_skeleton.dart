@@ -22,9 +22,10 @@ class _TodayShimmerSkeletonState extends State<TodayShimmerSkeleton>
       duration: const Duration(milliseconds: 1000),
     )..repeat(reverse: true);
 
-    _animation = Tween<double>(begin: 0.35, end: 0.85).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
-    );
+    _animation = Tween<double>(
+      begin: 0.35,
+      end: 0.85,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
   }
 
   @override
@@ -40,8 +41,9 @@ class _TodayShimmerSkeletonState extends State<TodayShimmerSkeleton>
     return AnimatedBuilder(
       animation: _animation,
       builder: (context, _) {
-        final shimmerColor =
-            cs.surfaceContainerHighest.withValues(alpha: _animation.value);
+        final shimmerColor = cs.surfaceContainerHighest.withValues(
+          alpha: _animation.value,
+        );
 
         return SingleChildScrollView(
           physics: const NeverScrollableScrollPhysics(),

@@ -62,15 +62,17 @@ class HealthSummaryCard extends StatelessWidget {
                         children: [
                           Text(
                             l10n.bmi,
-                            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                ),
+                            style: Theme.of(context).textTheme.titleMedium
+                                ?.copyWith(fontWeight: FontWeight.bold),
                           ),
                           const SizedBox(height: 2),
                           Text(
                             lastUpdateText,
-                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                            style: Theme.of(context).textTheme.bodySmall
+                                ?.copyWith(
+                                  color: Theme.of(
+                                    context,
+                                  ).colorScheme.onSurfaceVariant,
                                 ),
                           ),
                         ],
@@ -78,7 +80,9 @@ class HealthSummaryCard extends StatelessWidget {
                     ),
                     if (category != null)
                       Semantics(
-                        label: l10n.bmiCategoryLabel(_interpretBmi(category, l10n)),
+                        label: l10n.bmiCategoryLabel(
+                          _interpretBmi(category, l10n),
+                        ),
                         child: Container(
                           padding: const EdgeInsets.symmetric(
                             horizontal: 12,
@@ -99,7 +103,8 @@ class HealthSummaryCard extends StatelessWidget {
                               const SizedBox(width: 4),
                               Text(
                                 _interpretBmi(category, l10n),
-                                style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                                style: Theme.of(context).textTheme.labelMedium
+                                    ?.copyWith(
                                       color: badgeColor,
                                       fontWeight: FontWeight.bold,
                                     ),
@@ -117,7 +122,9 @@ class HealthSummaryCard extends StatelessWidget {
                   children: [
                     Semantics(
                       label: l10n.bmiValueLabel(
-                        bmi.isFinite ? bmi.toStringAsFixed(1) : l10n.heightNotSetLabel,
+                        bmi.isFinite
+                            ? bmi.toStringAsFixed(1)
+                            : l10n.heightNotSetLabel,
                       ),
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.baseline,
@@ -125,7 +132,8 @@ class HealthSummaryCard extends StatelessWidget {
                         children: [
                           Text(
                             bmi.isFinite ? bmi.toStringAsFixed(1) : '—',
-                            style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                            style: Theme.of(context).textTheme.headlineMedium
+                                ?.copyWith(
                                   fontWeight: FontWeight.bold,
                                   color: Theme.of(context).colorScheme.primary,
                                 ),
@@ -133,8 +141,11 @@ class HealthSummaryCard extends StatelessWidget {
                           const SizedBox(width: 6),
                           Text(
                             'kg/m²',
-                            style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                            style: Theme.of(context).textTheme.titleSmall
+                                ?.copyWith(
+                                  color: Theme.of(
+                                    context,
+                                  ).colorScheme.onSurfaceVariant,
                                 ),
                           ),
                         ],
@@ -147,23 +158,35 @@ class HealthSummaryCard extends StatelessWidget {
                   const SizedBox(height: 12),
                   Divider(
                     height: 1,
-                    color: Theme.of(context).colorScheme.outlineVariant.withValues(alpha: 0.5),
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.outlineVariant.withValues(alpha: 0.5),
                   ),
                   const SizedBox(height: 8),
                   Semantics(
-                    label: '${l10n.weightGoal}: ${_goalText(targetWeight, latestWeightKg, weightUnit, l10n)}',
+                    label:
+                        '${l10n.weightGoal}: ${_goalText(targetWeight, latestWeightKg, weightUnit, l10n)}',
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
                           l10n.weightGoal,
-                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                color: Theme.of(context).colorScheme.onSurfaceVariant,
+                          style: Theme.of(context).textTheme.bodySmall
+                              ?.copyWith(
+                                color: Theme.of(
+                                  context,
+                                ).colorScheme.onSurfaceVariant,
                               ),
                         ),
                         Text(
-                          _goalText(targetWeight, latestWeightKg, weightUnit, l10n),
-                          style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                          _goalText(
+                            targetWeight,
+                            latestWeightKg,
+                            weightUnit,
+                            l10n,
+                          ),
+                          style: Theme.of(context).textTheme.labelMedium
+                              ?.copyWith(
                                 fontWeight: FontWeight.bold,
                                 color: Theme.of(context).colorScheme.onSurface,
                               ),
@@ -186,7 +209,9 @@ class HealthSummaryCard extends StatelessWidget {
     MeasurementUnit unit,
     AppLocalizations l10n,
   ) {
-    final buttonLabel = targetWeightKg == null ? l10n.setWeightGoal : l10n.weightGoal;
+    final buttonLabel = targetWeightKg == null
+        ? l10n.setWeightGoal
+        : l10n.weightGoal;
 
     return Semantics(
       button: true,
@@ -216,19 +241,21 @@ class HealthSummaryCard extends StatelessWidget {
     MeasurementUnit unit,
   ) async {
     final displayValue = targetWeightKg != null
-        ? (unit == MeasurementUnit.imperial ? kgToLbs(targetWeightKg) : targetWeightKg)
+        ? (unit == MeasurementUnit.imperial
+              ? kgToLbs(targetWeightKg)
+              : targetWeightKg)
         : null;
 
     final result = await showDialog<double>(
       context: context,
-      builder: (ctx) => TargetWeightDialog(
-        currentValue: displayValue,
-        unit: unit,
-      ),
+      builder: (ctx) =>
+          TargetWeightDialog(currentValue: displayValue, unit: unit),
     );
 
     if (result != null && context.mounted) {
-      final targetKg = unit == MeasurementUnit.imperial ? lbsToKg(result) : result;
+      final targetKg = unit == MeasurementUnit.imperial
+          ? lbsToKg(result)
+          : result;
       context.read<AppSettingsBloc>().add(TargetWeightChanged(targetKg));
     }
   }

@@ -31,10 +31,8 @@ class CalendarDayDetailSheet extends StatelessWidget {
     return showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      builder: (sheetContext) => CalendarDayDetailSheet(
-        date: date,
-        entries: entries,
-      ),
+      builder: (sheetContext) =>
+          CalendarDayDetailSheet(date: date, entries: entries),
     );
   }
 
@@ -56,9 +54,9 @@ class CalendarDayDetailSheet extends StatelessWidget {
             children: [
               Text(
                 dateStr,
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
+                style: Theme.of(
+                  context,
+                ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
               ),
               IconButton(
                 icon: const Icon(Icons.close),
@@ -73,8 +71,8 @@ class CalendarDayDetailSheet extends StatelessWidget {
               child: Text(
                 l10n.noEntriesToday,
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: Theme.of(context).colorScheme.outline,
-                    ),
+                  color: Theme.of(context).colorScheme.outline,
+                ),
               ),
             )
           else
@@ -90,13 +88,13 @@ class CalendarDayDetailSheet extends StatelessWidget {
 
                   return ListTile(
                     leading: CircleAvatar(
-                      backgroundColor:
-                          Theme.of(context).colorScheme.primaryContainer,
+                      backgroundColor: Theme.of(
+                        context,
+                      ).colorScheme.primaryContainer,
                       child: Icon(
                         Icons.monitor_weight,
                         size: 18,
-                        color:
-                            Theme.of(context).colorScheme.onPrimaryContainer,
+                        color: Theme.of(context).colorScheme.onPrimaryContainer,
                       ),
                     ),
                     title: Text('${e.weightKg.toStringAsFixed(1)} kg'),
@@ -135,13 +133,7 @@ class CalendarDayDetailSheet extends StatelessWidget {
     final isToday = DateUtils.isSameDay(targetDate, now);
     final initialDateTime = isToday
         ? now
-        : DateTime(
-            targetDate.year,
-            targetDate.month,
-            targetDate.day,
-            12,
-            0,
-          );
+        : DateTime(targetDate.year, targetDate.month, targetDate.day, 12, 0);
 
     showDialog(
       context: context,

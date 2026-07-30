@@ -386,10 +386,7 @@ class _WeightDashboardScreenState extends State<WeightDashboardScreen> {
   }
 
   void _showAddWeightSheet(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (_) => const AddWeightSheet(),
-    );
+    showDialog(context: context, builder: (_) => const AddWeightSheet());
   }
 
   Widget _buildStatsSection(List<WeightEntry> entries, double? targetWeight) {

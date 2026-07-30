@@ -53,8 +53,8 @@ class CalendarDayCell extends StatelessWidget {
     final entriesCountLabel = !hasEntries
         ? l10n.noEntriesLabel
         : (entries.length == 1
-            ? l10n.singleEntry
-            : l10n.multipleEntries(entries.length));
+              ? l10n.singleEntry
+              : l10n.multipleEntries(entries.length));
 
     final futureSuffix = isFuture ? ', ${l10n.futureDateSuffix}' : '';
     final goalSuffix = isGoalAchieved ? ', ${l10n.goalAchieved}' : '';
@@ -76,9 +76,7 @@ class CalendarDayCell extends StatelessWidget {
               shape: BoxShape.circle,
               color: isSelected
                   ? cs.primary
-                  : (isToday
-                      ? cs.primaryContainer
-                      : Colors.transparent),
+                  : (isToday ? cs.primaryContainer : Colors.transparent),
               border: isToday && !isSelected
                   ? Border.all(color: cs.primary, width: 1.5)
                   : null,
@@ -91,13 +89,12 @@ class CalendarDayCell extends StatelessWidget {
                     '$dayNumber',
                     style: TextStyle(
                       fontSize: 14,
-                      fontWeight:
-                          isToday || isSelected ? FontWeight.bold : FontWeight.normal,
+                      fontWeight: isToday || isSelected
+                          ? FontWeight.bold
+                          : FontWeight.normal,
                       color: isSelected
                           ? cs.onPrimary
-                          : (isToday
-                              ? cs.onPrimaryContainer
-                              : cs.onSurface),
+                          : (isToday ? cs.onPrimaryContainer : cs.onSurface),
                     ),
                   ),
                 ),

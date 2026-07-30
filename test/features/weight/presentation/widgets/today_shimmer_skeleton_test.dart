@@ -3,13 +3,11 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:pure_weight/features/weight/presentation/widgets/today_shimmer_skeleton.dart';
 
 void main() {
-  testWidgets('TodayShimmerSkeleton renders placeholder cards and animates', (tester) async {
+  testWidgets('TodayShimmerSkeleton renders placeholder cards and animates', (
+    tester,
+  ) async {
     await tester.pumpWidget(
-      const MaterialApp(
-        home: Scaffold(
-          body: TodayShimmerSkeleton(),
-        ),
-      ),
+      const MaterialApp(home: Scaffold(body: TodayShimmerSkeleton())),
     );
 
     expect(find.byType(TodayShimmerSkeleton), findsOneWidget);

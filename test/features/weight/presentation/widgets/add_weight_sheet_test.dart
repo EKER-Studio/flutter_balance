@@ -82,7 +82,9 @@ void main() {
     expect(find.text('Note (optional)'), findsOneWidget);
   });
 
-  testWidgets('parses comma as decimal separator and dispatches AddWeight', (tester) async {
+  testWidgets('parses comma as decimal separator and dispatches AddWeight', (
+    tester,
+  ) async {
     await tester.pumpWidget(createTestWidget(const AddWeightSheet()));
     await tester.pumpAndSettle();
 
@@ -107,7 +109,9 @@ void main() {
     ).called(1);
   });
 
-  testWidgets('parses dot as decimal separator and dispatches AddWeight', (tester) async {
+  testWidgets('parses dot as decimal separator and dispatches AddWeight', (
+    tester,
+  ) async {
     await tester.pumpWidget(createTestWidget(const AddWeightSheet()));
     await tester.pumpAndSettle();
 

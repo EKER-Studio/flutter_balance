@@ -3,10 +3,8 @@ import 'package:pure_weight/features/weight/domain/entities/weight_entry.dart';
 import 'package:pure_weight/features/weight/presentation/widgets/calendar/calendar_day_cell.dart';
 
 /// Callback signature when a calendar day is selected.
-typedef OnCalendarDaySelected = void Function(
-  DateTime date,
-  List<WeightEntry> entries,
-);
+typedef OnCalendarDaySelected =
+    void Function(DateTime date, List<WeightEntry> entries);
 
 /// Reusable calendar grid displaying day cells for a focused month.
 class CalendarGrid extends StatelessWidget {
@@ -80,7 +78,8 @@ class CalendarGrid extends StatelessWidget {
         final isToday = DateUtils.isSameDay(date, now);
         final isSelected = DateUtils.isSameDay(date, selectedDate);
         final isFuture = date.isAfter(todayEnd);
-        final isGoalAchieved = targetWeight != null &&
+        final isGoalAchieved =
+            targetWeight != null &&
             dayEntries.any((e) => e.weightKg <= targetWeight!);
 
         return CalendarDayCell(

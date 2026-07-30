@@ -40,8 +40,8 @@ class CalendarDayEntriesCard extends StatelessWidget {
     final hasMultiple = entries.length >= 2;
 
     // Check if target weight was reached on this day
-    final isGoalAchievedOnDay = targetWeight != null &&
-        entries.any((e) => e.weightKg <= targetWeight!);
+    final isGoalAchievedOnDay =
+        targetWeight != null && entries.any((e) => e.weightKg <= targetWeight!);
 
     // Daily Stats
     double averageKg = 0;
@@ -63,9 +63,7 @@ class CalendarDayEntriesCard extends StatelessWidget {
     return Card(
       elevation: 0,
       color: cs.surfaceContainerLow,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(28),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
       child: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(
@@ -74,23 +72,23 @@ class CalendarDayEntriesCard extends StatelessWidget {
             // Goal Achievement Banner
             if (isGoalAchievedOnDay) ...[
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 10,
+                ),
                 decoration: BoxDecoration(
                   color: cs.tertiaryContainer,
                   borderRadius: BorderRadius.circular(16),
                 ),
                 child: Row(
                   children: [
-                    Icon(
-                      Icons.stars,
-                      color: cs.onTertiaryContainer,
-                      size: 22,
-                    ),
+                    Icon(Icons.stars, color: cs.onTertiaryContainer, size: 22),
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(
                         l10n.goalAchievedOnDayBanner,
-                        style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                        style: Theme.of(context).textTheme.labelMedium
+                            ?.copyWith(
                               fontWeight: FontWeight.bold,
                               color: cs.onTertiaryContainer,
                             ),
@@ -117,21 +115,25 @@ class CalendarDayEntriesCard extends StatelessWidget {
                       children: [
                         Text(
                           l10n.dailySummaryTitle,
-                          style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                          style: Theme.of(context).textTheme.labelLarge
+                              ?.copyWith(
                                 fontWeight: FontWeight.bold,
                                 color: cs.onSecondaryContainer,
                               ),
                         ),
                         Container(
                           padding: const EdgeInsets.symmetric(
-                              horizontal: 8, vertical: 2),
+                            horizontal: 8,
+                            vertical: 2,
+                          ),
                           decoration: BoxDecoration(
                             color: cs.primary.withValues(alpha: 0.15),
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: Text(
                             l10n.multipleEntries(entries.length),
-                            style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                            style: Theme.of(context).textTheme.labelSmall
+                                ?.copyWith(
                                   fontWeight: FontWeight.bold,
                                   color: cs.primary,
                                 ),
@@ -148,19 +150,16 @@ class CalendarDayEntriesCard extends StatelessWidget {
                             children: [
                               Text(
                                 l10n.averageWeight,
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .bodySmall
+                                style: Theme.of(context).textTheme.bodySmall
                                     ?.copyWith(
-                                      color: cs.onSecondaryContainer
-                                          .withValues(alpha: 0.8),
+                                      color: cs.onSecondaryContainer.withValues(
+                                        alpha: 0.8,
+                                      ),
                                     ),
                               ),
                               Text(
                                 '${displayAverage.toStringAsFixed(1)} $unitLabel',
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .titleSmall
+                                style: Theme.of(context).textTheme.titleSmall
                                     ?.copyWith(
                                       fontWeight: FontWeight.bold,
                                       color: cs.onSecondaryContainer,
@@ -175,19 +174,16 @@ class CalendarDayEntriesCard extends StatelessWidget {
                             children: [
                               Text(
                                 l10n.rangeMinMax,
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .bodySmall
+                                style: Theme.of(context).textTheme.bodySmall
                                     ?.copyWith(
-                                      color: cs.onSecondaryContainer
-                                          .withValues(alpha: 0.8),
+                                      color: cs.onSecondaryContainer.withValues(
+                                        alpha: 0.8,
+                                      ),
                                     ),
                               ),
                               Text(
                                 '${displayMin.toStringAsFixed(1)} – ${displayMax.toStringAsFixed(1)} $unitLabel (Δ ${displayDelta.toStringAsFixed(1)})',
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .titleSmall
+                                style: Theme.of(context).textTheme.titleSmall
                                     ?.copyWith(
                                       fontWeight: FontWeight.bold,
                                       color: cs.onSecondaryContainer,
@@ -212,12 +208,15 @@ class CalendarDayEntriesCard extends StatelessWidget {
               separatorBuilder: (_, _) => const Divider(height: 16),
               itemBuilder: (context, index) {
                 final entry = entries[index];
-                final displayWeight = isImperial ? kgToLbs(entry.weightKg) : entry.weightKg;
+                final displayWeight = isImperial
+                    ? kgToLbs(entry.weightKg)
+                    : entry.weightKg;
                 final timeStr = DateFormat.jm(
                   Localizations.localeOf(context).toString(),
                 ).format(entry.dateTime);
 
-                final meetsGoal = targetWeight != null && entry.weightKg <= targetWeight!;
+                final meetsGoal =
+                    targetWeight != null && entry.weightKg <= targetWeight!;
 
                 return Row(
                   children: [
@@ -243,18 +242,16 @@ class CalendarDayEntriesCard extends StatelessWidget {
                             children: [
                               Text(
                                 '${displayWeight.toStringAsFixed(1)} $unitLabel',
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .titleMedium
-                                    ?.copyWith(
-                                      fontWeight: FontWeight.bold,
-                                    ),
+                                style: Theme.of(context).textTheme.titleMedium
+                                    ?.copyWith(fontWeight: FontWeight.bold),
                               ),
                               if (meetsGoal) ...[
                                 const SizedBox(width: 8),
                                 Container(
                                   padding: const EdgeInsets.symmetric(
-                                      horizontal: 6, vertical: 1),
+                                    horizontal: 6,
+                                    vertical: 1,
+                                  ),
                                   decoration: BoxDecoration(
                                     color: cs.tertiaryContainer,
                                     borderRadius: BorderRadius.circular(6),
@@ -277,12 +274,8 @@ class CalendarDayEntriesCard extends StatelessWidget {
                             entry.note != null && entry.note!.isNotEmpty
                                 ? '$timeStr • ${entry.note}'
                                 : timeStr,
-                            style: Theme.of(context)
-                                .textTheme
-                                .bodySmall
-                                ?.copyWith(
-                                  color: cs.onSurfaceVariant,
-                                ),
+                            style: Theme.of(context).textTheme.bodySmall
+                                ?.copyWith(color: cs.onSurfaceVariant),
                           ),
                         ],
                       ),

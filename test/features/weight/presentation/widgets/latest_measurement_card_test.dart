@@ -46,23 +46,21 @@ void main() {
       createTestWidget(const LatestMeasurementCard(latestEntry: null)),
     );
 
-    expect(find.text('No entries yet. Add your first measurement below!'), findsOneWidget);
+    expect(
+      find.text('No entries yet. Add your first measurement below!'),
+      findsOneWidget,
+    );
   });
 
-  testWidgets('renders formatted weight, today timestamp, and triggers onTap', (tester) async {
+  testWidgets('renders formatted weight, today timestamp, and triggers onTap', (
+    tester,
+  ) async {
     var tapped = false;
-    final entry = WeightEntry(
-      id: 1,
-      weightKg: 75.4,
-      dateTime: DateTime.now(),
-    );
+    final entry = WeightEntry(id: 1, weightKg: 75.4, dateTime: DateTime.now());
 
     await tester.pumpWidget(
       createTestWidget(
-        LatestMeasurementCard(
-          latestEntry: entry,
-          onTap: () => tapped = true,
-        ),
+        LatestMeasurementCard(latestEntry: entry, onTap: () => tapped = true),
       ),
     );
 
@@ -86,11 +84,7 @@ void main() {
     );
 
     await tester.pumpWidget(
-      createTestWidget(
-        LatestMeasurementCard(
-          latestEntry: entry,
-        ),
-      ),
+      createTestWidget(LatestMeasurementCard(latestEntry: entry)),
     );
 
     expect(find.text('154.3'), findsOneWidget);

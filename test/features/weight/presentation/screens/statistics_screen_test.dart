@@ -50,8 +50,9 @@ void main() {
   testWidgets('StatisticsScreen renders empty state when no entries exist', (
     tester,
   ) async {
-    when(() => repository.watchAllEntries())
-        .thenAnswer((_) => Stream.value(<WeightEntry>[]));
+    when(
+      () => repository.watchAllEntries(),
+    ).thenAnswer((_) => Stream.value(<WeightEntry>[]));
 
     final settingsBloc = AppSettingsBloc();
     final weightBloc = WeightBloc(repository: repository)
@@ -73,82 +74,76 @@ void main() {
     expect(find.text('BMI'), findsOneWidget);
   });
 
-  testWidgets('StatisticsScreen displays calculated metrics and Bento Grid when entries exist', (
-    tester,
-  ) async {
-    final now = DateTime.now();
-    final entries = [
-      WeightEntry(
-        id: 1,
-        weightKg: 80.0,
-        dateTime: now.subtract(const Duration(days: 2)),
-      ),
-      WeightEntry(
-        id: 2,
-        weightKg: 75.0,
-        dateTime: now.subtract(const Duration(days: 1)),
-      ),
-      WeightEntry(
-        id: 3,
-        weightKg: 74.0,
-        dateTime: now,
-      ),
-    ];
+  testWidgets(
+    'StatisticsScreen displays calculated metrics and Bento Grid when entries exist',
+    (tester) async {
+      final now = DateTime.now();
+      final entries = [
+        WeightEntry(
+          id: 1,
+          weightKg: 80.0,
+          dateTime: now.subtract(const Duration(days: 2)),
+        ),
+        WeightEntry(
+          id: 2,
+          weightKg: 75.0,
+          dateTime: now.subtract(const Duration(days: 1)),
+        ),
+        WeightEntry(id: 3, weightKg: 74.0, dateTime: now),
+      ];
 
-    when(() => repository.watchAllEntries())
-        .thenAnswer((_) => Stream.value(entries));
+      when(
+        () => repository.watchAllEntries(),
+      ).thenAnswer((_) => Stream.value(entries));
 
-    final settingsBloc = AppSettingsBloc()..add(const UpdateHeight(180));
-    final weightBloc = WeightBloc(repository: repository)
-      ..add(const SubscribeToWeightChanges());
+      final settingsBloc = AppSettingsBloc()..add(const UpdateHeight(180));
+      final weightBloc = WeightBloc(repository: repository)
+        ..add(const SubscribeToWeightChanges());
 
-    await tester.pumpWidget(
-      buildSubject(settingsBloc: settingsBloc, weightBloc: weightBloc),
-    );
-    await tester.pumpAndSettle();
+      await tester.pumpWidget(
+        buildSubject(settingsBloc: settingsBloc, weightBloc: weightBloc),
+      );
+      await tester.pumpAndSettle();
 
-    // Check lowest weight (74.0)
-    expect(find.text('74.0'), findsOneWidget);
-    // Check highest weight (80.0)
-    expect(find.text('80.0'), findsOneWidget);
-    // Check net progress (-6.0)
-    expect(find.text('-6.0'), findsOneWidget);
-    // Check trend percentage change badge (-7.5%)
-    expect(find.text('-7.5%'), findsOneWidget);
-  });
+      // Check lowest weight (74.0)
+      expect(find.text('74.0'), findsOneWidget);
+      // Check highest weight (80.0)
+      expect(find.text('80.0'), findsOneWidget);
+      // Check net progress (-6.0)
+      expect(find.text('-6.0'), findsOneWidget);
+      // Check trend percentage change badge (-7.5%)
+      expect(find.text('-7.5%'), findsOneWidget);
+    },
+  );
 
-  testWidgets('StatisticsScreen updates metrics when unit is changed to imperial', (
-    tester,
-  ) async {
-    final now = DateTime.now();
-    final entries = [
-      WeightEntry(
-        id: 1,
-        weightKg: 70.0,
-        dateTime: now,
-      ),
-    ];
+  testWidgets(
+    'StatisticsScreen updates metrics when unit is changed to imperial',
+    (tester) async {
+      final now = DateTime.now();
+      final entries = [WeightEntry(id: 1, weightKg: 70.0, dateTime: now)];
 
-    when(() => repository.watchAllEntries())
-        .thenAnswer((_) => Stream.value(entries));
+      when(
+        () => repository.watchAllEntries(),
+      ).thenAnswer((_) => Stream.value(entries));
 
-    final settingsBloc = AppSettingsBloc();
-    final weightBloc = WeightBloc(repository: repository)
-      ..add(const SubscribeToWeightChanges());
+      final settingsBloc = AppSettingsBloc();
+      final weightBloc = WeightBloc(repository: repository)
+        ..add(const SubscribeToWeightChanges());
 
-    await tester.pumpWidget(
-      buildSubject(settingsBloc: settingsBloc, weightBloc: weightBloc),
-    );
-    await tester.pumpAndSettle();
+      await tester.pumpWidget(
+        buildSubject(settingsBloc: settingsBloc, weightBloc: weightBloc),
+      );
+      await tester.pumpAndSettle();
 
-    expect(find.text('70.0'), findsWidgets);
+      expect(find.text('70.0'), findsWidgets);
 
-    // Switch to imperial units
-    settingsBloc.add(const UpdateMeasurementUnit(MeasurementUnit.imperial));
-    await tester.pumpAndSettle();
+      // Switch to imperial units
+      settingsBloc.add(const UpdateMeasurementUnit(MeasurementUnit.imperial));
+      await tester.pumpAndSettle();
 
-    // 70.0 kg is ~154.3 lb
-    expect(find.text('154.3'), findsWidgets);
-    expect(find.text('lb'), findsWidgets);
-  });
+      // 70.0 kg is ~154.3 lb
+      expect(find.text('154.3'), findsWidgets);
+      expect(find.text('lb'), findsWidgets);
+    },
+  );
 }

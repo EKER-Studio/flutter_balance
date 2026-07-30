@@ -31,17 +31,16 @@ class LatestMeasurementCard extends StatelessWidget {
       return Card(
         elevation: 0,
         color: Theme.of(context).colorScheme.surfaceContainerLow,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(28),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
         child: Padding(
           padding: const EdgeInsets.all(20),
           child: Row(
             children: [
               CircleAvatar(
                 radius: 24,
-                backgroundColor:
-                    Theme.of(context).colorScheme.secondaryContainer,
+                backgroundColor: Theme.of(
+                  context,
+                ).colorScheme.secondaryContainer,
                 child: Icon(
                   Icons.scale,
                   color: Theme.of(context).colorScheme.onSecondaryContainer,
@@ -52,8 +51,8 @@ class LatestMeasurementCard extends StatelessWidget {
                 child: Text(
                   l10n.emptyState,
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: Theme.of(context).colorScheme.onSurfaceVariant,
-                      ),
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  ),
                 ),
               ),
             ],
@@ -78,9 +77,7 @@ class LatestMeasurementCard extends StatelessWidget {
       child: Card(
         elevation: 0,
         color: Theme.of(context).colorScheme.surfaceContainerLow,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(28),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
         child: InkWell(
           borderRadius: BorderRadius.circular(28),
           onTap: onTap,
@@ -90,8 +87,9 @@ class LatestMeasurementCard extends StatelessWidget {
               children: [
                 CircleAvatar(
                   radius: 24,
-                  backgroundColor:
-                      Theme.of(context).colorScheme.secondaryContainer,
+                  backgroundColor: Theme.of(
+                    context,
+                  ).colorScheme.secondaryContainer,
                   child: Icon(
                     Icons.scale,
                     color: Theme.of(context).colorScheme.onSecondaryContainer,
@@ -104,16 +102,15 @@ class LatestMeasurementCard extends StatelessWidget {
                     children: [
                       Text(
                         l10n.latestMeasurement,
-                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                              fontWeight: FontWeight.bold,
-                            ),
+                        style: Theme.of(context).textTheme.titleMedium
+                            ?.copyWith(fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 2),
                       Text(
                         timestampText,
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                              color: Theme.of(context).colorScheme.onSurfaceVariant,
-                            ),
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        ),
                       ),
                     ],
                   ),
@@ -124,7 +121,8 @@ class LatestMeasurementCard extends StatelessWidget {
                   children: [
                     Text(
                       displayWeight.toStringAsFixed(1),
-                      style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                      style: Theme.of(context).textTheme.headlineMedium
+                          ?.copyWith(
                             fontWeight: FontWeight.bold,
                             color: Theme.of(context).colorScheme.primary,
                           ),
@@ -133,8 +131,8 @@ class LatestMeasurementCard extends StatelessWidget {
                     Text(
                       unitLabel,
                       style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                            color: Theme.of(context).colorScheme.onSurfaceVariant,
-                          ),
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      ),
                     ),
                   ],
                 ),
@@ -152,7 +150,8 @@ class LatestMeasurementCard extends StatelessWidget {
     AppLocalizations l10n,
   ) {
     final now = DateTime.now();
-    final isToday = dateTime.year == now.year &&
+    final isToday =
+        dateTime.year == now.year &&
         dateTime.month == now.month &&
         dateTime.day == now.day;
     final timeStr = DateFormat.jm(

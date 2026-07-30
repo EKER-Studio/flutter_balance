@@ -68,17 +68,20 @@ void main() {
     expect(find.text('11.0 lb to target'), findsOneWidget);
   });
 
-  testWidgets('renders Goal Achieved status when latestWeight <= targetWeight', (tester) async {
-    final bloc = AppSettingsBloc();
-    bloc.add(const TargetWeightChanged(75.0));
-    await tester.pump();
+  testWidgets(
+    'renders Goal Achieved status when latestWeight <= targetWeight',
+    (tester) async {
+      final bloc = AppSettingsBloc();
+      bloc.add(const TargetWeightChanged(75.0));
+      await tester.pump();
 
-    await tester.pumpWidget(
-      createTestWidget(const HealthSummaryCard(latestWeightKg: 70.0), bloc),
-    );
+      await tester.pumpWidget(
+        createTestWidget(const HealthSummaryCard(latestWeightKg: 70.0), bloc),
+      );
 
-    expect(find.text('Goal achieved!'), findsOneWidget);
-  });
+      expect(find.text('Goal achieved!'), findsOneWidget);
+    },
+  );
 
   testWidgets('opens TargetWeightDialog on goal button tap', (tester) async {
     final bloc = AppSettingsBloc();

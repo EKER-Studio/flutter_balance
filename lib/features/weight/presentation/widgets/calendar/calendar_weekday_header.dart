@@ -21,9 +21,9 @@ class CalendarWeekdayHeader extends StatelessWidget {
             child: Text(
               format.format(d),
               style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                    color: Theme.of(context).colorScheme.outline,
-                    fontWeight: FontWeight.bold,
-                  ),
+                color: Theme.of(context).colorScheme.outline,
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ),
         );
