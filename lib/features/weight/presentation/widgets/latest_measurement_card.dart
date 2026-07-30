@@ -7,7 +7,7 @@ import 'package:pure_weight/features/weight/domain/entities/weight_entry.dart';
 import 'package:pure_weight/l10n/app_localizations.dart';
 import 'package:pure_weight/presentation/bloc/settings/app_settings_bloc.dart';
 
-/// Reusable card displaying the most recent weight measurement or empty state.
+/// Reusable card displaying the most recent weight measurement or empty state with accessibility (a11y) support.
 class LatestMeasurementCard extends StatelessWidget {
   /// The latest recorded [WeightEntry], or `null` if no entries exist.
   final WeightEntry? latestEntry;
@@ -69,70 +69,77 @@ class LatestMeasurementCard extends StatelessWidget {
     final unitLabel = unit == MeasurementUnit.imperial ? 'lb' : 'kg';
     final timestampText = _formatTimestamp(context, entry.dateTime, l10n);
 
-    return Card(
-      elevation: 0,
-      color: Theme.of(context).colorScheme.surfaceContainerLow,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(28),
-      ),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(28),
-        onTap: onTap,
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Row(
-            children: [
-              CircleAvatar(
-                radius: 24,
-                backgroundColor:
-                    Theme.of(context).colorScheme.secondaryContainer,
-                child: Icon(
-                  Icons.scale,
-                  color: Theme.of(context).colorScheme.onSecondaryContainer,
+    final semanticLabel =
+        '${l10n.latestMeasurement}: ${displayWeight.toStringAsFixed(1)} $unitLabel, $timestampText. Dotknij, aby przejść do statystyk.';
+
+    return Semantics(
+      button: onTap != null,
+      label: semanticLabel,
+      child: Card(
+        elevation: 0,
+        color: Theme.of(context).colorScheme.surfaceContainerLow,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(28),
+        ),
+        child: InkWell(
+          borderRadius: BorderRadius.circular(28),
+          onTap: onTap,
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Row(
+              children: [
+                CircleAvatar(
+                  radius: 24,
+                  backgroundColor:
+                      Theme.of(context).colorScheme.secondaryContainer,
+                  child: Icon(
+                    Icons.scale,
+                    color: Theme.of(context).colorScheme.onSecondaryContainer,
+                  ),
                 ),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        l10n.latestMeasurement,
+                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                              fontWeight: FontWeight.bold,
+                            ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        timestampText,
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              color: Theme.of(context).colorScheme.onSurfaceVariant,
+                            ),
+                      ),
+                    ],
+                  ),
+                ),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.baseline,
+                  textBaseline: TextBaseline.alphabetic,
                   children: [
                     Text(
-                      l10n.latestMeasurement,
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      displayWeight.toStringAsFixed(1),
+                      style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                             fontWeight: FontWeight.bold,
+                            color: Theme.of(context).colorScheme.primary,
                           ),
                     ),
-                    const SizedBox(height: 2),
+                    const SizedBox(width: 4),
                     Text(
-                      timestampText,
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      unitLabel,
+                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                             color: Theme.of(context).colorScheme.onSurfaceVariant,
                           ),
                     ),
                   ],
                 ),
-              ),
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.baseline,
-                textBaseline: TextBaseline.alphabetic,
-                children: [
-                  Text(
-                    displayWeight.toStringAsFixed(1),
-                    style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: Theme.of(context).colorScheme.primary,
-                        ),
-                  ),
-                  const SizedBox(width: 4),
-                  Text(
-                    unitLabel,
-                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                          color: Theme.of(context).colorScheme.onSurfaceVariant,
-                        ),
-                  ),
-                ],
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

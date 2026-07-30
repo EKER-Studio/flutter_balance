@@ -8,7 +8,8 @@ import 'package:pure_weight/features/weight/presentation/bloc/weight_event.dart'
 import 'package:pure_weight/l10n/app_localizations.dart';
 import 'package:pure_weight/presentation/bloc/settings/app_settings_bloc.dart';
 
-/// Modal dialog form for adding a new weight measurement with date, time, and note selection.
+/// Modal dialog form for adding a new weight measurement with date, time, and note selection,
+/// adhering to Material 3 dialog guidelines and accessibility (a11y) standards.
 class AddWeightSheet extends StatefulWidget {
   /// Optional initial date/time for the measurement.
   final DateTime? initialDate;
@@ -141,36 +142,46 @@ class _AddWeightSheetState extends State<AddWeightSheet> {
                 Row(
                   children: [
                     Expanded(
-                      child: InkWell(
-                        onTap: () => _pickDate(context),
-                        borderRadius: BorderRadius.circular(8),
-                        child: InputDecorator(
-                          decoration: InputDecoration(
-                            labelText: l10n.measurementDate,
-                            border: const OutlineInputBorder(),
-                            suffixIcon: const Icon(Icons.calendar_today_outlined, size: 20),
-                          ),
-                          child: Text(
-                            dateStr,
-                            style: Theme.of(context).textTheme.bodyLarge,
+                      child: Semantics(
+                        button: true,
+                        label: '${l10n.measurementDate}: $dateStr',
+                        hint: 'Dotknij dwukrotnie, aby otworzyć kalendarz',
+                        child: InkWell(
+                          onTap: () => _pickDate(context),
+                          borderRadius: BorderRadius.circular(8),
+                          child: InputDecorator(
+                            decoration: InputDecoration(
+                              labelText: l10n.measurementDate,
+                              border: const OutlineInputBorder(),
+                              suffixIcon: const Icon(Icons.calendar_today_outlined, size: 20),
+                            ),
+                            child: Text(
+                              dateStr,
+                              style: Theme.of(context).textTheme.bodyLarge,
+                            ),
                           ),
                         ),
                       ),
                     ),
                     const SizedBox(width: 12),
                     Expanded(
-                      child: InkWell(
-                        onTap: () => _pickTime(context),
-                        borderRadius: BorderRadius.circular(8),
-                        child: InputDecorator(
-                          decoration: InputDecoration(
-                            labelText: l10n.measurementTime,
-                            border: const OutlineInputBorder(),
-                            suffixIcon: const Icon(Icons.access_time_outlined, size: 20),
-                          ),
-                          child: Text(
-                            timeStr,
-                            style: Theme.of(context).textTheme.bodyLarge,
+                      child: Semantics(
+                        button: true,
+                        label: '${l10n.measurementTime}: $timeStr',
+                        hint: 'Dotknij dwukrotnie, aby zmienić godzinę',
+                        child: InkWell(
+                          onTap: () => _pickTime(context),
+                          borderRadius: BorderRadius.circular(8),
+                          child: InputDecorator(
+                            decoration: InputDecoration(
+                              labelText: l10n.measurementTime,
+                              border: const OutlineInputBorder(),
+                              suffixIcon: const Icon(Icons.access_time_outlined, size: 20),
+                            ),
+                            child: Text(
+                              timeStr,
+                              style: Theme.of(context).textTheme.bodyLarge,
+                            ),
                           ),
                         ),
                       ),
@@ -235,7 +246,8 @@ class _AddWeightSheetState extends State<AddWeightSheet> {
                     TextButton(
                       onPressed: () => Navigator.of(context).pop(),
                       style: TextButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                        minimumSize: const Size(48, 48),
                       ),
                       child: Text(l10n.cancel),
                     ),
@@ -243,7 +255,8 @@ class _AddWeightSheetState extends State<AddWeightSheet> {
                     FilledButton(
                       onPressed: _onSave,
                       style: FilledButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                        minimumSize: const Size(48, 48),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(20),
                         ),

@@ -47,38 +47,39 @@ class HealthSummaryCard extends StatelessWidget {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(28),
           ),
-          child: MergeSemantics(
-            child: Padding(
-              padding: const EdgeInsets.all(20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              l10n.bmi,
-                              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                            ),
-                            const SizedBox(height: 2),
-                            Text(
-                              lastUpdateText,
-                              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                    color: Theme.of(context).colorScheme.onSurfaceVariant,
-                                  ),
-                            ),
-                          ],
-                        ),
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            l10n.bmi,
+                            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                ),
+                          ),
+                          const SizedBox(height: 2),
+                          Text(
+                            lastUpdateText,
+                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                                ),
+                          ),
+                        ],
                       ),
-                      if (category != null)
-                        Container(
+                    ),
+                    if (category != null)
+                      Semantics(
+                        label: 'Kategoria BMI: ${_interpretBmi(category, l10n)}',
+                        child: Container(
                           padding: const EdgeInsets.symmetric(
                             horizontal: 12,
                             vertical: 6,
@@ -106,14 +107,17 @@ class HealthSummaryCard extends StatelessWidget {
                             ],
                           ),
                         ),
-                    ],
-                  ),
-                  const SizedBox(height: 16),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      Row(
+                      ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Semantics(
+                      label: 'Wskaźnik BMI: ${bmi.isFinite ? bmi.toStringAsFixed(1) : "brak podanego wzrostu"} kg/m²',
+                      child: Row(
                         crossAxisAlignment: CrossAxisAlignment.baseline,
                         textBaseline: TextBaseline.alphabetic,
                         children: [
@@ -133,17 +137,20 @@ class HealthSummaryCard extends StatelessWidget {
                           ),
                         ],
                       ),
-                      _buildGoalButton(context, targetWeight, weightUnit, l10n),
-                    ],
-                  ),
-                  if (targetWeight != null) ...[
-                    const SizedBox(height: 12),
-                    Divider(
-                      height: 1,
-                      color: Theme.of(context).colorScheme.outlineVariant.withValues(alpha: 0.5),
                     ),
-                    const SizedBox(height: 8),
-                    Row(
+                    _buildGoalButton(context, targetWeight, weightUnit, l10n),
+                  ],
+                ),
+                if (targetWeight != null) ...[
+                  const SizedBox(height: 12),
+                  Divider(
+                    height: 1,
+                    color: Theme.of(context).colorScheme.outlineVariant.withValues(alpha: 0.5),
+                  ),
+                  const SizedBox(height: 8),
+                  Semantics(
+                    label: '${l10n.weightGoal}: ${_goalText(targetWeight, latestWeightKg, weightUnit, l10n)}',
+                    child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
@@ -161,9 +168,9 @@ class HealthSummaryCard extends StatelessWidget {
                         ),
                       ],
                     ),
-                  ],
+                  ),
                 ],
-              ),
+              ],
             ),
           ),
         );
@@ -177,18 +184,25 @@ class HealthSummaryCard extends StatelessWidget {
     MeasurementUnit unit,
     AppLocalizations l10n,
   ) {
-    return TextButton.icon(
-      onPressed: () => _openTargetWeightDialog(context, targetWeightKg, unit),
-      icon: const Icon(Icons.edit_outlined, size: 18),
-      label: Text(
-        targetWeightKg == null ? l10n.setWeightGoal : l10n.weightGoal,
-        style: const TextStyle(fontWeight: FontWeight.w600),
-      ),
-      style: TextButton.styleFrom(
-        foregroundColor: Theme.of(context).colorScheme.primary,
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
+    final buttonLabel = targetWeightKg == null ? l10n.setWeightGoal : l10n.weightGoal;
+
+    return Semantics(
+      button: true,
+      label: buttonLabel,
+      child: TextButton.icon(
+        onPressed: () => _openTargetWeightDialog(context, targetWeightKg, unit),
+        icon: const Icon(Icons.edit_outlined, size: 18),
+        label: Text(
+          buttonLabel,
+          style: const TextStyle(fontWeight: FontWeight.w600),
+        ),
+        style: TextButton.styleFrom(
+          foregroundColor: Theme.of(context).colorScheme.primary,
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+          minimumSize: const Size(48, 48),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
         ),
       ),
     );

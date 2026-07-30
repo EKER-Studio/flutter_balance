@@ -74,21 +74,14 @@ class CalendarDayEntriesCard extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                 decoration: BoxDecoration(
-                  color: Theme.of(context)
-                      .colorScheme
-                      .tertiaryContainer
-                      .withValues(alpha: 0.25),
+                  color: Theme.of(context).colorScheme.tertiaryContainer,
                   borderRadius: BorderRadius.circular(16),
-                  border: Border.all(
-                    color: Theme.of(context).colorScheme.tertiary,
-                    width: 1,
-                  ),
                 ),
                 child: Row(
                   children: [
                     Icon(
                       Icons.stars,
-                      color: Theme.of(context).colorScheme.tertiary,
+                      color: Theme.of(context).colorScheme.onTertiaryContainer,
                       size: 22,
                     ),
                     const SizedBox(width: 8),
@@ -97,7 +90,7 @@ class CalendarDayEntriesCard extends StatelessWidget {
                         'Cel wagi został osiągnięty w tym dniu! 🏆',
                         style: Theme.of(context).textTheme.labelMedium?.copyWith(
                               fontWeight: FontWeight.bold,
-                              color: Theme.of(context).colorScheme.tertiary,
+                              color: Theme.of(context).colorScheme.onTertiaryContainer,
                             ),
                       ),
                     ),
@@ -110,10 +103,7 @@ class CalendarDayEntriesCard extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: Theme.of(context)
-                      .colorScheme
-                      .secondaryContainer
-                      .withValues(alpha: 0.6),
+                  color: Theme.of(context).colorScheme.secondaryContainer,
                   borderRadius: BorderRadius.circular(16),
                 ),
                 child: Column(
