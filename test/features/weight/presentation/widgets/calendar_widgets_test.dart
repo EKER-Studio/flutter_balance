@@ -3,16 +3,19 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:pure_weight/core/models/measurement_unit.dart';
 import 'package:pure_weight/features/weight/domain/entities/weight_entry.dart';
 import 'package:pure_weight/features/weight/domain/repositories/weight_repository.dart';
 import 'package:pure_weight/features/weight/presentation/bloc/weight_bloc.dart';
 import 'package:pure_weight/features/weight/presentation/bloc/weight_event.dart';
 import 'package:pure_weight/features/weight/presentation/screens/calendar_screen.dart';
+import 'package:pure_weight/features/weight/presentation/widgets/add_weight_sheet.dart';
 import 'package:pure_weight/features/weight/presentation/widgets/calendar/calendar_day_cell.dart';
 import 'package:pure_weight/features/weight/presentation/widgets/calendar/calendar_day_empty_card.dart';
 import 'package:pure_weight/features/weight/presentation/widgets/calendar/calendar_day_entries_card.dart';
 import 'package:pure_weight/features/weight/presentation/widgets/calendar/calendar_day_future_card.dart';
 import 'package:pure_weight/features/weight/presentation/widgets/calendar/calendar_error_card.dart';
+import 'package:pure_weight/features/weight/presentation/widgets/calendar/calendar_grid.dart';
 import 'package:pure_weight/features/weight/presentation/widgets/calendar/calendar_month_header.dart';
 import 'package:pure_weight/features/weight/presentation/widgets/calendar/calendar_shimmer_skeleton.dart';
 import 'package:pure_weight/features/weight/presentation/widgets/calendar/calendar_weekday_header.dart';
@@ -38,10 +41,13 @@ void main() {
         .thenAnswer((_) => Stream.value(<WeightEntry>[]));
   });
 
-  Widget createTestWidget(Widget child) {
+  Widget createTestWidget(
+    Widget child, {
+    AppSettingsBloc? settingsBloc,
+  }) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider(create: (_) => AppSettingsBloc()),
+        BlocProvider(create: (_) => settingsBloc ?? AppSettingsBloc()),
       ],
       child: MaterialApp(
         localizationsDelegates: AppLocalizations.localizationsDelegates,
@@ -180,6 +186,32 @@ void main() {
   });
 
   testWidgets(
+      'CalendarDayEntriesCard displays single entry with note and time', (
+    tester,
+  ) async {
+    final entry = WeightEntry(
+      id: 1,
+      weightKg: 72.5,
+      dateTime: DateTime(2026, 7, 15, 8, 30),
+      note: 'Morning weight',
+    );
+
+    await tester.pumpWidget(
+      createTestWidget(
+        CalendarDayEntriesCard(
+          selectedDate: DateTime(2026, 7, 15),
+          entries: [entry],
+        ),
+      ),
+    );
+
+    expect(find.text('72.5 kg'), findsOneWidget);
+    expect(find.textContaining('Morning weight'), findsOneWidget);
+    expect(find.byIcon(Icons.delete_outline), findsOneWidget);
+    expect(find.byIcon(Icons.add), findsOneWidget);
+  });
+
+  testWidgets(
       'CalendarDayEntriesCard displays daily summary stats and goal banner when goal is reached', (
     tester,
   ) async {
@@ -204,6 +236,52 @@ void main() {
     expect(find.text('72.5 kg'), findsOneWidget);
   });
 
+  testWidgets('CalendarDayEntriesCard supports imperial units (lb)', (
+    tester,
+  ) async {
+    final settingsBloc = AppSettingsBloc();
+    settingsBloc.emit(
+      settingsBloc.state.copyWith(measurementUnit: MeasurementUnit.imperial),
+    );
+
+    final entry = WeightEntry(
+      id: 1,
+      weightKg: 70.0, // ~154.3 lb
+      dateTime: DateTime(2026, 7, 15, 8, 30),
+    );
+
+    await tester.pumpWidget(
+      createTestWidget(
+        CalendarDayEntriesCard(
+          selectedDate: DateTime(2026, 7, 15),
+          entries: [entry],
+        ),
+        settingsBloc: settingsBloc,
+      ),
+    );
+
+    expect(find.text('154.3 lb'), findsOneWidget);
+  });
+
+  testWidgets('CalendarGrid delegates day cell selection', (tester) async {
+    DateTime? selectedDateResult;
+
+    await tester.pumpWidget(
+      createTestWidget(
+        CalendarGrid(
+          focusedMonth: DateTime(2026, 7, 1),
+          selectedDate: DateTime(2026, 7, 1),
+          entries: const [],
+          onDaySelected: (date, _) => selectedDateResult = date,
+        ),
+      ),
+    );
+
+    expect(find.byType(CalendarGrid), findsOneWidget);
+    await tester.tap(find.text('15'));
+    expect(selectedDateResult, DateTime(2026, 7, 15));
+  });
+
   testWidgets('CalendarShimmerSkeleton renders pulsing placeholders', (
     tester,
   ) async {
@@ -212,6 +290,65 @@ void main() {
     );
 
     expect(find.byType(CalendarShimmerSkeleton), findsOneWidget);
+  });
+
+  testWidgets(
+      'CalendarScreen renders month header, weekdays, grid, and day card', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      MultiBlocProvider(
+        providers: [
+          BlocProvider(create: (_) => AppSettingsBloc()),
+          BlocProvider(
+            create: (context) => WeightBloc(repository: repository)
+              ..add(const SubscribeToWeightChanges()),
+          ),
+        ],
+        child: const MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: CalendarScreen(),
+        ),
+      ),
+    );
+
+    await tester.pumpAndSettle();
+
+    expect(find.byType(CalendarScreen), findsOneWidget);
+    expect(find.byType(CalendarMonthHeader), findsOneWidget);
+    expect(find.byType(CalendarWeekdayHeader), findsOneWidget);
+    expect(find.byType(CalendarDayEmptyCard), findsOneWidget);
+    expect(find.byType(FloatingActionButton), findsOneWidget);
+  });
+
+  testWidgets(
+      'CalendarScreen opens AddWeightSheet when FloatingActionButton is tapped', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      MultiBlocProvider(
+        providers: [
+          BlocProvider(create: (_) => AppSettingsBloc()),
+          BlocProvider(
+            create: (context) => WeightBloc(repository: repository)
+              ..add(const SubscribeToWeightChanges()),
+          ),
+        ],
+        child: const MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: CalendarScreen(),
+        ),
+      ),
+    );
+
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byType(FloatingActionButton));
+    await tester.pumpAndSettle();
+
+    expect(find.byType(AddWeightSheet), findsOneWidget);
   });
 
   testWidgets(
