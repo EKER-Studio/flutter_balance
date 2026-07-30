@@ -45,9 +45,9 @@ class HealthSummaryCard extends StatelessWidget {
           elevation: 0,
           color: Theme.of(
             context,
-          ).colorScheme.surfaceContainerHighest.withValues(alpha: 0.55),
+          ).colorScheme.surfaceContainerLow,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
+            borderRadius: BorderRadius.circular(28),
           ),
           child: MergeSemantics(
             child: Padding(
