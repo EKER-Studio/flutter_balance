@@ -12,6 +12,7 @@ import 'package:pure_weight/presentation/bloc/settings/app_settings_state.dart';
 import 'package:pure_weight/presentation/bloc/settings/bmi_category.dart';
 import 'package:pure_weight/presentation/core/clamped_layout.dart';
 import 'package:pure_weight/presentation/widgets/weight_chart.dart';
+import 'package:pure_weight/features/weight/presentation/widgets/statistics_shimmer_skeleton.dart';
 
 /// Tab 3: Statistics Screen providing habit-tracker analytics, streaks, trends, and key metrics.
 class StatisticsScreen extends StatelessWidget {
@@ -27,6 +28,13 @@ class StatisticsScreen extends StatelessWidget {
       body: SafeArea(
         child: BlocBuilder<WeightBloc, WeightState>(
           builder: (context, weightState) {
+            if (weightState is WeightInitial || weightState is WeightLoading) {
+              return const ClampedLayout(
+                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                child: StatisticsShimmerSkeleton(),
+              );
+            }
+
             return BlocBuilder<AppSettingsBloc, AppSettingsState>(
               builder: (context, settingsState) {
                 final entries = switch (weightState) {
