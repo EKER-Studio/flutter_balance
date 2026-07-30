@@ -8,7 +8,7 @@ import 'package:pure_weight/features/weight/data/models/weight_entry_model.dart'
 void main() {
   group('DatabaseModule', () {
     test('dbName is versioned correctly', () {
-      expect(DatabaseModule.dbName, 'pure_weight_v1');
+      expect(DatabaseModule.dbName, 'pure_weight_v2');
     });
 
     test('getInstance returns null when instance is uninitialized', () {
