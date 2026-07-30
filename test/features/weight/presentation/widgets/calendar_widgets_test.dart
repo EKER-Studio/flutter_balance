@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:pure_weight/features/weight/domain/entities/weight_entry.dart';
 import 'package:pure_weight/features/weight/domain/repositories/weight_repository.dart';
@@ -9,6 +8,7 @@ import 'package:pure_weight/features/weight/presentation/bloc/weight_bloc.dart';
 import 'package:pure_weight/features/weight/presentation/bloc/weight_event.dart';
 import 'package:pure_weight/features/weight/presentation/screens/calendar_screen.dart';
 import 'package:pure_weight/features/weight/presentation/widgets/calendar/calendar_day_cell.dart';
+import 'package:pure_weight/features/weight/presentation/widgets/calendar/calendar_day_empty_card.dart';
 import 'package:pure_weight/features/weight/presentation/widgets/calendar/calendar_month_header.dart';
 import 'package:pure_weight/features/weight/presentation/widgets/calendar/calendar_weekday_header.dart';
 import 'package:pure_weight/l10n/app_localizations.dart';
@@ -16,18 +16,10 @@ import 'package:pure_weight/presentation/bloc/settings/app_settings_bloc.dart';
 
 class MockWeightRepository extends Mock implements WeightRepository {}
 
-class MockHydratedStorage extends Mock implements HydratedStorage {}
-
 void main() {
   late MockWeightRepository repository;
-  late MockHydratedStorage storage;
 
   setUp(() {
-    storage = MockHydratedStorage();
-    HydratedBloc.storage = storage;
-    when(() => storage.read(any())).thenReturn(null);
-    when(() => storage.write(any(), any())).thenAnswer((_) async {});
-
     repository = MockWeightRepository();
     when(() => repository.watchAllEntries())
         .thenAnswer((_) => Stream.value(<WeightEntry>[]));
@@ -74,7 +66,7 @@ void main() {
     expect(find.byType(CalendarWeekdayHeader), findsOneWidget);
   });
 
-  testWidgets('CalendarDayCell renders day number and handles tap', (
+  testWidgets('CalendarDayCell renders day number, selection state, and handles tap', (
     tester,
   ) async {
     var tapped = false;
@@ -86,6 +78,7 @@ void main() {
           dayNumber: 15,
           entries: const [],
           isToday: false,
+          isSelected: true,
           onTap: () => tapped = true,
         ),
       ),
@@ -96,7 +89,21 @@ void main() {
     expect(tapped, isTrue);
   });
 
-  testWidgets('CalendarScreen renders month header, weekdays, and grid', (
+  testWidgets('CalendarDayEmptyCard renders empty state UI and add button', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      createTestWidget(
+        CalendarDayEmptyCard(selectedDate: DateTime(2026, 7, 15)),
+      ),
+    );
+
+    expect(find.text('Brak pomiarów w tym dniu'), findsOneWidget);
+    expect(find.byIcon(Icons.event_busy), findsOneWidget);
+    expect(find.text('Dodaj pomiar'), findsOneWidget);
+  });
+
+  testWidgets('CalendarScreen renders month header, weekdays, and empty state card', (
     tester,
   ) async {
     await tester.pumpWidget(
@@ -116,11 +123,11 @@ void main() {
       ),
     );
 
-    await tester.pump();
     await tester.pumpAndSettle();
 
     expect(find.byType(CalendarScreen), findsOneWidget);
     expect(find.byType(CalendarMonthHeader), findsOneWidget);
     expect(find.byType(CalendarWeekdayHeader), findsOneWidget);
+    expect(find.byType(CalendarDayEmptyCard), findsOneWidget);
   });
 }

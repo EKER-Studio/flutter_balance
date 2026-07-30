@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
 import 'package:pure_weight/features/weight/domain/entities/weight_entry.dart';
 import 'package:pure_weight/features/weight/presentation/bloc/weight_bloc.dart';
 import 'package:pure_weight/features/weight/presentation/bloc/weight_state.dart';
 import 'package:pure_weight/features/weight/presentation/widgets/add_weight_sheet.dart';
-import 'package:pure_weight/features/weight/presentation/widgets/calendar/calendar_day_detail_sheet.dart';
+import 'package:pure_weight/features/weight/presentation/widgets/calendar/calendar_day_empty_card.dart';
+import 'package:pure_weight/features/weight/presentation/widgets/calendar/calendar_day_entries_card.dart';
 import 'package:pure_weight/features/weight/presentation/widgets/calendar/calendar_grid.dart';
 import 'package:pure_weight/features/weight/presentation/widgets/calendar/calendar_month_header.dart';
 import 'package:pure_weight/features/weight/presentation/widgets/calendar/calendar_weekday_header.dart';
@@ -22,12 +24,14 @@ class CalendarScreen extends StatefulWidget {
 
 class _CalendarScreenState extends State<CalendarScreen> {
   late DateTime _focusedMonth;
+  late DateTime _selectedDate;
 
   @override
   void initState() {
     super.initState();
     final now = DateTime.now();
     _focusedMonth = DateTime(now.year, now.month, 1);
+    _selectedDate = now;
   }
 
   void _previousMonth() {
@@ -42,9 +46,17 @@ class _CalendarScreenState extends State<CalendarScreen> {
     });
   }
 
+  void _onDaySelected(DateTime date) {
+    setState(() {
+      _selectedDate = date;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final locale = Localizations.localeOf(context).toString();
+    final formattedSelectedDate = DateFormat.MMMMd(locale).format(_selectedDate);
 
     return Scaffold(
       appBar: AppBar(
@@ -74,33 +86,73 @@ class _CalendarScreenState extends State<CalendarScreen> {
               _ => <WeightEntry>[],
             };
 
+            // Filter entries for the selected day
+            final dayEntries = entries
+                .where((e) => DateUtils.isSameDay(e.dateTime, _selectedDate))
+                .toList()
+              ..sort((a, b) => b.dateTime.compareTo(a.dateTime));
+
             return ClampedLayout(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  CalendarMonthHeader(
-                    focusedMonth: _focusedMonth,
-                    onPreviousMonth: _previousMonth,
-                    onNextMonth: _nextMonth,
-                  ),
-                  const SizedBox(height: 16),
-                  const CalendarWeekdayHeader(),
-                  const SizedBox(height: 8),
-                  Expanded(
-                    child: CalendarGrid(
-                      focusedMonth: _focusedMonth,
-                      entries: entries,
-                      onDaySelected: (date, dayEntries) {
-                        CalendarDayDetailSheet.show(
-                          context,
-                          date: date,
-                          entries: dayEntries,
-                        );
-                      },
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              child: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    // Top Calendar Card
+                    Card(
+                      elevation: 0,
+                      color: Theme.of(context).colorScheme.surfaceContainerLow,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(28),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: Column(
+                          children: [
+                            CalendarMonthHeader(
+                              focusedMonth: _focusedMonth,
+                              onPreviousMonth: _previousMonth,
+                              onNextMonth: _nextMonth,
+                            ),
+                            const SizedBox(height: 16),
+                            const CalendarWeekdayHeader(),
+                            const SizedBox(height: 12),
+                            CalendarGrid(
+                              focusedMonth: _focusedMonth,
+                              selectedDate: _selectedDate,
+                              entries: entries,
+                              onDaySelected: (date, _) => _onDaySelected(date),
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
-                  ),
-                ],
+                    const SizedBox(height: 20),
+                    // Selected Day Header
+                    Padding(
+                      padding: const EdgeInsets.only(left: 8, bottom: 8),
+                      child: Text(
+                        'Zapisy z $formattedSelectedDate',
+                        style:
+                            Theme.of(context).textTheme.titleMedium?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .onSurfaceVariant,
+                                ),
+                      ),
+                    ),
+                    // Selected Day Entries / Empty State Card
+                    if (dayEntries.isEmpty)
+                      CalendarDayEmptyCard(selectedDate: _selectedDate)
+                    else
+                      CalendarDayEntriesCard(
+                        selectedDate: _selectedDate,
+                        entries: dayEntries,
+                      ),
+                    const SizedBox(height: 80),
+                  ],
+                ),
               ),
             );
           },

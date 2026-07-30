@@ -13,6 +13,9 @@ class CalendarGrid extends StatelessWidget {
   /// The month and year currently displayed by the grid.
   final DateTime focusedMonth;
 
+  /// The currently active selected date.
+  final DateTime selectedDate;
+
   /// All available weight entries to map into calendar dates.
   final List<WeightEntry> entries;
 
@@ -23,6 +26,7 @@ class CalendarGrid extends StatelessWidget {
   const CalendarGrid({
     super.key,
     required this.focusedMonth,
+    required this.selectedDate,
     required this.entries,
     required this.onDaySelected,
   });
@@ -52,11 +56,12 @@ class CalendarGrid extends StatelessWidget {
 
     return GridView.builder(
       physics: const NeverScrollableScrollPhysics(),
+      shrinkWrap: true,
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 7,
         mainAxisSpacing: 8,
-        crossAxisSpacing: 8,
-        childAspectRatio: 0.9,
+        crossAxisSpacing: 4,
+        childAspectRatio: 1.0,
       ),
       itemCount: totalCells,
       itemBuilder: (context, index) {
@@ -68,12 +73,14 @@ class CalendarGrid extends StatelessWidget {
         final date = DateTime(focusedMonth.year, focusedMonth.month, dayNumber);
         final dayEntries = entriesByDay[dayNumber] ?? const [];
         final isToday = DateUtils.isSameDay(date, now);
+        final isSelected = DateUtils.isSameDay(date, selectedDate);
 
         return CalendarDayCell(
           date: date,
           dayNumber: dayNumber,
           entries: dayEntries,
           isToday: isToday,
+          isSelected: isSelected,
           onTap: () => onDaySelected(date, dayEntries),
         );
       },
