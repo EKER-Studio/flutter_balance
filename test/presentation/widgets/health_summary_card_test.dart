@@ -9,6 +9,7 @@ import 'package:pure_weight/features/weight/presentation/widgets/health_summary_
 import 'package:pure_weight/l10n/app_localizations.dart';
 import 'package:pure_weight/presentation/bloc/settings/app_settings_bloc.dart';
 import 'package:pure_weight/presentation/bloc/settings/app_settings_event.dart';
+import 'package:pure_weight/presentation/widgets/target_weight_dialog.dart';
 
 class MockHydratedStorage extends Mock implements HydratedStorage {}
 
@@ -22,23 +23,27 @@ void main() {
     when(() => storage.write(any(), any())).thenAnswer((_) async {});
   });
 
+  Widget createTestWidget(Widget child, AppSettingsBloc bloc) {
+    return BlocProvider.value(
+      value: bloc,
+      child: MaterialApp(
+        localizationsDelegates: const [
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+        ],
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: Scaffold(body: child),
+      ),
+    );
+  }
+
   testWidgets('renders goal and BMI details from app settings', (tester) async {
     final bloc = AppSettingsBloc();
 
     await tester.pumpWidget(
-      BlocProvider.value(
-        value: bloc,
-        child: MaterialApp(
-          localizationsDelegates: const [
-            AppLocalizations.delegate,
-            GlobalMaterialLocalizations.delegate,
-            GlobalCupertinoLocalizations.delegate,
-            GlobalWidgetsLocalizations.delegate,
-          ],
-          supportedLocales: AppLocalizations.supportedLocales,
-          home: const Scaffold(body: HealthSummaryCard(latestWeightKg: 72.0)),
-        ),
-      ),
+      createTestWidget(const HealthSummaryCard(latestWeightKg: 72.0), bloc),
     );
 
     expect(find.text('Set weight goal'), findsOneWidget);
@@ -57,21 +62,34 @@ void main() {
     await tester.pump();
 
     await tester.pumpWidget(
-      BlocProvider.value(
-        value: bloc,
-        child: MaterialApp(
-          localizationsDelegates: const [
-            AppLocalizations.delegate,
-            GlobalMaterialLocalizations.delegate,
-            GlobalCupertinoLocalizations.delegate,
-            GlobalWidgetsLocalizations.delegate,
-          ],
-          supportedLocales: AppLocalizations.supportedLocales,
-          home: const Scaffold(body: HealthSummaryCard(latestWeightKg: 75.0)),
-        ),
-      ),
+      createTestWidget(const HealthSummaryCard(latestWeightKg: 75.0), bloc),
     );
 
     expect(find.text('11.0 lb to target'), findsOneWidget);
+  });
+
+  testWidgets('renders Goal Achieved status when latestWeight <= targetWeight', (tester) async {
+    final bloc = AppSettingsBloc();
+    bloc.add(const TargetWeightChanged(75.0));
+    await tester.pump();
+
+    await tester.pumpWidget(
+      createTestWidget(const HealthSummaryCard(latestWeightKg: 70.0), bloc),
+    );
+
+    expect(find.text('Goal achieved!'), findsOneWidget);
+  });
+
+  testWidgets('opens TargetWeightDialog on goal button tap', (tester) async {
+    final bloc = AppSettingsBloc();
+
+    await tester.pumpWidget(
+      createTestWidget(const HealthSummaryCard(latestWeightKg: 72.0), bloc),
+    );
+
+    await tester.tap(find.text('Set weight goal'));
+    await tester.pumpAndSettle();
+
+    expect(find.byType(TargetWeightDialog), findsOneWidget);
   });
 }
