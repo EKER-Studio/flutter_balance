@@ -103,7 +103,7 @@ List<WeightEntry> getInitial3MonthsWeightEntries({DateTime? referenceDate}) {
 
       entries.add(
         WeightEntry(
-          weightKg: double.parse(weight.toStringAsFixed(1)),
+          weightKg: (weight * 10).round() / 10,
           dateTime: measurementTime,
           note: note,
         ),

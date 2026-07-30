@@ -98,7 +98,7 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
       );
       return WeightEntry(
         id: dayEntries.first.id,
-        weightKg: double.parse(avgWeight.toStringAsFixed(2)),
+        weightKg: (avgWeight * 100).round() / 100,
         dateTime: noonDate,
       );
     }).toList();
