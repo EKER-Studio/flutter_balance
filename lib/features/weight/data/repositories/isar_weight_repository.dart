@@ -193,6 +193,45 @@ class IsarWeightRepository implements WeightRepository {
   }
 
   @override
+  Future<void> updateEntry(WeightEntry entry) async {
+    if (entry.id == 0) {
+      throw WeightRepositoryException(
+        type: WeightErrorType.writeFailed,
+        message: 'Cannot update entry with no id',
+      );
+    }
+    try {
+      final key = await _getOrLoadKey(isWrite: true);
+      final model = _entityToModel(entry, key);
+      await isar.writeTxn(() async {
+        await isar.weightEntryModels.put(model);
+      });
+    } on WeightRepositoryException {
+      rethrow;
+    } on IsarError catch (e, stack) {
+      if (kDebugMode) {
+        debugPrint('[IsarWeightRepository] updateEntry IsarError: $e\n$stack');
+      }
+      throw WeightRepositoryException(
+        type: WeightErrorType.writeFailed,
+        message: 'Database update failure: ${e.message}',
+        sourceError: e,
+      );
+    } catch (e, stack) {
+      if (kDebugMode) {
+        debugPrint(
+          '[IsarWeightRepository] updateEntry unexpected error: $e\n$stack',
+        );
+      }
+      throw WeightRepositoryException(
+        type: WeightErrorType.writeFailed,
+        message: 'Unexpected error while updating entry: $e',
+        sourceError: e,
+      );
+    }
+  }
+
+  @override
   Future<void> deleteEntry(int id) async {
     try {
       await isar.writeTxn(() async {
