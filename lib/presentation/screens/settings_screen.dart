@@ -338,20 +338,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
-  String _themeLabel(AppThemeMode mode, AppLocalizations l10n) {
-    return switch (mode) {
-      AppThemeMode.system => l10n.system,
-      AppThemeMode.light => l10n.light,
-      AppThemeMode.dark => l10n.dark,
-    };
-  }
+  String _themeLabel(AppThemeMode mode, AppLocalizations l10n) =>
+      mode.localizedName(l10n);
 
-  String _unitLabel(MeasurementUnit unit, AppLocalizations l10n) {
-    return switch (unit) {
-      MeasurementUnit.metric => l10n.metricUnit,
-      MeasurementUnit.imperial => l10n.imperialUnit,
-    };
-  }
+  String _unitLabel(MeasurementUnit unit, AppLocalizations l10n) =>
+      unit.localizedName(l10n);
 
   void _showWipeConfirmation(BuildContext context) {
     final l10n = AppLocalizations.of(context);
@@ -868,16 +859,9 @@ class _ApplicationSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final themeLabel = switch (state.themeMode) {
-      AppThemeMode.system => l10n.system,
-      AppThemeMode.light => l10n.light,
-      AppThemeMode.dark => l10n.dark,
-    };
+    final themeLabel = state.themeMode.localizedName(l10n);
 
-    final unitLabel = switch (state.measurementUnit) {
-      MeasurementUnit.metric => l10n.metricUnit,
-      MeasurementUnit.imperial => l10n.imperialUnit,
-    };
+    final unitLabel = state.measurementUnit.localizedName(l10n);
 
     final notificationTimeText = state.notificationTime.format(context);
 
