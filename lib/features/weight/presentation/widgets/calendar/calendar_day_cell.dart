@@ -41,8 +41,10 @@ class CalendarDayCell extends StatelessWidget {
     final dateLabel = DateFormat.yMMMMd(
       Localizations.localeOf(context).toString(),
     ).format(date);
-    final entriesCountLabel = hasEntries ? '${entries.length} pomiary' : 'Brak pomiarów';
-    final semanticText = '$dateLabel, $entriesCountLabel${isSelected ? ', zaznaczony' : ''}';
+    final entriesCountLabel =
+        hasEntries ? '${entries.length} pomiary' : 'Brak pomiarów';
+    final semanticText =
+        '$dateLabel, $entriesCountLabel${isSelected ? ', zaznaczony' : ''}';
 
     Color circleBgColor;
     Color textColor;
@@ -69,40 +71,41 @@ class CalendarDayCell extends StatelessWidget {
       child: InkWell(
         onTap: onTap,
         customBorder: const CircleBorder(),
-        child: Container(
-          width: 44,
-          height: 44,
-          decoration: BoxDecoration(
-            color: circleBgColor,
-            shape: BoxShape.circle,
-            border: isToday && !isSelected
-                ? Border.all(color: cs.primary, width: 2)
-                : null,
-          ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                '$dayNumber',
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: textColor,
-                      fontWeight: isSelected || isToday || hasEntries
-                          ? FontWeight.bold
-                          : FontWeight.normal,
-                    ),
-              ),
-              if (hasEntries) ...[
-                const SizedBox(height: 2),
-                Container(
-                  width: 4,
-                  height: 4,
-                  decoration: BoxDecoration(
-                    color: dotColor,
-                    shape: BoxShape.circle,
-                  ),
+        child: AspectRatio(
+          aspectRatio: 1.0,
+          child: Container(
+            decoration: BoxDecoration(
+              color: circleBgColor,
+              shape: BoxShape.circle,
+              border: isToday && !isSelected
+                  ? Border.all(color: cs.primary, width: 2)
+                  : null,
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  '$dayNumber',
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: textColor,
+                        fontWeight: isSelected || isToday || hasEntries
+                            ? FontWeight.bold
+                            : FontWeight.normal,
+                      ),
                 ),
+                if (hasEntries) ...[
+                  const SizedBox(height: 2),
+                  Container(
+                    width: 4,
+                    height: 4,
+                    decoration: BoxDecoration(
+                      color: dotColor,
+                      shape: BoxShape.circle,
+                    ),
+                  ),
+                ],
               ],
-            ],
+            ),
           ),
         ),
       ),
