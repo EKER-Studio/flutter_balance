@@ -110,6 +110,36 @@ abstract class AppLocalizations {
   /// **'Settings'**
   String get settingsTitle;
 
+  /// No description provided for @settingsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Customize the app to your needs'**
+  String get settingsSubtitle;
+
+  /// No description provided for @profileSection.
+  ///
+  /// In en, this message translates to:
+  /// **'PROFILE'**
+  String get profileSection;
+
+  /// No description provided for @applicationSection.
+  ///
+  /// In en, this message translates to:
+  /// **'APPLICATION'**
+  String get applicationSection;
+
+  /// No description provided for @securitySection.
+  ///
+  /// In en, this message translates to:
+  /// **'SECURITY'**
+  String get securitySection;
+
+  /// No description provided for @dataSection.
+  ///
+  /// In en, this message translates to:
+  /// **'DATA'**
+  String get dataSection;
+
   /// No description provided for @metricUnit.
   ///
   /// In en, this message translates to:

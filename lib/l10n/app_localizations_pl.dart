@@ -15,6 +15,21 @@ class AppLocalizationsPl extends AppLocalizations {
   String get settingsTitle => 'Ustawienia';
 
   @override
+  String get settingsSubtitle => 'Dostosuj aplikację do swoich potrzeb';
+
+  @override
+  String get profileSection => 'PROFIL';
+
+  @override
+  String get applicationSection => 'APLIKACJA';
+
+  @override
+  String get securitySection => 'BEZPIECZEŃSTWO';
+
+  @override
+  String get dataSection => 'DANE';
+
+  @override
   String get metricUnit => 'Metryczny (kg, cm)';
 
   @override

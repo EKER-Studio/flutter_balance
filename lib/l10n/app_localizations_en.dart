@@ -15,6 +15,21 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settingsTitle => 'Settings';
 
   @override
+  String get settingsSubtitle => 'Customize the app to your needs';
+
+  @override
+  String get profileSection => 'PROFILE';
+
+  @override
+  String get applicationSection => 'APPLICATION';
+
+  @override
+  String get securitySection => 'SECURITY';
+
+  @override
+  String get dataSection => 'DATA';
+
+  @override
   String get metricUnit => 'Metric (kg, cm)';
 
   @override

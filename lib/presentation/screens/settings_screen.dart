@@ -15,9 +15,9 @@ import 'package:pure_weight/presentation/bloc/settings/app_theme_mode.dart';
 import 'package:pure_weight/core/models/measurement_unit.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:pure_weight/presentation/widgets/target_weight_dialog.dart';
+import 'package:pure_weight/presentation/core/clamped_layout.dart';
 import 'dart:io';
 
-/// Dialog for setting the height.
 class _HeightDialog extends StatefulWidget {
   final double currentValue;
 
@@ -101,10 +101,7 @@ class _HeightDialogState extends State<_HeightDialog> {
   }
 }
 
-
-/// Settings screen for theme, measurement unit, and database management.
 class SettingsScreen extends StatefulWidget {
-  /// Creates [SettingsScreen].
   const SettingsScreen({super.key});
 
   @override
@@ -128,258 +125,119 @@ class _SettingsScreenState extends State<SettingsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(AppLocalizations.of(context).settingsTitle)),
+      appBar: _buildAppBar(context),
       body: BlocBuilder<AppSettingsBloc, AppSettingsState>(
         builder: (context, state) {
           final l10n = AppLocalizations.of(context);
-          return ListView(
-            padding: const EdgeInsets.all(16),
-            children: [
-              _buildSection(
-                context,
-                title: l10n.theme,
-                children: AppThemeMode.values
-                    .map(
-                      (mode) => _buildRadioTile(
-                        context,
-                        value: mode,
-                        groupValue: state.themeMode,
-                        onChanged: (value) {
-                          // Radio always passes the selected value when the
-                          // groupValue type is non-nullable.
-                          context.read<AppSettingsBloc>().add(
-                            UpdateTheme(value!),
-                          );
-                        },
-                        label: _themeLabel(mode, l10n),
-                      ),
-                    )
-                    .toList(),
-              ),
-              const SizedBox(height: 24),
-              _buildSection(
-                context,
-                title: l10n.measurementUnit,
-                children: MeasurementUnit.values
-                    .map(
-                      (unit) => _buildRadioTile(
-                        context,
-                        value: unit,
-                        groupValue: state.measurementUnit,
-                        onChanged: (value) {
-                          // Radio always passes the selected value when the
-                          // groupValue type is non-nullable.
-                          context.read<AppSettingsBloc>().add(
-                            UpdateMeasurementUnit(value!),
-                          );
-                        },
-                        label: _unitLabel(unit, l10n),
-                      ),
-                    )
-                    .toList(),
-              ),
-              const SizedBox(height: 24),
-              _buildSection(
-                context,
-                title: l10n.height,
+          return SingleChildScrollView(
+            child: ClampedLayout(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  ListTile(
-                    leading: Icon(
-                      Icons.height,
-                      color: Theme.of(context).colorScheme.primary,
-                    ),
-                    title: Text(l10n.height),
-                    subtitle: Text(
-                      state.height > 0
-                          ? '${state.height.toStringAsFixed(0)} cm'
-                          : l10n.notSet,
-                    ),
-                    trailing: IconButton(
-                      icon: const Icon(Icons.edit_outlined),
-                      onPressed: () => _showHeightDialog(context),
+                  const SizedBox(height: 8),
+                  _buildHeader(context, l10n),
+                  const SizedBox(height: 24),
+                  _SectionHeader(label: l10n.profileSection),
+                  const SizedBox(height: 8),
+                  _ProfileSection(
+                    state: state,
+                    l10n: l10n,
+                    onHeightTap: () => _showHeightDialog(context),
+                    onTargetWeightTap: () => _showTargetWeightDialog(context),
+                  ),
+                  const SizedBox(height: 16),
+                  _SectionHeader(label: l10n.applicationSection),
+                  const SizedBox(height: 8),
+                  _ApplicationSection(
+                    state: state,
+                    l10n: l10n,
+                    onThemeTap: () => _showThemeSelection(context),
+                    onUnitTap: () => _showUnitSelection(context),
+                    onNotificationsChanged: (v) =>
+                        _handleNotificationToggle(context, v),
+                    onNotificationTimeTap: () => _selectNotificationTime(
+                      context,
+                      state.notificationTime,
                     ),
                   ),
+                  const SizedBox(height: 16),
+                  _SectionHeader(label: l10n.securitySection),
+                  const SizedBox(height: 8),
+                  _SecuritySection(
+                    state: state,
+                    l10n: l10n,
+                    isBiometricAvailable: _isBiometricAvailable,
+                    onBiometricChanged: (v) =>
+                        _handleBiometricToggle(context, v),
+                    biometricsAvailableLabel: l10n.biometricDesc,
+                    biometricsNotAvailableLabel: l10n.biometricsNotAvailable,
+                  ),
+                  const SizedBox(height: 16),
+                  _SectionHeader(label: l10n.dataSection),
+                  const SizedBox(height: 8),
+                  _DataSection(
+                    l10n: l10n,
+                    onImportTap: () => _importCsv(context),
+                    onWipeTap: () => _showWipeConfirmation(context),
+                  ),
+                  const SizedBox(height: 32),
                 ],
               ),
-              const SizedBox(height: 24),
-              _buildSection(
-                context,
-                title: l10n.goal,
-                children: [
-                  ListTile(
-                    leading: Icon(
-                      Icons.flag_outlined,
-                      color: Theme.of(context).colorScheme.tertiary,
-                    ),
-                    title: Text(l10n.targetWeight),
-                    subtitle: Text(
-                      state.targetWeight != null
-                          ? formatWeight(
-                              // Guarded by the != null check above.
-                              state.targetWeight!,
-                              state.measurementUnit,
-                            )
-                          : l10n.notSet,
-                    ),
-                    trailing: IconButton(
-                      icon: const Icon(Icons.edit_outlined),
-                      onPressed: () => _showTargetWeightDialog(context),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 24),
-              _buildSection(
-                context,
-                title: l10n.security,
-                children: [
-                  FutureBuilder<bool>(
-                    future: _isBiometricAvailable,
-                    builder: (context, snapshot) {
-                      final isAvailable = snapshot.data ?? false;
-                      final isLoading =
-                          snapshot.connectionState == ConnectionState.waiting;
-                      return SwitchListTile(
-                        title: Text(l10n.biometricLock),
-                        subtitle: Text(
-                          isAvailable
-                              ? l10n.biometricDesc
-                              : l10n.biometricsNotAvailable,
-                        ),
-                        value: isAvailable
-                            ? state.isBiometricLockEnabled
-                            : false,
-                        onChanged: isLoading
-                            ? null
-                            : (value) async {
-                                if (isAvailable) {
-                                  context.read<AppSettingsBloc>().add(
-                                    UpdateBiometricLock(value),
-                                  );
-                                }
-                              },
-                        secondary: const Icon(Icons.fingerprint),
-                      );
-                    },
-                  ),
-                ],
-              ),
-              const SizedBox(height: 24),
-              _buildSection(
-                context,
-                title: l10n.notifications,
-                children: [
-                  SwitchListTile(
-                    secondary: Icon(
-                      Icons.notifications_outlined,
-                      color: Theme.of(context).colorScheme.secondary,
-                    ),
-                    title: Text(l10n.dailyReminder),
-                    subtitle: Text(l10n.dailyReminderDesc),
-                    value: state.notificationsEnabled,
-                    onChanged: (value) =>
-                        _handleNotificationToggle(context, value),
-                  ),
-                  if (state.notificationsEnabled)
-                    ListTile(
-                      leading: Icon(
-                        Icons.access_time_outlined,
-                        color: Theme.of(context).colorScheme.secondary,
-                      ),
-                      title: Text(l10n.reminderTime),
-                      subtitle: Text(state.notificationTime.format(context)),
-                      trailing: IconButton(
-                        icon: const Icon(Icons.edit_outlined),
-                        onPressed: () => _selectNotificationTime(
-                          context,
-                          state.notificationTime,
-                        ),
-                      ),
-                    ),
-                ],
-              ),
-              const SizedBox(height: 24),
-              _buildSection(
-                context,
-                title: l10n.database,
-                children: [
-                  ListTile(
-                    leading: Icon(
-                      Icons.file_upload_outlined,
-                      color: Theme.of(context).colorScheme.primary,
-                    ),
-                    title: Text(l10n.importCsv),
-                    subtitle: Text(l10n.importCsvDesc),
-                    onTap: () => _importCsv(context),
-                  ),
-                  ListTile(
-                    leading: Icon(
-                      Icons.delete_forever,
-                      color: Theme.of(context).colorScheme.error,
-                    ),
-                    title: Text(l10n.wipeData),
-                    subtitle: Text(l10n.wipeDataDesc),
-                    onTap: () => _showWipeConfirmation(context),
-                  ),
-                ],
-              ),
-            ],
+            ),
           );
         },
       ),
     );
   }
 
-  Widget _buildSection(
-    BuildContext context, {
-    required String title,
-    required List<Widget> children,
-  }) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          title,
-          style: Theme.of(
-            context,
-          ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+  PreferredSizeWidget _buildAppBar(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+    return AppBar(
+      title: Row(
+        children: [
+          Icon(Icons.monitor_weight, color: colorScheme.primary),
+          const SizedBox(width: 8),
+          Text(
+            AppLocalizations.of(context).todayTabTitle,
+            style: textTheme.titleLarge,
+          ),
+        ],
+      ),
+      actions: [
+        Padding(
+          padding: const EdgeInsets.only(right: 8),
+          child: CircleAvatar(
+            backgroundColor: colorScheme.primaryContainer,
+            child: Text(
+              'U',
+              style: textTheme.titleSmall?.copyWith(
+                color: colorScheme.onPrimaryContainer,
+              ),
+            ),
+          ),
         ),
-        const SizedBox(height: 8),
-        ...children,
       ],
     );
   }
 
-  Widget _buildRadioTile<T>(
-    BuildContext context, {
-    required T value,
-    required T? groupValue,
-    required ValueChanged<T?> onChanged,
-    required String label,
-  }) {
-    return ListTile(
-      leading: RadioGroup<T>(
-        groupValue: groupValue,
-        onChanged: onChanged,
-        child: Radio<T>(value: value),
-      ),
-      title: Text(label),
+  Widget _buildHeader(BuildContext context, AppLocalizations l10n) {
+    final textTheme = Theme.of(context).textTheme;
+    final colorScheme = Theme.of(context).colorScheme;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(l10n.settingsTitle, style: textTheme.headlineLarge),
+        const SizedBox(height: 4),
+        Text(
+          l10n.settingsSubtitle,
+          style: textTheme.bodyMedium?.copyWith(
+            color: colorScheme.onSurfaceVariant,
+          ),
+        ),
+      ],
     );
-  }
-
-  String _themeLabel(AppThemeMode mode, AppLocalizations l10n) {
-    return switch (mode) {
-      AppThemeMode.system => l10n.system,
-      AppThemeMode.light => l10n.light,
-      AppThemeMode.dark => l10n.dark,
-    };
-  }
-
-  String _unitLabel(MeasurementUnit unit, AppLocalizations l10n) {
-    return switch (unit) {
-      MeasurementUnit.metric => l10n.metricUnit,
-      MeasurementUnit.imperial => l10n.imperialUnit,
-    };
   }
 
   void _showHeightDialog(BuildContext dialogContext) async {
@@ -416,6 +274,83 @@ class _SettingsScreenState extends State<SettingsScreen> {
     } else {
       context.read<AppSettingsBloc>().add(const TargetWeightChanged(null));
     }
+  }
+
+  void _showThemeSelection(BuildContext dialogContext) {
+    final state = dialogContext.read<AppSettingsBloc>().state;
+    final l10n = AppLocalizations.of(dialogContext);
+    showDialog(
+      context: dialogContext,
+      builder: (ctx) => SimpleDialog(
+        title: Text(l10n.theme),
+        children: [
+          RadioGroup<AppThemeMode>(
+            groupValue: state.themeMode,
+            onChanged: (value) {
+              if (value == null) return;
+              ctx.read<AppSettingsBloc>().add(UpdateTheme(value));
+              Navigator.pop(ctx);
+            },
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                for (final mode in AppThemeMode.values)
+                  RadioListTile<AppThemeMode>(
+                    title: Text(_themeLabel(mode, l10n)),
+                    value: mode,
+                  ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showUnitSelection(BuildContext dialogContext) {
+    final state = dialogContext.read<AppSettingsBloc>().state;
+    final l10n = AppLocalizations.of(dialogContext);
+    showDialog(
+      context: dialogContext,
+      builder: (ctx) => SimpleDialog(
+        title: Text(l10n.measurementUnit),
+        children: [
+          RadioGroup<MeasurementUnit>(
+            groupValue: state.measurementUnit,
+            onChanged: (value) {
+              if (value == null) return;
+              ctx.read<AppSettingsBloc>().add(UpdateMeasurementUnit(value));
+              Navigator.pop(ctx);
+            },
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                for (final unit in MeasurementUnit.values)
+                  RadioListTile<MeasurementUnit>(
+                    title: Text(_unitLabel(unit, l10n)),
+                    value: unit,
+                  ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  String _themeLabel(AppThemeMode mode, AppLocalizations l10n) {
+    return switch (mode) {
+      AppThemeMode.system => l10n.system,
+      AppThemeMode.light => l10n.light,
+      AppThemeMode.dark => l10n.dark,
+    };
+  }
+
+  String _unitLabel(MeasurementUnit unit, AppLocalizations l10n) {
+    return switch (unit) {
+      MeasurementUnit.metric => l10n.metricUnit,
+      MeasurementUnit.imperial => l10n.imperialUnit,
+    };
   }
 
   void _showWipeConfirmation(BuildContext context) {
@@ -479,15 +414,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
         allowedExtensions: ['csv'],
       );
 
-      if (result == null || result.files.single.path == null) {
-        return;
-      }
+      if (result == null || result.files.single.path == null) return;
 
-      // Guarded by the path == null check (early return) above.
       final filePath = result.files.single.path!;
       final fileContent = await File(filePath).readAsString();
 
-      // Parse CSV and obtain both entries and skipped rows count.
       final csvResult = await CsvImporter.parse(fileContent);
       final entries = csvResult.entries;
       final skippedRows = csvResult.skippedRows;
@@ -571,6 +502,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
     bloc.add(ToggleNotifications(enabled));
   }
 
+  Future<void> _handleBiometricToggle(
+    BuildContext context,
+    bool enabled,
+  ) async {
+    context.read<AppSettingsBloc>().add(UpdateBiometricLock(enabled));
+  }
+
   Future<void> _selectNotificationTime(
     BuildContext context,
     TimeOfDay initialTime,
@@ -582,5 +520,478 @@ class _SettingsScreenState extends State<SettingsScreen> {
     if (newTime != null && context.mounted) {
       context.read<AppSettingsBloc>().add(UpdateNotificationTime(newTime));
     }
+  }
+}
+
+class _SectionHeader extends StatelessWidget {
+  final String label;
+
+  const _SectionHeader({required this.label});
+
+  @override
+  Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+    final colorScheme = Theme.of(context).colorScheme;
+    return Padding(
+      padding: const EdgeInsets.only(left: 16),
+      child: Text(
+        label,
+        style: textTheme.labelLarge?.copyWith(color: colorScheme.primary),
+      ),
+    );
+  }
+}
+
+class _CustomSettingsTile extends StatefulWidget {
+  final IconData icon;
+  final String title;
+  final String? valueText;
+  final Widget? trailing;
+  final VoidCallback? onTap;
+  final bool isError;
+  final bool showChevron;
+  const _CustomSettingsTile({
+    required this.icon,
+    required this.title,
+    this.valueText,
+    this.trailing,
+    this.onTap,
+    this.isError = false,
+    this.showChevron = true,
+  });
+
+  @override
+  State<_CustomSettingsTile> createState() => _CustomSettingsTileState();
+}
+
+class _CustomSettingsTileState extends State<_CustomSettingsTile> {
+  final _focusNode = FocusNode();
+  bool _isFocused = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _focusNode.addListener(_onFocusChange);
+  }
+
+  void _onFocusChange() {
+    if (_isFocused != _focusNode.hasFocus) {
+      setState(() => _isFocused = _focusNode.hasFocus);
+    }
+  }
+
+  @override
+  void dispose() {
+    _focusNode.removeListener(_onFocusChange);
+    _focusNode.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
+    final iconColor = widget.isError
+        ? colorScheme.error
+        : colorScheme.onSurfaceVariant;
+
+    final leading = ExcludeSemantics(
+      child: Container(
+        width: 40,
+        height: 40,
+        decoration: const BoxDecoration(shape: BoxShape.circle),
+        foregroundDecoration: BoxDecoration(
+          color: colorScheme.surfaceContainer,
+          shape: BoxShape.circle,
+        ),
+        alignment: Alignment.center,
+        child: Icon(widget.icon, color: iconColor, size: 20),
+      ),
+    );
+
+    final titleWidget = Text(
+      widget.title,
+      style: textTheme.bodyLarge?.copyWith(
+        color: widget.isError ? colorScheme.error : null,
+      ),
+    );
+
+    Widget? trailingWidget;
+    if (widget.trailing != null) {
+      trailingWidget = widget.trailing;
+    } else if (widget.valueText != null) {
+      trailingWidget = Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Flexible(
+            child: Text(
+              widget.valueText!,
+              style: textTheme.bodyMedium?.copyWith(
+                color: widget.isError
+                    ? colorScheme.error
+                    : colorScheme.onSurfaceVariant,
+              ),
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+          if (widget.showChevron)
+            ExcludeSemantics(
+              child: Icon(
+                Icons.chevron_right,
+                color: colorScheme.onSurfaceVariant,
+              ),
+            ),
+        ],
+      );
+    } else if (widget.showChevron) {
+      trailingWidget = ExcludeSemantics(
+        child: Icon(Icons.chevron_right, color: colorScheme.onSurfaceVariant),
+      );
+    }
+
+    final shape = RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(20),
+    );
+
+    final tile = MergeSemantics(
+      child: Focus(
+        focusNode: _focusNode,
+        child: ListTile(
+          shape: shape,
+          onTap: widget.onTap,
+          leading: leading,
+          title: titleWidget,
+          trailing: trailingWidget,
+        ),
+      ),
+    );
+
+    if (_isFocused) {
+      return Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: colorScheme.primary, width: 2),
+        ),
+        child: tile,
+      );
+    }
+
+    return tile;
+  }
+}
+
+class _CustomSwitchTile extends StatefulWidget {
+  final IconData icon;
+  final String title;
+  final String? subtitle;
+  final bool value;
+  final ValueChanged<bool>? onChanged;
+
+  const _CustomSwitchTile({
+    required this.icon,
+    required this.title,
+    this.subtitle,
+    required this.value,
+    this.onChanged,
+  });
+
+  @override
+  State<_CustomSwitchTile> createState() => _CustomSwitchTileState();
+}
+
+class _CustomSwitchTileState extends State<_CustomSwitchTile> {
+  final _focusNode = FocusNode();
+  bool _isFocused = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _focusNode.addListener(_onFocusChange);
+  }
+
+  void _onFocusChange() {
+    if (_isFocused != _focusNode.hasFocus) {
+      setState(() => _isFocused = _focusNode.hasFocus);
+    }
+  }
+
+  @override
+  void dispose() {
+    _focusNode.removeListener(_onFocusChange);
+    _focusNode.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
+    final leading = ExcludeSemantics(
+      child: Container(
+        width: 40,
+        height: 40,
+        decoration: const BoxDecoration(shape: BoxShape.circle),
+        foregroundDecoration: BoxDecoration(
+          color: colorScheme.surfaceContainer,
+          shape: BoxShape.circle,
+        ),
+        alignment: Alignment.center,
+        child: Icon(widget.icon, color: colorScheme.onSurfaceVariant, size: 20),
+      ),
+    );
+
+    final shape = RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(20),
+    );
+
+    final tile = MergeSemantics(
+      child: Focus(
+        focusNode: _focusNode,
+        child: SwitchListTile.adaptive(
+          shape: shape,
+          title: Text(widget.title, style: textTheme.bodyLarge),
+          subtitle: widget.subtitle != null
+              ? Text(
+                  widget.subtitle!,
+                  style: textTheme.bodyMedium?.copyWith(
+                    color: colorScheme.onSurfaceVariant,
+                  ),
+                )
+              : null,
+          secondary: leading,
+          value: widget.value,
+          onChanged: widget.onChanged,
+        ),
+      ),
+    );
+
+    if (_isFocused) {
+      return Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: colorScheme.primary, width: 2),
+        ),
+        child: tile,
+      );
+    }
+
+    return tile;
+  }
+}
+
+class _ProfileSection extends StatelessWidget {
+  final AppSettingsState state;
+  final AppLocalizations l10n;
+  final VoidCallback onHeightTap;
+  final VoidCallback onTargetWeightTap;
+
+  const _ProfileSection({
+    required this.state,
+    required this.l10n,
+    required this.onHeightTap,
+    required this.onTargetWeightTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
+    final heightValue = state.height > 0
+        ? formatHeight(state.height, state.measurementUnit)
+        : l10n.heightNotSetLabel;
+
+    final targetWeightValue = state.targetWeight != null
+        ? formatWeight(state.targetWeight!, state.measurementUnit)
+        : l10n.notSet;
+
+    return Card(
+      margin: EdgeInsets.zero,
+      child: Column(
+        children: [
+          _CustomSettingsTile(
+            icon: Icons.height,
+            title: l10n.height,
+            valueText: heightValue,
+            onTap: onHeightTap,
+          ),
+          _CustomSettingsTile(
+            icon: Icons.flag,
+            title: l10n.targetWeight,
+            trailing: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Flexible(
+                  child: Text(
+                    targetWeightValue,
+                    style: textTheme.bodyMedium?.copyWith(
+                      color: colorScheme.primary,
+                      fontWeight: FontWeight.w500,
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+                ExcludeSemantics(
+                  child: Icon(
+                    Icons.chevron_right,
+                    color: colorScheme.onSurfaceVariant,
+                  ),
+                ),
+              ],
+            ),
+            onTap: onTargetWeightTap,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ApplicationSection extends StatelessWidget {
+  final AppSettingsState state;
+  final AppLocalizations l10n;
+  final VoidCallback onThemeTap;
+  final VoidCallback onUnitTap;
+  final ValueChanged<bool> onNotificationsChanged;
+  final VoidCallback onNotificationTimeTap;
+
+  const _ApplicationSection({
+    required this.state,
+    required this.l10n,
+    required this.onThemeTap,
+    required this.onUnitTap,
+    required this.onNotificationsChanged,
+    required this.onNotificationTimeTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final themeLabel = switch (state.themeMode) {
+      AppThemeMode.system => l10n.system,
+      AppThemeMode.light => l10n.light,
+      AppThemeMode.dark => l10n.dark,
+    };
+
+    final unitLabel = switch (state.measurementUnit) {
+      MeasurementUnit.metric => l10n.metricUnit,
+      MeasurementUnit.imperial => l10n.imperialUnit,
+    };
+
+    final notificationTimeText = state.notificationTime.format(context);
+
+    return Card(
+      margin: EdgeInsets.zero,
+      child: Column(
+        children: [
+          _CustomSettingsTile(
+            icon: Icons.palette,
+            title: l10n.theme,
+            valueText: themeLabel,
+            onTap: onThemeTap,
+          ),
+          _CustomSettingsTile(
+            icon: Icons.straighten,
+            title: l10n.measurementUnit,
+            valueText: unitLabel,
+            onTap: onUnitTap,
+          ),
+          _CustomSwitchTile(
+            icon: Icons.notifications_outlined,
+            title: l10n.dailyReminder,
+            subtitle: l10n.dailyReminderDesc,
+            value: state.notificationsEnabled,
+            onChanged: onNotificationsChanged,
+          ),
+          if (state.notificationsEnabled)
+            _CustomSettingsTile(
+              icon: Icons.access_time,
+              title: l10n.reminderTime,
+              valueText: notificationTimeText,
+              onTap: onNotificationTimeTap,
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+class _SecuritySection extends StatelessWidget {
+  final AppSettingsState state;
+  final AppLocalizations l10n;
+  final Future<bool> isBiometricAvailable;
+  final ValueChanged<bool> onBiometricChanged;
+  final String biometricsAvailableLabel;
+  final String biometricsNotAvailableLabel;
+
+  const _SecuritySection({
+    required this.state,
+    required this.l10n,
+    required this.isBiometricAvailable,
+    required this.onBiometricChanged,
+    required this.biometricsAvailableLabel,
+    required this.biometricsNotAvailableLabel,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      margin: EdgeInsets.zero,
+      child: FutureBuilder<bool>(
+        future: isBiometricAvailable,
+        builder: (context, snapshot) {
+          final available = snapshot.data ?? false;
+          final isLoading = snapshot.connectionState == ConnectionState.waiting;
+
+          return _CustomSwitchTile(
+            icon: Icons.fingerprint,
+            title: l10n.biometricLock,
+            subtitle: available
+                ? biometricsAvailableLabel
+                : biometricsNotAvailableLabel,
+            value: available ? state.isBiometricLockEnabled : false,
+            onChanged: isLoading
+                ? null
+                : (available ? onBiometricChanged : null),
+          );
+        },
+      ),
+    );
+  }
+}
+
+class _DataSection extends StatelessWidget {
+  final AppLocalizations l10n;
+  final VoidCallback onImportTap;
+  final VoidCallback onWipeTap;
+
+  const _DataSection({
+    required this.l10n,
+    required this.onImportTap,
+    required this.onWipeTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      margin: EdgeInsets.zero,
+      child: Column(
+        children: [
+          _CustomSettingsTile(
+            icon: Icons.import_export,
+            title: l10n.importCsv,
+            onTap: onImportTap,
+          ),
+          _CustomSettingsTile(
+            icon: Icons.delete_forever,
+            title: l10n.wipeData,
+            isError: true,
+            showChevron: false,
+            onTap: onWipeTap,
+          ),
+        ],
+      ),
+    );
   }
 }
