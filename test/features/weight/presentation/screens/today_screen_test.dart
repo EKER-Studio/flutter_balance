@@ -84,8 +84,39 @@ void main() {
     await tester.pumpWidget(createTestWidget(const TodayScreen()));
     await tester.pump();
 
-    expect(find.text('Failed to read weight data.'), findsOneWidget);
-    expect(find.text('Try again'), findsOneWidget);
+    expect(find.text('Failed to read weight data.'), findsWidgets);
+    expect(find.text('Try again'), findsWidgets);
+  });
+
+  testWidgets('renders inline error banner when WeightError state occurs with cached entries', (tester) async {
+    final entry = WeightEntry(
+      id: 1,
+      weightKg: 70.0,
+      dateTime: DateTime.now(),
+    );
+
+    when(() => weightBloc.state).thenReturn(
+      WeightError(
+        errorType: WeightErrorType.writeFailed,
+        entries: [entry],
+        filteredEntries: [entry],
+      ),
+    );
+    when(() => weightBloc.stream).thenAnswer(
+      (_) => Stream.value(
+        WeightError(
+          errorType: WeightErrorType.writeFailed,
+          entries: [entry],
+          filteredEntries: [entry],
+        ),
+      ),
+    );
+
+    await tester.pumpWidget(createTestWidget(const TodayScreen()));
+    await tester.pump();
+
+    expect(find.byIcon(Icons.warning_amber_rounded), findsOneWidget);
+    expect(find.text('Failed to save weight data.'), findsWidgets);
   });
 
   testWidgets('renders cold start empty state when no weight entries exist', (tester) async {

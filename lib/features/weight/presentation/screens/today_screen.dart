@@ -30,6 +30,19 @@ class TodayScreen extends StatelessWidget {
     this.onNavigateToSettings,
   });
 
+  String _getErrorMessage(BuildContext context, WeightErrorType errorType) {
+    final l10n = AppLocalizations.of(context);
+    return switch (errorType) {
+      WeightErrorType.streamError => l10n.errorStream,
+      WeightErrorType.heightNotSet => l10n.errorHeightNotSet,
+      WeightErrorType.addEntryFailed => l10n.errorAddEntryFailed,
+      WeightErrorType.deleteEntryFailed => l10n.errorDeleteEntryFailed,
+      WeightErrorType.readFailed => l10n.errorReadFailed,
+      WeightErrorType.writeFailed => l10n.errorWriteFailed,
+      WeightErrorType.wipeFailed => l10n.errorWipeFailed,
+    };
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
@@ -65,7 +78,25 @@ class TodayScreen extends StatelessWidget {
         ],
       ),
       body: SafeArea(
-        child: BlocBuilder<WeightBloc, WeightState>(
+        child: BlocConsumer<WeightBloc, WeightState>(
+          listenWhen: (previous, current) => current is WeightError,
+          listener: (context, state) {
+            if (state is WeightError) {
+              final message = state.message ?? _getErrorMessage(context, state.errorType);
+              ScaffoldMessenger.of(context).hideCurrentSnackBar();
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(message),
+                  action: SnackBarAction(
+                    label: l10n.retry,
+                    onPressed: () {
+                      context.read<WeightBloc>().add(const SubscribeToWeightChanges());
+                    },
+                  ),
+                ),
+              );
+            }
+          },
           builder: (context, state) {
             if (state is WeightInitial || state is WeightLoading) {
               return const ClampedLayout(
@@ -83,7 +114,7 @@ class TodayScreen extends StatelessWidget {
             if (state is WeightError && entries.isEmpty) {
               return ClampedLayout(
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                child: _buildErrorCard(context, state.errorType, l10n),
+                child: _buildErrorCard(context, state.errorType, state.message, l10n),
               );
             }
 
@@ -103,33 +134,43 @@ class TodayScreen extends StatelessWidget {
             final latestEntry = sortedEntries.first;
             final latestWeight = latestEntry.weightKg;
 
-            return ClampedLayout(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              child: SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    HealthSummaryCard(
-                      latestWeightKg: latestWeight,
-                      lastUpdated: latestEntry.dateTime,
-                    ),
-                    const SizedBox(height: 16),
-                    _buildWeightTrendCard(
-                      context,
-                      filteredEntries,
-                      state.timePeriod,
-                    ),
-                    const SizedBox(height: 16),
-                    LatestMeasurementCard(
-                      latestEntry: latestEntry,
-                      onTap: () {
-                        if (onNavigateToStats != null) {
-                          onNavigateToStats!();
-                        }
-                      },
-                    ),
-                    const SizedBox(height: 80),
-                  ],
+            return RefreshIndicator(
+              onRefresh: () async {
+                context.read<WeightBloc>().add(const SubscribeToWeightChanges());
+              },
+              child: ClampedLayout(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                child: SingleChildScrollView(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      if (state is WeightError) ...[
+                        _buildInlineErrorBanner(context, state.errorType, state.message, l10n),
+                        const SizedBox(height: 16),
+                      ],
+                      HealthSummaryCard(
+                        latestWeightKg: latestWeight,
+                        lastUpdated: latestEntry.dateTime,
+                      ),
+                      const SizedBox(height: 16),
+                      _buildWeightTrendCard(
+                        context,
+                        filteredEntries,
+                        state.timePeriod,
+                      ),
+                      const SizedBox(height: 16),
+                      LatestMeasurementCard(
+                        latestEntry: latestEntry,
+                        onTap: () {
+                          if (onNavigateToStats != null) {
+                            onNavigateToStats!();
+                          }
+                        },
+                      ),
+                      const SizedBox(height: 80),
+                    ],
+                  ),
                 ),
               ),
             );
@@ -155,11 +196,60 @@ class TodayScreen extends StatelessWidget {
     );
   }
 
+  Widget _buildInlineErrorBanner(
+    BuildContext context,
+    WeightErrorType errorType,
+    String? message,
+    AppLocalizations l10n,
+  ) {
+    final errorText = message ?? _getErrorMessage(context, errorType);
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.errorContainer,
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Row(
+        children: [
+          Icon(
+            Icons.warning_amber_rounded,
+            color: Theme.of(context).colorScheme.error,
+            size: 24,
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Text(
+              errorText,
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: Theme.of(context).colorScheme.onErrorContainer,
+                    fontWeight: FontWeight.w500,
+                  ),
+            ),
+          ),
+          TextButton(
+            onPressed: () {
+              context.read<WeightBloc>().add(const SubscribeToWeightChanges());
+            },
+            style: TextButton.styleFrom(
+              foregroundColor: Theme.of(context).colorScheme.error,
+              padding: const EdgeInsets.symmetric(horizontal: 12),
+            ),
+            child: Text(l10n.retry),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildErrorCard(
     BuildContext context,
     WeightErrorType errorType,
+    String? message,
     AppLocalizations l10n,
   ) {
+    final errorText = message ?? _getErrorMessage(context, errorType);
+
     return Card(
       elevation: 0,
       color: Theme.of(context).colorScheme.errorContainer,
@@ -167,7 +257,7 @@ class TodayScreen extends StatelessWidget {
         borderRadius: BorderRadius.circular(28),
       ),
       child: Padding(
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.all(24),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -185,7 +275,15 @@ class TodayScreen extends StatelessWidget {
                   ),
               textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 6),
+            Text(
+              errorText,
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: Theme.of(context).colorScheme.onErrorContainer,
+                  ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 20),
             FilledButton.icon(
               onPressed: () {
                 context.read<WeightBloc>().add(const SubscribeToWeightChanges());
