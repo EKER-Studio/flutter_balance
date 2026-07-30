@@ -103,12 +103,14 @@ void main() {
 
       final settingsBloc = AppSettingsBloc();
       // Use filteredEntries: [] to avoid fl_chart rendering issues in test env
-      final weightBloc = createBloc(WeightLoaded(
-        entries: entries,
-        filteredEntries: [],
-        timePeriod: TimePeriod.week,
-        heightCm: null,
-      ));
+      final weightBloc = createBloc(
+        WeightLoaded(
+          entries: entries,
+          filteredEntries: [],
+          timePeriod: TimePeriod.week,
+          heightCm: null,
+        ),
+      );
 
       await tester.pumpWidget(
         buildSubject(settingsBloc: settingsBloc, weightBloc: weightBloc),

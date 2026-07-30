@@ -17,7 +17,7 @@ enum TimePeriod {
   year,
 
   /// All time.
-  all;
+  all,
 }
 
 /// Extension providing domain-level constants for [TimePeriod].
