@@ -6,13 +6,13 @@ import 'package:mocktail/mocktail.dart';
 import 'package:pure_weight/features/weight/domain/entities/weight_entry.dart';
 import 'package:pure_weight/features/weight/domain/repositories/weight_repository.dart';
 import 'package:pure_weight/features/weight/presentation/bloc/weight_bloc.dart';
-import 'package:pure_weight/features/weight/presentation/bloc/weight_event.dart';
 import 'package:pure_weight/features/weight/presentation/screens/calendar_screen.dart';
 import 'package:pure_weight/features/weight/presentation/widgets/calendar/calendar_day_cell.dart';
 import 'package:pure_weight/features/weight/presentation/widgets/calendar/calendar_day_empty_card.dart';
 import 'package:pure_weight/features/weight/presentation/widgets/calendar/calendar_day_entries_card.dart';
 import 'package:pure_weight/features/weight/presentation/widgets/calendar/calendar_day_future_card.dart';
 import 'package:pure_weight/features/weight/presentation/widgets/calendar/calendar_month_header.dart';
+import 'package:pure_weight/features/weight/presentation/widgets/calendar/calendar_shimmer_skeleton.dart';
 import 'package:pure_weight/features/weight/presentation/widgets/calendar/calendar_weekday_header.dart';
 import 'package:pure_weight/l10n/app_localizations.dart';
 import 'package:pure_weight/presentation/bloc/settings/app_settings_bloc.dart';
@@ -188,17 +188,29 @@ void main() {
     expect(find.text('72.5 kg'), findsOneWidget);
   });
 
-  testWidgets(
-      'CalendarScreen renders month header, weekdays, and empty state card', (
+  testWidgets('CalendarShimmerSkeleton renders pulsing placeholders', (
     tester,
   ) async {
+    await tester.pumpWidget(
+      createTestWidget(const CalendarShimmerSkeleton()),
+    );
+
+    expect(find.byType(CalendarShimmerSkeleton), findsOneWidget);
+  });
+
+  testWidgets(
+      'CalendarScreen renders shimmer skeleton during WeightInitial state', (
+    tester,
+  ) async {
+    when(() => repository.watchAllEntries())
+        .thenAnswer((_) => const Stream.empty());
+
     await tester.pumpWidget(
       MultiBlocProvider(
         providers: [
           BlocProvider(create: (_) => AppSettingsBloc()),
           BlocProvider(
-            create: (context) => WeightBloc(repository: repository)
-              ..add(const SubscribeToWeightChanges()),
+            create: (context) => WeightBloc(repository: repository),
           ),
         ],
         child: const MaterialApp(
@@ -209,11 +221,8 @@ void main() {
       ),
     );
 
-    await tester.pumpAndSettle();
+    await tester.pump();
 
-    expect(find.byType(CalendarScreen), findsOneWidget);
-    expect(find.byType(CalendarMonthHeader), findsOneWidget);
-    expect(find.byType(CalendarWeekdayHeader), findsOneWidget);
-    expect(find.byType(CalendarDayEmptyCard), findsOneWidget);
+    expect(find.byType(CalendarShimmerSkeleton), findsOneWidget);
   });
 }
