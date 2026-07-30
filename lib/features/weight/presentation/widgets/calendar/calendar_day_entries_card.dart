@@ -17,11 +17,15 @@ class CalendarDayEntriesCard extends StatelessWidget {
   /// Recorded weight entries for [selectedDate].
   final List<WeightEntry> entries;
 
+  /// Optional target weight in kg used to highlight goal achievements.
+  final double? targetWeight;
+
   /// Creates a [CalendarDayEntriesCard] widget.
   const CalendarDayEntriesCard({
     super.key,
     required this.selectedDate,
     required this.entries,
+    this.targetWeight,
   });
 
   @override
@@ -31,6 +35,8 @@ class CalendarDayEntriesCard extends StatelessWidget {
     final unitLabel = isImperial ? 'lb' : 'kg';
 
     final hasMultipleEntries = entries.length >= 2;
+    final isGoalAchievedToday = targetWeight != null &&
+        entries.any((e) => e.weightKg <= targetWeight!);
 
     double averageKg = 0;
     double minKg = 0;
@@ -64,6 +70,42 @@ class CalendarDayEntriesCard extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
+            if (isGoalAchievedToday) ...[
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                decoration: BoxDecoration(
+                  color: Theme.of(context)
+                      .colorScheme
+                      .tertiaryContainer
+                      .withValues(alpha: 0.25),
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(
+                    color: Theme.of(context).colorScheme.tertiary,
+                    width: 1,
+                  ),
+                ),
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.stars,
+                      color: Theme.of(context).colorScheme.tertiary,
+                      size: 22,
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        'Cel wagi został osiągnięty w tym dniu! 🏆',
+                        style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: Theme.of(context).colorScheme.tertiary,
+                            ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 12),
+            ],
             if (hasMultipleEntries) ...[
               Container(
                 padding: const EdgeInsets.all(12),
@@ -192,25 +234,60 @@ class CalendarDayEntriesCard extends StatelessWidget {
                 final timeStr = DateFormat.jm(
                   Localizations.localeOf(context).toString(),
                 ).format(entry.dateTime);
+                final isEntryGoalAchieved = targetWeight != null &&
+                    entry.weightKg <= targetWeight!;
 
                 return ListTile(
                   contentPadding:
                       const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   leading: CircleAvatar(
-                    backgroundColor:
-                        Theme.of(context).colorScheme.secondaryContainer,
+                    backgroundColor: isEntryGoalAchieved
+                        ? Theme.of(context).colorScheme.tertiaryContainer
+                        : Theme.of(context).colorScheme.secondaryContainer,
                     child: Icon(
-                      Icons.monitor_weight,
+                      isEntryGoalAchieved
+                          ? Icons.star
+                          : Icons.monitor_weight,
                       size: 20,
-                      color:
-                          Theme.of(context).colorScheme.onSecondaryContainer,
+                      color: isEntryGoalAchieved
+                          ? Theme.of(context).colorScheme.onTertiaryContainer
+                          : Theme.of(context).colorScheme.onSecondaryContainer,
                     ),
                   ),
-                  title: Text(
-                    '${displayWeight.toStringAsFixed(1)} $unitLabel',
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
+                  title: Row(
+                    children: [
+                      Text(
+                        '${displayWeight.toStringAsFixed(1)} $unitLabel',
+                        style:
+                            Theme.of(context).textTheme.titleMedium?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                ),
+                      ),
+                      if (isEntryGoalAchieved) ...[
+                        const SizedBox(width: 8),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 6, vertical: 1),
+                          decoration: BoxDecoration(
+                            color:
+                                Theme.of(context).colorScheme.tertiaryContainer,
+                            borderRadius: BorderRadius.circular(6),
+                          ),
+                          child: Text(
+                            'Cel',
+                            style: Theme.of(context)
+                                .textTheme
+                                .labelSmall
+                                ?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .onTertiaryContainer,
+                                ),
+                          ),
                         ),
+                      ],
+                    ],
                   ),
                   subtitle: Text(
                     entry.note != null && entry.note!.isNotEmpty

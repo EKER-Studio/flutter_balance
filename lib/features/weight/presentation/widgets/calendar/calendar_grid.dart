@@ -19,6 +19,9 @@ class CalendarGrid extends StatelessWidget {
   /// All available weight entries to map into calendar dates.
   final List<WeightEntry> entries;
 
+  /// Optional target weight in kg used to compute goal achievement markers.
+  final double? targetWeight;
+
   /// Callback triggered when a day cell is tapped.
   final OnCalendarDaySelected onDaySelected;
 
@@ -28,6 +31,7 @@ class CalendarGrid extends StatelessWidget {
     required this.focusedMonth,
     required this.selectedDate,
     required this.entries,
+    this.targetWeight,
     required this.onDaySelected,
   });
 
@@ -76,6 +80,8 @@ class CalendarGrid extends StatelessWidget {
         final isToday = DateUtils.isSameDay(date, now);
         final isSelected = DateUtils.isSameDay(date, selectedDate);
         final isFuture = date.isAfter(todayEnd);
+        final isGoalAchieved = targetWeight != null &&
+            dayEntries.any((e) => e.weightKg <= targetWeight!);
 
         return CalendarDayCell(
           date: date,
@@ -84,6 +90,7 @@ class CalendarGrid extends StatelessWidget {
           isToday: isToday,
           isSelected: isSelected,
           isFuture: isFuture,
+          isGoalAchieved: isGoalAchieved,
           onTap: () => onDaySelected(date, dayEntries),
         );
       },

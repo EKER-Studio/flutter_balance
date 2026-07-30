@@ -12,6 +12,7 @@ import 'package:pure_weight/features/weight/presentation/widgets/calendar/calend
 import 'package:pure_weight/features/weight/presentation/widgets/calendar/calendar_month_header.dart';
 import 'package:pure_weight/features/weight/presentation/widgets/calendar/calendar_weekday_header.dart';
 import 'package:pure_weight/l10n/app_localizations.dart';
+import 'package:pure_weight/presentation/bloc/settings/app_settings_bloc.dart';
 import 'package:pure_weight/presentation/core/clamped_layout.dart';
 
 /// Tab 2: Calendar Screen providing a monthly view with measurement status indicators.
@@ -62,6 +63,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
     final l10n = AppLocalizations.of(context);
     final locale = Localizations.localeOf(context).toString();
     final formattedSelectedDate = DateFormat.MMMMd(locale).format(_selectedDate);
+    final targetWeight = context.watch<AppSettingsBloc>().state.targetWeight;
 
     final now = DateTime.now();
     final todayEnd = DateTime(now.year, now.month, now.day, 23, 59, 59);
@@ -130,6 +132,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                               focusedMonth: _focusedMonth,
                               selectedDate: _selectedDate,
                               entries: entries,
+                              targetWeight: targetWeight,
                               onDaySelected: (date, _) => _onDaySelected(date),
                             ),
                           ],
@@ -163,6 +166,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                       CalendarDayEntriesCard(
                         selectedDate: _selectedDate,
                         entries: dayEntries,
+                        targetWeight: targetWeight,
                       ),
                     const SizedBox(height: 80),
                   ],

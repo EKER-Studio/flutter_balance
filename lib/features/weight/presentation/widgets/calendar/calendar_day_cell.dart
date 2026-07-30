@@ -22,6 +22,9 @@ class CalendarDayCell extends StatelessWidget {
   /// Whether this cell represents a future date.
   final bool isFuture;
 
+  /// Whether a weight measurement on this date met or beat the target weight.
+  final bool isGoalAchieved;
+
   /// Callback executed when this cell is tapped.
   final VoidCallback onTap;
 
@@ -34,6 +37,7 @@ class CalendarDayCell extends StatelessWidget {
     required this.isToday,
     required this.isSelected,
     this.isFuture = false,
+    this.isGoalAchieved = false,
     required this.onTap,
   });
 
@@ -48,8 +52,9 @@ class CalendarDayCell extends StatelessWidget {
     final entriesCountLabel =
         hasEntries ? '${entries.length} pomiary' : 'Brak pomiarów';
     final futureSuffix = isFuture ? ', Przyszła data' : '';
+    final goalSuffix = isGoalAchieved ? ', Cel osiągnięty!' : '';
     final semanticText =
-        '$dateLabel, $entriesCountLabel$futureSuffix${isSelected ? ', zaznaczony' : ''}';
+        '$dateLabel, $entriesCountLabel$goalSuffix$futureSuffix${isSelected ? ', zaznaczony' : ''}';
 
     Color circleBgColor;
     Color textColor;
@@ -88,29 +93,60 @@ class CalendarDayCell extends StatelessWidget {
                   ? Border.all(color: cs.primary, width: 2)
                   : null,
             ),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
+            child: Stack(
+              alignment: Alignment.center,
               children: [
-                Text(
-                  '$dayNumber',
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: textColor,
-                        fontWeight: isSelected || isToday || hasEntries
-                            ? FontWeight.bold
-                            : FontWeight.normal,
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      '$dayNumber',
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            color: textColor,
+                            fontWeight: isSelected || isToday || hasEntries
+                                ? FontWeight.bold
+                                : FontWeight.normal,
+                          ),
+                    ),
+                    if (hasEntries) ...[
+                      const SizedBox(height: 2),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Container(
+                            width: 4,
+                            height: 4,
+                            decoration: BoxDecoration(
+                              color: dotColor,
+                              shape: BoxShape.circle,
+                            ),
+                          ),
+                          if (entries.length >= 2) ...[
+                            const SizedBox(width: 2),
+                            Container(
+                              width: 4,
+                              height: 4,
+                              decoration: BoxDecoration(
+                                color: dotColor,
+                                shape: BoxShape.circle,
+                              ),
+                            ),
+                          ],
+                        ],
                       ),
+                    ],
+                  ],
                 ),
-                if (hasEntries) ...[
-                  const SizedBox(height: 2),
-                  Container(
-                    width: 4,
-                    height: 4,
-                    decoration: BoxDecoration(
-                      color: dotColor,
-                      shape: BoxShape.circle,
+                if (isGoalAchieved)
+                  Positioned(
+                    top: 2,
+                    right: 4,
+                    child: Icon(
+                      Icons.star,
+                      size: 10,
+                      color: isSelected ? cs.onPrimary : cs.tertiary,
                     ),
                   ),
-                ],
               ],
             ),
           ),

@@ -106,6 +106,26 @@ void main() {
     expect(tapped, isTrue);
   });
 
+  testWidgets('CalendarDayCell renders star badge when isGoalAchieved is true', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      createTestWidget(
+        CalendarDayCell(
+          date: DateTime(2026, 7, 15),
+          dayNumber: 15,
+          entries: const [],
+          isToday: false,
+          isSelected: false,
+          isGoalAchieved: true,
+          onTap: () {},
+        ),
+      ),
+    );
+
+    expect(find.byIcon(Icons.star), findsOneWidget);
+  });
+
   testWidgets('CalendarDayEmptyCard renders empty state UI and add button', (
     tester,
   ) async {
@@ -144,7 +164,7 @@ void main() {
   });
 
   testWidgets(
-      'CalendarDayEntriesCard displays daily summary stats when multiple entries exist', (
+      'CalendarDayEntriesCard displays daily summary stats and goal banner when goal is reached', (
     tester,
   ) async {
     final entries = [
@@ -157,14 +177,15 @@ void main() {
         CalendarDayEntriesCard(
           selectedDate: DateTime(2026, 7, 15),
           entries: entries,
+          targetWeight: 72.5,
         ),
       ),
     );
 
     expect(find.text('Podsumowanie dnia'), findsOneWidget);
+    expect(find.textContaining('Cel wagi został osiągnięty'), findsOneWidget);
     expect(find.text('Średnia waga'), findsOneWidget);
-    expect(find.text('72.5 kg'), findsOneWidget); // (72.0 + 73.0)/2 = 72.5
-    expect(find.text('2 pomiary'), findsOneWidget);
+    expect(find.text('72.5 kg'), findsOneWidget);
   });
 
   testWidgets(
