@@ -5,10 +5,12 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:pure_weight/features/weight/domain/entities/weight_entry.dart';
+import 'package:pure_weight/features/weight/domain/weight_error_type.dart';
 import 'package:pure_weight/features/weight/presentation/bloc/weight_bloc.dart';
 import 'package:pure_weight/features/weight/presentation/bloc/weight_event.dart';
 import 'package:pure_weight/features/weight/presentation/bloc/weight_state.dart';
 import 'package:pure_weight/features/weight/presentation/screens/today_screen.dart';
+import 'package:pure_weight/features/weight/presentation/widgets/today_shimmer_skeleton.dart';
 import 'package:pure_weight/l10n/app_localizations.dart';
 import 'package:pure_weight/presentation/bloc/settings/app_settings_bloc.dart';
 
@@ -31,6 +33,61 @@ void main() {
     settingsBloc = AppSettingsBloc();
   });
 
+  Widget createTestWidget(Widget child) {
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider<WeightBloc>.value(value: weightBloc),
+        BlocProvider<AppSettingsBloc>.value(value: settingsBloc),
+      ],
+      child: MaterialApp(
+        localizationsDelegates: const [
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+        ],
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: child,
+      ),
+    );
+  }
+
+  testWidgets('renders shimmer skeleton during WeightLoading state', (tester) async {
+    when(() => weightBloc.state).thenReturn(const WeightLoading());
+    when(() => weightBloc.stream).thenAnswer((_) => Stream.value(const WeightLoading()));
+
+    await tester.pumpWidget(createTestWidget(const TodayScreen()));
+    await tester.pump();
+
+    expect(find.byType(TodayShimmerSkeleton), findsOneWidget);
+    expect(find.byType(FloatingActionButton), findsNothing);
+  });
+
+  testWidgets('renders error card with retry button during WeightError state with empty entries', (tester) async {
+    when(() => weightBloc.state).thenReturn(
+      const WeightError(
+        errorType: WeightErrorType.readFailed,
+        entries: [],
+        filteredEntries: [],
+      ),
+    );
+    when(() => weightBloc.stream).thenAnswer(
+      (_) => Stream.value(
+        const WeightError(
+          errorType: WeightErrorType.readFailed,
+          entries: [],
+          filteredEntries: [],
+        ),
+      ),
+    );
+
+    await tester.pumpWidget(createTestWidget(const TodayScreen()));
+    await tester.pump();
+
+    expect(find.text('Failed to read weight data.'), findsOneWidget);
+    expect(find.text('Try again'), findsOneWidget);
+  });
+
   testWidgets('renders cold start empty state when no weight entries exist', (tester) async {
     when(() => weightBloc.state).thenReturn(
       const WeightLoaded(
@@ -51,25 +108,7 @@ void main() {
       ),
     );
 
-    await tester.pumpWidget(
-      MultiBlocProvider(
-        providers: [
-          BlocProvider<WeightBloc>.value(value: weightBloc),
-          BlocProvider<AppSettingsBloc>.value(value: settingsBloc),
-        ],
-        child: const MaterialApp(
-          localizationsDelegates: [
-            AppLocalizations.delegate,
-            GlobalMaterialLocalizations.delegate,
-            GlobalCupertinoLocalizations.delegate,
-            GlobalWidgetsLocalizations.delegate,
-          ],
-          supportedLocales: AppLocalizations.supportedLocales,
-          home: TodayScreen(),
-        ),
-      ),
-    );
-
+    await tester.pumpWidget(createTestWidget(const TodayScreen()));
     await tester.pump();
 
     expect(find.text('Welcome to PureWeight!'), findsOneWidget);
@@ -103,25 +142,7 @@ void main() {
       ),
     );
 
-    await tester.pumpWidget(
-      MultiBlocProvider(
-        providers: [
-          BlocProvider<WeightBloc>.value(value: weightBloc),
-          BlocProvider<AppSettingsBloc>.value(value: settingsBloc),
-        ],
-        child: const MaterialApp(
-          localizationsDelegates: [
-            AppLocalizations.delegate,
-            GlobalMaterialLocalizations.delegate,
-            GlobalCupertinoLocalizations.delegate,
-            GlobalWidgetsLocalizations.delegate,
-          ],
-          supportedLocales: AppLocalizations.supportedLocales,
-          home: TodayScreen(),
-        ),
-      ),
-    );
-
+    await tester.pumpWidget(createTestWidget(const TodayScreen()));
     await tester.pump();
 
     expect(find.text('BMI'), findsOneWidget);

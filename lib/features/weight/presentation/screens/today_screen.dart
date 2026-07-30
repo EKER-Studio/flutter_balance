@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pure_weight/features/weight/domain/entities/weight_entry.dart';
+import 'package:pure_weight/features/weight/domain/weight_error_type.dart';
 import 'package:pure_weight/features/weight/presentation/bloc/weight_bloc.dart';
 import 'package:pure_weight/features/weight/presentation/bloc/weight_event.dart';
 import 'package:pure_weight/features/weight/presentation/bloc/weight_state.dart';
 import 'package:pure_weight/features/weight/presentation/widgets/add_weight_sheet.dart';
 import 'package:pure_weight/features/weight/presentation/widgets/health_summary_card.dart';
 import 'package:pure_weight/features/weight/presentation/widgets/latest_measurement_card.dart';
+import 'package:pure_weight/features/weight/presentation/widgets/today_shimmer_skeleton.dart';
 import 'package:pure_weight/l10n/app_localizations.dart';
 import 'package:pure_weight/presentation/bloc/settings/app_settings_bloc.dart';
 import 'package:pure_weight/presentation/bloc/settings/app_settings_state.dart';
@@ -65,11 +67,25 @@ class TodayScreen extends StatelessWidget {
       body: SafeArea(
         child: BlocBuilder<WeightBloc, WeightState>(
           builder: (context, state) {
+            if (state is WeightInitial || state is WeightLoading) {
+              return const ClampedLayout(
+                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                child: TodayShimmerSkeleton(),
+              );
+            }
+
             final entries = switch (state) {
               WeightLoaded(:final entries) => entries,
               WeightError(:final entries) => entries,
               _ => <WeightEntry>[],
             };
+
+            if (state is WeightError && entries.isEmpty) {
+              return ClampedLayout(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                child: _buildErrorCard(context, state.errorType, l10n),
+              );
+            }
 
             if (entries.isEmpty) {
               return _buildColdStartEmptyState(context, l10n);
@@ -127,12 +143,58 @@ class TodayScreen extends StatelessWidget {
             WeightError(:final entries) => entries,
             _ => <WeightEntry>[],
           };
-          if (entries.isEmpty) return const SizedBox.shrink();
+          if (entries.isEmpty || state is WeightInitial || state is WeightLoading) {
+            return const SizedBox.shrink();
+          }
           return FloatingActionButton(
             onPressed: () => _showAddWeightSheet(context),
             child: const Icon(Icons.add),
           );
         },
+      ),
+    );
+  }
+
+  Widget _buildErrorCard(
+    BuildContext context,
+    WeightErrorType errorType,
+    AppLocalizations l10n,
+  ) {
+    return Card(
+      elevation: 0,
+      color: Theme.of(context).colorScheme.errorContainer,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(28),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              Icons.error_outline,
+              size: 48,
+              color: Theme.of(context).colorScheme.error,
+            ),
+            const SizedBox(height: 12),
+            Text(
+              l10n.errorReadFailed,
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: Theme.of(context).colorScheme.onErrorContainer,
+                  ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 16),
+            FilledButton.icon(
+              onPressed: () {
+                context.read<WeightBloc>().add(const SubscribeToWeightChanges());
+              },
+              icon: const Icon(Icons.refresh, size: 18),
+              label: Text(l10n.retry),
+            ),
+          ],
+        ),
       ),
     );
   }
