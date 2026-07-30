@@ -155,6 +155,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get emptyState => 'No entries yet. Add your first measurement below!';
 
   @override
+  String get welcomeTitle => 'Welcome to PureWeight!';
+
+  @override
+  String get welcomeSubtitle =>
+      'Add your first measurement to start tracking your progress towards better health.';
+
+  @override
+  String get addFirstMeasurement => 'Add first measurement';
+
+  @override
   String get history => 'History';
 
   @override

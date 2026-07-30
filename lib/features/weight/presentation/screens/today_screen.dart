@@ -1,14 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:intl/intl.dart';
-import 'package:pure_weight/core/models/measurement_unit.dart';
-import 'package:pure_weight/core/utils/unit_converter.dart';
 import 'package:pure_weight/features/weight/domain/entities/weight_entry.dart';
 import 'package:pure_weight/features/weight/presentation/bloc/weight_bloc.dart';
 import 'package:pure_weight/features/weight/presentation/bloc/weight_event.dart';
 import 'package:pure_weight/features/weight/presentation/bloc/weight_state.dart';
 import 'package:pure_weight/features/weight/presentation/widgets/add_weight_sheet.dart';
 import 'package:pure_weight/features/weight/presentation/widgets/health_summary_card.dart';
+import 'package:pure_weight/features/weight/presentation/widgets/latest_measurement_card.dart';
 import 'package:pure_weight/l10n/app_localizations.dart';
 import 'package:pure_weight/presentation/bloc/settings/app_settings_bloc.dart';
 import 'package:pure_weight/presentation/bloc/settings/app_settings_state.dart';
@@ -73,6 +71,10 @@ class TodayScreen extends StatelessWidget {
               _ => <WeightEntry>[],
             };
 
+            if (entries.isEmpty) {
+              return _buildColdStartEmptyState(context, l10n);
+            }
+
             final filteredEntries = switch (state) {
               WeightLoaded(:final filteredEntries) => filteredEntries,
               WeightError(:final filteredEntries) => filteredEntries,
@@ -82,8 +84,8 @@ class TodayScreen extends StatelessWidget {
             final sortedEntries = List<WeightEntry>.from(entries)
               ..sort((a, b) => b.dateTime.compareTo(a.dateTime));
 
-            final latestEntry = sortedEntries.isNotEmpty ? sortedEntries.first : null;
-            final latestWeight = latestEntry?.weightKg ?? 0.0;
+            final latestEntry = sortedEntries.first;
+            final latestWeight = latestEntry.weightKg;
 
             return ClampedLayout(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -93,7 +95,7 @@ class TodayScreen extends StatelessWidget {
                   children: [
                     HealthSummaryCard(
                       latestWeightKg: latestWeight,
-                      lastUpdated: latestEntry?.dateTime,
+                      lastUpdated: latestEntry.dateTime,
                     ),
                     const SizedBox(height: 16),
                     _buildWeightTrendCard(
@@ -102,7 +104,14 @@ class TodayScreen extends StatelessWidget {
                       state.timePeriod,
                     ),
                     const SizedBox(height: 16),
-                    _buildLatestMeasurementCard(context, latestEntry, l10n),
+                    LatestMeasurementCard(
+                      latestEntry: latestEntry,
+                      onTap: () {
+                        if (onNavigateToStats != null) {
+                          onNavigateToStats!();
+                        }
+                      },
+                    ),
                     const SizedBox(height: 80),
                   ],
                 ),
@@ -111,9 +120,88 @@ class TodayScreen extends StatelessWidget {
           },
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => _showAddWeightSheet(context),
-        child: const Icon(Icons.add),
+      floatingActionButton: BlocBuilder<WeightBloc, WeightState>(
+        builder: (context, state) {
+          final entries = switch (state) {
+            WeightLoaded(:final entries) => entries,
+            WeightError(:final entries) => entries,
+            _ => <WeightEntry>[],
+          };
+          if (entries.isEmpty) return const SizedBox.shrink();
+          return FloatingActionButton(
+            onPressed: () => _showAddWeightSheet(context),
+            child: const Icon(Icons.add),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildColdStartEmptyState(BuildContext context, AppLocalizations l10n) {
+    return Center(
+      child: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Container(
+                width: 96,
+                height: 96,
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.surfaceContainerHigh,
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  Icons.monitor_weight_outlined,
+                  size: 48,
+                  color: Theme.of(context).colorScheme.primary,
+                ),
+              ),
+              const SizedBox(height: 24),
+              Text(
+                l10n.welcomeTitle,
+                style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: Theme.of(context).colorScheme.onSurface,
+                    ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 12),
+              ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 340),
+                child: Text(
+                  l10n.welcomeSubtitle,
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      ),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+              const SizedBox(height: 32),
+              FilledButton.icon(
+                onPressed: () => _showAddWeightSheet(context),
+                icon: const Icon(Icons.add, size: 20),
+                label: Text(
+                  l10n.addFirstMeasurement,
+                  style: const TextStyle(fontWeight: FontWeight.bold),
+                ),
+                style: FilledButton.styleFrom(
+                  backgroundColor: Theme.of(context).colorScheme.primary,
+                  foregroundColor: Theme.of(context).colorScheme.onPrimary,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 24,
+                    vertical: 14,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(999),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -140,7 +228,12 @@ class TodayScreen extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 Padding(
-                  padding: const EdgeInsets.only(left: 4, right: 4, top: 4, bottom: 8),
+                  padding: const EdgeInsets.only(
+                    left: 4,
+                    right: 4,
+                    top: 4,
+                    bottom: 8,
+                  ),
                   child: Text(
                     l10n.weightTrend,
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
@@ -162,148 +255,6 @@ class TodayScreen extends StatelessWidget {
         );
       },
     );
-  }
-
-  Widget _buildLatestMeasurementCard(
-    BuildContext context,
-    WeightEntry? latestEntry,
-    AppLocalizations l10n,
-  ) {
-    final unit = context.watch<AppSettingsBloc>().state.measurementUnit;
-
-    if (latestEntry == null) {
-      return Card(
-        elevation: 0,
-        color: Theme.of(context).colorScheme.surfaceContainerLow,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(28),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(20),
-          child: Row(
-            children: [
-              CircleAvatar(
-                radius: 24,
-                backgroundColor: Theme.of(context).colorScheme.secondaryContainer,
-                child: Icon(
-                  Icons.scale,
-                  color: Theme.of(context).colorScheme.onSecondaryContainer,
-                ),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Text(
-                  l10n.emptyState,
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: Theme.of(context).colorScheme.onSurfaceVariant,
-                      ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      );
-    }
-
-    final displayWeight = unit == MeasurementUnit.imperial
-        ? kgToLbs(latestEntry.weightKg)
-        : latestEntry.weightKg;
-    final unitLabel = unit == MeasurementUnit.imperial ? 'lb' : 'kg';
-    final timestampText = _formatTimestamp(context, latestEntry.dateTime, l10n);
-
-    return Card(
-      elevation: 0,
-      color: Theme.of(context).colorScheme.surfaceContainerLow,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(28),
-      ),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(28),
-        onTap: () {
-          if (onNavigateToStats != null) {
-            onNavigateToStats!();
-          }
-        },
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Row(
-            children: [
-              CircleAvatar(
-                radius: 24,
-                backgroundColor: Theme.of(context).colorScheme.secondaryContainer,
-                child: Icon(
-                  Icons.scale,
-                  color: Theme.of(context).colorScheme.onSecondaryContainer,
-                ),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      l10n.latestMeasurement,
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.bold,
-                          ),
-                    ),
-                    const SizedBox(height: 2),
-                    Text(
-                      timestampText,
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: Theme.of(context).colorScheme.onSurfaceVariant,
-                          ),
-                    ),
-                  ],
-                ),
-              ),
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.baseline,
-                textBaseline: TextBaseline.alphabetic,
-                children: [
-                  Text(
-                    displayWeight.toStringAsFixed(1),
-                    style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: Theme.of(context).colorScheme.primary,
-                        ),
-                  ),
-                  const SizedBox(width: 4),
-                  Text(
-                    unitLabel,
-                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                          color: Theme.of(context).colorScheme.onSurfaceVariant,
-                        ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  String _formatTimestamp(
-    BuildContext context,
-    DateTime dateTime,
-    AppLocalizations l10n,
-  ) {
-    final now = DateTime.now();
-    final isToday = dateTime.year == now.year &&
-        dateTime.month == now.month &&
-        dateTime.day == now.day;
-    final timeStr = DateFormat.jm(
-      Localizations.localeOf(context).toString(),
-    ).format(dateTime);
-
-    if (isToday) {
-      return 'Dzisiaj, $timeStr';
-    }
-    final dateStr = DateFormat.MMMd(
-      Localizations.localeOf(context).toString(),
-    ).format(dateTime);
-    return '$dateStr, $timeStr';
   }
 
   void _showAddWeightSheet(BuildContext context) {

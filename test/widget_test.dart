@@ -52,6 +52,6 @@ void main() {
     // Verify UI state
     expect(find.byType(NavigationBar), findsOneWidget);
     expect(find.text('Today'), findsWidgets);
-    expect(find.byType(FloatingActionButton), findsOneWidget);
+    expect(find.text('Add first measurement'), findsOneWidget);
   });
 }

@@ -368,6 +368,24 @@ abstract class AppLocalizations {
   /// **'No entries yet. Add your first measurement below!'**
   String get emptyState;
 
+  /// No description provided for @welcomeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Welcome to PureWeight!'**
+  String get welcomeTitle;
+
+  /// No description provided for @welcomeSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Add your first measurement to start tracking your progress towards better health.'**
+  String get welcomeSubtitle;
+
+  /// No description provided for @addFirstMeasurement.
+  ///
+  /// In en, this message translates to:
+  /// **'Add first measurement'**
+  String get addFirstMeasurement;
+
   /// No description provided for @history.
   ///
   /// In en, this message translates to:

@@ -157,6 +157,16 @@ class AppLocalizationsPl extends AppLocalizations {
   String get emptyState => 'Brak wpisów. Dodaj swój pierwszy pomiar poniżej!';
 
   @override
+  String get welcomeTitle => 'Witaj w Waga i BMI!';
+
+  @override
+  String get welcomeSubtitle =>
+      'Dodaj swój pierwszy pomiar, aby zacząć śledzenie swoich postępów w stronę lepszego zdrowia.';
+
+  @override
+  String get addFirstMeasurement => 'Dodaj pierwszy pomiar';
+
+  @override
   String get history => 'Historia';
 
   @override
