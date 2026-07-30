@@ -10,6 +10,7 @@ import 'package:pure_weight/features/weight/presentation/bloc/weight_event.dart'
 import 'package:pure_weight/features/weight/presentation/screens/calendar_screen.dart';
 import 'package:pure_weight/features/weight/presentation/widgets/calendar/calendar_day_cell.dart';
 import 'package:pure_weight/features/weight/presentation/widgets/calendar/calendar_day_empty_card.dart';
+import 'package:pure_weight/features/weight/presentation/widgets/calendar/calendar_day_entries_card.dart';
 import 'package:pure_weight/features/weight/presentation/widgets/calendar/calendar_day_future_card.dart';
 import 'package:pure_weight/features/weight/presentation/widgets/calendar/calendar_month_header.dart';
 import 'package:pure_weight/features/weight/presentation/widgets/calendar/calendar_weekday_header.dart';
@@ -36,10 +37,15 @@ void main() {
   });
 
   Widget createTestWidget(Widget child) {
-    return MaterialApp(
-      localizationsDelegates: AppLocalizations.localizationsDelegates,
-      supportedLocales: AppLocalizations.supportedLocales,
-      home: Scaffold(body: child),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(create: (_) => AppSettingsBloc()),
+      ],
+      child: MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: Scaffold(body: child),
+      ),
     );
   }
 
@@ -114,7 +120,8 @@ void main() {
     expect(find.text('Dodaj pomiar'), findsOneWidget);
   });
 
-  testWidgets('CalendarDayFutureCard renders future card and return to today button', (
+  testWidgets(
+      'CalendarDayFutureCard renders future card and return to today button', (
     tester,
   ) async {
     var todaySelected = false;
@@ -134,6 +141,30 @@ void main() {
 
     await tester.tap(find.text('Przejdź do dzisiaj'));
     expect(todaySelected, isTrue);
+  });
+
+  testWidgets(
+      'CalendarDayEntriesCard displays daily summary stats when multiple entries exist', (
+    tester,
+  ) async {
+    final entries = [
+      WeightEntry(id: 1, weightKg: 72.0, dateTime: DateTime(2026, 7, 15, 8, 0)),
+      WeightEntry(id: 2, weightKg: 73.0, dateTime: DateTime(2026, 7, 15, 20, 0)),
+    ];
+
+    await tester.pumpWidget(
+      createTestWidget(
+        CalendarDayEntriesCard(
+          selectedDate: DateTime(2026, 7, 15),
+          entries: entries,
+        ),
+      ),
+    );
+
+    expect(find.text('Podsumowanie dnia'), findsOneWidget);
+    expect(find.text('Średnia waga'), findsOneWidget);
+    expect(find.text('72.5 kg'), findsOneWidget); // (72.0 + 73.0)/2 = 72.5
+    expect(find.text('2 pomiary'), findsOneWidget);
   });
 
   testWidgets(
