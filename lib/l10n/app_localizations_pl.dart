@@ -396,7 +396,7 @@ class AppLocalizationsPl extends AppLocalizations {
   String get singleEntry => '1 pomiar';
 
   @override
-  String multipleEntries(Object count) {
+  String multipleEntries(int count) {
     return '$count pomiary';
   }
 
@@ -416,4 +416,61 @@ class AppLocalizationsPl extends AppLocalizations {
 
   @override
   String get totalProgress => 'Całkowita zmiana';
+
+  @override
+  String get noEntriesForDate => 'Brak pomiarów w tym dniu';
+
+  @override
+  String get noEntriesForDateSubtitle =>
+      'Nie dodano jeszcze żadnych danych dla wybranej daty. Regularne pomiary pomagają lepiej śledzić postępy.';
+
+  @override
+  String get futureDateTitle => 'Przyszła data';
+
+  @override
+  String get futureDateSubtitle =>
+      'Nie możesz dodać pomiaru wagi dla przyszłej daty. Sprawdź poprzednie dni lub wróć do dzisiejszego.';
+
+  @override
+  String get goToToday => 'Przejdź do dzisiaj';
+
+  @override
+  String get goalAchievedOnDayBanner =>
+      'Cel wagi został osiągnięty w tym dniu! 🏆';
+
+  @override
+  String get dailySummaryTitle => 'Podsumowanie dnia';
+
+  @override
+  String get rangeMinMax => 'Zakres (Min / Max)';
+
+  @override
+  String get goalChipLabel => 'Cel';
+
+  @override
+  String get deleteMeasurementTooltip => 'Usuń pomiar';
+
+  @override
+  String get addAnotherMeasurement => 'Dodaj kolejny pomiar';
+
+  @override
+  String entriesFromDate(String date) {
+    return 'Zapisy z $date';
+  }
+
+  @override
+  String get databaseErrorTitle => 'Błąd odczytu bazy danych';
+
+  @override
+  String get databaseErrorDefaultMessage =>
+      'Nie udało się załadować historii pomiarów z lokalnej bazy danych. Spróbuj ponowić próbę.';
+
+  @override
+  String get noEntriesLabel => 'Brak pomiarów';
+
+  @override
+  String get futureDateSuffix => 'Przyszła data';
+
+  @override
+  String get selectedSuffix => 'zaznaczony';
 }

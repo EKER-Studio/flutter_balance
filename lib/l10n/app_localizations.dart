@@ -614,25 +614,25 @@ abstract class AppLocalizations {
   /// **'Obese'**
   String get bmiCategoryObese;
 
-  /// Description for the Underweight BMI category
+  /// No description provided for @bmiCategoryDescriptionUnderweight.
   ///
   /// In en, this message translates to:
   /// **'BMI below 18.5 — you may need to gain weight'**
   String get bmiCategoryDescriptionUnderweight;
 
-  /// Description for the Normal BMI category
+  /// No description provided for @bmiCategoryDescriptionNormal.
   ///
   /// In en, this message translates to:
   /// **'BMI between 18.5 and 24.9 — healthy range'**
   String get bmiCategoryDescriptionNormal;
 
-  /// Description for the Overweight BMI category
+  /// No description provided for @bmiCategoryDescriptionOverweight.
   ///
   /// In en, this message translates to:
   /// **'BMI between 25.0 and 29.9 — slight excess weight'**
   String get bmiCategoryDescriptionOverweight;
 
-  /// Description for the Obese BMI category
+  /// No description provided for @bmiCategoryDescriptionObese.
   ///
   /// In en, this message translates to:
   /// **'BMI 30.0 or higher — consider consulting a professional'**
@@ -816,7 +816,7 @@ abstract class AppLocalizations {
   ///
   /// In en, this message translates to:
   /// **'{count} measurements'**
-  String multipleEntries(Object count);
+  String multipleEntries(int count);
 
   /// No description provided for @loggingStreak.
   ///
@@ -847,6 +847,108 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Total Progress'**
   String get totalProgress;
+
+  /// No description provided for @noEntriesForDate.
+  ///
+  /// In en, this message translates to:
+  /// **'No measurements recorded for this day'**
+  String get noEntriesForDate;
+
+  /// No description provided for @noEntriesForDateSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No data added for the selected date yet. Regular measurements help track progress better.'**
+  String get noEntriesForDateSubtitle;
+
+  /// No description provided for @futureDateTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Future date'**
+  String get futureDateTitle;
+
+  /// No description provided for @futureDateSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'You cannot add weight measurements for future dates. Check previous days or return to today.'**
+  String get futureDateSubtitle;
+
+  /// No description provided for @goToToday.
+  ///
+  /// In en, this message translates to:
+  /// **'Go to today'**
+  String get goToToday;
+
+  /// No description provided for @goalAchievedOnDayBanner.
+  ///
+  /// In en, this message translates to:
+  /// **'Weight goal was achieved on this day! 🏆'**
+  String get goalAchievedOnDayBanner;
+
+  /// No description provided for @dailySummaryTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Daily Summary'**
+  String get dailySummaryTitle;
+
+  /// No description provided for @rangeMinMax.
+  ///
+  /// In en, this message translates to:
+  /// **'Range (Min / Max)'**
+  String get rangeMinMax;
+
+  /// No description provided for @goalChipLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Goal'**
+  String get goalChipLabel;
+
+  /// No description provided for @deleteMeasurementTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete measurement'**
+  String get deleteMeasurementTooltip;
+
+  /// No description provided for @addAnotherMeasurement.
+  ///
+  /// In en, this message translates to:
+  /// **'Add another measurement'**
+  String get addAnotherMeasurement;
+
+  /// No description provided for @entriesFromDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Entries from {date}'**
+  String entriesFromDate(String date);
+
+  /// No description provided for @databaseErrorTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Database read error'**
+  String get databaseErrorTitle;
+
+  /// No description provided for @databaseErrorDefaultMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load weight history from the local database. Please try again.'**
+  String get databaseErrorDefaultMessage;
+
+  /// No description provided for @noEntriesLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'No measurements'**
+  String get noEntriesLabel;
+
+  /// No description provided for @futureDateSuffix.
+  ///
+  /// In en, this message translates to:
+  /// **'Future date'**
+  String get futureDateSuffix;
+
+  /// No description provided for @selectedSuffix.
+  ///
+  /// In en, this message translates to:
+  /// **'selected'**
+  String get selectedSuffix;
 }
 
 class _AppLocalizationsDelegate

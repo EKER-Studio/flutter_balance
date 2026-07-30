@@ -393,7 +393,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get singleEntry => '1 measurement';
 
   @override
-  String multipleEntries(Object count) {
+  String multipleEntries(int count) {
     return '$count measurements';
   }
 
@@ -413,4 +413,61 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get totalProgress => 'Total Progress';
+
+  @override
+  String get noEntriesForDate => 'No measurements recorded for this day';
+
+  @override
+  String get noEntriesForDateSubtitle =>
+      'No data added for the selected date yet. Regular measurements help track progress better.';
+
+  @override
+  String get futureDateTitle => 'Future date';
+
+  @override
+  String get futureDateSubtitle =>
+      'You cannot add weight measurements for future dates. Check previous days or return to today.';
+
+  @override
+  String get goToToday => 'Go to today';
+
+  @override
+  String get goalAchievedOnDayBanner =>
+      'Weight goal was achieved on this day! 🏆';
+
+  @override
+  String get dailySummaryTitle => 'Daily Summary';
+
+  @override
+  String get rangeMinMax => 'Range (Min / Max)';
+
+  @override
+  String get goalChipLabel => 'Goal';
+
+  @override
+  String get deleteMeasurementTooltip => 'Delete measurement';
+
+  @override
+  String get addAnotherMeasurement => 'Add another measurement';
+
+  @override
+  String entriesFromDate(String date) {
+    return 'Entries from $date';
+  }
+
+  @override
+  String get databaseErrorTitle => 'Database read error';
+
+  @override
+  String get databaseErrorDefaultMessage =>
+      'Failed to load weight history from the local database. Please try again.';
+
+  @override
+  String get noEntriesLabel => 'No measurements';
+
+  @override
+  String get futureDateSuffix => 'Future date';
+
+  @override
+  String get selectedSuffix => 'selected';
 }

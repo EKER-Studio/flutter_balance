@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pure_weight/features/weight/presentation/bloc/weight_bloc.dart';
 import 'package:pure_weight/features/weight/presentation/bloc/weight_event.dart';
+import 'package:pure_weight/l10n/app_localizations.dart';
 
 /// Reusable Material 3 error card displayed when a local database read error occurs.
 class CalendarErrorCard extends StatelessWidget {
@@ -17,6 +18,7 @@ class CalendarErrorCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context);
 
     return Card(
       elevation: 0,
@@ -40,7 +42,7 @@ class CalendarErrorCard extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             Text(
-              'Błąd odczytu bazy danych',
+              l10n.databaseErrorTitle,
               style: Theme.of(context).textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.bold,
                     color: cs.onErrorContainer,
@@ -51,7 +53,7 @@ class CalendarErrorCard extends StatelessWidget {
             Text(
               errorMessage.isNotEmpty
                   ? errorMessage
-                  : 'Nie udało się załadować historii pomiarów z lokalnej bazy danych. Spróbuj ponowić próbę.',
+                  : l10n.databaseErrorDefaultMessage,
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                     color: cs.onErrorContainer.withValues(alpha: 0.8),
                   ),
@@ -63,7 +65,7 @@ class CalendarErrorCard extends StatelessWidget {
                 context.read<WeightBloc>().add(const RefreshWeightData());
               },
               icon: const Icon(Icons.refresh),
-              label: const Text('Spróbuj ponownie'),
+              label: Text(l10n.retry),
               style: FilledButton.styleFrom(
                 backgroundColor: cs.onErrorContainer,
                 foregroundColor: cs.errorContainer,

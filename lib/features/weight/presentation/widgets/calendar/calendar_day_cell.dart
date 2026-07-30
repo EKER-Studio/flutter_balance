@@ -1,34 +1,35 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:pure_weight/features/weight/domain/entities/weight_entry.dart';
+import 'package:pure_weight/l10n/app_localizations.dart';
 
-/// Reusable calendar day cell widget with Material 3 styling and accessibility (a11y) support.
+/// Reusable calendar day cell widget representing a single day in the monthly grid.
 class CalendarDayCell extends StatelessWidget {
   /// The date represented by this cell.
   final DateTime date;
 
-  /// The day number of the month (1-31).
+  /// Day number (1-31).
   final int dayNumber;
 
-  /// List of weight entries recorded on this date.
+  /// Entries recorded on this date.
   final List<WeightEntry> entries;
 
-  /// Whether this cell represents the current calendar date (today).
+  /// Whether this day is today.
   final bool isToday;
 
-  /// Whether this cell is currently selected by the user.
+  /// Whether this day is selected.
   final bool isSelected;
 
-  /// Whether this cell represents a future date.
+  /// Whether this day is in the future.
   final bool isFuture;
 
-  /// Whether a weight measurement on this date met or beat the target weight.
+  /// Whether the user reached their target weight goal on this day.
   final bool isGoalAchieved;
 
-  /// Callback executed when this cell is tapped.
+  /// Callback when this cell is tapped.
   final VoidCallback onTap;
 
-  /// Creates a [CalendarDayCell] widget.
+  /// Creates a [CalendarDayCell].
   const CalendarDayCell({
     super.key,
     required this.date,
@@ -43,104 +44,90 @@ class CalendarDayCell extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final hasEntries = entries.isNotEmpty;
     final cs = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context);
+    final locale = Localizations.localeOf(context).toString();
+    final dateLabel = DateFormat.yMMMMd(locale).format(date);
 
-    final dateLabel = DateFormat.yMMMMd(
-      Localizations.localeOf(context).toString(),
-    ).format(date);
-    final entriesCountLabel =
-        hasEntries ? '${entries.length} pomiary' : 'Brak pomiarów';
-    final futureSuffix = isFuture ? ', Przyszła data' : '';
-    final goalSuffix = isGoalAchieved ? ', Cel osiągnięty!' : '';
-    final semanticText =
-        '$dateLabel, $entriesCountLabel$goalSuffix$futureSuffix${isSelected ? ', zaznaczony' : ''}';
+    final hasEntries = entries.isNotEmpty;
+    final entriesCountLabel = !hasEntries
+        ? l10n.noEntriesLabel
+        : (entries.length == 1
+            ? l10n.singleEntry
+            : l10n.multipleEntries(entries.length));
 
-    Color circleBgColor;
-    Color textColor;
-    Color dotColor;
+    final futureSuffix = isFuture ? ', ${l10n.futureDateSuffix}' : '';
+    final goalSuffix = isGoalAchieved ? ', ${l10n.goalAchieved}' : '';
 
-    if (isSelected) {
-      circleBgColor = cs.primary;
-      textColor = cs.onPrimary;
-      dotColor = cs.onPrimary;
-    } else if (isToday) {
-      circleBgColor = cs.primaryContainer;
-      textColor = cs.onPrimaryContainer;
-      dotColor = cs.primary;
-    } else {
-      circleBgColor = Colors.transparent;
-      textColor = isFuture
-          ? cs.onSurfaceVariant.withValues(alpha: 0.4)
-          : cs.onSurface;
-      dotColor = cs.primary;
-    }
+    final semanticsLabel =
+        '$dateLabel, $entriesCountLabel$goalSuffix$futureSuffix${isSelected ? ', ${l10n.selectedSuffix}' : ''}';
 
     return Semantics(
       button: true,
       selected: isSelected,
-      label: semanticText,
+      label: semanticsLabel,
       child: InkWell(
         onTap: onTap,
-        customBorder: const CircleBorder(),
-        child: AspectRatio(
-          aspectRatio: 1.0,
+        borderRadius: BorderRadius.circular(20),
+        child: Opacity(
+          opacity: isFuture ? 0.40 : 1.0,
           child: Container(
             decoration: BoxDecoration(
-              color: circleBgColor,
               shape: BoxShape.circle,
+              color: isSelected
+                  ? cs.primary
+                  : (isToday
+                      ? cs.primaryContainer
+                      : Colors.transparent),
               border: isToday && !isSelected
-                  ? Border.all(color: cs.primary, width: 2)
+                  ? Border.all(color: cs.primary, width: 1.5)
                   : null,
             ),
             child: Stack(
-              alignment: Alignment.center,
+              clipBehavior: Clip.none,
               children: [
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      '$dayNumber',
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: textColor,
-                            fontWeight: isSelected || isToday || hasEntries
-                                ? FontWeight.bold
-                                : FontWeight.normal,
-                          ),
+                Center(
+                  child: Text(
+                    '$dayNumber',
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight:
+                          isToday || isSelected ? FontWeight.bold : FontWeight.normal,
+                      color: isSelected
+                          ? cs.onPrimary
+                          : (isToday
+                              ? cs.onPrimaryContainer
+                              : cs.onSurface),
                     ),
-                    if (hasEntries) ...[
-                      const SizedBox(height: 2),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Container(
-                            width: 4,
-                            height: 4,
-                            decoration: BoxDecoration(
-                              color: dotColor,
-                              shape: BoxShape.circle,
-                            ),
-                          ),
-                          if (entries.length >= 2) ...[
-                            const SizedBox(width: 2),
-                            Container(
-                              width: 4,
-                              height: 4,
-                              decoration: BoxDecoration(
-                                color: dotColor,
-                                shape: BoxShape.circle,
-                              ),
-                            ),
-                          ],
-                        ],
-                      ),
-                    ],
-                  ],
+                  ),
                 ),
+                // Indicator dots for entries
+                if (hasEntries && !isSelected)
+                  Positioned(
+                    bottom: 4,
+                    left: 0,
+                    right: 0,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: List.generate(
+                        entries.length > 1 ? 2 : 1,
+                        (index) => Container(
+                          width: 4,
+                          height: 4,
+                          margin: const EdgeInsets.symmetric(horizontal: 1.5),
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: cs.primary,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                // Goal Achievement Star Badge
                 if (isGoalAchieved)
                   Positioned(
                     top: 2,
-                    right: 4,
+                    right: 2,
                     child: Icon(
                       Icons.star,
                       size: 10,

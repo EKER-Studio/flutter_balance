@@ -159,7 +159,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                     Padding(
                       padding: const EdgeInsets.only(left: 8, bottom: 8),
                       child: Text(
-                        'Zapisy z $formattedSelectedDate',
+                        l10n.entriesFromDate(formattedSelectedDate),
                         style:
                             Theme.of(context).textTheme.titleMedium?.copyWith(
                                   fontWeight: FontWeight.bold,

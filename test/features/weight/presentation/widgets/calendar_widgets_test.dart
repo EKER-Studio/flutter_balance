@@ -44,12 +44,14 @@ void main() {
   Widget createTestWidget(
     Widget child, {
     AppSettingsBloc? settingsBloc,
+    Locale locale = const Locale('pl'),
   }) {
     return MultiBlocProvider(
       providers: [
         BlocProvider(create: (_) => settingsBloc ?? AppSettingsBloc()),
       ],
       child: MaterialApp(
+        locale: locale,
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
         home: Scaffold(body: child),
@@ -134,22 +136,33 @@ void main() {
     expect(find.byIcon(Icons.star), findsOneWidget);
   });
 
-  testWidgets('CalendarDayEmptyCard renders empty state UI and add button', (
+  testWidgets('CalendarDayEmptyCard renders empty state UI in Polish and English', (
     tester,
   ) async {
     await tester.pumpWidget(
       createTestWidget(
         CalendarDayEmptyCard(selectedDate: DateTime(2026, 7, 15)),
+        locale: const Locale('pl'),
       ),
     );
 
     expect(find.text('Brak pomiarów w tym dniu'), findsOneWidget);
     expect(find.byIcon(Icons.event_busy), findsOneWidget);
     expect(find.text('Dodaj pomiar'), findsOneWidget);
+
+    await tester.pumpWidget(
+      createTestWidget(
+        CalendarDayEmptyCard(selectedDate: DateTime(2026, 7, 15)),
+        locale: const Locale('en'),
+      ),
+    );
+
+    expect(find.text('No measurements recorded for this day'), findsOneWidget);
+    expect(find.text('Add measurement'), findsOneWidget);
   });
 
   testWidgets(
-      'CalendarDayFutureCard renders future card and return to today button', (
+      'CalendarDayFutureCard renders future card in Polish and English', (
     tester,
   ) async {
     var todaySelected = false;
@@ -160,6 +173,7 @@ void main() {
           selectedDate: DateTime(2030, 1, 1),
           onSelectToday: () => todaySelected = true,
         ),
+        locale: const Locale('pl'),
       ),
     );
 
@@ -169,20 +183,44 @@ void main() {
 
     await tester.tap(find.text('Przejdź do dzisiaj'));
     expect(todaySelected, isTrue);
+
+    await tester.pumpWidget(
+      createTestWidget(
+        CalendarDayFutureCard(
+          selectedDate: DateTime(2030, 1, 1),
+          onSelectToday: () {},
+        ),
+        locale: const Locale('en'),
+      ),
+    );
+
+    expect(find.text('Future date'), findsOneWidget);
+    expect(find.text('Go to today'), findsOneWidget);
   });
 
-  testWidgets('CalendarErrorCard renders error message and retry button', (
+  testWidgets('CalendarErrorCard renders error message and retry button in Polish and English', (
     tester,
   ) async {
     await tester.pumpWidget(
       createTestWidget(
         const CalendarErrorCard(errorMessage: 'Database connection failed'),
+        locale: const Locale('pl'),
       ),
     );
 
     expect(find.text('Błąd odczytu bazy danych'), findsOneWidget);
     expect(find.text('Database connection failed'), findsOneWidget);
     expect(find.text('Spróbuj ponownie'), findsOneWidget);
+
+    await tester.pumpWidget(
+      createTestWidget(
+        const CalendarErrorCard(errorMessage: 'Database connection failed'),
+        locale: const Locale('en'),
+      ),
+    );
+
+    expect(find.text('Database read error'), findsOneWidget);
+    expect(find.text('Try again'), findsOneWidget);
   });
 
   testWidgets(
@@ -227,6 +265,7 @@ void main() {
           entries: entries,
           targetWeight: 72.5,
         ),
+        locale: const Locale('pl'),
       ),
     );
 
@@ -306,6 +345,7 @@ void main() {
           ),
         ],
         child: const MaterialApp(
+          locale: Locale('pl'),
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
           home: CalendarScreen(),
@@ -336,6 +376,7 @@ void main() {
           ),
         ],
         child: const MaterialApp(
+          locale: Locale('pl'),
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
           home: CalendarScreen(),
@@ -368,6 +409,7 @@ void main() {
           ),
         ],
         child: const MaterialApp(
+          locale: Locale('pl'),
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
           home: CalendarScreen(),

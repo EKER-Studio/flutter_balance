@@ -125,16 +125,35 @@
   "monthlyCompliance": "Regularność w miesiącu",
   "averageWeight": "Średnia waga",
   "totalProgress": "Całkowita zmiana",
-  "@bmiCategoryDescriptionUnderweight": {
-    "description": "Description for the Underweight BMI category"
+  "noEntriesForDate": "Brak pomiarów w tym dniu",
+  "noEntriesForDateSubtitle": "Nie dodano jeszcze żadnych danych dla wybranej daty. Regularne pomiary pomagają lepiej śledzić postępy.",
+  "futureDateTitle": "Przyszła data",
+  "futureDateSubtitle": "Nie możesz dodać pomiaru wagi dla przyszłej daty. Sprawdź poprzednie dni lub wróć do dzisiejszego.",
+  "goToToday": "Przejdź do dzisiaj",
+  "goalAchievedOnDayBanner": "Cel wagi został osiągnięty w tym dniu! 🏆",
+  "dailySummaryTitle": "Podsumowanie dnia",
+  "rangeMinMax": "Zakres (Min / Max)",
+  "goalChipLabel": "Cel",
+  "deleteMeasurementTooltip": "Usuń pomiar",
+  "addAnotherMeasurement": "Dodaj kolejny pomiar",
+  "entriesFromDate": "Zapisy z {date}",
+  "databaseErrorTitle": "Błąd odczytu bazy danych",
+  "databaseErrorDefaultMessage": "Nie udało się załadować historii pomiarów z lokalnej bazy danych. Spróbuj ponowić próbę.",
+  "noEntriesLabel": "Brak pomiarów",
+  "futureDateSuffix": "Przyszła data",
+  "selectedSuffix": "zaznaczony",
+  "@entriesFromDate": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
   },
-  "@bmiCategoryDescriptionNormal": {
-    "description": "Description for the Normal BMI category"
-  },
-  "@bmiCategoryDescriptionOverweight": {
-    "description": "Description for the Overweight BMI category"
-  },
-  "@bmiCategoryDescriptionObese": {
-    "description": "Description for the Obese BMI category"
+  "@multipleEntries": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   }
 }

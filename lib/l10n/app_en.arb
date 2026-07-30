@@ -125,16 +125,35 @@
   "monthlyCompliance": "Monthly Consistency",
   "averageWeight": "Average Weight",
   "totalProgress": "Total Progress",
-  "@bmiCategoryDescriptionUnderweight": {
-    "description": "Description for the Underweight BMI category"
+  "noEntriesForDate": "No measurements recorded for this day",
+  "noEntriesForDateSubtitle": "No data added for the selected date yet. Regular measurements help track progress better.",
+  "futureDateTitle": "Future date",
+  "futureDateSubtitle": "You cannot add weight measurements for future dates. Check previous days or return to today.",
+  "goToToday": "Go to today",
+  "goalAchievedOnDayBanner": "Weight goal was achieved on this day! 🏆",
+  "dailySummaryTitle": "Daily Summary",
+  "rangeMinMax": "Range (Min / Max)",
+  "goalChipLabel": "Goal",
+  "deleteMeasurementTooltip": "Delete measurement",
+  "addAnotherMeasurement": "Add another measurement",
+  "entriesFromDate": "Entries from {date}",
+  "databaseErrorTitle": "Database read error",
+  "databaseErrorDefaultMessage": "Failed to load weight history from the local database. Please try again.",
+  "noEntriesLabel": "No measurements",
+  "futureDateSuffix": "Future date",
+  "selectedSuffix": "selected",
+  "@entriesFromDate": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
   },
-  "@bmiCategoryDescriptionNormal": {
-    "description": "Description for the Normal BMI category"
-  },
-  "@bmiCategoryDescriptionOverweight": {
-    "description": "Description for the Overweight BMI category"
-  },
-  "@bmiCategoryDescriptionObese": {
-    "description": "Description for the Obese BMI category"
+  "@multipleEntries": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   }
 }
