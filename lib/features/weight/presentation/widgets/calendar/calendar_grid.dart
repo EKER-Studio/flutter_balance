@@ -53,6 +53,7 @@ class CalendarGrid extends StatelessWidget {
     }
 
     final now = DateTime.now();
+    final todayEnd = DateTime(now.year, now.month, now.day, 23, 59, 59);
 
     return GridView.builder(
       physics: const NeverScrollableScrollPhysics(),
@@ -74,6 +75,7 @@ class CalendarGrid extends StatelessWidget {
         final dayEntries = entriesByDay[dayNumber] ?? const [];
         final isToday = DateUtils.isSameDay(date, now);
         final isSelected = DateUtils.isSameDay(date, selectedDate);
+        final isFuture = date.isAfter(todayEnd);
 
         return CalendarDayCell(
           date: date,
@@ -81,6 +83,7 @@ class CalendarGrid extends StatelessWidget {
           entries: dayEntries,
           isToday: isToday,
           isSelected: isSelected,
+          isFuture: isFuture,
           onTap: () => onDaySelected(date, dayEntries),
         );
       },

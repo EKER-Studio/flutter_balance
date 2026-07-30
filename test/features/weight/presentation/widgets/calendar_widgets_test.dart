@@ -10,6 +10,7 @@ import 'package:pure_weight/features/weight/presentation/bloc/weight_event.dart'
 import 'package:pure_weight/features/weight/presentation/screens/calendar_screen.dart';
 import 'package:pure_weight/features/weight/presentation/widgets/calendar/calendar_day_cell.dart';
 import 'package:pure_weight/features/weight/presentation/widgets/calendar/calendar_day_empty_card.dart';
+import 'package:pure_weight/features/weight/presentation/widgets/calendar/calendar_day_future_card.dart';
 import 'package:pure_weight/features/weight/presentation/widgets/calendar/calendar_month_header.dart';
 import 'package:pure_weight/features/weight/presentation/widgets/calendar/calendar_weekday_header.dart';
 import 'package:pure_weight/l10n/app_localizations.dart';
@@ -111,6 +112,28 @@ void main() {
     expect(find.text('Brak pomiarów w tym dniu'), findsOneWidget);
     expect(find.byIcon(Icons.event_busy), findsOneWidget);
     expect(find.text('Dodaj pomiar'), findsOneWidget);
+  });
+
+  testWidgets('CalendarDayFutureCard renders future card and return to today button', (
+    tester,
+  ) async {
+    var todaySelected = false;
+
+    await tester.pumpWidget(
+      createTestWidget(
+        CalendarDayFutureCard(
+          selectedDate: DateTime(2030, 1, 1),
+          onSelectToday: () => todaySelected = true,
+        ),
+      ),
+    );
+
+    expect(find.text('Przyszła data'), findsOneWidget);
+    expect(find.byIcon(Icons.schedule), findsOneWidget);
+    expect(find.text('Przejdź do dzisiaj'), findsOneWidget);
+
+    await tester.tap(find.text('Przejdź do dzisiaj'));
+    expect(todaySelected, isTrue);
   });
 
   testWidgets(

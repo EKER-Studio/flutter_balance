@@ -7,6 +7,7 @@ import 'package:pure_weight/features/weight/presentation/bloc/weight_state.dart'
 import 'package:pure_weight/features/weight/presentation/widgets/add_weight_sheet.dart';
 import 'package:pure_weight/features/weight/presentation/widgets/calendar/calendar_day_empty_card.dart';
 import 'package:pure_weight/features/weight/presentation/widgets/calendar/calendar_day_entries_card.dart';
+import 'package:pure_weight/features/weight/presentation/widgets/calendar/calendar_day_future_card.dart';
 import 'package:pure_weight/features/weight/presentation/widgets/calendar/calendar_grid.dart';
 import 'package:pure_weight/features/weight/presentation/widgets/calendar/calendar_month_header.dart';
 import 'package:pure_weight/features/weight/presentation/widgets/calendar/calendar_weekday_header.dart';
@@ -49,6 +50,10 @@ class _CalendarScreenState extends State<CalendarScreen> {
   void _onDaySelected(DateTime date) {
     setState(() {
       _selectedDate = date;
+      // Focus month if selected date is in a different month
+      if (date.year != _focusedMonth.year || date.month != _focusedMonth.month) {
+        _focusedMonth = DateTime(date.year, date.month, 1);
+      }
     });
   }
 
@@ -57,6 +62,10 @@ class _CalendarScreenState extends State<CalendarScreen> {
     final l10n = AppLocalizations.of(context);
     final locale = Localizations.localeOf(context).toString();
     final formattedSelectedDate = DateFormat.MMMMd(locale).format(_selectedDate);
+
+    final now = DateTime.now();
+    final todayEnd = DateTime(now.year, now.month, now.day, 23, 59, 59);
+    final isSelectedDateFuture = _selectedDate.isAfter(todayEnd);
 
     return Scaffold(
       appBar: AppBar(
@@ -142,8 +151,13 @@ class _CalendarScreenState extends State<CalendarScreen> {
                                 ),
                       ),
                     ),
-                    // Selected Day Entries / Empty State Card
-                    if (dayEntries.isEmpty)
+                    // Selected Day Details / Future / Empty State Card
+                    if (isSelectedDateFuture)
+                      CalendarDayFutureCard(
+                        selectedDate: _selectedDate,
+                        onSelectToday: () => _onDaySelected(DateTime.now()),
+                      )
+                    else if (dayEntries.isEmpty)
                       CalendarDayEmptyCard(selectedDate: _selectedDate)
                     else
                       CalendarDayEntriesCard(
@@ -166,8 +180,9 @@ class _CalendarScreenState extends State<CalendarScreen> {
   }
 
   void _showAddWeightSheet(BuildContext context) {
-    showDialog(
+    showModalBottomSheet(
       context: context,
+      isScrollControlled: true,
       builder: (_) => const AddWeightSheet(),
     );
   }

@@ -19,6 +19,9 @@ class CalendarDayCell extends StatelessWidget {
   /// Whether this cell is currently selected by the user.
   final bool isSelected;
 
+  /// Whether this cell represents a future date.
+  final bool isFuture;
+
   /// Callback executed when this cell is tapped.
   final VoidCallback onTap;
 
@@ -30,6 +33,7 @@ class CalendarDayCell extends StatelessWidget {
     required this.entries,
     required this.isToday,
     required this.isSelected,
+    this.isFuture = false,
     required this.onTap,
   });
 
@@ -43,8 +47,9 @@ class CalendarDayCell extends StatelessWidget {
     ).format(date);
     final entriesCountLabel =
         hasEntries ? '${entries.length} pomiary' : 'Brak pomiarów';
+    final futureSuffix = isFuture ? ', Przyszła data' : '';
     final semanticText =
-        '$dateLabel, $entriesCountLabel${isSelected ? ', zaznaczony' : ''}';
+        '$dateLabel, $entriesCountLabel$futureSuffix${isSelected ? ', zaznaczony' : ''}';
 
     Color circleBgColor;
     Color textColor;
@@ -60,7 +65,9 @@ class CalendarDayCell extends StatelessWidget {
       dotColor = cs.primary;
     } else {
       circleBgColor = Colors.transparent;
-      textColor = cs.onSurface;
+      textColor = isFuture
+          ? cs.onSurfaceVariant.withValues(alpha: 0.4)
+          : cs.onSurface;
       dotColor = cs.primary;
     }
 
