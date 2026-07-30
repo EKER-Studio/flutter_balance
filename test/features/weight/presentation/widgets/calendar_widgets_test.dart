@@ -45,6 +45,7 @@ void main() {
     Widget child, {
     AppSettingsBloc? settingsBloc,
     Locale locale = const Locale('pl'),
+    ThemeMode themeMode = ThemeMode.light,
   }) {
     return MultiBlocProvider(
       providers: [
@@ -52,6 +53,9 @@ void main() {
       ],
       child: MaterialApp(
         locale: locale,
+        themeMode: themeMode,
+        theme: ThemeData(useMaterial3: true, brightness: Brightness.light),
+        darkTheme: ThemeData(useMaterial3: true, brightness: Brightness.dark),
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
         home: Scaffold(body: child),
@@ -332,7 +336,7 @@ void main() {
   });
 
   testWidgets(
-      'CalendarScreen renders month header, weekdays, grid, and day card', (
+      'CalendarScreen renders month header, weekdays, grid, and day card in Dark Mode', (
     tester,
   ) async {
     await tester.pumpWidget(
@@ -344,11 +348,13 @@ void main() {
               ..add(const SubscribeToWeightChanges()),
           ),
         ],
-        child: const MaterialApp(
-          locale: Locale('pl'),
+        child: MaterialApp(
+          locale: const Locale('pl'),
+          themeMode: ThemeMode.dark,
+          darkTheme: ThemeData(useMaterial3: true, brightness: Brightness.dark),
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: CalendarScreen(),
+          home: const Scaffold(body: CalendarScreen()),
         ),
       ),
     );
