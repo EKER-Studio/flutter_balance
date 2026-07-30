@@ -43,8 +43,11 @@ final class AddWeight extends WeightEvent {
   /// Optional note attached to this measurement.
   final String? note;
 
-  /// Creates [AddWeight] with the given [weightKg] and optional [note].
-  const AddWeight({required this.weightKg, this.note});
+  /// Optional custom timestamp for the measurement (defaults to current date/time if null).
+  final DateTime? dateTime;
+
+  /// Creates [AddWeight] with the given [weightKg], optional [note], and optional [dateTime].
+  const AddWeight({required this.weightKg, this.note, this.dateTime});
 }
 
 /// Removes the entry with the given [id].

@@ -183,7 +183,7 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
 
     final entry = WeightEntry(
       weightKg: event.weightKg,
-      dateTime: DateTime.now(),
+      dateTime: event.dateTime ?? DateTime.now(),
       note: event.note,
     );
 

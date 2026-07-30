@@ -329,4 +329,55 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get chartSemanticsFilter => 'filter';
+
+  @override
+  String get tabToday => 'Today';
+
+  @override
+  String get tabCalendar => 'Calendar';
+
+  @override
+  String get tabStats => 'Statistics';
+
+  @override
+  String get tabSettings => 'Settings';
+
+  @override
+  String get todaySummary => 'Today\'s Summary';
+
+  @override
+  String get noEntriesToday => 'No weight measurements recorded today.';
+
+  @override
+  String addMeasurementForDate(Object date) {
+    return 'Add measurement for $date';
+  }
+
+  @override
+  String get missingData => 'Missing data';
+
+  @override
+  String get singleEntry => '1 measurement';
+
+  @override
+  String multipleEntries(Object count) {
+    return '$count measurements';
+  }
+
+  @override
+  String get loggingStreak => 'Logging Streak';
+
+  @override
+  String streakDays(Object count) {
+    return '$count days';
+  }
+
+  @override
+  String get monthlyCompliance => 'Monthly Consistency';
+
+  @override
+  String get averageWeight => 'Average Weight';
+
+  @override
+  String get totalProgress => 'Total Progress';
 }

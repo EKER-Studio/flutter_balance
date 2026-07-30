@@ -697,6 +697,96 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'filter'**
   String get chartSemanticsFilter;
+
+  /// No description provided for @tabToday.
+  ///
+  /// In en, this message translates to:
+  /// **'Today'**
+  String get tabToday;
+
+  /// No description provided for @tabCalendar.
+  ///
+  /// In en, this message translates to:
+  /// **'Calendar'**
+  String get tabCalendar;
+
+  /// No description provided for @tabStats.
+  ///
+  /// In en, this message translates to:
+  /// **'Statistics'**
+  String get tabStats;
+
+  /// No description provided for @tabSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Settings'**
+  String get tabSettings;
+
+  /// No description provided for @todaySummary.
+  ///
+  /// In en, this message translates to:
+  /// **'Today\'s Summary'**
+  String get todaySummary;
+
+  /// No description provided for @noEntriesToday.
+  ///
+  /// In en, this message translates to:
+  /// **'No weight measurements recorded today.'**
+  String get noEntriesToday;
+
+  /// No description provided for @addMeasurementForDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Add measurement for {date}'**
+  String addMeasurementForDate(Object date);
+
+  /// No description provided for @missingData.
+  ///
+  /// In en, this message translates to:
+  /// **'Missing data'**
+  String get missingData;
+
+  /// No description provided for @singleEntry.
+  ///
+  /// In en, this message translates to:
+  /// **'1 measurement'**
+  String get singleEntry;
+
+  /// No description provided for @multipleEntries.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} measurements'**
+  String multipleEntries(Object count);
+
+  /// No description provided for @loggingStreak.
+  ///
+  /// In en, this message translates to:
+  /// **'Logging Streak'**
+  String get loggingStreak;
+
+  /// No description provided for @streakDays.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} days'**
+  String streakDays(Object count);
+
+  /// No description provided for @monthlyCompliance.
+  ///
+  /// In en, this message translates to:
+  /// **'Monthly Consistency'**
+  String get monthlyCompliance;
+
+  /// No description provided for @averageWeight.
+  ///
+  /// In en, this message translates to:
+  /// **'Average Weight'**
+  String get averageWeight;
+
+  /// No description provided for @totalProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Progress'**
+  String get totalProgress;
 }
 
 class _AppLocalizationsDelegate

@@ -6,8 +6,11 @@ import 'package:pure_weight/features/weight/presentation/bloc/weight_event.dart'
 
 /// Modal bottom sheet form for adding a new weight measurement.
 class AddWeightSheet extends StatefulWidget {
+  /// Optional target date for the measurement.
+  final DateTime? initialDate;
+
   /// Creates [AddWeightSheet].
-  const AddWeightSheet({super.key});
+  const AddWeightSheet({super.key, this.initialDate});
 
   @override
   State<AddWeightSheet> createState() => _AddWeightSheetState();
@@ -108,7 +111,13 @@ class _AddWeightSheetState extends State<AddWeightSheet> {
         return;
       }
       final note = _noteController.text.isEmpty ? null : _noteController.text;
-      context.read<WeightBloc>().add(AddWeight(weightKg: weight, note: note));
+      context.read<WeightBloc>().add(
+        AddWeight(
+          weightKg: weight,
+          note: note,
+          dateTime: widget.initialDate,
+        ),
+      );
       Navigator.of(context).pop();
     }
   }
