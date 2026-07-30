@@ -473,4 +473,36 @@ class AppLocalizationsPl extends AppLocalizations {
 
   @override
   String get selectedSuffix => 'zaznaczony';
+
+  @override
+  String get todayTabTitle => 'Waga i BMI';
+
+  @override
+  String todayAtTime(String time) {
+    return 'Dzisiaj, $time';
+  }
+
+  @override
+  String get tapToViewStatsHint => 'Dotknij, aby przejść do statystyk';
+
+  @override
+  String bmiCategoryLabel(String category) {
+    return 'Kategoria BMI: $category';
+  }
+
+  @override
+  String bmiValueLabel(String value) {
+    return 'Wskaźnik BMI: $value kg/m²';
+  }
+
+  @override
+  String get heightNotSetLabel => 'brak podanego wzrostu';
+
+  @override
+  String get doubleTapToOpenCalendarHint =>
+      'Dotknij dwukrotnie, aby otworzyć kalendarz';
+
+  @override
+  String get doubleTapToChangeTimeHint =>
+      'Dotknij dwukrotnie, aby zmienić godzinę';
 }

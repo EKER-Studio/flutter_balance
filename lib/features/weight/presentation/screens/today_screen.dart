@@ -57,7 +57,7 @@ class TodayScreen extends StatelessWidget {
             ),
             const SizedBox(width: 10),
             Text(
-              l10n.appTitle == 'PureWeight' ? 'Waga i BMI' : l10n.appTitle,
+              l10n.todayTabTitle,
               style: TextStyle(
                 fontWeight: FontWeight.bold,
                 color: Theme.of(context).colorScheme.primary,

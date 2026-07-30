@@ -145,7 +145,7 @@ class _AddWeightSheetState extends State<AddWeightSheet> {
                       child: Semantics(
                         button: true,
                         label: '${l10n.measurementDate}: $dateStr',
-                        hint: 'Dotknij dwukrotnie, aby otworzyć kalendarz',
+                        hint: l10n.doubleTapToOpenCalendarHint,
                         child: InkWell(
                           onTap: () => _pickDate(context),
                           borderRadius: BorderRadius.circular(8),
@@ -168,7 +168,7 @@ class _AddWeightSheetState extends State<AddWeightSheet> {
                       child: Semantics(
                         button: true,
                         label: '${l10n.measurementTime}: $timeStr',
-                        hint: 'Dotknij dwukrotnie, aby zmienić godzinę',
+                        hint: l10n.doubleTapToChangeTimeHint,
                         child: InkWell(
                           onTap: () => _pickTime(context),
                           borderRadius: BorderRadius.circular(8),

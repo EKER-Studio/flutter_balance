@@ -78,7 +78,7 @@ class HealthSummaryCard extends StatelessWidget {
                     ),
                     if (category != null)
                       Semantics(
-                        label: 'Kategoria BMI: ${_interpretBmi(category, l10n)}',
+                        label: l10n.bmiCategoryLabel(_interpretBmi(category, l10n)),
                         child: Container(
                           padding: const EdgeInsets.symmetric(
                             horizontal: 12,
@@ -116,7 +116,9 @@ class HealthSummaryCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
                     Semantics(
-                      label: 'Wskaźnik BMI: ${bmi.isFinite ? bmi.toStringAsFixed(1) : "brak podanego wzrostu"} kg/m²',
+                      label: l10n.bmiValueLabel(
+                        bmi.isFinite ? bmi.toStringAsFixed(1) : l10n.heightNotSetLabel,
+                      ),
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.baseline,
                         textBaseline: TextBaseline.alphabetic,

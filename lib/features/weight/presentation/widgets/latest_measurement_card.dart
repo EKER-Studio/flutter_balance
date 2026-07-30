@@ -70,7 +70,7 @@ class LatestMeasurementCard extends StatelessWidget {
     final timestampText = _formatTimestamp(context, entry.dateTime, l10n);
 
     final semanticLabel =
-        '${l10n.latestMeasurement}: ${displayWeight.toStringAsFixed(1)} $unitLabel, $timestampText. Dotknij, aby przejść do statystyk.';
+        '${l10n.latestMeasurement}: ${displayWeight.toStringAsFixed(1)} $unitLabel, $timestampText. ${l10n.tapToViewStatsHint}.';
 
     return Semantics(
       button: onTap != null,
@@ -160,7 +160,7 @@ class LatestMeasurementCard extends StatelessWidget {
     ).format(dateTime);
 
     if (isToday) {
-      return 'Dzisiaj, $timeStr';
+      return l10n.todayAtTime(timeStr);
     }
     final dateStr = DateFormat.MMMd(
       Localizations.localeOf(context).toString(),

@@ -949,6 +949,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'selected'**
   String get selectedSuffix;
+
+  /// No description provided for @todayTabTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Weight & BMI'**
+  String get todayTabTitle;
+
+  /// No description provided for @todayAtTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Today, {time}'**
+  String todayAtTime(String time);
+
+  /// No description provided for @tapToViewStatsHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap to view statistics'**
+  String get tapToViewStatsHint;
+
+  /// No description provided for @bmiCategoryLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'BMI Category: {category}'**
+  String bmiCategoryLabel(String category);
+
+  /// No description provided for @bmiValueLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'BMI Value: {value} kg/m²'**
+  String bmiValueLabel(String value);
+
+  /// No description provided for @heightNotSetLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'height not set'**
+  String get heightNotSetLabel;
+
+  /// No description provided for @doubleTapToOpenCalendarHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Double tap to open calendar'**
+  String get doubleTapToOpenCalendarHint;
+
+  /// No description provided for @doubleTapToChangeTimeHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Double tap to change time'**
+  String get doubleTapToChangeTimeHint;
 }
 
 class _AppLocalizationsDelegate
