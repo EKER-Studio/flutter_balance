@@ -35,26 +35,26 @@ class StatisticsScreen extends StatelessWidget {
               );
             }
 
+            final entries = switch (weightState) {
+              WeightLoaded(:final entries) => entries,
+              WeightError(:final entries) => entries,
+              _ => <WeightEntry>[],
+            };
+            final filteredEntries = switch (weightState) {
+              WeightLoaded(:final filteredEntries) => filteredEntries,
+              WeightError(:final filteredEntries) => filteredEntries,
+              _ => <WeightEntry>[],
+            };
+            final period = weightState.timePeriod;
+            final now = DateTime.now();
+            final streak = _calculateStreak(entries, now);
+            final compliancePct = _calculateMonthlyCompliance(entries, now);
+
             return BlocBuilder<AppSettingsBloc, AppSettingsState>(
               builder: (context, settingsState) {
-                final entries = switch (weightState) {
-                  WeightLoaded(:final entries) => entries,
-                  WeightError(:final entries) => entries,
-                  _ => <WeightEntry>[],
-                };
-                final filteredEntries = switch (weightState) {
-                  WeightLoaded(:final filteredEntries) => filteredEntries,
-                  WeightError(:final filteredEntries) => filteredEntries,
-                  _ => <WeightEntry>[],
-                };
-                final period = weightState.timePeriod;
                 final unit = settingsState.measurementUnit;
                 final heightCm = settingsState.height;
                 final targetWeight = settingsState.targetWeight;
-
-                final now = DateTime.now();
-                final streak = _calculateStreak(entries, now);
-                final compliancePct = _calculateMonthlyCompliance(entries, now);
 
                 return ClampedLayout(
                   padding: const EdgeInsets.all(16),
