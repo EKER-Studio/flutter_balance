@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pure_weight/features/weight/domain/entities/weight_entry.dart';
-import 'package:pure_weight/features/weight/domain/weight_error_type.dart';
 import 'package:pure_weight/features/weight/presentation/bloc/weight_bloc.dart';
 import 'package:pure_weight/features/weight/presentation/bloc/weight_event.dart';
 import 'package:pure_weight/features/weight/presentation/bloc/weight_state.dart';
+import 'package:pure_weight/features/weight/domain/weight_error_type.dart';
+import 'package:pure_weight/features/weight/presentation/utils/weight_error_localizer.dart';
 import 'package:pure_weight/features/weight/presentation/widgets/add_weight_sheet.dart';
 import 'package:pure_weight/features/weight/presentation/widgets/health_summary_card.dart';
 import 'package:pure_weight/features/weight/presentation/widgets/latest_measurement_card.dart';
@@ -30,19 +31,6 @@ class TodayScreen extends StatelessWidget {
     this.onNavigateToStats,
     this.onNavigateToSettings,
   });
-
-  String _getErrorMessage(BuildContext context, WeightErrorType errorType) {
-    final l10n = AppLocalizations.of(context);
-    return switch (errorType) {
-      WeightErrorType.streamError => l10n.errorStream,
-      WeightErrorType.heightNotSet => l10n.errorHeightNotSet,
-      WeightErrorType.addEntryFailed => l10n.errorAddEntryFailed,
-      WeightErrorType.deleteEntryFailed => l10n.errorDeleteEntryFailed,
-      WeightErrorType.readFailed => l10n.errorReadFailed,
-      WeightErrorType.writeFailed => l10n.errorWriteFailed,
-      WeightErrorType.wipeFailed => l10n.errorWipeFailed,
-    };
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -84,7 +72,7 @@ class TodayScreen extends StatelessWidget {
           listener: (context, state) {
             if (state is WeightError) {
               final message =
-                  state.message ?? _getErrorMessage(context, state.errorType);
+                  state.message ?? state.errorType.localizedMessage(l10n);
               ScaffoldMessenger.of(context).hideCurrentSnackBar();
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
@@ -117,7 +105,7 @@ class TodayScreen extends StatelessWidget {
 
             if (state is WeightError && entries.isEmpty) {
               final errorText =
-                  state.message ?? _getErrorMessage(context, state.errorType);
+                  state.message ?? state.errorType.localizedMessage(l10n);
               return ClampedLayout(
                 padding: const EdgeInsets.symmetric(
                   horizontal: 16,
@@ -163,8 +151,7 @@ class TodayScreen extends StatelessWidget {
               _ => <WeightEntry>[],
             };
 
-            final sortedEntries = List<WeightEntry>.from(entries)
-              ..sort((a, b) => b.dateTime.compareTo(a.dateTime));
+            final sortedEntries = entries.toList();
 
             final latestEntry = sortedEntries.first;
             final latestWeight = latestEntry.weightKg;
@@ -249,7 +236,8 @@ class TodayScreen extends StatelessWidget {
     String? message,
     AppLocalizations l10n,
   ) {
-    final errorText = message ?? _getErrorMessage(context, errorType);
+    final l10n = AppLocalizations.of(context);
+    final errorText = message ?? errorType.localizedMessage(l10n);
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),

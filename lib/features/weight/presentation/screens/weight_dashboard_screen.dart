@@ -3,11 +3,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pure_weight/l10n/app_localizations.dart';
 import 'package:pure_weight/core/utils/csv_exporter.dart';
 import 'package:pure_weight/features/weight/domain/entities/weight_entry.dart';
+import 'package:pure_weight/features/weight/domain/weight_error_type.dart';
 import 'package:pure_weight/features/weight/presentation/bloc/weight_bloc.dart';
 import 'package:pure_weight/features/weight/presentation/bloc/weight_event.dart';
 import 'package:pure_weight/features/weight/presentation/bloc/weight_state.dart';
+import 'package:pure_weight/features/weight/presentation/utils/weight_error_localizer.dart';
 import 'package:pure_weight/presentation/bloc/settings/app_settings_event.dart';
-import 'package:pure_weight/features/weight/domain/weight_error_type.dart';
 import 'package:pure_weight/features/weight/presentation/widgets/add_weight_sheet.dart';
 import 'package:pure_weight/presentation/bloc/settings/app_settings_state.dart';
 import 'package:pure_weight/presentation/core/clamped_layout.dart';
@@ -40,19 +41,6 @@ class _WeightDashboardScreenState extends State<WeightDashboardScreen> {
     super.dispose();
   }
 
-  String _getErrorMessage(BuildContext context, WeightErrorType errorType) {
-    final l10n = AppLocalizations.of(context);
-    return switch (errorType) {
-      WeightErrorType.streamError => l10n.errorStream,
-      WeightErrorType.heightNotSet => l10n.errorHeightNotSet,
-      WeightErrorType.addEntryFailed => l10n.errorAddEntryFailed,
-      WeightErrorType.deleteEntryFailed => l10n.errorDeleteEntryFailed,
-      WeightErrorType.readFailed => l10n.errorReadFailed,
-      WeightErrorType.writeFailed => l10n.errorWriteFailed,
-      WeightErrorType.wipeFailed => l10n.errorWipeFailed,
-    };
-  }
-
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<WeightBloc, WeightState>(
@@ -61,7 +49,9 @@ class _WeightDashboardScreenState extends State<WeightDashboardScreen> {
         if (state is WeightError) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text(_getErrorMessage(context, state.errorType)),
+              content: Text(
+                state.errorType.localizedMessage(AppLocalizations.of(context)),
+              ),
               action: SnackBarAction(
                 label: AppLocalizations.of(context).retry,
                 onPressed: () {
@@ -165,8 +155,7 @@ class _WeightDashboardScreenState extends State<WeightDashboardScreen> {
     TimePeriod timePeriod,
     double? heightCm,
   ) {
-    final sorted = List<WeightEntry>.from(entries)
-      ..sort((a, b) => b.dateTime.compareTo(a.dateTime));
+    final sorted = entries.toList();
 
     return OrientationBuilder(
       builder: (context, orientation) {
@@ -237,7 +226,13 @@ class _WeightDashboardScreenState extends State<WeightDashboardScreen> {
                       color: Theme.of(context).colorScheme.error,
                     ),
                     const SizedBox(width: 12),
-                    Expanded(child: Text(_getErrorMessage(context, errorType))),
+                    Expanded(
+                      child: Text(
+                        errorType.localizedMessage(
+                          AppLocalizations.of(context),
+                        ),
+                      ),
+                    ),
                   ],
                 ),
               ),

@@ -26,13 +26,4 @@ class WeightEntry {
     required this.dateTime,
     this.note,
   });
-
-  /// Calculates Body Mass Index (BMI) using body weight in kilograms and height in meters.
-  ///
-  /// Takes [weightKg] in kilograms and [heightMeters] in meters.
-  /// Uses formula: `BMI = weightKg / (heightMeters * heightMeters)`.
-  /// Returns calculated BMI as a [double] or [double.infinity] if [heightMeters] is zero.
-  static double calculateBmi(double weightKg, double heightMeters) {
-    return weightKg / (heightMeters * heightMeters);
-  }
 }

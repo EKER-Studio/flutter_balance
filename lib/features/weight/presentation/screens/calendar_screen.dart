@@ -119,13 +119,9 @@ class _CalendarScreenState extends State<CalendarScreen> {
             };
 
             // Filter entries for the selected day
-            final dayEntries =
-                entries
-                    .where(
-                      (e) => DateUtils.isSameDay(e.dateTime, _selectedDate),
-                    )
-                    .toList()
-                  ..sort((a, b) => b.dateTime.compareTo(a.dateTime));
+            final dayEntries = entries
+                .where((e) => DateUtils.isSameDay(e.dateTime, _selectedDate))
+                .toList();
 
             return ClampedLayout(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),

@@ -1,3 +1,5 @@
+import 'package:pure_weight/l10n/app_localizations.dart';
+
 /// BMI category classification.
 enum BmiCategory {
   /// BMI below 18.5.
@@ -27,5 +29,15 @@ enum BmiCategory {
   }
 }
 
-/// Calculates the [BmiCategory] corresponding to a numeric BMI value.
-BmiCategory getBmiCategory(double bmi) => BmiCategory.fromBmi(bmi);
+/// Localized display helpers for [BmiCategory].
+extension BmiCategoryX on BmiCategory {
+  /// Returns the user-facing label for this category using [l10n].
+  String localizedName(AppLocalizations l10n) {
+    return switch (this) {
+      BmiCategory.underweight => l10n.bmiCategoryUnderweight,
+      BmiCategory.normal => l10n.bmiCategoryNormal,
+      BmiCategory.overweight => l10n.bmiCategoryOverweight,
+      BmiCategory.obese => l10n.bmiCategoryObese,
+    };
+  }
+}

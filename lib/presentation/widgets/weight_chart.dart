@@ -46,9 +46,8 @@ class WeightChart extends StatelessWidget {
       );
     }
 
-    // Sort entries by date
-    final sortedEntries = List<WeightEntry>.from(entries)
-      ..sort((a, b) => a.dateTime.compareTo(b.dateTime));
+    // Sort entries by date (repo returns descending, reverse for ascending chart)
+    final sortedEntries = entries.reversed.toList();
     final unit = context.watch<AppSettingsBloc>().state.measurementUnit;
     final weightsInDisplayUnit = sortedEntries
         .map(

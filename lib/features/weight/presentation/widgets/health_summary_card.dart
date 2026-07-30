@@ -33,8 +33,10 @@ class HealthSummaryCard extends StatelessWidget {
         final targetWeight = state.targetWeight;
         final weightUnit = state.measurementUnit;
         final l10n = AppLocalizations.of(context);
-        final bmi = _calculateBmi(latestWeightKg, heightCm);
-        final category = bmi.isFinite ? getBmiCategory(bmi) : null;
+        final bmi = heightCm > 0
+            ? state.calculateBmi(latestWeightKg)
+            : double.nan;
+        final category = bmi.isFinite ? BmiCategory.fromBmi(bmi) : null;
         final badgeColor = category != null
             ? _badgeColorForCategory(context, category)
             : Theme.of(context).colorScheme.primary;
@@ -81,7 +83,7 @@ class HealthSummaryCard extends StatelessWidget {
                     if (category != null)
                       Semantics(
                         label: l10n.bmiCategoryLabel(
-                          _interpretBmi(category, l10n),
+                          category.localizedName(l10n),
                         ),
                         child: Container(
                           padding: const EdgeInsets.symmetric(
@@ -102,7 +104,7 @@ class HealthSummaryCard extends StatelessWidget {
                               ),
                               const SizedBox(width: 4),
                               Text(
-                                _interpretBmi(category, l10n),
+                                category.localizedName(l10n),
                                 style: Theme.of(context).textTheme.labelMedium
                                     ?.copyWith(
                                       color: badgeColor,
@@ -280,14 +282,6 @@ class HealthSummaryCard extends StatelessWidget {
     return l10n.lastUpdatedDate(formattedDate);
   }
 
-  double _calculateBmi(double weightKg, double heightCm) {
-    if (heightCm <= 0) {
-      return double.nan;
-    }
-    final heightInMeters = heightCm / 100;
-    return weightKg / (heightInMeters * heightInMeters);
-  }
-
   Color _badgeColorForCategory(BuildContext context, BmiCategory category) {
     final cs = Theme.of(context).colorScheme;
     return switch (category) {
@@ -295,15 +289,6 @@ class HealthSummaryCard extends StatelessWidget {
       BmiCategory.normal => cs.tertiary,
       BmiCategory.overweight => cs.secondary,
       BmiCategory.obese => cs.error,
-    };
-  }
-
-  String _interpretBmi(BmiCategory category, AppLocalizations l10n) {
-    return switch (category) {
-      BmiCategory.underweight => l10n.bmiCategoryUnderweight,
-      BmiCategory.normal => l10n.bmiCategoryNormal,
-      BmiCategory.overweight => l10n.bmiCategoryOverweight,
-      BmiCategory.obese => l10n.bmiCategoryObese,
     };
   }
 

@@ -373,8 +373,7 @@ class StatisticsScreen extends StatelessWidget {
         ? null
         : weights.reduce((a, b) => a + b) / weights.length;
 
-    final sortedByDate = List<WeightEntry>.from(entries)
-      ..sort((a, b) => a.dateTime.compareTo(b.dateTime));
+    final sortedByDate = entries.reversed.toList();
 
     final netChangeKg = (sortedByDate.length >= 2)
         ? (sortedByDate.last.weightKg - sortedByDate.first.weightKg)
@@ -402,10 +401,10 @@ class StatisticsScreen extends StatelessWidget {
         ? avgWeightKg / ((heightCm / 100) * (heightCm / 100))
         : null;
     final bmiCategory = bmi != null && bmi.isFinite
-        ? getBmiCategory(bmi)
+        ? BmiCategory.fromBmi(bmi)
         : null;
     final bmiCategoryText = bmiCategory != null
-        ? _interpretBmi(bmiCategory, l10n)
+        ? bmiCategory.localizedName(l10n)
         : '—';
 
     return Column(
@@ -556,8 +555,7 @@ class StatisticsScreen extends StatelessWidget {
   double? _calculatePercentChange(List<WeightEntry> entries) {
     if (entries.length < 2) return null;
 
-    final sorted = List<WeightEntry>.from(entries)
-      ..sort((a, b) => a.dateTime.compareTo(b.dateTime));
+    final sorted = entries.reversed.toList();
 
     final first = sorted.first.weightKg;
     final last = sorted.last.weightKg;
@@ -613,14 +611,5 @@ class StatisticsScreen extends StatelessWidget {
         .length;
 
     return ((loggedDays / 30) * 100).round();
-  }
-
-  String _interpretBmi(BmiCategory category, AppLocalizations l10n) {
-    return switch (category) {
-      BmiCategory.underweight => l10n.bmiCategoryUnderweight,
-      BmiCategory.normal => l10n.bmiCategoryNormal,
-      BmiCategory.overweight => l10n.bmiCategoryOverweight,
-      BmiCategory.obese => l10n.bmiCategoryObese,
-    };
   }
 }
