@@ -1,3 +1,6 @@
+import 'dart:ui' as ui;
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
@@ -12,6 +15,20 @@ import 'package:pure_weight/presentation/bloc/settings/app_settings_event.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  FlutterError.onError = (details) {
+    FlutterError.presentError(details);
+    if (kDebugMode) {
+      debugPrint('FlutterError: ${details.exception}\n${details.stack}');
+    }
+  };
+
+  ui.PlatformDispatcher.instance.onError = (Object error, StackTrace stack) {
+    if (kDebugMode) {
+      debugPrint('Unhandled async error: $error\n$stack');
+    }
+    return true;
+  };
 
   final storageDirectory = HydratedStorageDirectory(
     (await getApplicationDocumentsDirectory()).path,
