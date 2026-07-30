@@ -4,11 +4,11 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:pure_weight/core/models/measurement_unit.dart';
+import 'package:pure_weight/features/weight/presentation/widgets/health_summary_card.dart';
 import 'package:pure_weight/l10n/app_localizations.dart';
 import 'package:pure_weight/presentation/bloc/settings/app_settings_bloc.dart';
 import 'package:pure_weight/presentation/bloc/settings/app_settings_event.dart';
-import 'package:pure_weight/core/models/measurement_unit.dart';
-import 'package:pure_weight/features/weight/presentation/widgets/health_summary_card.dart';
 
 class MockHydratedStorage extends Mock implements HydratedStorage {}
 
@@ -36,12 +36,12 @@ void main() {
             GlobalWidgetsLocalizations.delegate,
           ],
           supportedLocales: AppLocalizations.supportedLocales,
-          home: Scaffold(body: HealthSummaryCard(latestWeightKg: 72.0)),
+          home: const Scaffold(body: HealthSummaryCard(latestWeightKg: 72.0)),
         ),
       ),
     );
 
-    expect(find.text('Goal not set'), findsOneWidget);
+    expect(find.text('Set weight goal'), findsOneWidget);
     expect(find.textContaining('BMI'), findsAtLeastNWidgets(1));
 
     bloc.add(const TargetWeightChanged(70.0));
@@ -53,7 +53,7 @@ void main() {
   testWidgets('formats the goal in imperial units', (tester) async {
     final bloc = AppSettingsBloc();
     bloc.add(const UpdateMeasurementUnit(MeasurementUnit.imperial));
-    bloc.add(const TargetWeightChanged(154.3));
+    bloc.add(const TargetWeightChanged(70.0));
     await tester.pump();
 
     await tester.pumpWidget(
@@ -67,12 +67,11 @@ void main() {
             GlobalWidgetsLocalizations.delegate,
           ],
           supportedLocales: AppLocalizations.supportedLocales,
-          home: Scaffold(body: HealthSummaryCard(latestWeightKg: 160.0)),
+          home: const Scaffold(body: HealthSummaryCard(latestWeightKg: 75.0)),
         ),
       ),
     );
 
-    expect(find.text('12.6 lb to target'), findsOneWidget);
-    expect(find.text('Target: 340.2 lbs'), findsOneWidget);
+    expect(find.text('11.0 lb to target'), findsOneWidget);
   });
 }

@@ -17,29 +17,34 @@ class MainNavigationScreen extends StatefulWidget {
 class _MainNavigationScreenState extends State<MainNavigationScreen> {
   int _currentIndex = 0;
 
-  final List<Widget> _screens = const [
-    TodayScreen(),
-    CalendarScreen(),
-    StatisticsScreen(),
-    SettingsScreen(),
-  ];
+  void _onTabSelected(int index) {
+    setState(() {
+      _currentIndex = index;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
 
+    final screens = [
+      TodayScreen(
+        onNavigateToStats: () => _onTabSelected(2),
+        onNavigateToSettings: () => _onTabSelected(3),
+      ),
+      const CalendarScreen(),
+      const StatisticsScreen(),
+      const SettingsScreen(),
+    ];
+
     return Scaffold(
       body: IndexedStack(
         index: _currentIndex,
-        children: _screens,
+        children: screens,
       ),
       bottomNavigationBar: NavigationBar(
         selectedIndex: _currentIndex,
-        onDestinationSelected: (index) {
-          setState(() {
-            _currentIndex = index;
-          });
-        },
+        onDestinationSelected: _onTabSelected,
         destinations: [
           NavigationDestination(
             icon: const Icon(Icons.today_outlined),

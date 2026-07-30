@@ -14,6 +14,7 @@ import 'package:pure_weight/presentation/bloc/settings/app_settings_state.dart';
 import 'package:pure_weight/presentation/bloc/settings/app_theme_mode.dart';
 import 'package:pure_weight/core/models/measurement_unit.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:pure_weight/presentation/widgets/target_weight_dialog.dart';
 import 'dart:io';
 
 /// Dialog for setting the height.
@@ -100,94 +101,6 @@ class _HeightDialogState extends State<_HeightDialog> {
   }
 }
 
-/// Dialog for setting the target weight with proper lifecycle management.
-class _TargetWeightDialog extends StatefulWidget {
-  final double? currentValue;
-  final MeasurementUnit unit;
-
-  const _TargetWeightDialog({required this.currentValue, required this.unit});
-
-  @override
-  State<_TargetWeightDialog> createState() => _TargetWeightDialogState();
-}
-
-class _TargetWeightDialogState extends State<_TargetWeightDialog> {
-  late final TextEditingController _controller;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = TextEditingController(
-      text: widget.currentValue?.toString() ?? '',
-    );
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  void _handleSave() {
-    FocusScope.of(context).unfocus();
-    final text = _controller.text.trim().replaceAll(',', '.');
-    final weight = double.tryParse(text);
-
-    if (text.isEmpty) {
-      Navigator.of(context).pop(null);
-      return;
-    }
-
-    if (weight != null && weight > 0) {
-      Navigator.of(context).pop(weight);
-    } else {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(AppLocalizations.of(context).invalidPositiveNumber),
-          backgroundColor: Theme.of(context).colorScheme.error,
-        ),
-      );
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
-    return AlertDialog(
-      title: Text(l10n.targetWeightDialogTitle),
-      content: SingleChildScrollView(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            TextField(
-              controller: _controller,
-              keyboardType: const TextInputType.numberWithOptions(
-                decimal: true,
-                signed: false,
-              ),
-              autofocus: true,
-              decoration: InputDecoration(
-                labelText: widget.unit == MeasurementUnit.imperial
-                    ? l10n.weightInLbLabel
-                    : l10n.weightInKgLabel,
-                hintText: l10n.weightHint,
-              ),
-              onSubmitted: (_) => _handleSave(),
-            ),
-          ],
-        ),
-      ),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.of(context).pop(),
-          child: Text(l10n.cancel),
-        ),
-        FilledButton(onPressed: _handleSave, child: Text(l10n.save)),
-      ],
-    );
-  }
-}
 
 /// Settings screen for theme, measurement unit, and database management.
 class SettingsScreen extends StatefulWidget {
@@ -493,7 +406,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final result = await showDialog<double>(
       context: dialogContext,
       builder: (ctx) =>
-          _TargetWeightDialog(currentValue: currentTarget, unit: unit),
+          TargetWeightDialog(currentValue: currentTarget, unit: unit),
     );
 
     if (!mounted) return;

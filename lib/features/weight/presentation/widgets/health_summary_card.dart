@@ -1,19 +1,29 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
+import 'package:pure_weight/core/models/measurement_unit.dart';
 import 'package:pure_weight/core/utils/unit_converter.dart';
 import 'package:pure_weight/l10n/app_localizations.dart';
 import 'package:pure_weight/presentation/bloc/settings/app_settings_bloc.dart';
+import 'package:pure_weight/presentation/bloc/settings/app_settings_event.dart';
 import 'package:pure_weight/presentation/bloc/settings/app_settings_state.dart';
 import 'package:pure_weight/presentation/bloc/settings/bmi_category.dart';
-import 'package:pure_weight/core/models/measurement_unit.dart';
+import 'package:pure_weight/presentation/widgets/target_weight_dialog.dart';
 
-/// A compact health summary card showing BMI and goal progress.
+/// A health summary card displaying current BMI, last updated status, category badge, and weight goal actions.
 class HealthSummaryCard extends StatelessWidget {
   /// The latest recorded weight in kilograms.
   final double latestWeightKg;
 
-  /// Creates a [HealthSummaryCard] with the latest known weight.
-  const HealthSummaryCard({super.key, required this.latestWeightKg});
+  /// Optional date of the latest recorded weight measurement.
+  final DateTime? lastUpdated;
+
+  /// Creates a [HealthSummaryCard] with [latestWeightKg] and optional [lastUpdated].
+  const HealthSummaryCard({
+    super.key,
+    required this.latestWeightKg,
+    this.lastUpdated,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -22,129 +32,136 @@ class HealthSummaryCard extends StatelessWidget {
         final heightCm = state.height;
         final targetWeight = state.targetWeight;
         final weightUnit = state.measurementUnit;
-        final localization = AppLocalizations.of(context);
+        final l10n = AppLocalizations.of(context);
         final bmi = _calculateBmi(latestWeightKg, heightCm);
         final category = bmi.isFinite ? getBmiCategory(bmi) : null;
         final badgeColor = category != null
             ? _badgeColorForCategory(context, category)
             : Theme.of(context).colorScheme.primary;
-        final goalText = _goalText(
-          targetWeight,
-          latestWeightKg,
-          weightUnit,
-          localization,
-        );
-        final goalSubtitle = _goalSubtitle(
-          targetWeight,
-          latestWeightKg,
-          weightUnit,
-          localization,
-        );
+
+        final lastUpdateText = _formatLastUpdated(context, lastUpdated, l10n);
 
         return Card(
           elevation: 0,
-          color: Theme.of(
-            context,
-          ).colorScheme.surfaceContainerLow,
+          color: Theme.of(context).colorScheme.surfaceContainerLow,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(28),
           ),
           child: MergeSemantics(
             child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Row(
+              padding: const EdgeInsets.all(20),
+              child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          localization.bmi,
-                          style: Theme.of(context).textTheme.labelMedium
-                              ?.copyWith(
-                                color: Theme.of(
-                                  context,
-                                ).colorScheme.onSurfaceVariant,
-                              ),
-                        ),
-                        const SizedBox(height: 8),
-                        Row(
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              bmi.isFinite ? bmi.toStringAsFixed(1) : '—',
-                              style: Theme.of(context).textTheme.headlineMedium
-                                  ?.copyWith(fontWeight: FontWeight.bold),
+                              l10n.bmi,
+                              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                  ),
                             ),
-                            const SizedBox(width: 8),
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 10,
-                                vertical: 4,
+                            const SizedBox(height: 2),
+                            Text(
+                              lastUpdateText,
+                              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                                  ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      if (category != null)
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 6,
+                          ),
+                          decoration: BoxDecoration(
+                            color: badgeColor.withValues(alpha: 0.15),
+                            borderRadius: BorderRadius.circular(999),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                Icons.check_circle_outline,
+                                size: 16,
+                                color: badgeColor,
                               ),
-                              decoration: BoxDecoration(
-                                color: badgeColor.withValues(alpha: 0.15),
-                                borderRadius: BorderRadius.circular(999),
-                              ),
-                              child: Text(
-                                category != null
-                                    ? _interpretBmi(category, localization)
-                                    : '',
-                                style: Theme.of(context).textTheme.labelMedium
-                                    ?.copyWith(
+                              const SizedBox(width: 4),
+                              Text(
+                                _interpretBmi(category, l10n),
+                                style: Theme.of(context).textTheme.labelMedium?.copyWith(
                                       color: badgeColor,
                                       fontWeight: FontWeight.bold,
                                     ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
-                        const SizedBox(height: 8),
-                        Text(
-                          localization.bmiSubtitle,
-                          style: Theme.of(context).textTheme.bodySmall
-                              ?.copyWith(
-                                color: Theme.of(
-                                  context,
-                                ).colorScheme.onSurfaceVariant,
-                              ),
-                        ),
-                      ],
-                    ),
+                    ],
                   ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                  const SizedBox(height: 16),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.baseline,
+                        textBaseline: TextBaseline.alphabetic,
+                        children: [
+                          Text(
+                            bmi.isFinite ? bmi.toStringAsFixed(1) : '—',
+                            style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                  color: Theme.of(context).colorScheme.primary,
+                                ),
+                          ),
+                          const SizedBox(width: 6),
+                          Text(
+                            'kg/m²',
+                            style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                                ),
+                          ),
+                        ],
+                      ),
+                      _buildGoalButton(context, targetWeight, weightUnit, l10n),
+                    ],
+                  ),
+                  if (targetWeight != null) ...[
+                    const SizedBox(height: 12),
+                    Divider(
+                      height: 1,
+                      color: Theme.of(context).colorScheme.outlineVariant.withValues(alpha: 0.5),
+                    ),
+                    const SizedBox(height: 8),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          localization.weightGoal,
-                          style: Theme.of(context).textTheme.labelMedium
-                              ?.copyWith(
-                                color: Theme.of(
-                                  context,
-                                ).colorScheme.onSurfaceVariant,
+                          l10n.weightGoal,
+                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                color: Theme.of(context).colorScheme.onSurfaceVariant,
                               ),
                         ),
-                        const SizedBox(height: 8),
                         Text(
-                          goalText,
-                          style: Theme.of(context).textTheme.titleMedium
-                              ?.copyWith(fontWeight: FontWeight.bold),
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          goalSubtitle,
-                          style: Theme.of(context).textTheme.bodySmall
-                              ?.copyWith(
-                                color: Theme.of(
-                                  context,
-                                ).colorScheme.onSurfaceVariant,
+                          _goalText(targetWeight, latestWeightKg, weightUnit, l10n),
+                          style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                                fontWeight: FontWeight.bold,
+                                color: Theme.of(context).colorScheme.onSurface,
                               ),
                         ),
                       ],
                     ),
-                  ),
+                  ],
                 ],
               ),
             ),
@@ -154,11 +171,76 @@ class HealthSummaryCard extends StatelessWidget {
     );
   }
 
+  Widget _buildGoalButton(
+    BuildContext context,
+    double? targetWeightKg,
+    MeasurementUnit unit,
+    AppLocalizations l10n,
+  ) {
+    return TextButton.icon(
+      onPressed: () => _openTargetWeightDialog(context, targetWeightKg, unit),
+      icon: const Icon(Icons.edit_outlined, size: 18),
+      label: Text(
+        targetWeightKg == null ? l10n.setWeightGoal : l10n.weightGoal,
+        style: const TextStyle(fontWeight: FontWeight.w600),
+      ),
+      style: TextButton.styleFrom(
+        foregroundColor: Theme.of(context).colorScheme.primary,
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+        ),
+      ),
+    );
+  }
+
+  Future<void> _openTargetWeightDialog(
+    BuildContext context,
+    double? targetWeightKg,
+    MeasurementUnit unit,
+  ) async {
+    final displayValue = targetWeightKg != null
+        ? (unit == MeasurementUnit.imperial ? kgToLbs(targetWeightKg) : targetWeightKg)
+        : null;
+
+    final result = await showDialog<double>(
+      context: context,
+      builder: (ctx) => TargetWeightDialog(
+        currentValue: displayValue,
+        unit: unit,
+      ),
+    );
+
+    if (result != null && context.mounted) {
+      final targetKg = unit == MeasurementUnit.imperial ? lbsToKg(result) : result;
+      context.read<AppSettingsBloc>().add(TargetWeightChanged(targetKg));
+    }
+  }
+
+  String _formatLastUpdated(
+    BuildContext context,
+    DateTime? date,
+    AppLocalizations l10n,
+  ) {
+    if (date == null) {
+      return l10n.bmiSubtitle;
+    }
+    final now = DateTime.now();
+    final isToday =
+        date.year == now.year && date.month == now.month && date.day == now.day;
+    if (isToday) {
+      return l10n.lastUpdatedToday;
+    }
+    final formattedDate = DateFormat.yMMMd(
+      Localizations.localeOf(context).toString(),
+    ).format(date);
+    return l10n.lastUpdatedDate(formattedDate);
+  }
+
   double _calculateBmi(double weightKg, double heightCm) {
     if (heightCm <= 0) {
       return double.nan;
     }
-
     final heightInMeters = heightCm / 100;
     return weightKg / (heightInMeters * heightInMeters);
   }
@@ -183,47 +265,19 @@ class HealthSummaryCard extends StatelessWidget {
   }
 
   String _goalText(
-    double? targetWeight,
+    double targetWeight,
     double currentWeightKg,
     MeasurementUnit unit,
     AppLocalizations l10n,
   ) {
-    if (targetWeight == null) {
-      return l10n.goalNotSet;
-    }
-
     if (currentWeightKg <= targetWeight) {
       return l10n.goalAchieved;
     }
-
     final difference = currentWeightKg - targetWeight;
     final displayed = unit == MeasurementUnit.imperial
         ? kgToLbs(difference)
         : difference;
     final unitLabel = unit == MeasurementUnit.imperial ? 'lb' : 'kg';
-
     return '${displayed.toStringAsFixed(1)} $unitLabel ${l10n.toTarget}';
-  }
-
-  String _goalSubtitle(
-    double? targetWeight,
-    double currentWeightKg,
-    MeasurementUnit unit,
-    AppLocalizations l10n,
-  ) {
-    if (targetWeight == null) {
-      return l10n.setGoalMotivation;
-    }
-
-    final difference = currentWeightKg - targetWeight;
-    if (difference <= 0.05 && difference >= -0.05) {
-      return l10n.rightOnTarget;
-    }
-
-    final displayed = unit == MeasurementUnit.imperial
-        ? kgToLbs(targetWeight)
-        : targetWeight;
-    final unitLabel = unit == MeasurementUnit.imperial ? 'lbs' : 'kg';
-    return '${l10n.targetLabel} ${displayed.toStringAsFixed(1)} $unitLabel';
   }
 }

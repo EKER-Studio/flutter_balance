@@ -201,6 +201,20 @@ class AppLocalizationsPl extends AppLocalizations {
   String get bmiSubtitle => 'Na podstawie Twojego wzrostu i ostatniej wagi';
 
   @override
+  String get lastUpdatedToday => 'Ostatnia aktualizacja: Dzisiaj';
+
+  @override
+  String lastUpdatedDate(Object date) {
+    return 'Ostatnia aktualizacja: $date';
+  }
+
+  @override
+  String get setWeightGoal => 'Ustaw cel wagi';
+
+  @override
+  String get weightTrend => 'Trend wagi';
+
+  @override
   String get weightGoal => 'Cel wagowy';
 
   @override

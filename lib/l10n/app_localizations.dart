@@ -452,6 +452,30 @@ abstract class AppLocalizations {
   /// **'Based on your height and latest weight'**
   String get bmiSubtitle;
 
+  /// No description provided for @lastUpdatedToday.
+  ///
+  /// In en, this message translates to:
+  /// **'Last updated: Today'**
+  String get lastUpdatedToday;
+
+  /// No description provided for @lastUpdatedDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Last updated: {date}'**
+  String lastUpdatedDate(Object date);
+
+  /// No description provided for @setWeightGoal.
+  ///
+  /// In en, this message translates to:
+  /// **'Set weight goal'**
+  String get setWeightGoal;
+
+  /// No description provided for @weightTrend.
+  ///
+  /// In en, this message translates to:
+  /// **'Weight trend'**
+  String get weightTrend;
+
   /// No description provided for @weightGoal.
   ///
   /// In en, this message translates to:
