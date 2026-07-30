@@ -52,8 +52,9 @@ class StatisticsScreen extends StatelessWidget {
                 final heightCm = settingsState.height;
                 final targetWeight = settingsState.targetWeight;
 
-                final streak = _calculateStreak(entries);
-                final compliancePct = _calculateMonthlyCompliance(entries);
+                final now = DateTime.now();
+                final streak = _calculateStreak(entries, now);
+                final compliancePct = _calculateMonthlyCompliance(entries, now);
 
                 return ClampedLayout(
                   padding: const EdgeInsets.all(16),
@@ -566,7 +567,7 @@ class StatisticsScreen extends StatelessWidget {
   }
 
   /// Calculates current daily streak.
-  int _calculateStreak(List<WeightEntry> entries) {
+  int _calculateStreak(List<WeightEntry> entries, DateTime now) {
     if (entries.isEmpty) return 0;
 
     final dates =
@@ -579,8 +580,7 @@ class StatisticsScreen extends StatelessWidget {
             .toList()
           ..sort((a, b) => b.compareTo(a));
 
-    final today = DateTime.now();
-    final todayDate = DateTime(today.year, today.month, today.day);
+    final todayDate = DateTime(now.year, now.month, now.day);
     final yesterdayDate = todayDate.subtract(const Duration(days: 1));
 
     if (!dates.contains(todayDate) && !dates.contains(yesterdayDate)) {
@@ -599,8 +599,7 @@ class StatisticsScreen extends StatelessWidget {
   }
 
   /// Calculates monthly compliance percentage (logged days in last 30 days).
-  int _calculateMonthlyCompliance(List<WeightEntry> entries) {
-    final now = DateTime.now();
+  int _calculateMonthlyCompliance(List<WeightEntry> entries, DateTime now) {
     final today = DateTime(now.year, now.month, now.day);
     final monthAgo = today.subtract(Duration(days: monthlyComplianceDays));
 
