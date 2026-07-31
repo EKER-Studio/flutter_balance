@@ -151,9 +151,10 @@ class TodayScreen extends StatelessWidget {
               _ => <WeightEntry>[],
             };
 
-            final sortedEntries = entries.toList();
-
-            final latestEntry = sortedEntries.first;
+            // Repository already returns entries sorted newest-first
+            // (sortByDateTimeDesc at the Isar query level).
+            final latestFirstEntries = entries;
+            final latestEntry = latestFirstEntries.first;
             final latestWeight = latestEntry.weightKg;
 
             return RefreshIndicator(
@@ -236,7 +237,6 @@ class TodayScreen extends StatelessWidget {
     String? message,
     AppLocalizations l10n,
   ) {
-    final l10n = AppLocalizations.of(context);
     final errorText = message ?? errorType.localizedMessage(l10n);
 
     return Container(
