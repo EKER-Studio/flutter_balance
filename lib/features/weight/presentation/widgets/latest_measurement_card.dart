@@ -65,7 +65,7 @@ class LatestMeasurementCard extends StatelessWidget {
     final displayWeight = unit == MeasurementUnit.imperial
         ? kgToLbs(entry.weightKg)
         : entry.weightKg;
-    final unitLabel = unit == MeasurementUnit.imperial ? 'lb' : 'kg';
+    final unitLabel = unitLabelFor(unit);
     final timestampText = _formatTimestamp(context, entry.dateTime, l10n);
 
     final semanticLabel =

@@ -142,7 +142,7 @@ class HealthSummaryCard extends StatelessWidget {
                           ),
                           const SizedBox(width: 6),
                           Text(
-                            'kg/m²',
+                            bmiUnitLabel,
                             style: Theme.of(context).textTheme.titleSmall
                                 ?.copyWith(
                                   color: Theme.of(
@@ -305,7 +305,7 @@ class HealthSummaryCard extends StatelessWidget {
     final displayed = unit == MeasurementUnit.imperial
         ? kgToLbs(difference)
         : difference;
-    final unitLabel = unit == MeasurementUnit.imperial ? 'lb' : 'kg';
+    final unitLabel = unitLabelFor(unit);
     return '${displayed.toStringAsFixed(1)} $unitLabel ${l10n.toTarget}';
   }
 }

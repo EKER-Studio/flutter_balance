@@ -35,7 +35,7 @@ class CalendarDayEntriesCard extends StatelessWidget {
     final l10n = AppLocalizations.of(context);
     final unit = context.watch<AppSettingsBloc>().state.measurementUnit;
     final isImperial = unit == MeasurementUnit.imperial;
-    final unitLabel = isImperial ? 'lb' : 'kg';
+    final unitLabel = unitLabelFor(unit);
 
     final hasMultiple = entries.length >= 2;
 

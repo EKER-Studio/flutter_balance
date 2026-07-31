@@ -233,7 +233,7 @@ class StatisticsScreen extends StatelessWidget {
     final formattedLatest = latestKg != null
         ? formatWeight(latestKg, unit)
         : '—';
-    final unitLabel = unit == MeasurementUnit.imperial ? 'lb' : 'kg';
+    final unitLabel = unitLabelFor(unit);
 
     final percentChange = _calculatePercentChange(filteredEntries);
 
@@ -382,7 +382,7 @@ class StatisticsScreen extends StatelessWidget {
         ? (sortedByDate.last.weightKg - sortedByDate.first.weightKg)
         : null;
 
-    final unitLabel = unit == MeasurementUnit.imperial ? 'lb' : 'kg';
+    final unitLabel = unitLabelFor(unit);
 
     final minDisplay = minWeightKg != null
         ? (unit == MeasurementUnit.imperial

@@ -41,6 +41,14 @@ String formatWeight(double weightKg, MeasurementUnit unit) {
   return '${weightKg.toStringAsFixed(1)} kg';
 }
 
+/// Returns the plain unit suffix for the given [unit] (`kg` or `lb`).
+String unitLabelFor(MeasurementUnit unit) {
+  return unit == MeasurementUnit.imperial ? 'lb' : 'kg';
+}
+
+/// Label for BMI values, which are always expressed in kg/m².
+const String bmiUnitLabel = 'kg/m²';
+
 /// Formats a height stored in centimeters for user display according to [unit].
 ///
 /// Takes [heightCm] in centimeters and target [MeasurementUnit] system [unit].
