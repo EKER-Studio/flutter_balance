@@ -26,7 +26,7 @@ lib/
 │       │   └── weight_error_type.dart # Typed domain error enum
 │       └── presentation/
 │           ├── bloc/             # WeightBloc, WeightEvent & WeightState
-│           ├── screens/          # WeightDashboardScreen
+│           ├── screens/          # TodayScreen, CalendarScreen, StatisticsScreen
 │           └── widgets/          # AddWeightSheet, HealthSummaryCard
 ├── l10n/                         # Localization ARB assets (app_en.arb, app_pl.arb)
 └── presentation/
@@ -55,7 +55,6 @@ lib/
 | **Database** | isar_community | High-performance local NoSQL database |
 | **Charts** | fl_chart | Interactive weight history visualizations |
 | **Biometrics** | local_auth | Native biometric authentication (Face ID, Touch ID, fingerprint) |
-| **File Sharing** | share_plus | System share sheet integration for CSV exports |
 | **CSV Handling** | csv | CSV encoding and parsing pipeline |
 | **Localization** | flutter_localizations + gen-l10n | Internationalization (English, Polish) |
 | **Notifications** | flutter_local_notifications | Local scheduled daily reminders |
@@ -71,7 +70,7 @@ lib/
 
 ### Data Management
 - **CSV Import**: Batch import entries via `CsvImporter` with row validation.
-- **CSV Export**: Export data via `CsvExporter` and share through system share sheets.
+- **CSV Export**: Export data via `CsvExporter` to a CSV file on disk.
   - Column format: `ID`, `Date`, `Weight (kg)`, `Note`
 - **Unit System**: Seamless switching between Metric (kg, cm) and Imperial (lb, ft/in).
 
@@ -105,7 +104,7 @@ flutter run
 ## Project Conventions
 
 ### Database Engine
-- Isar schema configuration uses the `pure_weight_v1` store name.
+- Isar schema configuration uses the `pure_weight_v2` store name (encrypted schema; the pre-encryption `pure_weight_v1` store is quarantined on first launch).
 - `DatabaseModule` manages initialization, integrity verification, and fallback database recovery (`.isar.bak`).
 - Native database-level sorting via `.where().sortByDateTimeDesc()` runs directly inside Isar query streams.
 
