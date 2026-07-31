@@ -47,7 +47,8 @@ class WeightChart extends StatelessWidget {
     }
 
     // Sort entries by date (repo returns descending, reverse for ascending chart)
-    final sortedEntries = entries.reversed.toList();
+    final sortedEntries = [...entries]
+      ..sort((a, b) => a.dateTime.compareTo(b.dateTime));
     final unit = context.watch<AppSettingsBloc>().state.measurementUnit;
     final weightsInDisplayUnit = sortedEntries
         .map(
@@ -294,25 +295,41 @@ class WeightChart extends StatelessWidget {
   }
 
   List<FlSpot> _getSpots(
-    List<WeightEntry> sortedEntries,
-    MeasurementUnit unit,
-  ) {
-    return sortedEntries.map((e) {
+      List<WeightEntry> sortedEntries,
+      MeasurementUnit unit,
+      ) {
+    if (sortedEntries.isEmpty) return [];
+
+    final firstDate = sortedEntries.first.dateTime;
+
+    return sortedEntries.map((entry) {
       final y = unit == MeasurementUnit.imperial
-          ? kgToLbs(e.weightKg)
-          : e.weightKg;
-      return FlSpot(e.dateTime.millisecondsSinceEpoch.toDouble(), y);
+          ? kgToLbs(entry.weightKg)
+          : entry.weightKg;
+
+      final x = entry.dateTime
+          .difference(firstDate)
+          .inMinutes
+          .toDouble();
+
+      return FlSpot(x, y);
     }).toList();
   }
 
   double _getBottomInterval(List<WeightEntry> sortedEntries) {
-    if (sortedEntries.length <= 1) return 1;
-    final diff =
-        sortedEntries.last.dateTime.millisecondsSinceEpoch -
-        sortedEntries.first.dateTime.millisecondsSinceEpoch;
+    if (sortedEntries.length <= 1) {
+      return 1;
+    }
 
-    if (diff == 0) return 1;
-    return diff / 4;
+    final minutes = sortedEntries.last.dateTime
+        .difference(sortedEntries.first.dateTime)
+        .inMinutes;
+
+    if (minutes <= 0) {
+      return 1;
+    }
+
+    return minutes / 4;
   }
 
   Widget _buildBottomTitle(
@@ -323,12 +340,21 @@ class WeightChart extends StatelessWidget {
   ) {
     if (sortedEntries.isEmpty) return const SizedBox.shrink();
 
-    final minTime = sortedEntries.first.dateTime.millisecondsSinceEpoch;
-    final maxTime = sortedEntries.last.dateTime.millisecondsSinceEpoch;
+    final firstDate = sortedEntries.first.dateTime;
+    final lastDate = sortedEntries.last.dateTime;
 
-    if (value < minTime || value > maxTime) return const SizedBox.shrink();
+    final maxMinutes = lastDate
+        .difference(firstDate)
+        .inMinutes
+        .toDouble();
 
-    final date = DateTime.fromMillisecondsSinceEpoch(value.toInt());
+    if (value < 0 || value > maxMinutes) {
+      return const SizedBox.shrink();
+    }
+
+    final date = firstDate.add(
+      Duration(minutes: value.round()),
+    );
     String formattedDate;
 
     switch (period) {
