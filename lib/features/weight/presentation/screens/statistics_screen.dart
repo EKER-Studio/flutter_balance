@@ -226,8 +226,9 @@ class StatisticsScreen extends StatelessWidget {
     required AppLocalizations l10n,
   }) {
     final cs = Theme.of(context).colorScheme;
+    // filteredEntries is newest-first (repository sorts sortByDateTimeDesc).
     final latestKg = filteredEntries.isNotEmpty
-        ? filteredEntries.last.weightKg
+        ? filteredEntries.first.weightKg
         : null;
     final formattedLatest = latestKg != null
         ? formatWeight(latestKg, unit)
@@ -328,9 +329,10 @@ class StatisticsScreen extends StatelessWidget {
 
     final sign = percentChange > 0 ? '+' : '';
     final formattedValue = '$sign${percentChange.toStringAsFixed(1)}%';
+    final l10n = AppLocalizations.of(context);
 
     return Semantics(
-      label: 'Trend: $formattedValue',
+      label: l10n.trendPercentChange(formattedValue),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
         decoration: BoxDecoration(
@@ -421,7 +423,7 @@ class StatisticsScreen extends StatelessWidget {
                 icon: Icons.south_east,
                 iconColor: Theme.of(context).colorScheme.primary,
                 semanticLabel:
-                    '${l10n.lowest}: ${minDisplay != null ? "${minDisplay.toStringAsFixed(1)} $unitLabel" : "brak danych"}',
+                    '${l10n.lowest}: ${minDisplay != null ? "${minDisplay.toStringAsFixed(1)} $unitLabel" : l10n.missingData}',
               ),
             ),
             const SizedBox(width: 12),
@@ -434,7 +436,7 @@ class StatisticsScreen extends StatelessWidget {
                 icon: Icons.north_east,
                 iconColor: Theme.of(context).colorScheme.error,
                 semanticLabel:
-                    '${l10n.highest}: ${maxDisplay != null ? "${maxDisplay.toStringAsFixed(1)} $unitLabel" : "brak danych"}',
+                    '${l10n.highest}: ${maxDisplay != null ? "${maxDisplay.toStringAsFixed(1)} $unitLabel" : l10n.missingData}',
               ),
             ),
           ],
@@ -449,14 +451,14 @@ class StatisticsScreen extends StatelessWidget {
                 value: netChangeDisplay != null
                     ? '${netChangeDisplay > 0 ? '+' : ''}${netChangeDisplay.toStringAsFixed(1)}'
                     : '—',
-                subtitle: '$unitLabel łącznie',
+                subtitle: l10n.totalProgressUnitSuffix(unitLabel),
                 icon: Icons.stars_outlined,
                 iconColor: Theme.of(context).colorScheme.primary,
                 valueColor: netChangeDisplay != null && netChangeDisplay < 0
                     ? Theme.of(context).colorScheme.primary
                     : Theme.of(context).colorScheme.onSurface,
                 semanticLabel:
-                    '${l10n.totalProgress}: ${netChangeDisplay != null ? "${netChangeDisplay.toStringAsFixed(1)} $unitLabel" : "brak danych"}',
+                    '${l10n.totalProgress}: ${netChangeDisplay != null ? "${netChangeDisplay.toStringAsFixed(1)} $unitLabel" : l10n.missingData}',
               ),
             ),
             const SizedBox(width: 12),
@@ -469,7 +471,7 @@ class StatisticsScreen extends StatelessWidget {
                 icon: Icons.monitor_heart_outlined,
                 iconColor: Theme.of(context).colorScheme.secondary,
                 semanticLabel:
-                    '${l10n.bmi}: ${bmi != null ? "${bmi.toStringAsFixed(1)}, $bmiCategoryText" : "brak danych"}',
+                    '${l10n.bmi}: ${bmi != null ? "${bmi.toStringAsFixed(1)}, $bmiCategoryText" : l10n.missingData}',
               ),
             ),
           ],

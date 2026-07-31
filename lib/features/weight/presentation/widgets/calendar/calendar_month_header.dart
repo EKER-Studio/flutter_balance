@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:pure_weight/l10n/app_localizations.dart';
 
 /// Reusable month navigation header for calendar views.
 class CalendarMonthHeader extends StatelessWidget {
@@ -22,6 +23,7 @@ class CalendarMonthHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final monthYearStr = DateFormat.yMMMM(
       Localizations.localeOf(context).toString(),
     ).format(focusedMonth);
@@ -38,7 +40,7 @@ class CalendarMonthHeader extends StatelessWidget {
             IconButton(
               icon: const Icon(Icons.chevron_left),
               onPressed: onPreviousMonth,
-              tooltip: 'Previous month',
+              tooltip: l10n.previousMonth,
             ),
             Text(
               monthYearStr,
@@ -49,7 +51,7 @@ class CalendarMonthHeader extends StatelessWidget {
             IconButton(
               icon: const Icon(Icons.chevron_right),
               onPressed: onNextMonth,
-              tooltip: 'Next month',
+              tooltip: l10n.nextMonth,
             ),
           ],
         ),

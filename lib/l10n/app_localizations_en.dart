@@ -421,6 +421,22 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String trendPercentChange(Object value) {
+    return 'Trend: $value';
+  }
+
+  @override
+  String totalProgressUnitSuffix(Object unit) {
+    return '$unit total';
+  }
+
+  @override
+  String get previousMonth => 'Previous month';
+
+  @override
+  String get nextMonth => 'Next month';
+
+  @override
   String get monthlyCompliance => 'Monthly Consistency';
 
   @override

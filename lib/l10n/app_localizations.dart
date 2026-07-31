@@ -860,6 +860,30 @@ abstract class AppLocalizations {
   /// **'{count} days'**
   String streakDays(Object count);
 
+  /// No description provided for @trendPercentChange.
+  ///
+  /// In en, this message translates to:
+  /// **'Trend: {value}'**
+  String trendPercentChange(Object value);
+
+  /// No description provided for @totalProgressUnitSuffix.
+  ///
+  /// In en, this message translates to:
+  /// **'{unit} total'**
+  String totalProgressUnitSuffix(Object unit);
+
+  /// No description provided for @previousMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'Previous month'**
+  String get previousMonth;
+
+  /// No description provided for @nextMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'Next month'**
+  String get nextMonth;
+
   /// No description provided for @monthlyCompliance.
   ///
   /// In en, this message translates to:
