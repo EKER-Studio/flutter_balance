@@ -4,6 +4,16 @@ import 'dart:typed_data';
 import 'package:encrypt/encrypt.dart' as enc;
 
 /// Provides Field-Level AES-256 CBC encryption and decryption services.
+///
+/// ## Security caveat
+/// CBC alone provides confidentiality, NOT integrity: ciphertext can be
+/// tampered with (e.g. bit-flipped) without detection, and padding-oracle
+/// attacks against CBC are well documented. The threat model here is
+/// at-rest protection of plaintext values in a local database file, not
+/// defense against an adversary who can modify the database. If that
+/// threat model ever changes (e.g. database syncing to a remote store),
+/// switch to an authenticated mode (AES-GCM) or add a MAC over
+/// `IV + ciphertext` before shipping.
 class FieldCipher {
   /// Encrypts plaintext string using AES-256 CBC with a prepended random 16-byte IV.
   ///
