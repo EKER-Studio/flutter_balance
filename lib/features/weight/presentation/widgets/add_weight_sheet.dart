@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:pure_weight/core/models/measurement_unit.dart';
 import 'package:pure_weight/core/utils/unit_converter.dart';
+import 'package:pure_weight/features/weight/domain/entities/weight_entry.dart';
 import 'package:pure_weight/features/weight/presentation/bloc/weight_bloc.dart';
 import 'package:pure_weight/features/weight/presentation/bloc/weight_event.dart';
 import 'package:pure_weight/l10n/app_localizations.dart';
@@ -231,7 +232,8 @@ class _AddWeightSheetState extends State<AddWeightSheet> {
                     final weightKg = unit == MeasurementUnit.imperial
                         ? lbsToKg(parsed)
                         : parsed;
-                    if (weightKg < 20 || weightKg > 300) {
+                    if (weightKg < WeightEntry.minWeightKg ||
+                        weightKg > WeightEntry.maxWeightKg) {
                       return l10n.weightRangeError;
                     }
                     return null;

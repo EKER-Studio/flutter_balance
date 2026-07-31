@@ -198,8 +198,8 @@ ID,Data,Waga (kg),BMI,Notatka
     test('parses CSV with weight at boundary values', () async {
       const csvContent = '''
 ID,Data,Waga (kg),BMI,Notatka
-1,2024-01-15,0.1,23.1,Minimum weight
-2,2024-01-16,299.9,23.0,Maximum weight
+1,2024-01-15,20,23.1,Minimum weight
+2,2024-01-16,300,23.0,Maximum weight
 ''';
 
       final result = await CsvImporter.parse(csvContent);
@@ -207,8 +207,24 @@ ID,Data,Waga (kg),BMI,Notatka
 
       expect(entries.length, 2);
       expect(result.skippedRows, 0);
-      expect(entries[0].weightKg, 0.1);
-      expect(entries[1].weightKg, 299.9);
+      expect(entries[0].weightKg, 20);
+      expect(entries[1].weightKg, 300);
+    });
+
+    test('skips rows outside the valid weight range', () async {
+      const csvContent = '''
+ID,Data,Waga (kg),BMI,Notatka
+1,2024-01-15,0.1,23.1,Below range
+2,2024-01-16,300.1,23.0,Above range
+3,2024-01-17,75,23.1,Valid
+''';
+
+      final result = await CsvImporter.parse(csvContent);
+      final entries = result.entries;
+
+      expect(entries.length, 1);
+      expect(result.skippedRows, 2);
+      expect(entries[0].weightKg, 75);
     });
 
     test('parses CSV with ID column not used', () async {
