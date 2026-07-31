@@ -54,10 +54,55 @@ abstract final class AppTheme {
     surfaceTint: Color(0xFF6750A4),
   );
 
-  /// Dark ColorScheme generated from seed with dark brightness override.
-  static final ColorScheme darkColorScheme = ColorScheme.fromSeed(
-    seedColor: primaryColor,
+  /// Dark ColorScheme: hand-tuned counterpart of [lightColorScheme] with the
+  /// same tonal roles shifted to dark brightness, so both modes share one
+  /// consistent hue family.
+  static const ColorScheme darkColorScheme = ColorScheme(
     brightness: Brightness.dark,
+    primary: Color(0xFFD0BCFF),
+    onPrimary: Color(0xFF381E72),
+    primaryContainer: Color(0xFF4F378A),
+    onPrimaryContainer: Color(0xFFEADDFF),
+    primaryFixed: Color(0xFFE9DDFF),
+    primaryFixedDim: Color(0xFFCFBCFF),
+    onPrimaryFixed: Color(0xFF22005D),
+    onPrimaryFixedVariant: Color(0xFF4F378A),
+    secondary: Color(0xFFCCC2DC),
+    onSecondary: Color(0xFF332D41),
+    secondaryContainer: Color(0xFF4A4458),
+    onSecondaryContainer: Color(0xFFE8DEF8),
+    secondaryFixed: Color(0xFFE8DEF9),
+    secondaryFixedDim: Color(0xFFCCC2DC),
+    onSecondaryFixed: Color(0xFF1E192B),
+    onSecondaryFixedVariant: Color(0xFF4A4358),
+    tertiary: Color(0xFFEFB8C8),
+    onTertiary: Color(0xFF492532),
+    tertiaryContainer: Color(0xFF633B48),
+    onTertiaryContainer: Color(0xFFFFD8E4),
+    tertiaryFixed: Color(0xFFFFD9E3),
+    tertiaryFixedDim: Color(0xFFEEB8C8),
+    onTertiaryFixed: Color(0xFF31111D),
+    onTertiaryFixedVariant: Color(0xFF633B48),
+    error: Color(0xFFF2B8B5),
+    onError: Color(0xFF601410),
+    errorContainer: Color(0xFF8C1D18),
+    onErrorContainer: Color(0xFFF9DEDC),
+    surface: Color(0xFF141218),
+    onSurface: Color(0xFFE6E0E9),
+    surfaceDim: Color(0xFF141218),
+    surfaceBright: Color(0xFF3A383E),
+    surfaceContainerLowest: Color(0xFF0F0D13),
+    surfaceContainerLow: Color(0xFF1C1B20),
+    surfaceContainer: Color(0xFF201F24),
+    surfaceContainerHigh: Color(0xFF2B2930),
+    surfaceContainerHighest: Color(0xFF36343B),
+    onSurfaceVariant: Color(0xFFCAC4D0),
+    outline: Color(0xFF948F99),
+    outlineVariant: Color(0xFF49454F),
+    inverseSurface: Color(0xFFE6E0E9),
+    onInverseSurface: Color(0xFF322F35),
+    inversePrimary: Color(0xFF4F378A),
+    surfaceTint: Color(0xFFCFBCFF),
   );
 
   /// Custom typography based on the Material 3 type scale using Roboto.
