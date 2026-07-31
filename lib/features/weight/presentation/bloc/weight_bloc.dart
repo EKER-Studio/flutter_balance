@@ -232,18 +232,34 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
     RefreshWeightData event,
     Emitter<WeightState> emit,
   ) async {
-    final entries = await repository.getAllEntries();
-    final heightCm = state.heightCm;
-    final timePeriod = state.timePeriod;
+    try {
+      final entries = await repository.getAllEntries();
+      final heightCm = state.heightCm;
+      final timePeriod = state.timePeriod;
 
-    emit(
-      WeightLoaded(
-        heightCm: heightCm,
-        timePeriod: timePeriod,
-        entries: entries,
-        filteredEntries: _filterEntries(entries, timePeriod),
-      ),
-    );
+      emit(
+        WeightLoaded(
+          heightCm: heightCm,
+          timePeriod: timePeriod,
+          entries: entries,
+          filteredEntries: _filterEntries(entries, timePeriod),
+        ),
+      );
+    } catch (e, stack) {
+      if (kDebugMode) {
+        debugPrint('[WeightBloc] Failed to refresh weight data: $e\n$stack');
+      }
+      final entries = _entriesFromState(state);
+      emit(
+        WeightError(
+          errorType: WeightErrorType.readFailed,
+          heightCm: state.heightCm,
+          timePeriod: state.timePeriod,
+          entries: entries,
+          filteredEntries: _filterEntries(entries, state.timePeriod),
+        ),
+      );
+    }
   }
 
   Future<void> _onClearAllWeightData(
