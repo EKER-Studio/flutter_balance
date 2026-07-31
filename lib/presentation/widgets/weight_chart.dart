@@ -295,9 +295,9 @@ class WeightChart extends StatelessWidget {
   }
 
   List<FlSpot> _getSpots(
-      List<WeightEntry> sortedEntries,
-      MeasurementUnit unit,
-      ) {
+    List<WeightEntry> sortedEntries,
+    MeasurementUnit unit,
+  ) {
     if (sortedEntries.isEmpty) return [];
 
     final firstDate = sortedEntries.first.dateTime;
@@ -307,10 +307,7 @@ class WeightChart extends StatelessWidget {
           ? kgToLbs(entry.weightKg)
           : entry.weightKg;
 
-      final x = entry.dateTime
-          .difference(firstDate)
-          .inMinutes
-          .toDouble();
+      final x = entry.dateTime.difference(firstDate).inMinutes.toDouble();
 
       return FlSpot(x, y);
     }).toList();
@@ -343,18 +340,13 @@ class WeightChart extends StatelessWidget {
     final firstDate = sortedEntries.first.dateTime;
     final lastDate = sortedEntries.last.dateTime;
 
-    final maxMinutes = lastDate
-        .difference(firstDate)
-        .inMinutes
-        .toDouble();
+    final maxMinutes = lastDate.difference(firstDate).inMinutes.toDouble();
 
     if (value < 0 || value > maxMinutes) {
       return const SizedBox.shrink();
     }
 
-    final date = firstDate.add(
-      Duration(minutes: value.round()),
-    );
+    final date = firstDate.add(Duration(minutes: value.round()));
     String formattedDate;
 
     switch (period) {

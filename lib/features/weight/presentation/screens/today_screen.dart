@@ -7,7 +7,6 @@ import 'package:pure_weight/features/weight/presentation/bloc/weight_state.dart'
 import 'package:pure_weight/features/weight/domain/weight_error_type.dart';
 import 'package:pure_weight/features/weight/presentation/utils/weight_error_localizer.dart';
 import 'package:pure_weight/features/weight/presentation/widgets/add_weight_sheet.dart';
-import 'package:pure_weight/features/weight/presentation/widgets/calendar/calendar_day_detail_sheet.dart';
 import 'package:pure_weight/features/weight/presentation/widgets/health_summary_card.dart';
 import 'package:pure_weight/features/weight/presentation/widgets/latest_measurement_card.dart';
 import 'package:pure_weight/features/weight/presentation/widgets/today_shimmer_skeleton.dart';
@@ -148,17 +147,10 @@ class TodayScreen extends StatelessWidget {
             final latestFirstEntries = entries;
             final latestEntry = latestFirstEntries.first;
             final latestWeight = latestEntry.weightKg;
-            final latestDayEntries = latestFirstEntries
-                .where(
-                  (e) => DateUtils.isSameDay(e.dateTime, latestEntry.dateTime),
-                )
-                .toList();
 
             return RefreshIndicator(
               onRefresh: () async {
-                context.read<WeightBloc>().add(
-                  const RefreshWeightData(),
-                );
+                context.read<WeightBloc>().add(const RefreshWeightData());
                 await Future<void>.delayed(const Duration(milliseconds: 300));
               },
               child: ClampedLayout(
@@ -186,14 +178,7 @@ class TodayScreen extends StatelessWidget {
                         state.timePeriod,
                       ),
                       const SizedBox(height: 16),
-                      LatestMeasurementCard(
-                        latestEntry: latestEntry,
-                        onTap: () => CalendarDayDetailSheet.show(
-                          context,
-                          date: latestEntry.dateTime,
-                          entries: latestDayEntries,
-                        ),
-                      ),
+                      LatestMeasurementCard(latestEntry: latestEntry),
                       const SizedBox(height: 80),
                     ],
                   ),

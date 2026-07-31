@@ -18,8 +18,10 @@ void main() {
 
   setUp(() {
     storage = MockHydratedStorage();
+
     when(() => storage.read(any())).thenReturn(null);
     when(() => storage.write(any(), any())).thenAnswer((_) async {});
+
     HydratedBloc.storage = storage;
   });
 
@@ -57,17 +59,10 @@ void main() {
     expect(find.text('Za mało danych, aby wyświetlić wykres.'), findsOneWidget);
   });
 
-  testWidgets('WeightChart renders filter chips and chart for entries', (
-    tester,
-  ) async {
-    final now = DateTime.now();
+  testWidgets('WeightChart renders filter chips and chart', (tester) async {
     final entries = [
-      WeightEntry(id: 1, weightKg: 74.0, dateTime: now),
-      WeightEntry(
-        id: 2,
-        weightKg: 75.0,
-        dateTime: now.subtract(const Duration(days: 1)),
-      ),
+      WeightEntry(id: 1, weightKg: 74, dateTime: DateTime(2026, 1, 10)),
+      WeightEntry(id: 2, weightKg: 75, dateTime: DateTime(2026, 1, 9)),
     ];
 
     await tester.pumpWidget(
@@ -78,45 +73,66 @@ void main() {
     expect(find.text('Miesiąc'), findsOneWidget);
     expect(find.text('Rok'), findsOneWidget);
     expect(find.text('Wszystkie'), findsOneWidget);
+
     expect(find.byType(CustomPaint), findsWidgets);
   });
 
-  testWidgets('WeightChart notifies period changes via callback', (
-    tester,
-  ) async {
-    final now = DateTime.now();
-    final entries = [WeightEntry(id: 1, weightKg: 74.0, dateTime: now)];
+  testWidgets('WeightChart notifies period changes', (tester) async {
+    final entries = [
+      WeightEntry(id: 1, weightKg: 74, dateTime: DateTime(2026, 1, 10)),
+    ];
+
     TimePeriod? changedTo;
 
     await tester.pumpWidget(
       buildSubject(
         entries: entries,
         period: TimePeriod.week,
-        onPeriodChanged: (p) => changedTo = p,
+        onPeriodChanged: (period) => changedTo = period,
       ),
     );
 
     await tester.tap(find.text('Miesiąc'));
+    await tester.pumpAndSettle();
+
     expect(changedTo, TimePeriod.month);
   });
 
   testWidgets('WeightChart converts values when imperial unit is active', (
     tester,
   ) async {
-    final now = DateTime.now();
-    final entries = [WeightEntry(id: 1, weightKg: 70.0, dateTime: now)];
+    final entries = [
+      WeightEntry(id: 1, weightKg: 70, dateTime: DateTime(2026, 1, 10)),
+    ];
 
     await tester.pumpWidget(
       buildSubject(entries: entries, period: TimePeriod.week),
     );
 
-    // Switch to imperial while the chart is mounted.
     final settingsBloc = BlocProvider.of<AppSettingsBloc>(
       tester.element(find.byType(WeightChart)),
     );
+
     settingsBloc.add(const UpdateMeasurementUnit(MeasurementUnit.imperial));
-    await tester.pump();
+
+    await tester.pumpAndSettle();
 
     expect(find.textContaining('lbs'), findsWidgets);
+  });
+
+  testWidgets('WeightChart handles very large date ranges', (tester) async {
+    final entries = [
+      WeightEntry(id: 1, weightKg: 72, dateTime: DateTime(2020, 1, 1)),
+      WeightEntry(id: 2, weightKg: 74, dateTime: DateTime(2026, 1, 1)),
+    ];
+
+    await tester.pumpWidget(
+      buildSubject(entries: entries, period: TimePeriod.all),
+    );
+
+    await tester.pumpAndSettle();
+
+    expect(find.byType(WeightChart), findsOneWidget);
+    expect(tester.takeException(), isNull);
   });
 }
