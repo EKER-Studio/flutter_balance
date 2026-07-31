@@ -14,6 +14,7 @@ import 'package:pure_weight/features/weight/data/repositories/isar_weight_reposi
 import 'package:pure_weight/features/weight/domain/repositories/weight_repository.dart';
 import 'package:pure_weight/presentation/bloc/settings/app_settings_bloc.dart';
 import 'package:pure_weight/presentation/bloc/settings/app_settings_event.dart';
+import 'package:pure_weight/presentation/bloc/settings/app_settings_state.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -56,7 +57,7 @@ Future<void> main() async {
 
   final settingsBloc = AppSettingsBloc();
   if (settingsBloc.state.height <= 0) {
-    settingsBloc.add(const UpdateHeight(178));
+    settingsBloc.add(const UpdateHeight(AppSettingsState.defaultHeightCm));
   }
 
   runApp(

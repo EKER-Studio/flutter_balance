@@ -9,13 +9,16 @@ import 'package:pure_weight/core/models/measurement_unit.dart';
 final class AppSettingsState {
   static const Object _targetWeightSentinel = Object();
 
+  /// Default height in centimeters applied when no valid height is configured.
+  static const double defaultHeightCm = 170.0;
+
   /// The selected theme mode.
   final AppThemeMode themeMode;
 
   /// The weight measurement unit system.
   final MeasurementUnit measurementUnit;
 
-  /// The user's height in centimeters (default: 170).
+  /// The user's height in centimeters (default: [defaultHeightCm]).
   final double height;
 
   /// Whether daily notification reminders are enabled.
@@ -37,7 +40,7 @@ final class AppSettingsState {
   const AppSettingsState({
     this.themeMode = AppThemeMode.system,
     this.measurementUnit = MeasurementUnit.metric,
-    this.height = 170.0,
+    this.height = defaultHeightCm,
     this.notificationsEnabled = true,
     this.notificationTime = const TimeOfDay(hour: 8, minute: 0),
     this.targetWeight,
@@ -86,7 +89,7 @@ final class AppSettingsState {
         (e) => e.name == json['measurementUnit'],
         orElse: () => MeasurementUnit.metric,
       ),
-      height: (heightValue as num?)?.toDouble() ?? 170.0,
+      height: (heightValue as num?)?.toDouble() ?? defaultHeightCm,
       notificationsEnabled: json['notificationsEnabled'] as bool? ?? true,
       notificationTime: json['notificationTime'] != null
           ? TimeOfDay(
