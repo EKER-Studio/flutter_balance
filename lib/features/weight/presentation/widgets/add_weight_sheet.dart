@@ -61,6 +61,7 @@ class _AddWeightSheetState extends State<AddWeightSheet> {
       firstDate: DateTime(2000),
       lastDate: now,
     );
+    if (!mounted) return;
 
     if (picked != null) {
       setState(() {
@@ -75,6 +76,7 @@ class _AddWeightSheetState extends State<AddWeightSheet> {
       context: context,
       initialTime: _selectedTime,
     );
+    if (!mounted) return;
 
     if (picked != null) {
       setState(() {
