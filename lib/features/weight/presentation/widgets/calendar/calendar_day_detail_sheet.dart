@@ -108,10 +108,7 @@ class CalendarDayDetailSheet extends StatelessWidget {
                     ),
                     trailing: IconButton(
                       icon: const Icon(Icons.delete_outline),
-                      onPressed: () {
-                        context.read<WeightBloc>().add(DeleteWeight(e.id));
-                        Navigator.of(context).pop();
-                      },
+                      onPressed: () => _confirmDelete(context, e.id),
                     ),
                   );
                 },
@@ -129,6 +126,36 @@ class CalendarDayDetailSheet extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  /// Prompts for confirmation before deleting [entryId], then closes the sheet.
+  Future<void> _confirmDelete(BuildContext context, int entryId) async {
+    final l10n = AppLocalizations.of(context);
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Text(l10n.deleteEntryTitle),
+        content: Text(l10n.deleteEntryMessage),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, false),
+            child: Text(l10n.cancel),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(dialogContext, true),
+            style: FilledButton.styleFrom(
+              backgroundColor: Theme.of(context).colorScheme.error,
+            ),
+            child: Text(l10n.deleteEntryTooltip),
+          ),
+        ],
+      ),
+    );
+    if (confirmed == true) {
+      if (!context.mounted) return;
+      context.read<WeightBloc>().add(DeleteWeight(entryId));
+      Navigator.of(context).pop();
+    }
   }
 
   void _showAddWeightSheetForDate(BuildContext context, DateTime targetDate) {

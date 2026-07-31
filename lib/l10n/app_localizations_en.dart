@@ -390,6 +390,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get deleteEntryTooltip => 'Delete entry';
 
   @override
+  String get deleteEntryTitle => 'Delete entry';
+
+  @override
+  String get deleteEntryMessage => 'This will permanently delete this entry.';
+
+  @override
   String skippedRows(Object count) {
     return 'Skipped $count rows';
   }

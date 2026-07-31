@@ -283,9 +283,7 @@ class CalendarDayEntriesCard extends StatelessWidget {
                     IconButton(
                       icon: const Icon(Icons.delete_outline, size: 20),
                       tooltip: l10n.deleteMeasurementTooltip,
-                      onPressed: () {
-                        context.read<WeightBloc>().add(DeleteWeight(entry.id));
-                      },
+                      onPressed: () => _confirmDelete(context, entry.id),
                     ),
                   ],
                 );
@@ -306,5 +304,34 @@ class CalendarDayEntriesCard extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  /// Prompts for confirmation before deleting [entryId].
+  Future<void> _confirmDelete(BuildContext context, int entryId) async {
+    final l10n = AppLocalizations.of(context);
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Text(l10n.deleteEntryTitle),
+        content: Text(l10n.deleteEntryMessage),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, false),
+            child: Text(l10n.cancel),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(dialogContext, true),
+            style: FilledButton.styleFrom(
+              backgroundColor: Theme.of(context).colorScheme.error,
+            ),
+            child: Text(l10n.deleteEntryTooltip),
+          ),
+        ],
+      ),
+    );
+    if (confirmed == true) {
+      if (!context.mounted) return;
+      context.read<WeightBloc>().add(DeleteWeight(entryId));
+    }
   }
 }

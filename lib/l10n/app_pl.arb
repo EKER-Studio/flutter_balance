@@ -119,6 +119,8 @@
   "errorWriteFailed": "Nie udało się zapisać danych wagi.",
   "errorWipeFailed": "Nie udało się wyczyścić danych wagi.",
   "deleteEntryTooltip": "Usuń wpis",
+  "deleteEntryTitle": "Usuń wpis",
+  "deleteEntryMessage": "Ten wpis zostanie trwale usunięty.",
   "skippedRows": "Pominięto {count} wierszy",
   "chartSemanticsTitle": "Wykres liniowy historii wagi dla okresu {period}. Ostatni zarejestrowany wynik to {weight}.",
   "chartSemanticsFilter": "filtr",

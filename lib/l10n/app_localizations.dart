@@ -812,6 +812,18 @@ abstract class AppLocalizations {
   /// **'Delete entry'**
   String get deleteEntryTooltip;
 
+  /// No description provided for @deleteEntryTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete entry'**
+  String get deleteEntryTitle;
+
+  /// No description provided for @deleteEntryMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'This will permanently delete this entry.'**
+  String get deleteEntryMessage;
+
   /// No description provided for @skippedRows.
   ///
   /// In en, this message translates to:

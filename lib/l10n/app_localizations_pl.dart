@@ -393,6 +393,12 @@ class AppLocalizationsPl extends AppLocalizations {
   String get deleteEntryTooltip => 'Usuń wpis';
 
   @override
+  String get deleteEntryTitle => 'Usuń wpis';
+
+  @override
+  String get deleteEntryMessage => 'Ten wpis zostanie trwale usunięty.';
+
+  @override
   String skippedRows(Object count) {
     return 'Pominięto $count wierszy';
   }
