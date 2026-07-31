@@ -45,6 +45,16 @@ class IsarWeightRepository implements WeightRepository {
     this.maxEntriesLoaded = defaultMaxEntriesLoaded,
   });
 
+  /// Resolves the live Isar instance for this repository.
+  ///
+  /// Prefers the currently registered open instance with the same name so
+  /// operations keep working after [DatabaseModule] recovers the database
+  /// (e.g. on app resumption), falling back to the captured [isar] instance.
+  Isar get liveIsar {
+    final registered = Isar.getInstance(isar.name);
+    return (registered != null && registered.isOpen) ? registered : isar;
+  }
+
   Future<Uint8List> _getOrLoadKey({bool isWrite = false}) async {
     if (_encryptionKey != null) {
       return _encryptionKey!;
@@ -126,7 +136,7 @@ class IsarWeightRepository implements WeightRepository {
 
   @override
   Stream<List<WeightEntry>> watchAllEntries() {
-    return isar.weightEntryModels
+    return liveIsar.weightEntryModels
         .where()
         .sortByDateTimeDesc()
         .limit(maxEntriesLoaded)
@@ -141,7 +151,7 @@ class IsarWeightRepository implements WeightRepository {
   Future<List<WeightEntry>> getAllEntries() async {
     try {
       final key = await _getOrLoadKey(isWrite: false);
-      final models = await isar.weightEntryModels
+      final models = await liveIsar.weightEntryModels
           .where()
           .sortByDateTimeDesc()
           .limit(maxEntriesLoaded)
@@ -179,8 +189,8 @@ class IsarWeightRepository implements WeightRepository {
     try {
       final key = await _getOrLoadKey(isWrite: true);
       final model = _entityToModel(entry, key);
-      await isar.writeTxn(() async {
-        await isar.weightEntryModels.put(model);
+      await liveIsar.writeTxn(() async {
+        await liveIsar.weightEntryModels.put(model);
       });
     } on WeightRepositoryException {
       rethrow;
@@ -210,8 +220,8 @@ class IsarWeightRepository implements WeightRepository {
   @override
   Future<void> deleteEntry(int id) async {
     try {
-      await isar.writeTxn(() async {
-        await isar.weightEntryModels.delete(id);
+      await liveIsar.writeTxn(() async {
+        await liveIsar.weightEntryModels.delete(id);
       });
     } on IsarError catch (e, stack) {
       if (kDebugMode) {
@@ -241,8 +251,8 @@ class IsarWeightRepository implements WeightRepository {
     try {
       final key = await _getOrLoadKey(isWrite: true);
       final models = entries.map((e) => _entityToModel(e, key)).toList();
-      await isar.writeTxn(() async {
-        await isar.weightEntryModels.putAll(models);
+      await liveIsar.writeTxn(() async {
+        await liveIsar.weightEntryModels.putAll(models);
       });
       return models.length;
     } on WeightRepositoryException {
@@ -275,8 +285,8 @@ class IsarWeightRepository implements WeightRepository {
   @override
   Future<void> clearAllData() async {
     try {
-      await isar.writeTxn(() async {
-        await isar.clear();
+      await liveIsar.writeTxn(() async {
+        await liveIsar.clear();
       });
     } on IsarError catch (e, stack) {
       if (kDebugMode) {

@@ -28,6 +28,7 @@ class App extends StatefulWidget {
 
 class _AppState extends State<App> {
   BiometricLockObserver? _observer;
+  WeightBloc? _weightBloc;
 
   late AppLocalizations _l10n;
 
@@ -45,6 +46,9 @@ class _AppState extends State<App> {
       ),
       onLockStateChanged: (locked) => settingsBloc.add(SetLocked(locked)),
       localizedReason: () => _l10n.biometricAuthReason,
+      onDatabaseReopened: () async {
+        _weightBloc?.add(const SubscribeToWeightChanges());
+      },
     );
   }
 
@@ -62,35 +66,41 @@ class _AppState extends State<App> {
         create: (context) =>
             WeightBloc(repository: context.read<WeightRepository>())
               ..add(const SubscribeToWeightChanges()),
-        child: BlocBuilder<AppSettingsBloc, AppSettingsState>(
-          builder: (context, settingsState) {
-            final themeMode = switch (settingsState.themeMode) {
-              AppThemeMode.system => ThemeMode.system,
-              AppThemeMode.light => ThemeMode.light,
-              AppThemeMode.dark => ThemeMode.dark,
-            };
-            return MaterialApp(
-              onGenerateTitle: (context) =>
-                  AppLocalizations.of(context).appTitle,
-              theme: AppTheme.lightTheme,
-              darkTheme: AppTheme.darkTheme,
-              themeMode: themeMode,
-              localizationsDelegates: AppLocalizations.localizationsDelegates,
-              supportedLocales: AppLocalizations.supportedLocales,
-              home: _LocalizationSync(
-                onLocalized: (l10n) {
-                  _l10n = l10n;
-                  NotificationService.instance.setLocalizedTexts(
-                    title: l10n.notificationReminderTitle,
-                    body: l10n.notificationReminderBody,
-                    channelName: l10n.notificationChannelName,
-                    channelDescription: l10n.notificationChannelDescription,
-                  );
-                },
-                child: settingsState.isLocked
-                    ? const BiometricShieldScreen()
-                    : const MainNavigationScreen(),
-              ),
+        child: Builder(
+          builder: (context) {
+            _weightBloc = context.read<WeightBloc>();
+            return BlocBuilder<AppSettingsBloc, AppSettingsState>(
+              builder: (context, settingsState) {
+                final themeMode = switch (settingsState.themeMode) {
+                  AppThemeMode.system => ThemeMode.system,
+                  AppThemeMode.light => ThemeMode.light,
+                  AppThemeMode.dark => ThemeMode.dark,
+                };
+                return MaterialApp(
+                  onGenerateTitle: (context) =>
+                      AppLocalizations.of(context).appTitle,
+                  theme: AppTheme.lightTheme,
+                  darkTheme: AppTheme.darkTheme,
+                  themeMode: themeMode,
+                  localizationsDelegates:
+                      AppLocalizations.localizationsDelegates,
+                  supportedLocales: AppLocalizations.supportedLocales,
+                  home: _LocalizationSync(
+                    onLocalized: (l10n) {
+                      _l10n = l10n;
+                      NotificationService.instance.setLocalizedTexts(
+                        title: l10n.notificationReminderTitle,
+                        body: l10n.notificationReminderBody,
+                        channelName: l10n.notificationChannelName,
+                        channelDescription: l10n.notificationChannelDescription,
+                      );
+                    },
+                    child: settingsState.isLocked
+                        ? const BiometricShieldScreen()
+                        : const MainNavigationScreen(),
+                  ),
+                );
+              },
             );
           },
         ),

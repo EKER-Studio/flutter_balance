@@ -18,6 +18,10 @@ class BiometricLockObserver with WidgetsBindingObserver {
   /// Resolves the localized reason shown in the biometric auth prompt.
   final String Function() localizedReason;
 
+  /// Optional callback invoked when the database had to be reopened after
+  /// app resumption, so consumers can re-subscribe to Isar streams.
+  final Future<void> Function()? onDatabaseReopened;
+
   bool _isLockEnabled = false;
   bool _disposed = false;
   StreamSubscription<bool>? _subscription;
@@ -31,6 +35,7 @@ class BiometricLockObserver with WidgetsBindingObserver {
     required this.onLockStateChanged,
     required this.localizedReason,
     this.lockEnabledStream,
+    this.onDatabaseReopened,
   }) {
     _isLockEnabled = isBiometricLockEnabled();
     WidgetsBinding.instance.addObserver(this);
@@ -49,7 +54,10 @@ class BiometricLockObserver with WidgetsBindingObserver {
 
   Future<void> _verifyDatabaseIntegrity() async {
     try {
-      await DatabaseModule.ensureInstanceIntegrity();
+      final result = await DatabaseModule.ensureInstanceIntegrity();
+      if (result.reopened) {
+        await onDatabaseReopened?.call();
+      }
     } catch (e, stack) {
       if (kDebugMode) {
         debugPrint(

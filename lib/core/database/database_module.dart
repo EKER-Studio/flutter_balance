@@ -114,7 +114,11 @@ class DatabaseModule {
   ///
   /// Checks if the active Isar instance handle is open and valid. If closed or evicted
   /// by OS low-memory termination while backgrounded, attempts a clean auto-reconnect.
-  static Future<Isar?> ensureInstanceIntegrity() async {
+  /// Returns the live instance together with a `reopened` flag indicating whether
+  /// a fresh instance had to be opened (in which case existing Isar query streams
+  /// are dead and consumers should re-subscribe).
+  static Future<({Isar instance, bool reopened})>
+  ensureInstanceIntegrity() async {
     try {
       final instance = Isar.getInstance(dbName);
       if (instance == null || !instance.isOpen) {
@@ -123,16 +127,16 @@ class DatabaseModule {
             '[DatabaseModule] Isar instance invalid or closed on app resumption. Re-initializing...',
           );
         }
-        return await initialize();
+        return (instance: await initialize(), reopened: true);
       }
-      return instance;
+      return (instance: instance, reopened: false);
     } catch (e, stack) {
       if (kDebugMode) {
         debugPrint(
           '[DatabaseModule] Error verifying Isar instance integrity on resumption: $e\n$stack',
         );
       }
-      return await initialize();
+      return (instance: await initialize(), reopened: true);
     }
   }
 
