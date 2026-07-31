@@ -157,8 +157,9 @@ class TodayScreen extends StatelessWidget {
             return RefreshIndicator(
               onRefresh: () async {
                 context.read<WeightBloc>().add(
-                  const SubscribeToWeightChanges(),
+                  const RefreshWeightData(),
                 );
+                await Future<void>.delayed(const Duration(milliseconds: 300));
               },
               child: ClampedLayout(
                 padding: const EdgeInsets.symmetric(
