@@ -39,16 +39,10 @@ class AppLocalizationsPl extends AppLocalizations {
   String get height => 'Wzrost';
 
   @override
-  String get goal => 'Cel';
-
-  @override
   String get targetWeight => 'Waga docelowa';
 
   @override
   String get notSet => 'Nie ustawiono';
-
-  @override
-  String get security => 'Bezpieczeństwo';
 
   @override
   String get biometricLock => 'Blokada biometryczna';
@@ -77,15 +71,7 @@ class AppLocalizationsPl extends AppLocalizations {
   String get importCsv => 'Importuj dane z CSV';
 
   @override
-  String get importCsvDesc =>
-      'Importuj wpisy wagi z poprzednio wyeksportowanego pliku CSV.';
-
-  @override
   String get wipeData => 'Wyczyść wszystkie dane';
-
-  @override
-  String get wipeDataDesc =>
-      'To trwale usunie wszystkie wpisy wagi i zresetuje ustawienia aplikacji.';
 
   @override
   String get cancel => 'Anuluj';
@@ -168,9 +154,6 @@ class AppLocalizationsPl extends AppLocalizations {
   }
 
   @override
-  String get importFailed => 'Nie udało się zaimportować danych.';
-
-  @override
   String importError(Object error) {
     return 'Błąd importu: $error';
   }
@@ -190,9 +173,6 @@ class AppLocalizationsPl extends AppLocalizations {
       'Przypomina o codziennym zanotowaniu wagi.';
 
   @override
-  String get setYourHeightTitle => 'Ustaw swój wzrost';
-
-  @override
   String get emptyState => 'Brak wpisów. Dodaj swój pierwszy pomiar poniżej!';
 
   @override
@@ -206,22 +186,10 @@ class AppLocalizationsPl extends AppLocalizations {
   String get addFirstMeasurement => 'Dodaj pierwszy pomiar';
 
   @override
-  String get history => 'Historia';
-
-  @override
-  String get stats => 'Statystyki';
-
-  @override
   String get lowest => 'Najniższa';
 
   @override
   String get highest => 'Najwyższa';
-
-  @override
-  String get toGoal => 'Do celu';
-
-  @override
-  String get reached => 'Osiągnięto!';
 
   @override
   String get latestMeasurement => 'Ostatni pomiar';
@@ -251,11 +219,6 @@ class AppLocalizationsPl extends AppLocalizations {
   String get bmi => 'BMI';
 
   @override
-  String bmiValue(Object value) {
-    return 'BMI: $value';
-  }
-
-  @override
   String get bmiSubtitle => 'Na podstawie Twojego wzrostu i ostatniej wagi';
 
   @override
@@ -276,22 +239,10 @@ class AppLocalizationsPl extends AppLocalizations {
   String get weightGoal => 'Cel wagowy';
 
   @override
-  String get goalNotSet => 'Cel nie ustawiony';
-
-  @override
   String get goalAchieved => 'Cel osiągnięty!';
 
   @override
   String get toTarget => 'do celu';
-
-  @override
-  String get setGoalMotivation => 'Ustaw cel, aby zachować motywację';
-
-  @override
-  String get rightOnTarget => 'Jesteś dokładnie przy celu';
-
-  @override
-  String get targetLabel => 'Cel:';
 
   @override
   String get chartEmpty => 'Za mało danych, aby wyświetlić wykres.';
@@ -324,22 +275,6 @@ class AppLocalizationsPl extends AppLocalizations {
   String get bmiCategoryObese => 'Otyłość';
 
   @override
-  String get bmiCategoryDescriptionUnderweight =>
-      'BMI poniżej 18,5 — warto zyskać na wadze';
-
-  @override
-  String get bmiCategoryDescriptionNormal =>
-      'BMI między 18,5 a 24,9 — zakres zdrowy';
-
-  @override
-  String get bmiCategoryDescriptionOverweight =>
-      'BMI między 25,0 a 29,9 — niewielki nadmiar wagi';
-
-  @override
-  String get bmiCategoryDescriptionObese =>
-      'BMI 30,0 lub więcej — warto skonsultować się ze specjalistą';
-
-  @override
   String get biometricAuthReason =>
       'Zautentyfikuj się, aby uzyskać dostęp do PureWeight';
 
@@ -348,9 +283,6 @@ class AppLocalizationsPl extends AppLocalizations {
 
   @override
   String get unlock => 'Odblokuj';
-
-  @override
-  String get notifications => 'Powiadomienia';
 
   @override
   String get dailyReminder => 'Codzienne przypomnienie';
@@ -422,9 +354,6 @@ class AppLocalizationsPl extends AppLocalizations {
 
   @override
   String get tabSettings => 'Ustawienia';
-
-  @override
-  String get todaySummary => 'Dzisiejsze podsumowanie';
 
   @override
   String get noEntriesToday => 'Brak zarejestrowanych pomiarów dzisiaj.';

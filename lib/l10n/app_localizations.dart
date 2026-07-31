@@ -158,12 +158,6 @@ abstract class AppLocalizations {
   /// **'Height'**
   String get height;
 
-  /// No description provided for @goal.
-  ///
-  /// In en, this message translates to:
-  /// **'Goal'**
-  String get goal;
-
   /// No description provided for @targetWeight.
   ///
   /// In en, this message translates to:
@@ -175,12 +169,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Not set'**
   String get notSet;
-
-  /// No description provided for @security.
-  ///
-  /// In en, this message translates to:
-  /// **'Security'**
-  String get security;
 
   /// No description provided for @biometricLock.
   ///
@@ -230,23 +218,11 @@ abstract class AppLocalizations {
   /// **'Import data from CSV'**
   String get importCsv;
 
-  /// No description provided for @importCsvDesc.
-  ///
-  /// In en, this message translates to:
-  /// **'Import weight entries from a previously exported CSV file.'**
-  String get importCsvDesc;
-
   /// No description provided for @wipeData.
   ///
   /// In en, this message translates to:
   /// **'Wipe All Data'**
   String get wipeData;
-
-  /// No description provided for @wipeDataDesc.
-  ///
-  /// In en, this message translates to:
-  /// **'This will permanently delete all your weight entries and reset app settings.'**
-  String get wipeDataDesc;
 
   /// No description provided for @cancel.
   ///
@@ -392,12 +368,6 @@ abstract class AppLocalizations {
   /// **'Imported {count} entries.'**
   String importSuccess(Object count);
 
-  /// No description provided for @importFailed.
-  ///
-  /// In en, this message translates to:
-  /// **'Failed to import data.'**
-  String get importFailed;
-
   /// No description provided for @importError.
   ///
   /// In en, this message translates to:
@@ -428,12 +398,6 @@ abstract class AppLocalizations {
   /// **'Reminds you to record your daily weight measurement.'**
   String get notificationChannelDescription;
 
-  /// No description provided for @setYourHeightTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Set Your Height'**
-  String get setYourHeightTitle;
-
   /// No description provided for @emptyState.
   ///
   /// In en, this message translates to:
@@ -458,18 +422,6 @@ abstract class AppLocalizations {
   /// **'Add first measurement'**
   String get addFirstMeasurement;
 
-  /// No description provided for @history.
-  ///
-  /// In en, this message translates to:
-  /// **'History'**
-  String get history;
-
-  /// No description provided for @stats.
-  ///
-  /// In en, this message translates to:
-  /// **'Stats'**
-  String get stats;
-
   /// No description provided for @lowest.
   ///
   /// In en, this message translates to:
@@ -481,18 +433,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Highest'**
   String get highest;
-
-  /// No description provided for @toGoal.
-  ///
-  /// In en, this message translates to:
-  /// **'To Goal'**
-  String get toGoal;
-
-  /// No description provided for @reached.
-  ///
-  /// In en, this message translates to:
-  /// **'Reached!'**
-  String get reached;
 
   /// No description provided for @latestMeasurement.
   ///
@@ -548,12 +488,6 @@ abstract class AppLocalizations {
   /// **'BMI'**
   String get bmi;
 
-  /// No description provided for @bmiValue.
-  ///
-  /// In en, this message translates to:
-  /// **'BMI: {value}'**
-  String bmiValue(Object value);
-
   /// No description provided for @bmiSubtitle.
   ///
   /// In en, this message translates to:
@@ -590,12 +524,6 @@ abstract class AppLocalizations {
   /// **'Weight Goal'**
   String get weightGoal;
 
-  /// No description provided for @goalNotSet.
-  ///
-  /// In en, this message translates to:
-  /// **'Goal not set'**
-  String get goalNotSet;
-
   /// No description provided for @goalAchieved.
   ///
   /// In en, this message translates to:
@@ -607,24 +535,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'to target'**
   String get toTarget;
-
-  /// No description provided for @setGoalMotivation.
-  ///
-  /// In en, this message translates to:
-  /// **'Set a goal to stay motivated'**
-  String get setGoalMotivation;
-
-  /// No description provided for @rightOnTarget.
-  ///
-  /// In en, this message translates to:
-  /// **'You are right on target'**
-  String get rightOnTarget;
-
-  /// No description provided for @targetLabel.
-  ///
-  /// In en, this message translates to:
-  /// **'Target:'**
-  String get targetLabel;
 
   /// No description provided for @chartEmpty.
   ///
@@ -686,30 +596,6 @@ abstract class AppLocalizations {
   /// **'Obese'**
   String get bmiCategoryObese;
 
-  /// No description provided for @bmiCategoryDescriptionUnderweight.
-  ///
-  /// In en, this message translates to:
-  /// **'BMI below 18.5 — you may need to gain weight'**
-  String get bmiCategoryDescriptionUnderweight;
-
-  /// No description provided for @bmiCategoryDescriptionNormal.
-  ///
-  /// In en, this message translates to:
-  /// **'BMI between 18.5 and 24.9 — healthy range'**
-  String get bmiCategoryDescriptionNormal;
-
-  /// No description provided for @bmiCategoryDescriptionOverweight.
-  ///
-  /// In en, this message translates to:
-  /// **'BMI between 25.0 and 29.9 — slight excess weight'**
-  String get bmiCategoryDescriptionOverweight;
-
-  /// No description provided for @bmiCategoryDescriptionObese.
-  ///
-  /// In en, this message translates to:
-  /// **'BMI 30.0 or higher — consider consulting a professional'**
-  String get bmiCategoryDescriptionObese;
-
   /// No description provided for @biometricAuthReason.
   ///
   /// In en, this message translates to:
@@ -727,12 +613,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Unlock'**
   String get unlock;
-
-  /// No description provided for @notifications.
-  ///
-  /// In en, this message translates to:
-  /// **'Notifications'**
-  String get notifications;
 
   /// No description provided for @dailyReminder.
   ///
@@ -865,12 +745,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Settings'**
   String get tabSettings;
-
-  /// No description provided for @todaySummary.
-  ///
-  /// In en, this message translates to:
-  /// **'Today\'s Summary'**
-  String get todaySummary;
 
   /// No description provided for @noEntriesToday.
   ///

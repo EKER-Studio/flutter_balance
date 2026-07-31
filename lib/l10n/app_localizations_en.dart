@@ -39,16 +39,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get height => 'Height';
 
   @override
-  String get goal => 'Goal';
-
-  @override
   String get targetWeight => 'Target Weight';
 
   @override
   String get notSet => 'Not set';
-
-  @override
-  String get security => 'Security';
 
   @override
   String get biometricLock => 'Biometric Lock';
@@ -76,15 +70,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get importCsv => 'Import data from CSV';
 
   @override
-  String get importCsvDesc =>
-      'Import weight entries from a previously exported CSV file.';
-
-  @override
   String get wipeData => 'Wipe All Data';
-
-  @override
-  String get wipeDataDesc =>
-      'This will permanently delete all your weight entries and reset app settings.';
 
   @override
   String get cancel => 'Cancel';
@@ -166,9 +152,6 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get importFailed => 'Failed to import data.';
-
-  @override
   String importError(Object error) {
     return 'Import error: $error';
   }
@@ -188,9 +171,6 @@ class AppLocalizationsEn extends AppLocalizations {
       'Reminds you to record your daily weight measurement.';
 
   @override
-  String get setYourHeightTitle => 'Set Your Height';
-
-  @override
   String get emptyState => 'No entries yet. Add your first measurement below!';
 
   @override
@@ -204,22 +184,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get addFirstMeasurement => 'Add first measurement';
 
   @override
-  String get history => 'History';
-
-  @override
-  String get stats => 'Stats';
-
-  @override
   String get lowest => 'Lowest';
 
   @override
   String get highest => 'Highest';
-
-  @override
-  String get toGoal => 'To Goal';
-
-  @override
-  String get reached => 'Reached!';
 
   @override
   String get latestMeasurement => 'Latest measurement';
@@ -249,11 +217,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get bmi => 'BMI';
 
   @override
-  String bmiValue(Object value) {
-    return 'BMI: $value';
-  }
-
-  @override
   String get bmiSubtitle => 'Based on your height and latest weight';
 
   @override
@@ -274,22 +237,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get weightGoal => 'Weight Goal';
 
   @override
-  String get goalNotSet => 'Goal not set';
-
-  @override
   String get goalAchieved => 'Goal achieved!';
 
   @override
   String get toTarget => 'to target';
-
-  @override
-  String get setGoalMotivation => 'Set a goal to stay motivated';
-
-  @override
-  String get rightOnTarget => 'You are right on target';
-
-  @override
-  String get targetLabel => 'Target:';
 
   @override
   String get chartEmpty => 'Not enough data to display chart.';
@@ -322,22 +273,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get bmiCategoryObese => 'Obese';
 
   @override
-  String get bmiCategoryDescriptionUnderweight =>
-      'BMI below 18.5 — you may need to gain weight';
-
-  @override
-  String get bmiCategoryDescriptionNormal =>
-      'BMI between 18.5 and 24.9 — healthy range';
-
-  @override
-  String get bmiCategoryDescriptionOverweight =>
-      'BMI between 25.0 and 29.9 — slight excess weight';
-
-  @override
-  String get bmiCategoryDescriptionObese =>
-      'BMI 30.0 or higher — consider consulting a professional';
-
-  @override
   String get biometricAuthReason => 'Authenticate to access PureWeight';
 
   @override
@@ -345,9 +280,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get unlock => 'Unlock';
-
-  @override
-  String get notifications => 'Notifications';
 
   @override
   String get dailyReminder => 'Daily Reminder';
@@ -419,9 +351,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get tabSettings => 'Settings';
-
-  @override
-  String get todaySummary => 'Today\'s Summary';
 
   @override
   String get noEntriesToday => 'No weight measurements recorded today.';
