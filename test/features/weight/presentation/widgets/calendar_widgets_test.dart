@@ -82,10 +82,10 @@ void main() {
 
     expect(find.textContaining('2026'), findsOneWidget);
 
-    await tester.tap(find.byTooltip('Previous month'));
+    await tester.tap(find.byIcon(Icons.chevron_left));
     expect(prevCalled, isTrue);
 
-    await tester.tap(find.byTooltip('Next month'));
+    await tester.tap(find.byIcon(Icons.chevron_right));
     expect(nextCalled, isTrue);
   });
 
