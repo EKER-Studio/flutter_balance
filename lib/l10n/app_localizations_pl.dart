@@ -58,6 +58,19 @@ class AppLocalizationsPl extends AppLocalizations {
       'Wymagaj Face ID lub odcisku palca przy uruchamianiu';
 
   @override
+  String get biometricLockoutTitle => 'Blokada biometryczna niedostępna';
+
+  @override
+  String get biometricLockoutBody =>
+      'Dane biometryczne nie są już dostępne lub zapisane na tym urządzeniu. Wyłącz blokadę biometryczną, aby odzyskać dostęp do danych, albo pozostaw ją włączoną.';
+
+  @override
+  String get keepLocked => 'Pozostaw zablokowane';
+
+  @override
+  String get disableLock => 'Wyłącz blokadę';
+
+  @override
   String get database => 'Baza danych';
 
   @override

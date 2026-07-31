@@ -20,11 +20,15 @@ class BiometricShieldScreen extends StatelessWidget {
         bloc.add(const SetLocked(true));
       }
       final l10n = AppLocalizations.of(context);
-      final authenticated = await BiometricService.instance.authenticate(
+      final result = await BiometricService.instance.authenticate(
         localizedReason: l10n.biometricAuthReason,
       );
-      if (authenticated) {
+      if (result == BiometricAuthResult.success) {
         bloc.add(const SetLocked(false));
+      } else if (BiometricService.isTerminalFailure(result)) {
+        if (!context.mounted) return;
+        await _offerLockRecovery(context, bloc, l10n);
+        return;
       } else {
         if (!bloc.state.isLocked) {
           bloc.add(const SetLocked(true));
@@ -37,6 +41,40 @@ class BiometricShieldScreen extends StatelessWidget {
       if (!bloc.state.isLocked) {
         bloc.add(const SetLocked(true));
       }
+    }
+  }
+
+  /// Offers the user a way out of a permanent biometric lockout.
+  ///
+  /// When authentication is impossible (no enrolled credentials, biometrics
+  /// unsupported, permanent lockout), the user may turn the biometric lock off
+  /// entirely instead of being stuck behind the shield forever.
+  Future<void> _offerLockRecovery(
+    BuildContext context,
+    AppSettingsBloc bloc,
+    AppLocalizations l10n,
+  ) async {
+    if (!context.mounted) return;
+    final disable = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Text(l10n.biometricLockoutTitle),
+        content: Text(l10n.biometricLockoutBody),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, false),
+            child: Text(l10n.keepLocked),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(dialogContext, true),
+            child: Text(l10n.disableLock),
+          ),
+        ],
+      ),
+    );
+    if (disable == true) {
+      bloc.add(const UpdateBiometricLock(false));
+      bloc.add(const SetLocked(false));
     }
   }
 

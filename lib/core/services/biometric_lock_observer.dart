@@ -66,16 +66,16 @@ class BiometricLockObserver with WidgetsBindingObserver {
     if (!isAvailable) return;
 
     try {
-      final authenticated = await BiometricService.instance.authenticate(
+      final result = await BiometricService.instance.authenticate(
         localizedReason: localizedReason(),
       );
 
-      if (authenticated) {
+      if (result == BiometricAuthResult.success) {
         onLockStateChanged(false);
       } else {
         if (kDebugMode) {
           debugPrint(
-            '[BiometricLockObserver] Authentication returned false — locking app.',
+            '[BiometricLockObserver] Authentication failed ($result) — locking app.',
           );
         }
         onLockStateChanged(true);

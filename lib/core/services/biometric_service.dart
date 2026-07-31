@@ -2,6 +2,33 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:local_auth/local_auth.dart';
 
+/// Outcome of a biometric authentication attempt.
+enum BiometricAuthResult {
+  /// Authentication succeeded.
+  success,
+
+  /// The user dismissed or rejected the prompt (retryable).
+  canceled,
+
+  /// Biometrics are temporarily locked out (retryable after the OS cool-down).
+  lockedOut,
+
+  /// Biometrics are permanently locked out until the user re-enrolls.
+  permanentlyLockedOut,
+
+  /// No biometric credentials are enrolled on this device.
+  notEnrolled,
+
+  /// No device passcode is set, so biometric-only authentication cannot work.
+  passcodeNotSet,
+
+  /// Biometrics are not available or unsupported on this device.
+  notAvailable,
+
+  /// Authentication failed for any other reason.
+  error,
+}
+
 /// Singleton service for checking biometric hardware availability and authenticating
 /// the user via Face ID, Touch ID, or fingerprint.
 class BiometricService {
@@ -49,58 +76,54 @@ class BiometricService {
   /// Prompts the user for biometric authentication.
   ///
   /// Takes a mandatory [localizedReason] string explaining the authentication request.
-  /// Takes an optional [opsRequired] boolean flag for OS requirement configuration.
-  /// Returns a [Future] resolving to `true` if authentication succeeded, `false` if
-  /// cancelled, rejected, or unsupported.
-  /// Catches platform lockout or security exceptions safely and logs errors.
-  Future<bool> authenticate({
+  /// Returns a [Future] resolving to a [BiometricAuthResult] describing the outcome.
+  /// Terminal failures ([BiometricAuthResult.notEnrolled], [BiometricAuthResult.notAvailable],
+  /// [BiometricAuthResult.permanentlyLockedOut], [BiometricAuthResult.passcodeNotSet])
+  /// mean the user cannot authenticate with biometrics until the device state changes.
+  Future<BiometricAuthResult> authenticate({
     required String localizedReason,
-    bool opsRequired = false,
   }) async {
     try {
       final supported = await isSupported();
-      if (!supported) return false;
+      if (!supported) return BiometricAuthResult.notAvailable;
 
-      return await _authentication.authenticate(
+      final ok = await _authentication.authenticate(
         localizedReason: localizedReason,
         biometricOnly: true,
         persistAcrossBackgrounding: false,
       );
+      return ok ? BiometricAuthResult.success : BiometricAuthResult.canceled;
     } on PlatformException catch (e, stack) {
       if (kDebugMode) {
-        switch (e.code) {
-          case 'LockedOut':
-            debugPrint(
-              '[BiometricService] Biometric authentication locked out: ${e.message}',
-            );
-          case 'PermanentlyLockedOut':
-            debugPrint(
-              '[BiometricService] Biometric authentication permanently locked out: ${e.message}',
-            );
-          case 'NotEnrolled':
-            debugPrint(
-              '[BiometricService] No biometric credentials enrolled: ${e.message}',
-            );
-          case 'PasscodeNotSet':
-            debugPrint(
-              '[BiometricService] Passcode not set on device: ${e.message}',
-            );
-          case 'NotAvailable':
-            debugPrint(
-              '[BiometricService] Biometrics not available: ${e.message}',
-            );
-          default:
-            debugPrint(
-              '[BiometricService] PlatformException (${e.code}): ${e.message}\n$stack',
-            );
-        }
+        debugPrint(
+          '[BiometricService] PlatformException (${e.code}): ${e.message}\n$stack',
+        );
       }
-      return false;
+      return switch (e.code) {
+        'LockedOut' => BiometricAuthResult.lockedOut,
+        'PermanentlyLockedOut' => BiometricAuthResult.permanentlyLockedOut,
+        'NotEnrolled' => BiometricAuthResult.notEnrolled,
+        'PasscodeNotSet' => BiometricAuthResult.passcodeNotSet,
+        'NotAvailable' => BiometricAuthResult.notAvailable,
+        _ => BiometricAuthResult.error,
+      };
     } catch (e, stack) {
       if (kDebugMode) {
         debugPrint('[BiometricService] authenticate error: $e\n$stack');
       }
-      return false;
+      return BiometricAuthResult.error;
     }
+  }
+
+  /// Whether [result] means the user cannot authenticate until the device
+  /// biometric configuration changes.
+  static bool isTerminalFailure(BiometricAuthResult result) {
+    return switch (result) {
+      BiometricAuthResult.notEnrolled ||
+      BiometricAuthResult.notAvailable ||
+      BiometricAuthResult.permanentlyLockedOut ||
+      BiometricAuthResult.passcodeNotSet => true,
+      _ => false,
+    };
   }
 }

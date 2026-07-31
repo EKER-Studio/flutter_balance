@@ -194,6 +194,30 @@ abstract class AppLocalizations {
   /// **'Require Face ID or fingerprint on app launch'**
   String get biometricDesc;
 
+  /// No description provided for @biometricLockoutTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Biometric lock unavailable'**
+  String get biometricLockoutTitle;
+
+  /// No description provided for @biometricLockoutBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Biometrics are no longer available or enrolled on this device. Turn off the biometric lock to regain access to your data, or keep it locked.'**
+  String get biometricLockoutBody;
+
+  /// No description provided for @keepLocked.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep locked'**
+  String get keepLocked;
+
+  /// No description provided for @disableLock.
+  ///
+  /// In en, this message translates to:
+  /// **'Turn off lock'**
+  String get disableLock;
+
   /// No description provided for @database.
   ///
   /// In en, this message translates to:

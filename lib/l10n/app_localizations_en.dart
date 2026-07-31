@@ -57,6 +57,19 @@ class AppLocalizationsEn extends AppLocalizations {
   String get biometricDesc => 'Require Face ID or fingerprint on app launch';
 
   @override
+  String get biometricLockoutTitle => 'Biometric lock unavailable';
+
+  @override
+  String get biometricLockoutBody =>
+      'Biometrics are no longer available or enrolled on this device. Turn off the biometric lock to regain access to your data, or keep it locked.';
+
+  @override
+  String get keepLocked => 'Keep locked';
+
+  @override
+  String get disableLock => 'Turn off lock';
+
+  @override
   String get database => 'Database';
 
   @override
