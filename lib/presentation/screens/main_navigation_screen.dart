@@ -28,10 +28,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
     final l10n = AppLocalizations.of(context);
 
     final screens = [
-      TodayScreen(
-        onNavigateToStats: () => _onTabSelected(2),
-        onNavigateToSettings: () => _onTabSelected(3),
-      ),
+      TodayScreen(onNavigateToSettings: () => _onTabSelected(3)),
       const CalendarScreen(),
       const StatisticsScreen(),
       const SettingsScreen(),

@@ -24,10 +24,7 @@ class TodayScreen extends StatelessWidget {
   final VoidCallback? onNavigateToSettings;
 
   /// Creates a [TodayScreen] with optional navigation callbacks.
-  const TodayScreen({
-    super.key,
-    this.onNavigateToSettings,
-  });
+  const TodayScreen({super.key, this.onNavigateToSettings});
 
   @override
   Widget build(BuildContext context) {
@@ -154,7 +151,9 @@ class TodayScreen extends StatelessWidget {
             final latestEntry = latestFirstEntries.first;
             final latestWeight = latestEntry.weightKg;
             final latestDayEntries = latestFirstEntries
-                .where((e) => DateUtils.isSameDay(e.dateTime, latestEntry.dateTime))
+                .where(
+                  (e) => DateUtils.isSameDay(e.dateTime, latestEntry.dateTime),
+                )
                 .toList();
 
             return RefreshIndicator(
