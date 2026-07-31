@@ -785,8 +785,8 @@ abstract class AppLocalizations {
   /// No description provided for @streakDays.
   ///
   /// In en, this message translates to:
-  /// **'{count} days'**
-  String streakDays(Object count);
+  /// **'{count, plural, =0{0 days} one{{count} day} other{{count} days}}'**
+  String streakDays(num count);
 
   /// No description provided for @trendPercentChange.
   ///

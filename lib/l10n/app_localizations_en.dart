@@ -375,8 +375,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get loggingStreak => 'Logging Streak';
 
   @override
-  String streakDays(Object count) {
-    return '$count days';
+  String streakDays(num count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count days',
+      one: '$count day',
+      zero: '0 days',
+    );
+    return '$_temp0';
   }
 
   @override

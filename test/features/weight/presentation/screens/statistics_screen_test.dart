@@ -156,4 +156,130 @@ void main() {
       expect(find.text('lb'), findsWidgets);
     },
   );
+
+  testWidgets('StatisticsScreen calculates a multi-day logging streak', (
+    tester,
+  ) async {
+    final now = DateTime.now();
+    final entries = [
+      for (var i = 0; i < 3; i++)
+        WeightEntry(
+          id: i + 1,
+          weightKg: 70.0,
+          dateTime: now.subtract(Duration(days: i)),
+        ),
+    ];
+
+    final settingsBloc = AppSettingsBloc();
+    final weightBloc = createBloc(
+      WeightLoaded(
+        entries: entries,
+        filteredEntries: [],
+        timePeriod: TimePeriod.week,
+        heightCm: null,
+      ),
+    );
+
+    await tester.pumpWidget(
+      buildSubject(settingsBloc: settingsBloc, weightBloc: weightBloc),
+    );
+
+    expect(find.text('3 dni'), findsOneWidget);
+  });
+
+  testWidgets(
+    'StatisticsScreen streak starts from yesterday when today is missing',
+    (tester) async {
+      final now = DateTime.now();
+      final entries = [
+        WeightEntry(
+          id: 1,
+          weightKg: 70.0,
+          dateTime: now.subtract(const Duration(days: 1)),
+        ),
+        WeightEntry(
+          id: 2,
+          weightKg: 71.0,
+          dateTime: now.subtract(const Duration(days: 2)),
+        ),
+      ];
+
+      final settingsBloc = AppSettingsBloc();
+      final weightBloc = createBloc(
+        WeightLoaded(
+          entries: entries,
+          filteredEntries: [],
+          timePeriod: TimePeriod.week,
+          heightCm: null,
+        ),
+      );
+
+      await tester.pumpWidget(
+        buildSubject(settingsBloc: settingsBloc, weightBloc: weightBloc),
+      );
+
+      expect(find.text('2 dni'), findsOneWidget);
+    },
+  );
+
+  testWidgets('StatisticsScreen streak resets when a day is missing', (
+    tester,
+  ) async {
+    final now = DateTime.now();
+    final entries = [
+      WeightEntry(id: 1, weightKg: 70.0, dateTime: now),
+      WeightEntry(
+        id: 2,
+        weightKg: 71.0,
+        dateTime: now.subtract(const Duration(days: 2)),
+      ),
+    ];
+
+    final settingsBloc = AppSettingsBloc();
+    final weightBloc = createBloc(
+      WeightLoaded(
+        entries: entries,
+        filteredEntries: [],
+        timePeriod: TimePeriod.week,
+        heightCm: null,
+      ),
+    );
+
+    await tester.pumpWidget(
+      buildSubject(settingsBloc: settingsBloc, weightBloc: weightBloc),
+    );
+
+    expect(find.text('1 dzień'), findsOneWidget);
+  });
+
+  testWidgets('StatisticsScreen computes monthly compliance over 30 days', (
+    tester,
+  ) async {
+    final now = DateTime.now();
+    final entries = [
+      for (var i = 0; i < 5; i++)
+        WeightEntry(
+          id: i + 1,
+          weightKg: 70.0,
+          dateTime: now.subtract(Duration(days: i)),
+        ),
+    ];
+
+    final settingsBloc = AppSettingsBloc();
+    final weightBloc = createBloc(
+      WeightLoaded(
+        entries: entries,
+        filteredEntries: [],
+        timePeriod: TimePeriod.week,
+        heightCm: null,
+      ),
+    );
+
+    await tester.pumpWidget(
+      buildSubject(settingsBloc: settingsBloc, weightBloc: weightBloc),
+    );
+
+    // 5 of 30 days -> 17% after rounding
+    expect(find.text('17%'), findsOneWidget);
+  });
 }

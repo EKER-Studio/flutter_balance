@@ -114,7 +114,7 @@
   "singleEntry": "1 pomiar",
   "multipleEntries": "{count} pomiary",
   "loggingStreak": "Seria ważenia",
-  "streakDays": "{count} dni",
+  "streakDays": "{count, plural, =0{0 dni} one{{count} dzień} few{{count} dni} many{{count} dni} other{{count} dni}}",
   "trendPercentChange": "Trend: {value}",
   "totalProgressUnitSuffix": "{unit} łącznie",
   "previousMonth": "Poprzedni miesiąc",
