@@ -5,7 +5,7 @@ abstract final class AppTheme {
   /// Primary brand color anchor: Lavender/Purple #4F378A.
   static const Color primaryColor = Color(0xFF4F378A);
 
-  /// Light ColorScheme matching the full Serene Metric specification in DESIGN.md.
+  /// Light ColorScheme: hand-tuned Material 3 palette anchored at [primaryColor].
   static const ColorScheme lightColorScheme = ColorScheme(
     brightness: Brightness.light,
     primary: Color(0xFF4F378A),
@@ -60,7 +60,7 @@ abstract final class AppTheme {
     brightness: Brightness.dark,
   );
 
-  /// Custom typography matching DESIGN.md specification using Roboto.
+  /// Custom typography based on the Material 3 type scale using Roboto.
   static const TextTheme textTheme = TextTheme(
     displayLarge: TextStyle(
       fontFamily: 'Roboto',

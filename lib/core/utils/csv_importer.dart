@@ -6,8 +6,8 @@ import 'package:pure_weight/features/weight/domain/entities/weight_entry.dart';
 ///
 /// Expected CSV format (matches [CsvExporter] output):
 /// ```
-/// ID,Data,Waga (kg),BMI,Notatka
-/// 1,2024-01-15 07:30,75.2,23.1,Notowanie poranne
+/// ID,Data,Weight (kg),BMI,Note
+/// 1,2024-01-15 07:30,75.2,23.1,Morning measurement
 /// 2,2024-01-16 07:30,75.0,23.0,
 /// ```
 ///
