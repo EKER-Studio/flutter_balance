@@ -42,10 +42,14 @@ Future<void> main() async {
   final isar = await DatabaseModule.initialize();
   final repository = _createWeightRepository(isar);
 
-  // Prepopulate database with hardcoded 3 months of measurements if empty
-  final existingEntries = await repository.getAllEntries();
-  if (existingEntries.isEmpty) {
-    await repository.bulkImportEntries(getInitial3MonthsWeightEntries());
+  // Demo/dev-only seed data — never runs in release builds. If QA needs
+  // this on a release build, gate it behind an explicit flag instead of
+  // kDebugMode.
+  if (kDebugMode) {
+    final existingEntries = await repository.getAllEntries();
+    if (existingEntries.isEmpty) {
+      await repository.bulkImportEntries(getInitial3MonthsWeightEntries());
+    }
   }
 
   await NotificationService.instance.initialize();
