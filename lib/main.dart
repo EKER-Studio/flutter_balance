@@ -10,7 +10,6 @@ import 'package:pure_weight/app.dart';
 import 'package:pure_weight/core/database/database_module.dart';
 import 'package:pure_weight/core/services/notification_service.dart';
 import 'package:isar_community/isar.dart';
-import 'package:pure_weight/features/weight/data/datasources/initial_weight_data.dart';
 import 'package:pure_weight/features/weight/data/repositories/isar_weight_repository.dart';
 import 'package:pure_weight/features/weight/domain/repositories/weight_repository.dart';
 import 'package:pure_weight/presentation/bloc/settings/app_settings_bloc.dart';
@@ -47,16 +46,6 @@ Future<void> main() async {
 
   final isar = await DatabaseModule.initialize();
   final repository = _createWeightRepository(isar);
-
-  // Demo/dev-only seed data — never runs in release builds. If QA needs
-  // this on a release build, gate it behind an explicit flag instead of
-  // kDebugMode.
-  if (kDebugMode) {
-    final existingEntries = await repository.getAllEntries();
-    if (existingEntries.isEmpty) {
-      await repository.bulkImportEntries(getInitial3MonthsWeightEntries());
-    }
-  }
 
   await NotificationService.instance.initialize();
 
