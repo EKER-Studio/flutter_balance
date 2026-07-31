@@ -28,7 +28,6 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
     on<RefreshWeightData>(_onRefreshWeightData);
     on<ClearAllWeightData>(_onClearAllWeightData);
     on<ImportWeightEntries>(_onImportWeightEntries);
-    on<UpdateWeight>(_onUpdateWeight);
   }
 
   static List<WeightEntry> _entriesFromState(WeightState state) {
@@ -304,47 +303,6 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
           timePeriod: state.timePeriod,
           entries: currentEntries,
           filteredEntries: _filterEntries(currentEntries, state.timePeriod),
-        ),
-      );
-    }
-  }
-
-  Future<void> _onUpdateWeight(
-    UpdateWeight event,
-    Emitter<WeightState> emit,
-  ) async {
-    final heightCm = state.heightCm;
-    final entries = _entriesFromState(state);
-
-    final entry = WeightEntry(
-      id: event.id,
-      weightKg: event.weightKg,
-      dateTime: event.dateTime ?? DateTime.now(),
-      note: event.note,
-    );
-
-    try {
-      await repository.updateEntry(entry);
-      final updatedEntries = await repository.getAllEntries();
-      emit(
-        WeightLoaded(
-          heightCm: heightCm,
-          timePeriod: state.timePeriod,
-          entries: updatedEntries,
-          filteredEntries: _filterEntries(updatedEntries, state.timePeriod),
-        ),
-      );
-    } catch (e, stack) {
-      if (kDebugMode) {
-        debugPrint('[WeightBloc] Failed to update entry: $e\n$stack');
-      }
-      emit(
-        WeightError(
-          errorType: WeightErrorType.writeFailed,
-          heightCm: heightCm,
-          timePeriod: state.timePeriod,
-          entries: entries,
-          filteredEntries: _filterEntries(entries, state.timePeriod),
         ),
       );
     }

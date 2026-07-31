@@ -105,26 +105,3 @@ final class ImportWeightEntries extends WeightEvent {
   /// Creates [ImportWeightEntries] with the given [entries].
   const ImportWeightEntries(this.entries);
 }
-
-/// Updates an existing weight entry identified by [id].
-final class UpdateWeight extends WeightEvent {
-  /// Identifier of the entry to update.
-  final int id;
-
-  /// Updated weight in kilograms.
-  final double weightKg;
-
-  /// Optional updated note.
-  final String? note;
-
-  /// Optional updated timestamp.
-  final DateTime? dateTime;
-
-  /// Creates [UpdateWeight] with the given [id], [weightKg], and optional [note] and [dateTime].
-  const UpdateWeight({
-    required this.id,
-    required this.weightKg,
-    this.note,
-    this.dateTime,
-  });
-}

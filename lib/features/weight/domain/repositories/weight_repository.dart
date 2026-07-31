@@ -27,14 +27,6 @@ abstract class WeightRepository {
   /// May throw a database error if disk space is full or transaction fails.
   Future<void> addEntry(WeightEntry entry);
 
-  /// Updates an existing weight entry identified by [entry.id].
-  ///
-  /// Takes a [WeightEntry] with a non-zero [WeightEntry.id] pointing to the
-  /// record to modify. Returns a [Future] that completes when the entry is
-  /// successfully updated.
-  /// May throw a database error if the record does not exist or write fails.
-  Future<void> updateEntry(WeightEntry entry);
-
   /// Removes the weight entry associated with the given [id].
   ///
   /// Takes an integer [id] identifying the target record.
