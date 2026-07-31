@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pure_weight/core/services/biometric_lock_observer.dart';
+import 'package:pure_weight/core/services/notification_service.dart';
 import 'package:pure_weight/features/weight/domain/repositories/weight_repository.dart';
 import 'package:pure_weight/features/weight/presentation/bloc/weight_bloc.dart';
 import 'package:pure_weight/features/weight/presentation/bloc/weight_event.dart';
@@ -28,6 +29,8 @@ class App extends StatefulWidget {
 class _AppState extends State<App> {
   BiometricLockObserver? _observer;
 
+  late AppLocalizations _l10n;
+
   @override
   void initState() {
     super.initState();
@@ -41,6 +44,7 @@ class _AppState extends State<App> {
         (s) => s.isBiometricLockEnabled,
       ),
       onLockStateChanged: (locked) => settingsBloc.add(SetLocked(locked)),
+      localizedReason: () => _l10n.biometricAuthReason,
     );
   }
 
@@ -73,13 +77,48 @@ class _AppState extends State<App> {
               themeMode: themeMode,
               localizationsDelegates: AppLocalizations.localizationsDelegates,
               supportedLocales: AppLocalizations.supportedLocales,
-              home: settingsState.isLocked
-                  ? const BiometricShieldScreen()
-                  : const MainNavigationScreen(),
+              home: _LocalizationSync(
+                onLocalized: (l10n) {
+                  _l10n = l10n;
+                  NotificationService.instance.setLocalizedTexts(
+                    title: l10n.notificationReminderTitle,
+                    body: l10n.notificationReminderBody,
+                  );
+                },
+                child: settingsState.isLocked
+                    ? const BiometricShieldScreen()
+                    : const MainNavigationScreen(),
+              ),
             );
           },
         ),
       ),
     );
   }
+}
+
+/// Synchronizes the active locale with services that live outside the widget tree.
+class _LocalizationSync extends StatefulWidget {
+  /// Child rendered below the [AppLocalizations] scope.
+  final Widget child;
+
+  /// Invoked with the active [AppLocalizations] whenever it is resolved or
+  /// the locale changes.
+  final void Function(AppLocalizations l10n) onLocalized;
+
+  const _LocalizationSync({required this.child, required this.onLocalized});
+
+  @override
+  State<_LocalizationSync> createState() => _LocalizationSyncState();
+}
+
+class _LocalizationSyncState extends State<_LocalizationSync> {
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    widget.onLocalized(AppLocalizations.of(context));
+  }
+
+  @override
+  Widget build(BuildContext context) => widget.child;
 }

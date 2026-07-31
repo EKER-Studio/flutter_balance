@@ -380,11 +380,17 @@ abstract class AppLocalizations {
   /// **'Import error: {error}'**
   String importError(Object error);
 
-  /// No description provided for @exportCsv.
+  /// No description provided for @notificationReminderTitle.
   ///
   /// In en, this message translates to:
-  /// **'Export CSV'**
-  String get exportCsv;
+  /// **'Time to weigh yourself!'**
+  String get notificationReminderTitle;
+
+  /// No description provided for @notificationReminderBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Log your weight today and stay on track with PureWeight.'**
+  String get notificationReminderBody;
 
   /// No description provided for @setYourHeightTitle.
   ///

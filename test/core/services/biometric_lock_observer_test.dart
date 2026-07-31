@@ -28,6 +28,7 @@ void main() {
           lockStateEmitted = locked;
         },
         lockEnabledStream: lockStreamController.stream,
+        localizedReason: () => 'Authenticate to access PureWeight',
       );
 
       // Verify initialization does not throw
@@ -49,6 +50,7 @@ void main() {
         onLockStateChanged: (_) {
           called = true;
         },
+        localizedReason: () => 'Authenticate to access PureWeight',
       );
 
       observer.didChangeAppLifecycleState(AppLifecycleState.paused);
@@ -65,6 +67,7 @@ void main() {
         final observer = BiometricLockObserver(
           isBiometricLockEnabled: () => false,
           onLockStateChanged: (_) {},
+          localizedReason: () => 'Authenticate to access PureWeight',
         );
 
         // Trigger resumed state

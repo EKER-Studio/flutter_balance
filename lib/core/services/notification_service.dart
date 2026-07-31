@@ -25,6 +25,18 @@ class NotificationService {
 
   bool _initialized = false;
 
+  String _title = 'Time to weigh yourself!';
+  String _body = 'Log your weight today and stay on track with PureWeight.';
+
+  /// Updates the localized texts used for scheduled reminder notifications.
+  ///
+  /// Must be invoked whenever the app locale changes so scheduled reminders
+  /// display in the active language.
+  void setLocalizedTexts({required String title, required String body}) {
+    _title = title;
+    _body = body;
+  }
+
   /// Initializes the local notification plugin and timezone database.
   ///
   /// Must be called after `WidgetsFlutterBinding.ensureInitialized()`.
@@ -70,15 +82,11 @@ class NotificationService {
   /// Schedules (or replaces) a repeating daily reminder at [time].
   ///
   /// Takes a mandatory [TimeOfDay] [time] specifying when the daily reminder should fire.
-  /// Takes optional [title] and [body] strings for notification display.
-  /// The notification fires every day at [time] in the device's local time zone.
+  /// The notification fires every day at [time] in the device's local time zone
+  /// using the localized texts configured via [setLocalizedTexts].
   /// Any previously scheduled reminder is cancelled first.
   /// Catches and logs non-fatal notification scheduling errors.
-  Future<void> scheduleDailyReminder(
-    TimeOfDay time, {
-    String title = 'Time to weigh yourself! ⚖️',
-    String body = 'Log your weight today and stay on track with PureWeight.',
-  }) async {
+  Future<void> scheduleDailyReminder(TimeOfDay time) async {
     if (!_initialized) return;
     try {
       await _plugin.cancel(id: _dailyReminderId);
@@ -102,8 +110,8 @@ class NotificationService {
           ),
         ),
         androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
-        title: title,
-        body: body,
+        title: _title,
+        body: _body,
         matchDateTimeComponents: DateTimeComponents.time,
       );
     } catch (e) {

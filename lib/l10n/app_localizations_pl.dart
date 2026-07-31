@@ -163,7 +163,11 @@ class AppLocalizationsPl extends AppLocalizations {
   }
 
   @override
-  String get exportCsv => 'Eksportuj CSV';
+  String get notificationReminderTitle => 'Czas zważyć się!';
+
+  @override
+  String get notificationReminderBody =>
+      'Zanotuj dzisiejszą wagę i pozostań na dobrej drodze w PureWeight.';
 
   @override
   String get setYourHeightTitle => 'Ustaw swój wzrost';

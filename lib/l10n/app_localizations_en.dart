@@ -161,7 +161,11 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get exportCsv => 'Export CSV';
+  String get notificationReminderTitle => 'Time to weigh yourself!';
+
+  @override
+  String get notificationReminderBody =>
+      'Log your weight today and stay on track with PureWeight.';
 
   @override
   String get setYourHeightTitle => 'Set Your Height';

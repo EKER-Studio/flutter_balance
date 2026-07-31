@@ -15,19 +15,22 @@ class BiometricLockObserver with WidgetsBindingObserver {
   /// Optional stream emitting changes to the biometric lock enabled setting.
   final Stream<bool>? lockEnabledStream;
 
-  /// Localized reason displayed in the biometric auth dialog.
-  final String localizedReason;
+  /// Resolves the localized reason shown in the biometric auth prompt.
+  final String Function() localizedReason;
 
   bool _isLockEnabled = false;
   bool _disposed = false;
   StreamSubscription<bool>? _subscription;
 
   /// Creates a [BiometricLockObserver] and registers it as a WidgetsBinding observer.
+  ///
+  /// [localizedReason] is resolved lazily at authentication time so it always
+  /// reflects the active locale.
   BiometricLockObserver({
     required this.isBiometricLockEnabled,
     required this.onLockStateChanged,
+    required this.localizedReason,
     this.lockEnabledStream,
-    this.localizedReason = 'Authenticate to access PureWeight',
   }) {
     _isLockEnabled = isBiometricLockEnabled();
     WidgetsBinding.instance.addObserver(this);
@@ -64,7 +67,7 @@ class BiometricLockObserver with WidgetsBindingObserver {
 
     try {
       final authenticated = await BiometricService.instance.authenticate(
-        localizedReason: localizedReason,
+        localizedReason: localizedReason(),
       );
 
       if (authenticated) {
