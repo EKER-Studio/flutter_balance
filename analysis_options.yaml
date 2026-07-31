@@ -36,3 +36,8 @@ import_lint:
       from: "package:pure_weight/features/**/data/**"
       except: []
       severity: error
+    avoid_infrastructure_imports_in_app_shell:
+      target: "package:pure_weight/presentation/**"
+      from: "package:pure_weight/features/**/data/**"
+      except: []
+      severity: error
