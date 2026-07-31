@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:ui' as ui;
 
 import 'package:flutter/foundation.dart';
@@ -23,12 +24,16 @@ Future<void> main() async {
     FlutterError.presentError(details);
     if (kDebugMode) {
       debugPrint('FlutterError: ${details.exception}\n${details.stack}');
+    } else {
+      _writeCrashLog(details.exception, details.stack ?? StackTrace.current);
     }
   };
 
   ui.PlatformDispatcher.instance.onError = (Object error, StackTrace stack) {
     if (kDebugMode) {
       debugPrint('Unhandled async error: $error\n$stack');
+    } else {
+      _writeCrashLog(error, stack);
     }
     return true;
   };
@@ -74,4 +79,20 @@ Future<void> main() async {
 /// is resolved, while the rest of the app only depends on the domain interface.
 WeightRepository _createWeightRepository(Isar isar) {
   return IsarWeightRepository(isar: isar);
+}
+
+/// Appends an uncaught [error] to the on-device crash log in release builds.
+///
+/// Errors would otherwise vanish silently because the platform error handler
+/// suppresses the default crash output. The log lives next to the database so
+/// it survives restarts without introducing a new dependency.
+Future<void> _writeCrashLog(Object error, StackTrace stack) async {
+  try {
+    final dir = await getApplicationDocumentsDirectory();
+    final file = File('${dir.path}/crash_log.txt');
+    final entry = '${DateTime.now().toIso8601String()}\n$error\n$stack\n\n';
+    await file.writeAsString(entry, mode: FileMode.append, flush: true);
+  } catch (_) {
+    // Crash logging must never throw.
+  }
 }
