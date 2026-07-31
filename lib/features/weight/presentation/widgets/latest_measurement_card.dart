@@ -69,7 +69,7 @@ class LatestMeasurementCard extends StatelessWidget {
     final timestampText = _formatTimestamp(context, entry.dateTime, l10n);
 
     final semanticLabel =
-        '${l10n.latestMeasurement}: ${displayWeight.toStringAsFixed(1)} $unitLabel, $timestampText. ${l10n.tapToViewStatsHint}.';
+        '${l10n.latestMeasurement}: ${displayWeight.toStringAsFixed(1)} $unitLabel, $timestampText. ${l10n.tapToViewDetailsHint}.';
 
     return Semantics(
       button: onTap != null,
