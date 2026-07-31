@@ -7,6 +7,7 @@ import 'package:pure_weight/features/weight/presentation/bloc/weight_state.dart'
 import 'package:pure_weight/features/weight/presentation/widgets/add_weight_sheet.dart';
 import 'package:pure_weight/features/weight/presentation/widgets/calendar/calendar_day_empty_card.dart';
 import 'package:pure_weight/features/weight/presentation/widgets/calendar/calendar_day_entries_card.dart';
+import 'package:pure_weight/features/weight/presentation/widgets/calendar/calendar_day_detail_sheet.dart';
 import 'package:pure_weight/features/weight/presentation/widgets/calendar/calendar_day_future_card.dart';
 import 'package:pure_weight/features/weight/presentation/widgets/calendar/calendar_error_card.dart';
 import 'package:pure_weight/features/weight/presentation/widgets/calendar/calendar_grid.dart';
@@ -153,7 +154,16 @@ class _CalendarScreenState extends State<CalendarScreen> {
                               selectedDate: _selectedDate,
                               entries: entries,
                               targetWeight: targetWeight,
-                              onDaySelected: (date, _) => _onDaySelected(date),
+                              onDaySelected: (date, dayEntries) {
+                                _onDaySelected(date);
+                                if (dayEntries.isNotEmpty) {
+                                  CalendarDayDetailSheet.show(
+                                    context,
+                                    date: date,
+                                    entries: dayEntries,
+                                  );
+                                }
+                              },
                             ),
                           ],
                         ),
