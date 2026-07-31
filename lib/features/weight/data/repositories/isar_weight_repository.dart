@@ -11,12 +11,18 @@ import 'package:pure_weight/features/weight/domain/weight_error_type.dart';
 
 /// Isar-backed implementation of [WeightRepository] using Field-Level AES-256 Encryption.
 class IsarWeightRepository implements WeightRepository {
+  /// Default cap on entries loaded/watched at once, newest-first.
+  ///
+  /// Covers roughly 14 years of daily weigh-ins plus multiple measurements
+  /// per day, so the cap is practically unreachable for realistic users.
+  static const int defaultMaxEntriesLoaded = 5000;
+
   /// Maximum number of entries loaded/watched at once, newest-first.
   ///
   /// Bounds memory/UI cost for very long-running users. Entries beyond this
   /// cap are not visible to [WeightBloc] (streaks, statistics, calendar).
-  /// If this becomes a real constraint, add pagination instead of raising it.
-  static const int maxEntriesLoaded = 500;
+  /// Configurable for tests; add pagination rather than raising this further.
+  final int maxEntriesLoaded;
 
   /// The Isar database instance.
   final Isar isar;
@@ -31,10 +37,12 @@ class IsarWeightRepository implements WeightRepository {
   ///
   /// Takes an optional [secureStorage] handler.
   /// Takes an optional [encryptionKey] for testing override.
+  /// Takes an optional [maxEntriesLoaded] cap, defaulting to [defaultMaxEntriesLoaded].
   IsarWeightRepository({
     required this.isar,
     this.secureStorage = const FlutterSecureStorage(),
     this._encryptionKey,
+    this.maxEntriesLoaded = defaultMaxEntriesLoaded,
   });
 
   Future<Uint8List> _getOrLoadKey({bool isWrite = false}) async {

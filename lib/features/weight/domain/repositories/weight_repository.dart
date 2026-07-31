@@ -7,7 +7,8 @@ import 'package:pure_weight/features/weight/domain/entities/weight_entry.dart';
 abstract class WeightRepository {
   /// Watches persisted weight records as a real-time reactive stream.
   ///
-  /// Returns the most recent entries (up to 500), sorted by date descending.
+  /// Returns the most recent entries (bounded by the implementation's entry
+  /// cap), sorted by date descending.
   /// Emits a new [List] of [WeightEntry] objects immediately upon subscription and
   /// whenever any entry is created, modified, or deleted in the underlying data store.
   /// May emit a stream error if underlying database stream connection fails.
@@ -15,7 +16,8 @@ abstract class WeightRepository {
 
   /// Fetches stored weight entries as a static single-shot list.
   ///
-  /// Returns the most recent entries (up to 500), sorted by date descending.
+  /// Returns the most recent entries (bounded by the implementation's entry
+  /// cap), sorted by date descending.
   /// Returns a [Future] resolving to a [List] of persisted [WeightEntry] entities.
   /// May throw a database error if local storage is unreadable.
   Future<List<WeightEntry>> getAllEntries();
