@@ -11,6 +11,13 @@ import 'package:pure_weight/features/weight/domain/weight_error_type.dart';
 
 /// Isar-backed implementation of [WeightRepository] using Field-Level AES-256 Encryption.
 class IsarWeightRepository implements WeightRepository {
+  /// Maximum number of entries loaded/watched at once, newest-first.
+  ///
+  /// Bounds memory/UI cost for very long-running users. Entries beyond this
+  /// cap are not visible to [WeightBloc] (streaks, statistics, calendar).
+  /// If this becomes a real constraint, add pagination instead of raising it.
+  static const int maxEntriesLoaded = 500;
+
   /// The Isar database instance.
   final Isar isar;
 
@@ -114,7 +121,7 @@ class IsarWeightRepository implements WeightRepository {
     return isar.weightEntryModels
         .where()
         .sortByDateTimeDesc()
-        .limit(500)
+        .limit(maxEntriesLoaded)
         .watch(fireImmediately: true)
         .asyncMap((models) async {
           final key = await _getOrLoadKey(isWrite: false);
@@ -129,7 +136,7 @@ class IsarWeightRepository implements WeightRepository {
       final models = await isar.weightEntryModels
           .where()
           .sortByDateTimeDesc()
-          .limit(500)
+          .limit(maxEntriesLoaded)
           .findAll();
       return models.map((m) => _modelToEntity(m, key)).toList();
     } on WeightRepositoryException {
