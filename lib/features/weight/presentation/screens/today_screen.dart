@@ -7,6 +7,7 @@ import 'package:pure_weight/features/weight/presentation/bloc/weight_state.dart'
 import 'package:pure_weight/features/weight/domain/weight_error_type.dart';
 import 'package:pure_weight/features/weight/presentation/utils/weight_error_localizer.dart';
 import 'package:pure_weight/features/weight/presentation/widgets/add_weight_sheet.dart';
+import 'package:pure_weight/features/weight/presentation/widgets/calendar/calendar_day_detail_sheet.dart';
 import 'package:pure_weight/features/weight/presentation/widgets/health_summary_card.dart';
 import 'package:pure_weight/features/weight/presentation/widgets/latest_measurement_card.dart';
 import 'package:pure_weight/features/weight/presentation/widgets/today_shimmer_skeleton.dart';
@@ -19,16 +20,12 @@ import 'package:pure_weight/presentation/widgets/weight_chart.dart';
 
 /// Tab 1: Today Screen displaying daily summary, BMI & goal card, weight trend chart, and latest measurement tile.
 class TodayScreen extends StatelessWidget {
-  /// Optional callback to navigate to the Statistics tab when the latest measurement card is tapped.
-  final VoidCallback? onNavigateToStats;
-
   /// Optional callback to navigate to Settings when profile icon is pressed.
   final VoidCallback? onNavigateToSettings;
 
   /// Creates a [TodayScreen] with optional navigation callbacks.
   const TodayScreen({
     super.key,
-    this.onNavigateToStats,
     this.onNavigateToSettings,
   });
 
@@ -156,6 +153,9 @@ class TodayScreen extends StatelessWidget {
             final latestFirstEntries = entries;
             final latestEntry = latestFirstEntries.first;
             final latestWeight = latestEntry.weightKg;
+            final latestDayEntries = latestFirstEntries
+                .where((e) => DateUtils.isSameDay(e.dateTime, latestEntry.dateTime))
+                .toList();
 
             return RefreshIndicator(
               onRefresh: () async {
@@ -195,11 +195,11 @@ class TodayScreen extends StatelessWidget {
                       const SizedBox(height: 16),
                       LatestMeasurementCard(
                         latestEntry: latestEntry,
-                        onTap: () {
-                          if (onNavigateToStats != null) {
-                            onNavigateToStats!();
-                          }
-                        },
+                        onTap: () => CalendarDayDetailSheet.show(
+                          context,
+                          date: latestEntry.dateTime,
+                          entries: latestDayEntries,
+                        ),
                       ),
                       const SizedBox(height: 80),
                     ],
