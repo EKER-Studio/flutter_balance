@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import 'package:pure_weight/core/utils/unit_converter.dart';
 import 'package:pure_weight/features/weight/domain/entities/weight_entry.dart';
 import 'package:pure_weight/features/weight/presentation/bloc/weight_bloc.dart';
 import 'package:pure_weight/features/weight/presentation/bloc/weight_event.dart';
 import 'package:pure_weight/features/weight/presentation/widgets/add_weight_sheet.dart';
 import 'package:pure_weight/l10n/app_localizations.dart';
+import 'package:pure_weight/presentation/bloc/settings/app_settings_bloc.dart';
 
 /// Bottom sheet displaying entries for a specific day with management actions.
 class CalendarDayDetailSheet extends StatelessWidget {
@@ -39,6 +41,7 @@ class CalendarDayDetailSheet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final unit = context.watch<AppSettingsBloc>().state.measurementUnit;
     final dateStr = DateFormat.yMMMMd(
       Localizations.localeOf(context).toString(),
     ).format(date);
@@ -97,7 +100,7 @@ class CalendarDayDetailSheet extends StatelessWidget {
                         color: Theme.of(context).colorScheme.onPrimaryContainer,
                       ),
                     ),
-                    title: Text('${e.weightKg.toStringAsFixed(1)} kg'),
+                    title: Text(formatWeight(e.weightKg, unit)),
                     subtitle: Text(
                       e.note != null && e.note!.isNotEmpty
                           ? '$timeStr • ${e.note}'
