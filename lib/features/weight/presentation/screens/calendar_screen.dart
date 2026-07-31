@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:pure_weight/features/weight/domain/entities/weight_entry.dart';
 import 'package:pure_weight/features/weight/presentation/bloc/weight_bloc.dart';
 import 'package:pure_weight/features/weight/presentation/bloc/weight_state.dart';
+import 'package:pure_weight/features/weight/presentation/utils/weight_error_localizer.dart';
 import 'package:pure_weight/features/weight/presentation/widgets/add_weight_sheet.dart';
 import 'package:pure_weight/features/weight/presentation/widgets/calendar/calendar_day_empty_card.dart';
 import 'package:pure_weight/features/weight/presentation/widgets/calendar/calendar_day_entries_card.dart';
@@ -110,7 +111,9 @@ class _CalendarScreenState extends State<CalendarScreen> {
                   horizontal: 16,
                   vertical: 12,
                 ),
-                child: CalendarErrorCard(errorMessage: state.message ?? ''),
+                child: CalendarErrorCard(
+                  errorMessage: state.errorType.localizedMessage(l10n),
+                ),
               );
             }
 

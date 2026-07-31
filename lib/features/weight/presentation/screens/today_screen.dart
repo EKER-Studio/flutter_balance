@@ -65,8 +65,7 @@ class TodayScreen extends StatelessWidget {
           listenWhen: (previous, current) => current is WeightError,
           listener: (context, state) {
             if (state is WeightError) {
-              final message =
-                  state.message ?? state.errorType.localizedMessage(l10n);
+              final message = state.errorType.localizedMessage(l10n);
               ScaffoldMessenger.of(context).hideCurrentSnackBar();
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
@@ -98,8 +97,7 @@ class TodayScreen extends StatelessWidget {
             };
 
             if (state is WeightError && entries.isEmpty) {
-              final errorText =
-                  state.message ?? state.errorType.localizedMessage(l10n);
+              final errorText = state.errorType.localizedMessage(l10n);
               return ClampedLayout(
                 padding: const EdgeInsets.symmetric(
                   horizontal: 16,
@@ -173,12 +171,7 @@ class TodayScreen extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       if (state is WeightError) ...[
-                        _buildInlineErrorBanner(
-                          context,
-                          state.errorType,
-                          state.message,
-                          l10n,
-                        ),
+                        _buildInlineErrorBanner(context, state.errorType, l10n),
                         const SizedBox(height: 16),
                       ],
                       HealthSummaryCard(
@@ -233,10 +226,9 @@ class TodayScreen extends StatelessWidget {
   Widget _buildInlineErrorBanner(
     BuildContext context,
     WeightErrorType errorType,
-    String? message,
     AppLocalizations l10n,
   ) {
-    final errorText = message ?? errorType.localizedMessage(l10n);
+    final errorText = errorType.localizedMessage(l10n);
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
