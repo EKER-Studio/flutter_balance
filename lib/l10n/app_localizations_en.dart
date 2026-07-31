@@ -511,7 +511,7 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get tapToViewStatsHint => 'Tap to view statistics';
+  String get tapToViewDetailsHint => 'Tap to view details';
 
   @override
   String bmiCategoryLabel(String category) {

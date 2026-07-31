@@ -153,7 +153,7 @@
   "selectedSuffix": "selected",
   "todayTabTitle": "Weight & BMI",
   "todayAtTime": "Today, {time}",
-  "tapToViewStatsHint": "Tap to view statistics",
+  "tapToViewDetailsHint": "Tap to view details",
   "bmiCategoryLabel": "BMI Category: {category}",
   "bmiValueLabel": "BMI Value: {value} kg/m²",
   "heightNotSetLabel": "height not set",

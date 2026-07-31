@@ -514,7 +514,7 @@ class AppLocalizationsPl extends AppLocalizations {
   }
 
   @override
-  String get tapToViewStatsHint => 'Dotknij, aby przejść do statystyk';
+  String get tapToViewDetailsHint => 'Dotknij, aby zobaczyć szczegóły';
 
   @override
   String bmiCategoryLabel(String category) {

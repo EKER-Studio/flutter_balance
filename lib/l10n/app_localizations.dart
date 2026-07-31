@@ -1016,11 +1016,11 @@ abstract class AppLocalizations {
   /// **'Today, {time}'**
   String todayAtTime(String time);
 
-  /// No description provided for @tapToViewStatsHint.
+  /// No description provided for @tapToViewDetailsHint.
   ///
   /// In en, this message translates to:
-  /// **'Tap to view statistics'**
-  String get tapToViewStatsHint;
+  /// **'Tap to view details'**
+  String get tapToViewDetailsHint;
 
   /// No description provided for @bmiCategoryLabel.
   ///

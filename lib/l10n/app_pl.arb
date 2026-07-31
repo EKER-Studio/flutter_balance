@@ -153,7 +153,7 @@
   "selectedSuffix": "zaznaczony",
   "todayTabTitle": "Waga i BMI",
   "todayAtTime": "Dzisiaj, {time}",
-  "tapToViewStatsHint": "Dotknij, aby przejść do statystyk",
+  "tapToViewDetailsHint": "Dotknij, aby zobaczyć szczegóły",
   "bmiCategoryLabel": "Kategoria BMI: {category}",
   "bmiValueLabel": "Wskaźnik BMI: {value} kg/m²",
   "heightNotSetLabel": "brak podanego wzrostu",
