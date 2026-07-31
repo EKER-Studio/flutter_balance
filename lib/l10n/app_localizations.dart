@@ -416,6 +416,18 @@ abstract class AppLocalizations {
   /// **'Log your weight today and stay on track with PureWeight.'**
   String get notificationReminderBody;
 
+  /// No description provided for @notificationChannelName.
+  ///
+  /// In en, this message translates to:
+  /// **'Daily Weight Reminders'**
+  String get notificationChannelName;
+
+  /// No description provided for @notificationChannelDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Reminds you to record your daily weight measurement.'**
+  String get notificationChannelDescription;
+
   /// No description provided for @setYourHeightTitle.
   ///
   /// In en, this message translates to:

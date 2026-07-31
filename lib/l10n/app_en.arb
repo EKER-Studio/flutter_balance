@@ -53,6 +53,8 @@
   "importError": "Import error: {error}",
   "notificationReminderTitle": "Time to weigh yourself!",
   "notificationReminderBody": "Log your weight today and stay on track with PureWeight.",
+  "notificationChannelName": "Daily Weight Reminders",
+  "notificationChannelDescription": "Reminds you to record your daily weight measurement.",
   "setYourHeightTitle": "Set Your Height",
   "emptyState": "No entries yet. Add your first measurement below!",
   "welcomeTitle": "Welcome to PureWeight!",

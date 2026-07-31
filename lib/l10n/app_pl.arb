@@ -53,6 +53,8 @@
   "importError": "Błąd importu: {error}",
   "notificationReminderTitle": "Czas zważyć się!",
   "notificationReminderBody": "Zanotuj dzisiejszą wagę i pozostań na dobrej drodze w PureWeight.",
+  "notificationChannelName": "Codzienne przypomnienia o ważeniu",
+  "notificationChannelDescription": "Przypomina o codziennym zanotowaniu wagi.",
   "setYourHeightTitle": "Ustaw swój wzrost",
   "emptyState": "Brak wpisów. Dodaj swój pierwszy pomiar poniżej!",
   "welcomeTitle": "Witaj w Waga i BMI!",

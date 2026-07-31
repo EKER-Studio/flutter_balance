@@ -83,6 +83,8 @@ class _AppState extends State<App> {
                   NotificationService.instance.setLocalizedTexts(
                     title: l10n.notificationReminderTitle,
                     body: l10n.notificationReminderBody,
+                    channelName: l10n.notificationChannelName,
+                    channelDescription: l10n.notificationChannelDescription,
                   );
                 },
                 child: settingsState.isLocked

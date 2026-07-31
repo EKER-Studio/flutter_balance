@@ -16,15 +16,15 @@ class NotificationService {
 
   static const int _dailyReminderId = 0;
   static const String _channelId = 'pure_weight_reminders';
-  static const String _channelName = 'Daily Weight Reminders';
-  static const String _channelDescription =
-      'Reminds you to record your daily weight measurement.';
 
   final FlutterLocalNotificationsPlugin _plugin =
       FlutterLocalNotificationsPlugin();
 
   bool _initialized = false;
 
+  String _channelName = 'Daily Weight Reminders';
+  String _channelDescription =
+      'Reminds you to record your daily weight measurement.';
   String _title = 'Time to weigh yourself!';
   String _body = 'Log your weight today and stay on track with PureWeight.';
 
@@ -32,9 +32,16 @@ class NotificationService {
   ///
   /// Must be invoked whenever the app locale changes so scheduled reminders
   /// display in the active language.
-  void setLocalizedTexts({required String title, required String body}) {
+  void setLocalizedTexts({
+    required String title,
+    required String body,
+    required String channelName,
+    required String channelDescription,
+  }) {
     _title = title;
     _body = body;
+    _channelName = channelName;
+    _channelDescription = channelDescription;
   }
 
   /// Initializes the local notification plugin and timezone database.

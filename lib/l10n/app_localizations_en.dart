@@ -181,6 +181,13 @@ class AppLocalizationsEn extends AppLocalizations {
       'Log your weight today and stay on track with PureWeight.';
 
   @override
+  String get notificationChannelName => 'Daily Weight Reminders';
+
+  @override
+  String get notificationChannelDescription =>
+      'Reminds you to record your daily weight measurement.';
+
+  @override
   String get setYourHeightTitle => 'Set Your Height';
 
   @override

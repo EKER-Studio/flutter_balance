@@ -183,6 +183,13 @@ class AppLocalizationsPl extends AppLocalizations {
       'Zanotuj dzisiejszą wagę i pozostań na dobrej drodze w PureWeight.';
 
   @override
+  String get notificationChannelName => 'Codzienne przypomnienia o ważeniu';
+
+  @override
+  String get notificationChannelDescription =>
+      'Przypomina o codziennym zanotowaniu wagi.';
+
+  @override
   String get setYourHeightTitle => 'Ustaw swój wzrost';
 
   @override
