@@ -200,7 +200,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           Icon(Icons.monitor_weight, color: colorScheme.primary),
           const SizedBox(width: 8),
           Text(
-            AppLocalizations.of(context).todayTabTitle,
+            AppLocalizations.of(context).settingsTitle,
             style: textTheme.titleLarge,
           ),
         ],
@@ -211,7 +211,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           child: CircleAvatar(
             backgroundColor: colorScheme.primaryContainer,
             child: Text(
-              'U',
+              AppLocalizations.of(context).appTitle.characters.first,
               style: textTheme.titleSmall?.copyWith(
                 color: colorScheme.onPrimaryContainer,
               ),
