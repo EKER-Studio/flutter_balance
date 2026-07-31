@@ -9,6 +9,7 @@ on:
 jobs:
   verification:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
 
     steps:
       - name: Checkout repository
@@ -24,6 +25,7 @@ jobs:
         uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
+          flutter-version: '3.44.8'
           cache: true
 
       - name: Cache Pub dependencies
