@@ -186,9 +186,10 @@ void main() {
     await tester.pumpWidget(createTestWidget(const TodayScreen()));
     await tester.pump();
 
-    expect(find.text('BMI'), findsOneWidget);
+    expect(find.text('25.1 BMI'), findsOneWidget);
     expect(find.text('Weight trend'), findsOneWidget);
-    expect(find.text('Latest measurement'), findsOneWidget);
+    expect(find.text('Last measurement'), findsOneWidget);
+    expect(find.byIcon(Icons.lightbulb_outline), findsOneWidget);
     expect(find.byType(FloatingActionButton), findsOneWidget);
   });
 }

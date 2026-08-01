@@ -477,6 +477,64 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get lastMeasurementLabel => 'Last measurement';
+
+  @override
+  String goalWeightLabel(String weight) {
+    return 'Goal: $weight';
+  }
+
+  @override
+  String remainingWeightLabel(String weight) {
+    return 'Remaining: $weight';
+  }
+
+  @override
+  String get dailyTipText =>
+      'A steady weighing routine works best when measurements are taken at a similar time of day.';
+
+  @override
+  String get addWeightSemanticsLabel => 'Add a new weight measurement';
+
+  @override
+  String get todayTabHomeSemanticsLabel => 'Today tab, home page';
+
+  @override
+  String weightSummarySemanticsLabel(
+    String weight,
+    String status,
+    String remaining,
+  ) {
+    return 'Today health summary. Last weight is $weight, BMI status is $status. Remaining to goal: $remaining.';
+  }
+
+  @override
+  String bmiValueShortLabel(String value) {
+    return '$value BMI';
+  }
+
+  @override
+  String get weekdayShortMonday => 'Mon';
+
+  @override
+  String get weekdayShortTuesday => 'Tue';
+
+  @override
+  String get weekdayShortWednesday => 'Wed';
+
+  @override
+  String get weekdayShortThursday => 'Thu';
+
+  @override
+  String get weekdayShortFriday => 'Fri';
+
+  @override
+  String get weekdayShortSaturday => 'Sat';
+
+  @override
+  String get weekdayShortSunday => 'Sun';
+
+  @override
   String get tapToViewDetailsHint => 'Tap to view details';
 
   @override

@@ -141,6 +141,21 @@
   "selectedSuffix": "zaznaczony",
   "todayTabTitle": "Waga i BMI",
   "todayAtTime": "Dzisiaj, {time}",
+  "lastMeasurementLabel": "Ostatni pomiar",
+  "goalWeightLabel": "Cel: {weight}",
+  "remainingWeightLabel": "Zostało: {weight}",
+  "dailyTipText": "Stała rutyna ważenia działa najlepiej, gdy pomiary wykonujesz o podobnej porze dnia.",
+  "addWeightSemanticsLabel": "Dodaj nowy pomiar wagi",
+  "todayTabHomeSemanticsLabel": "Karta Dzisiaj, strona główna",
+  "weightSummarySemanticsLabel": "Podsumowanie dzisiejszego stanu zdrowia. Ostatnia waga to {weight}, status BMI {status}. Do celu brakuje {remaining}.",
+  "bmiValueShortLabel": "{value} BMI",
+  "weekdayShortMonday": "Pon",
+  "weekdayShortTuesday": "Wto",
+  "weekdayShortWednesday": "Śro",
+  "weekdayShortThursday": "Czw",
+  "weekdayShortFriday": "Pią",
+  "weekdayShortSaturday": "Sob",
+  "weekdayShortSunday": "Nie",
   "tapToViewDetailsHint": "Dotknij, aby zobaczyć szczegóły",
   "bmiCategoryLabel": "Kategoria BMI: {category}",
   "bmiValueLabel": "Wskaźnik BMI: {value} kg/m²",
@@ -164,6 +179,40 @@
   "@todayAtTime": {
     "placeholders": {
       "time": {
+        "type": "String"
+      }
+    }
+  },
+  "@goalWeightLabel": {
+    "placeholders": {
+      "weight": {
+        "type": "String"
+      }
+    }
+  },
+  "@remainingWeightLabel": {
+    "placeholders": {
+      "weight": {
+        "type": "String"
+      }
+    }
+  },
+  "@weightSummarySemanticsLabel": {
+    "placeholders": {
+      "weight": {
+        "type": "String"
+      },
+      "status": {
+        "type": "String"
+      },
+      "remaining": {
+        "type": "String"
+      }
+    }
+  },
+  "@bmiValueShortLabel": {
+    "placeholders": {
+      "value": {
         "type": "String"
       }
     }

@@ -482,6 +482,64 @@ class AppLocalizationsPl extends AppLocalizations {
   }
 
   @override
+  String get lastMeasurementLabel => 'Ostatni pomiar';
+
+  @override
+  String goalWeightLabel(String weight) {
+    return 'Cel: $weight';
+  }
+
+  @override
+  String remainingWeightLabel(String weight) {
+    return 'Zostało: $weight';
+  }
+
+  @override
+  String get dailyTipText =>
+      'Stała rutyna ważenia działa najlepiej, gdy pomiary wykonujesz o podobnej porze dnia.';
+
+  @override
+  String get addWeightSemanticsLabel => 'Dodaj nowy pomiar wagi';
+
+  @override
+  String get todayTabHomeSemanticsLabel => 'Karta Dzisiaj, strona główna';
+
+  @override
+  String weightSummarySemanticsLabel(
+    String weight,
+    String status,
+    String remaining,
+  ) {
+    return 'Podsumowanie dzisiejszego stanu zdrowia. Ostatnia waga to $weight, status BMI $status. Do celu brakuje $remaining.';
+  }
+
+  @override
+  String bmiValueShortLabel(String value) {
+    return '$value BMI';
+  }
+
+  @override
+  String get weekdayShortMonday => 'Pon';
+
+  @override
+  String get weekdayShortTuesday => 'Wto';
+
+  @override
+  String get weekdayShortWednesday => 'Śro';
+
+  @override
+  String get weekdayShortThursday => 'Czw';
+
+  @override
+  String get weekdayShortFriday => 'Pią';
+
+  @override
+  String get weekdayShortSaturday => 'Sob';
+
+  @override
+  String get weekdayShortSunday => 'Nie';
+
+  @override
   String get tapToViewDetailsHint => 'Dotknij, aby zobaczyć szczegóły';
 
   @override

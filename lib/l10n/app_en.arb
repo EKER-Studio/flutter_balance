@@ -141,6 +141,21 @@
   "selectedSuffix": "selected",
   "todayTabTitle": "Weight & BMI",
   "todayAtTime": "Today, {time}",
+  "lastMeasurementLabel": "Last measurement",
+  "goalWeightLabel": "Goal: {weight}",
+  "remainingWeightLabel": "Remaining: {weight}",
+  "dailyTipText": "A steady weighing routine works best when measurements are taken at a similar time of day.",
+  "addWeightSemanticsLabel": "Add a new weight measurement",
+  "todayTabHomeSemanticsLabel": "Today tab, home page",
+  "weightSummarySemanticsLabel": "Today health summary. Last weight is {weight}, BMI status is {status}. Remaining to goal: {remaining}.",
+  "bmiValueShortLabel": "{value} BMI",
+  "weekdayShortMonday": "Mon",
+  "weekdayShortTuesday": "Tue",
+  "weekdayShortWednesday": "Wed",
+  "weekdayShortThursday": "Thu",
+  "weekdayShortFriday": "Fri",
+  "weekdayShortSaturday": "Sat",
+  "weekdayShortSunday": "Sun",
   "tapToViewDetailsHint": "Tap to view details",
   "bmiCategoryLabel": "BMI Category: {category}",
   "bmiValueLabel": "BMI Value: {value} kg/m²",
@@ -164,6 +179,40 @@
   "@todayAtTime": {
     "placeholders": {
       "time": {
+        "type": "String"
+      }
+    }
+  },
+  "@goalWeightLabel": {
+    "placeholders": {
+      "weight": {
+        "type": "String"
+      }
+    }
+  },
+  "@remainingWeightLabel": {
+    "placeholders": {
+      "weight": {
+        "type": "String"
+      }
+    }
+  },
+  "@weightSummarySemanticsLabel": {
+    "placeholders": {
+      "weight": {
+        "type": "String"
+      },
+      "status": {
+        "type": "String"
+      },
+      "remaining": {
+        "type": "String"
+      }
+    }
+  },
+  "@bmiValueShortLabel": {
+    "placeholders": {
+      "value": {
         "type": "String"
       }
     }

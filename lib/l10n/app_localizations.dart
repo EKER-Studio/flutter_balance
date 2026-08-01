@@ -944,6 +944,100 @@ abstract class AppLocalizations {
   /// **'Today, {time}'**
   String todayAtTime(String time);
 
+  /// No description provided for @lastMeasurementLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Last measurement'**
+  String get lastMeasurementLabel;
+
+  /// No description provided for @goalWeightLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Goal: {weight}'**
+  String goalWeightLabel(String weight);
+
+  /// No description provided for @remainingWeightLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Remaining: {weight}'**
+  String remainingWeightLabel(String weight);
+
+  /// No description provided for @dailyTipText.
+  ///
+  /// In en, this message translates to:
+  /// **'A steady weighing routine works best when measurements are taken at a similar time of day.'**
+  String get dailyTipText;
+
+  /// No description provided for @addWeightSemanticsLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a new weight measurement'**
+  String get addWeightSemanticsLabel;
+
+  /// No description provided for @todayTabHomeSemanticsLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Today tab, home page'**
+  String get todayTabHomeSemanticsLabel;
+
+  /// No description provided for @weightSummarySemanticsLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Today health summary. Last weight is {weight}, BMI status is {status}. Remaining to goal: {remaining}.'**
+  String weightSummarySemanticsLabel(
+    String weight,
+    String status,
+    String remaining,
+  );
+
+  /// No description provided for @bmiValueShortLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'{value} BMI'**
+  String bmiValueShortLabel(String value);
+
+  /// No description provided for @weekdayShortMonday.
+  ///
+  /// In en, this message translates to:
+  /// **'Mon'**
+  String get weekdayShortMonday;
+
+  /// No description provided for @weekdayShortTuesday.
+  ///
+  /// In en, this message translates to:
+  /// **'Tue'**
+  String get weekdayShortTuesday;
+
+  /// No description provided for @weekdayShortWednesday.
+  ///
+  /// In en, this message translates to:
+  /// **'Wed'**
+  String get weekdayShortWednesday;
+
+  /// No description provided for @weekdayShortThursday.
+  ///
+  /// In en, this message translates to:
+  /// **'Thu'**
+  String get weekdayShortThursday;
+
+  /// No description provided for @weekdayShortFriday.
+  ///
+  /// In en, this message translates to:
+  /// **'Fri'**
+  String get weekdayShortFriday;
+
+  /// No description provided for @weekdayShortSaturday.
+  ///
+  /// In en, this message translates to:
+  /// **'Sat'**
+  String get weekdayShortSaturday;
+
+  /// No description provided for @weekdayShortSunday.
+  ///
+  /// In en, this message translates to:
+  /// **'Sun'**
+  String get weekdayShortSunday;
+
   /// No description provided for @tapToViewDetailsHint.
   ///
   /// In en, this message translates to:
