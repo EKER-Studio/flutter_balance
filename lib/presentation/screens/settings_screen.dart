@@ -101,7 +101,9 @@ class _HeightDialogState extends State<_HeightDialog> {
   }
 }
 
+/// Screen for managing profile, application, security, and data settings.
 class SettingsScreen extends StatefulWidget {
+  /// Creates a settings screen.
   const SettingsScreen({super.key});
 
   @override
@@ -124,7 +126,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Scaffold(
+      backgroundColor: colorScheme.surface,
       appBar: _buildAppBar(context),
       body: BlocBuilder<AppSettingsBloc, AppSettingsState>(
         builder: (context, state) {
@@ -534,7 +539,7 @@ class _SectionHeader extends StatelessWidget {
 }
 
 class _CustomSettingsTile extends StatefulWidget {
-  final IconData icon;
+  final String emoji;
   final String title;
   final String? valueText;
   final Widget? trailing;
@@ -542,7 +547,7 @@ class _CustomSettingsTile extends StatefulWidget {
   final bool isError;
   final bool showChevron;
   const _CustomSettingsTile({
-    required this.icon,
+    required this.emoji,
     required this.title,
     this.valueText,
     this.trailing,
@@ -583,28 +588,23 @@ class _CustomSettingsTileState extends State<_CustomSettingsTile> {
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
 
-    final iconColor = widget.isError
-        ? colorScheme.error
-        : colorScheme.onSurfaceVariant;
-
     final leading = ExcludeSemantics(
       child: Container(
         width: 40,
         height: 40,
-        decoration: const BoxDecoration(shape: BoxShape.circle),
-        foregroundDecoration: BoxDecoration(
+        decoration: BoxDecoration(
           color: colorScheme.surfaceContainer,
           shape: BoxShape.circle,
         ),
         alignment: Alignment.center,
-        child: Icon(widget.icon, color: iconColor, size: 20),
+        child: Text(widget.emoji, style: textTheme.titleMedium),
       ),
     );
 
     final titleWidget = Text(
       widget.title,
       style: textTheme.bodyLarge?.copyWith(
-        color: widget.isError ? colorScheme.error : null,
+        color: widget.isError ? colorScheme.error : colorScheme.onSurface,
       ),
     );
 
@@ -648,12 +648,30 @@ class _CustomSettingsTileState extends State<_CustomSettingsTile> {
     final tile = MergeSemantics(
       child: Focus(
         focusNode: _focusNode,
-        child: ListTile(
-          shape: shape,
-          onTap: widget.onTap,
-          leading: leading,
-          title: titleWidget,
-          trailing: trailingWidget,
+        child: Theme(
+          data: Theme.of(context).copyWith(
+            highlightColor: widget.isError
+                ? colorScheme.errorContainer
+                : colorScheme.surfaceContainerHighest,
+            splashColor: widget.isError
+                ? colorScheme.errorContainer
+                : colorScheme.surfaceContainerHighest,
+          ),
+          child: ListTile(
+            shape: shape,
+            hoverColor: widget.isError
+                ? colorScheme.errorContainer
+                : colorScheme.surfaceContainerHighest,
+            focusColor: widget.isError
+                ? colorScheme.errorContainer
+                : colorScheme.surfaceContainerHighest,
+            minLeadingWidth: 40,
+            minVerticalPadding: 8,
+            onTap: widget.onTap,
+            leading: leading,
+            title: titleWidget,
+            trailing: trailingWidget,
+          ),
         ),
       ),
     );
@@ -673,14 +691,14 @@ class _CustomSettingsTileState extends State<_CustomSettingsTile> {
 }
 
 class _CustomSwitchTile extends StatefulWidget {
-  final IconData icon;
+  final String emoji;
   final String title;
   final String? subtitle;
   final bool value;
   final ValueChanged<bool>? onChanged;
 
   const _CustomSwitchTile({
-    required this.icon,
+    required this.emoji,
     required this.title,
     this.subtitle,
     required this.value,
@@ -723,13 +741,12 @@ class _CustomSwitchTileState extends State<_CustomSwitchTile> {
       child: Container(
         width: 40,
         height: 40,
-        decoration: const BoxDecoration(shape: BoxShape.circle),
-        foregroundDecoration: BoxDecoration(
+        decoration: BoxDecoration(
           color: colorScheme.surfaceContainer,
           shape: BoxShape.circle,
         ),
         alignment: Alignment.center,
-        child: Icon(widget.icon, color: colorScheme.onSurfaceVariant, size: 20),
+        child: Text(widget.emoji, style: textTheme.titleMedium),
       ),
     );
 
@@ -742,7 +759,13 @@ class _CustomSwitchTileState extends State<_CustomSwitchTile> {
         focusNode: _focusNode,
         child: SwitchListTile.adaptive(
           shape: shape,
-          title: Text(widget.title, style: textTheme.bodyLarge),
+          tileColor: Colors.transparent,
+          hoverColor: colorScheme.surfaceContainerHighest,
+          minVerticalPadding: 8,
+          title: Text(
+            widget.title,
+            style: textTheme.bodyLarge?.copyWith(color: colorScheme.onSurface),
+          ),
           subtitle: widget.subtitle != null
               ? Text(
                   widget.subtitle!,
@@ -800,16 +823,19 @@ class _ProfileSection extends StatelessWidget {
 
     return Card(
       margin: EdgeInsets.zero,
+      color: colorScheme.surfaceContainerLow,
+      elevation: 0,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
       child: Column(
         children: [
           _CustomSettingsTile(
-            icon: Icons.height,
+            emoji: '🧍',
             title: l10n.height,
             valueText: heightValue,
             onTap: onHeightTap,
           ),
           _CustomSettingsTile(
-            icon: Icons.flag,
+            emoji: '🎯',
             title: l10n.targetWeight,
             trailing: Row(
               mainAxisSize: MainAxisSize.min,
@@ -859,30 +885,32 @@ class _ApplicationSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     final themeLabel = state.themeMode.localizedName(l10n);
-
     final unitLabel = state.measurementUnit.localizedName(l10n);
-
     final notificationTimeText = state.notificationTime.format(context);
 
     return Card(
       margin: EdgeInsets.zero,
+      color: colorScheme.surfaceContainerLow,
+      elevation: 0,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
       child: Column(
         children: [
           _CustomSettingsTile(
-            icon: Icons.palette,
+            emoji: '🌗',
             title: l10n.theme,
             valueText: themeLabel,
             onTap: onThemeTap,
           ),
           _CustomSettingsTile(
-            icon: Icons.straighten,
+            emoji: '⚖️',
             title: l10n.measurementUnit,
             valueText: unitLabel,
             onTap: onUnitTap,
           ),
           _CustomSwitchTile(
-            icon: Icons.notifications_outlined,
+            emoji: '🔔',
             title: l10n.dailyReminder,
             subtitle: l10n.dailyReminderDesc,
             value: state.notificationsEnabled,
@@ -890,7 +918,7 @@ class _ApplicationSection extends StatelessWidget {
           ),
           if (state.notificationsEnabled)
             _CustomSettingsTile(
-              icon: Icons.access_time,
+              emoji: '⏰',
               title: l10n.reminderTime,
               valueText: notificationTimeText,
               onTap: onNotificationTimeTap,
@@ -920,8 +948,13 @@ class _SecuritySection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Card(
       margin: EdgeInsets.zero,
+      color: colorScheme.surfaceContainerLow,
+      elevation: 0,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
       child: FutureBuilder<bool>(
         future: isBiometricAvailable,
         builder: (context, snapshot) {
@@ -929,7 +962,7 @@ class _SecuritySection extends StatelessWidget {
           final isLoading = snapshot.connectionState == ConnectionState.waiting;
 
           return _CustomSwitchTile(
-            icon: Icons.fingerprint,
+            emoji: '🔒',
             title: l10n.biometricLock,
             subtitle: available
                 ? biometricsAvailableLabel
@@ -958,17 +991,22 @@ class _DataSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Card(
       margin: EdgeInsets.zero,
+      color: colorScheme.surfaceContainerLow,
+      elevation: 0,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
       child: Column(
         children: [
           _CustomSettingsTile(
-            icon: Icons.import_export,
+            emoji: '📂',
             title: l10n.importCsv,
             onTap: onImportTap,
           ),
           _CustomSettingsTile(
-            icon: Icons.delete_forever,
+            emoji: '🚨',
             title: l10n.wipeData,
             isError: true,
             showChevron: false,
