@@ -61,9 +61,14 @@ dev_dependencies:
   import_lint: ^2.0.0
 
 dependency_overrides:
-  # Required because isar_community_generator 3.3.2 (latest as of 2026-07-31)
-  # pins analyzer to >=8.0.0 <11.0.0 while import_lint 2.0.0 requires ^12.1.0.
-  # Remove once isar_community_generator bumps its analyzer upper bound.
+  # Temporary compatibility shim pinned on 2026-08-01.
+  # This override exists because isar_community_generator 3.3.2 currently limits analyzer to >=8.0.0 <11.0.0,
+  # while import_lint 2.0.0 currently requires analyzer ^12.1.0.
+  # Keep this shim only until one of the following upstream fixes is available:
+  #   - isar_community_generator adds support for analyzer >=12
+  #   - import_lint publishes a release compatible with analyzer <11
+  # Verify progress by running:
+  #   dart pub outdated import_lint isar_community_generator analyzer
   analyzer: 10.2.0
 
 # For information on the generic Dart part of this file, see the

@@ -81,8 +81,13 @@ flutter analyze
 # regardless of any `severity: error` setting on the rule). Do not rely on
 # its exit code. Instead, parse its own reported summary line, which is the
 # one part of its output we've verified to be stable and truthful.
-IMPORT_LINT_OUTPUT="$(dart run import_lint 2>&1 || true)"
+IMPORT_LINT_OUTPUT="$(dart run import_lint 2>&1)"
+import_lint_status=$?
 echo "$IMPORT_LINT_OUTPUT"
+if [[ $import_lint_status -ne 0 ]]; then
+  echo -e "${RED}❌ [FAIL] import_lint exited with status $import_lint_status.${NC}"
+  exit "$import_lint_status"
+fi
 if echo "$IMPORT_LINT_OUTPUT" | grep -qE "^[1-9][0-9]* issues? found"; then
   echo -e "${RED}❌ [FAIL] import_lint reported architecture boundary violations (see above). Aborting push.${NC}"
   exit 1
