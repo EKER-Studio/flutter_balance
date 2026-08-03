@@ -50,5 +50,20 @@ void main() {
         );
       },
     );
+
+    test('tampered ciphertext fails MAC verification and throws exception', () {
+      const plainText = '82.4';
+      final encrypted = FieldCipher.encrypt(plainText, keyA);
+      final rawBytes = base64Decode(encrypted);
+
+      // Flip a bit in the ciphertext section
+      rawBytes[rawBytes.length - 1] ^= 0xFF;
+      final tampered = base64Encode(rawBytes);
+
+      expect(
+        () => FieldCipher.decrypt(tampered, keyA),
+        throwsA(isA<FormatException>()),
+      );
+    });
   });
 }
