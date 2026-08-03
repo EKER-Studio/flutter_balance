@@ -276,8 +276,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
     if (result != null) {
       context.read<AppSettingsBloc>().add(TargetWeightChanged(result));
-    } else {
-      context.read<AppSettingsBloc>().add(const TargetWeightChanged(null));
     }
   }
 
