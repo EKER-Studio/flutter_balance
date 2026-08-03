@@ -17,6 +17,7 @@ import 'package:pure_weight/features/weight/presentation/widgets/calendar/calend
 import 'package:pure_weight/l10n/app_localizations.dart';
 import 'package:pure_weight/presentation/bloc/settings/app_settings_bloc.dart';
 import 'package:pure_weight/presentation/core/clamped_layout.dart';
+import 'package:pure_weight/presentation/widgets/app_top_bar.dart';
 
 /// Tab 2: Calendar Screen providing a monthly view with measurement status indicators.
 class CalendarScreen extends StatefulWidget {
@@ -76,24 +77,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
     final isSelectedDateFuture = _selectedDate.isAfter(todayEnd);
 
     return Scaffold(
-      appBar: AppBar(
-        title: Row(
-          children: [
-            Icon(
-              Icons.calendar_month,
-              color: Theme.of(context).colorScheme.primary,
-            ),
-            const SizedBox(width: 10),
-            Text(
-              l10n.tabCalendar,
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                color: Theme.of(context).colorScheme.primary,
-              ),
-            ),
-          ],
-        ),
-      ),
+      appBar: AppTopBar(title: l10n.tabCalendar),
       body: SafeArea(
         child: BlocBuilder<WeightBloc, WeightState>(
           builder: (context, state) {

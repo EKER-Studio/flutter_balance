@@ -20,6 +20,7 @@ import 'package:pure_weight/presentation/bloc/settings/app_settings_state.dart';
 import 'package:pure_weight/presentation/bloc/settings/bmi_category.dart';
 import 'package:pure_weight/features/weight/presentation/utils/bmi_category_localizer.dart';
 import 'package:pure_weight/presentation/core/clamped_layout.dart';
+import 'package:pure_weight/presentation/widgets/app_top_bar.dart';
 import 'package:pure_weight/presentation/widgets/state_message_card.dart';
 
 /// Tab 1: Today Screen displaying daily summary, BMI, goal progress, and weight trend.
@@ -35,7 +36,16 @@ class TodayScreen extends StatelessWidget {
     final l10n = AppLocalizations.of(context);
 
     return Scaffold(
-      appBar: _TodayAppBar(onProfilePressed: onNavigateToSettings),
+      appBar: AppTopBar(
+        title: l10n.todayTabTitle,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.account_circle_outlined),
+            tooltip: l10n.settingsTitle,
+            onPressed: onNavigateToSettings,
+          ),
+        ],
+      ),
       body: SafeArea(
         child: BlocConsumer<WeightBloc, WeightState>(
           listenWhen: (previous, current) => current is WeightError,
@@ -207,54 +217,6 @@ class _RefreshableTodayBody extends StatelessWidget {
           child: child,
         ),
       ),
-    );
-  }
-}
-
-class _TodayAppBar extends StatelessWidget implements PreferredSizeWidget {
-  final VoidCallback? onProfilePressed;
-
-  const _TodayAppBar({this.onProfilePressed});
-
-  @override
-  Size get preferredSize => const Size.fromHeight(64);
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
-    final colorScheme = Theme.of(context).colorScheme;
-    final textTheme = Theme.of(context).textTheme;
-
-    return AppBar(
-      toolbarHeight: 64,
-      elevation: 0,
-      scrolledUnderElevation: 0,
-      backgroundColor: colorScheme.surface,
-      titleSpacing: 16,
-      title: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(Icons.monitor_weight, color: colorScheme.primary, size: 24),
-          const SizedBox(width: 10),
-          Text(
-            l10n.todayTabTitle,
-            style: textTheme.headlineMedium?.copyWith(
-              color: colorScheme.primary,
-              fontWeight: FontWeight.w700,
-            ),
-          ),
-        ],
-      ),
-      actions: [
-        IconButton(
-          icon: Icon(
-            Icons.account_circle_outlined,
-            color: colorScheme.onSurface,
-          ),
-          tooltip: l10n.settingsTitle,
-          onPressed: onProfilePressed,
-        ),
-      ],
     );
   }
 }

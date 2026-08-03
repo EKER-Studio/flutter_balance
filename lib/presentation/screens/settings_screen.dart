@@ -15,6 +15,7 @@ import 'package:pure_weight/presentation/bloc/settings/app_theme_mode.dart';
 import 'package:pure_weight/presentation/utils/app_theme_mode_localizer.dart';
 import 'package:pure_weight/core/models/measurement_unit.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:pure_weight/presentation/widgets/app_top_bar.dart';
 import 'package:pure_weight/presentation/widgets/target_weight_dialog.dart';
 import 'dart:io';
 
@@ -130,7 +131,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
     return Scaffold(
       backgroundColor: colorScheme.surface,
-      appBar: _buildAppBar(context),
+      appBar: AppTopBar(title: AppLocalizations.of(context).settingsTitle),
       body: BlocBuilder<AppSettingsBloc, AppSettingsState>(
         builder: (context, state) {
           final l10n = AppLocalizations.of(context);
@@ -148,9 +149,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const SizedBox(height: 8),
-                        _buildHeader(context, l10n),
-                        const SizedBox(height: 24),
+                        const SizedBox(height: 12),
+                        Text(
+                          l10n.settingsSubtitle,
+                          style: Theme.of(context).textTheme.bodyMedium
+                              ?.copyWith(
+                                color: Theme.of(
+                                  context,
+                                ).colorScheme.onSurfaceVariant,
+                              ),
+                        ),
+                        const SizedBox(height: 16),
                         if (isWide)
                           Row(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -287,60 +296,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
           );
         },
       ),
-    );
-  }
-
-  PreferredSizeWidget _buildAppBar(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-    final textTheme = Theme.of(context).textTheme;
-    return AppBar(
-      title: Row(
-        children: [
-          ExcludeSemantics(
-            child: Icon(Icons.monitor_weight, color: colorScheme.primary),
-          ),
-          const SizedBox(width: 8),
-          Text(
-            AppLocalizations.of(context).settingsTitle,
-            style: textTheme.titleLarge,
-          ),
-        ],
-      ),
-      actions: [
-        Padding(
-          padding: const EdgeInsets.only(right: 8),
-          child: Tooltip(
-            message: AppLocalizations.of(context).appTitle,
-            child: CircleAvatar(
-              backgroundColor: colorScheme.primaryContainer,
-              child: Text(
-                AppLocalizations.of(context).appTitle.characters.first,
-                style: textTheme.titleSmall?.copyWith(
-                  color: colorScheme.onPrimaryContainer,
-                ),
-              ),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildHeader(BuildContext context, AppLocalizations l10n) {
-    final textTheme = Theme.of(context).textTheme;
-    final colorScheme = Theme.of(context).colorScheme;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(l10n.settingsTitle, style: textTheme.headlineLarge),
-        const SizedBox(height: 4),
-        Text(
-          l10n.settingsSubtitle,
-          style: textTheme.bodyMedium?.copyWith(
-            color: colorScheme.onSurfaceVariant,
-          ),
-        ),
-      ],
     );
   }
 
