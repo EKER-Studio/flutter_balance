@@ -85,3 +85,10 @@ final class CompleteOnboarding extends AppSettingsEvent {
   const CompleteOnboarding();
 }
 
+/// Resets all application settings to factory default values.
+final class ResetAppSettings extends AppSettingsEvent {
+  /// Creates [ResetAppSettings].
+  const ResetAppSettings();
+}
+
+

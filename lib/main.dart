@@ -87,9 +87,11 @@ Future<void> main() async {
       ),
     );
   } finally {
-    // Guarantee that the native splash screen is dismissed regardless of success or failure,
-    // preventing the app from hanging indefinitely on stuck native assets.
-    FlutterNativeSplash.remove();
+    // Guarantee that the native splash screen is dismissed after initial frame render,
+    // preventing screen flicker or stuck native splash screen assets.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      FlutterNativeSplash.remove();
+    });
   }
 }
 

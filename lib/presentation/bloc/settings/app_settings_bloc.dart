@@ -18,6 +18,7 @@ class AppSettingsBloc extends HydratedBloc<AppSettingsEvent, AppSettingsState> {
     on<UpdateBiometricLock>(_onUpdateBiometricLock);
     on<SetLocked>(_onSetLocked);
     on<CompleteOnboarding>(_onCompleteOnboarding);
+    on<ResetAppSettings>(_onResetAppSettings);
   }
 
   void _onUpdateTheme(UpdateTheme event, Emitter<AppSettingsState> emit) {
@@ -84,6 +85,13 @@ class AppSettingsBloc extends HydratedBloc<AppSettingsEvent, AppSettingsState> {
     Emitter<AppSettingsState> emit,
   ) {
     emit(state.copyWith(isOnboardingCompleted: true));
+  }
+
+  void _onResetAppSettings(
+    ResetAppSettings event,
+    Emitter<AppSettingsState> emit,
+  ) {
+    emit(const AppSettingsState());
   }
 
   @override

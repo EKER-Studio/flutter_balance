@@ -476,6 +476,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Future<void> _wipeDatabase(BuildContext context) async {
     try {
       context.read<WeightBloc>().add(const ClearAllWeightData());
+      context.read<AppSettingsBloc>().add(const ResetAppSettings());
 
       if (context.mounted) {
         context.read<WeightBloc>().add(const RefreshWeightData());

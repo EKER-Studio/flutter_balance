@@ -9,6 +9,7 @@ import 'package:pure_weight/features/weight/domain/repositories/weight_repositor
 import 'package:pure_weight/features/weight/presentation/bloc/weight_bloc.dart';
 import 'package:pure_weight/features/weight/presentation/bloc/weight_event.dart';
 import 'package:pure_weight/presentation/bloc/settings/app_settings_bloc.dart';
+import 'package:pure_weight/presentation/bloc/settings/app_settings_event.dart';
 
 class MockWeightRepository extends Mock implements WeightRepository {}
 
@@ -30,13 +31,15 @@ void main() {
     ).thenAnswer((_) => Stream.value(<WeightEntry>[]));
   });
 
-  testWidgets('App renders MainNavigationScreen with Today tab active', (
+  testWidgets('App renders OnboardingWizardScreen when onboarding is not completed', (
     tester,
   ) async {
+    final settingsBloc = AppSettingsBloc();
+
     await tester.pumpWidget(
       MultiBlocProvider(
         providers: [
-          BlocProvider(create: (_) => AppSettingsBloc()),
+          BlocProvider.value(value: settingsBloc),
           BlocProvider(
             create: (context) =>
                 WeightBloc(repository: repository)
@@ -46,12 +49,38 @@ void main() {
         child: App(repository: repository),
       ),
     );
-    // Let the BlocProvider's create method and streams settle
     await tester.pumpAndSettle();
 
-    // Verify UI state
+    expect(find.text('Step 1 of 3'), findsOneWidget);
+    expect(find.text('Units & Height'), findsOneWidget);
+
+    settingsBloc.close();
+  });
+
+  testWidgets('App renders MainNavigationScreen when onboarding is completed', (
+    tester,
+  ) async {
+    final settingsBloc = AppSettingsBloc();
+    settingsBloc.add(const CompleteOnboarding());
+
+    await tester.pumpWidget(
+      MultiBlocProvider(
+        providers: [
+          BlocProvider.value(value: settingsBloc),
+          BlocProvider(
+            create: (context) =>
+                WeightBloc(repository: repository)
+                  ..add(const SubscribeToWeightChanges()),
+          ),
+        ],
+        child: App(repository: repository),
+      ),
+    );
+    await tester.pumpAndSettle();
+
     expect(find.byType(NavigationBar), findsOneWidget);
     expect(find.text('Today'), findsWidgets);
-    expect(find.text('Add first measurement'), findsOneWidget);
+
+    settingsBloc.close();
   });
 }
