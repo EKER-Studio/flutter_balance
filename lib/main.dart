@@ -4,13 +4,14 @@ import 'dart:ui' as ui;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
+import 'package:isar_community/isar.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:pure_weight/app.dart';
 import 'package:pure_weight/core/database/database_module.dart';
 import 'package:pure_weight/core/services/biometric_service.dart';
 import 'package:pure_weight/core/services/notification_service.dart';
-import 'package:isar_community/isar.dart';
 import 'package:pure_weight/features/weight/data/repositories/isar_weight_repository.dart';
 import 'package:pure_weight/features/weight/domain/repositories/weight_repository.dart';
 import 'package:pure_weight/presentation/bloc/settings/app_settings_bloc.dart';
@@ -18,7 +19,8 @@ import 'package:pure_weight/presentation/bloc/settings/app_settings_event.dart';
 import 'package:pure_weight/presentation/bloc/settings/app_settings_state.dart';
 
 Future<void> main() async {
-  WidgetsFlutterBinding.ensureInitialized();
+  final widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
+  FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
 
   FlutterError.onError = (details) {
     FlutterError.presentError(details);
@@ -54,6 +56,8 @@ Future<void> main() async {
   if (settingsBloc.state.height <= 0) {
     settingsBloc.add(const UpdateHeight(AppSettingsState.defaultHeightCm));
   }
+
+  FlutterNativeSplash.remove();
 
   runApp(
     BlocProvider(
