@@ -3,6 +3,7 @@ import 'dart:ui' as ui;
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
@@ -17,10 +18,19 @@ import 'package:pure_weight/features/weight/domain/repositories/weight_repositor
 import 'package:pure_weight/presentation/bloc/settings/app_settings_bloc.dart';
 import 'package:pure_weight/presentation/bloc/settings/app_settings_event.dart';
 import 'package:pure_weight/presentation/bloc/settings/app_settings_state.dart';
+import 'package:pure_weight/presentation/screens/app_initialization_error_screen.dart';
 
 Future<void> main() async {
   final widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
+
+  // Configure transparent system overlays to match splash & theme background seamlessly.
+  SystemChrome.setSystemUIOverlayStyle(
+    const SystemUiOverlayStyle(
+      statusBarColor: Colors.transparent,
+      systemNavigationBarColor: Colors.transparent,
+    ),
+  );
 
   FlutterError.onError = (details) {
     FlutterError.presentError(details);
@@ -40,31 +50,47 @@ Future<void> main() async {
     return true;
   };
 
-  final storageDirectory = HydratedStorageDirectory(
-    (await getApplicationDocumentsDirectory()).path,
-  );
-  HydratedBloc.storage = await HydratedStorage.build(
-    storageDirectory: storageDirectory,
-  );
+  try {
+    final storageDirectory = HydratedStorageDirectory(
+      (await getApplicationDocumentsDirectory()).path,
+    );
+    HydratedBloc.storage = await HydratedStorage.build(
+      storageDirectory: storageDirectory,
+    );
 
-  final isar = await DatabaseModule.initialize();
-  final repository = _createWeightRepository(isar);
+    final isar = await DatabaseModule.initialize();
+    final repository = _createWeightRepository(isar);
 
-  await NotificationService.instance.initialize();
+    await NotificationService.instance.initialize();
 
-  final settingsBloc = AppSettingsBloc();
-  if (settingsBloc.state.height <= 0) {
-    settingsBloc.add(const UpdateHeight(AppSettingsState.defaultHeightCm));
+    final settingsBloc = AppSettingsBloc();
+    if (settingsBloc.state.height <= 0) {
+      settingsBloc.add(const UpdateHeight(AppSettingsState.defaultHeightCm));
+    }
+
+    runApp(
+      BlocProvider(
+        create: (_) => settingsBloc,
+        child: App(repository: repository),
+      ),
+    );
+  } catch (error, stackTrace) {
+    if (kDebugMode) {
+      debugPrint('App initialization failed: $error\n$stackTrace');
+    }
+    _writeCrashLog(error, stackTrace);
+
+    runApp(
+      AppInitializationErrorScreen(
+        error: error,
+        onRetry: () => main(),
+      ),
+    );
+  } finally {
+    // Guarantee that the native splash screen is dismissed regardless of success or failure,
+    // preventing the app from hanging indefinitely on stuck native assets.
+    FlutterNativeSplash.remove();
   }
-
-  FlutterNativeSplash.remove();
-
-  runApp(
-    BlocProvider(
-      create: (_) => settingsBloc,
-      child: App(repository: repository),
-    ),
-  );
 }
 
 /// Creates the [WeightRepository] implementation backed by Isar.
