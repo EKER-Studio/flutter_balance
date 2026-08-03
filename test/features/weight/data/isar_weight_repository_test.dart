@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
@@ -12,6 +13,20 @@ import 'package:pure_weight/features/weight/domain/entities/weight_entry.dart';
 import 'package:pure_weight/features/weight/domain/weight_error_type.dart';
 
 class MockFlutterSecureStorage extends Mock implements FlutterSecureStorage {}
+
+/// Polls [predicate] until it returns true or [timeout] elapses.
+Future<void> waitUntil(
+  bool Function() predicate, {
+  Duration timeout = const Duration(seconds: 10),
+}) async {
+  final deadline = DateTime.now().add(timeout);
+  while (!predicate()) {
+    if (DateTime.now().isAfter(deadline)) {
+      fail('Timed out waiting for condition');
+    }
+    await Future<void>.delayed(const Duration(milliseconds: 50));
+  }
+}
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -313,5 +328,156 @@ void main() {
         expect(entries[2].dateTime, DateTime(2025, 1, 1));
       },
     );
+  });
+
+  group('IsarWeightRepository Stream Resilience', () {
+    test(
+      'watchAllEntries surfaces errors as domain exceptions and recovers '
+      'after the unlock signal fires',
+      () async {
+        if (isar == null) {
+          markTestSkipped(
+            'Isar native library not available in this environment',
+          );
+          return;
+        }
+        final unlockSignal = StreamController<void>.broadcast();
+        final repo = IsarWeightRepository(
+          isar: isar!,
+          secureStorage: mockSecureStorage,
+          unlockSignal: unlockSignal.stream,
+        );
+        when(
+          () => mockSecureStorage.read(key: 'isar_encryption_key'),
+        ).thenAnswer((_) async => null);
+
+        await repo.addEntry(
+          WeightEntry(weightKg: 82.0, dateTime: DateTime(2025, 6, 1)),
+        );
+
+        final events = <Object>[];
+        final streamDone = Completer<void>();
+        final subscription = repo.watchAllEntries().listen(
+          (entries) => events.add(entries),
+          onError: (Object error, StackTrace stackTrace) =>
+              events.add(error),
+          onDone: streamDone.complete,
+        );
+        addTearDown(subscription.cancel);
+        addTearDown(unlockSignal.close);
+
+        // First emission fails because the encryption key is inaccessible.
+        await waitUntil(
+          () => events.any((e) => e is WeightRepositoryException),
+        );
+
+        // The key becomes available again; the unlock signal must trigger an
+        // immediate re-subscribe instead of waiting out the backoff.
+        when(
+          () => mockSecureStorage.read(key: 'isar_encryption_key'),
+        ).thenAnswer((_) async => base64Encode(testKeyA));
+        unlockSignal.add(null);
+
+        await waitUntil(() => events.any((e) => e is List<WeightEntry>));
+
+        final recovered = events.firstWhere((e) => e is List<WeightEntry>)
+            as List<WeightEntry>;
+        expect(recovered.length, 1);
+        expect(recovered.first.weightKg, 82.0);
+        expect(streamDone.isCompleted, isFalse);
+      },
+    );
+  });
+
+  group('resilientStream retry logic', () {
+    test('surfaces mapped errors and keeps retrying on repeated failures',
+        () async {
+      var attempts = 0;
+      final stream = resilientStream<List<int>>(
+        () {
+          attempts++;
+          return Stream.error(Exception('keystore locked'));
+        },
+        mapError: (error, stack) => StateError('mapped: $error'),
+        backoffFor: (_) => const Duration(milliseconds: 10),
+      );
+
+      final errors = <Object>[];
+      final subscription = stream.listen(
+        (_) {},
+        onError: (Object error, StackTrace stackTrace) => errors.add(error),
+      );
+      addTearDown(subscription.cancel);
+
+      await waitUntil(() => errors.length >= 3);
+      expect(attempts, greaterThanOrEqualTo(3));
+      expect(errors.first, isA<StateError>());
+    });
+
+    test('recovers once the source succeeds again', () async {
+      var attempts = 0;
+      final source = StreamController<List<int>>();
+      final stream = resilientStream<List<int>>(
+        () {
+          attempts++;
+          if (attempts == 1) {
+            return Stream.error(Exception('keystore locked'));
+          }
+          return source.stream;
+        },
+        mapError: (error, stack) => StateError('mapped: $error'),
+        backoffFor: (_) => const Duration(milliseconds: 10),
+      );
+
+      final events = <Object>[];
+      final subscription = stream.listen(
+        (entries) => events.add(entries),
+        onError: (Object error, StackTrace stackTrace) => events.add(error),
+      );
+      addTearDown(subscription.cancel);
+      addTearDown(source.close);
+
+      await waitUntil(() => events.any((e) => e is StateError));
+      source.add([1, 2, 3]);
+      await waitUntil(() => events.whereType<List<int>>().isNotEmpty);
+      expect(attempts, 2);
+      final recovered = events.firstWhere((e) => e is List<int>);
+      expect(recovered, [1, 2, 3]);
+    });
+
+    test('recovery signal skips the backoff wait', () async {
+      final recoverySignal = StreamController<void>.broadcast();
+      var attempts = 0;
+      final stream = resilientStream<List<int>>(
+        () {
+          attempts++;
+          if (attempts == 1) {
+            return Stream.error(Exception('keystore locked'));
+          }
+          return Stream.value(const [7]);
+        },
+        mapError: (error, stack) => StateError('mapped: $error'),
+        recoverySignal: recoverySignal.stream,
+        backoffFor: (_) => const Duration(seconds: 30),
+      );
+
+      final events = <Object>[];
+      final subscription = stream.listen(
+        (entries) => events.add(entries),
+        onError: (Object error, StackTrace stackTrace) => events.add(error),
+      );
+      addTearDown(subscription.cancel);
+      addTearDown(recoverySignal.close);
+
+      await waitUntil(() => events.any((e) => e is StateError));
+      final started = DateTime.now();
+      recoverySignal.add(null);
+      await waitUntil(() => events.any((e) => e == const [7]));
+
+      // Recovery happened well before the 30s backoff would have elapsed.
+      expect(DateTime.now().difference(started), lessThan(
+        const Duration(seconds: 5),
+      ));
+    });
   });
 }

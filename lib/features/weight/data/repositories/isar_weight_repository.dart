@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
@@ -24,6 +25,19 @@ class IsarWeightRepository implements WeightRepository {
   /// Configurable for tests; add pagination rather than raising this further.
   final int maxEntriesLoaded;
 
+  /// Optional stream fired after each successful biometric authentication.
+  ///
+  /// The [watchAllEntries] retry loop wakes up on this signal and re-subscribes
+  /// immediately, instead of waiting out the full backoff, once the user has
+  /// authenticated again and the device keystore is accessible.
+  final Stream<void>? unlockSignal;
+
+  /// Base delay (milliseconds) before the first [watchAllEntries] retry.
+  static const int _retryBaseDelayMs = 250;
+
+  /// Cap (milliseconds) on the exponential retry backoff.
+  static const int _retryMaxDelayMs = 32000;
+
   /// The Isar database instance.
   final Isar isar;
 
@@ -38,11 +52,13 @@ class IsarWeightRepository implements WeightRepository {
   /// Takes an optional [secureStorage] handler.
   /// Takes an optional [encryptionKey] for testing override.
   /// Takes an optional [maxEntriesLoaded] cap, defaulting to [defaultMaxEntriesLoaded].
+  /// Takes an optional [unlockSignal] that triggers immediate stream recovery.
   IsarWeightRepository({
     required this.isar,
     this.secureStorage = const FlutterSecureStorage(),
     this._encryptionKey,
     this.maxEntriesLoaded = defaultMaxEntriesLoaded,
+    this.unlockSignal,
   });
 
   /// Resolves the live Isar instance for this repository.
@@ -136,6 +152,44 @@ class IsarWeightRepository implements WeightRepository {
 
   @override
   Stream<List<WeightEntry>> watchAllEntries() {
+    return resilientStream(
+      _watchAndDecryptEntries,
+      mapError: (error, stack) {
+        // Drop the cached key so the next attempt re-reads it from secure
+        // storage, which becomes accessible again once the user unlocks the
+        // device and authenticates.
+        _encryptionKey = null;
+        if (kDebugMode) {
+          debugPrint(
+            '[IsarWeightRepository] watchAllEntries failure: $error\n$stack',
+          );
+        }
+        return error is WeightRepositoryException
+            ? error
+            : WeightRepositoryException(
+                type: WeightErrorType.streamError,
+                message: 'Weight entry stream failure: $error',
+                sourceError: error,
+              );
+      },
+      recoverySignal: unlockSignal,
+      backoffFor: (consecutiveFailures) {
+        final shift = consecutiveFailures > 7 ? 7 : consecutiveFailures;
+        final delayMs = _retryBaseDelayMs << shift;
+        return Duration(
+          milliseconds:
+              delayMs < _retryMaxDelayMs ? delayMs : _retryMaxDelayMs,
+        );
+      },
+    );
+  }
+
+  /// Watches the Isar query, decrypting each emitted batch with the loaded key.
+  ///
+  /// The returned stream errors (surfaced as a [WeightRepositoryException])
+  /// when the encryption key is missing or the database raises an error, but
+  /// never completes on its own.
+  Stream<List<WeightEntry>> _watchAndDecryptEntries() {
     return liveIsar.weightEntryModels
         .where()
         .sortByDateTimeDesc()
@@ -160,27 +214,7 @@ class IsarWeightRepository implements WeightRepository {
               sourceError: e,
             );
           }
-        })
-        .handleError(
-          (Object error, StackTrace stack) {
-            if (kDebugMode) {
-              debugPrint(
-                '[IsarWeightRepository] watchAllEntries source stream error: '
-                '$error\n$stack',
-              );
-            }
-            // Rethrow as a domain exception so the BLoC receives typed errors
-            // instead of raw infrastructure exceptions. The stream continues
-            // emitting after this error (cancelOnError is false in the BLoC).
-            // ignore: only_throw_errors
-            throw WeightRepositoryException(
-              type: WeightErrorType.streamError,
-              message: 'Weight entry stream infrastructure failure: $error',
-              sourceError: error,
-            );
-          },
-          test: (error) => error is! WeightRepositoryException,
-        );
+        });
   }
 
   @override
@@ -346,4 +380,90 @@ class IsarWeightRepository implements WeightRepository {
       );
     }
   }
+}
+
+/// Re-subscribes to [createStream] whenever it errors or completes.
+///
+/// Each failure is surfaced to the listener via [mapError] before the retry
+/// loop waits [backoffFor] — an exponential delay bounded by the caller —
+/// unless [recoverySignal] fires first. The returned stream never terminates
+/// on its own, so transient infrastructure failures (e.g. an encryption key
+/// that is inaccessible while the device is locked) recover without a restart.
+///
+/// The controller approach is used (instead of `yield*`) because inner-stream
+/// errors forwarded through `yield*` cannot be intercepted by a surrounding
+/// `try`/`catch` when the listener handles errors.
+Stream<T> resilientStream<T>(
+  Stream<T> Function() createStream, {
+  required Object Function(Object error, StackTrace stack) mapError,
+  Stream<void>? recoverySignal,
+  required Duration Function(int consecutiveFailures) backoffFor,
+}) {
+  final controller = StreamController<T>();
+  var consecutiveFailures = 0;
+  var disposed = false;
+  StreamSubscription<T>? sourceSub;
+  Timer? retryTimer;
+  StreamSubscription<void>? retryWaitSub;
+
+  void cancelWait() {
+    retryTimer?.cancel();
+    retryTimer = null;
+    retryWaitSub?.cancel();
+    retryWaitSub = null;
+  }
+
+  // Forward references allow the mutually recursive retry closures below.
+  void Function() resubscribe = () {};
+  void Function() scheduleRetry = () {};
+
+  resubscribe = () {
+    if (disposed) return;
+    cancelWait();
+    sourceSub?.cancel();
+    if (disposed) return;
+    sourceSub = createStream().listen(
+      (data) {
+        if (disposed) return;
+        consecutiveFailures = 0;
+        controller.add(data);
+      },
+      onError: (Object error, StackTrace stack) {
+        if (disposed) return;
+        consecutiveFailures++;
+        controller.addError(mapError(error, stack), stack);
+        scheduleRetry();
+      },
+      onDone: () {
+        if (disposed) return;
+        // A clean completion is treated like a disruption: the underlying
+        // stream is expected to stay open while the database is alive.
+        scheduleRetry();
+      },
+    );
+  };
+
+  scheduleRetry = () {
+    if (disposed) return;
+    final backoff = backoffFor(consecutiveFailures);
+    final signal = recoverySignal;
+    if (signal == null) {
+      retryTimer = Timer(backoff, resubscribe);
+    } else {
+      retryWaitSub = signal.timeout(backoff).listen(
+        (_) => resubscribe(),
+        onError: (Object _) => resubscribe(),
+      );
+    }
+  };
+
+  controller.onCancel = () {
+    disposed = true;
+    cancelWait();
+    sourceSub?.cancel();
+    sourceSub = null;
+  };
+
+  resubscribe();
+  return controller.stream;
 }

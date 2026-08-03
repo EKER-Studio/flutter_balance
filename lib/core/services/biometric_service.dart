@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:local_auth/local_auth.dart';
@@ -38,6 +40,21 @@ class BiometricService {
   static final BiometricService instance = BiometricService._();
 
   final LocalAuthentication _authentication = LocalAuthentication();
+
+  /// Broadcast stream emitting an event after every successful authentication.
+  ///
+  /// Listeners such as the encrypted weight stream recovery use it to retry
+  /// work that failed while the device keystore was locked.
+  Stream<void> get authenticationSuccesses => _authenticationSuccessController.stream;
+
+  final StreamController<void> _authenticationSuccessController =
+      StreamController<void>.broadcast();
+
+  void _notifyAuthenticationSuccess() {
+    if (!_authenticationSuccessController.isClosed) {
+      _authenticationSuccessController.add(null);
+    }
+  }
 
   /// Checks whether the device has active biometric hardware and enrolled credentials.
   ///
@@ -92,7 +109,11 @@ class BiometricService {
         biometricOnly: true,
         persistAcrossBackgrounding: false,
       );
-      return ok ? BiometricAuthResult.success : BiometricAuthResult.canceled;
+      if (ok) {
+        _notifyAuthenticationSuccess();
+        return BiometricAuthResult.success;
+      }
+      return BiometricAuthResult.canceled;
     } on PlatformException catch (e, stack) {
       if (kDebugMode) {
         debugPrint(

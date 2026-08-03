@@ -8,6 +8,7 @@ import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:pure_weight/app.dart';
 import 'package:pure_weight/core/database/database_module.dart';
+import 'package:pure_weight/core/services/biometric_service.dart';
 import 'package:pure_weight/core/services/notification_service.dart';
 import 'package:isar_community/isar.dart';
 import 'package:pure_weight/features/weight/data/repositories/isar_weight_repository.dart';
@@ -66,8 +67,13 @@ Future<void> main() async {
 ///
 /// Kept in [main.dart] as the composition root where the concrete type
 /// is resolved, while the rest of the app only depends on the domain interface.
+/// The repository is wired to [BiometricService.authenticationSuccesses] so
+/// the encrypted watch stream re-subscribes as soon as the user authenticates.
 WeightRepository _createWeightRepository(Isar isar) {
-  return IsarWeightRepository(isar: isar);
+  return IsarWeightRepository(
+    isar: isar,
+    unlockSignal: BiometricService.instance.authenticationSuccesses,
+  );
 }
 
 /// Appends an uncaught [error] to the on-device crash log in release builds.
