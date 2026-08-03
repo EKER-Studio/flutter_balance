@@ -16,7 +16,6 @@ import 'package:pure_weight/presentation/utils/app_theme_mode_localizer.dart';
 import 'package:pure_weight/core/models/measurement_unit.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:pure_weight/presentation/widgets/target_weight_dialog.dart';
-import 'package:pure_weight/presentation/core/clamped_layout.dart';
 import 'dart:io';
 
 class _HeightDialog extends StatefulWidget {
@@ -135,62 +134,156 @@ class _SettingsScreenState extends State<SettingsScreen> {
       body: BlocBuilder<AppSettingsBloc, AppSettingsState>(
         builder: (context, state) {
           final l10n = AppLocalizations.of(context);
-          return SingleChildScrollView(
-            child: ClampedLayout(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const SizedBox(height: 8),
-                  _buildHeader(context, l10n),
-                  const SizedBox(height: 24),
-                  _SectionHeader(label: l10n.profileSection),
-                  const SizedBox(height: 8),
-                  _ProfileSection(
-                    state: state,
-                    l10n: l10n,
-                    onHeightTap: () => _showHeightDialog(context),
-                    onTargetWeightTap: () => _showTargetWeightDialog(context),
-                  ),
-                  const SizedBox(height: 16),
-                  _SectionHeader(label: l10n.applicationSection),
-                  const SizedBox(height: 8),
-                  _ApplicationSection(
-                    state: state,
-                    l10n: l10n,
-                    onThemeTap: () => _showThemeSelection(context),
-                    onUnitTap: () => _showUnitSelection(context),
-                    onNotificationsChanged: (v) =>
-                        _handleNotificationToggle(context, v),
-                    onNotificationTimeTap: () => _selectNotificationTime(
-                      context,
-                      state.notificationTime,
+          return LayoutBuilder(
+            builder: (context, constraints) {
+              final isWide = constraints.maxWidth >= 720;
+              final maxContentWidth = isWide ? 900.0 : 600.0;
+
+              return SingleChildScrollView(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Align(
+                  alignment: Alignment.topCenter,
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(maxWidth: maxContentWidth),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const SizedBox(height: 8),
+                        _buildHeader(context, l10n),
+                        const SizedBox(height: 24),
+                        if (isWide)
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    _SectionHeader(label: l10n.profileSection),
+                                    const SizedBox(height: 8),
+                                    _ProfileSection(
+                                      state: state,
+                                      l10n: l10n,
+                                      onHeightTap: () =>
+                                          _showHeightDialog(context),
+                                      onTargetWeightTap: () =>
+                                          _showTargetWeightDialog(context),
+                                    ),
+                                    const SizedBox(height: 24),
+                                    _SectionHeader(
+                                      label: l10n.applicationSection,
+                                    ),
+                                    const SizedBox(height: 8),
+                                    _ApplicationSection(
+                                      state: state,
+                                      l10n: l10n,
+                                      onThemeTap: () =>
+                                          _showThemeSelection(context),
+                                      onUnitTap: () =>
+                                          _showUnitSelection(context),
+                                      onNotificationsChanged: (v) =>
+                                          _handleNotificationToggle(context, v),
+                                      onNotificationTimeTap: () =>
+                                          _selectNotificationTime(
+                                            context,
+                                            state.notificationTime,
+                                          ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              const SizedBox(width: 24),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    _SectionHeader(label: l10n.securitySection),
+                                    const SizedBox(height: 8),
+                                    _SecuritySection(
+                                      state: state,
+                                      l10n: l10n,
+                                      isBiometricAvailable:
+                                          _isBiometricAvailable,
+                                      onBiometricChanged: (v) =>
+                                          _handleBiometricToggle(context, v),
+                                      biometricsAvailableLabel:
+                                          l10n.biometricDesc,
+                                      biometricsNotAvailableLabel:
+                                          l10n.biometricsNotAvailable,
+                                    ),
+                                    const SizedBox(height: 24),
+                                    _SectionHeader(label: l10n.dataSection),
+                                    const SizedBox(height: 8),
+                                    _DataSection(
+                                      l10n: l10n,
+                                      onImportTap: () => _importCsv(context),
+                                      onWipeTap: () =>
+                                          _showWipeConfirmation(context),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          )
+                        else
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              _SectionHeader(label: l10n.profileSection),
+                              const SizedBox(height: 8),
+                              _ProfileSection(
+                                state: state,
+                                l10n: l10n,
+                                onHeightTap: () => _showHeightDialog(context),
+                                onTargetWeightTap: () =>
+                                    _showTargetWeightDialog(context),
+                              ),
+                              const SizedBox(height: 16),
+                              _SectionHeader(label: l10n.applicationSection),
+                              const SizedBox(height: 8),
+                              _ApplicationSection(
+                                state: state,
+                                l10n: l10n,
+                                onThemeTap: () => _showThemeSelection(context),
+                                onUnitTap: () => _showUnitSelection(context),
+                                onNotificationsChanged: (v) =>
+                                    _handleNotificationToggle(context, v),
+                                onNotificationTimeTap: () =>
+                                    _selectNotificationTime(
+                                      context,
+                                      state.notificationTime,
+                                    ),
+                              ),
+                              const SizedBox(height: 16),
+                              _SectionHeader(label: l10n.securitySection),
+                              const SizedBox(height: 8),
+                              _SecuritySection(
+                                state: state,
+                                l10n: l10n,
+                                isBiometricAvailable: _isBiometricAvailable,
+                                onBiometricChanged: (v) =>
+                                    _handleBiometricToggle(context, v),
+                                biometricsAvailableLabel: l10n.biometricDesc,
+                                biometricsNotAvailableLabel:
+                                    l10n.biometricsNotAvailable,
+                              ),
+                              const SizedBox(height: 16),
+                              _SectionHeader(label: l10n.dataSection),
+                              const SizedBox(height: 8),
+                              _DataSection(
+                                l10n: l10n,
+                                onImportTap: () => _importCsv(context),
+                                onWipeTap: () => _showWipeConfirmation(context),
+                              ),
+                            ],
+                          ),
+                        const SizedBox(height: 32),
+                      ],
                     ),
                   ),
-                  const SizedBox(height: 16),
-                  _SectionHeader(label: l10n.securitySection),
-                  const SizedBox(height: 8),
-                  _SecuritySection(
-                    state: state,
-                    l10n: l10n,
-                    isBiometricAvailable: _isBiometricAvailable,
-                    onBiometricChanged: (v) =>
-                        _handleBiometricToggle(context, v),
-                    biometricsAvailableLabel: l10n.biometricDesc,
-                    biometricsNotAvailableLabel: l10n.biometricsNotAvailable,
-                  ),
-                  const SizedBox(height: 16),
-                  _SectionHeader(label: l10n.dataSection),
-                  const SizedBox(height: 8),
-                  _DataSection(
-                    l10n: l10n,
-                    onImportTap: () => _importCsv(context),
-                    onWipeTap: () => _showWipeConfirmation(context),
-                  ),
-                  const SizedBox(height: 32),
-                ],
-              ),
-            ),
+                ),
+              );
+            },
           );
         },
       ),
@@ -537,7 +630,7 @@ class _SectionHeader extends StatelessWidget {
 }
 
 class _CustomSettingsTile extends StatefulWidget {
-  final String emoji;
+  final IconData icon;
   final String title;
   final String? valueText;
   final Widget? trailing;
@@ -546,7 +639,7 @@ class _CustomSettingsTile extends StatefulWidget {
   final bool showChevron;
   final String? sectionLabel;
   const _CustomSettingsTile({
-    required this.emoji,
+    required this.icon,
     required this.title,
     this.valueText,
     this.trailing,
@@ -597,7 +690,13 @@ class _CustomSettingsTileState extends State<_CustomSettingsTile> {
           shape: BoxShape.circle,
         ),
         alignment: Alignment.center,
-        child: Text(widget.emoji, style: textTheme.titleMedium),
+        child: Icon(
+          widget.icon,
+          size: 24,
+          color: widget.isError
+              ? colorScheme.error
+              : colorScheme.onSurfaceVariant,
+        ),
       ),
     );
 
@@ -694,7 +793,7 @@ class _CustomSettingsTileState extends State<_CustomSettingsTile> {
 }
 
 class _CustomSwitchTile extends StatefulWidget {
-  final String emoji;
+  final IconData icon;
   final String title;
   final String? subtitle;
   final bool value;
@@ -702,7 +801,7 @@ class _CustomSwitchTile extends StatefulWidget {
   final String? sectionLabel;
 
   const _CustomSwitchTile({
-    required this.emoji,
+    required this.icon,
     required this.title,
     this.subtitle,
     required this.value,
@@ -751,7 +850,7 @@ class _CustomSwitchTileState extends State<_CustomSwitchTile> {
           shape: BoxShape.circle,
         ),
         alignment: Alignment.center,
-        child: Text(widget.emoji, style: textTheme.titleMedium),
+        child: Icon(widget.icon, size: 24, color: colorScheme.onSurfaceVariant),
       ),
     );
 
@@ -837,14 +936,14 @@ class _ProfileSection extends StatelessWidget {
       child: Column(
         children: [
           _CustomSettingsTile(
-            emoji: '🧍',
+            icon: Icons.height,
             title: l10n.height,
             valueText: heightValue,
             sectionLabel: l10n.profileSection,
             onTap: onHeightTap,
           ),
           _CustomSettingsTile(
-            emoji: '🎯',
+            icon: Icons.flag,
             title: l10n.targetWeight,
             sectionLabel: l10n.profileSection,
             trailing: Row(
@@ -908,21 +1007,21 @@ class _ApplicationSection extends StatelessWidget {
       child: Column(
         children: [
           _CustomSettingsTile(
-            emoji: '🌗',
-            title: l10n.theme,
-            valueText: themeLabel,
-            sectionLabel: l10n.applicationSection,
-            onTap: onThemeTap,
-          ),
-          _CustomSettingsTile(
-            emoji: '⚖️',
+            icon: Icons.straighten,
             title: l10n.measurementUnit,
             valueText: unitLabel,
             sectionLabel: l10n.applicationSection,
             onTap: onUnitTap,
           ),
+          _CustomSettingsTile(
+            icon: Icons.palette,
+            title: l10n.theme,
+            valueText: themeLabel,
+            sectionLabel: l10n.applicationSection,
+            onTap: onThemeTap,
+          ),
           _CustomSwitchTile(
-            emoji: '🔔',
+            icon: Icons.notifications,
             title: l10n.dailyReminder,
             subtitle: l10n.dailyReminderDesc,
             sectionLabel: l10n.applicationSection,
@@ -931,7 +1030,7 @@ class _ApplicationSection extends StatelessWidget {
           ),
           if (state.notificationsEnabled)
             _CustomSettingsTile(
-              emoji: '⏰',
+              icon: Icons.access_time,
               title: l10n.reminderTime,
               valueText: notificationTimeText,
               sectionLabel: l10n.applicationSection,
@@ -976,7 +1075,7 @@ class _SecuritySection extends StatelessWidget {
           final isLoading = snapshot.connectionState == ConnectionState.waiting;
 
           return _CustomSwitchTile(
-            emoji: '🔒',
+            icon: Icons.fingerprint,
             title: l10n.biometricLock,
             subtitle: available
                 ? biometricsAvailableLabel
@@ -1016,13 +1115,13 @@ class _DataSection extends StatelessWidget {
       child: Column(
         children: [
           _CustomSettingsTile(
-            emoji: '📂',
+            icon: Icons.import_export,
             title: l10n.importCsv,
             sectionLabel: l10n.dataSection,
             onTap: onImportTap,
           ),
           _CustomSettingsTile(
-            emoji: '🚨',
+            icon: Icons.delete_forever,
             title: l10n.wipeData,
             isError: true,
             showChevron: false,

@@ -76,6 +76,7 @@ void main() {
     await tester.pumpWidget(createTestWidget());
     await tester.pump();
 
+    await tester.scrollUntilVisible(find.text('System'), 100);
     await tester.tap(find.text('System'));
     await tester.pump();
 
@@ -155,5 +156,38 @@ void main() {
     await tester.pump();
 
     verifyNever(() => storage.clear());
+  });
+
+  testWidgets('renders Material Icons for settings items', (tester) async {
+    await tester.pumpWidget(createTestWidget());
+    await tester.pump();
+
+    expect(find.byIcon(Icons.height), findsOneWidget);
+    expect(find.byIcon(Icons.flag), findsOneWidget);
+    expect(find.byIcon(Icons.straighten), findsOneWidget);
+    expect(find.byIcon(Icons.palette), findsOneWidget);
+    expect(find.byIcon(Icons.notifications), findsOneWidget);
+    expect(find.byIcon(Icons.fingerprint), findsOneWidget);
+    expect(find.byIcon(Icons.import_export), findsOneWidget);
+    expect(find.byIcon(Icons.delete_forever), findsOneWidget);
+  });
+
+  testWidgets('renders 2-column layout on wide screen (tablet / landscape)', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(1000, 800);
+    tester.view.devicePixelRatio = 1.0;
+
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
+    await tester.pumpWidget(createTestWidget());
+    await tester.pump();
+
+    expect(find.byType(Row), findsWidgets);
+    expect(find.text('PROFILE'), findsOneWidget);
+    expect(find.text('APPLICATION'), findsOneWidget);
+    expect(find.text('SECURITY'), findsOneWidget);
+    expect(find.text('DATA'), findsOneWidget);
   });
 }
