@@ -139,7 +139,7 @@
   "noEntriesLabel": "Brak pomiarów",
   "futureDateSuffix": "Przyszła data",
   "selectedSuffix": "zaznaczony",
-  "todayTabTitle": "Waga i BMI",
+  "todayTabTitle": "Dzisiaj",
   "todayAtTime": "Dzisiaj, {time}",
   "lastMeasurementLabel": "Ostatni pomiar",
   "goalWeightLabel": "Cel: {weight}",

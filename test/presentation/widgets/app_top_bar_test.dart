@@ -13,13 +13,12 @@ void main() {
   }
 
   group('AppTopBar', () {
-    testWidgets('renders title and weight icon', (tester) async {
+    testWidgets('renders title text', (tester) async {
       await tester.pumpWidget(
         createTestWidget(const AppTopBar(title: 'Dzisiaj')),
       );
 
       expect(find.text('Dzisiaj'), findsOneWidget);
-      expect(find.byIcon(Icons.monitor_weight), findsOneWidget);
     });
 
     testWidgets('renders action items when provided', (tester) async {

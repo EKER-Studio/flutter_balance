@@ -139,7 +139,7 @@
   "noEntriesLabel": "No measurements",
   "futureDateSuffix": "Future date",
   "selectedSuffix": "selected",
-  "todayTabTitle": "Weight & BMI",
+  "todayTabTitle": "Today",
   "todayAtTime": "Today, {time}",
   "lastMeasurementLabel": "Last measurement",
   "goalWeightLabel": "Goal: {weight}",

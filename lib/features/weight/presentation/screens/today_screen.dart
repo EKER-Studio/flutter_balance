@@ -36,16 +36,7 @@ class TodayScreen extends StatelessWidget {
     final l10n = AppLocalizations.of(context);
 
     return Scaffold(
-      appBar: AppTopBar(
-        title: l10n.todayTabTitle,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.account_circle_outlined),
-            tooltip: l10n.settingsTitle,
-            onPressed: onNavigateToSettings,
-          ),
-        ],
-      ),
+      appBar: AppTopBar(title: l10n.todayTabTitle),
       body: SafeArea(
         child: BlocConsumer<WeightBloc, WeightState>(
           listenWhen: (previous, current) => current is WeightError,

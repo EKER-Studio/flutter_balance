@@ -28,19 +28,12 @@ class AppTopBar extends StatelessWidget implements PreferredSizeWidget {
       scrolledUnderElevation: 0,
       backgroundColor: colorScheme.surface,
       titleSpacing: 16,
-      title: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(Icons.monitor_weight, color: colorScheme.primary, size: 24),
-          const SizedBox(width: 10),
-          Text(
-            title,
-            style: textTheme.headlineMedium?.copyWith(
-              color: colorScheme.primary,
-              fontWeight: FontWeight.w700,
-            ),
-          ),
-        ],
+      title: Text(
+        title,
+        style: textTheme.headlineMedium?.copyWith(
+          color: colorScheme.primary,
+          fontWeight: FontWeight.w700,
+        ),
       ),
       actions: actions,
     );
