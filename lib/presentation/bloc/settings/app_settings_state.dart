@@ -91,12 +91,18 @@ final class AppSettingsState {
       ),
       height: (heightValue as num?)?.toDouble() ?? defaultHeightCm,
       notificationsEnabled: json['notificationsEnabled'] as bool? ?? true,
-      notificationTime: json['notificationTime'] != null
-          ? TimeOfDay(
-              hour: json['notificationTime']['hour'] as int,
-              minute: json['notificationTime']['minute'] as int,
-            )
-          : const TimeOfDay(hour: 8, minute: 0),
+      notificationTime: (() {
+        final notifTime = json['notificationTime'];
+        if (notifTime == null || notifTime is! Map<String, dynamic>) {
+          return const TimeOfDay(hour: 8, minute: 0);
+        }
+        final hour = notifTime['hour'];
+        final minute = notifTime['minute'];
+        if (hour is int && minute is int) {
+          return TimeOfDay(hour: hour, minute: minute);
+        }
+        return const TimeOfDay(hour: 8, minute: 0);
+      })(),
       targetWeight: (json['targetWeight'] as num?)?.toDouble(),
       isBiometricLockEnabled: biometricLockEnabled,
       isLocked: biometricLockEnabled
