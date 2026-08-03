@@ -6,10 +6,9 @@ import 'package:pure_weight/features/weight/domain/entities/weight_entry.dart';
 class CsvExporter {
   /// Generates a CSV-formatted string from [entries].
   ///
-  /// Takes a list of [WeightEntry] objects [entries] and an optional user height in cm [heightCm].
   /// Formats column headers as `['ID', 'Date', 'Weight (kg)', 'Note']` and formats timestamps as `yyyy-MM-dd HH:mm`.
   /// Returns a [String] containing the encoded CSV data rows separated by newlines (`\n`).
-  static String generateCsv(List<WeightEntry> entries, [double? heightCm]) {
+  static String generateCsv(List<WeightEntry> entries) {
     final List<List<dynamic>> rows = [
       ['ID', 'Date', 'Weight (kg)', 'Note'],
     ];

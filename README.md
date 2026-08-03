@@ -70,7 +70,7 @@ lib/
 
 ### Data Management
 - **CSV Import**: Batch import entries via `CsvImporter` with row validation.
-- **CSV Export**: Export data via `CsvExporter` to a CSV file on disk.
+- **CSV Export** *(planned)*: Export data via `CsvExporter` to a CSV file on disk once a UI entry point ships.
   - Column format: `ID`, `Date`, `Weight (kg)`, `Note`
 - **Unit System**: Seamless switching between Metric (kg, cm) and Imperial (lb, ft/in).
 
