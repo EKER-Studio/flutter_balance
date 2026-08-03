@@ -5,11 +5,13 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:pure_weight/features/weight/domain/entities/weight_entry.dart';
+import 'package:pure_weight/features/weight/domain/time_period.dart';
 import 'package:pure_weight/features/weight/domain/weight_error_type.dart';
 import 'package:pure_weight/features/weight/presentation/bloc/weight_bloc.dart';
 import 'package:pure_weight/features/weight/presentation/bloc/weight_event.dart';
 import 'package:pure_weight/features/weight/presentation/bloc/weight_state.dart';
 import 'package:pure_weight/features/weight/presentation/screens/today_screen.dart';
+import 'package:pure_weight/features/weight/presentation/widgets/add_weight_sheet.dart';
 import 'package:pure_weight/features/weight/presentation/widgets/today_shimmer_skeleton.dart';
 import 'package:pure_weight/l10n/app_localizations.dart';
 import 'package:pure_weight/presentation/bloc/settings/app_settings_bloc.dart';
@@ -159,6 +161,37 @@ void main() {
     expect(find.byType(FloatingActionButton), findsNothing);
   });
 
+  testWidgets('tapping Add first measurement button opens AddWeightSheet', (
+    tester,
+  ) async {
+    when(() => weightBloc.state).thenReturn(
+      const WeightLoaded(
+        entries: [],
+        filteredEntries: [],
+        timePeriod: TimePeriod.month,
+        heightCm: 175.0,
+      ),
+    );
+    when(() => weightBloc.stream).thenAnswer(
+      (_) => Stream.value(
+        const WeightLoaded(
+          entries: [],
+          filteredEntries: [],
+          timePeriod: TimePeriod.month,
+          heightCm: 175.0,
+        ),
+      ),
+    );
+
+    await tester.pumpWidget(createTestWidget(const TodayScreen()));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Add first measurement'));
+    await tester.pumpAndSettle();
+
+    expect(find.byType(AddWeightSheet), findsOneWidget);
+  });
+
   testWidgets('renders cards and FAB when weight entries exist', (
     tester,
   ) async {
@@ -191,5 +224,38 @@ void main() {
     expect(find.text('Last measurement'), findsOneWidget);
     expect(find.byIcon(Icons.lightbulb_outline), findsOneWidget);
     expect(find.byType(FloatingActionButton), findsOneWidget);
+  });
+
+  testWidgets('tapping FAB opens AddWeightSheet when entries exist', (
+    tester,
+  ) async {
+    final entry = WeightEntry(id: 1, weightKg: 72.5, dateTime: DateTime.now());
+
+    when(() => weightBloc.state).thenReturn(
+      WeightLoaded(
+        entries: [entry],
+        filteredEntries: [entry],
+        timePeriod: TimePeriod.month,
+        heightCm: 175.0,
+      ),
+    );
+    when(() => weightBloc.stream).thenAnswer(
+      (_) => Stream.value(
+        WeightLoaded(
+          entries: [entry],
+          filteredEntries: [entry],
+          timePeriod: TimePeriod.month,
+          heightCm: 175.0,
+        ),
+      ),
+    );
+
+    await tester.pumpWidget(createTestWidget(const TodayScreen()));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byType(FloatingActionButton));
+    await tester.pumpAndSettle();
+
+    expect(find.byType(AddWeightSheet), findsOneWidget);
   });
 }
