@@ -7,6 +7,7 @@ import 'package:pure_weight/core/services/biometric_service.dart';
 import 'package:pure_weight/core/utils/csv_importer.dart';
 import 'package:pure_weight/features/weight/presentation/bloc/weight_bloc.dart';
 import 'package:pure_weight/features/weight/presentation/bloc/weight_event.dart';
+import 'package:pure_weight/features/weight/presentation/utils/measurement_unit_localizer.dart';
 import 'package:pure_weight/presentation/bloc/settings/app_settings_bloc.dart';
 import 'package:pure_weight/presentation/bloc/settings/app_settings_event.dart';
 import 'package:pure_weight/presentation/bloc/settings/app_settings_state.dart';
