@@ -27,10 +27,81 @@ class App extends StatefulWidget {
 }
 
 class _AppState extends State<App> {
-  BiometricLockObserver? _observer;
-  WeightBloc? _weightBloc;
-
   late AppLocalizations _l10n;
+
+  @override
+  Widget build(BuildContext context) {
+    return RepositoryProvider.value(
+      value: widget.repository,
+      child: BlocProvider(
+        create: (context) =>
+            WeightBloc(repository: context.read<WeightRepository>())
+              ..add(const SubscribeToWeightChanges()),
+        child: _ObserverRegistrar(
+          localizedReason: () => _l10n.biometricAuthReason,
+          child: BlocBuilder<AppSettingsBloc, AppSettingsState>(
+            builder: (context, settingsState) {
+              final themeMode = switch (settingsState.themeMode) {
+                AppThemeMode.system => ThemeMode.system,
+                AppThemeMode.light => ThemeMode.light,
+                AppThemeMode.dark => ThemeMode.dark,
+              };
+              return MaterialApp(
+                onGenerateTitle: (context) =>
+                    AppLocalizations.of(context).appTitle,
+                theme: AppTheme.lightTheme,
+                darkTheme: AppTheme.darkTheme,
+                themeMode: themeMode,
+                localizationsDelegates:
+                    AppLocalizations.localizationsDelegates,
+                supportedLocales: AppLocalizations.supportedLocales,
+                home: _LocalizationSync(
+                  onLocalized: (l10n) {
+                    _l10n = l10n;
+                    NotificationService.instance.setLocalizedTexts(
+                      title: l10n.notificationReminderTitle,
+                      body: l10n.notificationReminderBody,
+                      channelName: l10n.notificationChannelName,
+                      channelDescription: l10n.notificationChannelDescription,
+                    );
+                  },
+                  child: settingsState.isLocked
+                      ? const BiometricShieldScreen()
+                      : const MainNavigationScreen(),
+                ),
+              );
+            },
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Registers the [BiometricLockObserver] once the [WeightBloc] provider is in scope.
+///
+/// Lives below the [BlocProvider] so the observer can resolve the weight BLoC
+/// dynamically through its own context instead of capturing a direct instance
+/// reference, which could go stale if the provider is ever recreated.
+class _ObserverRegistrar extends StatefulWidget {
+  /// Resolves the localized biometric authentication prompt reason.
+  final String Function() localizedReason;
+
+  /// The subtree rendered below the app-level providers.
+  final Widget child;
+
+  /// Creates an [_ObserverRegistrar] with [localizedReason] and [child].
+  const _ObserverRegistrar({
+    required this.localizedReason,
+    required this.child,
+  });
+
+  @override
+  State<_ObserverRegistrar> createState() => _ObserverRegistrarState();
+}
+
+class _ObserverRegistrarState extends State<_ObserverRegistrar> {
+  BiometricLockObserver? _observer;
 
   @override
   void initState() {
@@ -45,9 +116,9 @@ class _AppState extends State<App> {
         (s) => s.isBiometricLockEnabled,
       ),
       onLockStateChanged: (locked) => settingsBloc.add(SetLocked(locked)),
-      localizedReason: () => _l10n.biometricAuthReason,
+      localizedReason: widget.localizedReason,
       onDatabaseReopened: () async {
-        _weightBloc?.add(const SubscribeToWeightChanges());
+        context.read<WeightBloc>().add(const SubscribeToWeightChanges());
       },
     );
   }
@@ -59,54 +130,7 @@ class _AppState extends State<App> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return RepositoryProvider.value(
-      value: widget.repository,
-      child: BlocProvider(
-        create: (context) =>
-            WeightBloc(repository: context.read<WeightRepository>())
-              ..add(const SubscribeToWeightChanges()),
-        child: Builder(
-          builder: (context) {
-            _weightBloc = context.read<WeightBloc>();
-            return BlocBuilder<AppSettingsBloc, AppSettingsState>(
-              builder: (context, settingsState) {
-                final themeMode = switch (settingsState.themeMode) {
-                  AppThemeMode.system => ThemeMode.system,
-                  AppThemeMode.light => ThemeMode.light,
-                  AppThemeMode.dark => ThemeMode.dark,
-                };
-                return MaterialApp(
-                  onGenerateTitle: (context) =>
-                      AppLocalizations.of(context).appTitle,
-                  theme: AppTheme.lightTheme,
-                  darkTheme: AppTheme.darkTheme,
-                  themeMode: themeMode,
-                  localizationsDelegates:
-                      AppLocalizations.localizationsDelegates,
-                  supportedLocales: AppLocalizations.supportedLocales,
-                  home: _LocalizationSync(
-                    onLocalized: (l10n) {
-                      _l10n = l10n;
-                      NotificationService.instance.setLocalizedTexts(
-                        title: l10n.notificationReminderTitle,
-                        body: l10n.notificationReminderBody,
-                        channelName: l10n.notificationChannelName,
-                        channelDescription: l10n.notificationChannelDescription,
-                      );
-                    },
-                    child: settingsState.isLocked
-                        ? const BiometricShieldScreen()
-                        : const MainNavigationScreen(),
-                  ),
-                );
-              },
-            );
-          },
-        ),
-      ),
-    );
-  }
+  Widget build(BuildContext context) => widget.child;
 }
 
 /// Synchronizes the active locale with services that live outside the widget tree.
