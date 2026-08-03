@@ -42,9 +42,7 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
     List<WeightEntry> entries,
     TimePeriod period,
   ) {
-    if ((identical(entries, _memoEntries) ||
-            listEquals(entries, _memoEntries)) &&
-        period == _memoPeriod) {
+    if (period == _memoPeriod && _sameEntries(entries, _memoEntries)) {
       return _memoResult;
     }
     final filtered = switch (period) {
@@ -63,6 +61,28 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
     _memoPeriod = period;
     _memoResult = result;
     return result;
+  }
+
+  /// Compares two entry lists by content key without relying on identity.
+  ///
+  /// Reactive streams always allocate new list and entry instances, so
+  /// `identical`/`listEquals` can never detect an unchanged dataset. Each
+  /// element's stable key (id + dateTime + weightKg) is compared in a single
+  /// allocation-free pass, which is far cheaper than re-running the filter and
+  /// day aggregation on every stream emission.
+  static bool _sameEntries(List<WeightEntry> entries, List<WeightEntry>? memo) {
+    if (identical(entries, memo)) return true;
+    if (memo == null || entries.length != memo.length) return false;
+    for (var i = 0; i < entries.length; i++) {
+      final current = entries[i];
+      final cached = memo[i];
+      if (current.id != cached.id ||
+          current.dateTime != cached.dateTime ||
+          current.weightKg != cached.weightKg) {
+        return false;
+      }
+    }
+    return true;
   }
 
   /// Aggregates [entries] so that multiple measurements on the same calendar

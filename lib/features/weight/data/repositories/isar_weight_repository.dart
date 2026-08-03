@@ -191,6 +191,7 @@ class IsarWeightRepository implements WeightRepository {
   Stream<List<WeightEntry>> _watchAndDecryptEntries() {
     return liveIsar.weightEntryModels
         .where()
+        .anyDateTime()
         .sortByDateTimeDesc()
         .limit(maxEntriesLoaded)
         .watch(fireImmediately: true)

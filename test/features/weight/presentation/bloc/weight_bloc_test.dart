@@ -238,6 +238,95 @@ void main() {
       },
     );
 
+    test(
+      'reuses memoized filteredEntries when equal content arrives in new instances',
+      () async {
+        final bloc = WeightBloc(repository: repository);
+        final states = <WeightState>[];
+        final subscription = bloc.stream.listen(states.add);
+        addTearDown(subscription.cancel);
+        addTearDown(bloc.close);
+
+        final now = DateTime.now();
+        final first = [
+          WeightEntry(
+            id: 1,
+            weightKg: 70,
+            dateTime: now.subtract(const Duration(days: 2)),
+          ),
+          WeightEntry(
+            id: 2,
+            weightKg: 71,
+            dateTime: now.subtract(const Duration(days: 1)),
+          ),
+        ];
+        final second = [
+          WeightEntry(
+            id: 1,
+            weightKg: 70,
+            dateTime: now.subtract(const Duration(days: 2)),
+          ),
+          WeightEntry(
+            id: 2,
+            weightKg: 71,
+            dateTime: now.subtract(const Duration(days: 1)),
+          ),
+        ];
+
+        bloc.add(const SubscribeToWeightChanges());
+        await Future(() {});
+        streamController.add(first);
+        await Future(() {});
+        streamController.add(second);
+        await Future(() {});
+
+        final loaded = states.whereType<WeightLoaded>().toList();
+        expect(loaded.length, 2);
+        expect(
+          identical(loaded[0].filteredEntries, loaded[1].filteredEntries),
+          isTrue,
+        );
+      },
+    );
+
+    test('refilters when entry content changes between emissions', () async {
+      final bloc = WeightBloc(repository: repository);
+      final states = <WeightState>[];
+      final subscription = bloc.stream.listen(states.add);
+      addTearDown(subscription.cancel);
+      addTearDown(bloc.close);
+
+      final now = DateTime.now();
+      bloc.add(const SubscribeToWeightChanges());
+      await Future(() {});
+
+      streamController.add([
+        WeightEntry(
+          id: 1,
+          weightKg: 70,
+          dateTime: now.subtract(const Duration(days: 2)),
+        ),
+      ]);
+      await Future(() {});
+
+      streamController.add([
+        WeightEntry(
+          id: 1,
+          weightKg: 82,
+          dateTime: now.subtract(const Duration(days: 2)),
+        ),
+      ]);
+      await Future(() {});
+
+      final loaded = states.whereType<WeightLoaded>().toList();
+      expect(loaded.length, 2);
+      expect(
+        identical(loaded[0].filteredEntries, loaded[1].filteredEntries),
+        isFalse,
+      );
+      expect(loaded[1].filteredEntries.single.weightKg, 82);
+    });
+
     test('fromJson restores config and initializes state as WeightInitial', () {
       final bloc = WeightBloc(repository: repository);
       final state = bloc.fromJson({'heightCm': 180, 'timePeriod': 'year'});
