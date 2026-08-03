@@ -677,15 +677,18 @@ class _PeriodPill extends StatelessWidget {
         borderRadius: BorderRadius.circular(9999),
         hoverColor: colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
         focusColor: colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-          child: Text(
-            label,
-            style: textTheme.labelMedium?.copyWith(
-              color: selected
-                  ? colorScheme.onPrimary
-                  : colorScheme.onSurfaceVariant,
-              fontWeight: FontWeight.w600,
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(minWidth: 48, minHeight: 48),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+            child: Text(
+              label,
+              style: textTheme.labelMedium?.copyWith(
+                color: selected
+                    ? colorScheme.onPrimary
+                    : colorScheme.onSurfaceVariant,
+                fontWeight: FontWeight.w600,
+              ),
             ),
           ),
         ),
