@@ -7,6 +7,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:isar_community/isar.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:pure_weight/core/utils/field_cipher.dart';
 import 'package:pure_weight/features/weight/data/models/weight_entry_model.dart';
 import 'package:pure_weight/features/weight/data/repositories/isar_weight_repository.dart';
 import 'package:pure_weight/features/weight/domain/entities/weight_entry.dart';
@@ -54,6 +55,7 @@ void main() {
         [WeightEntryModelSchema],
         directory: tempDir.path,
         name: 'isar_repo_test',
+        inspector: false,
       );
     } catch (_) {
       return;
@@ -110,6 +112,45 @@ void main() {
         expect(entries.first.weightKg, 78.5);
         expect(entries.first.note, 'Valid Note');
         expect(entries.first.dateTime, DateTime(2026, 7, 29, 10, 0));
+      },
+    );
+
+    test(
+      'CASE 1.5 (Full FieldCipher round-trip): On-disk ciphertext decrypts via FieldCipher and repository read matches the exact original inputs',
+      () async {
+        if (isar == null) {
+          markTestSkipped(
+            'Isar native library not available in this environment',
+          );
+          return;
+        }
+        final original = WeightEntry(
+          weightKg: 87.25,
+          dateTime: DateTime(2026, 7, 29, 23, 59, 30, 123),
+          note: 'Stretki ąśćżźł — ünïcödé 🎯',
+        );
+
+        await repository!.addEntry(original);
+
+        // The persisted model must hold ciphertext that FieldCipher decrypts
+        // back to exactly the plaintext values handed to the repository.
+        final rawModels = await isar!.weightEntryModels.where().findAll();
+        expect(rawModels.length, 1);
+        expect(
+          FieldCipher.decrypt(rawModels.first.encryptedWeight, testKeyA),
+          '87.25',
+        );
+        expect(
+          FieldCipher.decrypt(rawModels.first.encryptedNote!, testKeyA),
+          original.note,
+        );
+
+        // Reading via the repository must restore the original entries verbatim.
+        final entries = await repository!.getAllEntries();
+        expect(entries.length, 1);
+        expect(entries.first.weightKg, original.weightKg);
+        expect(entries.first.note, original.note);
+        expect(entries.first.dateTime, original.dateTime);
       },
     );
 
@@ -217,6 +258,7 @@ void main() {
         return;
       }
       final stream = repository!.watchAllEntries();
+      final entriesFuture = stream.firstWhere((e) => e.length == 1);
 
       await repository!.addEntry(
         WeightEntry(
@@ -226,7 +268,7 @@ void main() {
         ),
       );
 
-      final entries = await stream.first;
+      final entries = await entriesFuture;
       expect(entries.length, 1);
       expect(entries.first.weightKg, 80.0);
       expect(entries.first.note, 'Active stream note');
@@ -349,7 +391,13 @@ void main() {
         () => mockSecureStorage.read(key: 'isar_encryption_key'),
       ).thenAnswer((_) async => null);
 
-      await repo.addEntry(
+      // Persist an entry while the key is still available, so the watch phase
+      // has encrypted data to decrypt once the keystore becomes accessible.
+      final keyedWriter = IsarWeightRepository(
+        isar: isar!,
+        encryptionKey: testKeyA,
+      );
+      await keyedWriter.addEntry(
         WeightEntry(weightKg: 82.0, dateTime: DateTime(2025, 6, 1)),
       );
 
