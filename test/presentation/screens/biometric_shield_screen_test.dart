@@ -43,22 +43,22 @@ void main() {
   }) {
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
         .setMockMethodCallHandler(channel, (MethodCall methodCall) async {
-      switch (methodCall.method) {
-        case 'canCheckBiometrics':
-          return canCheckBiometrics;
-        case 'isDeviceSupported':
-          return isDeviceSupported;
-        case 'getAvailableBiometrics':
-          return canCheckBiometrics ? <String>['fingerprint'] : <String>[];
-        case 'authenticate':
-          if (errorCode != null) {
-            throw PlatformException(code: errorCode, message: 'Mock error');
+          switch (methodCall.method) {
+            case 'canCheckBiometrics':
+              return canCheckBiometrics;
+            case 'isDeviceSupported':
+              return isDeviceSupported;
+            case 'getAvailableBiometrics':
+              return canCheckBiometrics ? <String>['fingerprint'] : <String>[];
+            case 'authenticate':
+              if (errorCode != null) {
+                throw PlatformException(code: errorCode, message: 'Mock error');
+              }
+              return authenticateResult;
+            default:
+              return null;
           }
-          return authenticateResult;
-        default:
-          return null;
-      }
-    });
+        });
   }
 
   tearDown(() {
@@ -76,7 +76,9 @@ void main() {
   });
 
   group('BiometricShieldScreen Tests', () {
-    testWidgets('renders lock icon, title, reason, and unlock button', (tester) async {
+    testWidgets('renders lock icon, title, reason, and unlock button', (
+      tester,
+    ) async {
       setupMockChannel(
         canCheckBiometrics: true,
         isDeviceSupported: true,
@@ -107,7 +109,39 @@ void main() {
       expect(bloc.state.isLocked, false);
     });
 
-    testWidgets('terminal failure opens lock recovery dialog and user can disable lock', (tester) async {
+    testWidgets(
+      'terminal failure opens lock recovery dialog and user can disable lock',
+      (tester) async {
+        setupMockChannel(
+          canCheckBiometrics: false,
+          isDeviceSupported: false,
+          authenticateResult: false,
+        );
+
+        await tester.pumpWidget(buildTestWidget());
+        await tester.pumpAndSettle();
+
+        await tester.tap(find.byType(FilledButton));
+        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 500));
+
+        expect(find.byType(AlertDialog), findsOneWidget);
+
+        final l10n = AppLocalizations.of(
+          tester.element(find.byType(AlertDialog)),
+        );
+        await tester.tap(find.widgetWithText(FilledButton, l10n.disableLock));
+        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 500));
+
+        expect(bloc.state.isBiometricLockEnabled, false);
+        expect(bloc.state.isLocked, false);
+      },
+    );
+
+    testWidgets('terminal failure dialog can be dismissed with keep locked', (
+      tester,
+    ) async {
       setupMockChannel(
         canCheckBiometrics: false,
         isDeviceSupported: false,
@@ -123,32 +157,9 @@ void main() {
 
       expect(find.byType(AlertDialog), findsOneWidget);
 
-      final l10n = AppLocalizations.of(tester.element(find.byType(AlertDialog)));
-      await tester.tap(find.widgetWithText(FilledButton, l10n.disableLock));
-      await tester.pump();
-      await tester.pump(const Duration(milliseconds: 500));
-
-      expect(bloc.state.isBiometricLockEnabled, false);
-      expect(bloc.state.isLocked, false);
-    });
-
-    testWidgets('terminal failure dialog can be dismissed with keep locked', (tester) async {
-      setupMockChannel(
-        canCheckBiometrics: false,
-        isDeviceSupported: false,
-        authenticateResult: false,
+      final l10n = AppLocalizations.of(
+        tester.element(find.byType(AlertDialog)),
       );
-
-      await tester.pumpWidget(buildTestWidget());
-      await tester.pumpAndSettle();
-
-      await tester.tap(find.byType(FilledButton));
-      await tester.pump();
-      await tester.pump(const Duration(milliseconds: 500));
-
-      expect(find.byType(AlertDialog), findsOneWidget);
-
-      final l10n = AppLocalizations.of(tester.element(find.byType(AlertDialog)));
       await tester.tap(find.widgetWithText(TextButton, l10n.keepLocked));
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 500));

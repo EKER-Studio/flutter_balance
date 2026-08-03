@@ -142,7 +142,9 @@ void main() {
       },
     );
 
-    testWidgets('CalendarScreen FAB opens AddWeightSheet dialog', (tester) async {
+    testWidgets('CalendarScreen FAB opens AddWeightSheet dialog', (
+      tester,
+    ) async {
       await tester.pumpWidget(
         buildSubject(
           const WeightLoaded(

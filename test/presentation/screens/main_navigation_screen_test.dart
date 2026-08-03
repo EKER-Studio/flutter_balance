@@ -65,7 +65,9 @@ void main() {
       expect(find.text('Settings'), findsOneWidget);
     });
 
-    testWidgets('switches through all 4 tabs when destinations are selected', (tester) async {
+    testWidgets('switches through all 4 tabs when destinations are selected', (
+      tester,
+    ) async {
       await tester.pumpWidget(buildSubject());
       await tester.pumpAndSettle();
 
