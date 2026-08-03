@@ -104,7 +104,7 @@ log_success "All automated unit and widget tests completed successfully."
 # ------------------------------------------------------------------------------
 log_step "7" "Checking Android build integrity (Debug APK)..."
 # ------------------------------------------------------------------------------
-flutter build apk --debug --code-size-directory=build/logs/ || { echo "❌ [FAIL] Android build failed."; exit 1; }
+flutter build apk --debug || { echo "❌ [FAIL] Android build failed."; exit 1; }
 log_success "Android build completed successfully. Debug APK generated at build/app/outputs/flutter-apk/app-debug.apk."
 
 # ==============================================================================
