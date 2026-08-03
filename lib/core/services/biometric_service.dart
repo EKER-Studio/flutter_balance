@@ -45,7 +45,8 @@ class BiometricService {
   ///
   /// Listeners such as the encrypted weight stream recovery use it to retry
   /// work that failed while the device keystore was locked.
-  Stream<void> get authenticationSuccesses => _authenticationSuccessController.stream;
+  Stream<void> get authenticationSuccesses =>
+      _authenticationSuccessController.stream;
 
   final StreamController<void> _authenticationSuccessController =
       StreamController<void>.broadcast();

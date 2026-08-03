@@ -230,22 +230,19 @@ void main() {
       expect(state.notificationTime, const TimeOfDay(hour: 8, minute: 0));
     });
 
-    test(
-      'fromJson handles corrupted notificationTime gracefully',
-      () {
-        final json = {
-          'themeMode': 'dark',
-          'measurementUnit': 'imperial',
-          'height': 175.5,
-          'notificationsEnabled': false,
-          'notificationTime': 'corrupted',
-        };
+    test('fromJson handles corrupted notificationTime gracefully', () {
+      final json = {
+        'themeMode': 'dark',
+        'measurementUnit': 'imperial',
+        'height': 175.5,
+        'notificationsEnabled': false,
+        'notificationTime': 'corrupted',
+      };
 
-        final state = AppSettingsState.fromJson(json);
+      final state = AppSettingsState.fromJson(json);
 
-        expect(state.notificationTime, const TimeOfDay(hour: 8, minute: 0));
-      },
-    );
+      expect(state.notificationTime, const TimeOfDay(hour: 8, minute: 0));
+    });
 
     test(
       'fromJson handles notificationTime with non-int hour/minute gracefully',

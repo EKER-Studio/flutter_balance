@@ -177,8 +177,7 @@ class IsarWeightRepository implements WeightRepository {
         final shift = consecutiveFailures > 7 ? 7 : consecutiveFailures;
         final delayMs = _retryBaseDelayMs << shift;
         return Duration(
-          milliseconds:
-              delayMs < _retryMaxDelayMs ? delayMs : _retryMaxDelayMs,
+          milliseconds: delayMs < _retryMaxDelayMs ? delayMs : _retryMaxDelayMs,
         );
       },
     );
@@ -450,10 +449,9 @@ Stream<T> resilientStream<T>(
     if (signal == null) {
       retryTimer = Timer(backoff, resubscribe);
     } else {
-      retryWaitSub = signal.timeout(backoff).listen(
-        (_) => resubscribe(),
-        onError: (Object _) => resubscribe(),
-      );
+      retryWaitSub = signal
+          .timeout(backoff)
+          .listen((_) => resubscribe(), onError: (Object _) => resubscribe());
     }
   };
 
