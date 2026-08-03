@@ -160,12 +160,12 @@ class _StepUnitsHeightState extends State<StepUnitsHeight> {
                 ButtonSegment<MeasurementUnit>(
                   value: MeasurementUnit.metric,
                   label: Text('Metric (kg / cm)'),
-                  icon: Icon(Icons.straighten),
+                  icon: ExcludeSemantics(child: Icon(Icons.straighten)),
                 ),
                 ButtonSegment<MeasurementUnit>(
                   value: MeasurementUnit.imperial,
                   label: Text('Imperial (lbs / ft-in)'),
-                  icon: Icon(Icons.square_foot),
+                  icon: ExcludeSemantics(child: Icon(Icons.square_foot)),
                 ),
               ],
               selected: {_selectedUnit},

@@ -151,7 +151,7 @@ class _StepInitialWeightState extends State<StepInitialWeight> {
               constraints: const BoxConstraints(minHeight: 48.0),
               child: OutlinedButton.icon(
                 onPressed: _pickDateTime,
-                icon: const Icon(Icons.calendar_today),
+                icon: const ExcludeSemantics(child: Icon(Icons.calendar_today)),
                 label: Text(formattedDate),
               ),
             ),

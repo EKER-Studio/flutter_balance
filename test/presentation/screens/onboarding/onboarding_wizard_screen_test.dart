@@ -129,5 +129,31 @@ void main() {
       expect(find.text('Step 1 of 3'), findsOneWidget);
       expect(tester.takeException(), isNull);
     });
+
+    testWidgets('disables Next button when height is invalid (e.g. 20 cm)', (tester) async {
+      await tester.pumpWidget(buildSubject());
+
+      final heightInput = find.byKey(const Key('height_cm_input'));
+      await tester.enterText(heightInput, '20');
+      await tester.pump();
+
+      final nextButton = tester.widget<FilledButton>(find.widgetWithText(FilledButton, 'Next'));
+      expect(nextButton.onPressed, isNull);
+    });
+
+    testWidgets('accessibility audit: height input has text field semantics and focus', (tester) async {
+      final SemanticsHandle handle = tester.ensureSemantics();
+
+      await tester.pumpWidget(buildSubject());
+
+      final heightInput = find.byKey(const Key('height_cm_input'));
+      await tester.tap(heightInput);
+      await tester.pump();
+
+      final semanticsData = tester.getSemantics(heightInput).getSemanticsData();
+      expect(semanticsData.label, contains('Height'));
+
+      handle.dispose();
+    });
   });
 }
