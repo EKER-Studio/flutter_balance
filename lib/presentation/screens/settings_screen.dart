@@ -544,6 +544,7 @@ class _CustomSettingsTile extends StatefulWidget {
   final VoidCallback? onTap;
   final bool isError;
   final bool showChevron;
+  final String? sectionLabel;
   const _CustomSettingsTile({
     required this.emoji,
     required this.title,
@@ -552,6 +553,7 @@ class _CustomSettingsTile extends StatefulWidget {
     this.onTap,
     this.isError = false,
     this.showChevron = true,
+    this.sectionLabel,
   });
 
   @override
@@ -601,6 +603,9 @@ class _CustomSettingsTileState extends State<_CustomSettingsTile> {
 
     final titleWidget = Text(
       widget.title,
+      semanticsLabel: widget.sectionLabel != null
+          ? '${widget.sectionLabel}, ${widget.title}'
+          : null,
       style: textTheme.bodyLarge?.copyWith(
         color: widget.isError ? colorScheme.error : colorScheme.onSurface,
       ),
@@ -694,6 +699,7 @@ class _CustomSwitchTile extends StatefulWidget {
   final String? subtitle;
   final bool value;
   final ValueChanged<bool>? onChanged;
+  final String? sectionLabel;
 
   const _CustomSwitchTile({
     required this.emoji,
@@ -701,6 +707,7 @@ class _CustomSwitchTile extends StatefulWidget {
     this.subtitle,
     required this.value,
     this.onChanged,
+    this.sectionLabel,
   });
 
   @override
@@ -762,6 +769,9 @@ class _CustomSwitchTileState extends State<_CustomSwitchTile> {
           minVerticalPadding: 8,
           title: Text(
             widget.title,
+            semanticsLabel: widget.sectionLabel != null
+                ? '${widget.sectionLabel}, ${widget.title}'
+                : null,
             style: textTheme.bodyLarge?.copyWith(color: colorScheme.onSurface),
           ),
           subtitle: widget.subtitle != null
@@ -830,11 +840,13 @@ class _ProfileSection extends StatelessWidget {
             emoji: '🧍',
             title: l10n.height,
             valueText: heightValue,
+            sectionLabel: l10n.profileSection,
             onTap: onHeightTap,
           ),
           _CustomSettingsTile(
             emoji: '🎯',
             title: l10n.targetWeight,
+            sectionLabel: l10n.profileSection,
             trailing: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -899,18 +911,21 @@ class _ApplicationSection extends StatelessWidget {
             emoji: '🌗',
             title: l10n.theme,
             valueText: themeLabel,
+            sectionLabel: l10n.applicationSection,
             onTap: onThemeTap,
           ),
           _CustomSettingsTile(
             emoji: '⚖️',
             title: l10n.measurementUnit,
             valueText: unitLabel,
+            sectionLabel: l10n.applicationSection,
             onTap: onUnitTap,
           ),
           _CustomSwitchTile(
             emoji: '🔔',
             title: l10n.dailyReminder,
             subtitle: l10n.dailyReminderDesc,
+            sectionLabel: l10n.applicationSection,
             value: state.notificationsEnabled,
             onChanged: onNotificationsChanged,
           ),
@@ -919,6 +934,7 @@ class _ApplicationSection extends StatelessWidget {
               emoji: '⏰',
               title: l10n.reminderTime,
               valueText: notificationTimeText,
+              sectionLabel: l10n.applicationSection,
               onTap: onNotificationTimeTap,
             ),
         ],
@@ -965,6 +981,7 @@ class _SecuritySection extends StatelessWidget {
             subtitle: available
                 ? biometricsAvailableLabel
                 : biometricsNotAvailableLabel,
+            sectionLabel: l10n.securitySection,
             value: available ? state.isBiometricLockEnabled : false,
             onChanged: isLoading
                 ? null
@@ -1001,6 +1018,7 @@ class _DataSection extends StatelessWidget {
           _CustomSettingsTile(
             emoji: '📂',
             title: l10n.importCsv,
+            sectionLabel: l10n.dataSection,
             onTap: onImportTap,
           ),
           _CustomSettingsTile(
@@ -1008,6 +1026,7 @@ class _DataSection extends StatelessWidget {
             title: l10n.wipeData,
             isError: true,
             showChevron: false,
+            sectionLabel: l10n.dataSection,
             onTap: onWipeTap,
           ),
         ],

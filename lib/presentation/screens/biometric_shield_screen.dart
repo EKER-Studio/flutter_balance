@@ -92,7 +92,9 @@ class BiometricShieldScreen extends StatelessWidget {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  ExcludeSemantics(
+                  Semantics(
+                    label: 'Application locked status icon',
+                    image: true,
                     child: Icon(
                       Icons.lock_outline,
                       size: 80,
