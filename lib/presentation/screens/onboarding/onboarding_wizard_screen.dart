@@ -68,6 +68,12 @@ class _OnboardingWizardScreenState extends State<OnboardingWizardScreen> {
     settingsBloc.add(UpdateMeasurementUnit(unit));
     settingsBloc.add(UpdateHeight(heightCm));
 
+    // Sync height into the weight BLoC before the final step persists the
+    // initial measurement, otherwise its AddWeight guard rejects the entry
+    // with a heightNotSet error on a fresh install (height is only ever
+    // stored in AppSettingsBloc during onboarding).
+    context.read<WeightBloc>().add(UpdateUserHeight(heightCm));
+
     _goToStep(1);
   }
 

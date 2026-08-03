@@ -83,6 +83,12 @@ void main() {
       expect(find.text('Target Weight'), findsOneWidget);
       expect(find.byIcon(Icons.arrow_back), findsOneWidget);
 
+      // Height is synced to the weight BLoC so AddWeight in step 3 does not
+      // get rejected with a heightNotSet error on a fresh install.
+      verify(
+        () => weightBloc.add(any(that: isA<UpdateUserHeight>())),
+      ).called(1);
+
       // Step 2 -> Next (Skip target weight)
       await tester.tap(find.text('Skip'));
       await tester.pumpAndSettle();
