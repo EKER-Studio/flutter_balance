@@ -1,3 +1,4 @@
+import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:pure_weight/presentation/bloc/settings/app_theme_mode.dart';
 import 'package:pure_weight/presentation/bloc/settings/bmi_category.dart';
@@ -6,7 +7,7 @@ import 'package:pure_weight/core/models/measurement_unit.dart';
 /// Persistent app settings state.
 ///
 /// All fields are persisted across app restarts via [HydratedBloc].
-final class AppSettingsState {
+final class AppSettingsState extends Equatable {
   static const Object _targetWeightSentinel = Object();
 
   /// Default height in centimeters applied when no valid height is configured.
@@ -36,6 +37,9 @@ final class AppSettingsState {
   /// Whether the app is currently locked behind the biometric shield.
   final bool isLocked;
 
+  /// Whether the user has completed the initial onboarding wizard.
+  final bool isOnboardingCompleted;
+
   /// Creates [AppSettingsState] with the given parameters.
   const AppSettingsState({
     this.themeMode = AppThemeMode.system,
@@ -46,6 +50,7 @@ final class AppSettingsState {
     this.targetWeight,
     this.isBiometricLockEnabled = false,
     this.isLocked = false,
+    this.isOnboardingCompleted = false,
   });
 
   /// Creates a copy of this state with the given fields replaced.
@@ -58,6 +63,7 @@ final class AppSettingsState {
     Object? targetWeight = _targetWeightSentinel,
     bool? isBiometricLockEnabled,
     bool? isLocked,
+    bool? isOnboardingCompleted,
   }) {
     return AppSettingsState(
       themeMode: themeMode ?? this.themeMode,
@@ -71,8 +77,23 @@ final class AppSettingsState {
       isBiometricLockEnabled:
           isBiometricLockEnabled ?? this.isBiometricLockEnabled,
       isLocked: isLocked ?? this.isLocked,
+      isOnboardingCompleted:
+          isOnboardingCompleted ?? this.isOnboardingCompleted,
     );
   }
+
+  @override
+  List<Object?> get props => [
+        themeMode,
+        measurementUnit,
+        height,
+        notificationsEnabled,
+        notificationTime,
+        targetWeight,
+        isBiometricLockEnabled,
+        isLocked,
+        isOnboardingCompleted,
+      ];
 
   /// Deserializes [AppSettingsState] from a JSON map.
   factory AppSettingsState.fromJson(Map<String, dynamic> json) {
@@ -108,6 +129,7 @@ final class AppSettingsState {
       isLocked: biometricLockEnabled
           ? true
           : (json['isLocked'] as bool? ?? false),
+      isOnboardingCompleted: json['isOnboardingCompleted'] as bool? ?? false,
     );
   }
 
@@ -125,6 +147,7 @@ final class AppSettingsState {
       'targetWeight': targetWeight,
       'isBiometricLockEnabled': isBiometricLockEnabled,
       'isLocked': isLocked,
+      'isOnboardingCompleted': isOnboardingCompleted,
     };
   }
 }

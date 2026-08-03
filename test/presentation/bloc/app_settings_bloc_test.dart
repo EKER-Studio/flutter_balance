@@ -32,6 +32,7 @@ void main() {
       expect(bloc.state.notificationsEnabled, true);
       expect(bloc.state.notificationTime, const TimeOfDay(hour: 8, minute: 0));
       expect(bloc.state.isLocked, false);
+      expect(bloc.state.isOnboardingCompleted, false);
     });
 
     group('AppSettingsX', () {
@@ -142,6 +143,19 @@ void main() {
     );
 
     blocTest<AppSettingsBloc, AppSettingsState>(
+      'emits updated state on CompleteOnboarding',
+      build: () => AppSettingsBloc(),
+      act: (bloc) => bloc.add(const CompleteOnboarding()),
+      expect: () => [
+        isA<AppSettingsState>().having(
+          (s) => s.isOnboardingCompleted,
+          'isOnboardingCompleted',
+          true,
+        ),
+      ],
+    );
+
+    blocTest<AppSettingsBloc, AppSettingsState>(
       'preserves other fields when updating theme',
       build: () => AppSettingsBloc(),
       seed: () => const AppSettingsState(
@@ -149,6 +163,7 @@ void main() {
         height: 185.0,
         notificationsEnabled: false,
         notificationTime: TimeOfDay(hour: 10, minute: 0),
+        isOnboardingCompleted: true,
       ),
       act: (bloc) => bloc.add(const UpdateTheme(AppThemeMode.light)),
       expect: () => [
@@ -169,6 +184,11 @@ void main() {
               (s) => s.notificationTime,
               'notificationTime',
               const TimeOfDay(hour: 10, minute: 0),
+            )
+            .having(
+              (s) => s.isOnboardingCompleted,
+              'isOnboardingCompleted',
+              true,
             ),
       ],
     );
@@ -180,6 +200,7 @@ void main() {
         'height': 175.5,
         'notificationsEnabled': false,
         'notificationTime': {'hour': 14, 'minute': 30},
+        'isOnboardingCompleted': true,
       };
 
       final state = AppSettingsState.fromJson(json);
@@ -189,6 +210,7 @@ void main() {
       expect(state.height, 175.5);
       expect(state.notificationsEnabled, false);
       expect(state.notificationTime, const TimeOfDay(hour: 14, minute: 30));
+      expect(state.isOnboardingCompleted, true);
     });
 
     test(
@@ -228,6 +250,7 @@ void main() {
       expect(state.height, 170.0);
       expect(state.notificationsEnabled, true);
       expect(state.notificationTime, const TimeOfDay(hour: 8, minute: 0));
+      expect(state.isOnboardingCompleted, false);
     });
 
     test('fromJson handles corrupted notificationTime gracefully', () {
@@ -268,6 +291,7 @@ void main() {
         height: 175.5,
         notificationsEnabled: false,
         notificationTime: TimeOfDay(hour: 14, minute: 30),
+        isOnboardingCompleted: true,
       );
 
       final json = state.toJson();
@@ -278,6 +302,7 @@ void main() {
       expect(json['notificationsEnabled'], false);
       expect(json['notificationTime']['hour'], 14);
       expect(json['notificationTime']['minute'], 30);
+      expect(json['isOnboardingCompleted'], true);
     });
 
     test('toJson serializes defaults correctly', () {
@@ -291,6 +316,7 @@ void main() {
       expect(json['notificationsEnabled'], true);
       expect(json['notificationTime']['hour'], 8);
       expect(json['notificationTime']['minute'], 0);
+      expect(json['isOnboardingCompleted'], false);
     });
 
     test('copyWith creates updated copy', () {
@@ -300,11 +326,13 @@ void main() {
         height: 165.0,
         notificationsEnabled: true,
         notificationTime: TimeOfDay(hour: 7, minute: 0),
+        isOnboardingCompleted: false,
       );
 
       final updated = original.copyWith(
         themeMode: AppThemeMode.dark,
         height: 180.0,
+        isOnboardingCompleted: true,
       );
 
       expect(updated.themeMode, AppThemeMode.dark);
@@ -312,6 +340,7 @@ void main() {
       expect(updated.height, 180.0);
       expect(updated.notificationsEnabled, true);
       expect(updated.notificationTime, const TimeOfDay(hour: 7, minute: 0));
+      expect(updated.isOnboardingCompleted, true);
     });
   });
 }

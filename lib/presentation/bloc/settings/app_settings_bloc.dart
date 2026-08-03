@@ -17,6 +17,7 @@ class AppSettingsBloc extends HydratedBloc<AppSettingsEvent, AppSettingsState> {
     on<TargetWeightChanged>(_onTargetWeightChanged);
     on<UpdateBiometricLock>(_onUpdateBiometricLock);
     on<SetLocked>(_onSetLocked);
+    on<CompleteOnboarding>(_onCompleteOnboarding);
   }
 
   void _onUpdateTheme(UpdateTheme event, Emitter<AppSettingsState> emit) {
@@ -76,6 +77,13 @@ class AppSettingsBloc extends HydratedBloc<AppSettingsEvent, AppSettingsState> {
 
   void _onSetLocked(SetLocked event, Emitter<AppSettingsState> emit) {
     emit(state.copyWith(isLocked: event.locked));
+  }
+
+  void _onCompleteOnboarding(
+    CompleteOnboarding event,
+    Emitter<AppSettingsState> emit,
+  ) {
+    emit(state.copyWith(isOnboardingCompleted: true));
   }
 
   @override

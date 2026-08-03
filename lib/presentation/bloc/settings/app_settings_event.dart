@@ -78,3 +78,10 @@ final class SetLocked extends AppSettingsEvent {
   /// Creates [SetLocked] with the given [locked].
   const SetLocked(this.locked);
 }
+
+/// Marks the initial onboarding wizard as completed.
+final class CompleteOnboarding extends AppSettingsEvent {
+  /// Creates [CompleteOnboarding].
+  const CompleteOnboarding();
+}
+
