@@ -12,6 +12,7 @@ import 'package:pure_weight/presentation/bloc/settings/app_settings_bloc.dart';
 import 'package:pure_weight/presentation/bloc/settings/app_settings_event.dart';
 import 'package:pure_weight/presentation/bloc/settings/app_settings_state.dart';
 import 'package:pure_weight/presentation/bloc/settings/app_theme_mode.dart';
+import 'package:pure_weight/presentation/utils/app_theme_mode_localizer.dart';
 import 'package:pure_weight/core/models/measurement_unit.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:pure_weight/presentation/widgets/target_weight_dialog.dart';

@@ -8,6 +8,7 @@ import 'package:pure_weight/presentation/bloc/settings/app_settings_bloc.dart';
 import 'package:pure_weight/presentation/bloc/settings/app_settings_event.dart';
 import 'package:pure_weight/presentation/bloc/settings/app_settings_state.dart';
 import 'package:pure_weight/presentation/bloc/settings/bmi_category.dart';
+import 'package:pure_weight/features/weight/presentation/utils/bmi_category_localizer.dart';
 import 'package:pure_weight/presentation/widgets/target_weight_dialog.dart';
 
 /// A health summary card displaying current BMI, last updated status, category badge, and weight goal actions.

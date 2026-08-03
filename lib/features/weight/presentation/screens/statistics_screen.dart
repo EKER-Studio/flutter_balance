@@ -10,6 +10,7 @@ import 'package:pure_weight/l10n/app_localizations.dart';
 import 'package:pure_weight/presentation/bloc/settings/app_settings_bloc.dart';
 import 'package:pure_weight/presentation/bloc/settings/app_settings_state.dart';
 import 'package:pure_weight/presentation/bloc/settings/bmi_category.dart';
+import 'package:pure_weight/features/weight/presentation/utils/bmi_category_localizer.dart';
 import 'package:pure_weight/presentation/core/clamped_layout.dart';
 import 'package:pure_weight/presentation/widgets/weight_chart.dart';
 import 'package:pure_weight/features/weight/presentation/widgets/statistics_shimmer_skeleton.dart';
