@@ -124,7 +124,11 @@ class _ObserverRegistrarState extends State<_ObserverRegistrar> {
 
   @override
   void dispose() {
-    _observer?.removeThisObserver();
+    try {
+      _observer?.removeThisObserver();
+    } finally {
+      _observer = null;
+    }
     super.dispose();
   }
 
