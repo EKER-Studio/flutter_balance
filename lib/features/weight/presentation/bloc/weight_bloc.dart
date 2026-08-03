@@ -122,15 +122,20 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
       onError: (Object error, StackTrace stackTrace) {
         if (kDebugMode) {
           debugPrint(
-            '[WeightBloc] Database stream emitted an infrastructure error: $error\n$stackTrace',
+            '[WeightBloc] Database stream emitted an infrastructure error: '
+            '$error\n$stackTrace',
           );
         }
+        final errorType = error is WeightRepositoryException
+            ? error.type
+            : WeightErrorType.streamError;
+        final existingEntries = _entriesFromState(state);
         return WeightError(
-          errorType: WeightErrorType.streamError,
+          errorType: errorType,
           heightCm: state.heightCm,
           timePeriod: state.timePeriod,
-          entries: const [],
-          filteredEntries: const [],
+          entries: existingEntries,
+          filteredEntries: _filterEntries(existingEntries, state.timePeriod),
         );
       },
     );

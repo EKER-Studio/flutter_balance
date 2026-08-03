@@ -142,9 +142,45 @@ class IsarWeightRepository implements WeightRepository {
         .limit(maxEntriesLoaded)
         .watch(fireImmediately: true)
         .asyncMap((models) async {
-          final key = await _getOrLoadKey(isWrite: false);
-          return models.map((m) => _modelToEntity(m, key)).toList();
-        });
+          try {
+            final key = await _getOrLoadKey(isWrite: false);
+            return models.map((m) => _modelToEntity(m, key)).toList();
+          } on WeightRepositoryException {
+            rethrow;
+          } catch (e, stack) {
+            if (kDebugMode) {
+              debugPrint(
+                '[IsarWeightRepository] watchAllEntries decryption error: '
+                '$e\n$stack',
+              );
+            }
+            throw WeightRepositoryException(
+              type: WeightErrorType.readFailed,
+              message: 'Failed to decrypt weight entries: $e',
+              sourceError: e,
+            );
+          }
+        })
+        .handleError(
+          (Object error, StackTrace stack) {
+            if (kDebugMode) {
+              debugPrint(
+                '[IsarWeightRepository] watchAllEntries source stream error: '
+                '$error\n$stack',
+              );
+            }
+            // Rethrow as a domain exception so the BLoC receives typed errors
+            // instead of raw infrastructure exceptions. The stream continues
+            // emitting after this error (cancelOnError is false in the BLoC).
+            // ignore: only_throw_errors
+            throw WeightRepositoryException(
+              type: WeightErrorType.streamError,
+              message: 'Weight entry stream infrastructure failure: $error',
+              sourceError: error,
+            );
+          },
+          test: (error) => error is! WeightRepositoryException,
+        );
   }
 
   @override
