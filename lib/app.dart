@@ -68,8 +68,8 @@ class _AppState extends State<App> {
                   child: !settingsState.isOnboardingCompleted
                       ? const OnboardingWizardScreen()
                       : (settingsState.isLocked
-                          ? const BiometricShieldScreen()
-                          : const MainNavigationScreen()),
+                            ? const BiometricShieldScreen()
+                            : const MainNavigationScreen()),
                 ),
               );
             },

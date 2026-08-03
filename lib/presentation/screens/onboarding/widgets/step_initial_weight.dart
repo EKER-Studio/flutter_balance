@@ -92,7 +92,9 @@ class _StepInitialWeightState extends State<StepInitialWeight> {
     final theme = Theme.of(context);
     final isImperial = widget.unit == MeasurementUnit.imperial;
     final unitSuffix = isImperial ? 'lbs' : 'kg';
-    final formattedDate = DateFormat.yMMMd().add_jm().format(_selectedTimestamp);
+    final formattedDate = DateFormat.yMMMd().add_jm().format(
+      _selectedTimestamp,
+    );
 
     return ClampedLayout(
       padding: const EdgeInsets.all(24.0),

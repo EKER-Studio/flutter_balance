@@ -25,8 +25,9 @@ class AppInitializationErrorScreen extends StatelessWidget {
     final mediaQuery = MediaQuery.of(context);
     final brightness = mediaQuery.platformBrightness;
     final isDark = brightness == Brightness.dark;
-    final colorScheme =
-        isDark ? AppTheme.darkColorScheme : AppTheme.lightColorScheme;
+    final colorScheme = isDark
+        ? AppTheme.darkColorScheme
+        : AppTheme.lightColorScheme;
 
     return MaterialApp(
       debugShowCheckedModeBanner: false,
@@ -81,7 +82,8 @@ class AppInitializationErrorScreen extends StatelessWidget {
                     Semantics(
                       button: true,
                       label: 'Retry starting the application',
-                      hint: 'Double tap to attempt re-initializing database and services',
+                      hint:
+                          'Double tap to attempt re-initializing database and services',
                       child: FilledButton.icon(
                         onPressed: onRetry,
                         icon: const Icon(Icons.refresh_rounded),

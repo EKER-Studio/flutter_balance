@@ -4,8 +4,9 @@ import 'package:pure_weight/presentation/screens/app_initialization_error_screen
 
 void main() {
   group('AppInitializationErrorScreen Tests', () {
-    testWidgets('renders light mode error UI and handles retry tap',
-        (WidgetTester tester) async {
+    testWidgets('renders light mode error UI and handles retry tap', (
+      WidgetTester tester,
+    ) async {
       bool retried = false;
 
       await tester.pumpWidget(
@@ -28,8 +29,9 @@ void main() {
       expect(retried, isTrue);
     });
 
-    testWidgets('renders dark mode error UI cleanly',
-        (WidgetTester tester) async {
+    testWidgets('renders dark mode error UI cleanly', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(
         MediaQuery(
           data: const MediaQueryData(platformBrightness: Brightness.dark),
@@ -44,8 +46,9 @@ void main() {
       expect(find.text('Retry Startup'), findsOneWidget);
     });
 
-    testWidgets('verifies accessibility (a11y) semantics tree',
-        (WidgetTester tester) async {
+    testWidgets('verifies accessibility (a11y) semantics tree', (
+      WidgetTester tester,
+    ) async {
       final SemanticsHandle handle = tester.ensureSemantics();
 
       await tester.pumpWidget(
@@ -56,21 +59,13 @@ void main() {
       );
 
       expect(
-        find.bySemanticsLabel(
-          RegExp(r'Initialization Error'),
-        ),
+        find.bySemanticsLabel(RegExp(r'Initialization Error')),
         findsOneWidget,
       );
 
-
-      expect(
-        find.bySemanticsLabel(RegExp(r'Retry Startup')),
-        findsOneWidget,
-      );
-
+      expect(find.bySemanticsLabel(RegExp(r'Retry Startup')), findsOneWidget);
 
       handle.dispose();
     });
-
   });
 }

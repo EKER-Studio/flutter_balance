@@ -53,9 +53,7 @@ void main() {
         BlocProvider<WeightBloc>.value(value: weightBloc),
       ],
       child: MaterialApp(
-        home: OnboardingWizardScreen(
-          onWizardCompleted: onWizardCompleted,
-        ),
+        home: OnboardingWizardScreen(onWizardCompleted: onWizardCompleted),
       ),
     );
   }
@@ -69,12 +67,12 @@ void main() {
       expect(find.byIcon(Icons.arrow_back), findsNothing);
     });
 
-    testWidgets('navigates through steps 1 -> 2 -> 3 and completes wizard', (tester) async {
+    testWidgets('navigates through steps 1 -> 2 -> 3 and completes wizard', (
+      tester,
+    ) async {
       bool completed = false;
       await tester.pumpWidget(
-        buildSubject(
-          onWizardCompleted: () => completed = true,
-        ),
+        buildSubject(onWizardCompleted: () => completed = true),
       );
 
       // Step 1 -> Next
@@ -93,7 +91,10 @@ void main() {
       expect(find.text('Initial Weight'), findsOneWidget);
 
       // Enter initial weight in Step 3
-      await tester.enterText(find.byKey(const Key('initial_weight_input')), '78.5');
+      await tester.enterText(
+        find.byKey(const Key('initial_weight_input')),
+        '78.5',
+      );
       await tester.tap(find.text('Complete Setup'));
       await tester.pumpAndSettle();
 
@@ -102,7 +103,9 @@ void main() {
       verify(() => weightBloc.add(any(that: isA<AddWeight>()))).called(1);
     });
 
-    testWidgets('navigates back to Step 1 from Step 2 via back button', (tester) async {
+    testWidgets('navigates back to Step 1 from Step 2 via back button', (
+      tester,
+    ) async {
       await tester.pumpWidget(buildSubject());
 
       // Advance to Step 2
@@ -118,7 +121,9 @@ void main() {
       expect(find.text('Step 1 of 3'), findsOneWidget);
     });
 
-    testWidgets('renders cleanly in landscape orientation without overflow', (tester) async {
+    testWidgets('renders cleanly in landscape orientation without overflow', (
+      tester,
+    ) async {
       tester.view.physicalSize = const Size(1280, 720);
       tester.view.devicePixelRatio = 1.0;
       addTearDown(tester.view.resetPhysicalSize);
@@ -130,30 +135,39 @@ void main() {
       expect(tester.takeException(), isNull);
     });
 
-    testWidgets('disables Next button when height is invalid (e.g. 20 cm)', (tester) async {
+    testWidgets('disables Next button when height is invalid (e.g. 20 cm)', (
+      tester,
+    ) async {
       await tester.pumpWidget(buildSubject());
 
       final heightInput = find.byKey(const Key('height_cm_input'));
       await tester.enterText(heightInput, '20');
       await tester.pump();
 
-      final nextButton = tester.widget<FilledButton>(find.widgetWithText(FilledButton, 'Next'));
+      final nextButton = tester.widget<FilledButton>(
+        find.widgetWithText(FilledButton, 'Next'),
+      );
       expect(nextButton.onPressed, isNull);
     });
 
-    testWidgets('accessibility audit: height input has text field semantics and focus', (tester) async {
-      final SemanticsHandle handle = tester.ensureSemantics();
+    testWidgets(
+      'accessibility audit: height input has text field semantics and focus',
+      (tester) async {
+        final SemanticsHandle handle = tester.ensureSemantics();
 
-      await tester.pumpWidget(buildSubject());
+        await tester.pumpWidget(buildSubject());
 
-      final heightInput = find.byKey(const Key('height_cm_input'));
-      await tester.tap(heightInput);
-      await tester.pump();
+        final heightInput = find.byKey(const Key('height_cm_input'));
+        await tester.tap(heightInput);
+        await tester.pump();
 
-      final semanticsData = tester.getSemantics(heightInput).getSemanticsData();
-      expect(semanticsData.label, contains('Height'));
+        final semanticsData = tester
+            .getSemantics(heightInput)
+            .getSemanticsData();
+        expect(semanticsData.label, contains('Height'));
 
-      handle.dispose();
-    });
+        handle.dispose();
+      },
+    );
   });
 }

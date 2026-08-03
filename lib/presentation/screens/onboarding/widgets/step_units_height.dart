@@ -47,9 +47,7 @@ class _StepUnitsHeightState extends State<StepUnitsHeight> {
         ? widget.initialHeightCm
         : 170.0;
 
-    _cmController = TextEditingController(
-      text: initialCm.toStringAsFixed(0),
-    );
+    _cmController = TextEditingController(text: initialCm.toStringAsFixed(0));
 
     final [feet, inches] = cmToFeetInches(initialCm);
     _feetController = TextEditingController(text: feet.toInt().toString());

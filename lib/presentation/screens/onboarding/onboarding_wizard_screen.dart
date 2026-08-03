@@ -18,10 +18,7 @@ class OnboardingWizardScreen extends StatefulWidget {
   final VoidCallback? onWizardCompleted;
 
   /// Creates an [OnboardingWizardScreen].
-  const OnboardingWizardScreen({
-    super.key,
-    this.onWizardCompleted,
-  });
+  const OnboardingWizardScreen({super.key, this.onWizardCompleted});
 
   @override
   State<OnboardingWizardScreen> createState() => _OnboardingWizardScreenState();
@@ -87,8 +84,8 @@ class _OnboardingWizardScreenState extends State<OnboardingWizardScreen> {
     // Log initial weight entry
     try {
       context.read<WeightBloc>().add(
-            AddWeight(weightKg: weightKg, dateTime: timestamp),
-          );
+        AddWeight(weightKg: weightKg, dateTime: timestamp),
+      );
     } catch (_) {
       // Safe fallback if WeightBloc is not provided in context (e.g. unit tests)
     }
@@ -105,9 +102,7 @@ class _OnboardingWizardScreenState extends State<OnboardingWizardScreen> {
         return SingleChildScrollView(
           child: ConstrainedBox(
             constraints: BoxConstraints(minHeight: constraints.maxHeight),
-            child: IntrinsicHeight(
-              child: child,
-            ),
+            child: IntrinsicHeight(child: child),
           ),
         );
       },

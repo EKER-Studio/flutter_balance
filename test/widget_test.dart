@@ -31,31 +31,32 @@ void main() {
     ).thenAnswer((_) => Stream.value(<WeightEntry>[]));
   });
 
-  testWidgets('App renders OnboardingWizardScreen when onboarding is not completed', (
-    tester,
-  ) async {
-    final settingsBloc = AppSettingsBloc();
+  testWidgets(
+    'App renders OnboardingWizardScreen when onboarding is not completed',
+    (tester) async {
+      final settingsBloc = AppSettingsBloc();
 
-    await tester.pumpWidget(
-      MultiBlocProvider(
-        providers: [
-          BlocProvider.value(value: settingsBloc),
-          BlocProvider(
-            create: (context) =>
-                WeightBloc(repository: repository)
-                  ..add(const SubscribeToWeightChanges()),
-          ),
-        ],
-        child: App(repository: repository),
-      ),
-    );
-    await tester.pumpAndSettle();
+      await tester.pumpWidget(
+        MultiBlocProvider(
+          providers: [
+            BlocProvider.value(value: settingsBloc),
+            BlocProvider(
+              create: (context) =>
+                  WeightBloc(repository: repository)
+                    ..add(const SubscribeToWeightChanges()),
+            ),
+          ],
+          child: App(repository: repository),
+        ),
+      );
+      await tester.pumpAndSettle();
 
-    expect(find.text('Step 1 of 3'), findsOneWidget);
-    expect(find.text('Units & Height'), findsOneWidget);
+      expect(find.text('Step 1 of 3'), findsOneWidget);
+      expect(find.text('Units & Height'), findsOneWidget);
 
-    settingsBloc.close();
-  });
+      settingsBloc.close();
+    },
+  );
 
   testWidgets('App renders MainNavigationScreen when onboarding is completed', (
     tester,

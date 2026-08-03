@@ -80,12 +80,7 @@ Future<void> main() async {
     }
     _writeCrashLog(error, stackTrace);
 
-    runApp(
-      AppInitializationErrorScreen(
-        error: error,
-        onRetry: () => main(),
-      ),
-    );
+    runApp(AppInitializationErrorScreen(error: error, onRetry: () => main()));
   } finally {
     // Guarantee that the native splash screen is dismissed after initial frame render,
     // preventing screen flicker or stuck native splash screen assets.

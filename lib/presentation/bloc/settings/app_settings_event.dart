@@ -90,5 +90,3 @@ final class ResetAppSettings extends AppSettingsEvent {
   /// Creates [ResetAppSettings].
   const ResetAppSettings();
 }
-
-

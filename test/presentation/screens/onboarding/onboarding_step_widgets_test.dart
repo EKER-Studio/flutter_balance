@@ -7,7 +7,9 @@ import 'package:pure_weight/presentation/screens/onboarding/widgets/step_units_h
 
 void main() {
   group('StepUnitsHeight Widget Tests', () {
-    testWidgets('renders unit segmented button and metric height input', (tester) async {
+    testWidgets('renders unit segmented button and metric height input', (
+      tester,
+    ) async {
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
@@ -26,7 +28,9 @@ void main() {
       expect(find.byKey(const Key('height_cm_input')), findsOneWidget);
     });
 
-    testWidgets('switches to imperial inputs when imperial segment selected', (tester) async {
+    testWidgets('switches to imperial inputs when imperial segment selected', (
+      tester,
+    ) async {
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
@@ -117,7 +121,9 @@ void main() {
       expect(result, isNull);
     });
 
-    testWidgets('calls onNext with parsed target weight when Next pressed', (tester) async {
+    testWidgets('calls onNext with parsed target weight when Next pressed', (
+      tester,
+    ) async {
       double? result;
 
       await tester.pumpWidget(
@@ -133,7 +139,10 @@ void main() {
         ),
       );
 
-      await tester.enterText(find.byKey(const Key('target_weight_input')), '75.5');
+      await tester.enterText(
+        find.byKey(const Key('target_weight_input')),
+        '75.5',
+      );
       await tester.tap(find.text('Next'));
       await tester.pumpAndSettle();
 
@@ -142,7 +151,9 @@ void main() {
   });
 
   group('StepInitialWeight Widget Tests', () {
-    testWidgets('renders initial weight input and complete button', (tester) async {
+    testWidgets('renders initial weight input and complete button', (
+      tester,
+    ) async {
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
@@ -159,7 +170,9 @@ void main() {
       expect(find.text('Complete Setup'), findsOneWidget);
     });
 
-    testWidgets('shows validation error if initial weight is empty on submit', (tester) async {
+    testWidgets('shows validation error if initial weight is empty on submit', (
+      tester,
+    ) async {
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
@@ -177,7 +190,9 @@ void main() {
       expect(find.text('Initial weight is required'), findsOneWidget);
     });
 
-    testWidgets('calls onComplete when valid weight is entered', (tester) async {
+    testWidgets('calls onComplete when valid weight is entered', (
+      tester,
+    ) async {
       double? weightResult;
       DateTime? timeResult;
 
@@ -195,7 +210,10 @@ void main() {
         ),
       );
 
-      await tester.enterText(find.byKey(const Key('initial_weight_input')), '82.3');
+      await tester.enterText(
+        find.byKey(const Key('initial_weight_input')),
+        '82.3',
+      );
       await tester.tap(find.text('Complete Setup'));
       await tester.pumpAndSettle();
 

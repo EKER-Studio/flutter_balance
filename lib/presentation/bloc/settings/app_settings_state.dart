@@ -84,16 +84,16 @@ final class AppSettingsState extends Equatable {
 
   @override
   List<Object?> get props => [
-        themeMode,
-        measurementUnit,
-        height,
-        notificationsEnabled,
-        notificationTime,
-        targetWeight,
-        isBiometricLockEnabled,
-        isLocked,
-        isOnboardingCompleted,
-      ];
+    themeMode,
+    measurementUnit,
+    height,
+    notificationsEnabled,
+    notificationTime,
+    targetWeight,
+    isBiometricLockEnabled,
+    isLocked,
+    isOnboardingCompleted,
+  ];
 
   /// Deserializes [AppSettingsState] from a JSON map.
   factory AppSettingsState.fromJson(Map<String, dynamic> json) {
