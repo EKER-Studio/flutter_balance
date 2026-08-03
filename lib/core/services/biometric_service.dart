@@ -48,8 +48,25 @@ class BiometricService {
   Stream<void> get authenticationSuccesses =>
       _authenticationSuccessController.stream;
 
-  final StreamController<void> _authenticationSuccessController =
+  StreamController<void> _authenticationSuccessController =
       StreamController<void>.broadcast();
+
+  /// Resets the internal stream controller state for test isolation.
+  @visibleForTesting
+  static void resetForTesting() {
+    if (!instance._authenticationSuccessController.isClosed) {
+      instance._authenticationSuccessController.close();
+    }
+    instance._authenticationSuccessController =
+        StreamController<void>.broadcast();
+  }
+
+  /// Closes the authentication success stream controller.
+  Future<void> dispose() async {
+    if (!_authenticationSuccessController.isClosed) {
+      await _authenticationSuccessController.close();
+    }
+  }
 
   void _notifyAuthenticationSuccess() {
     if (!_authenticationSuccessController.isClosed) {
