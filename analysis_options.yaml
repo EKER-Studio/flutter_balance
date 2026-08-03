@@ -41,3 +41,13 @@ import_lint:
       from: "package:pure_weight/features/**/data/**"
       except: []
       severity: error
+    avoid_infrastructure_imports_in_domain:
+      target: "package:pure_weight/features/**/domain/**"
+      from: "package:pure_weight/features/**/data/**"
+      except: []
+      severity: error
+    avoid_presentation_imports_in_domain:
+      target: "package:pure_weight/features/**/domain/**"
+      from: "package:pure_weight/features/**/presentation/**"
+      except: []
+      severity: error
