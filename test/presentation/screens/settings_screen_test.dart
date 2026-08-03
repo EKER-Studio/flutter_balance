@@ -190,4 +190,34 @@ void main() {
     expect(find.text('SECURITY'), findsOneWidget);
     expect(find.text('DATA'), findsOneWidget);
   });
+
+  testWidgets('matches golden screenshot in portrait mode', (tester) async {
+    tester.view.physicalSize = const Size(400, 800);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
+    await tester.pumpWidget(createTestWidget());
+    await tester.pumpAndSettle();
+
+    await expectLater(
+      find.byType(SettingsScreen),
+      matchesGoldenFile('goldens/settings_screen_portrait.png'),
+    );
+  });
+
+  testWidgets('matches golden screenshot in landscape mode', (tester) async {
+    tester.view.physicalSize = const Size(1000, 800);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
+    await tester.pumpWidget(createTestWidget());
+    await tester.pumpAndSettle();
+
+    await expectLater(
+      find.byType(SettingsScreen),
+      matchesGoldenFile('goldens/settings_screen_landscape.png'),
+    );
+  });
 }

@@ -296,7 +296,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
     return AppBar(
       title: Row(
         children: [
-          Icon(Icons.monitor_weight, color: colorScheme.primary),
+          ExcludeSemantics(
+            child: Icon(Icons.monitor_weight, color: colorScheme.primary),
+          ),
           const SizedBox(width: 8),
           Text(
             AppLocalizations.of(context).settingsTitle,
@@ -307,12 +309,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
       actions: [
         Padding(
           padding: const EdgeInsets.only(right: 8),
-          child: CircleAvatar(
-            backgroundColor: colorScheme.primaryContainer,
-            child: Text(
-              AppLocalizations.of(context).appTitle.characters.first,
-              style: textTheme.titleSmall?.copyWith(
-                color: colorScheme.onPrimaryContainer,
+          child: Tooltip(
+            message: AppLocalizations.of(context).appTitle,
+            child: CircleAvatar(
+              backgroundColor: colorScheme.primaryContainer,
+              child: Text(
+                AppLocalizations.of(context).appTitle.characters.first,
+                style: textTheme.titleSmall?.copyWith(
+                  color: colorScheme.onPrimaryContainer,
+                ),
               ),
             ),
           ),
