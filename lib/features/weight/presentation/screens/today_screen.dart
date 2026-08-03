@@ -61,7 +61,10 @@ class TodayScreen extends StatelessWidget {
               state is WeightLoading) {
             return const SizedBox.shrink();
           }
-          return _AddWeightFAB(onPressed: () => _showAddWeightSheet(context));
+          return FloatingActionButton(
+            onPressed: () => _showAddWeightSheet(context),
+            child: const Icon(Icons.add),
+          );
         },
       ),
     );
@@ -931,30 +934,6 @@ class _InlineErrorBanner extends StatelessWidget {
             child: Text(l10n.retry),
           ),
         ],
-      ),
-    );
-  }
-}
-
-class _AddWeightFAB extends StatelessWidget {
-  final VoidCallback onPressed;
-
-  const _AddWeightFAB({required this.onPressed});
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
-    final colorScheme = Theme.of(context).colorScheme;
-
-    return Semantics(
-      button: true,
-      label: l10n.addWeightSemanticsLabel,
-      child: FloatingActionButton.large(
-        onPressed: onPressed,
-        backgroundColor: colorScheme.primary,
-        foregroundColor: colorScheme.onPrimary,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        child: const Icon(Icons.add),
       ),
     );
   }
