@@ -142,4 +142,18 @@ void main() {
     );
     expect(find.text('Wipe Data'), findsOneWidget);
   });
+
+  testWidgets('wipe does not clear hydrated storage', (tester) async {
+    await tester.pumpWidget(createTestWidget());
+    await tester.pump();
+
+    await tester.scrollUntilVisible(find.text('Wipe All Data'), 200);
+    await tester.tap(find.text('Wipe All Data'));
+    await tester.pump();
+
+    await tester.tap(find.text('Wipe Data'));
+    await tester.pump();
+
+    verifyNever(() => storage.clear());
+  });
 }

@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pure_weight/l10n/app_localizations.dart';
 import 'package:pure_weight/core/utils/unit_converter.dart';
 import 'package:file_picker/file_picker.dart';
-import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:pure_weight/core/services/biometric_service.dart';
 import 'package:pure_weight/core/utils/csv_importer.dart';
 import 'package:pure_weight/features/weight/presentation/bloc/weight_bloc.dart';
@@ -377,7 +376,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Future<void> _wipeDatabase(BuildContext context) async {
     try {
       context.read<WeightBloc>().add(const ClearAllWeightData());
-      await HydratedBloc.storage.clear();
 
       if (context.mounted) {
         context.read<WeightBloc>().add(const RefreshWeightData());
