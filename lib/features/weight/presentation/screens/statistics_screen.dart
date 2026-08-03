@@ -58,38 +58,49 @@ class StatisticsScreen extends StatelessWidget {
                 final heightCm = settingsState.height;
                 final targetWeight = settingsState.targetWeight;
 
-                return ClampedLayout(
-                  padding: const EdgeInsets.all(16),
+                return RefreshIndicator(
+                  onRefresh: () async {
+                    context.read<WeightBloc>().add(
+                      const SubscribeToWeightChanges(),
+                    );
+                  },
                   child: SingleChildScrollView(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        _buildHabitSummaryCards(
-                          context,
-                          streak: streak,
-                          compliancePct: compliancePct,
-                          l10n: l10n,
-                        ),
-                        const SizedBox(height: 16),
-                        _buildHeroTrendCard(
-                          context,
-                          filteredEntries: filteredEntries,
-                          period: period,
-                          targetWeight: targetWeight,
-                          unit: unit,
-                          l10n: l10n,
-                        ),
-                        const SizedBox(height: 16),
-                        _buildKeyMetricsGrid(
-                          context,
-                          entries: filteredEntries.isNotEmpty
-                              ? filteredEntries
-                              : entries,
-                          unit: unit,
-                          heightCm: heightCm,
-                          l10n: l10n,
-                        ),
-                      ],
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    child: ClampedLayout(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 12,
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          _buildHabitSummaryCards(
+                            context,
+                            streak: streak,
+                            compliancePct: compliancePct,
+                            l10n: l10n,
+                          ),
+                          const SizedBox(height: 16),
+                          _buildHeroTrendCard(
+                            context,
+                            filteredEntries: filteredEntries,
+                            period: period,
+                            targetWeight: targetWeight,
+                            unit: unit,
+                            l10n: l10n,
+                          ),
+                          const SizedBox(height: 16),
+                          _buildKeyMetricsGrid(
+                            context,
+                            entries: filteredEntries.isNotEmpty
+                                ? filteredEntries
+                                : entries,
+                            unit: unit,
+                            heightCm: heightCm,
+                            l10n: l10n,
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 );
