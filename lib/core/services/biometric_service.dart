@@ -33,6 +33,15 @@ enum BiometricAuthResult {
 
 /// Singleton service for checking biometric hardware availability and authenticating
 /// the user via Face ID, Touch ID, or fingerprint.
+///
+/// ```dart
+/// final available = await BiometricService.instance.isAvailable();
+/// if (available) {
+///   final result = await BiometricService.instance.authenticate(
+///     localizedReason: 'Unlock to view your weight data',
+///   );
+/// }
+/// ```
 class BiometricService {
   BiometricService._();
 
@@ -68,6 +77,7 @@ class BiometricService {
     }
   }
 
+  /// Broadcasts an authentication success event to [authenticationSuccesses].
   void _notifyAuthenticationSuccess() {
     if (!_authenticationSuccessController.isClosed) {
       _authenticationSuccessController.add(null);

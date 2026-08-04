@@ -8,6 +8,13 @@ import 'package:timezone/timezone.dart' as tz;
 /// Singleton service for managing local scheduled notifications.
 ///
 /// Must be initialized via [initialize] during app startup before invoking scheduling APIs.
+///
+/// ```dart
+/// await NotificationService.instance.initialize();
+/// await NotificationService.instance.scheduleDailyReminder(
+///   const TimeOfDay(hour: 8, minute: 0),
+/// );
+/// ```
 class NotificationService {
   NotificationService._();
 

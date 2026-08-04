@@ -8,6 +8,11 @@ import 'package:encrypt/encrypt.dart' as enc;
 ///
 /// Implements Encrypt-then-MAC using HMAC-SHA256 over `IV || Ciphertext` to guarantee
 /// confidentiality, authenticity, and integrity against data corruption or bit-flipping.
+///
+/// ```dart
+/// final cipherText = FieldCipher.encrypt('75.4', keyBytes);
+/// final plainText = FieldCipher.decrypt(cipherText, keyBytes);
+/// ```
 class FieldCipher {
   static const int _ivLength = 16;
   static const int _macLength = 32;

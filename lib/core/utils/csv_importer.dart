@@ -5,7 +5,7 @@ import 'package:pure_weight/features/weight/domain/entities/weight_entry.dart';
 /// Parses CSV file content and converts it into a list of [WeightEntry].
 ///
 /// Expected CSV format (matches [CsvExporter] output):
-/// ```
+/// ```dart
 /// ID,Data,Weight (kg),BMI,Note
 /// 1,2024-01-15 07:30,75.2,23.1,Morning measurement
 /// 2,2024-01-16 07:30,75.0,23.0,
@@ -25,6 +25,11 @@ class CsvImporter {
   /// Passes the raw [csvContent] string across the isolate boundary and returns
   /// the parsed [WeightEntry] entities and count of skipped invalid rows.
   /// Throws [FormatException] if the CSV has no valid header row or is corrupted.
+  ///
+  /// ```dart
+  /// final result = await CsvImporter.parse(fileContent);
+  /// // result.entries: valid weight entries, result.skippedRows: invalid rows
+  /// ```
   static Future<({List<WeightEntry> entries, int skippedRows})> parse(
     String csvContent,
   ) async {

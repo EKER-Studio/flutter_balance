@@ -11,6 +11,10 @@ class CsvExporter {
   /// Formats column headers as `['ID', 'Date', 'Weight (kg)', 'Note']` and formats timestamps as `yyyy-MM-dd HH:mm`.
   ///
   /// @param entries List of weight entry entities to encode.
+  ///
+  /// ```dart
+  /// final csv = CsvExporter.generateCsv(entries);
+  /// ```
   static String generateCsv(List<WeightEntry> entries) {
     final List<List<dynamic>> rows = [
       ['ID', 'Date', 'Weight (kg)', 'Note'],
@@ -33,6 +37,11 @@ class CsvExporter {
   /// Writes [entries] as a temporary CSV file on disk.
   ///
   /// @param entries List of weight entry entities to export.
+  ///
+  /// Returns the created [File], suitable for sharing via `share_plus`.
+  /// ```dart
+  /// final file = await CsvExporter.exportToFile(entries);
+  /// ```
   static Future<File> exportToFile(List<WeightEntry> entries) async {
     final csvData = generateCsv(entries);
     final tempDir = await getTemporaryDirectory();
