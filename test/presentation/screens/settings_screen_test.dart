@@ -116,10 +116,7 @@ void main() {
       await tester.tap(find.text('Save'));
       await tester.pump();
 
-      expect(
-        find.text('Height must be between 50 and 250 cm'),
-        findsOneWidget,
-      );
+      expect(find.text('Height must be between 50 and 250 cm'), findsOneWidget);
     },
   );
 
@@ -162,10 +159,7 @@ void main() {
       await tester.tap(find.text('Save'));
       await tester.pump();
 
-      expect(
-        find.text('Weight must be between 20 and 300 kg'),
-        findsOneWidget,
-      );
+      expect(find.text('Weight must be between 20 and 300 kg'), findsOneWidget);
     },
   );
 

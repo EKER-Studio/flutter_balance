@@ -142,33 +142,34 @@ void main() {
       },
     );
 
-    testWidgets('CalendarScreen inline Add button opens AddWeightSheet dialog', (
-      tester,
-    ) async {
-      await tester.pumpWidget(
-        buildSubject(
-          const WeightLoaded(
-            entries: [],
-            filteredEntries: [],
-            timePeriod: TimePeriod.month,
-            heightCm: null,
+    testWidgets(
+      'CalendarScreen inline Add button opens AddWeightSheet dialog',
+      (tester) async {
+        await tester.pumpWidget(
+          buildSubject(
+            const WeightLoaded(
+              entries: [],
+              filteredEntries: [],
+              timePeriod: TimePeriod.month,
+              heightCm: null,
+            ),
           ),
-        ),
-      );
-      await tester.pumpAndSettle();
+        );
+        await tester.pumpAndSettle();
 
-      await tester.dragUntilVisible(
-        find.byIcon(Icons.add),
-        find.byType(SingleChildScrollView),
-        const Offset(0, -50),
-      );
-      await tester.pumpAndSettle();
+        await tester.dragUntilVisible(
+          find.byIcon(Icons.add),
+          find.byType(SingleChildScrollView),
+          const Offset(0, -50),
+        );
+        await tester.pumpAndSettle();
 
-      await tester.tap(find.byIcon(Icons.add));
-      await tester.pumpAndSettle();
+        await tester.tap(find.byIcon(Icons.add));
+        await tester.pumpAndSettle();
 
-      expect(find.byType(AddWeightSheet), findsOneWidget);
-    });
+        expect(find.byType(AddWeightSheet), findsOneWidget);
+      },
+    );
   });
 }
 
