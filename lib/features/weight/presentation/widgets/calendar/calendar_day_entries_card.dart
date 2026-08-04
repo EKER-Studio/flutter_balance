@@ -197,7 +197,7 @@ class CalendarDayEntriesCard extends StatelessWidget {
           physics: const NeverScrollableScrollPhysics(),
           shrinkWrap: true,
           itemCount: entries.length,
-          separatorBuilder: (_, _) => const Divider(height: 16),
+          separatorBuilder: (_, _) => const SizedBox(height: 8),
           itemBuilder: (context, index) {
             final entry = entries[index];
             final displayWeight = isImperial
