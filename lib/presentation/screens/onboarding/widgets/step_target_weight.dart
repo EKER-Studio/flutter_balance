@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pure_weight/core/models/measurement_unit.dart';
 import 'package:pure_weight/core/utils/unit_converter.dart';
+import 'package:pure_weight/l10n/app_localizations.dart';
 import 'package:pure_weight/presentation/core/clamped_layout.dart';
 
 /// Form widget for Step 2 of the onboarding wizard: setting an optional target weight.
@@ -83,6 +84,7 @@ class _StepTargetWeightState extends State<StepTargetWeight> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context);
     final isImperial = widget.unit == MeasurementUnit.imperial;
     final unitSuffix = isImperial ? 'lbs' : 'kg';
 
@@ -138,7 +140,7 @@ class _StepTargetWeightState extends State<StepTargetWeight> {
                     constraints: const BoxConstraints(minHeight: 48.0),
                     child: OutlinedButton(
                       onPressed: _handleSkip,
-                      child: const Text('Skip'),
+                      child: Text(l10n.skip),
                     ),
                   ),
                 ),
@@ -148,7 +150,7 @@ class _StepTargetWeightState extends State<StepTargetWeight> {
                     constraints: const BoxConstraints(minHeight: 48.0),
                     child: FilledButton(
                       onPressed: _handleNext,
-                      child: const Text('Next'),
+                      child: Text(l10n.next),
                     ),
                   ),
                 ),

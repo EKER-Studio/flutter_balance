@@ -164,15 +164,40 @@
   "tapToViewDetailsHint": "Tap to view details",
   "bmiCategoryLabel": "BMI Category: {category}",
   "bmiValueLabel": "BMI Value: {value} kg/m²",
+  "heightNotSetLabel": "height not set",
+  "doubleTapToOpenCalendarHint": "Double tap to open calendar",
+  "doubleTapToChangeTimeHint": "Double tap to change time",
   "dailyReminderStepTitle": "Daily Reminder",
   "dailyReminderStepSubtitle": "Set a daily reminder to log your weight and stay on track.",
   "biometricStepTitle": "Biometric Lock",
   "biometricStepSubtitle": "Protect your personal weight measurements using Face ID or fingerprint authentication.",
   "skip": "Skip",
   "next": "Next",
+  "previousStepTooltip": "Previous Step",
+  "completeSetup": "Complete Setup",
+  "metricUnitOption": "Metric (kg / cm)",
+  "imperialUnitOption": "Imperial (lbs / ft-in)",
+  "stepOf": "Step {current} of {total}",
+  "appLockedStatusIconSemantics": "Application locked status icon",
+  "initErrorSemantics": "Initialization Error. App failed to start due to a database or storage error.",
+  "initErrorTitle": "Failed to Start PureWeight",
+  "initErrorSubtitle": "An unexpected error occurred during database setup. Please try restarting the app or tap retry below.",
+  "initErrorRetryLabel": "Retry starting the application",
+  "initErrorRetryHint": "Double tap to attempt re-initializing database and services",
+  "retryStartup": "Retry Startup",
   "heightNotSetLabel": "height not set",
   "doubleTapToOpenCalendarHint": "Double tap to open calendar",
   "doubleTapToChangeTimeHint": "Double tap to change time",
+  "@stepOf": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
   "@entriesFromDate": {
     "placeholders": {
       "date": {

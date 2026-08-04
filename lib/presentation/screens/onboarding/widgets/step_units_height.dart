@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pure_weight/core/models/measurement_unit.dart';
 import 'package:pure_weight/core/utils/unit_converter.dart';
+import 'package:pure_weight/l10n/app_localizations.dart';
 import 'package:pure_weight/presentation/core/clamped_layout.dart';
 
 /// Form widget for Step 1 of the onboarding wizard: selecting unit system and height.
@@ -130,6 +131,7 @@ class _StepUnitsHeightState extends State<StepUnitsHeight> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context);
 
     return ClampedLayout(
       padding: const EdgeInsets.all(24.0),
@@ -154,16 +156,16 @@ class _StepUnitsHeightState extends State<StepUnitsHeight> {
             ),
             const SizedBox(height: 24.0),
             SegmentedButton<MeasurementUnit>(
-              segments: const [
+              segments: [
                 ButtonSegment<MeasurementUnit>(
                   value: MeasurementUnit.metric,
-                  label: Text('Metric (kg / cm)'),
-                  icon: ExcludeSemantics(child: Icon(Icons.straighten)),
+                  label: Text(l10n.metricUnitOption),
+                  icon: const ExcludeSemantics(child: Icon(Icons.straighten)),
                 ),
                 ButtonSegment<MeasurementUnit>(
                   value: MeasurementUnit.imperial,
-                  label: Text('Imperial (lbs / ft-in)'),
-                  icon: ExcludeSemantics(child: Icon(Icons.square_foot)),
+                  label: Text(l10n.imperialUnitOption),
+                  icon: const ExcludeSemantics(child: Icon(Icons.square_foot)),
                 ),
               ],
               selected: {_selectedUnit},
@@ -246,7 +248,7 @@ class _StepUnitsHeightState extends State<StepUnitsHeight> {
               constraints: const BoxConstraints(minHeight: 48.0),
               child: FilledButton(
                 onPressed: _isValid ? _handleNext : null,
-                child: const Text('Next'),
+                child: Text(l10n.next),
               ),
             ),
           ],

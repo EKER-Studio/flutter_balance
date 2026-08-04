@@ -1,23 +1,30 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pure_weight/core/models/measurement_unit.dart';
+import 'package:pure_weight/l10n/app_localizations.dart';
 import 'package:pure_weight/presentation/screens/onboarding/widgets/step_initial_weight.dart';
 import 'package:pure_weight/presentation/screens/onboarding/widgets/step_target_weight.dart';
 import 'package:pure_weight/presentation/screens/onboarding/widgets/step_units_height.dart';
 
 void main() {
+  Widget buildApp(Widget child) {
+    return MaterialApp(
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
+      home: Scaffold(body: child),
+    );
+  }
+
   group('StepUnitsHeight Widget Tests', () {
     testWidgets('renders unit segmented button and metric height input', (
       tester,
     ) async {
       await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: StepUnitsHeight(
-              initialUnit: MeasurementUnit.metric,
-              initialHeightCm: 175.0,
-              onNext: (_, _) {},
-            ),
+        buildApp(
+          StepUnitsHeight(
+            initialUnit: MeasurementUnit.metric,
+            initialHeightCm: 175.0,
+            onNext: (_, _) {},
           ),
         ),
       );
@@ -32,13 +39,11 @@ void main() {
       tester,
     ) async {
       await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: StepUnitsHeight(
-              initialUnit: MeasurementUnit.metric,
-              initialHeightCm: 175.0,
-              onNext: (_, _) {},
-            ),
+        buildApp(
+          StepUnitsHeight(
+            initialUnit: MeasurementUnit.metric,
+            initialHeightCm: 175.0,
+            onNext: (_, _) {},
           ),
         ),
       );
@@ -55,16 +60,14 @@ void main() {
       double? selectedHeight;
 
       await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: StepUnitsHeight(
-              initialUnit: MeasurementUnit.metric,
-              initialHeightCm: 180.0,
-              onNext: (unit, height) {
-                selectedUnit = unit;
-                selectedHeight = height;
-              },
-            ),
+        buildApp(
+          StepUnitsHeight(
+            initialUnit: MeasurementUnit.metric,
+            initialHeightCm: 180.0,
+            onNext: (unit, height) {
+              selectedUnit = unit;
+              selectedHeight = height;
+            },
           ),
         ),
       );
@@ -80,12 +83,10 @@ void main() {
   group('StepTargetWeight Widget Tests', () {
     testWidgets('renders target weight input', (tester) async {
       await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: StepTargetWeight(
-              unit: MeasurementUnit.metric,
-              onNext: (_) {},
-            ),
+        buildApp(
+          StepTargetWeight(
+            unit: MeasurementUnit.metric,
+            onNext: (_) {},
           ),
         ),
       );
@@ -101,15 +102,13 @@ void main() {
       bool called = false;
 
       await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: StepTargetWeight(
-              unit: MeasurementUnit.metric,
-              onNext: (val) {
-                called = true;
-                result = val;
-              },
-            ),
+        buildApp(
+          StepTargetWeight(
+            unit: MeasurementUnit.metric,
+            onNext: (val) {
+              called = true;
+              result = val;
+            },
           ),
         ),
       );
@@ -127,14 +126,12 @@ void main() {
       double? result;
 
       await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: StepTargetWeight(
-              unit: MeasurementUnit.metric,
-              onNext: (val) {
-                result = val;
-              },
-            ),
+        buildApp(
+          StepTargetWeight(
+            unit: MeasurementUnit.metric,
+            onNext: (val) {
+              result = val;
+            },
           ),
         ),
       );
@@ -155,12 +152,10 @@ void main() {
       tester,
     ) async {
       await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: StepInitialWeight(
-              unit: MeasurementUnit.metric,
-              onComplete: (_, _) {},
-            ),
+        buildApp(
+          StepInitialWeight(
+            unit: MeasurementUnit.metric,
+            onComplete: (_, _) {},
           ),
         ),
       );
@@ -174,12 +169,10 @@ void main() {
       tester,
     ) async {
       await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: StepInitialWeight(
-              unit: MeasurementUnit.metric,
-              onComplete: (_, _) {},
-            ),
+        buildApp(
+          StepInitialWeight(
+            unit: MeasurementUnit.metric,
+            onComplete: (_, _) {},
           ),
         ),
       );
@@ -197,15 +190,13 @@ void main() {
       DateTime? timeResult;
 
       await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: StepInitialWeight(
-              unit: MeasurementUnit.metric,
-              onComplete: (w, t) {
-                weightResult = w;
-                timeResult = t;
-              },
-            ),
+        buildApp(
+          StepInitialWeight(
+            unit: MeasurementUnit.metric,
+            onComplete: (w, t) {
+              weightResult = w;
+              timeResult = t;
+            },
           ),
         ),
       );

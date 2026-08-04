@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pure_weight/core/models/measurement_unit.dart';
 import 'package:pure_weight/features/weight/presentation/bloc/weight_bloc.dart';
 import 'package:pure_weight/features/weight/presentation/bloc/weight_event.dart';
+import 'package:pure_weight/l10n/app_localizations.dart';
 import 'package:pure_weight/presentation/bloc/settings/app_settings_bloc.dart';
 import 'package:pure_weight/presentation/bloc/settings/app_settings_event.dart';
 import 'package:pure_weight/presentation/screens/onboarding/widgets/step_biometric_lock.dart';
@@ -128,6 +129,7 @@ class _OnboardingWizardScreenState extends State<OnboardingWizardScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context);
     final progress = (_currentStep + 1) / 5.0;
 
     return PopScope(
@@ -142,7 +144,7 @@ class _OnboardingWizardScreenState extends State<OnboardingWizardScreen> {
         resizeToAvoidBottomInset: true,
         appBar: AppBar(
           title: Text(
-            'Step ${_currentStep + 1} of 5',
+            l10n.stepOf(_currentStep + 1, 5),
             style: theme.textTheme.titleMedium?.copyWith(
               color: theme.colorScheme.onSurfaceVariant,
             ),
@@ -151,7 +153,7 @@ class _OnboardingWizardScreenState extends State<OnboardingWizardScreen> {
           leading: _currentStep > 0
               ? IconButton(
                   icon: const Icon(Icons.arrow_back),
-                  tooltip: 'Previous Step',
+                  tooltip: l10n.previousStepTooltip,
                   onPressed: () => _goToStep(_currentStep - 1),
                 )
               : null,

@@ -170,9 +170,31 @@
   "biometricStepSubtitle": "Chroń swoje dane dotyczące wagi za pomocą Face ID lub odcisku palca.",
   "skip": "Pomiń",
   "next": "Dalej",
+  "previousStepTooltip": "Poprzedni krok",
+  "completeSetup": "Zakończ konfigurację",
+  "metricUnitOption": "Metryczny (kg / cm)",
+  "imperialUnitOption": "Imperialny (lbs / ft-in)",
+  "stepOf": "Krok {current} z {total}",
+  "appLockedStatusIconSemantics": "Ikona statusu blokady aplikacji",
+  "initErrorSemantics": "Błąd inicjalizacji. Aplikacja nie mogła się uruchomić z powodu błędu bazy danych.",
+  "initErrorTitle": "Nie udało się uruchomić PureWeight",
+  "initErrorSubtitle": "Wystąpił nieoczekiwany błąd podczas konfiguracji bazy danych. Spróbuj uruchomić aplikację ponownie lub kliknij Spróbuj ponownie poniżej.",
+  "initErrorRetryLabel": "Ponów próbę uruchomienia aplikacji",
+  "initErrorRetryHint": "Stuknij dwukrotnie, aby ponowić próbę inicjalizacji bazy danych i usług",
+  "retryStartup": "Spróbuj ponownie",
   "heightNotSetLabel": "brak podanego wzrostu",
-  "doubleTapToOpenCalendarHint": "Dotknij dwukrotnie, aby otworzyć kalendarz",
-  "doubleTapToChangeTimeHint": "Dotknij dwukrotnie, aby zmienić godzinę",
+  "doubleTapToOpenCalendarHint": "Stuknij dwukrotnie, aby otworzyć kalendarz",
+  "doubleTapToChangeTimeHint": "Stuknij dwukrotnie, aby zmienić godzinę",
+  "@stepOf": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
   "@entriesFromDate": {
     "placeholders": {
       "date": {

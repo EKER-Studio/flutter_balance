@@ -116,7 +116,7 @@ class _BiometricShieldScreenState extends State<BiometricShieldScreen> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Semantics(
-                    label: 'Application locked status icon',
+                    label: l10n.appLockedStatusIconSemantics,
                     image: true,
                     child: Icon(
                       Icons.lock_outline,

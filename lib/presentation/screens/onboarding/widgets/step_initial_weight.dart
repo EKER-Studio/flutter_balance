@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:pure_weight/core/models/measurement_unit.dart';
 import 'package:pure_weight/core/utils/unit_converter.dart';
+import 'package:pure_weight/l10n/app_localizations.dart';
 import 'package:pure_weight/presentation/core/clamped_layout.dart';
 
 /// Form widget for Step 3 of the onboarding wizard: logging initial weight.
@@ -90,6 +91,7 @@ class _StepInitialWeightState extends State<StepInitialWeight> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context);
     final isImperial = widget.unit == MeasurementUnit.imperial;
     final unitSuffix = isImperial ? 'lbs' : 'kg';
     final formattedDate = DateFormat.yMMMd().add_jm().format(
@@ -162,7 +164,7 @@ class _StepInitialWeightState extends State<StepInitialWeight> {
               constraints: const BoxConstraints(minHeight: 48.0),
               child: FilledButton(
                 onPressed: _handleComplete,
-                child: const Text('Complete Setup'),
+                child: Text(l10n.completeSetup),
               ),
             ),
           ],

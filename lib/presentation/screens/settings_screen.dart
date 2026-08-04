@@ -616,18 +616,36 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final bloc = context.read<AppSettingsBloc>();
 
     if (enabled) {
+      // Guard: verify biometrics are enrolled before prompting.
+      final available = await BiometricService.instance.isAvailable();
+      if (!available) {
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(l10n.biometricsNotAvailable)),
+          );
+        }
+        return;
+      }
+
       final result = await BiometricService.instance.authenticate(
         localizedReason: l10n.biometricAuthReason,
       );
       if (result == BiometricAuthResult.success) {
         bloc.add(const UpdateBiometricLock(true));
+      } else if (BiometricService.isTerminalFailure(result)) {
+        // Biometrics became unavailable between the availability check and
+        // the authentication call (e.g. user deleted fingerprints mid-flow).
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(l10n.biometricsNotAvailable)),
+          );
+        }
       } else {
+        // User canceled or failed — do not enable the lock.
         bloc.add(const UpdateBiometricLock(false));
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(l10n.biometricAuthFailed),
-            ),
+            SnackBar(content: Text(l10n.biometricAuthFailed)),
           );
         }
       }
