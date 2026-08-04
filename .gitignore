@@ -58,3 +58,6 @@ app.*.map.json
 
 # Golden test failure output artifacts
 **/failures/
+
+# Visual Studio Code settings folder
+.vscode/
