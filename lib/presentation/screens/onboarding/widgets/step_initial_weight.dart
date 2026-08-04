@@ -125,6 +125,7 @@ class _StepInitialWeightState extends State<StepInitialWeight> {
             TextFormField(
               key: const Key('initial_weight_input'),
               controller: _weightController,
+              autofocus: true,
               keyboardType: const TextInputType.numberWithOptions(
                 decimal: true,
               ),

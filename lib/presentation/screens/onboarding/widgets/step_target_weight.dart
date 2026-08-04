@@ -138,6 +138,7 @@ class _StepTargetWeightState extends State<StepTargetWeight> {
           TextField(
             key: const Key('target_weight_input'),
             controller: _weightController,
+            autofocus: true,
             keyboardType: const TextInputType.numberWithOptions(
               decimal: true,
             ),

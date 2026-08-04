@@ -197,6 +197,7 @@ class _StepUnitsHeightState extends State<StepUnitsHeight> {
             TextField(
               key: const Key('height_cm_input'),
               controller: _cmController,
+              autofocus: true,
               keyboardType: const TextInputType.numberWithOptions(
                 decimal: true,
               ),
@@ -232,6 +233,7 @@ class _StepUnitsHeightState extends State<StepUnitsHeight> {
                   child: TextField(
                     key: const Key('height_feet_input'),
                     controller: _feetController,
+                    autofocus: true,
                     keyboardType: TextInputType.number,
                     decoration: InputDecoration(
                       labelText: 'Feet',
