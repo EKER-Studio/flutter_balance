@@ -206,6 +206,7 @@ class HealthSummaryCard extends StatelessWidget {
     );
   }
 
+  /// Builds the weight goal button that opens [TargetWeightDialog].
   Widget _buildGoalButton(
     BuildContext context,
     double? targetWeightKg,
@@ -238,6 +239,7 @@ class HealthSummaryCard extends StatelessWidget {
     );
   }
 
+  /// Opens the [TargetWeightDialog] and persists the chosen target weight.
   Future<void> _openTargetWeightDialog(
     BuildContext context,
     double? targetWeightKg,
@@ -263,6 +265,7 @@ class HealthSummaryCard extends StatelessWidget {
     }
   }
 
+  /// Formats the last updated timestamp as "today" or a localized date.
   String _formatLastUpdated(
     BuildContext context,
     DateTime? date,
@@ -283,6 +286,7 @@ class HealthSummaryCard extends StatelessWidget {
     return l10n.lastUpdatedDate(formattedDate);
   }
 
+  /// Maps [category] to the color scheme color used for the badge.
   Color _badgeColorForCategory(BuildContext context, BmiCategory category) {
     final cs = Theme.of(context).colorScheme;
     return switch (category) {
@@ -293,6 +297,7 @@ class HealthSummaryCard extends StatelessWidget {
     };
   }
 
+  /// Builds the goal status text: achieved, or the remaining amount to target.
   String _goalText(
     double targetWeight,
     double currentWeightKg,

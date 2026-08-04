@@ -11,6 +11,14 @@ import 'package:pure_weight/presentation/bloc/settings/app_settings_bloc.dart';
 
 /// Modal dialog form for adding a new weight measurement with date, time, and note selection,
 /// adhering to Material 3 dialog guidelines and accessibility (a11y) standards.
+///
+/// Validates the weight against [WeightEntry.minWeightKg] and
+/// [WeightEntry.maxWeightKg], converts imperial input to kilograms, and
+/// dispatches [AddWeight] to [WeightBloc] on save.
+///
+/// ```dart
+/// showDialog(context: context, builder: (_) => const AddWeightSheet());
+/// ```
 class AddWeightSheet extends StatefulWidget {
   /// Optional initial date/time for the measurement.
   final DateTime? initialDate;
@@ -54,6 +62,8 @@ class _AddWeightSheetState extends State<AddWeightSheet> {
     _selectedTime.minute,
   );
 
+  /// Shows the date picker and validates that the combined selection is not
+  /// in the future.
   Future<void> _pickDate(BuildContext context) async {
     final now = DateTime.now();
     final picked = await showDatePicker(
@@ -72,6 +82,7 @@ class _AddWeightSheetState extends State<AddWeightSheet> {
     }
   }
 
+  /// Shows the time picker and validates the combined selection.
   Future<void> _pickTime(BuildContext context) async {
     final picked = await showTimePicker(
       context: context,
@@ -87,6 +98,7 @@ class _AddWeightSheetState extends State<AddWeightSheet> {
     }
   }
 
+  /// Marks the combined date/time as invalid when it lies in the future.
   void _validateDateTime() {
     if (_combinedDateTime.isAfter(DateTime.now())) {
       _dateTimeError = AppLocalizations.of(context).futureDateError;
@@ -288,6 +300,7 @@ class _AddWeightSheetState extends State<AddWeightSheet> {
     );
   }
 
+  /// Validates the form and dispatches [AddWeight] to [WeightBloc] on success.
   void _onSave() {
     FocusScope.of(context).unfocus();
     _validateDateTime();

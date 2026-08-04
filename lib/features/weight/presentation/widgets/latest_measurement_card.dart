@@ -153,6 +153,7 @@ class LatestMeasurementCard extends StatelessWidget {
     );
   }
 
+  /// Formats [dateTime] as "today at HH:mm" or a localized date and time.
   String _formatTimestamp(
     BuildContext context,
     DateTime dateTime,
