@@ -11,6 +11,20 @@ import 'package:pure_weight/features/weight/domain/repositories/weight_repositor
 import 'package:pure_weight/features/weight/domain/weight_error_type.dart';
 
 /// Isar-backed implementation of [WeightRepository] using Field-Level AES-256 Encryption.
+///
+/// Weight and note values are encrypted with [FieldCipher] before persistence
+/// and decrypted on read. The watch stream is resilient: transient failures
+/// (e.g. an inaccessible encryption key while the device is locked) trigger an
+/// exponential retry that is immediately short-circuited by the optional
+/// [unlockSignal] emitted after successful biometric authentication.
+///
+/// ```dart
+/// final repository = IsarWeightRepository(
+///   isar: isar,
+///   unlockSignal: BiometricService.instance.authenticationSuccesses,
+/// );
+/// final stream = repository.watchAllEntries();
+/// ```
 class IsarWeightRepository implements WeightRepository {
   /// Default cap on entries loaded/watched at once, newest-first.
   ///
@@ -71,6 +85,10 @@ class IsarWeightRepository implements WeightRepository {
     return (registered != null && registered.isOpen) ? registered : isar;
   }
 
+  /// Loads the cached AES-256 key or reads it from secure storage.
+  ///
+  /// Throws [WeightRepositoryException] with the given [WeightErrorType] when
+  /// the key is missing or inaccessible.
   Future<Uint8List> _getOrLoadKey({bool isWrite = false}) async {
     if (_encryptionKey != null) {
       return _encryptionKey!;
@@ -98,6 +116,9 @@ class IsarWeightRepository implements WeightRepository {
     );
   }
 
+  /// Converts a stored [WeightEntryModel] into its domain [WeightEntry],
+  /// decrypting the weight and note fields. Undecryptable values degrade to
+  /// `0.0 kg` and a `[Decryption Error]` note respectively.
   WeightEntry _modelToEntity(WeightEntryModel model, Uint8List key) {
     double weight = 0.0;
     String? note;
@@ -135,6 +156,7 @@ class IsarWeightRepository implements WeightRepository {
     );
   }
 
+  /// Converts a domain [WeightEntry] into its encrypted [WeightEntryModel].
   WeightEntryModel _entityToModel(WeightEntry entity, Uint8List key) {
     final model = WeightEntryModel()
       ..id = entity.id == 0 ? Isar.autoIncrement : entity.id
@@ -150,6 +172,18 @@ class IsarWeightRepository implements WeightRepository {
     return model;
   }
 
+  /// Emits decrypted weight entries in real time, newest first, bounded by
+  /// [maxEntriesLoaded].
+  ///
+  /// Backed by a reactive Isar watch stream on `weightEntryModels` with
+  /// `fireImmediately: true`, so the first emission arrives on subscription.
+  /// The stream is resilient: any error drops the cached encryption key and
+  /// retries the subscription with exponential backoff, short-circuited by
+  /// [unlockSignal] when provided.
+  ///
+  /// Emits a [WeightRepositoryException] as a stream error if the decryption
+  /// key is missing or the underlying Isar stream fails. Never completes on
+  /// its own.
   @override
   Stream<List<WeightEntry>> watchAllEntries() {
     return resilientStream(
@@ -217,6 +251,10 @@ class IsarWeightRepository implements WeightRepository {
         });
   }
 
+  /// Reads and decrypts up to [maxEntriesLoaded] entries, newest first.
+  ///
+  /// Throws [WeightRepositoryException] with [WeightErrorType.readFailed] when
+  /// the encryption key is missing or the Isar query or decryption fails.
   @override
   Future<List<WeightEntry>> getAllEntries() async {
     try {
@@ -254,6 +292,12 @@ class IsarWeightRepository implements WeightRepository {
     }
   }
 
+  /// Encrypts and persists [entry] within a single Isar write transaction,
+  /// assigning an auto-increment [WeightEntry.id] when it is unset.
+  ///
+  /// Throws [WeightRepositoryException] with [WeightErrorType.writeFailed] when
+  /// the encryption key is missing, the write transaction fails, or an
+  /// unexpected error occurs.
   @override
   Future<void> addEntry(WeightEntry entry) async {
     try {
@@ -287,6 +331,10 @@ class IsarWeightRepository implements WeightRepository {
     }
   }
 
+  /// Deletes the entry identified by [id] within a single Isar write transaction.
+  ///
+  /// Throws [WeightRepositoryException] with
+  /// [WeightErrorType.deleteEntryFailed] when the delete transaction fails.
   @override
   Future<void> deleteEntry(int id) async {
     try {
@@ -316,6 +364,11 @@ class IsarWeightRepository implements WeightRepository {
     }
   }
 
+  /// Encrypts and persists all [entries] within a single Isar write transaction.
+  ///
+  /// Returns the number of models written. Throws [WeightRepositoryException]
+  /// with [WeightErrorType.writeFailed] when the encryption key is missing,
+  /// the bulk transaction fails, or an unexpected error occurs.
   @override
   Future<int> bulkImportEntries(List<WeightEntry> entries) async {
     try {
@@ -352,6 +405,10 @@ class IsarWeightRepository implements WeightRepository {
     }
   }
 
+  /// Wipes all stored Isar collections within a single write transaction.
+  ///
+  /// Throws [WeightRepositoryException] with [WeightErrorType.wipeFailed] when
+  /// the clear transaction fails or an unexpected error occurs.
   @override
   Future<void> clearAllData() async {
     try {
@@ -393,6 +450,12 @@ class IsarWeightRepository implements WeightRepository {
 /// The controller approach is used (instead of `yield*`) because inner-stream
 /// errors forwarded through `yield*` cannot be intercepted by a surrounding
 /// `try`/`catch` when the listener handles errors.
+///
+/// @param createStream Factory producing the stream to retry.
+/// @param mapError Maps each failure into the error surfaced to listeners.
+/// @param recoverySignal Optional signal that fires a retry before the backoff
+///   elapses, so recovery is immediate once the underlying condition clears.
+/// @param backoffFor Computes the retry delay from the number of consecutive failures.
 Stream<T> resilientStream<T>(
   Stream<T> Function() createStream, {
   required Object Function(Object error, StackTrace stack) mapError,

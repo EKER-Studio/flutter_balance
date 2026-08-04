@@ -60,6 +60,10 @@ class DatabaseModule {
   /// - Automatic compactOnLaunch when file exceeds threshold
   /// - Instance reuse check for hot reload / re-init safety
   /// - Graceful fallback & automatic DB backup/reset on schema corruption
+  ///
+  /// ```dart
+  /// final isar = await DatabaseModule.initialize();
+  /// ```
   static Future<Isar> initialize() async {
     final dir = await getApplicationDocumentsDirectory();
 
@@ -140,6 +144,8 @@ class DatabaseModule {
     }
   }
 
+  /// Opens the Isar instance for [directoryPath] with automatic compaction
+  /// and the v2 encrypted schema registered.
   static Future<Isar> _openIsar(String directoryPath) {
     return Isar.open(
       [WeightEntryModelSchema],
