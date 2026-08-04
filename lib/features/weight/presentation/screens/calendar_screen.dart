@@ -28,6 +28,7 @@ class CalendarScreen extends StatefulWidget {
   State<CalendarScreen> createState() => _CalendarScreenState();
 }
 
+/// Tracks the focused month and selected day for the calendar grid.
 class _CalendarScreenState extends State<CalendarScreen> {
   late DateTime _focusedMonth;
   late DateTime _selectedDate;
@@ -40,18 +41,21 @@ class _CalendarScreenState extends State<CalendarScreen> {
     _selectedDate = now;
   }
 
+  /// Shifts the focused month one month back.
   void _previousMonth() {
     setState(() {
       _focusedMonth = DateTime(_focusedMonth.year, _focusedMonth.month - 1, 1);
     });
   }
 
+  /// Shifts the focused month one month forward.
   void _nextMonth() {
     setState(() {
       _focusedMonth = DateTime(_focusedMonth.year, _focusedMonth.month + 1, 1);
     });
   }
 
+  /// Selects [date], moving the focused month if it falls outside it.
   void _onDaySelected(DateTime date) {
     setState(() {
       _selectedDate = date;
@@ -190,6 +194,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
     );
   }
 
+  /// Opens the [AddWeightSheet] pre-filled with the selected day.
   void _showAddWeightSheet(BuildContext context) {
     showDialog(
       context: context,

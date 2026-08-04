@@ -18,6 +18,12 @@ import 'package:pure_weight/features/weight/domain/repositories/weight_repositor
 import 'package:pure_weight/presentation/bloc/settings/app_settings_bloc.dart';
 import 'package:pure_weight/presentation/screens/app_initialization_error_screen.dart';
 
+/// Entry point of the PureWeight application.
+///
+/// Bootstraps platform bindings, [HydratedBloc] storage, the [Isar] database
+/// via [DatabaseModule], notifications, and the [AppSettingsBloc] before
+/// running the app. On any initialization failure a crash log is appended and
+/// [AppInitializationErrorScreen] is shown with a retry action.
 Future<void> main() async {
   final widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
