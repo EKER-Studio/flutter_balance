@@ -3,11 +3,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:pure_weight/core/services/notification_service.dart';
 import 'package:pure_weight/l10n/app_localizations.dart';
 import 'package:pure_weight/presentation/bloc/settings/app_settings_bloc.dart';
 import 'package:pure_weight/presentation/screens/onboarding/widgets/step_reminder_notification.dart';
 
 class MockHydratedStorage extends Mock implements HydratedStorage {}
+
+class MockNotificationService extends Mock implements NotificationService {}
 
 void main() {
   late MockHydratedStorage storage;
@@ -79,5 +82,40 @@ void main() {
       await tester.pumpAndSettle();
       expect(nextCount, equals(2));
     });
+
+    testWidgets(
+      'toggling the switch enables notifications via the bloc and shows time tile',
+      (tester) async {
+        final mockNotificationService = MockNotificationService();
+        registerFallbackValue(const TimeOfDay(hour: 8, minute: 0));
+        when(
+          () => mockNotificationService.requestPermissions(),
+        ).thenAnswer((_) async => true);
+        when(
+          () => mockNotificationService.scheduleDailyReminder(any()),
+        ).thenAnswer((_) async {});
+
+        settingsBloc = AppSettingsBloc(
+          notificationService: mockNotificationService,
+        );
+
+        await tester.pumpWidget(buildSubject(onNext: () {}));
+
+        expect(settingsBloc.state.notificationsEnabled, isFalse);
+        expect(
+          find.byKey(const Key('notification_step_time_tile')),
+          findsNothing,
+        );
+
+        await tester.tap(find.byKey(const Key('notification_step_switch')));
+        await tester.pumpAndSettle();
+
+        expect(settingsBloc.state.notificationsEnabled, isTrue);
+        expect(
+          find.byKey(const Key('notification_step_time_tile')),
+          findsOneWidget,
+        );
+      },
+    );
   });
 }
