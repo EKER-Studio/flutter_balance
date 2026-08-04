@@ -137,6 +137,7 @@ void main() {
           const WeightLoaded(entries: [], filteredEntries: [], heightCm: 170),
       act: (bloc) => bloc.add(const AddWeight(weightKg: 72)),
       expect: () => [
+        isA<WeightLoading>(),
         isA<WeightError>().having(
           (s) => s.errorType,
           'errorType',

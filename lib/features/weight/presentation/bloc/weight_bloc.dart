@@ -214,6 +214,13 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
       return;
     }
 
+    // Emit loading state if this is the first entry (e.g., from onboarding wizard).
+    // This prevents the TodayScreen from flashing the "empty" view while the DB
+    // persists the initial measurement before the reactive stream fires.
+    if (entries.isEmpty) {
+      emit(WeightLoading(heightCm: heightCm, timePeriod: state.timePeriod));
+    }
+
     final entry = WeightEntry(
       weightKg: event.weightKg,
       dateTime: event.dateTime ?? DateTime.now(),
