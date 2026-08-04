@@ -154,7 +154,22 @@ class NotificationService {
     if (!_initialized) return;
     try {
       await _plugin.cancel(id: _dailyReminderId);
-      final tz.TZDateTime scheduledDate = _nextInstanceOfTime(time);
+
+      final scheduleMode = AndroidScheduleMode.exactAllowWhileIdle;
+
+      final now = tz.TZDateTime.now(tz.local);
+      var scheduledDate = tz.TZDateTime(
+        tz.local,
+        now.year,
+        now.month,
+        now.day,
+        time.hour,
+        time.minute,
+      );
+      if (scheduledDate.isBefore(now)) {
+        scheduledDate = scheduledDate.add(const Duration(days: 1));
+      }
+
       await _plugin.zonedSchedule(
         id: _dailyReminderId,
         scheduledDate: scheduledDate,
@@ -173,7 +188,7 @@ class NotificationService {
             presentSound: true,
           ),
         ),
-        androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
+        androidScheduleMode: scheduleMode,
         title: _title,
         body: _body,
         matchDateTimeComponents: DateTimeComponents.time,
@@ -200,20 +215,5 @@ class NotificationService {
     }
   }
 
-  /// Computes the next [tz.TZDateTime] that matches [time] in the local zone.
-  tz.TZDateTime _nextInstanceOfTime(TimeOfDay time) {
-    final now = tz.TZDateTime.now(tz.local);
-    var scheduled = tz.TZDateTime(
-      tz.local,
-      now.year,
-      now.month,
-      now.day,
-      time.hour,
-      time.minute,
-    );
-    if (scheduled.isBefore(now)) {
-      scheduled = scheduled.add(const Duration(days: 1));
-    }
-    return scheduled;
-  }
+
 }
