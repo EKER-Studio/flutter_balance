@@ -32,37 +32,38 @@ void main() {
       child: MaterialApp(
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
-        home: Scaffold(
-          body: StepReminderNotification(onNext: onNext),
-        ),
+        home: Scaffold(body: StepReminderNotification(onNext: onNext)),
       ),
     );
   }
 
   group('StepReminderNotification Widget Tests', () {
-    testWidgets('renders step title, description, switch, skip and next buttons', (
-      tester,
-    ) async {
-      await tester.pumpWidget(buildSubject(onNext: () {}));
+    testWidgets(
+      'renders step title, description, switch, skip and next buttons',
+      (tester) async {
+        await tester.pumpWidget(buildSubject(onNext: () {}));
 
-      expect(find.text('Daily Reminder'), findsWidgets);
-      expect(
-        find.text('Set a daily reminder to log your weight and stay on track.'),
-        findsOneWidget,
-      );
-      expect(
-        find.byKey(const Key('notification_step_switch')),
-        findsOneWidget,
-      );
-      expect(
-        find.byKey(const Key('notification_step_skip_button')),
-        findsOneWidget,
-      );
-      expect(
-        find.byKey(const Key('notification_step_next_button')),
-        findsOneWidget,
-      );
-    });
+        expect(find.text('Daily Reminder'), findsWidgets);
+        expect(
+          find.text(
+            'Set a daily reminder to log your weight and stay on track.',
+          ),
+          findsOneWidget,
+        );
+        expect(
+          find.byKey(const Key('notification_step_switch')),
+          findsOneWidget,
+        );
+        expect(
+          find.byKey(const Key('notification_step_skip_button')),
+          findsOneWidget,
+        );
+        expect(
+          find.byKey(const Key('notification_step_next_button')),
+          findsOneWidget,
+        );
+      },
+    );
 
     testWidgets('invokes onNext when skip or next button is pressed', (
       tester,

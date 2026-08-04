@@ -13,10 +13,7 @@ class StepBiometricLock extends StatefulWidget {
   final VoidCallback onNext;
 
   /// Creates a [StepBiometricLock] widget.
-  const StepBiometricLock({
-    super.key,
-    required this.onNext,
-  });
+  const StepBiometricLock({super.key, required this.onNext});
 
   @override
   State<StepBiometricLock> createState() => _StepBiometricLockState();
@@ -115,7 +112,9 @@ class _StepBiometricLockState extends State<StepBiometricLock> {
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(16.0),
                     border: Border.all(
-                      color: theme.colorScheme.outlineVariant.withValues(alpha: 0.3),
+                      color: theme.colorScheme.outlineVariant.withValues(
+                        alpha: 0.3,
+                      ),
                     ),
                   ),
                   child: Column(

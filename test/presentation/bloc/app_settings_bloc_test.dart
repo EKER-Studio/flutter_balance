@@ -30,12 +30,15 @@ void main() {
     HydratedBloc.storage = storage;
     when(() => storage.read(any())).thenReturn(null);
     when(() => storage.write(any(), any())).thenAnswer((_) async {});
-    when(() => mockNotificationService.requestPermissions())
-        .thenAnswer((_) async => true);
-    when(() => mockNotificationService.scheduleDailyReminder(any()))
-        .thenAnswer((_) async {});
-    when(() => mockNotificationService.cancelDailyReminder())
-        .thenAnswer((_) async {});
+    when(
+      () => mockNotificationService.requestPermissions(),
+    ).thenAnswer((_) async => true);
+    when(
+      () => mockNotificationService.scheduleDailyReminder(any()),
+    ).thenAnswer((_) async {});
+    when(
+      () => mockNotificationService.cancelDailyReminder(),
+    ).thenAnswer((_) async {});
   });
 
   group('AppSettingsBloc', () {
@@ -139,8 +142,9 @@ void main() {
     blocTest<AppSettingsBloc, AppSettingsState>(
       'emits notificationsEnabled false on ToggleNotifications(true) when permission denied',
       setUp: () {
-        when(() => mockNotificationService.requestPermissions())
-            .thenAnswer((_) async => false);
+        when(
+          () => mockNotificationService.requestPermissions(),
+        ).thenAnswer((_) async => false);
       },
       build: () =>
           AppSettingsBloc(notificationService: mockNotificationService),
@@ -154,9 +158,7 @@ void main() {
       ],
       verify: (_) {
         verify(() => mockNotificationService.requestPermissions()).called(1);
-        verifyNever(
-          () => mockNotificationService.scheduleDailyReminder(any()),
-        );
+        verifyNever(() => mockNotificationService.scheduleDailyReminder(any()));
       },
     );
 

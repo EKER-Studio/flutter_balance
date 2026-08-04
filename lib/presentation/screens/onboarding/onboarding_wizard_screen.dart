@@ -185,14 +185,10 @@ class _OnboardingWizardScreenState extends State<OnboardingWizardScreen> {
                 ),
               ),
               _buildStepWrapper(
-                StepReminderNotification(
-                  onNext: _handleReminderNext,
-                ),
+                StepReminderNotification(onNext: _handleReminderNext),
               ),
               _buildStepWrapper(
-                StepBiometricLock(
-                  onNext: _handleBiometricNext,
-                ),
+                StepBiometricLock(onNext: _handleBiometricNext),
               ),
               _buildStepWrapper(
                 StepInitialWeight(

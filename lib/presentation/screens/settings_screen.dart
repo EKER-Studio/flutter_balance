@@ -532,11 +532,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
       if (entries.isEmpty) {
         if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(l10n.exportNoData),
-            ),
-          );
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(l10n.exportNoData)));
         }
         return;
       }
@@ -545,8 +543,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
       if (context.mounted) {
         final box = context.findRenderObject() as RenderBox?;
-        final originRect =
-            box != null ? box.localToGlobal(Offset.zero) & box.size : null;
+        final originRect = box != null
+            ? box.localToGlobal(Offset.zero) & box.size
+            : null;
 
         await Share.shareXFiles(
           [XFile(exportedFile.path)],
@@ -565,11 +564,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
       }
     } catch (e) {
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(l10n.exportError(e.toString())),
-          ),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(l10n.exportError(e.toString()))));
       }
     }
   }
@@ -620,9 +617,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
       final available = await BiometricService.instance.isAvailable();
       if (!available) {
         if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(l10n.biometricsNotAvailable)),
-          );
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(l10n.biometricsNotAvailable)));
         }
         return;
       }
@@ -636,17 +633,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
         // Biometrics became unavailable between the availability check and
         // the authentication call (e.g. user deleted fingerprints mid-flow).
         if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(l10n.biometricsNotAvailable)),
-          );
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(l10n.biometricsNotAvailable)));
         }
       } else {
         // User canceled or failed — do not enable the lock.
         bloc.add(const UpdateBiometricLock(false));
         if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(l10n.biometricAuthFailed)),
-          );
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(l10n.biometricAuthFailed)));
         }
       }
     } else {

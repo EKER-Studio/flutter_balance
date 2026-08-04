@@ -13,10 +13,7 @@ class StepReminderNotification extends StatelessWidget {
   final VoidCallback onNext;
 
   /// Creates a [StepReminderNotification] widget.
-  const StepReminderNotification({
-    super.key,
-    required this.onNext,
-  });
+  const StepReminderNotification({super.key, required this.onNext});
 
   Future<void> _handleToggle(BuildContext context, bool enabled) async {
     final l10n = AppLocalizations.of(context);
@@ -95,7 +92,9 @@ class StepReminderNotification extends StatelessWidget {
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(16.0),
                     border: Border.all(
-                      color: theme.colorScheme.outlineVariant.withValues(alpha: 0.3),
+                      color: theme.colorScheme.outlineVariant.withValues(
+                        alpha: 0.3,
+                      ),
                     ),
                   ),
                   child: Column(
@@ -133,7 +132,10 @@ class StepReminderNotification extends StatelessWidget {
                             key: const Key('notification_step_time_button'),
                             onPressed: () => _pickTime(context, time),
                             icon: const ExcludeSemantics(
-                              child: Icon(Icons.edit_calendar_outlined, size: 18),
+                              child: Icon(
+                                Icons.edit_calendar_outlined,
+                                size: 18,
+                              ),
                             ),
                             label: Text(formattedTime),
                           ),

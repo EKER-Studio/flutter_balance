@@ -84,10 +84,7 @@ void main() {
     testWidgets('renders target weight input', (tester) async {
       await tester.pumpWidget(
         buildApp(
-          StepTargetWeight(
-            unit: MeasurementUnit.metric,
-            onNext: (_) {},
-          ),
+          StepTargetWeight(unit: MeasurementUnit.metric, onNext: (_) {}),
         ),
       );
 

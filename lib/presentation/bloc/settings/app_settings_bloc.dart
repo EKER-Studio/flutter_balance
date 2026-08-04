@@ -11,9 +11,9 @@ class AppSettingsBloc extends HydratedBloc<AppSettingsEvent, AppSettingsState> {
 
   /// Creates an [AppSettingsBloc] initialized with default settings.
   AppSettingsBloc({NotificationService? notificationService})
-      : _notificationService =
-            notificationService ?? NotificationService.instance,
-        super(const AppSettingsState()) {
+    : _notificationService =
+          notificationService ?? NotificationService.instance,
+      super(const AppSettingsState()) {
     on<UpdateTheme>(_onUpdateTheme);
     on<UpdateMeasurementUnit>(_onUpdateMeasurementUnit);
     on<UpdateHeight>(_onUpdateHeight);
@@ -67,9 +67,7 @@ class AppSettingsBloc extends HydratedBloc<AppSettingsEvent, AppSettingsState> {
   ) async {
     emit(state.copyWith(notificationTime: event.notificationTime));
     if (state.notificationsEnabled) {
-      await _notificationService.scheduleDailyReminder(
-        event.notificationTime,
-      );
+      await _notificationService.scheduleDailyReminder(event.notificationTime);
     }
   }
 

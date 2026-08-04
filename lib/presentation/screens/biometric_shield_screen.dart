@@ -50,11 +50,9 @@ class _BiometricShieldScreenState extends State<BiometricShieldScreen> {
           bloc.add(const SetLocked(true));
         }
         if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(l10n.biometricAuthFailed),
-            ),
-          );
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(l10n.biometricAuthFailed)));
         }
       }
     } catch (e, stack) {

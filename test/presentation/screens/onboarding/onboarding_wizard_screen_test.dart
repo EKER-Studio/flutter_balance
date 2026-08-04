@@ -70,74 +70,77 @@ void main() {
       expect(find.byIcon(Icons.arrow_back), findsNothing);
     });
 
-    testWidgets('navigates through steps 1 -> 2 -> 3 -> 4 -> 5 and completes wizard', (
-      tester,
-    ) async {
-      bool completed = false;
-      await tester.pumpWidget(
-        buildSubject(onWizardCompleted: () => completed = true),
-      );
+    testWidgets(
+      'navigates through steps 1 -> 2 -> 3 -> 4 -> 5 and completes wizard',
+      (tester) async {
+        bool completed = false;
+        await tester.pumpWidget(
+          buildSubject(onWizardCompleted: () => completed = true),
+        );
 
-      // Step 1 -> Next
-      await tester.enterText(find.byKey(const Key('height_cm_input')), '170');
-      await tester.pumpAndSettle();
-      await tester.tap(find.text('Next'));
-      await tester.pumpAndSettle();
+        // Step 1 -> Next
+        await tester.enterText(find.byKey(const Key('height_cm_input')), '170');
+        await tester.pumpAndSettle();
+        await tester.tap(find.text('Next'));
+        await tester.pumpAndSettle();
 
-      expect(find.text('Step 2 of 5'), findsOneWidget);
-      expect(find.text('Target Weight'), findsOneWidget);
-      expect(find.byIcon(Icons.arrow_back), findsOneWidget);
+        expect(find.text('Step 2 of 5'), findsOneWidget);
+        expect(find.text('Target Weight'), findsOneWidget);
+        expect(find.byIcon(Icons.arrow_back), findsOneWidget);
 
-      // Height is synced to the weight BLoC so AddWeight in step 5 does not
-      // get rejected with a heightNotSet error on a fresh install.
-      verify(
-        () => weightBloc.add(any(that: isA<UpdateUserHeight>())),
-      ).called(1);
+        // Height is synced to the weight BLoC so AddWeight in step 5 does not
+        // get rejected with a heightNotSet error on a fresh install.
+        verify(
+          () => weightBloc.add(any(that: isA<UpdateUserHeight>())),
+        ).called(1);
 
-      // Step 2 -> Next (Skip target weight)
-      await tester.tap(find.text('Skip').first);
-      await tester.pumpAndSettle();
+        // Step 2 -> Next (Skip target weight)
+        await tester.tap(find.text('Skip').first);
+        await tester.pumpAndSettle();
 
-      expect(find.text('Step 3 of 5'), findsOneWidget);
-      expect(find.text('Daily Reminder'), findsWidgets);
+        expect(find.text('Step 3 of 5'), findsOneWidget);
+        expect(find.text('Daily Reminder'), findsWidgets);
 
-      // Step 3 -> Next (Skip/Next reminder)
-      await tester.tap(find.byKey(const Key('notification_step_next_button')));
-      await tester.pumpAndSettle();
+        // Step 3 -> Next (Skip/Next reminder)
+        await tester.tap(
+          find.byKey(const Key('notification_step_next_button')),
+        );
+        await tester.pumpAndSettle();
 
-      expect(find.text('Step 4 of 5'), findsOneWidget);
-      expect(find.text('Biometric Lock'), findsWidgets);
+        expect(find.text('Step 4 of 5'), findsOneWidget);
+        expect(find.text('Biometric Lock'), findsWidgets);
 
-      // Step 4 -> Next (Skip/Next biometric lock)
-      await tester.tap(find.byKey(const Key('biometric_step_next_button')));
-      await tester.pumpAndSettle();
+        // Step 4 -> Next (Skip/Next biometric lock)
+        await tester.tap(find.byKey(const Key('biometric_step_next_button')));
+        await tester.pumpAndSettle();
 
-      expect(find.text('Step 5 of 5'), findsOneWidget);
-      expect(find.text('Initial Weight'), findsOneWidget);
+        expect(find.text('Step 5 of 5'), findsOneWidget);
+        expect(find.text('Initial Weight'), findsOneWidget);
 
-      // Enter initial weight in Step 5
-      await tester.enterText(
-        find.byKey(const Key('initial_weight_input')),
-        '75.5',
-      );
-      await tester.tap(find.text('Complete Setup'));
-      await tester.pumpAndSettle();
+        // Enter initial weight in Step 5
+        await tester.enterText(
+          find.byKey(const Key('initial_weight_input')),
+          '75.5',
+        );
+        await tester.tap(find.text('Complete Setup'));
+        await tester.pumpAndSettle();
 
-      expect(completed, isTrue);
-      expect(settingsBloc.state.isOnboardingCompleted, isTrue);
+        expect(completed, isTrue);
+        expect(settingsBloc.state.isOnboardingCompleted, isTrue);
 
-      verify(
-        () => weightBloc.add(
-          any(
-            that: isA<AddWeight>().having(
-              (w) => w.weightKg,
-              'weightKg',
-              75.5,
+        verify(
+          () => weightBloc.add(
+            any(
+              that: isA<AddWeight>().having(
+                (w) => w.weightKg,
+                'weightKg',
+                75.5,
+              ),
             ),
           ),
-        ),
-      ).called(1);
-    });
+        ).called(1);
+      },
+    );
 
     testWidgets('navigates back to Step 1 from Step 2 via back button', (
       tester,

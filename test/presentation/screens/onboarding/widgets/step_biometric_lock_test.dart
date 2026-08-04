@@ -32,34 +32,30 @@ void main() {
       child: MaterialApp(
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
-        home: Scaffold(
-          body: StepBiometricLock(onNext: onNext),
-        ),
+        home: Scaffold(body: StepBiometricLock(onNext: onNext)),
       ),
     );
   }
 
   group('StepBiometricLock Widget Tests', () {
-    testWidgets('renders step title, description, switch, skip and next buttons', (
-      tester,
-    ) async {
-      await tester.pumpWidget(buildSubject(onNext: () {}));
-      await tester.pumpAndSettle();
+    testWidgets(
+      'renders step title, description, switch, skip and next buttons',
+      (tester) async {
+        await tester.pumpWidget(buildSubject(onNext: () {}));
+        await tester.pumpAndSettle();
 
-      expect(find.text('Biometric Lock'), findsWidgets);
-      expect(
-        find.byKey(const Key('biometric_step_switch')),
-        findsOneWidget,
-      );
-      expect(
-        find.byKey(const Key('biometric_step_skip_button')),
-        findsOneWidget,
-      );
-      expect(
-        find.byKey(const Key('biometric_step_next_button')),
-        findsOneWidget,
-      );
-    });
+        expect(find.text('Biometric Lock'), findsWidgets);
+        expect(find.byKey(const Key('biometric_step_switch')), findsOneWidget);
+        expect(
+          find.byKey(const Key('biometric_step_skip_button')),
+          findsOneWidget,
+        );
+        expect(
+          find.byKey(const Key('biometric_step_next_button')),
+          findsOneWidget,
+        );
+      },
+    );
 
     testWidgets('invokes onNext when skip or next button is pressed', (
       tester,

@@ -3,7 +3,6 @@ import 'dart:math' as math;
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:intl/intl.dart';
 import 'package:pure_weight/core/models/measurement_unit.dart';
 import 'package:pure_weight/core/utils/unit_converter.dart';
 import 'package:pure_weight/features/weight/domain/entities/weight_entry.dart';
@@ -13,12 +12,12 @@ import 'package:pure_weight/features/weight/presentation/bloc/weight_event.dart'
 import 'package:pure_weight/features/weight/presentation/bloc/weight_state.dart';
 import 'package:pure_weight/features/weight/presentation/utils/weight_error_localizer.dart';
 import 'package:pure_weight/features/weight/presentation/widgets/add_weight_sheet.dart';
+import 'package:pure_weight/features/weight/presentation/widgets/health_summary_card.dart';
+import 'package:pure_weight/features/weight/presentation/widgets/latest_measurement_card.dart';
 import 'package:pure_weight/features/weight/presentation/widgets/today_shimmer_skeleton.dart';
 import 'package:pure_weight/l10n/app_localizations.dart';
 import 'package:pure_weight/presentation/bloc/settings/app_settings_bloc.dart';
 import 'package:pure_weight/presentation/bloc/settings/app_settings_state.dart';
-import 'package:pure_weight/presentation/bloc/settings/bmi_category.dart';
-import 'package:pure_weight/features/weight/presentation/utils/bmi_category_localizer.dart';
 import 'package:pure_weight/presentation/core/clamped_layout.dart';
 import 'package:pure_weight/presentation/widgets/app_top_bar.dart';
 import 'package:pure_weight/presentation/widgets/state_message_card.dart';
@@ -115,31 +114,85 @@ class TodayScreen extends StatelessWidget {
 
     return BlocBuilder<AppSettingsBloc, AppSettingsState>(
       builder: (context, settings) {
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            if (state is WeightError) ...[
-              _InlineErrorBanner(errorType: state.errorType),
-              const SizedBox(height: 16),
-            ],
-            _WeightSummaryCard(
-              latestEntry: latestEntry,
-              entries: entries,
-              settings: settings,
-            ),
-            const SizedBox(height: 12),
-            _WeightTrendChartCard(
-              entries: filteredEntries,
-              period: state.timePeriod,
-              measurementUnit: settings.measurementUnit,
-              onPeriodChanged: (period) {
-                context.read<WeightBloc>().add(ChangeChartFilter(period));
-              },
-            ),
-            const SizedBox(height: 12),
-            const _DailyTipCard(),
-            const SizedBox(height: 80),
-          ],
+        return LayoutBuilder(
+          builder: (context, constraints) {
+            final isWide = constraints.maxWidth >= 600;
+
+            final Widget cardStack;
+            if (isWide) {
+              cardStack = Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  if (state is WeightError) ...[
+                    _InlineErrorBanner(errorType: state.errorType),
+                    const SizedBox(height: 16),
+                  ],
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(
+                        child: HealthSummaryCard(
+                          latestWeightKg: latestEntry.weightKg,
+                          lastUpdated: latestEntry.dateTime,
+                        ),
+                      ),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: LatestMeasurementCard(latestEntry: latestEntry),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  _WeightTrendChartCard(
+                    entries: filteredEntries,
+                    period: state.timePeriod,
+                    measurementUnit: settings.measurementUnit,
+                    onPeriodChanged: (period) {
+                      context.read<WeightBloc>().add(ChangeChartFilter(period));
+                    },
+                  ),
+                  const SizedBox(height: 16),
+                  const _DailyTipCard(),
+                  const SizedBox(height: 80),
+                ],
+              );
+            } else {
+              cardStack = Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  if (state is WeightError) ...[
+                    _InlineErrorBanner(errorType: state.errorType),
+                    const SizedBox(height: 16),
+                  ],
+                  HealthSummaryCard(
+                    latestWeightKg: latestEntry.weightKg,
+                    lastUpdated: latestEntry.dateTime,
+                  ),
+                  const SizedBox(height: 16),
+                  _WeightTrendChartCard(
+                    entries: filteredEntries,
+                    period: state.timePeriod,
+                    measurementUnit: settings.measurementUnit,
+                    onPeriodChanged: (period) {
+                      context.read<WeightBloc>().add(ChangeChartFilter(period));
+                    },
+                  ),
+                  const SizedBox(height: 16),
+                  LatestMeasurementCard(latestEntry: latestEntry),
+                  const SizedBox(height: 16),
+                  const _DailyTipCard(),
+                  const SizedBox(height: 80),
+                ],
+              );
+            }
+
+            return Center(
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 900),
+                child: cardStack,
+              ),
+            );
+          },
         );
       },
     );
@@ -212,293 +265,6 @@ class _RefreshableTodayBody extends StatelessWidget {
         ),
       ),
     );
-  }
-}
-
-class _WeightSummaryCard extends StatelessWidget {
-  final WeightEntry latestEntry;
-  final List<WeightEntry> entries;
-  final AppSettingsState settings;
-
-  const _WeightSummaryCard({
-    required this.latestEntry,
-    required this.entries,
-    required this.settings,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
-    final colorScheme = Theme.of(context).colorScheme;
-    final textTheme = Theme.of(context).textTheme;
-    final latestWeight = formatWeight(
-      latestEntry.weightKg,
-      settings.measurementUnit,
-    );
-    final weightParts = latestWeight.split(' ');
-    final weightValue = weightParts.first;
-    final weightUnit = weightParts.length > 1
-        ? weightParts.last
-        : unitLabelFor(settings.measurementUnit);
-    final bmi = settings.calculateBmi(latestEntry.weightKg);
-    final bmiCategory = settings.getBmiCategory(bmi);
-    final bmiStatus = bmiCategory.localizedName(l10n);
-    final remaining = _remainingToTarget(
-      latestEntry.weightKg,
-      settings.targetWeight,
-    );
-    final remainingLabel = settings.targetWeight == null
-        ? l10n.notSet
-        : formatWeight(remaining, settings.measurementUnit);
-
-    return Semantics(
-      container: true,
-      label: l10n.weightSummarySemanticsLabel(
-        latestWeight,
-        bmiStatus,
-        remainingLabel,
-      ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(28),
-        child: Stack(
-          children: [
-            Positioned(
-              top: -16,
-              right: -16,
-              child: Container(
-                width: 160,
-                height: 160,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: colorScheme.primary.withValues(alpha: 0.05),
-                ),
-              ),
-            ),
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: colorScheme.surfaceContainerLow,
-                borderRadius: BorderRadius.circular(28),
-                border: Border.all(
-                  color: colorScheme.outlineVariant.withValues(alpha: 0.3),
-                ),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              l10n.lastMeasurementLabel,
-                              style: textTheme.labelMedium?.copyWith(
-                                color: colorScheme.onSurfaceVariant,
-                              ),
-                            ),
-                            const SizedBox(height: 2),
-                            Row(
-                              crossAxisAlignment: CrossAxisAlignment.baseline,
-                              textBaseline: TextBaseline.alphabetic,
-                              children: [
-                                Flexible(
-                                  child: Text(
-                                    weightValue,
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: textTheme.displayMedium?.copyWith(
-                                      color: colorScheme.primary,
-                                      fontWeight: FontWeight.w800,
-                                      letterSpacing: -1.2,
-                                    ),
-                                  ),
-                                ),
-                                const SizedBox(width: 6),
-                                Text(
-                                  weightUnit,
-                                  style: textTheme.titleLarge?.copyWith(
-                                    color: colorScheme.onSurfaceVariant,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 2),
-                            Text(
-                              _formatMeasurementTime(
-                                latestEntry.dateTime,
-                                l10n,
-                              ),
-                              style: textTheme.bodyMedium?.copyWith(
-                                color: colorScheme.onSurfaceVariant,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      _BmiBadge(
-                        bmi: bmi,
-                        status: bmiStatus,
-                        category: bmiCategory,
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 12),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Flexible(
-                        child: Text(
-                          l10n.goalWeightLabel(
-                            settings.targetWeight == null
-                                ? l10n.notSet
-                                : formatWeight(
-                                    settings.targetWeight!,
-                                    settings.measurementUnit,
-                                  ),
-                          ),
-                          style: textTheme.labelMedium?.copyWith(
-                            color: colorScheme.onSurfaceVariant,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Flexible(
-                        child: Text(
-                          l10n.remainingWeightLabel(remainingLabel),
-                          textAlign: TextAlign.end,
-                          style: textTheme.labelMedium?.copyWith(
-                            color: colorScheme.onSurfaceVariant,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 8),
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(9999),
-                    child: LinearProgressIndicator(
-                      value: _goalProgress(
-                        entries,
-                        latestEntry.weightKg,
-                        settings.targetWeight,
-                      ),
-                      minHeight: 8,
-                      color: colorScheme.primary,
-                      backgroundColor: colorScheme.surfaceContainerHighest,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  static double _remainingToTarget(double currentWeight, double? targetWeight) {
-    if (targetWeight == null) {
-      return 0;
-    }
-    return (currentWeight - targetWeight).abs();
-  }
-
-  static double _goalProgress(
-    List<WeightEntry> entries,
-    double currentWeight,
-    double? targetWeight,
-  ) {
-    if (targetWeight == null || entries.isEmpty) {
-      return 0;
-    }
-    final oldestWeight = entries.last.weightKg;
-    final denominator = (oldestWeight - targetWeight).abs();
-    if (denominator == 0) {
-      return currentWeight == targetWeight ? 1 : 0;
-    }
-    final numerator = targetWeight < oldestWeight
-        ? oldestWeight - currentWeight
-        : currentWeight - oldestWeight;
-    return (numerator / denominator).clamp(0.0, 1.0);
-  }
-}
-
-class _BmiBadge extends StatelessWidget {
-  final double bmi;
-  final String status;
-  final BmiCategory category;
-
-  const _BmiBadge({
-    required this.bmi,
-    required this.status,
-    required this.category,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
-    final colorScheme = Theme.of(context).colorScheme;
-    final textTheme = Theme.of(context).textTheme;
-
-    return Container(
-      padding: const EdgeInsets.all(12),
-      constraints: const BoxConstraints(minWidth: 108),
-      decoration: BoxDecoration(
-        color: colorScheme.primary.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: colorScheme.primary.withValues(alpha: 0.2)),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.end,
-        children: [
-          Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(
-                _statusIcon(category),
-                color: colorScheme.primary,
-                size: 16,
-                fill: 1,
-              ),
-              const SizedBox(width: 4),
-              Flexible(
-                child: Text(
-                  status,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: textTheme.labelMedium?.copyWith(
-                    color: colorScheme.primary,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 4),
-          Text(
-            l10n.bmiValueShortLabel(bmi.toStringAsFixed(1)),
-            textAlign: TextAlign.end,
-            style: textTheme.titleLarge?.copyWith(
-              color: colorScheme.primary,
-              fontWeight: FontWeight.w800,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  IconData _statusIcon(BmiCategory category) {
-    return switch (category) {
-      BmiCategory.normal => Icons.check_circle,
-      BmiCategory.underweight ||
-      BmiCategory.overweight ||
-      BmiCategory.obese => Icons.info,
-    };
   }
 }
 
@@ -870,27 +636,57 @@ class _DailyTipCard extends StatelessWidget {
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
 
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.transparent,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: colorScheme.outline),
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Icon(Icons.lightbulb_outline, color: colorScheme.primary),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Text(
-              l10n.dailyTipText,
-              style: textTheme.bodyMedium?.copyWith(
-                color: colorScheme.onSurfaceVariant,
+    return Semantics(
+      container: true,
+      label: '${l10n.dailyTipTitle}: ${l10n.dailyTipText}',
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: colorScheme.surfaceContainerLow,
+          borderRadius: BorderRadius.circular(28),
+          border: Border.all(
+            color: colorScheme.outlineVariant.withValues(alpha: 0.3),
+          ),
+        ),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: colorScheme.primaryContainer,
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                Icons.lightbulb_outline,
+                color: colorScheme.onPrimaryContainer,
+                size: 20,
               ),
             ),
-          ),
-        ],
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    l10n.dailyTipTitle,
+                    style: textTheme.labelLarge?.copyWith(
+                      color: colorScheme.primary,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    l10n.dailyTipText,
+                    style: textTheme.bodyMedium?.copyWith(
+                      color: colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -937,18 +733,4 @@ class _InlineErrorBanner extends StatelessWidget {
       ),
     );
   }
-}
-
-String _formatMeasurementTime(DateTime dateTime, AppLocalizations l10n) {
-  final time = DateFormat.Hm().format(dateTime);
-  final now = DateTime.now();
-  final isToday =
-      dateTime.year == now.year &&
-      dateTime.month == now.month &&
-      dateTime.day == now.day;
-
-  if (isToday) {
-    return l10n.todayAtTime(time);
-  }
-  return l10n.lastUpdatedDate(DateFormat.yMMMd().add_Hm().format(dateTime));
 }
