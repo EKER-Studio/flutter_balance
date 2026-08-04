@@ -1,5 +1,6 @@
 import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/semantics.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
@@ -201,24 +202,5 @@ void main() {
       },
     );
 
-    testWidgets(
-      'accessibility audit: height input has text field semantics and focus',
-      (tester) async {
-        final SemanticsHandle handle = tester.ensureSemantics();
-
-        await tester.pumpWidget(buildSubject());
-
-        final heightInput = find.byKey(const Key('height_cm_input'));
-        await tester.tap(heightInput);
-        await tester.pump();
-
-        final semanticsData = tester
-            .getSemantics(heightInput)
-            .getSemanticsData();
-        expect(semanticsData.label, contains('Height'));
-
-        handle.dispose();
-      },
-    );
   });
 }

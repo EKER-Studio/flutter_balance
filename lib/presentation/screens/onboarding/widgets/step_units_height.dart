@@ -31,12 +31,14 @@ class StepUnitsHeight extends StatefulWidget {
 }
 
 class _StepUnitsHeightState extends State<StepUnitsHeight> {
-  final _formKey = GlobalKey<FormState>();
   late MeasurementUnit _selectedUnit;
 
   late final TextEditingController _cmController;
   late final TextEditingController _feetController;
   late final TextEditingController _inchesController;
+
+  String? _cmErrorText;
+  String? _imperialErrorText;
 
   @override
   void initState() {
@@ -104,6 +106,8 @@ class _StepUnitsHeightState extends State<StepUnitsHeight> {
 
     final currentCm = _calculateHeightCm();
     setState(() {
+      _cmErrorText = null;
+      _imperialErrorText = null;
       _selectedUnit = newUnit;
       if (currentCm != null) {
         if (newUnit == MeasurementUnit.imperial) {
@@ -119,11 +123,17 @@ class _StepUnitsHeightState extends State<StepUnitsHeight> {
 
   /// Validates the form and invokes [StepUnitsHeight.onNext] on success.
   void _handleNext() {
-    if (_formKey.currentState?.validate() ?? false) {
-      final heightCm = _calculateHeightCm();
-      if (heightCm != null) {
-        widget.onNext(_selectedUnit, heightCm);
-      }
+    final heightCm = _calculateHeightCm();
+    if (heightCm == null) {
+      setState(() {
+        if (_selectedUnit == MeasurementUnit.metric) {
+          _cmErrorText = AppLocalizations.of(context).heightRangeError;
+        } else {
+          _imperialErrorText = 'Invalid height';
+        }
+      });
+    } else {
+      widget.onNext(_selectedUnit, heightCm);
     }
   }
 
@@ -131,125 +141,155 @@ class _StepUnitsHeightState extends State<StepUnitsHeight> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context);
+    
+    final isMetricError = _cmErrorText != null;
+    final isImperialError = _imperialErrorText != null;
+
+    final errorOutline = OutlineInputBorder(
+      borderRadius: BorderRadius.circular(8),
+      borderSide: BorderSide(
+        color: theme.colorScheme.error,
+        width: 2,
+      ),
+    );
 
     return ClampedLayout(
       padding: const EdgeInsets.all(24.0),
-      child: Form(
-        key: _formKey,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Text(
-              'Units & Height',
-              style: theme.textTheme.headlineSmall?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Text(
+            'Units & Height',
+            style: theme.textTheme.headlineSmall?.copyWith(
+              fontWeight: FontWeight.bold,
             ),
-            const SizedBox(height: 8.0),
-            Text(
-              'Select your preferred unit system and enter your height.',
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant,
-              ),
+          ),
+          const SizedBox(height: 8.0),
+          Text(
+            'Select your preferred unit system and enter your height.',
+            style: theme.textTheme.bodyMedium?.copyWith(
+              color: theme.colorScheme.onSurfaceVariant,
             ),
-            const SizedBox(height: 24.0),
-            SegmentedButton<MeasurementUnit>(
-              segments: [
-                ButtonSegment<MeasurementUnit>(
-                  value: MeasurementUnit.metric,
-                  label: Text(l10n.metricUnitOption),
-                  icon: const ExcludeSemantics(child: Icon(Icons.straighten)),
-                ),
-                ButtonSegment<MeasurementUnit>(
-                  value: MeasurementUnit.imperial,
-                  label: Text(l10n.imperialUnitOption),
-                  icon: const ExcludeSemantics(child: Icon(Icons.square_foot)),
-                ),
-              ],
-              selected: {_selectedUnit},
-              onSelectionChanged: (selection) {
-                if (selection.isNotEmpty) {
-                  _onUnitChanged(selection.first);
-                }
-              },
-            ),
-            const SizedBox(height: 24.0),
-            if (_selectedUnit == MeasurementUnit.metric) ...[
-              TextFormField(
-                key: const Key('height_cm_input'),
-                controller: _cmController,
-                keyboardType: const TextInputType.numberWithOptions(
-                  decimal: true,
-                ),
-                decoration: InputDecoration(
-                  labelText: l10n.heightCmLabel,
-                  hintText: l10n.heightHint,
-                  helperText: '50 – 250 cm',
-                ),
-                validator: (value) {
-                  final parsed = double.tryParse(value?.trim() ?? '');
-                  if (parsed == null ||
-                      parsed < AppSettingsState.minHeightCm ||
-                      parsed > AppSettingsState.maxHeightCm) {
-                    return l10n.heightRangeError;
-                  }
-                  return null;
-                },
+          ),
+          const SizedBox(height: 24.0),
+          SegmentedButton<MeasurementUnit>(
+            segments: [
+              ButtonSegment<MeasurementUnit>(
+                value: MeasurementUnit.metric,
+                label: Text(l10n.metricUnitOption),
+                icon: const ExcludeSemantics(child: Icon(Icons.straighten)),
               ),
-            ] else ...[
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Expanded(
-                    child: TextFormField(
-                      key: const Key('height_feet_input'),
-                      controller: _feetController,
-                      keyboardType: TextInputType.number,
-                      decoration: const InputDecoration(
-                        labelText: 'Feet',
-                        suffixText: 'ft',
-                      ),
-                      validator: (value) {
-                        final feet = double.tryParse(value?.trim() ?? '');
-                        if (feet == null || feet < 1 || feet > 8) {
-                          return '1-8 ft';
-                        }
-                        return null;
-                      },
-                    ),
-                  ),
-                  const SizedBox(width: 16.0),
-                  Expanded(
-                    child: TextFormField(
-                      key: const Key('height_inches_input'),
-                      controller: _inchesController,
-                      keyboardType: TextInputType.number,
-                      decoration: const InputDecoration(
-                        labelText: 'Inches',
-                        suffixText: 'in',
-                      ),
-                      validator: (value) {
-                        final inches = double.tryParse(value?.trim() ?? '');
-                        if (inches == null || inches < 0 || inches >= 12) {
-                          return '0-11 in';
-                        }
-                        return null;
-                      },
-                    ),
-                  ),
-                ],
+              ButtonSegment<MeasurementUnit>(
+                value: MeasurementUnit.imperial,
+                label: Text(l10n.imperialUnitOption),
+                icon: const ExcludeSemantics(child: Icon(Icons.square_foot)),
               ),
             ],
-            const Spacer(),
-            ConstrainedBox(
-              constraints: const BoxConstraints(minHeight: 48.0),
-              child: FilledButton(
-                onPressed: _handleNext,
-                child: Text(l10n.next),
+            selected: {_selectedUnit},
+            onSelectionChanged: (selection) {
+              if (selection.isNotEmpty) {
+                _onUnitChanged(selection.first);
+              }
+            },
+          ),
+          const SizedBox(height: 24.0),
+          if (_selectedUnit == MeasurementUnit.metric) ...[
+            TextField(
+              key: const Key('height_cm_input'),
+              controller: _cmController,
+              keyboardType: const TextInputType.numberWithOptions(
+                decimal: true,
+              ),
+              decoration: InputDecoration(
+                labelText: l10n.heightCmLabel,
+                hintText: l10n.heightHint,
+                enabledBorder: isMetricError ? errorOutline : null,
+                focusedBorder: isMetricError ? errorOutline : null,
+              ),
+              onChanged: (_) {
+                if (_cmErrorText != null) {
+                  setState(() => _cmErrorText = null);
+                }
+              },
+              onSubmitted: (_) => _handleNext(),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              isMetricError ? _cmErrorText! : '50 – 250 cm',
+              style: TextStyle(
+                color: isMetricError
+                    ? theme.colorScheme.error
+                    : theme.colorScheme.onSurfaceVariant,
+                fontSize: 12,
+                fontWeight: isMetricError ? FontWeight.w500 : FontWeight.w400,
               ),
             ),
+          ] else ...[
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  child: TextField(
+                    key: const Key('height_feet_input'),
+                    controller: _feetController,
+                    keyboardType: TextInputType.number,
+                    decoration: InputDecoration(
+                      labelText: 'Feet',
+                      suffixText: 'ft',
+                      enabledBorder: isImperialError ? errorOutline : null,
+                      focusedBorder: isImperialError ? errorOutline : null,
+                    ),
+                    onChanged: (_) {
+                      if (_imperialErrorText != null) {
+                        setState(() => _imperialErrorText = null);
+                      }
+                    },
+                    onSubmitted: (_) => _handleNext(),
+                  ),
+                ),
+                const SizedBox(width: 16.0),
+                Expanded(
+                  child: TextField(
+                    key: const Key('height_inches_input'),
+                    controller: _inchesController,
+                    keyboardType: TextInputType.number,
+                    decoration: InputDecoration(
+                      labelText: 'Inches',
+                      suffixText: 'in',
+                      enabledBorder: isImperialError ? errorOutline : null,
+                      focusedBorder: isImperialError ? errorOutline : null,
+                    ),
+                    onChanged: (_) {
+                      if (_imperialErrorText != null) {
+                        setState(() => _imperialErrorText = null);
+                      }
+                    },
+                    onSubmitted: (_) => _handleNext(),
+                  ),
+                ),
+              ],
+            ),
+            if (isImperialError) ...[
+              const SizedBox(height: 8),
+              Text(
+                _imperialErrorText!,
+                style: TextStyle(
+                  color: theme.colorScheme.error,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ],
           ],
-        ),
+          const Spacer(),
+          ConstrainedBox(
+            constraints: const BoxConstraints(minHeight: 48.0),
+            child: FilledButton(
+              onPressed: _handleNext,
+              child: Text(l10n.next),
+            ),
+          ),
+        ],
       ),
     );
   }
