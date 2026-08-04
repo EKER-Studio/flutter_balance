@@ -270,5 +270,8 @@
         "type": "String"
       }
     }
-  }
+  },
+  "instantTestNotification": "Instant Test Notification",
+  "testNotificationSent": "Test notification sent!",
+  "errorSendingTestNotification": "Error sending test notification: {error}"
 }

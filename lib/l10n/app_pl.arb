@@ -267,5 +267,8 @@
         "type": "String"
       }
     }
-  }
+  },
+  "instantTestNotification": "Test Powiadomienia",
+  "testNotificationSent": "Wysłano testowe powiadomienie!",
+  "errorSendingTestNotification": "Błąd wysyłania testowego powiadomienia: {error}"
 }

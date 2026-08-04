@@ -74,9 +74,10 @@ class BiometricLockObserver with WidgetsBindingObserver {
   Future<void> _checkBiometricLock() async {
     if (!_isLockEnabled) return;
 
-    // Do not re-trigger auth if an authentication dialog is currently open or
-    // if the app is already locked behind BiometricShieldScreen.
+    // Do not re-trigger lock if an authentication dialog is currently open,
+    // just finished, or if the app is already locked behind BiometricShieldScreen.
     if (BiometricService.instance.isAuthenticating) return;
+    if (BiometricService.instance.wasAuthenticatingRecently) return;
     if (isAppLocked?.call() == true) return;
 
     // Wait until current frame ends so FlutterFragmentActivity is attached & resumed natively
@@ -85,27 +86,10 @@ class BiometricLockObserver with WidgetsBindingObserver {
     final isAvailable = await BiometricService.instance.isAvailable();
     if (!isAvailable) return;
 
-    try {
-      final result = await BiometricService.instance.authenticate(
-        localizedReason: localizedReason(),
-      );
-
-      if (result == BiometricAuthResult.success) {
-        onLockStateChanged(false);
-      } else {
-        if (kDebugMode) {
-          debugPrint(
-            '[BiometricLockObserver] Authentication failed ($result) — locking app.',
-          );
-        }
-        onLockStateChanged(true);
-      }
-    } catch (e, stack) {
-      if (kDebugMode) {
-        debugPrint('[BiometricLockObserver] Authentication threw: $e\n$stack');
-      }
-      onLockStateChanged(true);
-    }
+    // The app came from the background and should be locked.
+    // We do NOT call authenticate() here, because BiometricShieldScreen will
+    // automatically mount when isLocked becomes true, and it handles the auth prompt.
+    onLockStateChanged(true);
   }
 
   /// Disposes this observer and cancels the settings stream subscription.

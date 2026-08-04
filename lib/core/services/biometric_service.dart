@@ -139,9 +139,17 @@ class BiometricService {
   }
 
   Future<BiometricAuthResult>? _activeAuthFuture;
+  DateTime? _lastAuthCompletionTime;
 
   /// Whether biometric authentication is currently in progress.
   bool get isAuthenticating => _activeAuthFuture != null;
+
+  /// Whether biometric authentication finished very recently (within 1 second).
+  /// Useful to prevent app lifecycle observers from instantly re-triggering logic
+  /// when returning from the native biometric dialog.
+  bool get wasAuthenticatingRecently =>
+      _lastAuthCompletionTime != null &&
+      DateTime.now().difference(_lastAuthCompletionTime!) < const Duration(seconds: 1);
 
   /// Prompts the user for biometric authentication.
   ///
@@ -172,6 +180,7 @@ class BiometricService {
       return await _activeAuthFuture!;
     } finally {
       _activeAuthFuture = null;
+      _lastAuthCompletionTime = DateTime.now();
     }
   }
 
