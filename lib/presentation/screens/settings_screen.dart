@@ -540,7 +540,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   void _showWipeConfirmation(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final errorColor = Theme.of(context).colorScheme.error;
-    
+
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
@@ -556,9 +556,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               Navigator.pop(ctx);
               await _wipeDatabase(context);
             },
-            style: FilledButton.styleFrom(
-              backgroundColor: errorColor,
-            ),
+            style: FilledButton.styleFrom(backgroundColor: errorColor),
             child: Text(l10n.wipeDataButton),
           ),
         ],

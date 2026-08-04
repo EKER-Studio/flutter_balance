@@ -194,7 +194,10 @@ void main() {
         expect(find.text('Step 2 of 5'), findsNothing);
 
         // Should display the validation error text
-        expect(find.text('Height must be between 50 and 250 cm'), findsOneWidget);
+        expect(
+          find.text('Height must be between 50 and 250 cm'),
+          findsOneWidget,
+        );
       },
     );
 

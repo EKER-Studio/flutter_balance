@@ -67,8 +67,6 @@ class _StepUnitsHeightState extends State<StepUnitsHeight> {
     super.dispose();
   }
 
-
-
   /// Converts the active unit inputs into centimeters, or `null` when invalid.
   double? _calculateHeightCm() {
     if (_selectedUnit == MeasurementUnit.metric) {
