@@ -176,20 +176,27 @@ void main() {
       expect(tester.takeException(), isNull);
     });
 
-    testWidgets('disables Next button when height is invalid (e.g. 20 cm)', (
-      tester,
-    ) async {
-      await tester.pumpWidget(buildSubject());
+    testWidgets(
+      'shows validation error when height is invalid (e.g. 20 cm) and Next is pressed',
+      (tester) async {
+        await tester.pumpWidget(buildSubject());
+        await tester.pumpAndSettle();
 
-      final heightInput = find.byKey(const Key('height_cm_input'));
-      await tester.enterText(heightInput, '20');
-      await tester.pump();
+        final heightField = find.byKey(const Key('height_cm_input'));
+        await tester.enterText(heightField, '20');
+        await tester.pumpAndSettle();
 
-      final nextButton = tester.widget<FilledButton>(
-        find.widgetWithText(FilledButton, 'Next'),
-      );
-      expect(nextButton.onPressed, isNull);
-    });
+        final nextButton = find.widgetWithText(FilledButton, 'Next');
+        await tester.tap(nextButton);
+        await tester.pumpAndSettle();
+
+        // Should not navigate to step 2
+        expect(find.text('Step 2 of 5'), findsNothing);
+
+        // Should display the validation error text
+        expect(find.text('Height must be between 50 and 250 cm'), findsOneWidget);
+      },
+    );
 
     testWidgets(
       'accessibility audit: height input has text field semantics and focus',

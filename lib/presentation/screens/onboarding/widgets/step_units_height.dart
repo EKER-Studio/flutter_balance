@@ -38,8 +38,6 @@ class _StepUnitsHeightState extends State<StepUnitsHeight> {
   late final TextEditingController _feetController;
   late final TextEditingController _inchesController;
 
-  bool _isValid = true;
-
   @override
   void initState() {
     super.initState();
@@ -59,8 +57,6 @@ class _StepUnitsHeightState extends State<StepUnitsHeight> {
     _inchesController = TextEditingController(
       text: hasHeight ? inches.round().toString() : '',
     );
-
-    _validate();
   }
 
   @override
@@ -71,15 +67,7 @@ class _StepUnitsHeightState extends State<StepUnitsHeight> {
     super.dispose();
   }
 
-  /// Re-evaluates input validity and updates the Next button state.
-  void _validate() {
-    final valid = _calculateHeightCm() != null;
-    if (valid != _isValid) {
-      setState(() {
-        _isValid = valid;
-      });
-    }
-  }
+
 
   /// Converts the active unit inputs into centimeters, or `null` when invalid.
   double? _calculateHeightCm() {
@@ -129,7 +117,6 @@ class _StepUnitsHeightState extends State<StepUnitsHeight> {
         }
       }
     });
-    _validate();
   }
 
   /// Validates the form and invokes [StepUnitsHeight.onNext] on success.
@@ -151,7 +138,6 @@ class _StepUnitsHeightState extends State<StepUnitsHeight> {
       padding: const EdgeInsets.all(24.0),
       child: Form(
         key: _formKey,
-        onChanged: _validate,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -197,11 +183,10 @@ class _StepUnitsHeightState extends State<StepUnitsHeight> {
                 keyboardType: const TextInputType.numberWithOptions(
                   decimal: true,
                 ),
-                decoration: const InputDecoration(
-                  labelText: 'Height',
-                  suffixText: 'cm',
-                  border: OutlineInputBorder(),
-                  helperText: 'Enter height between 50 and 250 cm',
+                decoration: InputDecoration(
+                  labelText: l10n.heightCmLabel,
+                  hintText: l10n.heightHint,
+                  helperText: '50 – 250 cm',
                 ),
                 validator: (value) {
                   final parsed = double.tryParse(value?.trim() ?? '');
@@ -225,7 +210,6 @@ class _StepUnitsHeightState extends State<StepUnitsHeight> {
                       decoration: const InputDecoration(
                         labelText: 'Feet',
                         suffixText: 'ft',
-                        border: OutlineInputBorder(),
                       ),
                       validator: (value) {
                         final feet = double.tryParse(value?.trim() ?? '');
@@ -245,7 +229,6 @@ class _StepUnitsHeightState extends State<StepUnitsHeight> {
                       decoration: const InputDecoration(
                         labelText: 'Inches',
                         suffixText: 'in',
-                        border: OutlineInputBorder(),
                       ),
                       validator: (value) {
                         final inches = double.tryParse(value?.trim() ?? '');
@@ -263,7 +246,7 @@ class _StepUnitsHeightState extends State<StepUnitsHeight> {
             ConstrainedBox(
               constraints: const BoxConstraints(minHeight: 48.0),
               child: FilledButton(
-                onPressed: _isValid ? _handleNext : null,
+                onPressed: _handleNext,
                 child: Text(l10n.next),
               ),
             ),

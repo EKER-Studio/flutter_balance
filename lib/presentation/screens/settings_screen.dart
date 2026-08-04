@@ -539,6 +539,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
   /// Asks for confirmation before wiping all stored weight data.
   void _showWipeConfirmation(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final errorColor = Theme.of(context).colorScheme.error;
+    
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
@@ -555,7 +557,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               await _wipeDatabase(context);
             },
             style: FilledButton.styleFrom(
-              backgroundColor: Theme.of(context).colorScheme.error,
+              backgroundColor: errorColor,
             ),
             child: Text(l10n.wipeDataButton),
           ),
