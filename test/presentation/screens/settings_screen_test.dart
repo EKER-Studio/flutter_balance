@@ -163,14 +163,14 @@ void main() {
     await tester.pump();
 
     expect(find.byIcon(Icons.height), findsOneWidget);
-    expect(find.byIcon(Icons.flag), findsOneWidget);
+    expect(find.byIcon(Icons.flag_outlined), findsOneWidget);
     expect(find.byIcon(Icons.straighten), findsOneWidget);
-    expect(find.byIcon(Icons.palette), findsOneWidget);
-    expect(find.byIcon(Icons.notifications), findsOneWidget);
+    expect(find.byIcon(Icons.palette_outlined), findsOneWidget);
+    expect(find.byIcon(Icons.notifications_outlined), findsOneWidget);
     expect(find.byIcon(Icons.fingerprint), findsOneWidget);
-    expect(find.byIcon(Icons.file_upload), findsOneWidget);
-    expect(find.byIcon(Icons.file_download), findsOneWidget);
-    expect(find.byIcon(Icons.delete_forever), findsOneWidget);
+    expect(find.byIcon(Icons.file_upload_outlined), findsOneWidget);
+    expect(find.byIcon(Icons.file_download_outlined), findsOneWidget);
+    expect(find.byIcon(Icons.delete_forever_outlined), findsOneWidget);
   });
 
   testWidgets('shows empty export snackbar when exporting with no entries', (

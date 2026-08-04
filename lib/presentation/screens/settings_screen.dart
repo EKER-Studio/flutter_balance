@@ -652,7 +652,6 @@ class _CustomSettingsTile extends StatefulWidget {
   final IconData icon;
   final String title;
   final String? valueText;
-  final Widget? trailing;
   final VoidCallback? onTap;
   final bool isError;
   final bool showChevron;
@@ -661,7 +660,6 @@ class _CustomSettingsTile extends StatefulWidget {
     required this.icon,
     required this.title,
     this.valueText,
-    this.trailing,
     this.onTap,
     this.isError = false,
     this.showChevron = true,
@@ -730,9 +728,7 @@ class _CustomSettingsTileState extends State<_CustomSettingsTile> {
     );
 
     Widget? trailingWidget;
-    if (widget.trailing != null) {
-      trailingWidget = widget.trailing;
-    } else if (widget.valueText != null) {
+    if (widget.valueText != null) {
       trailingWidget = Row(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -937,7 +933,6 @@ class _ProfileSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-    final textTheme = Theme.of(context).textTheme;
 
     final heightValue = state.height > 0
         ? formatHeight(state.height, state.measurementUnit)
@@ -962,30 +957,10 @@ class _ProfileSection extends StatelessWidget {
             onTap: onHeightTap,
           ),
           _CustomSettingsTile(
-            icon: Icons.flag,
+            icon: Icons.flag_outlined,
             title: l10n.targetWeight,
+            valueText: targetWeightValue,
             sectionLabel: l10n.profileSection,
-            trailing: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Flexible(
-                  child: Text(
-                    targetWeightValue,
-                    style: textTheme.bodyMedium?.copyWith(
-                      color: colorScheme.primary,
-                      fontWeight: FontWeight.w500,
-                    ),
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-                ExcludeSemantics(
-                  child: Icon(
-                    Icons.chevron_right,
-                    color: colorScheme.onSurfaceVariant,
-                  ),
-                ),
-              ],
-            ),
             onTap: onTargetWeightTap,
           ),
         ],
@@ -1033,14 +1008,14 @@ class _ApplicationSection extends StatelessWidget {
             onTap: onUnitTap,
           ),
           _CustomSettingsTile(
-            icon: Icons.palette,
+            icon: Icons.palette_outlined,
             title: l10n.theme,
             valueText: themeLabel,
             sectionLabel: l10n.applicationSection,
             onTap: onThemeTap,
           ),
           _CustomSwitchTile(
-            icon: Icons.notifications,
+            icon: Icons.notifications_outlined,
             title: l10n.dailyReminder,
             subtitle: l10n.dailyReminderDesc,
             sectionLabel: l10n.applicationSection,
@@ -1049,7 +1024,7 @@ class _ApplicationSection extends StatelessWidget {
           ),
           if (state.notificationsEnabled)
             _CustomSettingsTile(
-              icon: Icons.access_time,
+              icon: Icons.access_time_outlined,
               title: l10n.reminderTime,
               valueText: notificationTimeText,
               sectionLabel: l10n.applicationSection,
@@ -1136,19 +1111,19 @@ class _DataSection extends StatelessWidget {
       child: Column(
         children: [
           _CustomSettingsTile(
-            icon: Icons.file_upload,
+            icon: Icons.file_upload_outlined,
             title: l10n.importCsv,
             sectionLabel: l10n.dataSection,
             onTap: onImportTap,
           ),
           _CustomSettingsTile(
-            icon: Icons.file_download,
+            icon: Icons.file_download_outlined,
             title: l10n.exportCsv,
             sectionLabel: l10n.dataSection,
             onTap: onExportTap,
           ),
           _CustomSettingsTile(
-            icon: Icons.delete_forever,
+            icon: Icons.delete_forever_outlined,
             title: l10n.wipeData,
             isError: true,
             showChevron: false,
