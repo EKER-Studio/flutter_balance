@@ -102,6 +102,27 @@ void main() {
     expect(find.text('Height (cm)'), findsOneWidget);
   });
 
+  testWidgets(
+    'shows height error snackbar when entering height outside 50-250 cm range',
+    (tester) async {
+      await tester.pumpWidget(createTestWidget());
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('height not set'));
+      await tester.pumpAndSettle();
+
+      // Enter invalid height (e.g. 1 cm)
+      await tester.enterText(find.byType(TextField), '1');
+      await tester.tap(find.text('Save'));
+      await tester.pump();
+
+      expect(
+        find.text('Height must be between 50 and 250 cm'),
+        findsOneWidget,
+      );
+    },
+  );
+
   testWidgets('shows unit selection dialog on unit tap', (tester) async {
     await tester.pumpWidget(createTestWidget());
     await tester.pump();
@@ -126,6 +147,27 @@ void main() {
     expect(find.text('Target Weight').last, findsOneWidget);
     expect(find.text('Weight (kg)'), findsOneWidget);
   });
+
+  testWidgets(
+    'shows weight error snackbar when entering target weight outside 20-300 kg range',
+    (tester) async {
+      await tester.pumpWidget(createTestWidget());
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('Not set'));
+      await tester.pumpAndSettle();
+
+      // Enter invalid target weight (e.g. 5 kg)
+      await tester.enterText(find.byType(TextField), '5');
+      await tester.tap(find.text('Save'));
+      await tester.pump();
+
+      expect(
+        find.text('Weight must be between 20 and 300 kg'),
+        findsOneWidget,
+      );
+    },
+  );
 
   testWidgets('shows notification switch disabled by default', (tester) async {
     await tester.pumpWidget(createTestWidget());

@@ -69,6 +69,7 @@
   "weightCannotBeEmpty": "Waga nie może być pusta",
   "enterValidNumber": "Wprowadź poprawną liczbę",
   "weightRangeError": "Waga musi być z zakresu od 20 do 300 kg",
+  "heightRangeError": "Wzrost musi mieścić się w przedziale od 50 do 250 cm",
   "bmi": "BMI",
   "bmiSubtitle": "Na podstawie Twojego wzrostu i ostatniej wagi",
   "lastUpdatedToday": "Ostatnia aktualizacja: Dzisiaj",

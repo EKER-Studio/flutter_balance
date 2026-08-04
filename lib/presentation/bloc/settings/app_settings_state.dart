@@ -11,6 +11,12 @@ final class AppSettingsState extends Equatable {
   static const Object _targetWeightSentinel = Object();
   static const Object _heightSentinel = Object();
 
+  /// Minimum valid height in centimeters, inclusive.
+  static const double minHeightCm = 50.0;
+
+  /// Maximum valid height in centimeters, inclusive.
+  static const double maxHeightCm = 250.0;
+
   /// The selected theme mode.
   final AppThemeMode themeMode;
 

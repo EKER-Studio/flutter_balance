@@ -60,11 +60,14 @@ class _HeightDialogState extends State<_HeightDialog> {
     final text = _controller.text.trim().replaceAll(',', '.');
     final height = double.tryParse(text);
 
-    if (text.isEmpty || height == null || height <= 0) {
+    if (text.isEmpty ||
+        height == null ||
+        height < AppSettingsState.minHeightCm ||
+        height > AppSettingsState.maxHeightCm) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(AppLocalizations.of(context).invalidPositiveNumber),
+          content: Text(AppLocalizations.of(context).heightRangeError),
           backgroundColor: Theme.of(context).colorScheme.error,
         ),
       );
@@ -93,6 +96,8 @@ class _HeightDialogState extends State<_HeightDialog> {
               decoration: InputDecoration(
                 labelText: l10n.heightCmLabel,
                 hintText: l10n.heightHint,
+                helperText:
+                    '50 – 250 cm',
               ),
               onSubmitted: (_) => _handleSave(),
             ),

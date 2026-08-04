@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pure_weight/core/models/measurement_unit.dart';
+import 'package:pure_weight/core/utils/unit_converter.dart';
+import 'package:pure_weight/features/weight/domain/entities/weight_entry.dart';
 import 'package:pure_weight/l10n/app_localizations.dart';
 
 /// Dialog for setting or updating the target weight.
@@ -49,10 +51,8 @@ class _TargetWeightDialogState extends State<TargetWeightDialog> {
       return;
     }
 
-    final weight = double.tryParse(text);
-    if (weight != null && weight > 0) {
-      Navigator.of(context).pop(weight);
-    } else {
+    final parsedWeight = double.tryParse(text);
+    if (parsedWeight == null) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -60,7 +60,26 @@ class _TargetWeightDialogState extends State<TargetWeightDialog> {
           backgroundColor: Theme.of(context).colorScheme.error,
         ),
       );
+      return;
     }
+
+    final weightKg = widget.unit == MeasurementUnit.imperial
+        ? lbsToKg(parsedWeight)
+        : parsedWeight;
+
+    if (weightKg < WeightEntry.minWeightKg ||
+        weightKg > WeightEntry.maxWeightKg) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(AppLocalizations.of(context).weightRangeError),
+          backgroundColor: Theme.of(context).colorScheme.error,
+        ),
+      );
+      return;
+    }
+
+    Navigator.of(context).pop(parsedWeight);
   }
 
   @override

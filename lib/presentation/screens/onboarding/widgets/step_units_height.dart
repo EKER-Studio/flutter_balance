@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:pure_weight/core/models/measurement_unit.dart';
 import 'package:pure_weight/core/utils/unit_converter.dart';
 import 'package:pure_weight/l10n/app_localizations.dart';
+import 'package:pure_weight/presentation/bloc/settings/app_settings_state.dart';
 import 'package:pure_weight/presentation/core/clamped_layout.dart';
 
 /// Form widget for Step 1 of the onboarding wizard: selecting unit system and height.
@@ -84,7 +85,9 @@ class _StepUnitsHeightState extends State<StepUnitsHeight> {
   double? _calculateHeightCm() {
     if (_selectedUnit == MeasurementUnit.metric) {
       final cm = double.tryParse(_cmController.text.trim());
-      if (cm != null && cm >= 50.0 && cm <= 250.0) {
+      if (cm != null &&
+          cm >= AppSettingsState.minHeightCm &&
+          cm <= AppSettingsState.maxHeightCm) {
         return cm;
       }
       return null;
@@ -99,7 +102,8 @@ class _StepUnitsHeightState extends State<StepUnitsHeight> {
           inches < 12) {
         final totalInches = (feet * 12) + inches;
         final cm = totalInches * 2.54;
-        if (cm >= 50.0 && cm <= 250.0) {
+        if (cm >= AppSettingsState.minHeightCm &&
+            cm <= AppSettingsState.maxHeightCm) {
           return cm;
         }
       }
@@ -201,8 +205,10 @@ class _StepUnitsHeightState extends State<StepUnitsHeight> {
                 ),
                 validator: (value) {
                   final parsed = double.tryParse(value?.trim() ?? '');
-                  if (parsed == null || parsed < 50.0 || parsed > 250.0) {
-                    return 'Height must be between 50 and 250 cm';
+                  if (parsed == null ||
+                      parsed < AppSettingsState.minHeightCm ||
+                      parsed > AppSettingsState.maxHeightCm) {
+                    return l10n.heightRangeError;
                   }
                   return null;
                 },
