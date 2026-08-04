@@ -226,6 +226,19 @@ abstract final class AppTheme {
         borderRadius: BorderRadius.circular(8),
         borderSide: BorderSide(color: lightColorScheme.primary, width: 2),
       ),
+      errorBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(8),
+        borderSide: BorderSide(color: lightColorScheme.error, width: 2),
+      ),
+      focusedErrorBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(8),
+        borderSide: BorderSide(color: lightColorScheme.error, width: 2),
+      ),
+      errorStyle: TextStyle(
+        color: lightColorScheme.error,
+        fontSize: 12,
+        fontWeight: FontWeight.w400,
+      ),
     ),
     chipTheme: ChipThemeData(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
@@ -304,6 +317,19 @@ abstract final class AppTheme {
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(8),
         borderSide: BorderSide(color: darkColorScheme.primary, width: 2),
+      ),
+      errorBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(8),
+        borderSide: BorderSide(color: darkColorScheme.error, width: 2),
+      ),
+      focusedErrorBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(8),
+        borderSide: BorderSide(color: darkColorScheme.error, width: 2),
+      ),
+      errorStyle: TextStyle(
+        color: darkColorScheme.error,
+        fontSize: 12,
+        fontWeight: FontWeight.w400,
       ),
     ),
     chipTheme: ChipThemeData(
