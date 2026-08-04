@@ -123,6 +123,7 @@ void main() {
           find.byKey(const Key('initial_weight_input')),
           '75.5',
         );
+        await tester.pumpAndSettle();
         await tester.tap(find.text('Complete Setup'));
         await tester.pumpAndSettle();
 

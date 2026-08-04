@@ -27,9 +27,9 @@ class StepInitialWeight extends StatefulWidget {
 }
 
 class _StepInitialWeightState extends State<StepInitialWeight> {
-  final _formKey = GlobalKey<FormState>();
   final TextEditingController _weightController = TextEditingController();
   DateTime _selectedTimestamp = DateTime.now();
+  String? _errorText;
 
   @override
   void dispose() {
@@ -80,14 +80,27 @@ class _StepInitialWeightState extends State<StepInitialWeight> {
     }
     return parsed;
   }
-
-  /// Validates the form and invokes [StepInitialWeight.onComplete] on success.
-  void _handleComplete() {
-    if (_formKey.currentState?.validate() ?? false) {
-      final weightKg = _parseWeightKg();
-      if (weightKg != null) {
-        widget.onComplete(weightKg, _selectedTimestamp);
+  void _validate(String value) {
+    setState(() {
+      final trimmed = value.trim();
+      if (trimmed.isEmpty) {
+        _errorText = 'Initial weight is required';
+        return;
       }
+
+      final parsed = double.tryParse(trimmed);
+      if (parsed == null || parsed <= 0 || parsed > 500) {
+        _errorText = 'Please enter a valid weight (> 0)';
+      } else {
+        _errorText = null;
+      }
+    });
+  }
+
+  void _handleComplete() {
+    final weightKg = _parseWeightKg();
+    if (weightKg != null) {
+      widget.onComplete(weightKg, _selectedTimestamp);
     }
   }
 
@@ -100,79 +113,91 @@ class _StepInitialWeightState extends State<StepInitialWeight> {
     final formattedDate = DateFormat.yMMMd().add_jm().format(
       _selectedTimestamp,
     );
+    
+    final isError = _errorText != null;
+    final isNextEnabled = _weightController.text.trim().isNotEmpty && !isError;
+    
+    final errorOutline = OutlineInputBorder(
+      borderRadius: BorderRadius.circular(8),
+      borderSide: BorderSide(
+        color: theme.colorScheme.error,
+        width: 2,
+      ),
+    );
 
     return ClampedLayout(
       padding: const EdgeInsets.all(24.0),
-      child: Form(
-        key: _formKey,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Text(
-              'Initial Weight',
-              style: theme.textTheme.headlineSmall?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Text(
+            'Initial Weight',
+            style: theme.textTheme.headlineSmall?.copyWith(
+              fontWeight: FontWeight.bold,
             ),
-            const SizedBox(height: 8.0),
-            Text(
-              'Log your starting weight measurement to begin tracking.',
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant,
-              ),
+          ),
+          const SizedBox(height: 8.0),
+          Text(
+            'Log your starting weight measurement to begin tracking.',
+            style: theme.textTheme.bodyMedium?.copyWith(
+              color: theme.colorScheme.onSurfaceVariant,
             ),
-            const SizedBox(height: 24.0),
-            TextFormField(
-              key: const Key('initial_weight_input'),
-              controller: _weightController,
-              autofocus: true,
-              keyboardType: const TextInputType.numberWithOptions(
-                decimal: true,
-              ),
-              decoration: InputDecoration(
-                labelText: 'Current Weight ($unitSuffix)',
-                suffixText: unitSuffix,
-                border: const OutlineInputBorder(),
-                helperText: 'Enter your initial weight',
-              ),
-              validator: (value) {
-                final trimmed = value?.trim() ?? '';
-                if (trimmed.isEmpty) {
-                  return 'Initial weight is required';
-                }
-                final parsed = double.tryParse(trimmed);
-                if (parsed == null || parsed <= 0 || parsed > 500) {
-                  return 'Please enter a valid weight (> 0)';
-                }
-                return null;
-              },
+          ),
+          const SizedBox(height: 24.0),
+          TextField(
+            key: const Key('initial_weight_input'),
+            controller: _weightController,
+            autofocus: true,
+            keyboardType: const TextInputType.numberWithOptions(
+              decimal: true,
             ),
-            const SizedBox(height: 20.0),
-            Text(
-              'Measurement Date & Time',
-              style: theme.textTheme.bodyMedium?.copyWith(
-                fontWeight: FontWeight.w600,
-              ),
+            decoration: InputDecoration(
+              labelText: 'Current Weight ($unitSuffix)',
+              suffixText: unitSuffix,
+              enabledBorder: isError ? errorOutline : null,
+              focusedBorder: isError ? errorOutline : null,
             ),
-            const SizedBox(height: 8.0),
-            ConstrainedBox(
-              constraints: const BoxConstraints(minHeight: 48.0),
-              child: OutlinedButton.icon(
-                onPressed: _pickDateTime,
-                icon: const ExcludeSemantics(child: Icon(Icons.calendar_today)),
-                label: Text(formattedDate),
-              ),
+            onChanged: _validate,
+            onSubmitted: (_) {
+              if (isNextEnabled) _handleComplete();
+            },
+          ),
+          const SizedBox(height: 8),
+          Text(
+            isError ? _errorText! : 'Enter your initial weight',
+            style: TextStyle(
+              color: isError
+                  ? theme.colorScheme.error
+                  : theme.colorScheme.onSurfaceVariant,
+              fontSize: 12,
+              fontWeight: isError ? FontWeight.w500 : FontWeight.w400,
             ),
-            const Spacer(),
-            ConstrainedBox(
-              constraints: const BoxConstraints(minHeight: 48.0),
-              child: FilledButton(
-                onPressed: _handleComplete,
-                child: Text(l10n.completeSetup),
-              ),
+          ),
+          const SizedBox(height: 20.0),
+          Text(
+            'Measurement Date & Time',
+            style: theme.textTheme.bodyMedium?.copyWith(
+              fontWeight: FontWeight.w600,
             ),
-          ],
-        ),
+          ),
+          const SizedBox(height: 8.0),
+          ConstrainedBox(
+            constraints: const BoxConstraints(minHeight: 48.0),
+            child: OutlinedButton.icon(
+              onPressed: _pickDateTime,
+              icon: const ExcludeSemantics(child: Icon(Icons.calendar_today)),
+              label: Text(formattedDate),
+            ),
+          ),
+          const Spacer(),
+          ConstrainedBox(
+            constraints: const BoxConstraints(minHeight: 48.0),
+            child: FilledButton(
+              onPressed: isNextEnabled ? _handleComplete : null,
+              child: Text(l10n.completeSetup),
+            ),
+          ),
+        ],
       ),
     );
   }
