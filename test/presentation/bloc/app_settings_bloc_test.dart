@@ -45,7 +45,7 @@ void main() {
       );
       expect(bloc.state.themeMode, AppThemeMode.system);
       expect(bloc.state.measurementUnit, MeasurementUnit.metric);
-      expect(bloc.state.height, 170.0);
+      expect(bloc.state.height, isNull);
       expect(bloc.state.notificationsEnabled, false);
       expect(bloc.state.notificationTime, const TimeOfDay(hour: 8, minute: 0));
       expect(bloc.state.isLocked, false);
@@ -330,7 +330,7 @@ void main() {
 
       expect(state.themeMode, AppThemeMode.system);
       expect(state.measurementUnit, MeasurementUnit.metric);
-      expect(state.height, 170.0);
+      expect(state.height, isNull);
       expect(state.notificationsEnabled, false);
       expect(state.notificationTime, const TimeOfDay(hour: 8, minute: 0));
       expect(state.isOnboardingCompleted, false);
@@ -395,7 +395,7 @@ void main() {
 
       expect(json['themeMode'], 'system');
       expect(json['measurementUnit'], 'metric');
-      expect(json['heightCm'], 170.0);
+      expect(json['heightCm'], isNull);
       expect(json['notificationsEnabled'], false);
       expect(json['notificationTime']['hour'], 8);
       expect(json['notificationTime']['minute'], 0);

@@ -24,7 +24,7 @@ import 'package:pure_weight/presentation/widgets/target_weight_dialog.dart';
 import 'dart:io';
 
 class _HeightDialog extends StatefulWidget {
-  final double currentValue;
+  final double? currentValue;
 
   const _HeightDialog({required this.currentValue});
 
@@ -39,8 +39,8 @@ class _HeightDialogState extends State<_HeightDialog> {
   void initState() {
     super.initState();
     _controller = TextEditingController(
-      text: widget.currentValue > 0
-          ? widget.currentValue.toStringAsFixed(0)
+      text: (widget.currentValue != null && widget.currentValue! > 0)
+          ? widget.currentValue!.toStringAsFixed(0)
           : '',
     );
   }
@@ -973,8 +973,8 @@ class _ProfileSection extends StatelessWidget {
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
 
-    final heightValue = state.height > 0
-        ? formatHeight(state.height, state.measurementUnit)
+    final heightValue = (state.height != null && state.height! > 0)
+        ? formatHeight(state.height!, state.measurementUnit)
         : l10n.heightNotSetLabel;
 
     final targetWeightValue = state.targetWeight != null

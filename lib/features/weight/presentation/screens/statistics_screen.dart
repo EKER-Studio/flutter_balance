@@ -375,7 +375,7 @@ class StatisticsScreen extends StatelessWidget {
     BuildContext context, {
     required List<WeightEntry> entries,
     required MeasurementUnit unit,
-    required double heightCm,
+    required double? heightCm,
     required AppLocalizations l10n,
   }) {
     final weights = entries.map((e) => e.weightKg).toList();
@@ -413,7 +413,7 @@ class StatisticsScreen extends StatelessWidget {
               : netChangeKg)
         : null;
 
-    final bmi = (avgWeightKg != null && heightCm > 0)
+    final bmi = (avgWeightKg != null && heightCm != null && heightCm > 0)
         ? avgWeightKg / ((heightCm / 100) * (heightCm / 100))
         : null;
     final bmiCategory = bmi != null && bmi.isFinite

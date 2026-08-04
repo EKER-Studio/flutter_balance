@@ -79,6 +79,8 @@ void main() {
       );
 
       // Step 1 -> Next
+      await tester.enterText(find.byKey(const Key('height_cm_input')), '170');
+      await tester.pumpAndSettle();
       await tester.tap(find.text('Next'));
       await tester.pumpAndSettle();
 
@@ -143,6 +145,8 @@ void main() {
       await tester.pumpWidget(buildSubject());
 
       // Advance to Step 2
+      await tester.enterText(find.byKey(const Key('height_cm_input')), '170');
+      await tester.pumpAndSettle();
       await tester.tap(find.text('Next'));
       await tester.pumpAndSettle();
 

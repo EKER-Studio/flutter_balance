@@ -9,8 +9,8 @@ class StepUnitsHeight extends StatefulWidget {
   /// Initial measurement unit system preference.
   final MeasurementUnit initialUnit;
 
-  /// Initial height in centimeters.
-  final double initialHeightCm;
+  /// Initial height in centimeters, or `null` if not yet set.
+  final double? initialHeightCm;
 
   /// Callback invoked when the user proceeds to the next step.
   ///
@@ -44,15 +44,20 @@ class _StepUnitsHeightState extends State<StepUnitsHeight> {
     super.initState();
     _selectedUnit = widget.initialUnit;
 
-    final initialCm = widget.initialHeightCm > 0
-        ? widget.initialHeightCm
-        : 170.0;
+    final initialCm = widget.initialHeightCm;
+    final hasHeight = initialCm != null && initialCm > 0;
 
-    _cmController = TextEditingController(text: initialCm.toStringAsFixed(0));
+    _cmController = TextEditingController(
+      text: hasHeight ? initialCm.toStringAsFixed(0) : '',
+    );
 
-    final [feet, inches] = cmToFeetInches(initialCm);
-    _feetController = TextEditingController(text: feet.toInt().toString());
-    _inchesController = TextEditingController(text: inches.round().toString());
+    final [feet, inches] = cmToFeetInches(hasHeight ? initialCm : 0.0);
+    _feetController = TextEditingController(
+      text: hasHeight ? feet.toInt().toString() : '',
+    );
+    _inchesController = TextEditingController(
+      text: hasHeight ? inches.round().toString() : '',
+    );
 
     _validate();
   }

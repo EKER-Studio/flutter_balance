@@ -7,6 +7,7 @@ import 'package:mocktail/mocktail.dart';
 import 'package:pure_weight/features/weight/presentation/bloc/weight_bloc.dart';
 import 'package:pure_weight/l10n/app_localizations.dart';
 import 'package:pure_weight/presentation/bloc/settings/app_settings_bloc.dart';
+import 'package:pure_weight/presentation/bloc/settings/app_settings_event.dart';
 import 'package:pure_weight/features/weight/presentation/bloc/weight_state.dart';
 import 'package:pure_weight/presentation/screens/settings_screen.dart';
 
@@ -66,8 +67,9 @@ void main() {
   });
 
   testWidgets('renders height value from settings', (tester) async {
+    settingsBloc.add(const UpdateHeight(170.0));
     await tester.pumpWidget(createTestWidget());
-    await tester.pump();
+    await tester.pumpAndSettle();
 
     expect(find.text('170 cm'), findsOneWidget);
   });
@@ -85,11 +87,12 @@ void main() {
   });
 
   testWidgets('shows height dialog on height tap', (tester) async {
+    settingsBloc.add(const UpdateHeight(170.0));
     await tester.pumpWidget(createTestWidget());
-    await tester.pump();
+    await tester.pumpAndSettle();
 
     await tester.tap(find.text('170 cm'));
-    await tester.pump();
+    await tester.pumpAndSettle();
 
     expect(find.text('Set Height'), findsOneWidget);
     expect(find.text('Height (cm)'), findsOneWidget);

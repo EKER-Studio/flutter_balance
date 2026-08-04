@@ -34,7 +34,7 @@ class HealthSummaryCard extends StatelessWidget {
         final targetWeight = state.targetWeight;
         final weightUnit = state.measurementUnit;
         final l10n = AppLocalizations.of(context);
-        final bmi = heightCm > 0
+        final bmi = (heightCm != null && heightCm > 0)
             ? state.calculateBmi(latestWeightKg)
             : double.nan;
         final category = bmi.isFinite ? BmiCategory.fromBmi(bmi) : null;

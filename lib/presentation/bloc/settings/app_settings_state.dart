@@ -9,9 +9,7 @@ import 'package:pure_weight/core/models/measurement_unit.dart';
 /// All fields are persisted across app restarts via [HydratedBloc].
 final class AppSettingsState extends Equatable {
   static const Object _targetWeightSentinel = Object();
-
-  /// Default height in centimeters applied when no valid height is configured.
-  static const double defaultHeightCm = 170.0;
+  static const Object _heightSentinel = Object();
 
   /// The selected theme mode.
   final AppThemeMode themeMode;
@@ -19,8 +17,8 @@ final class AppSettingsState extends Equatable {
   /// The weight measurement unit system.
   final MeasurementUnit measurementUnit;
 
-  /// The user's height in centimeters (default: [defaultHeightCm]).
-  final double height;
+  /// The user's height in centimeters. `null` means the user has not set a height yet.
+  final double? height;
 
   /// Whether daily notification reminders are enabled.
   final bool notificationsEnabled;
@@ -44,7 +42,7 @@ final class AppSettingsState extends Equatable {
   const AppSettingsState({
     this.themeMode = AppThemeMode.system,
     this.measurementUnit = MeasurementUnit.metric,
-    this.height = defaultHeightCm,
+    this.height,
     this.notificationsEnabled = false,
     this.notificationTime = const TimeOfDay(hour: 8, minute: 0),
     this.targetWeight,
@@ -54,10 +52,12 @@ final class AppSettingsState extends Equatable {
   });
 
   /// Creates a copy of this state with the given fields replaced.
+  ///
+  /// To explicitly clear height back to null, pass [clearHeight] as `true`.
   AppSettingsState copyWith({
     AppThemeMode? themeMode,
     MeasurementUnit? measurementUnit,
-    double? height,
+    Object? height = _heightSentinel,
     bool? notificationsEnabled,
     TimeOfDay? notificationTime,
     Object? targetWeight = _targetWeightSentinel,
@@ -68,7 +68,7 @@ final class AppSettingsState extends Equatable {
     return AppSettingsState(
       themeMode: themeMode ?? this.themeMode,
       measurementUnit: measurementUnit ?? this.measurementUnit,
-      height: height ?? this.height,
+      height: height == _heightSentinel ? this.height : height as double?,
       notificationsEnabled: notificationsEnabled ?? this.notificationsEnabled,
       notificationTime: notificationTime ?? this.notificationTime,
       targetWeight: targetWeight == _targetWeightSentinel
@@ -110,7 +110,7 @@ final class AppSettingsState extends Equatable {
         (e) => e.name == json['measurementUnit'],
         orElse: () => MeasurementUnit.metric,
       ),
-      height: (heightValue as num?)?.toDouble() ?? defaultHeightCm,
+      height: (heightValue as num?)?.toDouble(),
       notificationsEnabled: json['notificationsEnabled'] as bool? ?? false,
       notificationTime: (() {
         final notifTime = json['notificationTime'];
@@ -155,12 +155,15 @@ final class AppSettingsState extends Equatable {
 /// Helper methods for BMI-related app settings behavior.
 extension AppSettingsX on AppSettingsState {
   /// Calculates the user's BMI from the current configured height and a weight.
+  ///
+  /// Returns `0.0` when height has not been set yet.
   double calculateBmi(double currentWeightKg) {
-    if (height <= 0) {
+    final h = height;
+    if (h == null || h <= 0) {
       return 0.0;
     }
 
-    final heightInMeters = height / 100;
+    final heightInMeters = h / 100;
     return currentWeightKg / (heightInMeters * heightInMeters);
   }
 

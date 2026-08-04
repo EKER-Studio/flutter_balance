@@ -15,6 +15,7 @@ import 'package:pure_weight/features/weight/presentation/widgets/add_weight_shee
 import 'package:pure_weight/features/weight/presentation/widgets/today_shimmer_skeleton.dart';
 import 'package:pure_weight/l10n/app_localizations.dart';
 import 'package:pure_weight/presentation/bloc/settings/app_settings_bloc.dart';
+import 'package:pure_weight/presentation/bloc/settings/app_settings_event.dart';
 
 class MockHydratedStorage extends Mock implements HydratedStorage {}
 
@@ -32,7 +33,7 @@ void main() {
     when(() => storage.write(any(), any())).thenAnswer((_) async {});
 
     weightBloc = MockWeightBloc();
-    settingsBloc = AppSettingsBloc();
+    settingsBloc = AppSettingsBloc()..add(const UpdateHeight(170.0));
   });
 
   Widget createTestWidget(Widget child) {
@@ -148,7 +149,7 @@ void main() {
           entries: [],
           filteredEntries: [],
           timePeriod: TimePeriod.month,
-          heightCm: 175.0,
+          heightCm: 170.0,
         ),
       ),
     );
@@ -178,7 +179,7 @@ void main() {
           entries: [],
           filteredEntries: [],
           timePeriod: TimePeriod.month,
-          heightCm: 175.0,
+          heightCm: 170.0,
         ),
       ),
     );
@@ -211,13 +212,13 @@ void main() {
           entries: [entry],
           filteredEntries: [entry],
           timePeriod: TimePeriod.month,
-          heightCm: 175.0,
+          heightCm: 170.0,
         ),
       ),
     );
 
     await tester.pumpWidget(createTestWidget(const TodayScreen()));
-    await tester.pump();
+    await tester.pumpAndSettle();
 
     expect(find.text('25.1 BMI'), findsOneWidget);
     expect(find.text('Weight trend'), findsOneWidget);
@@ -245,7 +246,7 @@ void main() {
           entries: [entry],
           filteredEntries: [entry],
           timePeriod: TimePeriod.month,
-          heightCm: 175.0,
+          heightCm: 170.0,
         ),
       ),
     );

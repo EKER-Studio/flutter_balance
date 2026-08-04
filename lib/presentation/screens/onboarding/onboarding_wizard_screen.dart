@@ -32,7 +32,7 @@ class _OnboardingWizardScreenState extends State<OnboardingWizardScreen> {
   int _currentStep = 0;
 
   late MeasurementUnit _selectedUnit;
-  late double _selectedHeightCm;
+  late double? _selectedHeightCm;
   double? _targetWeightKg;
 
   @override

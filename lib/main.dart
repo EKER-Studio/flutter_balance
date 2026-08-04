@@ -16,8 +16,6 @@ import 'package:pure_weight/core/services/notification_service.dart';
 import 'package:pure_weight/features/weight/data/repositories/isar_weight_repository.dart';
 import 'package:pure_weight/features/weight/domain/repositories/weight_repository.dart';
 import 'package:pure_weight/presentation/bloc/settings/app_settings_bloc.dart';
-import 'package:pure_weight/presentation/bloc/settings/app_settings_event.dart';
-import 'package:pure_weight/presentation/bloc/settings/app_settings_state.dart';
 import 'package:pure_weight/presentation/screens/app_initialization_error_screen.dart';
 
 Future<void> main() async {
@@ -64,9 +62,6 @@ Future<void> main() async {
     await NotificationService.instance.initialize();
 
     final settingsBloc = AppSettingsBloc();
-    if (settingsBloc.state.height <= 0) {
-      settingsBloc.add(const UpdateHeight(AppSettingsState.defaultHeightCm));
-    }
 
     runApp(
       BlocProvider(
