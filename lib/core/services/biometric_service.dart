@@ -86,12 +86,14 @@ class BiometricService {
 
   /// Checks whether the device has active biometric hardware and enrolled credentials.
   ///
-  /// Returns a [Future] resolving to `true` if biometric sensors can be checked and
-  /// credentials are enrolled, `false` otherwise.
+  /// Returns a [Future] resolving to `true` if the device supports biometric
+  /// sensors and at least one credential is enrolled, `false` otherwise.
   /// Catches hardware or platform exceptions safely and logs errors.
   Future<bool> isAvailable() async {
     try {
-      return await _authentication.canCheckBiometrics;
+      if (!await _authentication.canCheckBiometrics) return false;
+      final biometrics = await _authentication.getAvailableBiometrics();
+      return biometrics.isNotEmpty;
     } catch (e, stack) {
       if (kDebugMode) {
         debugPrint('[BiometricService] isAvailable error: $e\n$stack');
@@ -142,6 +144,30 @@ class BiometricService {
         return BiometricAuthResult.success;
       }
       return BiometricAuthResult.canceled;
+    } on LocalAuthException catch (e, stack) {
+      if (kDebugMode) {
+        debugPrint(
+          '[BiometricService] LocalAuthException (${e.code.name}): $e\n$stack',
+        );
+      }
+      return switch (e.code) {
+        LocalAuthExceptionCode.userCanceled ||
+        LocalAuthExceptionCode.systemCanceled ||
+        LocalAuthExceptionCode.userRequestedFallback ||
+        LocalAuthExceptionCode.timeout => BiometricAuthResult.canceled,
+        LocalAuthExceptionCode.temporaryLockout =>
+          BiometricAuthResult.lockedOut,
+        LocalAuthExceptionCode.biometricLockout =>
+          BiometricAuthResult.permanentlyLockedOut,
+        LocalAuthExceptionCode.noBiometricsEnrolled =>
+          BiometricAuthResult.notEnrolled,
+        LocalAuthExceptionCode.noCredentialsSet =>
+          BiometricAuthResult.passcodeNotSet,
+        LocalAuthExceptionCode.noBiometricHardware ||
+        LocalAuthExceptionCode.biometricHardwareTemporarilyUnavailable =>
+          BiometricAuthResult.notAvailable,
+        _ => BiometricAuthResult.error,
+      };
     } on PlatformException catch (e, stack) {
       if (kDebugMode) {
         debugPrint(
