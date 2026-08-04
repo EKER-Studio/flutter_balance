@@ -10,6 +10,21 @@ import 'package:pure_weight/presentation/bloc/settings/app_settings_bloc.dart';
 import 'package:pure_weight/core/models/measurement_unit.dart';
 
 /// A chart widget that displays weight history over time.
+///
+/// Plots [entries] on a time-based X-axis, converts values into the active
+/// measurement unit, and renders the optional [targetWeight] as a dashed
+/// reference line.
+///
+/// ```dart
+/// WeightChart(
+///   entries: filteredEntries,
+///   period: TimePeriod.month,
+///   onPeriodChanged: (period) {
+///     // dispatch the newly selected period to the weight BLoC
+///   },
+///   targetWeight: 72.5,
+/// )
+/// ```
 class WeightChart extends StatelessWidget {
   /// The list of weight entries to plot.
   final List<WeightEntry> entries;
@@ -251,6 +266,7 @@ class WeightChart extends StatelessWidget {
     );
   }
 
+  /// Builds the row of period filter [ChoiceChip]s above the chart.
   Widget _buildFilterChips(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     return Wrap(
@@ -281,6 +297,7 @@ class WeightChart extends StatelessWidget {
     );
   }
 
+  /// Returns the localized label for [p].
   String _getPeriodName(TimePeriod p, AppLocalizations l10n) {
     switch (p) {
       case TimePeriod.week:
@@ -294,6 +311,8 @@ class WeightChart extends StatelessWidget {
     }
   }
 
+  /// Maps [sortedEntries] to [FlSpot]s with minutes-since-first as X and the
+  /// weight converted into [unit] as Y.
   List<FlSpot> _getSpots(
     List<WeightEntry> sortedEntries,
     MeasurementUnit unit,
@@ -313,6 +332,7 @@ class WeightChart extends StatelessWidget {
     }).toList();
   }
 
+  /// Computes the X-axis label interval as a quarter of the visible span.
   double _getBottomInterval(List<WeightEntry> sortedEntries) {
     if (sortedEntries.length <= 1) {
       return 1;
@@ -329,6 +349,8 @@ class WeightChart extends StatelessWidget {
     return minutes / 4;
   }
 
+  /// Builds the bottom axis label for the date at the given [value],
+  /// formatted according to the current [period].
   Widget _buildBottomTitle(
     double value,
     TitleMeta meta,

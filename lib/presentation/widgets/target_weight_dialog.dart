@@ -38,6 +38,8 @@ class _TargetWeightDialogState extends State<TargetWeightDialog> {
     super.dispose();
   }
 
+  /// Pops the entered weight on success, `null` when cleared, or shows an
+  /// error [SnackBar] for invalid input.
   void _handleSave() {
     FocusScope.of(context).unfocus();
     final text = _controller.text.trim().replaceAll(',', '.');
