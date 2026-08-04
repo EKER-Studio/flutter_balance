@@ -283,7 +283,10 @@ class _RefreshableTodayBody extends StatelessWidget {
             top: false,
             sliver: SliverToBoxAdapter(
               child: ClampedLayout(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 12,
+                ),
                 child: child,
               ),
             ),

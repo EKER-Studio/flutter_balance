@@ -81,7 +81,8 @@ void main() {
     await tester.pumpWidget(createTestWidget());
     await tester.pump();
 
-    await tester.drag(find.text('PROFILE'), const Offset(0, -500)); await tester.pumpAndSettle();
+    await tester.drag(find.text('PROFILE'), const Offset(0, -500));
+    await tester.pumpAndSettle();
     await tester.tap(find.text('System'));
     await tester.pump();
 
@@ -105,7 +106,8 @@ void main() {
     await tester.pumpWidget(createTestWidget());
     await tester.pump();
 
-    await tester.drag(find.text('PROFILE'), const Offset(0, -500)); await tester.pumpAndSettle();
+    await tester.drag(find.text('PROFILE'), const Offset(0, -500));
+    await tester.pumpAndSettle();
     await tester.tap(find.text('Metric (kg, cm)'));
     await tester.pump();
 
@@ -153,7 +155,8 @@ void main() {
       await tester.pumpWidget(createTestWidget());
       await tester.pump();
 
-      await tester.drag(find.text('PROFILE'), const Offset(0, -500)); await tester.pumpAndSettle();
+      await tester.drag(find.text('PROFILE'), const Offset(0, -500));
+      await tester.pumpAndSettle();
       await tester.tap(find.byType(Switch).first);
       await tester.pumpAndSettle();
 
@@ -168,7 +171,8 @@ void main() {
     await tester.pumpWidget(createTestWidget());
     await tester.pump();
 
-    await tester.drag(find.text('PROFILE'), const Offset(0, -500)); await tester.pumpAndSettle();
+    await tester.drag(find.text('PROFILE'), const Offset(0, -500));
+    await tester.pumpAndSettle();
     await tester.tap(find.text('Wipe All Data'));
     await tester.pump();
 
@@ -185,7 +189,8 @@ void main() {
     await tester.pumpWidget(createTestWidget());
     await tester.pump();
 
-    await tester.drag(find.text('PROFILE'), const Offset(0, -500)); await tester.pumpAndSettle();
+    await tester.drag(find.text('PROFILE'), const Offset(0, -500));
+    await tester.pumpAndSettle();
     await tester.tap(find.text('Wipe All Data'));
     await tester.pump();
 
@@ -216,7 +221,8 @@ void main() {
     await tester.pumpWidget(createTestWidget());
     await tester.pump();
 
-    await tester.drag(find.text('PROFILE'), const Offset(0, -500)); await tester.pumpAndSettle();
+    await tester.drag(find.text('PROFILE'), const Offset(0, -500));
+    await tester.pumpAndSettle();
     await tester.tap(find.text('Export data to CSV'));
     await tester.pump();
 

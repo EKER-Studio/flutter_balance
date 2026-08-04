@@ -15,7 +15,8 @@ class StepReminderNotification extends StatefulWidget {
   const StepReminderNotification({super.key, required this.onNext});
 
   @override
-  State<StepReminderNotification> createState() => _StepReminderNotificationState();
+  State<StepReminderNotification> createState() =>
+      _StepReminderNotificationState();
 }
 
 class _StepReminderNotificationState extends State<StepReminderNotification> {
@@ -29,9 +30,7 @@ class _StepReminderNotificationState extends State<StepReminderNotification> {
       initialTime: initialTime,
       builder: (context, child) {
         return MediaQuery(
-          data: MediaQuery.of(context).copyWith(
-            alwaysUse24HourFormat: true,
-          ),
+          data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true),
           child: child!,
         );
       },
@@ -159,13 +158,13 @@ class _StepReminderNotificationState extends State<StepReminderNotification> {
                             Expanded(
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisSize: MainAxisSize.min, // Fix: Prevents layout crash inside Row
+                                mainAxisSize: MainAxisSize
+                                    .min, // Fix: Prevents layout crash inside Row
                                 children: [
                                   Text(
                                     l10n.reminderTime,
-                                    style: theme.textTheme.titleMedium?.copyWith(
-                                      fontWeight: FontWeight.w600,
-                                    ),
+                                    style: theme.textTheme.titleMedium
+                                        ?.copyWith(fontWeight: FontWeight.w600),
                                   ),
                                   const SizedBox(height: 4.0),
                                   Text(

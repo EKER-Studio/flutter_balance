@@ -8,11 +8,7 @@ void main() {
     return MaterialApp(
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
-      home: Scaffold(
-        body: CustomScrollView(
-          slivers: [child],
-        ),
-      ),
+      home: Scaffold(body: CustomScrollView(slivers: [child])),
     );
   }
 

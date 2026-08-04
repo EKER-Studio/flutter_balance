@@ -74,9 +74,7 @@ class CalendarDayCell extends StatelessWidget {
           child: Container(
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: isSelected
-                  ? cs.primary
-                  : Colors.transparent,
+              color: isSelected ? cs.primary : Colors.transparent,
               border: isToday && !isSelected
                   ? Border.all(color: cs.primary, width: 1.0)
                   : null,

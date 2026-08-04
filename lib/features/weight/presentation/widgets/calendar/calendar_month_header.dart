@@ -36,9 +36,9 @@ class CalendarMonthHeader extends StatelessWidget {
           Text(
             monthYearStr,
             style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: Theme.of(context).colorScheme.onSurface,
-                ),
+              fontWeight: FontWeight.bold,
+              color: Theme.of(context).colorScheme.onSurface,
+            ),
           ),
           Row(
             mainAxisSize: MainAxisSize.min,
