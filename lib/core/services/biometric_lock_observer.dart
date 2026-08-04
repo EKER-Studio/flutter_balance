@@ -52,6 +52,8 @@ class BiometricLockObserver with WidgetsBindingObserver {
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) {
       _verifyDatabaseIntegrity();
+    } else if (state == AppLifecycleState.paused ||
+        state == AppLifecycleState.hidden) {
       _checkBiometricLock();
     }
   }
@@ -80,15 +82,10 @@ class BiometricLockObserver with WidgetsBindingObserver {
     if (BiometricService.instance.wasAuthenticatingRecently) return;
     if (isAppLocked?.call() == true) return;
 
-    // Wait until current frame ends so FlutterFragmentActivity is attached & resumed natively
-    await WidgetsBinding.instance.endOfFrame;
-
-    final isAvailable = await BiometricService.instance.isAvailable();
-    if (!isAvailable) return;
-
-    // The app came from the background and should be locked.
+    // The app went to the background and should be locked.
     // We do NOT call authenticate() here, because BiometricShieldScreen will
-    // automatically mount when isLocked becomes true, and it handles the auth prompt.
+    // automatically mount when isLocked becomes true, and it handles the auth prompt
+    // when the app resumes.
     onLockStateChanged(true);
   }
 
