@@ -51,6 +51,12 @@
 		<true/>
 		<key>NSFaceIDUsageDescription</key>
 		<string>Unlock the app with Face ID for faster and more secure access.</string>
+		<key>NSUserNotificationsUsageDescription</key>
+		<string>Allow notifications for workout and weight tracking reminders.</string>
+		<key>UIBackgroundModes</key>
+		<array>
+			<string>remote-notification</string>
+		</array>
 		<key>UILaunchStoryboardName</key>
 		<string>LaunchScreen</string>
 		<key>UIMainStoryboardFile</key>
