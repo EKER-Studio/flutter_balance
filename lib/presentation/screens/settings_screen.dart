@@ -566,29 +566,30 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   /// Clears all weight entries and resets every app setting.
   Future<void> _wipeDatabase(BuildContext context) async {
-    try {
-      context.read<WeightBloc>().add(const ClearAllWeightData());
-      context.read<AppSettingsBloc>().add(const ResetAppSettings());
+    final l10n = AppLocalizations.of(context);
+    final theme = Theme.of(context);
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
+    final weightBloc = context.read<WeightBloc>();
+    final appSettingsBloc = context.read<AppSettingsBloc>();
 
-      if (context.mounted) {
-        context.read<WeightBloc>().add(const RefreshWeightData());
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(AppLocalizations.of(context).dataWipedSuccess),
-            backgroundColor: Theme.of(context).colorScheme.tertiary,
-          ),
-        );
-      }
+    try {
+      weightBloc.add(const ClearAllWeightData());
+      appSettingsBloc.add(const ResetAppSettings());
+      weightBloc.add(const RefreshWeightData());
+
+      scaffoldMessenger.showSnackBar(
+        SnackBar(
+          content: Text(l10n.dataWipedSuccess),
+          backgroundColor: theme.colorScheme.tertiary,
+        ),
+      );
     } catch (e) {
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              AppLocalizations.of(context).errorWipingData(e.toString()),
-            ),
-          ),
-        );
-      }
+      scaffoldMessenger.showSnackBar(
+        SnackBar(
+          content: Text(l10n.errorWipingData(e.toString())),
+          backgroundColor: theme.colorScheme.error,
+        ),
+      );
     }
   }
 
