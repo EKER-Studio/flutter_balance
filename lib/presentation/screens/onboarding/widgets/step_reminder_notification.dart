@@ -71,7 +71,7 @@ class _StepReminderNotificationState extends State<StepReminderNotification> {
             children: [
               // Title
               Text(
-                l10n.dailyReminderStepTitle,
+                l10n.dailyReminderStepOptionalTitle,
                 style: theme.textTheme.headlineSmall?.copyWith(
                   fontWeight: FontWeight.bold,
                 ),
@@ -158,8 +158,7 @@ class _StepReminderNotificationState extends State<StepReminderNotification> {
                             Expanded(
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisSize: MainAxisSize
-                                    .min, // Fix: Prevents layout crash inside Row
+                                mainAxisSize: MainAxisSize.min, // Fix: Prevents layout crash inside Row
                                 children: [
                                   Text(
                                     l10n.reminderTime,
@@ -218,30 +217,13 @@ class _StepReminderNotificationState extends State<StepReminderNotification> {
               ],
               const Spacer(),
               // Bottom buttons
-              Row(
-                children: [
-                  Expanded(
-                    child: ConstrainedBox(
-                      constraints: const BoxConstraints(minHeight: 48.0),
-                      child: TextButton(
-                        key: const Key('notification_step_skip_button'),
-                        onPressed: widget.onNext,
-                        child: Text(l10n.skip),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 16.0),
-                  Expanded(
-                    child: ConstrainedBox(
-                      constraints: const BoxConstraints(minHeight: 48.0),
-                      child: FilledButton(
-                        key: const Key('notification_step_next_button'),
-                        onPressed: widget.onNext,
-                        child: Text(l10n.next),
-                      ),
-                    ),
-                  ),
-                ],
+              ConstrainedBox(
+                constraints: const BoxConstraints(minHeight: 48.0),
+                child: FilledButton(
+                  key: const Key('notification_step_next_button'),
+                  onPressed: widget.onNext,
+                  child: Text(l10n.next),
+                ),
               ),
             ],
           );

@@ -171,6 +171,7 @@
   "bmiCategoryLabel": "Kategoria BMI: {category}",
   "bmiValueLabel": "Wskaźnik BMI: {value} kg/m²",
   "dailyReminderStepTitle": "Codzienne przypomnienie",
+  "dailyReminderStepOptionalTitle": "Codzienne przypomnienie (Opcjonalnie)",
   "dailyReminderStepSubtitle": "Ustaw codzienne przypomnienie, aby pamiętać o ważeniu.",
   "biometricStepTitle": "Blokada biometryczna",
   "biometricStepSubtitle": "Chroń swoje dane dotyczące wagi za pomocą Face ID lub odcisku palca.",

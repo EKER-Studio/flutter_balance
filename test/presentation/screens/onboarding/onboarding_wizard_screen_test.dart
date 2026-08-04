@@ -100,7 +100,7 @@ void main() {
         await tester.pumpAndSettle();
 
         expect(find.text('Step 3 of 5'), findsOneWidget);
-        expect(find.text('Daily Reminder'), findsWidgets);
+        expect(find.text('Daily Reminder (Optional)'), findsOneWidget);
 
         // Step 3 -> Next (Skip/Next reminder)
         await tester.tap(
