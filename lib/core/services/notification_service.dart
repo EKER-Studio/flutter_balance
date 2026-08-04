@@ -215,32 +215,6 @@ class NotificationService {
     }
   }
 
-  /// Shows an immediate test notification to verify native notification
-  /// display capabilities on Android and iOS without scheduling or
-  /// timezone logic.
-  Future<void> showInstantTestNotification() async {
-    if (!_initialized) await initialize();
-
-    await _plugin.show(
-      id: 888,
-      title: '🧪 Instant Test',
-      body: 'If you see this, native notifications are 100% working!',
-      notificationDetails: const NotificationDetails(
-        android: AndroidNotificationDetails(
-          'daily_weight_reminders_v2',
-          'Daily Weight Reminders',
-          importance: Importance.max,
-          priority: Priority.high,
-          icon: '@mipmap/ic_launcher',
-        ),
-        iOS: DarwinNotificationDetails(
-          presentAlert: true,
-          presentSound: true,
-          presentBadge: true,
-        ),
-      ),
-    );
-  }
 
 
 }
