@@ -77,7 +77,6 @@ class _HeightDialogState extends State<_HeightDialog> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final colorScheme = Theme.of(context).colorScheme;
     final isError = _errorText != null;
 
     return AlertDialog(
@@ -102,7 +101,7 @@ class _HeightDialogState extends State<_HeightDialog> {
                     ? OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8),
                         borderSide: BorderSide(
-                          color: colorScheme.error,
+                          color: Theme.of(context).colorScheme.error,
                           width: 2,
                         ),
                       )
@@ -111,7 +110,7 @@ class _HeightDialogState extends State<_HeightDialog> {
                     ? OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8),
                         borderSide: BorderSide(
-                          color: colorScheme.error,
+                          color: Theme.of(context).colorScheme.error,
                           width: 2,
                         ),
                       )
@@ -125,17 +124,14 @@ class _HeightDialogState extends State<_HeightDialog> {
               onSubmitted: (_) => _handleSave(),
             ),
             const SizedBox(height: 8),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12),
-              child: Text(
-                isError ? _errorText! : '50 – 250 cm',
-                style: TextStyle(
-                  color: isError
-                      ? colorScheme.error
-                      : colorScheme.onSurfaceVariant,
-                  fontSize: 12,
-                  fontWeight: isError ? FontWeight.w500 : FontWeight.w400,
-                ),
+            Text(
+              isError ? _errorText! : '50 – 250 cm',
+              style: TextStyle(
+                color: isError
+                    ? Theme.of(context).colorScheme.error
+                    : Theme.of(context).colorScheme.onSurfaceVariant,
+                fontSize: 12,
+                fontWeight: isError ? FontWeight.w500 : FontWeight.w400,
               ),
             ),
           ],

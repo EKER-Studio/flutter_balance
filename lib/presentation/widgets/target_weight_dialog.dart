@@ -78,7 +78,6 @@ class _TargetWeightDialogState extends State<TargetWeightDialog> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final colorScheme = Theme.of(context).colorScheme;
     final isError = _errorText != null;
 
     return AlertDialog(
@@ -105,7 +104,7 @@ class _TargetWeightDialogState extends State<TargetWeightDialog> {
                     ? OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8),
                         borderSide: BorderSide(
-                          color: colorScheme.error,
+                          color: Theme.of(context).colorScheme.error,
                           width: 2,
                         ),
                       )
@@ -114,7 +113,7 @@ class _TargetWeightDialogState extends State<TargetWeightDialog> {
                     ? OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8),
                         borderSide: BorderSide(
-                          color: colorScheme.error,
+                          color: Theme.of(context).colorScheme.error,
                           width: 2,
                         ),
                       )
@@ -127,20 +126,16 @@ class _TargetWeightDialogState extends State<TargetWeightDialog> {
               },
               onSubmitted: (_) => _handleSave(),
             ),
-            if (isError) ...[
-              const SizedBox(height: 8),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 12),
-                child: Text(
-                  _errorText!,
-                  style: TextStyle(
-                    color: colorScheme.error,
-                    fontSize: 12,
-                    fontWeight: FontWeight.w500,
-                  ),
+            const SizedBox(height: 8),
+            if (isError)
+              Text(
+                _errorText!,
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.error,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w500,
                 ),
               ),
-            ],
           ],
         ),
       ),
