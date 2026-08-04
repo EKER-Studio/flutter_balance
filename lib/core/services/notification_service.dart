@@ -22,7 +22,7 @@ class NotificationService {
   static final NotificationService instance = NotificationService._();
 
   static const int _dailyReminderId = 0;
-  static const String _channelId = 'pure_weight_reminders';
+  static const String _channelId = 'daily_weight_reminders_v2';
 
   final FlutterLocalNotificationsPlugin _plugin =
       FlutterLocalNotificationsPlugin();
@@ -149,7 +149,7 @@ class NotificationService {
             _channelId,
             _channelName,
             channelDescription: _channelDescription,
-            importance: Importance.high,
+            importance: Importance.max,
             priority: Priority.high,
             icon: '@mipmap/ic_launcher',
           ),
