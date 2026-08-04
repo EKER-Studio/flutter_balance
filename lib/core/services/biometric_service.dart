@@ -149,7 +149,8 @@ class BiometricService {
   /// when returning from the native biometric dialog.
   bool get wasAuthenticatingRecently =>
       _lastAuthCompletionTime != null &&
-      DateTime.now().difference(_lastAuthCompletionTime!) < const Duration(seconds: 1);
+      DateTime.now().difference(_lastAuthCompletionTime!) <
+          const Duration(seconds: 1);
 
   /// Prompts the user for biometric authentication.
   ///
@@ -191,13 +192,17 @@ class BiometricService {
     try {
       final supported = await isSupported();
       if (kDebugMode) {
-        debugPrint('[BiometricService] authenticate -> isSupported: $supported');
+        debugPrint(
+          '[BiometricService] authenticate -> isSupported: $supported',
+        );
       }
       if (!supported) return BiometricAuthResult.notAvailable;
 
       final available = await isAvailable();
       if (kDebugMode) {
-        debugPrint('[BiometricService] authenticate -> isAvailable: $available');
+        debugPrint(
+          '[BiometricService] authenticate -> isAvailable: $available',
+        );
       }
       if (!available) return BiometricAuthResult.notAvailable;
 
@@ -291,9 +296,7 @@ class BiometricService {
         cancelButton: l10n.cancel,
         signInHint: l10n.biometricAuthReason,
       ),
-      IOSAuthMessages(
-        cancelButton: l10n.cancel,
-      ),
+      IOSAuthMessages(cancelButton: l10n.cancel),
     ];
   }
 }

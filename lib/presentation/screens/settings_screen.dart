@@ -626,7 +626,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
     context.read<AppSettingsBloc>().add(ToggleNotifications(enabled));
   }
 
-
   /// Toggles the biometric lock, authenticating the user before enabling it.
   Future<void> _handleBiometricToggle(
     BuildContext context,

@@ -161,7 +161,9 @@ class _BiometricShieldScreenState extends State<BiometricShieldScreen> {
                       style: FilledButton.styleFrom(
                         minimumSize: const Size(0, 48),
                       ),
-                      onPressed: _isUnlocking ? null : () => _handleUnlock(context, bloc),
+                      onPressed: _isUnlocking
+                          ? null
+                          : () => _handleUnlock(context, bloc),
                       icon: const Icon(Icons.fingerprint),
                       label: Text(l10n.unlock),
                     ),

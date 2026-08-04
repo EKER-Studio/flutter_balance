@@ -25,8 +25,9 @@ class FakeLocalAuthPlatform extends LocalAuthPlatform {
   @override
   Future<bool> isDeviceSupported() async => true;
   @override
-  Future<List<BiometricType>> getEnrolledBiometrics() async =>
-      const [BiometricType.fingerprint];
+  Future<List<BiometricType>> getEnrolledBiometrics() async => const [
+    BiometricType.fingerprint,
+  ];
 }
 
 void main() {
