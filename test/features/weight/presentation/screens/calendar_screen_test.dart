@@ -88,6 +88,7 @@ void main() {
       );
 
       expect(find.text('72.5 kg'), findsOneWidget);
+      expect(find.text('Dodaj kolejny pomiar'), findsOneWidget);
     });
 
     testWidgets('CalendarScreen navigates between months', (tester) async {
@@ -141,7 +142,7 @@ void main() {
       },
     );
 
-    testWidgets('CalendarScreen FAB opens AddWeightSheet dialog', (
+    testWidgets('CalendarScreen inline Add button opens AddWeightSheet dialog', (
       tester,
     ) async {
       await tester.pumpWidget(
@@ -156,7 +157,14 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      await tester.tap(find.byType(FloatingActionButton));
+      await tester.dragUntilVisible(
+        find.byIcon(Icons.add),
+        find.byType(SingleChildScrollView),
+        const Offset(0, -50),
+      );
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.byIcon(Icons.add));
       await tester.pumpAndSettle();
 
       expect(find.byType(AddWeightSheet), findsOneWidget);

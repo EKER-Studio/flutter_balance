@@ -96,19 +96,24 @@ class CalendarDayCell extends StatelessWidget {
                     ),
                   ),
                 ),
-                // Indicator dot for entries
+                // Indicator dots for entries
                 if (hasEntries)
                   Positioned(
                     bottom: 4,
                     left: 0,
                     right: 0,
-                    child: Center(
-                      child: Container(
-                        width: 4,
-                        height: 4,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: isSelected ? cs.onPrimary : cs.primary,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: List.generate(
+                        entries.length > 3 ? 3 : entries.length,
+                        (index) => Container(
+                          width: 4,
+                          height: 4,
+                          margin: const EdgeInsets.symmetric(horizontal: 1.5),
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: isSelected ? cs.onPrimary : cs.primary,
+                          ),
                         ),
                       ),
                     ),
@@ -116,8 +121,8 @@ class CalendarDayCell extends StatelessWidget {
                 // Goal Achievement Star Badge
                 if (isGoalAchieved)
                   Positioned(
-                    top: 2,
-                    right: 2,
+                    top: -2,
+                    right: -2,
                     child: Icon(
                       Icons.star,
                       size: 10,

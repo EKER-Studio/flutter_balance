@@ -9,7 +9,6 @@ import 'package:pure_weight/features/weight/domain/repositories/weight_repositor
 import 'package:pure_weight/features/weight/presentation/bloc/weight_bloc.dart';
 import 'package:pure_weight/features/weight/presentation/bloc/weight_event.dart';
 import 'package:pure_weight/features/weight/presentation/screens/calendar_screen.dart';
-import 'package:pure_weight/features/weight/presentation/widgets/add_weight_sheet.dart';
 import 'package:pure_weight/features/weight/presentation/widgets/calendar/calendar_day_cell.dart';
 import 'package:pure_weight/features/weight/presentation/widgets/calendar/calendar_day_empty_card.dart';
 import 'package:pure_weight/features/weight/presentation/widgets/calendar/calendar_day_entries_card.dart';
@@ -254,6 +253,7 @@ void main() {
       expect(find.text('72.5 kg'), findsOneWidget);
       expect(find.textContaining('Morning weight'), findsOneWidget);
       expect(find.byIcon(Icons.delete_outline), findsOneWidget);
+      expect(find.byIcon(Icons.add), findsOneWidget);
     },
   );
 
@@ -378,38 +378,6 @@ void main() {
       expect(find.byType(CalendarMonthHeader), findsOneWidget);
       expect(find.byType(CalendarWeekdayHeader), findsOneWidget);
       expect(find.byType(CalendarDayEmptyCard), findsOneWidget);
-      expect(find.byType(FloatingActionButton), findsOneWidget);
-    },
-  );
-
-  testWidgets(
-    'CalendarScreen opens AddWeightSheet when FloatingActionButton is tapped',
-    (tester) async {
-      await tester.pumpWidget(
-        MultiBlocProvider(
-          providers: [
-            BlocProvider(create: (_) => AppSettingsBloc()),
-            BlocProvider(
-              create: (context) =>
-                  WeightBloc(repository: repository)
-                    ..add(const SubscribeToWeightChanges()),
-            ),
-          ],
-          child: const MaterialApp(
-            locale: Locale('pl'),
-            localizationsDelegates: AppLocalizations.localizationsDelegates,
-            supportedLocales: AppLocalizations.supportedLocales,
-            home: CalendarScreen(),
-          ),
-        ),
-      );
-
-      await tester.pumpAndSettle();
-
-      await tester.tap(find.byType(FloatingActionButton));
-      await tester.pumpAndSettle();
-
-      expect(find.byType(AddWeightSheet), findsOneWidget);
     },
   );
 
