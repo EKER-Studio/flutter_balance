@@ -77,12 +77,17 @@ class _HeightDialogState extends State<_HeightDialog> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final colorScheme = Theme.of(context).colorScheme;
+    final isError = _errorText != null;
+
     return AlertDialog(
       title: Text(l10n.heightDialogTitle),
       content: SingleChildScrollView(
         child: Column(
           mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
+            const SizedBox(height: 16),
             TextField(
               controller: _controller,
               keyboardType: const TextInputType.numberWithOptions(
@@ -93,8 +98,24 @@ class _HeightDialogState extends State<_HeightDialog> {
               decoration: InputDecoration(
                 labelText: l10n.heightCmLabel,
                 hintText: l10n.heightHint,
-                helperText: _errorText == null ? '50 – 250 cm' : null,
-                errorText: _errorText,
+                enabledBorder: isError
+                    ? OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        borderSide: BorderSide(
+                          color: colorScheme.error,
+                          width: 2,
+                        ),
+                      )
+                    : null,
+                focusedBorder: isError
+                    ? OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        borderSide: BorderSide(
+                          color: colorScheme.error,
+                          width: 2,
+                        ),
+                      )
+                    : null,
               ),
               onChanged: (_) {
                 if (_errorText != null) {
@@ -102,6 +123,20 @@ class _HeightDialogState extends State<_HeightDialog> {
                 }
               },
               onSubmitted: (_) => _handleSave(),
+            ),
+            const SizedBox(height: 8),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12),
+              child: Text(
+                isError ? _errorText! : '50 – 250 cm',
+                style: TextStyle(
+                  color: isError
+                      ? colorScheme.error
+                      : colorScheme.onSurfaceVariant,
+                  fontSize: 12,
+                  fontWeight: isError ? FontWeight.w500 : FontWeight.w400,
+                ),
+              ),
             ),
           ],
         ),

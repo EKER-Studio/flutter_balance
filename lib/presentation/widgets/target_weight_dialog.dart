@@ -78,12 +78,17 @@ class _TargetWeightDialogState extends State<TargetWeightDialog> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final colorScheme = Theme.of(context).colorScheme;
+    final isError = _errorText != null;
+
     return AlertDialog(
       title: Text(l10n.targetWeightDialogTitle),
       content: SingleChildScrollView(
         child: Column(
           mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
+            const SizedBox(height: 16),
             TextField(
               controller: _controller,
               keyboardType: const TextInputType.numberWithOptions(
@@ -96,7 +101,24 @@ class _TargetWeightDialogState extends State<TargetWeightDialog> {
                     ? l10n.weightInLbLabel
                     : l10n.weightInKgLabel,
                 hintText: l10n.weightHint,
-                errorText: _errorText,
+                enabledBorder: isError
+                    ? OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        borderSide: BorderSide(
+                          color: colorScheme.error,
+                          width: 2,
+                        ),
+                      )
+                    : null,
+                focusedBorder: isError
+                    ? OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        borderSide: BorderSide(
+                          color: colorScheme.error,
+                          width: 2,
+                        ),
+                      )
+                    : null,
               ),
               onChanged: (_) {
                 if (_errorText != null) {
@@ -105,6 +127,20 @@ class _TargetWeightDialogState extends State<TargetWeightDialog> {
               },
               onSubmitted: (_) => _handleSave(),
             ),
+            if (isError) ...[
+              const SizedBox(height: 8),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 12),
+                child: Text(
+                  _errorText!,
+                  style: TextStyle(
+                    color: colorScheme.error,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ),
+            ],
           ],
         ),
       ),
