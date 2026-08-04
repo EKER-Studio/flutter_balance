@@ -158,7 +158,8 @@ class _StepReminderNotificationState extends State<StepReminderNotification> {
                             Expanded(
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisSize: MainAxisSize.min, // Fix: Prevents layout crash inside Row
+                                mainAxisSize: MainAxisSize
+                                    .min, // Fix: Prevents layout crash inside Row
                                 children: [
                                   Text(
                                     l10n.reminderTime,

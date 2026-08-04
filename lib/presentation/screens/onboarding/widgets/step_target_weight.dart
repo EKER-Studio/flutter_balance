@@ -110,10 +110,7 @@ class _StepTargetWeightState extends State<StepTargetWeight> {
 
     final errorOutline = OutlineInputBorder(
       borderRadius: BorderRadius.circular(8),
-      borderSide: BorderSide(
-        color: theme.colorScheme.error,
-        width: 2,
-      ),
+      borderSide: BorderSide(color: theme.colorScheme.error, width: 2),
     );
 
     return ClampedLayout(
@@ -139,9 +136,7 @@ class _StepTargetWeightState extends State<StepTargetWeight> {
             key: const Key('target_weight_input'),
             controller: _weightController,
             autofocus: true,
-            keyboardType: const TextInputType.numberWithOptions(
-              decimal: true,
-            ),
+            keyboardType: const TextInputType.numberWithOptions(decimal: true),
             decoration: InputDecoration(
               labelText: '${l10n.targetWeightDialogTitle} ($unitSuffix)',
               suffixText: unitSuffix,
@@ -177,4 +172,3 @@ class _StepTargetWeightState extends State<StepTargetWeight> {
     );
   }
 }
-

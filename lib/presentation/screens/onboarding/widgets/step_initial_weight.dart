@@ -80,6 +80,7 @@ class _StepInitialWeightState extends State<StepInitialWeight> {
     }
     return parsed;
   }
+
   void _validate(String value) {
     setState(() {
       final trimmed = value.trim();
@@ -113,16 +114,13 @@ class _StepInitialWeightState extends State<StepInitialWeight> {
     final formattedDate = DateFormat.yMMMd().add_jm().format(
       _selectedTimestamp,
     );
-    
+
     final isError = _errorText != null;
     final isNextEnabled = _weightController.text.trim().isNotEmpty && !isError;
-    
+
     final errorOutline = OutlineInputBorder(
       borderRadius: BorderRadius.circular(8),
-      borderSide: BorderSide(
-        color: theme.colorScheme.error,
-        width: 2,
-      ),
+      borderSide: BorderSide(color: theme.colorScheme.error, width: 2),
     );
 
     return ClampedLayout(
@@ -148,9 +146,7 @@ class _StepInitialWeightState extends State<StepInitialWeight> {
             key: const Key('initial_weight_input'),
             controller: _weightController,
             autofocus: true,
-            keyboardType: const TextInputType.numberWithOptions(
-              decimal: true,
-            ),
+            keyboardType: const TextInputType.numberWithOptions(decimal: true),
             decoration: InputDecoration(
               labelText: 'Current Weight ($unitSuffix)',
               suffixText: unitSuffix,

@@ -141,16 +141,13 @@ class _StepUnitsHeightState extends State<StepUnitsHeight> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context);
-    
+
     final isMetricError = _cmErrorText != null;
     final isImperialError = _imperialErrorText != null;
 
     final errorOutline = OutlineInputBorder(
       borderRadius: BorderRadius.circular(8),
-      borderSide: BorderSide(
-        color: theme.colorScheme.error,
-        width: 2,
-      ),
+      borderSide: BorderSide(color: theme.colorScheme.error, width: 2),
     );
 
     return ClampedLayout(
@@ -286,10 +283,7 @@ class _StepUnitsHeightState extends State<StepUnitsHeight> {
           const Spacer(),
           ConstrainedBox(
             constraints: const BoxConstraints(minHeight: 48.0),
-            child: FilledButton(
-              onPressed: _handleNext,
-              child: Text(l10n.next),
-            ),
+            child: FilledButton(onPressed: _handleNext, child: Text(l10n.next)),
           ),
         ],
       ),
