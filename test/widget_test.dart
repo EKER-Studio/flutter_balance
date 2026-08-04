@@ -51,7 +51,7 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      expect(find.text('Step 1 of 3'), findsOneWidget);
+      expect(find.text('Step 1 of 4'), findsOneWidget);
       expect(find.text('Units & Height'), findsOneWidget);
 
       settingsBloc.close();

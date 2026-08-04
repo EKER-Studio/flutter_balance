@@ -6,6 +6,7 @@ import 'package:pure_weight/features/weight/presentation/bloc/weight_event.dart'
 import 'package:pure_weight/presentation/bloc/settings/app_settings_bloc.dart';
 import 'package:pure_weight/presentation/bloc/settings/app_settings_event.dart';
 import 'package:pure_weight/presentation/screens/onboarding/widgets/step_initial_weight.dart';
+import 'package:pure_weight/presentation/screens/onboarding/widgets/step_reminder_notification.dart';
 import 'package:pure_weight/presentation/screens/onboarding/widgets/step_target_weight.dart';
 import 'package:pure_weight/presentation/screens/onboarding/widgets/step_units_height.dart';
 
@@ -86,6 +87,10 @@ class _OnboardingWizardScreenState extends State<OnboardingWizardScreen> {
     _goToStep(2);
   }
 
+  void _handleReminderNext() {
+    _goToStep(3);
+  }
+
   void _handleInitialWeightComplete(double weightKg, DateTime timestamp) {
     // Log initial weight entry
     try {
@@ -118,7 +123,7 @@ class _OnboardingWizardScreenState extends State<OnboardingWizardScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final progress = (_currentStep + 1) / 3.0;
+    final progress = (_currentStep + 1) / 4.0;
 
     return PopScope(
       canPop: _currentStep == 0,
@@ -132,7 +137,7 @@ class _OnboardingWizardScreenState extends State<OnboardingWizardScreen> {
         resizeToAvoidBottomInset: true,
         appBar: AppBar(
           title: Text(
-            'Step ${_currentStep + 1} of 3',
+            'Step ${_currentStep + 1} of 4',
             style: theme.textTheme.titleMedium?.copyWith(
               color: theme.colorScheme.onSurfaceVariant,
             ),
@@ -170,6 +175,11 @@ class _OnboardingWizardScreenState extends State<OnboardingWizardScreen> {
                   unit: _selectedUnit,
                   initialTargetWeightKg: _targetWeightKg,
                   onNext: _handleTargetWeightNext,
+                ),
+              ),
+              _buildStepWrapper(
+                StepReminderNotification(
+                  onNext: _handleReminderNext,
                 ),
               ),
               _buildStepWrapper(

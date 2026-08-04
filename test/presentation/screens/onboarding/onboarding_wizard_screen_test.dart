@@ -7,6 +7,7 @@ import 'package:mocktail/mocktail.dart';
 import 'package:pure_weight/features/weight/presentation/bloc/weight_bloc.dart';
 import 'package:pure_weight/features/weight/presentation/bloc/weight_event.dart';
 import 'package:pure_weight/features/weight/presentation/bloc/weight_state.dart';
+import 'package:pure_weight/l10n/app_localizations.dart';
 import 'package:pure_weight/presentation/bloc/settings/app_settings_bloc.dart';
 import 'package:pure_weight/presentation/screens/onboarding/onboarding_wizard_screen.dart';
 
@@ -53,21 +54,23 @@ void main() {
         BlocProvider<WeightBloc>.value(value: weightBloc),
       ],
       child: MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
         home: OnboardingWizardScreen(onWizardCompleted: onWizardCompleted),
       ),
     );
   }
 
   group('OnboardingWizardScreen Widget Tests', () {
-    testWidgets('renders initial Step 1 of 3', (tester) async {
+    testWidgets('renders initial Step 1 of 4', (tester) async {
       await tester.pumpWidget(buildSubject());
 
-      expect(find.text('Step 1 of 3'), findsOneWidget);
+      expect(find.text('Step 1 of 4'), findsOneWidget);
       expect(find.text('Units & Height'), findsOneWidget);
       expect(find.byIcon(Icons.arrow_back), findsNothing);
     });
 
-    testWidgets('navigates through steps 1 -> 2 -> 3 and completes wizard', (
+    testWidgets('navigates through steps 1 -> 2 -> 3 -> 4 and completes wizard', (
       tester,
     ) async {
       bool completed = false;
@@ -79,34 +82,52 @@ void main() {
       await tester.tap(find.text('Next'));
       await tester.pumpAndSettle();
 
-      expect(find.text('Step 2 of 3'), findsOneWidget);
+      expect(find.text('Step 2 of 4'), findsOneWidget);
       expect(find.text('Target Weight'), findsOneWidget);
       expect(find.byIcon(Icons.arrow_back), findsOneWidget);
 
-      // Height is synced to the weight BLoC so AddWeight in step 3 does not
+      // Height is synced to the weight BLoC so AddWeight in step 4 does not
       // get rejected with a heightNotSet error on a fresh install.
       verify(
         () => weightBloc.add(any(that: isA<UpdateUserHeight>())),
       ).called(1);
 
       // Step 2 -> Next (Skip target weight)
-      await tester.tap(find.text('Skip'));
+      await tester.tap(find.text('Skip').first);
       await tester.pumpAndSettle();
 
-      expect(find.text('Step 3 of 3'), findsOneWidget);
+      expect(find.text('Step 3 of 4'), findsOneWidget);
+      expect(find.text('Daily Reminder'), findsWidgets);
+
+      // Step 3 -> Next (Skip/Next reminder)
+      await tester.tap(find.byKey(const Key('notification_step_next_button')));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Step 4 of 4'), findsOneWidget);
       expect(find.text('Initial Weight'), findsOneWidget);
 
-      // Enter initial weight in Step 3
+      // Enter initial weight in Step 4
       await tester.enterText(
         find.byKey(const Key('initial_weight_input')),
-        '78.5',
+        '75.5',
       );
       await tester.tap(find.text('Complete Setup'));
       await tester.pumpAndSettle();
 
       expect(completed, isTrue);
       expect(settingsBloc.state.isOnboardingCompleted, isTrue);
-      verify(() => weightBloc.add(any(that: isA<AddWeight>()))).called(1);
+
+      verify(
+        () => weightBloc.add(
+          any(
+            that: isA<AddWeight>().having(
+              (w) => w.weightKg,
+              'weightKg',
+              75.5,
+            ),
+          ),
+        ),
+      ).called(1);
     });
 
     testWidgets('navigates back to Step 1 from Step 2 via back button', (
@@ -118,13 +139,13 @@ void main() {
       await tester.tap(find.text('Next'));
       await tester.pumpAndSettle();
 
-      expect(find.text('Step 2 of 3'), findsOneWidget);
+      expect(find.text('Step 2 of 4'), findsOneWidget);
 
       // Tap back button
       await tester.tap(find.byIcon(Icons.arrow_back));
       await tester.pumpAndSettle();
 
-      expect(find.text('Step 1 of 3'), findsOneWidget);
+      expect(find.text('Step 1 of 4'), findsOneWidget);
     });
 
     testWidgets('renders cleanly in landscape orientation without overflow', (
@@ -137,7 +158,7 @@ void main() {
       await tester.pumpWidget(buildSubject());
       await tester.pumpAndSettle();
 
-      expect(find.text('Step 1 of 3'), findsOneWidget);
+      expect(find.text('Step 1 of 4'), findsOneWidget);
       expect(tester.takeException(), isNull);
     });
 
