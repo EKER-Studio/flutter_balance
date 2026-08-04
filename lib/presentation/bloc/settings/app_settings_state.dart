@@ -53,7 +53,8 @@ final class AppSettingsState extends Equatable {
 
   /// Creates a copy of this state with the given fields replaced.
   ///
-  /// To explicitly clear height back to null, pass [clearHeight] as `true`.
+  /// To explicitly clear the height back to `null`, pass `null` as [height]
+  /// (the sentinel default keeps the current value).
   AppSettingsState copyWith({
     AppThemeMode? themeMode,
     MeasurementUnit? measurementUnit,

@@ -9,7 +9,19 @@ import 'package:pure_weight/features/weight/presentation/bloc/weight_state.dart'
 
 /// BLoC managing weight entries and user height.
 ///
-/// Uses [HydratedBloc] to persist [WeightState.heightCm] across restarts.
+/// Subscribes to the reactive [WeightRepository.watchAllEntries] stream,
+/// aggregates measurements per calendar day for chart display, and maps
+/// repository failures to typed [WeightErrorType] states. Uses [HydratedBloc]
+/// to persist [WeightState.heightCm] and the selected chart [TimePeriod]
+/// across restarts.
+///
+/// ```dart
+/// final bloc = WeightBloc(repository: repository)
+///   ..add(const SubscribeToWeightChanges());
+///
+/// bloc.add(AddWeight(weightKg: 75.4, note: 'Morning'));
+/// bloc.add(ChangeChartFilter(TimePeriod.month));
+/// ```
 class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
   /// The [WeightRepository] backing data operations.
   final WeightRepository repository;
@@ -30,6 +42,8 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
     on<ImportWeightEntries>(_onImportWeightEntries);
   }
 
+  /// Extracts the persisted entries from any [WeightState], falling back to
+  /// an empty list for [WeightInitial] and [WeightLoading].
   static List<WeightEntry> _entriesFromState(WeightState state) {
     return switch (state) {
       WeightLoaded(:final entries) => entries,
@@ -38,6 +52,10 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
     };
   }
 
+  /// Filters [entries] by [period] and aggregates them per calendar day.
+  ///
+  /// Uses a memoized result keyed on the entry content so identical stream
+  /// emissions skip the filter and aggregation work entirely.
   List<WeightEntry> _filterEntries(
     List<WeightEntry> entries,
     TimePeriod period,
@@ -88,9 +106,9 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
   /// Aggregates [entries] so that multiple measurements on the same calendar
   /// day are collapsed into a single averaged data point.
   ///
-  /// The merged entry carries the mean [WeightEntry.weightKg] for that day, with [WeightEntry.dateTime] set to noon
-  /// (12:00) of the day to keep the X-axis positions stable across re-renders.
-
+  /// The merged entry carries the mean [WeightEntry.weightKg] for that day,
+  /// with [WeightEntry.dateTime] set to noon (12:00) of the day to keep the
+  /// X-axis positions stable across re-renders.
   List<WeightEntry> _aggregateByDay(List<WeightEntry> entries) {
     if (entries.length <= 1) return entries;
 
@@ -124,6 +142,8 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
     }).toList();
   }
 
+  /// Subscribes to the repository watch stream and forwards emissions to
+  /// [WeightLoaded], or to [WeightError] with the mapped [WeightRepositoryException].
   Future<void> _onSubscribeToWeightChanges(
     SubscribeToWeightChanges event,
     Emitter<WeightState> emit,
@@ -161,6 +181,8 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
     );
   }
 
+  /// Persists the new [UpdateUserHeight.heightCm] and re-emits the current
+  /// entries with an updated [WeightLoaded] state.
   void _onUpdateUserHeight(UpdateUserHeight event, Emitter<WeightState> emit) {
     final entries = _entriesFromState(state);
     emit(
@@ -173,6 +195,8 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
     );
   }
 
+  /// Persists a new [WeightEntry] via the repository, validating that the
+  /// user's height is set first (emits [WeightErrorType.heightNotSet] otherwise).
   Future<void> _onAddWeight(AddWeight event, Emitter<WeightState> emit) async {
     final heightCm = state.heightCm;
     final entries = _entriesFromState(state);
@@ -214,6 +238,8 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
     }
   }
 
+  /// Deletes the entry with [DeleteWeight.id] via the repository and emits
+  /// [WeightErrorType.deleteEntryFailed] on failure.
   Future<void> _onDeleteWeight(
     DeleteWeight event,
     Emitter<WeightState> emit,
@@ -237,6 +263,8 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
     }
   }
 
+  /// Re-emits the current entries filtered by the newly selected chart
+  /// [ChangeChartFilter.period].
   void _onChangeChartFilter(
     ChangeChartFilter event,
     Emitter<WeightState> emit,
@@ -253,6 +281,8 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
     );
   }
 
+  /// Re-reads all entries from the repository and emits a fresh [WeightLoaded]
+  /// state, emitting [WeightErrorType.readFailed] on failure.
   Future<void> _onRefreshWeightData(
     RefreshWeightData event,
     Emitter<WeightState> emit,
@@ -287,6 +317,8 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
     }
   }
 
+  /// Wipes all stored weight data and emits an empty [WeightLoaded] state,
+  /// emitting [WeightErrorType.wipeFailed] on failure.
   Future<void> _onClearAllWeightData(
     ClearAllWeightData event,
     Emitter<WeightState> emit,
@@ -317,6 +349,8 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
     }
   }
 
+  /// Bulk imports [ImportWeightEntries.entries] into the repository, then
+  /// re-reads the full dataset and emits an updated [WeightLoaded] state.
   Future<void> _onImportWeightEntries(
     ImportWeightEntries event,
     Emitter<WeightState> emit,
@@ -349,6 +383,8 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
     }
   }
 
+  /// Restores the persisted [WeightState.heightCm] and chart [TimePeriod]
+  /// from the hydrated JSON map, defaulting to [TimePeriod.week].
   @override
   WeightState? fromJson(Map<String, dynamic> json) {
     final periodString = json['timePeriod'] as String?;
@@ -365,6 +401,9 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
     );
   }
 
+  /// Serializes only the lightweight user preferences ([WeightState.heightCm]
+  /// and the [WeightState.timePeriod] name) for hydration, omitting the
+  /// dynamic entry lists to avoid redundant disk I/O.
   @override
   Map<String, dynamic>? toJson(WeightState state) {
     // Omit dynamic data collections (entries & filteredEntries) from JSON persistence
