@@ -62,15 +62,15 @@ void main() {
   }
 
   group('OnboardingWizardScreen Widget Tests', () {
-    testWidgets('renders initial Step 1 of 4', (tester) async {
+    testWidgets('renders initial Step 1 of 5', (tester) async {
       await tester.pumpWidget(buildSubject());
 
-      expect(find.text('Step 1 of 4'), findsOneWidget);
+      expect(find.text('Step 1 of 5'), findsOneWidget);
       expect(find.text('Units & Height'), findsOneWidget);
       expect(find.byIcon(Icons.arrow_back), findsNothing);
     });
 
-    testWidgets('navigates through steps 1 -> 2 -> 3 -> 4 and completes wizard', (
+    testWidgets('navigates through steps 1 -> 2 -> 3 -> 4 -> 5 and completes wizard', (
       tester,
     ) async {
       bool completed = false;
@@ -82,11 +82,11 @@ void main() {
       await tester.tap(find.text('Next'));
       await tester.pumpAndSettle();
 
-      expect(find.text('Step 2 of 4'), findsOneWidget);
+      expect(find.text('Step 2 of 5'), findsOneWidget);
       expect(find.text('Target Weight'), findsOneWidget);
       expect(find.byIcon(Icons.arrow_back), findsOneWidget);
 
-      // Height is synced to the weight BLoC so AddWeight in step 4 does not
+      // Height is synced to the weight BLoC so AddWeight in step 5 does not
       // get rejected with a heightNotSet error on a fresh install.
       verify(
         () => weightBloc.add(any(that: isA<UpdateUserHeight>())),
@@ -96,17 +96,24 @@ void main() {
       await tester.tap(find.text('Skip').first);
       await tester.pumpAndSettle();
 
-      expect(find.text('Step 3 of 4'), findsOneWidget);
+      expect(find.text('Step 3 of 5'), findsOneWidget);
       expect(find.text('Daily Reminder'), findsWidgets);
 
       // Step 3 -> Next (Skip/Next reminder)
       await tester.tap(find.byKey(const Key('notification_step_next_button')));
       await tester.pumpAndSettle();
 
-      expect(find.text('Step 4 of 4'), findsOneWidget);
+      expect(find.text('Step 4 of 5'), findsOneWidget);
+      expect(find.text('Biometric Lock'), findsWidgets);
+
+      // Step 4 -> Next (Skip/Next biometric lock)
+      await tester.tap(find.byKey(const Key('biometric_step_next_button')));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Step 5 of 5'), findsOneWidget);
       expect(find.text('Initial Weight'), findsOneWidget);
 
-      // Enter initial weight in Step 4
+      // Enter initial weight in Step 5
       await tester.enterText(
         find.byKey(const Key('initial_weight_input')),
         '75.5',
@@ -139,13 +146,13 @@ void main() {
       await tester.tap(find.text('Next'));
       await tester.pumpAndSettle();
 
-      expect(find.text('Step 2 of 4'), findsOneWidget);
+      expect(find.text('Step 2 of 5'), findsOneWidget);
 
       // Tap back button
       await tester.tap(find.byIcon(Icons.arrow_back));
       await tester.pumpAndSettle();
 
-      expect(find.text('Step 1 of 4'), findsOneWidget);
+      expect(find.text('Step 1 of 5'), findsOneWidget);
     });
 
     testWidgets('renders cleanly in landscape orientation without overflow', (
@@ -158,7 +165,7 @@ void main() {
       await tester.pumpWidget(buildSubject());
       await tester.pumpAndSettle();
 
-      expect(find.text('Step 1 of 4'), findsOneWidget);
+      expect(find.text('Step 1 of 5'), findsOneWidget);
       expect(tester.takeException(), isNull);
     });
 

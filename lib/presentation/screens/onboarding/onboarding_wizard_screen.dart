@@ -5,6 +5,7 @@ import 'package:pure_weight/features/weight/presentation/bloc/weight_bloc.dart';
 import 'package:pure_weight/features/weight/presentation/bloc/weight_event.dart';
 import 'package:pure_weight/presentation/bloc/settings/app_settings_bloc.dart';
 import 'package:pure_weight/presentation/bloc/settings/app_settings_event.dart';
+import 'package:pure_weight/presentation/screens/onboarding/widgets/step_biometric_lock.dart';
 import 'package:pure_weight/presentation/screens/onboarding/widgets/step_initial_weight.dart';
 import 'package:pure_weight/presentation/screens/onboarding/widgets/step_reminder_notification.dart';
 import 'package:pure_weight/presentation/screens/onboarding/widgets/step_target_weight.dart';
@@ -91,6 +92,10 @@ class _OnboardingWizardScreenState extends State<OnboardingWizardScreen> {
     _goToStep(3);
   }
 
+  void _handleBiometricNext() {
+    _goToStep(4);
+  }
+
   void _handleInitialWeightComplete(double weightKg, DateTime timestamp) {
     // Log initial weight entry
     try {
@@ -123,7 +128,7 @@ class _OnboardingWizardScreenState extends State<OnboardingWizardScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final progress = (_currentStep + 1) / 4.0;
+    final progress = (_currentStep + 1) / 5.0;
 
     return PopScope(
       canPop: _currentStep == 0,
@@ -137,7 +142,7 @@ class _OnboardingWizardScreenState extends State<OnboardingWizardScreen> {
         resizeToAvoidBottomInset: true,
         appBar: AppBar(
           title: Text(
-            'Step ${_currentStep + 1} of 4',
+            'Step ${_currentStep + 1} of 5',
             style: theme.textTheme.titleMedium?.copyWith(
               color: theme.colorScheme.onSurfaceVariant,
             ),
@@ -180,6 +185,11 @@ class _OnboardingWizardScreenState extends State<OnboardingWizardScreen> {
               _buildStepWrapper(
                 StepReminderNotification(
                   onNext: _handleReminderNext,
+                ),
+              ),
+              _buildStepWrapper(
+                StepBiometricLock(
+                  onNext: _handleBiometricNext,
                 ),
               ),
               _buildStepWrapper(

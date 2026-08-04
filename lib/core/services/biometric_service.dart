@@ -97,9 +97,9 @@ class BiometricService {
   /// Catches platform exceptions safely and logs errors.
   Future<bool> isSupported() async {
     try {
-      final available = await isAvailable();
-      if (!available) return false;
-      return await _authentication.isDeviceSupported();
+      final isSupported = await _authentication.isDeviceSupported();
+      final canCheck = await _authentication.canCheckBiometrics;
+      return isSupported || canCheck;
     } catch (e, stack) {
       if (kDebugMode) {
         debugPrint('[BiometricService] isSupported error: $e\n$stack');
@@ -124,8 +124,8 @@ class BiometricService {
 
       final ok = await _authentication.authenticate(
         localizedReason: localizedReason,
-        biometricOnly: true,
-        persistAcrossBackgrounding: false,
+        biometricOnly: false,
+        persistAcrossBackgrounding: true,
       );
       if (ok) {
         _notifyAuthenticationSuccess();

@@ -612,7 +612,28 @@ class _SettingsScreenState extends State<SettingsScreen> {
     BuildContext context,
     bool enabled,
   ) async {
-    context.read<AppSettingsBloc>().add(UpdateBiometricLock(enabled));
+    final l10n = AppLocalizations.of(context);
+    final bloc = context.read<AppSettingsBloc>();
+
+    if (enabled) {
+      final result = await BiometricService.instance.authenticate(
+        localizedReason: l10n.biometricAuthReason,
+      );
+      if (result == BiometricAuthResult.success) {
+        bloc.add(const UpdateBiometricLock(true));
+      } else {
+        bloc.add(const UpdateBiometricLock(false));
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(l10n.biometricAuthFailed),
+            ),
+          );
+        }
+      }
+    } else {
+      bloc.add(const UpdateBiometricLock(false));
+    }
   }
 
   Future<void> _selectNotificationTime(

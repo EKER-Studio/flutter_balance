@@ -10,9 +10,25 @@ import 'package:pure_weight/presentation/bloc/settings/app_settings_state.dart';
 
 /// Full-screen overlay shown when the app is locked due to a failed
 /// biometric authentication attempt.
-class BiometricShieldScreen extends StatelessWidget {
+class BiometricShieldScreen extends StatefulWidget {
   /// Creates a [BiometricShieldScreen].
   const BiometricShieldScreen({super.key});
+
+  @override
+  State<BiometricShieldScreen> createState() => _BiometricShieldScreenState();
+}
+
+class _BiometricShieldScreenState extends State<BiometricShieldScreen> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        final bloc = context.read<AppSettingsBloc>();
+        _handleUnlock(context, bloc);
+      }
+    });
+  }
 
   Future<void> _handleUnlock(BuildContext context, AppSettingsBloc bloc) async {
     try {
@@ -25,13 +41,20 @@ class BiometricShieldScreen extends StatelessWidget {
       );
       if (result == BiometricAuthResult.success) {
         bloc.add(const SetLocked(false));
-      } else if (BiometricService.isTerminalFailure(result)) {
+      } else if (BiometricService.isTerminalFailure(result) ||
+          result == BiometricAuthResult.notAvailable) {
         if (!context.mounted) return;
         await _offerLockRecovery(context, bloc, l10n);
-        return;
       } else {
         if (!bloc.state.isLocked) {
           bloc.add(const SetLocked(true));
+        }
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(l10n.biometricAuthFailed),
+            ),
+          );
         }
       }
     } catch (e, stack) {

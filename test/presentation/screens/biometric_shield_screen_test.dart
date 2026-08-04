@@ -121,18 +121,13 @@ void main() {
         await tester.pumpWidget(buildTestWidget());
         await tester.pumpAndSettle();
 
-        await tester.tap(find.byType(FilledButton));
-        await tester.pump();
-        await tester.pump(const Duration(milliseconds: 500));
-
         expect(find.byType(AlertDialog), findsOneWidget);
 
         final l10n = AppLocalizations.of(
           tester.element(find.byType(AlertDialog)),
         );
         await tester.tap(find.widgetWithText(FilledButton, l10n.disableLock));
-        await tester.pump();
-        await tester.pump(const Duration(milliseconds: 500));
+        await tester.pumpAndSettle();
 
         expect(bloc.state.isBiometricLockEnabled, false);
         expect(bloc.state.isLocked, false);
@@ -151,18 +146,13 @@ void main() {
       await tester.pumpWidget(buildTestWidget());
       await tester.pumpAndSettle();
 
-      await tester.tap(find.byType(FilledButton));
-      await tester.pump();
-      await tester.pump(const Duration(milliseconds: 500));
-
       expect(find.byType(AlertDialog), findsOneWidget);
 
       final l10n = AppLocalizations.of(
         tester.element(find.byType(AlertDialog)),
       );
       await tester.tap(find.widgetWithText(TextButton, l10n.keepLocked));
-      await tester.pump();
-      await tester.pump(const Duration(milliseconds: 500));
+      await tester.pumpAndSettle();
 
       expect(bloc.state.isLocked, true);
     });
