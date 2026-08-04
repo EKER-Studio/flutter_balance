@@ -19,6 +19,7 @@ import 'package:pure_weight/presentation/bloc/settings/app_theme_mode.dart';
 import 'package:pure_weight/presentation/utils/app_theme_mode_localizer.dart';
 import 'package:pure_weight/core/models/measurement_unit.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:pure_weight/core/services/notification_service.dart';
 import 'package:pure_weight/presentation/widgets/app_top_bar.dart';
 import 'package:pure_weight/presentation/widgets/target_weight_dialog.dart';
 import 'dart:io';
@@ -234,6 +235,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                               context,
                                               state.notificationTime,
                                             ),
+                                        onInstantTestTap: () =>
+                                            _showInstantTestNotification(context),
                                       ),
                                     ],
                                   ),
@@ -304,6 +307,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                         context,
                                         state.notificationTime,
                                       ),
+                                  onInstantTestTap: () =>
+                                      _showInstantTestNotification(context),
                                 ),
                                 const SizedBox(height: 16),
                                 _SectionHeader(label: l10n.securitySection),
@@ -626,6 +631,33 @@ class _SettingsScreenState extends State<SettingsScreen> {
     context.read<AppSettingsBloc>().add(ToggleNotifications(enabled));
   }
 
+  /// Triggers an instant test notification to verify native display.
+  Future<void> _showInstantTestNotification(BuildContext context) async {
+    try {
+      await NotificationService.instance.showInstantTestNotification();
+      if (context.mounted) {
+        final l10n = AppLocalizations.of(context);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(l10n.testNotificationSent),
+            backgroundColor: Theme.of(context).colorScheme.tertiary,
+          ),
+        );
+      }
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              AppLocalizations.of(context).errorSendingTestNotification(e.toString()),
+            ),
+            backgroundColor: Theme.of(context).colorScheme.error,
+          ),
+        );
+      }
+    }
+  }
+
   /// Toggles the biometric lock, authenticating the user before enabling it.
   Future<void> _handleBiometricToggle(
     BuildContext context,
@@ -648,6 +680,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
       final result = await BiometricService.instance.authenticate(
         localizedReason: l10n.biometricAuthReason,
+        authMessages: BiometricService.createAuthMessages(l10n),
       );
       if (result == BiometricAuthResult.success) {
         bloc.add(const UpdateBiometricLock(true));
@@ -1100,6 +1133,9 @@ class _ApplicationSection extends StatelessWidget {
   /// Callback invoked when the reminder time tile is tapped.
   final VoidCallback onNotificationTimeTap;
 
+  /// Callback invoked when the instant test notification button is tapped.
+  final Future<void> Function() onInstantTestTap;
+
   /// Creates an [_ApplicationSection] with the given dependencies.
   const _ApplicationSection({
     required this.state,
@@ -1108,6 +1144,7 @@ class _ApplicationSection extends StatelessWidget {
     required this.onUnitTap,
     required this.onNotificationsChanged,
     required this.onNotificationTimeTap,
+    required this.onInstantTestTap,
   });
 
   @override
@@ -1154,6 +1191,12 @@ class _ApplicationSection extends StatelessWidget {
               sectionLabel: l10n.applicationSection,
               onTap: onNotificationTimeTap,
             ),
+          _CustomSettingsTile(
+            icon: Icons.bug_report_outlined,
+            title: l10n.instantTestNotification,
+            sectionLabel: l10n.applicationSection,
+            onTap: onInstantTestTap,
+          ),
         ],
       ),
     );

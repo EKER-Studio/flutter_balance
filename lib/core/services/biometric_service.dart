@@ -3,6 +3,10 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:local_auth/local_auth.dart';
+import 'package:local_auth_android/local_auth_android.dart';
+import 'package:local_auth_darwin/local_auth_darwin.dart';
+import 'package:local_auth_platform_interface/local_auth_platform_interface.dart';
+import 'package:pure_weight/l10n/app_localizations.dart';
 
 /// Outcome of a biometric authentication attempt.
 enum BiometricAuthResult {
@@ -91,8 +95,15 @@ class BiometricService {
   /// Catches hardware or platform exceptions safely and logs errors.
   Future<bool> isAvailable() async {
     try {
-      if (!await _authentication.canCheckBiometrics) return false;
+      final canCheck = await _authentication.canCheckBiometrics;
+      if (kDebugMode) {
+        debugPrint('[BiometricService] canCheckBiometrics: $canCheck');
+      }
+      if (!canCheck) return false;
       final biometrics = await _authentication.getAvailableBiometrics();
+      if (kDebugMode) {
+        debugPrint('[BiometricService] getAvailableBiometrics: $biometrics');
+      }
       return biometrics.isNotEmpty;
     } catch (e, stack) {
       if (kDebugMode) {
@@ -110,8 +121,15 @@ class BiometricService {
   Future<bool> isSupported() async {
     try {
       final deviceSupported = await _authentication.isDeviceSupported();
+      if (kDebugMode) {
+        debugPrint('[BiometricService] isDeviceSupported: $deviceSupported');
+      }
       if (!deviceSupported) return false;
-      return await _authentication.canCheckBiometrics;
+      final canCheck = await _authentication.canCheckBiometrics;
+      if (kDebugMode) {
+        debugPrint('[BiometricService] canCheckBiometrics: $canCheck');
+      }
+      return canCheck;
     } catch (e, stack) {
       if (kDebugMode) {
         debugPrint('[BiometricService] isSupported error: $e\n$stack');
@@ -120,25 +138,69 @@ class BiometricService {
     }
   }
 
+  Future<BiometricAuthResult>? _activeAuthFuture;
+
+  /// Whether biometric authentication is currently in progress.
+  bool get isAuthenticating => _activeAuthFuture != null;
+
   /// Prompts the user for biometric authentication.
   ///
   /// Takes a mandatory [localizedReason] string explaining the authentication request.
+  /// Optional [authMessages] can be provided to customize dialog strings per locale.
+  /// Concurrent calls while authentication is in progress await the same active
+  /// operation rather than launching overlapping native dialogs.
   /// Returns a [Future] resolving to a [BiometricAuthResult] describing the outcome.
-  /// Terminal failures ([BiometricAuthResult.notEnrolled], [BiometricAuthResult.notAvailable],
-  /// [BiometricAuthResult.permanentlyLockedOut], [BiometricAuthResult.passcodeNotSet])
-  /// mean the user cannot authenticate with biometrics until the device state changes.
   Future<BiometricAuthResult> authenticate({
     required String localizedReason,
+    Iterable<AuthMessages>? authMessages,
+  }) async {
+    if (_activeAuthFuture != null) {
+      if (kDebugMode) {
+        debugPrint(
+          '[BiometricService] Authentication already in progress. Re-using active Future.',
+        );
+      }
+      return await _activeAuthFuture!;
+    }
+
+    _activeAuthFuture = _performAuthentication(
+      localizedReason: localizedReason,
+      authMessages: authMessages,
+    );
+
+    try {
+      return await _activeAuthFuture!;
+    } finally {
+      _activeAuthFuture = null;
+    }
+  }
+
+  Future<BiometricAuthResult> _performAuthentication({
+    required String localizedReason,
+    Iterable<AuthMessages>? authMessages,
   }) async {
     try {
       final supported = await isSupported();
+      if (kDebugMode) {
+        debugPrint('[BiometricService] authenticate -> isSupported: $supported');
+      }
       if (!supported) return BiometricAuthResult.notAvailable;
+
+      final available = await isAvailable();
+      if (kDebugMode) {
+        debugPrint('[BiometricService] authenticate -> isAvailable: $available');
+      }
+      if (!available) return BiometricAuthResult.notAvailable;
 
       final ok = await _authentication.authenticate(
         localizedReason: localizedReason,
+        authMessages: authMessages ?? const <AuthMessages>[],
         biometricOnly: false,
         persistAcrossBackgrounding: true,
       );
+      if (kDebugMode) {
+        debugPrint('[BiometricService] authenticate result: $ok');
+      }
       if (ok) {
         _notifyAuthenticationSuccess();
         return BiometricAuthResult.success;
@@ -146,9 +208,12 @@ class BiometricService {
       return BiometricAuthResult.canceled;
     } on LocalAuthException catch (e, stack) {
       if (kDebugMode) {
-        debugPrint(
-          '[BiometricService] LocalAuthException (${e.code.name}): $e\n$stack',
-        );
+        debugPrint('=== BIOMETRIC LOCAL AUTH ERROR ===');
+        debugPrint('Code: ${e.code.name}');
+        debugPrint('Description: ${e.description}');
+        debugPrint('Details: ${e.details}');
+        debugPrint('StackTrace: $stack');
+        debugPrint('==================================');
       }
       return switch (e.code) {
         LocalAuthExceptionCode.userCanceled ||
@@ -166,13 +231,19 @@ class BiometricService {
         LocalAuthExceptionCode.noBiometricHardware ||
         LocalAuthExceptionCode.biometricHardwareTemporarilyUnavailable =>
           BiometricAuthResult.notAvailable,
-        _ => BiometricAuthResult.error,
+        LocalAuthExceptionCode.authInProgress ||
+        LocalAuthExceptionCode.uiUnavailable ||
+        LocalAuthExceptionCode.deviceError ||
+        LocalAuthExceptionCode.unknownError => BiometricAuthResult.error,
       };
     } on PlatformException catch (e, stack) {
       if (kDebugMode) {
-        debugPrint(
-          '[BiometricService] PlatformException (${e.code}): ${e.message}\n$stack',
-        );
+        debugPrint('=== BIOMETRIC PLATFORM ERROR ===');
+        debugPrint('Code: ${e.code}');
+        debugPrint('Message: ${e.message}');
+        debugPrint('Details: ${e.details}');
+        debugPrint('StackTrace: $stack');
+        debugPrint('================================');
       }
       return switch (e.code) {
         'LockedOut' => BiometricAuthResult.lockedOut,
@@ -180,6 +251,7 @@ class BiometricService {
         'NotEnrolled' => BiometricAuthResult.notEnrolled,
         'PasscodeNotSet' => BiometricAuthResult.passcodeNotSet,
         'NotAvailable' => BiometricAuthResult.notAvailable,
+        'auth_in_progress' => BiometricAuthResult.error,
         _ => BiometricAuthResult.error,
       };
     } catch (e, stack) {
@@ -200,5 +272,19 @@ class BiometricService {
       BiometricAuthResult.passcodeNotSet => true,
       _ => false,
     };
+  }
+
+  /// Creates localized [AuthMessages] based on [AppLocalizations].
+  static List<AuthMessages> createAuthMessages(AppLocalizations l10n) {
+    return [
+      AndroidAuthMessages(
+        signInTitle: l10n.biometricStepTitle,
+        cancelButton: l10n.cancel,
+        signInHint: l10n.biometricAuthReason,
+      ),
+      IOSAuthMessages(
+        cancelButton: l10n.cancel,
+      ),
+    ];
   }
 }

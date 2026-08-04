@@ -59,6 +59,7 @@ class _StepBiometricLockState extends State<StepBiometricLock> {
 
       final result = await BiometricService.instance.authenticate(
         localizedReason: l10n.biometricAuthReason,
+        authMessages: BiometricService.createAuthMessages(l10n),
       );
 
       if (result == BiometricAuthResult.success) {

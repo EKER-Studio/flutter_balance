@@ -20,6 +20,8 @@ class BiometricShieldScreen extends StatefulWidget {
 
 /// Locked state behind the biometric shield, showing the unlock prompt.
 class _BiometricShieldScreenState extends State<BiometricShieldScreen> {
+  bool _isUnlocking = false;
+
   @override
   void initState() {
     super.initState();
@@ -32,6 +34,9 @@ class _BiometricShieldScreenState extends State<BiometricShieldScreen> {
   }
 
   Future<void> _handleUnlock(BuildContext context, AppSettingsBloc bloc) async {
+    if (_isUnlocking) return;
+    _isUnlocking = true;
+
     try {
       if (!bloc.state.isLocked) {
         bloc.add(const SetLocked(true));
@@ -39,6 +44,7 @@ class _BiometricShieldScreenState extends State<BiometricShieldScreen> {
       final l10n = AppLocalizations.of(context);
       final result = await BiometricService.instance.authenticate(
         localizedReason: l10n.biometricAuthReason,
+        authMessages: BiometricService.createAuthMessages(l10n),
       );
       if (result == BiometricAuthResult.success) {
         bloc.add(const SetLocked(false));
@@ -62,6 +68,12 @@ class _BiometricShieldScreenState extends State<BiometricShieldScreen> {
       }
       if (!bloc.state.isLocked) {
         bloc.add(const SetLocked(true));
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isUnlocking = false;
+        });
       }
     }
   }
@@ -109,8 +121,8 @@ class _BiometricShieldScreenState extends State<BiometricShieldScreen> {
         return Scaffold(
           backgroundColor: Theme.of(context).scaffoldBackgroundColor,
           body: Center(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 32),
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 24),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -124,9 +136,12 @@ class _BiometricShieldScreenState extends State<BiometricShieldScreen> {
                     ),
                   ),
                   const SizedBox(height: 24),
-                  Text(
-                    l10n.appLocked,
-                    style: Theme.of(context).textTheme.headlineSmall,
+                  Semantics(
+                    header: true,
+                    child: Text(
+                      l10n.appLocked,
+                      style: Theme.of(context).textTheme.headlineSmall,
+                    ),
                   ),
                   const SizedBox(height: 12),
                   Text(
@@ -137,13 +152,19 @@ class _BiometricShieldScreenState extends State<BiometricShieldScreen> {
                     ),
                   ),
                   const SizedBox(height: 32),
-                  FilledButton.icon(
-                    style: FilledButton.styleFrom(
-                      minimumSize: const Size(0, 48),
+                  Semantics(
+                    button: true,
+                    enabled: !_isUnlocking,
+                    label: l10n.unlock,
+                    hint: l10n.biometricAuthReason,
+                    child: FilledButton.icon(
+                      style: FilledButton.styleFrom(
+                        minimumSize: const Size(0, 48),
+                      ),
+                      onPressed: _isUnlocking ? null : () => _handleUnlock(context, bloc),
+                      icon: const Icon(Icons.fingerprint),
+                      label: Text(l10n.unlock),
                     ),
-                    onPressed: () => _handleUnlock(context, bloc),
-                    icon: const Icon(Icons.fingerprint),
-                    label: Text(l10n.unlock),
                   ),
                 ],
               ),

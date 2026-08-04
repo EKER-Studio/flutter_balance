@@ -13,9 +13,21 @@ import 'package:pure_weight/presentation/bloc/settings/app_settings_bloc.dart';
 import 'package:pure_weight/features/weight/presentation/bloc/weight_state.dart';
 import 'package:pure_weight/presentation/screens/settings_screen.dart';
 
+import 'package:local_auth_platform_interface/local_auth_platform_interface.dart';
+
 class MockHydratedStorage extends Mock implements HydratedStorage {}
 
 class MockWeightBloc extends Mock implements WeightBloc {}
+
+class FakeLocalAuthPlatform extends LocalAuthPlatform {
+  @override
+  Future<bool> deviceSupportsBiometrics() async => true;
+  @override
+  Future<bool> isDeviceSupported() async => true;
+  @override
+  Future<List<BiometricType>> getEnrolledBiometrics() async =>
+      const [BiometricType.fingerprint];
+}
 
 void main() {
   late MockHydratedStorage storage;
@@ -23,6 +35,7 @@ void main() {
   late AppSettingsBloc settingsBloc;
 
   setUp(() {
+    LocalAuthPlatform.instance = FakeLocalAuthPlatform();
     storage = MockHydratedStorage();
     HydratedBloc.storage = storage;
     when(() => storage.read(any())).thenReturn(null);

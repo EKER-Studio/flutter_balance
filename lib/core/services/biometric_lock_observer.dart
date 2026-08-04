@@ -9,6 +9,9 @@ class BiometricLockObserver with WidgetsBindingObserver {
   /// Callback returning whether biometric lock is enabled.
   final bool Function() isBiometricLockEnabled;
 
+  /// Optional callback returning whether the app is currently locked.
+  final bool Function()? isAppLocked;
+
   /// Callback emitted when the lock state changes (true = locked, false = unlocked).
   final ValueChanged<bool> onLockStateChanged;
 
@@ -34,6 +37,7 @@ class BiometricLockObserver with WidgetsBindingObserver {
     required this.isBiometricLockEnabled,
     required this.onLockStateChanged,
     required this.localizedReason,
+    this.isAppLocked,
     this.lockEnabledStream,
     this.onDatabaseReopened,
   }) {
@@ -69,6 +73,14 @@ class BiometricLockObserver with WidgetsBindingObserver {
 
   Future<void> _checkBiometricLock() async {
     if (!_isLockEnabled) return;
+
+    // Do not re-trigger auth if an authentication dialog is currently open or
+    // if the app is already locked behind BiometricShieldScreen.
+    if (BiometricService.instance.isAuthenticating) return;
+    if (isAppLocked?.call() == true) return;
+
+    // Wait until current frame ends so FlutterFragmentActivity is attached & resumed natively
+    await WidgetsBinding.instance.endOfFrame;
 
     final isAvailable = await BiometricService.instance.isAvailable();
     if (!isAvailable) return;

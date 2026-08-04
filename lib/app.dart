@@ -114,6 +114,7 @@ class _ObserverRegistrarState extends State<_ObserverRegistrar> {
     }
     _observer = BiometricLockObserver(
       isBiometricLockEnabled: () => settingsBloc.state.isBiometricLockEnabled,
+      isAppLocked: () => settingsBloc.state.isLocked,
       lockEnabledStream: settingsBloc.stream.map(
         (s) => s.isBiometricLockEnabled,
       ),
