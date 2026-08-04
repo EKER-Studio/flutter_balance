@@ -254,7 +254,6 @@ void main() {
       expect(find.text('72.5 kg'), findsOneWidget);
       expect(find.textContaining('Morning weight'), findsOneWidget);
       expect(find.byIcon(Icons.delete_outline), findsOneWidget);
-      expect(find.byIcon(Icons.add), findsOneWidget);
     },
   );
 

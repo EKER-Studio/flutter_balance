@@ -88,7 +88,6 @@ void main() {
       );
 
       expect(find.text('72.5 kg'), findsOneWidget);
-      expect(find.text('Dodaj kolejny pomiar'), findsOneWidget);
     });
 
     testWidgets('CalendarScreen navigates between months', (tester) async {

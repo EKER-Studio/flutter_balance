@@ -70,269 +70,250 @@ class CalendarDayEntriesCard extends StatelessWidget {
       children: [
         // Goal Achievement Banner
         if (isGoalAchievedOnDay) ...[
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 10,
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+            decoration: BoxDecoration(
+              color: cs.tertiaryContainer,
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: Row(
+              children: [
+                Icon(Icons.stars, color: cs.onTertiaryContainer, size: 22),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    l10n.goalAchievedOnDayBanner,
+                    style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: cs.onTertiaryContainer,
+                    ),
+                  ),
                 ),
-                decoration: BoxDecoration(
-                  color: cs.tertiaryContainer,
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                child: Row(
+              ],
+            ),
+          ),
+          const SizedBox(height: 16),
+        ],
+
+        // Daily Summary Stats Bar (when 2+ measurements exist)
+        if (hasMultiple) ...[
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: cs.secondaryContainer,
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: Column(
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Icon(Icons.stars, color: cs.onTertiaryContainer, size: 22),
-                    const SizedBox(width: 8),
-                    Expanded(
+                    Text(
+                      l10n.dailySummaryTitle,
+                      style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: cs.onSecondaryContainer,
+                      ),
+                    ),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 2,
+                      ),
+                      decoration: BoxDecoration(
+                        color: cs.primary.withValues(alpha: 0.15),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
                       child: Text(
-                        l10n.goalAchievedOnDayBanner,
-                        style: Theme.of(context).textTheme.labelMedium
-                            ?.copyWith(
-                              fontWeight: FontWeight.bold,
-                              color: cs.onTertiaryContainer,
-                            ),
+                        l10n.multipleEntries(entries.length),
+                        style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: cs.primary,
+                        ),
                       ),
                     ),
                   ],
                 ),
-              ),
-              const SizedBox(height: 16),
-            ],
-
-            // Daily Summary Stats Bar (when 2+ measurements exist)
-            if (hasMultiple) ...[
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: cs.secondaryContainer,
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                child: Column(
+                const SizedBox(height: 8),
+                Row(
                   children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          l10n.dailySummaryTitle,
-                          style: Theme.of(context).textTheme.labelLarge
-                              ?.copyWith(
-                                fontWeight: FontWeight.bold,
-                                color: cs.onSecondaryContainer,
-                              ),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            l10n.averageWeight,
+                            style: Theme.of(context).textTheme.bodySmall
+                                ?.copyWith(
+                                  color: cs.onSecondaryContainer.withValues(
+                                    alpha: 0.8,
+                                  ),
+                                ),
+                          ),
+                          Text(
+                            '${displayAverage.toStringAsFixed(1)} $unitLabel',
+                            style: Theme.of(context).textTheme.titleSmall
+                                ?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                  color: cs.onSecondaryContainer,
+                                ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            l10n.rangeMinMax,
+                            style: Theme.of(context).textTheme.bodySmall
+                                ?.copyWith(
+                                  color: cs.onSecondaryContainer.withValues(
+                                    alpha: 0.8,
+                                  ),
+                                ),
+                          ),
+                          Text(
+                            '${displayMin.toStringAsFixed(1)} – ${displayMax.toStringAsFixed(1)} $unitLabel (Δ ${displayDelta.toStringAsFixed(1)})',
+                            style: Theme.of(context).textTheme.titleSmall
+                                ?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                  color: cs.onSecondaryContainer,
+                                ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 16),
+        ],
+
+        // List of Entries for this day
+        ListView.separated(
+          physics: const NeverScrollableScrollPhysics(),
+          shrinkWrap: true,
+          itemCount: entries.length,
+          separatorBuilder: (_, _) => const Divider(height: 16),
+          itemBuilder: (context, index) {
+            final entry = entries[index];
+            final displayWeight = isImperial
+                ? kgToLbs(entry.weightKg)
+                : entry.weightKg;
+            final timeStr = DateFormat.Hm(
+              Localizations.localeOf(context).toString(),
+            ).format(entry.dateTime);
+
+            final meetsGoal =
+                targetWeight != null && entry.weightKg <= targetWeight!;
+
+            final bmi = (heightCm != null && heightCm > 0)
+                ? appSettingsState.calculateBmi(entry.weightKg)
+                : double.nan;
+            final category = bmi.isFinite ? BmiCategory.fromBmi(bmi) : null;
+            final categoryText = category?.localizedName(l10n) ?? '';
+
+            return Card(
+              elevation: 0,
+              margin: EdgeInsets.zero,
+              color: cs.surfaceContainerLow,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(28),
+              ),
+              child: InkWell(
+                borderRadius: BorderRadius.circular(28),
+                onTap: () {
+                  // Optional: handle tap (edit?)
+                },
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Row(
+                    children: [
+                      CircleAvatar(
+                        radius: 24,
+                        backgroundColor: meetsGoal
+                            ? cs.tertiaryContainer
+                            : cs.secondaryContainer,
+                        child: Icon(
+                          meetsGoal ? Icons.star : Icons.monitor_weight,
+                          size: 24,
+                          color: meetsGoal
+                              ? cs.onTertiaryContainer
+                              : cs.onSecondaryContainer,
                         ),
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 8,
-                            vertical: 2,
-                          ),
-                          decoration: BoxDecoration(
-                            color: cs.primary.withValues(alpha: 0.15),
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: Text(
-                            l10n.multipleEntries(entries.length),
-                            style: Theme.of(context).textTheme.labelSmall
+                      ),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              '${displayWeight.toStringAsFixed(1)} $unitLabel',
+                              style: Theme.of(context).textTheme.titleLarge
+                                  ?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                    color: cs.onSurface,
+                                  ),
+                            ),
+                            Row(
+                              children: [
+                                Icon(
+                                  Icons.schedule,
+                                  size: 16,
+                                  color: cs.onSurfaceVariant,
+                                ),
+                                const SizedBox(width: 4),
+                                Text(
+                                  entry.note != null && entry.note!.isNotEmpty
+                                      ? '$timeStr • ${entry.note}'
+                                      : timeStr,
+                                  style: Theme.of(context).textTheme.bodyMedium
+                                      ?.copyWith(color: cs.onSurfaceVariant),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          Text(
+                            bmi.isFinite ? 'BMI ${bmi.toStringAsFixed(1)}' : '',
+                            style: Theme.of(context).textTheme.titleMedium
                                 ?.copyWith(
                                   fontWeight: FontWeight.bold,
                                   color: cs.primary,
                                 ),
                           ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 8),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                l10n.averageWeight,
-                                style: Theme.of(context).textTheme.bodySmall
-                                    ?.copyWith(
-                                      color: cs.onSecondaryContainer.withValues(
-                                        alpha: 0.8,
-                                      ),
-                                    ),
-                              ),
-                              Text(
-                                '${displayAverage.toStringAsFixed(1)} $unitLabel',
-                                style: Theme.of(context).textTheme.titleSmall
-                                    ?.copyWith(
-                                      fontWeight: FontWeight.bold,
-                                      color: cs.onSecondaryContainer,
-                                    ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                l10n.rangeMinMax,
-                                style: Theme.of(context).textTheme.bodySmall
-                                    ?.copyWith(
-                                      color: cs.onSecondaryContainer.withValues(
-                                        alpha: 0.8,
-                                      ),
-                                    ),
-                              ),
-                              Text(
-                                '${displayMin.toStringAsFixed(1)} – ${displayMax.toStringAsFixed(1)} $unitLabel (Δ ${displayDelta.toStringAsFixed(1)})',
-                                style: Theme.of(context).textTheme.titleSmall
-                                    ?.copyWith(
-                                      fontWeight: FontWeight.bold,
-                                      color: cs.onSecondaryContainer,
-                                    ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 16),
-            ],
-
-            // List of Entries for this day
-            ListView.separated(
-              physics: const NeverScrollableScrollPhysics(),
-              shrinkWrap: true,
-              itemCount: entries.length,
-              separatorBuilder: (_, _) => const Divider(height: 16),
-              itemBuilder: (context, index) {
-                final entry = entries[index];
-                final displayWeight = isImperial
-                    ? kgToLbs(entry.weightKg)
-                    : entry.weightKg;
-                final timeStr = DateFormat.Hm(
-                  Localizations.localeOf(context).toString(),
-                ).format(entry.dateTime);
-
-                final meetsGoal =
-                    targetWeight != null && entry.weightKg <= targetWeight!;
-
-                final bmi = (heightCm != null && heightCm > 0)
-                    ? appSettingsState.calculateBmi(entry.weightKg)
-                    : double.nan;
-                final category = bmi.isFinite ? BmiCategory.fromBmi(bmi) : null;
-                final categoryText = category?.localizedName(l10n) ?? '';
-
-                return Card(
-                  elevation: 0,
-                  margin: EdgeInsets.zero,
-                  color: cs.surfaceContainerLow,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(28),
-                  ),
-                  child: InkWell(
-                    borderRadius: BorderRadius.circular(28),
-                    onTap: () {
-                      // Optional: handle tap (edit?)
-                    },
-                    child: Padding(
-                      padding: const EdgeInsets.all(16),
-                      child: Row(
-                        children: [
-                          CircleAvatar(
-                            radius: 24,
-                            backgroundColor: meetsGoal
-                                ? cs.tertiaryContainer
-                                : cs.secondaryContainer,
-                            child: Icon(
-                              meetsGoal ? Icons.star : Icons.monitor_weight,
-                              size: 24,
-                              color: meetsGoal
-                                  ? cs.onTertiaryContainer
-                                  : cs.onSecondaryContainer,
+                          if (categoryText.isNotEmpty)
+                            Text(
+                              categoryText,
+                              style: Theme.of(context).textTheme.labelMedium
+                                  ?.copyWith(color: cs.onSurfaceVariant),
                             ),
-                          ),
-                          const SizedBox(width: 16),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  '${displayWeight.toStringAsFixed(1)} $unitLabel',
-                                  style: Theme.of(context).textTheme.titleLarge
-                                      ?.copyWith(
-                                        fontWeight: FontWeight.bold,
-                                        color: cs.onSurface,
-                                      ),
-                                ),
-                                Row(
-                                  children: [
-                                    Icon(
-                                      Icons.schedule,
-                                      size: 16,
-                                      color: cs.onSurfaceVariant,
-                                    ),
-                                    const SizedBox(width: 4),
-                                    Text(
-                                      entry.note != null && entry.note!.isNotEmpty
-                                          ? '$timeStr • ${entry.note}'
-                                          : timeStr,
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .bodyMedium
-                                          ?.copyWith(color: cs.onSurfaceVariant),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                          ),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            children: [
-                              Text(
-                                bmi.isFinite ? 'BMI ${bmi.toStringAsFixed(1)}' : '',
-                                style: Theme.of(context).textTheme.titleMedium
-                                    ?.copyWith(
-                                      fontWeight: FontWeight.bold,
-                                      color: cs.primary,
-                                    ),
-                              ),
-                              if (categoryText.isNotEmpty)
-                                Text(
-                                  categoryText,
-                                  style: Theme.of(context).textTheme.labelMedium
-                                      ?.copyWith(color: cs.onSurfaceVariant),
-                                ),
-                            ],
-                          ),
-                          const SizedBox(width: 8),
-                          IconButton(
-                            icon: const Icon(Icons.delete_outline, size: 20),
-                            tooltip: l10n.deleteMeasurementTooltip,
-                            color: cs.onSurfaceVariant,
-                            onPressed: () => _confirmDelete(context, entry.id),
-                          ),
                         ],
                       ),
-                    ),
+                      const SizedBox(width: 8),
+                      IconButton(
+                        icon: const Icon(Icons.delete_outline, size: 20),
+                        tooltip: l10n.deleteMeasurementTooltip,
+                        color: cs.onSurfaceVariant,
+                        onPressed: () => _confirmDelete(context, entry.id),
+                      ),
+                    ],
                   ),
-                );
-              },
-            ),
-            const SizedBox(height: 16),
-            OutlinedButton.icon(
-              onPressed: () {
-                showDialog(
-                  context: context,
-                  builder: (_) => AddWeightSheet(initialDate: selectedDate),
-                );
-              },
-              icon: const Icon(Icons.add),
-              label: Text(l10n.addAnotherMeasurement),
-            ),
-          ],
-        );
+                ),
+              ),
+            );
+          },
+        ),
+      ],
+    );
   }
 
   /// Prompts for confirmation before deleting [entryId].
