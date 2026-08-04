@@ -9,6 +9,9 @@ import 'package:pure_weight/features/weight/presentation/bloc/weight_event.dart'
 import 'package:pure_weight/features/weight/presentation/widgets/add_weight_sheet.dart';
 import 'package:pure_weight/l10n/app_localizations.dart';
 import 'package:pure_weight/presentation/bloc/settings/app_settings_bloc.dart';
+import 'package:pure_weight/presentation/bloc/settings/app_settings_state.dart';
+import 'package:pure_weight/presentation/bloc/settings/bmi_category.dart';
+import 'package:pure_weight/features/weight/presentation/utils/bmi_category_localizer.dart';
 
 /// Reusable Material 3 day details card displaying weight entries, notes, and stats.
 class CalendarDayEntriesCard extends StatelessWidget {
@@ -33,7 +36,9 @@ class CalendarDayEntriesCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
     final l10n = AppLocalizations.of(context);
-    final unit = context.watch<AppSettingsBloc>().state.measurementUnit;
+    final appSettingsState = context.watch<AppSettingsBloc>().state;
+    final unit = appSettingsState.measurementUnit;
+    final heightCm = appSettingsState.height;
     final isImperial = unit == MeasurementUnit.imperial;
     final unitLabel = unitLabelFor(unit);
 
@@ -60,17 +65,11 @@ class CalendarDayEntriesCard extends StatelessWidget {
     final displayMax = isImperial ? kgToLbs(maxKg) : maxKg;
     final displayDelta = displayMax - displayMin;
 
-    return Card(
-      elevation: 0,
-      color: cs.surfaceContainerLow,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
-      child: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            // Goal Achievement Banner
-            if (isGoalAchievedOnDay) ...[
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        // Goal Achievement Banner
+        if (isGoalAchievedOnDay) ...[
               Container(
                 padding: const EdgeInsets.symmetric(
                   horizontal: 12,
@@ -211,81 +210,113 @@ class CalendarDayEntriesCard extends StatelessWidget {
                 final displayWeight = isImperial
                     ? kgToLbs(entry.weightKg)
                     : entry.weightKg;
-                final timeStr = DateFormat.jm(
+                final timeStr = DateFormat.Hm(
                   Localizations.localeOf(context).toString(),
                 ).format(entry.dateTime);
 
                 final meetsGoal =
                     targetWeight != null && entry.weightKg <= targetWeight!;
 
-                return Row(
-                  children: [
-                    CircleAvatar(
-                      radius: 20,
-                      backgroundColor: meetsGoal
-                          ? cs.tertiaryContainer
-                          : cs.primaryContainer,
-                      child: Icon(
-                        meetsGoal ? Icons.star : Icons.monitor_weight_outlined,
-                        size: 20,
-                        color: meetsGoal
-                            ? cs.onTertiaryContainer
-                            : cs.onPrimaryContainer,
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                final bmi = (heightCm != null && heightCm > 0)
+                    ? appSettingsState.calculateBmi(entry.weightKg)
+                    : double.nan;
+                final category = bmi.isFinite ? BmiCategory.fromBmi(bmi) : null;
+                final categoryText = category?.localizedName(l10n) ?? '';
+
+                return Card(
+                  elevation: 0,
+                  margin: EdgeInsets.zero,
+                  color: cs.surfaceContainerLow,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(28),
+                  ),
+                  child: InkWell(
+                    borderRadius: BorderRadius.circular(28),
+                    onTap: () {
+                      // Optional: handle tap (edit?)
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Row(
                         children: [
-                          Row(
-                            children: [
-                              Text(
-                                '${displayWeight.toStringAsFixed(1)} $unitLabel',
-                                style: Theme.of(context).textTheme.titleMedium
-                                    ?.copyWith(fontWeight: FontWeight.bold),
-                              ),
-                              if (meetsGoal) ...[
-                                const SizedBox(width: 8),
-                                Container(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 6,
-                                    vertical: 1,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color: cs.tertiaryContainer,
-                                    borderRadius: BorderRadius.circular(6),
-                                  ),
-                                  child: Text(
-                                    l10n.goalChipLabel,
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .labelSmall
-                                        ?.copyWith(
-                                          fontWeight: FontWeight.bold,
-                                          color: cs.onTertiaryContainer,
-                                        ),
-                                  ),
+                          CircleAvatar(
+                            radius: 24,
+                            backgroundColor: meetsGoal
+                                ? cs.tertiaryContainer
+                                : cs.secondaryContainer,
+                            child: Icon(
+                              meetsGoal ? Icons.star : Icons.monitor_weight,
+                              size: 24,
+                              color: meetsGoal
+                                  ? cs.onTertiaryContainer
+                                  : cs.onSecondaryContainer,
+                            ),
+                          ),
+                          const SizedBox(width: 16),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  '${displayWeight.toStringAsFixed(1)} $unitLabel',
+                                  style: Theme.of(context).textTheme.titleLarge
+                                      ?.copyWith(
+                                        fontWeight: FontWeight.bold,
+                                        color: cs.onSurface,
+                                      ),
+                                ),
+                                Row(
+                                  children: [
+                                    Icon(
+                                      Icons.schedule,
+                                      size: 16,
+                                      color: cs.onSurfaceVariant,
+                                    ),
+                                    const SizedBox(width: 4),
+                                    Text(
+                                      entry.note != null && entry.note!.isNotEmpty
+                                          ? '$timeStr • ${entry.note}'
+                                          : timeStr,
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodyMedium
+                                          ?.copyWith(color: cs.onSurfaceVariant),
+                                    ),
+                                  ],
                                 ),
                               ],
+                            ),
+                          ),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: [
+                              Text(
+                                bmi.isFinite ? 'BMI ${bmi.toStringAsFixed(1)}' : '',
+                                style: Theme.of(context).textTheme.titleMedium
+                                    ?.copyWith(
+                                      fontWeight: FontWeight.bold,
+                                      color: cs.primary,
+                                    ),
+                              ),
+                              if (categoryText.isNotEmpty)
+                                Text(
+                                  categoryText,
+                                  style: Theme.of(context).textTheme.labelMedium
+                                      ?.copyWith(color: cs.onSurfaceVariant),
+                                ),
                             ],
                           ),
-                          Text(
-                            entry.note != null && entry.note!.isNotEmpty
-                                ? '$timeStr • ${entry.note}'
-                                : timeStr,
-                            style: Theme.of(context).textTheme.bodySmall
-                                ?.copyWith(color: cs.onSurfaceVariant),
+                          const SizedBox(width: 8),
+                          IconButton(
+                            icon: const Icon(Icons.delete_outline, size: 20),
+                            tooltip: l10n.deleteMeasurementTooltip,
+                            color: cs.onSurfaceVariant,
+                            onPressed: () => _confirmDelete(context, entry.id),
                           ),
                         ],
                       ),
                     ),
-                    IconButton(
-                      icon: const Icon(Icons.delete_outline, size: 20),
-                      tooltip: l10n.deleteMeasurementTooltip,
-                      onPressed: () => _confirmDelete(context, entry.id),
-                    ),
-                  ],
+                  ),
                 );
               },
             ),
@@ -301,9 +332,7 @@ class CalendarDayEntriesCard extends StatelessWidget {
               label: Text(l10n.addAnotherMeasurement),
             ),
           ],
-        ),
-      ),
-    );
+        );
   }
 
   /// Prompts for confirmation before deleting [entryId].
