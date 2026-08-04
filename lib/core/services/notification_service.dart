@@ -32,8 +32,8 @@ class NotificationService {
   String _channelName = 'Daily Weight Reminders';
   String _channelDescription =
       'Reminds you to record your daily weight measurement.';
-  String _title = 'Time to weigh yourself!';
-  String _body = 'Log your weight today and stay on track with PureWeight.';
+  String _title = 'Time to weigh in!';
+  String _body = "Don't forget to log your weight today.";
 
   /// Updates the localized texts used for scheduled reminder notifications.
   ///
@@ -134,6 +134,7 @@ class NotificationService {
   /// The notification fires every day at [time] in the device's local time zone
   /// using the localized texts configured via [setLocalizedTexts].
   /// Any previously scheduled reminder is cancelled first.
+  /// Uses high notification importance and priority for prominent delivery.
   /// Catches and logs non-fatal notification scheduling errors.
   Future<void> scheduleDailyReminder(TimeOfDay time) async {
     if (!_initialized) return;
@@ -148,8 +149,8 @@ class NotificationService {
             _channelId,
             _channelName,
             channelDescription: _channelDescription,
-            importance: Importance.defaultImportance,
-            priority: Priority.defaultPriority,
+            importance: Importance.high,
+            priority: Priority.high,
             icon: '@mipmap/ic_launcher',
           ),
           iOS: const DarwinNotificationDetails(

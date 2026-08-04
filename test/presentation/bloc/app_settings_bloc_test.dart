@@ -140,7 +140,7 @@ void main() {
     );
 
     blocTest<AppSettingsBloc, AppSettingsState>(
-      'emits notificationsEnabled false on ToggleNotifications(true) when permission denied',
+      'emits notificationsEnabled false and denied flag on ToggleNotifications(true) when permission denied',
       setUp: () {
         when(
           () => mockNotificationService.requestPermissions(),
@@ -150,14 +150,61 @@ void main() {
           AppSettingsBloc(notificationService: mockNotificationService),
       act: (bloc) => bloc.add(const ToggleNotifications(true)),
       expect: () => [
+        isA<AppSettingsState>()
+            .having(
+              (s) => s.notificationsEnabled,
+              'notificationsEnabled',
+              false,
+            )
+            .having(
+              (s) => s.notificationPermissionDenied,
+              'notificationPermissionDenied',
+              true,
+            ),
+      ],
+      verify: (_) {
+        verify(() => mockNotificationService.requestPermissions()).called(1);
+        verifyNever(() => mockNotificationService.scheduleDailyReminder(any()));
+      },
+    );
+
+    blocTest<AppSettingsBloc, AppSettingsState>(
+      'clears the denied flag on ToggleNotifications(false)',
+      build: () =>
+          AppSettingsBloc(notificationService: mockNotificationService),
+      seed: () => const AppSettingsState(
+        notificationsEnabled: false,
+        notificationPermissionDenied: true,
+      ),
+      act: (bloc) => bloc.add(const ToggleNotifications(false)),
+      expect: () => [
         isA<AppSettingsState>().having(
-          (s) => s.notificationsEnabled,
-          'notificationsEnabled',
+          (s) => s.notificationPermissionDenied,
+          'notificationPermissionDenied',
           false,
         ),
       ],
       verify: (_) {
-        verify(() => mockNotificationService.requestPermissions()).called(1);
+        verify(() => mockNotificationService.cancelDailyReminder()).called(1);
+      },
+    );
+
+    blocTest<AppSettingsBloc, AppSettingsState>(
+      'clears the denied flag on UpdateNotificationTime',
+      build: () =>
+          AppSettingsBloc(notificationService: mockNotificationService),
+      seed: () => const AppSettingsState(notificationPermissionDenied: true),
+      act: (bloc) => bloc.add(
+        const UpdateNotificationTime(TimeOfDay(hour: 12, minute: 30)),
+      ),
+      expect: () => [
+        isA<AppSettingsState>().having(
+          (s) => s.notificationPermissionDenied,
+          'notificationPermissionDenied',
+          false,
+        ),
+      ],
+      verify: (_) {
         verifyNever(() => mockNotificationService.scheduleDailyReminder(any()));
       },
     );
@@ -169,11 +216,17 @@ void main() {
       seed: () => const AppSettingsState(notificationsEnabled: true),
       act: (bloc) => bloc.add(const ToggleNotifications(false)),
       expect: () => [
-        isA<AppSettingsState>().having(
-          (s) => s.notificationsEnabled,
-          'notificationsEnabled',
-          false,
-        ),
+        isA<AppSettingsState>()
+            .having(
+              (s) => s.notificationsEnabled,
+              'notificationsEnabled',
+              false,
+            )
+            .having(
+              (s) => s.notificationPermissionDenied,
+              'notificationPermissionDenied',
+              false,
+            ),
       ],
       verify: (_) {
         verify(() => mockNotificationService.cancelDailyReminder()).called(1);
@@ -296,6 +349,7 @@ void main() {
       expect(state.notificationsEnabled, false);
       expect(state.notificationTime, const TimeOfDay(hour: 14, minute: 30));
       expect(state.isOnboardingCompleted, true);
+      expect(state.notificationPermissionDenied, false);
     });
 
     test(

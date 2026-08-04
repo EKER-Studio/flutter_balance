@@ -47,23 +47,33 @@ class AppSettingsBloc extends HydratedBloc<AppSettingsEvent, AppSettingsState> {
   /// Enables or disables daily reminder notifications.
   ///
   /// When enabling, requests OS permissions first and only schedules the
-  /// reminder when granted; when disabling, cancels the scheduled reminder.
+  /// reminder when granted; a denied request emits the transient
+  /// [AppSettingsState.notificationPermissionDenied] flag instead. When
+  /// disabling, cancels the scheduled reminder.
   Future<void> _onToggleNotifications(
     ToggleNotifications event,
     Emitter<AppSettingsState> emit,
   ) async {
     if (event.enabled) {
       final granted = await _notificationService.requestPermissions();
+      emit(
+        state.copyWith(
+          notificationsEnabled: granted,
+          notificationPermissionDenied: !granted,
+        ),
+      );
       if (granted) {
-        emit(state.copyWith(notificationsEnabled: true));
         await _notificationService.scheduleDailyReminder(
           state.notificationTime,
         );
-      } else {
-        emit(state.copyWith(notificationsEnabled: false));
       }
     } else {
-      emit(state.copyWith(notificationsEnabled: false));
+      emit(
+        state.copyWith(
+          notificationsEnabled: false,
+          notificationPermissionDenied: false,
+        ),
+      );
       await _notificationService.cancelDailyReminder();
     }
   }
@@ -74,7 +84,12 @@ class AppSettingsBloc extends HydratedBloc<AppSettingsEvent, AppSettingsState> {
     UpdateNotificationTime event,
     Emitter<AppSettingsState> emit,
   ) async {
-    emit(state.copyWith(notificationTime: event.notificationTime));
+    emit(
+      state.copyWith(
+        notificationTime: event.notificationTime,
+        notificationPermissionDenied: false,
+      ),
+    );
     if (state.notificationsEnabled) {
       await _notificationService.scheduleDailyReminder(event.notificationTime);
     }

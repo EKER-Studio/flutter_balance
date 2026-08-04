@@ -144,171 +144,202 @@ class _SettingsScreenState extends State<SettingsScreen> {
     return Scaffold(
       backgroundColor: colorScheme.surface,
       appBar: AppTopBar(title: AppLocalizations.of(context).settingsTitle),
-      body: BlocBuilder<AppSettingsBloc, AppSettingsState>(
-        builder: (context, state) {
+      body: BlocListener<AppSettingsBloc, AppSettingsState>(
+        listenWhen: (previous, current) =>
+            !previous.notificationPermissionDenied &&
+            current.notificationPermissionDenied,
+        listener: (context, state) {
           final l10n = AppLocalizations.of(context);
-          return LayoutBuilder(
-            builder: (context, constraints) {
-              final isWide = constraints.maxWidth >= 720;
-              final maxContentWidth = isWide ? 900.0 : 600.0;
+          ScaffoldMessenger.of(context)
+            ..hideCurrentSnackBar()
+            ..showSnackBar(
+              SnackBar(
+                content: Text(l10n.notificationPermissionDenied),
+                behavior: SnackBarBehavior.floating,
+                action: SnackBarAction(
+                  label: l10n.openSettings,
+                  onPressed: openAppSettings,
+                ),
+              ),
+            );
+        },
+        child: BlocBuilder<AppSettingsBloc, AppSettingsState>(
+          builder: (context, state) {
+            final l10n = AppLocalizations.of(context);
+            return LayoutBuilder(
+              builder: (context, constraints) {
+                final isWide = constraints.maxWidth >= 720;
+                final maxContentWidth = isWide ? 900.0 : 600.0;
 
-              return SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: Align(
-                  alignment: Alignment.topCenter,
-                  child: ConstrainedBox(
-                    constraints: BoxConstraints(maxWidth: maxContentWidth),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const SizedBox(height: 12),
-                        Text(
-                          l10n.settingsSubtitle,
-                          style: Theme.of(context).textTheme.bodyMedium
-                              ?.copyWith(
-                                color: Theme.of(
-                                  context,
-                                ).colorScheme.onSurfaceVariant,
-                              ),
-                        ),
-                        const SizedBox(height: 16),
-                        if (isWide)
-                          Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    _SectionHeader(label: l10n.profileSection),
-                                    const SizedBox(height: 8),
-                                    _ProfileSection(
-                                      state: state,
-                                      l10n: l10n,
-                                      onHeightTap: () =>
-                                          _showHeightDialog(context),
-                                      onTargetWeightTap: () =>
-                                          _showTargetWeightDialog(context),
-                                    ),
-                                    const SizedBox(height: 24),
-                                    _SectionHeader(
-                                      label: l10n.applicationSection,
-                                    ),
-                                    const SizedBox(height: 8),
-                                    _ApplicationSection(
-                                      state: state,
-                                      l10n: l10n,
-                                      onThemeTap: () =>
-                                          _showThemeSelection(context),
-                                      onUnitTap: () =>
-                                          _showUnitSelection(context),
-                                      onNotificationsChanged: (v) =>
-                                          _handleNotificationToggle(context, v),
-                                      onNotificationTimeTap: () =>
-                                          _selectNotificationTime(
-                                            context,
-                                            state.notificationTime,
-                                          ),
-                                    ),
-                                  ],
+                return SingleChildScrollView(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Align(
+                    alignment: Alignment.topCenter,
+                    child: ConstrainedBox(
+                      constraints: BoxConstraints(maxWidth: maxContentWidth),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const SizedBox(height: 12),
+                          Text(
+                            l10n.settingsSubtitle,
+                            style: Theme.of(context).textTheme.bodyMedium
+                                ?.copyWith(
+                                  color: Theme.of(
+                                    context,
+                                  ).colorScheme.onSurfaceVariant,
                                 ),
-                              ),
-                              const SizedBox(width: 24),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    _SectionHeader(label: l10n.securitySection),
-                                    const SizedBox(height: 8),
-                                    _SecuritySection(
-                                      state: state,
-                                      l10n: l10n,
-                                      isBiometricAvailable:
-                                          _isBiometricAvailable,
-                                      onBiometricChanged: (v) =>
-                                          _handleBiometricToggle(context, v),
-                                      biometricsAvailableLabel:
-                                          l10n.biometricDesc,
-                                      biometricsNotAvailableLabel:
-                                          l10n.biometricsNotAvailable,
-                                    ),
-                                    const SizedBox(height: 24),
-                                    _SectionHeader(label: l10n.dataSection),
-                                    const SizedBox(height: 8),
-                                    _DataSection(
-                                      l10n: l10n,
-                                      onImportTap: () => _importCsv(context),
-                                      onExportTap: () => _exportCsv(context),
-                                      onWipeTap: () =>
-                                          _showWipeConfirmation(context),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          )
-                        else
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              _SectionHeader(label: l10n.profileSection),
-                              const SizedBox(height: 8),
-                              _ProfileSection(
-                                state: state,
-                                l10n: l10n,
-                                onHeightTap: () => _showHeightDialog(context),
-                                onTargetWeightTap: () =>
-                                    _showTargetWeightDialog(context),
-                              ),
-                              const SizedBox(height: 16),
-                              _SectionHeader(label: l10n.applicationSection),
-                              const SizedBox(height: 8),
-                              _ApplicationSection(
-                                state: state,
-                                l10n: l10n,
-                                onThemeTap: () => _showThemeSelection(context),
-                                onUnitTap: () => _showUnitSelection(context),
-                                onNotificationsChanged: (v) =>
-                                    _handleNotificationToggle(context, v),
-                                onNotificationTimeTap: () =>
-                                    _selectNotificationTime(
-                                      context,
-                                      state.notificationTime,
-                                    ),
-                              ),
-                              const SizedBox(height: 16),
-                              _SectionHeader(label: l10n.securitySection),
-                              const SizedBox(height: 8),
-                              _SecuritySection(
-                                state: state,
-                                l10n: l10n,
-                                isBiometricAvailable: _isBiometricAvailable,
-                                onBiometricChanged: (v) =>
-                                    _handleBiometricToggle(context, v),
-                                biometricsAvailableLabel: l10n.biometricDesc,
-                                biometricsNotAvailableLabel:
-                                    l10n.biometricsNotAvailable,
-                              ),
-                              const SizedBox(height: 16),
-                              _SectionHeader(label: l10n.dataSection),
-                              const SizedBox(height: 8),
-                              _DataSection(
-                                l10n: l10n,
-                                onImportTap: () => _importCsv(context),
-                                onExportTap: () => _exportCsv(context),
-                                onWipeTap: () => _showWipeConfirmation(context),
-                              ),
-                            ],
                           ),
-                        const SizedBox(height: 32),
-                      ],
+                          const SizedBox(height: 16),
+                          if (isWide)
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      _SectionHeader(
+                                        label: l10n.profileSection,
+                                      ),
+                                      const SizedBox(height: 8),
+                                      _ProfileSection(
+                                        state: state,
+                                        l10n: l10n,
+                                        onHeightTap: () =>
+                                            _showHeightDialog(context),
+                                        onTargetWeightTap: () =>
+                                            _showTargetWeightDialog(context),
+                                      ),
+                                      const SizedBox(height: 24),
+                                      _SectionHeader(
+                                        label: l10n.applicationSection,
+                                      ),
+                                      const SizedBox(height: 8),
+                                      _ApplicationSection(
+                                        state: state,
+                                        l10n: l10n,
+                                        onThemeTap: () =>
+                                            _showThemeSelection(context),
+                                        onUnitTap: () =>
+                                            _showUnitSelection(context),
+                                        onNotificationsChanged: (v) =>
+                                            _handleNotificationToggle(
+                                              context,
+                                              v,
+                                            ),
+                                        onNotificationTimeTap: () =>
+                                            _selectNotificationTime(
+                                              context,
+                                              state.notificationTime,
+                                            ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                const SizedBox(width: 24),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      _SectionHeader(
+                                        label: l10n.securitySection,
+                                      ),
+                                      const SizedBox(height: 8),
+                                      _SecuritySection(
+                                        state: state,
+                                        l10n: l10n,
+                                        isBiometricAvailable:
+                                            _isBiometricAvailable,
+                                        onBiometricChanged: (v) =>
+                                            _handleBiometricToggle(context, v),
+                                        biometricsAvailableLabel:
+                                            l10n.biometricDesc,
+                                        biometricsNotAvailableLabel:
+                                            l10n.biometricsNotAvailable,
+                                      ),
+                                      const SizedBox(height: 24),
+                                      _SectionHeader(label: l10n.dataSection),
+                                      const SizedBox(height: 8),
+                                      _DataSection(
+                                        l10n: l10n,
+                                        onImportTap: () => _importCsv(context),
+                                        onExportTap: () => _exportCsv(context),
+                                        onWipeTap: () =>
+                                            _showWipeConfirmation(context),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            )
+                          else
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                _SectionHeader(label: l10n.profileSection),
+                                const SizedBox(height: 8),
+                                _ProfileSection(
+                                  state: state,
+                                  l10n: l10n,
+                                  onHeightTap: () => _showHeightDialog(context),
+                                  onTargetWeightTap: () =>
+                                      _showTargetWeightDialog(context),
+                                ),
+                                const SizedBox(height: 16),
+                                _SectionHeader(label: l10n.applicationSection),
+                                const SizedBox(height: 8),
+                                _ApplicationSection(
+                                  state: state,
+                                  l10n: l10n,
+                                  onThemeTap: () =>
+                                      _showThemeSelection(context),
+                                  onUnitTap: () => _showUnitSelection(context),
+                                  onNotificationsChanged: (v) =>
+                                      _handleNotificationToggle(context, v),
+                                  onNotificationTimeTap: () =>
+                                      _selectNotificationTime(
+                                        context,
+                                        state.notificationTime,
+                                      ),
+                                ),
+                                const SizedBox(height: 16),
+                                _SectionHeader(label: l10n.securitySection),
+                                const SizedBox(height: 8),
+                                _SecuritySection(
+                                  state: state,
+                                  l10n: l10n,
+                                  isBiometricAvailable: _isBiometricAvailable,
+                                  onBiometricChanged: (v) =>
+                                      _handleBiometricToggle(context, v),
+                                  biometricsAvailableLabel: l10n.biometricDesc,
+                                  biometricsNotAvailableLabel:
+                                      l10n.biometricsNotAvailable,
+                                ),
+                                const SizedBox(height: 16),
+                                _SectionHeader(label: l10n.dataSection),
+                                const SizedBox(height: 8),
+                                _DataSection(
+                                  l10n: l10n,
+                                  onImportTap: () => _importCsv(context),
+                                  onExportTap: () => _exportCsv(context),
+                                  onWipeTap: () =>
+                                      _showWipeConfirmation(context),
+                                ),
+                              ],
+                            ),
+                          const SizedBox(height: 32),
+                        ],
+                      ),
                     ),
                   ),
-                ),
-              );
-            },
-          );
-        },
+                );
+              },
+            );
+          },
+        ),
       ),
     );
   }
@@ -589,39 +620,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
     }
   }
 
-  /// Toggles the daily reminder after requesting OS notification permission.
-  Future<void> _handleNotificationToggle(
-    BuildContext context,
-    bool enabled,
-  ) async {
-    final l10n = AppLocalizations.of(context);
-    final bloc = context.read<AppSettingsBloc>();
-
-    if (enabled) {
-      final status = await Permission.notification.request();
-
-      if (status.isDenied ||
-          status.isPermanentlyDenied ||
-          status.isRestricted) {
-        bloc.add(const ToggleNotifications(false));
-
-        if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(l10n.notificationsDisabledOs),
-              behavior: SnackBarBehavior.floating,
-              action: SnackBarAction(
-                label: l10n.openSettings,
-                onPressed: () => openAppSettings(),
-              ),
-            ),
-          );
-        }
-        return;
-      }
-    }
-
-    bloc.add(ToggleNotifications(enabled));
+  /// Toggles the daily reminder via the [AppSettingsBloc], which requests OS
+  /// notification permission and schedules or cancels the reminder.
+  void _handleNotificationToggle(BuildContext context, bool enabled) {
+    context.read<AppSettingsBloc>().add(ToggleNotifications(enabled));
   }
 
   /// Toggles the biometric lock, authenticating the user before enabling it.
@@ -671,7 +673,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
     }
   }
 
-  /// Shows the time picker and persists the chosen reminder time.
+  /// Shows the time picker and persists the chosen reminder time, confirming
+  /// the new schedule with a [SnackBar].
   Future<void> _selectNotificationTime(
     BuildContext context,
     TimeOfDay initialTime,
@@ -681,7 +684,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
       initialTime: initialTime,
     );
     if (newTime != null && context.mounted) {
+      final l10n = AppLocalizations.of(context);
       context.read<AppSettingsBloc>().add(UpdateNotificationTime(newTime));
+      ScaffoldMessenger.of(context)
+        ..hideCurrentSnackBar()
+        ..showSnackBar(
+          SnackBar(
+            content: Text(l10n.reminderTimeSet(newTime.format(context))),
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
     }
   }
 }

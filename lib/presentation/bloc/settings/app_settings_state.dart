@@ -38,6 +38,11 @@ final class AppSettingsState extends Equatable {
   /// Whether the user has completed the initial onboarding wizard.
   final bool isOnboardingCompleted;
 
+  /// Transient flag set when the last notification permission request was
+  /// denied. Consumed by the UI to surface a permission-required message;
+  /// never persisted and reset by any subsequent notification-related event.
+  final bool notificationPermissionDenied;
+
   /// Creates [AppSettingsState] with the given parameters.
   const AppSettingsState({
     this.themeMode = AppThemeMode.system,
@@ -49,6 +54,7 @@ final class AppSettingsState extends Equatable {
     this.isBiometricLockEnabled = false,
     this.isLocked = false,
     this.isOnboardingCompleted = false,
+    this.notificationPermissionDenied = false,
   });
 
   /// Creates a copy of this state with the given fields replaced.
@@ -65,6 +71,7 @@ final class AppSettingsState extends Equatable {
     bool? isBiometricLockEnabled,
     bool? isLocked,
     bool? isOnboardingCompleted,
+    bool? notificationPermissionDenied,
   }) {
     return AppSettingsState(
       themeMode: themeMode ?? this.themeMode,
@@ -80,6 +87,8 @@ final class AppSettingsState extends Equatable {
       isLocked: isLocked ?? this.isLocked,
       isOnboardingCompleted:
           isOnboardingCompleted ?? this.isOnboardingCompleted,
+      notificationPermissionDenied:
+          notificationPermissionDenied ?? this.notificationPermissionDenied,
     );
   }
 
@@ -94,6 +103,7 @@ final class AppSettingsState extends Equatable {
     isBiometricLockEnabled,
     isLocked,
     isOnboardingCompleted,
+    notificationPermissionDenied,
   ];
 
   /// Deserializes [AppSettingsState] from a JSON map.
@@ -131,6 +141,8 @@ final class AppSettingsState extends Equatable {
           ? true
           : (json['isLocked'] as bool? ?? false),
       isOnboardingCompleted: json['isOnboardingCompleted'] as bool? ?? false,
+      // Transient flag: never restored from storage.
+      notificationPermissionDenied: false,
     );
   }
 

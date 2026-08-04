@@ -4,6 +4,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:pure_weight/core/services/notification_service.dart';
 import 'package:pure_weight/features/weight/presentation/bloc/weight_bloc.dart';
 import 'package:pure_weight/l10n/app_localizations.dart';
 import 'package:pure_weight/presentation/bloc/settings/app_settings_bloc.dart';
@@ -14,6 +15,8 @@ import 'package:pure_weight/presentation/screens/settings_screen.dart';
 class MockHydratedStorage extends Mock implements HydratedStorage {}
 
 class MockWeightBloc extends Mock implements WeightBloc {}
+
+class MockNotificationService extends Mock implements NotificationService {}
 
 void main() {
   late MockHydratedStorage storage;
@@ -129,6 +132,36 @@ void main() {
     expect(switchFinder, findsOneWidget);
     expect(tester.widget<Switch>(switchFinder).value, isFalse);
   });
+
+  testWidgets(
+    'shows permission denied snackbar when notification permission is rejected',
+    (tester) async {
+      final mockNotificationService = MockNotificationService();
+      registerFallbackValue(const TimeOfDay(hour: 8, minute: 0));
+      when(
+        () => mockNotificationService.requestPermissions(),
+      ).thenAnswer((_) async => false);
+      when(
+        () => mockNotificationService.scheduleDailyReminder(any()),
+      ).thenAnswer((_) async {});
+
+      settingsBloc = AppSettingsBloc(
+        notificationService: mockNotificationService,
+      );
+
+      await tester.pumpWidget(createTestWidget());
+      await tester.pump();
+
+      await tester.scrollUntilVisible(find.byType(Switch).first, 100);
+      await tester.tap(find.byType(Switch).first);
+      await tester.pumpAndSettle();
+
+      expect(
+        find.text('Notification permission is required to enable reminders.'),
+        findsOneWidget,
+      );
+    },
+  );
 
   testWidgets('shows wipe confirmation dialog', (tester) async {
     await tester.pumpWidget(createTestWidget());
