@@ -61,6 +61,24 @@ class NotificationService {
     try {
       tz_data.initializeTimeZones();
 
+      // Use the device's local timezone for scheduling.
+      // tz.local is already set to the device's local timezone by the timezone package.
+      final localLocation = tz.getLocation(tz.local.name);
+      tz.setLocalLocation(localLocation);
+
+      // Create the Android notification channel explicitly.
+      final androidChannel = AndroidNotificationChannel(
+        _channelId,
+        _channelName,
+        description: _channelDescription,
+        importance: Importance.max,
+      );
+      final androidPlugin = _plugin
+          .resolvePlatformSpecificImplementation<
+            AndroidFlutterLocalNotificationsPlugin
+          >();
+      await androidPlugin?.createNotificationChannel(androidChannel);
+
       const androidSettings = AndroidInitializationSettings(
         '@mipmap/ic_launcher',
       );
@@ -79,11 +97,7 @@ class NotificationService {
       );
 
       // Request permission on Android 13+.
-      await _plugin
-          .resolvePlatformSpecificImplementation<
-            AndroidFlutterLocalNotificationsPlugin
-          >()
-          ?.requestNotificationsPermission();
+      await androidPlugin?.requestNotificationsPermission();
 
       _initialized = true;
     } catch (e) {
