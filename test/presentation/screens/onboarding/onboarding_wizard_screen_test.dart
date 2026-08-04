@@ -109,7 +109,7 @@ void main() {
         await tester.pumpAndSettle();
 
         expect(find.text('Step 4 of 5'), findsOneWidget);
-        expect(find.text('Biometric Lock'), findsWidgets);
+        expect(find.text('Biometric Lock (Optional)'), findsOneWidget);
 
         // Step 4 -> Next (Skip/Next biometric lock)
         await tester.tap(find.byKey(const Key('biometric_step_next_button')));

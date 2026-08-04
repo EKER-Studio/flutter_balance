@@ -177,6 +177,7 @@
   "dailyReminderStepOptionalTitle": "Daily Reminder (Optional)",
   "dailyReminderStepSubtitle": "Set a daily reminder to log your weight and stay on track.",
   "biometricStepTitle": "Biometric Lock",
+  "biometricStepOptionalTitle": "Biometric Lock (Optional)",
   "biometricStepSubtitle": "Protect your personal weight measurements using Face ID or fingerprint authentication.",
   "skip": "Skip",
   "next": "Next",

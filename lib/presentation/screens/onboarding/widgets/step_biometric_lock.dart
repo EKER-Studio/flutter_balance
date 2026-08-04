@@ -94,7 +94,7 @@ class _StepBiometricLockState extends State<StepBiometricLock> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Text(
-                l10n.biometricStepTitle,
+                l10n.biometricStepOptionalTitle,
                 style: theme.textTheme.headlineSmall?.copyWith(
                   fontWeight: FontWeight.bold,
                 ),
@@ -151,32 +151,13 @@ class _StepBiometricLockState extends State<StepBiometricLock> {
                 ),
               ),
               const Spacer(),
-              Row(
-                children: [
-                  if (!enabled) ...[
-                    Expanded(
-                      child: ConstrainedBox(
-                        constraints: const BoxConstraints(minHeight: 48.0),
-                        child: TextButton(
-                          key: const Key('biometric_step_skip_button'),
-                          onPressed: widget.onNext,
-                          child: Text(l10n.skip),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 16.0),
-                  ],
-                  Expanded(
-                    child: ConstrainedBox(
-                      constraints: const BoxConstraints(minHeight: 48.0),
-                      child: FilledButton(
-                        key: const Key('biometric_step_next_button'),
-                        onPressed: widget.onNext,
-                        child: Text(l10n.next),
-                      ),
-                    ),
-                  ),
-                ],
+              ConstrainedBox(
+                constraints: const BoxConstraints(minHeight: 48.0),
+                child: FilledButton(
+                  key: const Key('biometric_step_next_button'),
+                  onPressed: widget.onNext,
+                  child: Text(l10n.next),
+                ),
               ),
             ],
           );
