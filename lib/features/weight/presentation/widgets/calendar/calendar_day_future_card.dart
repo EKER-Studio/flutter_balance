@@ -56,10 +56,13 @@ class CalendarDayFutureCard extends StatelessWidget {
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 20),
-            FilledButton.icon(
-              onPressed: onSelectToday,
-              icon: const Icon(Icons.today),
-              label: Text(l10n.goToToday),
+            SizedBox(
+              width: double.infinity,
+              child: FilledButton.icon(
+                onPressed: onSelectToday,
+                icon: const Icon(Icons.today),
+                label: Text(l10n.goToToday),
+              ),
             ),
           ],
         ),

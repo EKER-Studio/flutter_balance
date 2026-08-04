@@ -66,70 +66,78 @@ class CalendarDayCell extends StatelessWidget {
       button: true,
       selected: isSelected,
       label: semanticsLabel,
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(20),
-        child: Opacity(
-          opacity: isFuture ? 0.40 : 1.0,
-          child: Container(
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: isSelected ? cs.primary : Colors.transparent,
-              border: isToday && !isSelected
-                  ? Border.all(color: cs.primary, width: 1.0)
-                  : null,
-            ),
-            child: Stack(
-              clipBehavior: Clip.none,
-              children: [
-                Center(
-                  child: Text(
-                    '$dayNumber',
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: isToday || isSelected
-                          ? FontWeight.bold
-                          : FontWeight.normal,
-                      color: isSelected
-                          ? cs.onPrimary
-                          : (isToday ? cs.primary : cs.onSurface),
-                    ),
+      child: Padding(
+        padding: const EdgeInsets.all(4),
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            onTap: onTap,
+            borderRadius: BorderRadius.circular(20),
+            child: SizedBox.expand(
+              child: Opacity(
+                opacity: isFuture ? 0.40 : 1.0,
+                child: Container(
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: isSelected ? cs.primary : Colors.transparent,
+                    border: isToday && !isSelected
+                        ? Border.all(color: cs.primary, width: 1.0)
+                        : null,
                   ),
-                ),
-                // Indicator dots for entries
-                if (hasEntries)
-                  Positioned(
-                    bottom: 4,
-                    left: 0,
-                    right: 0,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: List.generate(
-                        entries.length > 3 ? 3 : entries.length,
-                        (index) => Container(
-                          width: 4,
-                          height: 4,
-                          margin: const EdgeInsets.symmetric(horizontal: 1.5),
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: isSelected ? cs.onPrimary : cs.primary,
+                  child: Stack(
+                    clipBehavior: Clip.none,
+                    children: [
+                      Center(
+                        child: Text(
+                          '$dayNumber',
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: isToday || isSelected
+                                ? FontWeight.bold
+                                : FontWeight.normal,
+                            color: isSelected
+                                ? cs.onPrimary
+                                : (isToday ? cs.primary : cs.onSurface),
                           ),
                         ),
                       ),
-                    ),
+                      // Indicator dots for entries
+                      if (hasEntries)
+                        Positioned(
+                          bottom: 4,
+                          left: 0,
+                          right: 0,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: List.generate(
+                              entries.length > 3 ? 3 : entries.length,
+                              (index) => Container(
+                                width: 4,
+                                height: 4,
+                                margin: const EdgeInsets.symmetric(horizontal: 1.5),
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: isSelected ? cs.onPrimary : cs.primary,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      // Goal Achievement Star Badge
+                      if (isGoalAchieved)
+                        Positioned(
+                          top: -2,
+                          right: -2,
+                          child: Icon(
+                            Icons.star,
+                            size: 10,
+                            color: isSelected ? cs.onPrimary : cs.tertiary,
+                          ),
+                        ),
+                    ],
                   ),
-                // Goal Achievement Star Badge
-                if (isGoalAchieved)
-                  Positioned(
-                    top: -2,
-                    right: -2,
-                    child: Icon(
-                      Icons.star,
-                      size: 10,
-                      color: isSelected ? cs.onPrimary : cs.tertiary,
-                    ),
-                  ),
-              ],
+                ),
+              ),
             ),
           ),
         ),

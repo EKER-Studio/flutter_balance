@@ -127,11 +127,12 @@ class _CalendarScreenState extends State<CalendarScreen> {
                       horizontal: 16,
                       vertical: 12,
                     ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        // Top Calendar Card
-                        Card(
+                    child: LayoutBuilder(
+                      builder: (context, constraints) {
+                        final isLandscape =
+                            MediaQuery.of(context).orientation ==
+                            Orientation.landscape;
+                        final calendarCard = Card(
                           elevation: 0,
                           color: Theme.of(
                             context,
@@ -162,10 +163,9 @@ class _CalendarScreenState extends State<CalendarScreen> {
                               ],
                             ),
                           ),
-                        ),
-                        const SizedBox(height: 20),
-                        // Selected Day Header
-                        Padding(
+                        );
+
+                        final selectedDayHeader = Padding(
                           padding: const EdgeInsets.only(left: 8, bottom: 8),
                           child: Text(
                             l10n.entriesFromDate(formattedSelectedDate),
@@ -177,23 +177,50 @@ class _CalendarScreenState extends State<CalendarScreen> {
                                   ).colorScheme.onSurfaceVariant,
                                 ),
                           ),
-                        ),
-                        // Selected Day Details / Future / Empty State Card
-                        if (isSelectedDateFuture)
-                          CalendarDayFutureCard(
-                            selectedDate: _selectedDate,
-                            onSelectToday: () => _onDaySelected(DateTime.now()),
-                          )
-                        else if (dayEntries.isEmpty)
-                          CalendarDayEmptyCard(selectedDate: _selectedDate)
-                        else
-                          CalendarDayEntriesCard(
-                            selectedDate: _selectedDate,
-                            entries: dayEntries,
-                            targetWeight: targetWeight,
-                          ),
-                        const SizedBox(height: 80),
-                      ],
+                        );
+
+                        final detailSection = Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            selectedDayHeader,
+                            if (isSelectedDateFuture)
+                              CalendarDayFutureCard(
+                                selectedDate: _selectedDate,
+                                onSelectToday: () =>
+                                    _onDaySelected(DateTime.now()),
+                              )
+                            else if (dayEntries.isEmpty)
+                              CalendarDayEmptyCard(selectedDate: _selectedDate)
+                            else
+                              CalendarDayEntriesCard(
+                                selectedDate: _selectedDate,
+                                entries: dayEntries,
+                                targetWeight: targetWeight,
+                              ),
+                          ],
+                        );
+
+                        if (isLandscape && constraints.maxWidth >= 720) {
+                          return Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Expanded(flex: 5, child: calendarCard),
+                              const SizedBox(width: 20),
+                              Expanded(flex: 5, child: detailSection),
+                            ],
+                          );
+                        }
+
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            calendarCard,
+                            const SizedBox(height: 20),
+                            detailSection,
+                            const SizedBox(height: 80),
+                          ],
+                        );
+                      },
                     ),
                   );
                 },

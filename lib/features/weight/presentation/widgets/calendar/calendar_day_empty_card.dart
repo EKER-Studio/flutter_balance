@@ -50,15 +50,18 @@ class CalendarDayEmptyCard extends StatelessWidget {
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 20),
-            FilledButton.icon(
-              onPressed: () {
-                showDialog(
-                  context: context,
-                  builder: (_) => AddWeightSheet(initialDate: selectedDate),
-                );
-              },
-              icon: const Icon(Icons.add),
-              label: Text(l10n.addWeight),
+            SizedBox(
+              width: double.infinity,
+              child: FilledButton.icon(
+                onPressed: () {
+                  showDialog(
+                    context: context,
+                    builder: (_) => AddWeightSheet(initialDate: selectedDate),
+                  );
+                },
+                icon: const Icon(Icons.add),
+                label: Text(l10n.addWeight),
+              ),
             ),
           ],
         ),
