@@ -114,7 +114,9 @@ class CalendarDayCell extends StatelessWidget {
                               (index) => Container(
                                 width: 4,
                                 height: 4,
-                                margin: const EdgeInsets.symmetric(horizontal: 1.5),
+                                margin: const EdgeInsets.symmetric(
+                                  horizontal: 1.5,
+                                ),
                                 decoration: BoxDecoration(
                                   shape: BoxShape.circle,
                                   color: isSelected ? cs.onPrimary : cs.primary,

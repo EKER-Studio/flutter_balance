@@ -13,36 +13,34 @@ void main() {
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
       home: Scaffold(
-        body: StepInitialWeight(
-          unit: unit,
-          onComplete: onComplete,
-        ),
+        body: StepInitialWeight(unit: unit, onComplete: onComplete),
       ),
     );
   }
 
   group('StepInitialWeight', () {
     testWidgets('renders correctly', (tester) async {
-      await tester.pumpWidget(buildTestWidget(
-        unit: MeasurementUnit.metric,
-        onComplete: (_, _) {},
-      ));
-      
+      await tester.pumpWidget(
+        buildTestWidget(unit: MeasurementUnit.metric, onComplete: (_, _) {}),
+      );
+
       await tester.pumpAndSettle();
 
       expect(find.text('Initial Weight'), findsOneWidget);
-      expect(find.text('Log your starting weight measurement to begin tracking.'), findsOneWidget);
+      expect(
+        find.text('Log your starting weight measurement to begin tracking.'),
+        findsOneWidget,
+      );
       expect(find.byType(TextFormField), findsOneWidget);
       expect(find.text('Current Weight (kg)'), findsOneWidget);
       expect(find.byType(FilledButton), findsOneWidget);
     });
 
     testWidgets('shows validation error when empty', (tester) async {
-      await tester.pumpWidget(buildTestWidget(
-        unit: MeasurementUnit.metric,
-        onComplete: (_, _) {},
-      ));
-      
+      await tester.pumpWidget(
+        buildTestWidget(unit: MeasurementUnit.metric, onComplete: (_, _) {}),
+      );
+
       await tester.pumpAndSettle();
 
       await tester.tap(find.byType(FilledButton));
@@ -51,12 +49,13 @@ void main() {
       expect(find.text('Initial weight is required'), findsOneWidget);
     });
 
-    testWidgets('shows validation error for invalid weight (<0)', (tester) async {
-      await tester.pumpWidget(buildTestWidget(
-        unit: MeasurementUnit.metric,
-        onComplete: (_, _) {},
-      ));
-      
+    testWidgets('shows validation error for invalid weight (<0)', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        buildTestWidget(unit: MeasurementUnit.metric, onComplete: (_, _) {}),
+      );
+
       await tester.pumpAndSettle();
 
       await tester.enterText(find.byType(TextFormField), '-5');
@@ -66,12 +65,13 @@ void main() {
       expect(find.text('Please enter a valid weight (> 0)'), findsOneWidget);
     });
 
-    testWidgets('shows validation error for invalid weight (>500)', (tester) async {
-      await tester.pumpWidget(buildTestWidget(
-        unit: MeasurementUnit.metric,
-        onComplete: (_, _) {},
-      ));
-      
+    testWidgets('shows validation error for invalid weight (>500)', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        buildTestWidget(unit: MeasurementUnit.metric, onComplete: (_, _) {}),
+      );
+
       await tester.pumpAndSettle();
 
       await tester.enterText(find.byType(TextFormField), '600');
@@ -85,14 +85,16 @@ void main() {
       double? resultWeight;
       DateTime? resultTime;
 
-      await tester.pumpWidget(buildTestWidget(
-        unit: MeasurementUnit.metric,
-        onComplete: (weight, time) {
-          resultWeight = weight;
-          resultTime = time;
-        },
-      ));
-      
+      await tester.pumpWidget(
+        buildTestWidget(
+          unit: MeasurementUnit.metric,
+          onComplete: (weight, time) {
+            resultWeight = weight;
+            resultTime = time;
+          },
+        ),
+      );
+
       await tester.pumpAndSettle();
 
       await tester.enterText(find.byType(TextFormField), '75.5');
@@ -103,18 +105,22 @@ void main() {
       expect(resultTime, isNotNull);
     });
 
-    testWidgets('calls onComplete with valid imperial weight converted to kg', (tester) async {
+    testWidgets('calls onComplete with valid imperial weight converted to kg', (
+      tester,
+    ) async {
       double? resultWeight;
       DateTime? resultTime;
 
-      await tester.pumpWidget(buildTestWidget(
-        unit: MeasurementUnit.imperial,
-        onComplete: (weight, time) {
-          resultWeight = weight;
-          resultTime = time;
-        },
-      ));
-      
+      await tester.pumpWidget(
+        buildTestWidget(
+          unit: MeasurementUnit.imperial,
+          onComplete: (weight, time) {
+            resultWeight = weight;
+            resultTime = time;
+          },
+        ),
+      );
+
       await tester.pumpAndSettle();
 
       expect(find.text('Current Weight (lbs)'), findsOneWidget);
@@ -132,14 +138,16 @@ void main() {
       double? resultWeight;
       DateTime? resultTime;
 
-      await tester.pumpWidget(buildTestWidget(
-        unit: MeasurementUnit.metric,
-        onComplete: (weight, time) {
-          resultWeight = weight;
-          resultTime = time;
-        },
-      ));
-      
+      await tester.pumpWidget(
+        buildTestWidget(
+          unit: MeasurementUnit.metric,
+          onComplete: (weight, time) {
+            resultWeight = weight;
+            resultTime = time;
+          },
+        ),
+      );
+
       await tester.pumpAndSettle();
 
       // Tap on the date picker button
