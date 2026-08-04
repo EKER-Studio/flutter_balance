@@ -153,17 +153,19 @@ class _StepBiometricLockState extends State<StepBiometricLock> {
               const Spacer(),
               Row(
                 children: [
-                  Expanded(
-                    child: ConstrainedBox(
-                      constraints: const BoxConstraints(minHeight: 48.0),
-                      child: TextButton(
-                        key: const Key('biometric_step_skip_button'),
-                        onPressed: widget.onNext,
-                        child: Text(l10n.skip),
+                  if (!enabled) ...[
+                    Expanded(
+                      child: ConstrainedBox(
+                        constraints: const BoxConstraints(minHeight: 48.0),
+                        child: TextButton(
+                          key: const Key('biometric_step_skip_button'),
+                          onPressed: widget.onNext,
+                          child: Text(l10n.skip),
+                        ),
                       ),
                     ),
-                  ),
-                  const SizedBox(width: 16.0),
+                    const SizedBox(width: 16.0),
+                  ],
                   Expanded(
                     child: ConstrainedBox(
                       constraints: const BoxConstraints(minHeight: 48.0),
