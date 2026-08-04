@@ -554,7 +554,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           FilledButton(
             onPressed: () async {
               Navigator.pop(ctx);
-              await _wipeDatabase(context);
+              await _wipeDatabase();
             },
             style: FilledButton.styleFrom(backgroundColor: errorColor),
             child: Text(l10n.wipeDataButton),
@@ -565,10 +565,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   /// Clears all weight entries and resets every app setting.
-  Future<void> _wipeDatabase(BuildContext context) async {
+  Future<void> _wipeDatabase() async {
     final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
-    final scaffoldMessenger = ScaffoldMessenger.of(context);
     final weightBloc = context.read<WeightBloc>();
     final appSettingsBloc = context.read<AppSettingsBloc>();
 
@@ -577,14 +576,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
       appSettingsBloc.add(const ResetAppSettings());
       weightBloc.add(const RefreshWeightData());
 
-      scaffoldMessenger.showSnackBar(
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(l10n.dataWipedSuccess),
           backgroundColor: theme.colorScheme.tertiary,
         ),
       );
     } catch (e) {
-      scaffoldMessenger.showSnackBar(
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(l10n.errorWipingData(e.toString())),
           backgroundColor: theme.colorScheme.error,
