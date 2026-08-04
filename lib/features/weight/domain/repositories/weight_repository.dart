@@ -4,6 +4,16 @@ import 'package:pure_weight/features/weight/domain/entities/weight_entry.dart';
 ///
 /// Serves as the Clean Architecture abstraction boundary between domain logic
 /// and concrete persistence data handlers (e.g. Isar database).
+///
+/// ```dart
+/// class MyRepository implements WeightRepository {
+///   @override
+///   Stream<List<WeightEntry>> watchAllEntries() => /* ... */;
+///   @override
+///   Future<void> addEntry(WeightEntry entry) => /* ... */;
+///   // remaining members omitted for brevity
+/// }
+/// ```
 abstract class WeightRepository {
   /// Watches persisted weight records as a real-time reactive stream.
   ///
