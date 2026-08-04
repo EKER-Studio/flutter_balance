@@ -30,8 +30,8 @@ class StepTargetWeight extends StatefulWidget {
 }
 
 class _StepTargetWeightState extends State<StepTargetWeight> {
-  final _formKey = GlobalKey<FormState>();
   late final TextEditingController _weightController;
+  String? _errorText;
 
   @override
   void initState() {
@@ -72,17 +72,30 @@ class _StepTargetWeightState extends State<StepTargetWeight> {
     return parsed;
   }
 
-  /// Validates the form and invokes [StepTargetWeight.onNext] on success.
-  void _handleNext() {
-    if (_formKey.currentState?.validate() ?? false) {
-      final weightKg = _parseTargetWeightKg();
-      widget.onNext(weightKg);
+  void _validate(String value) {
+    final trimmed = value.trim();
+    if (trimmed.isEmpty) {
+      if (_errorText != null) {
+        setState(() => _errorText = null);
+      }
+      return;
+    }
+
+    final parsed = double.tryParse(trimmed);
+    if (parsed == null || parsed <= 0 || parsed > 500) {
+      if (_errorText == null) {
+        setState(() => _errorText = 'Please enter a valid weight (> 0)');
+      }
+    } else {
+      if (_errorText != null) {
+        setState(() => _errorText = null);
+      }
     }
   }
 
-  /// Skips the target weight and invokes [StepTargetWeight.onNext] with `null`.
-  void _handleSkip() {
-    widget.onNext(null);
+  void _handleNext() {
+    final weightKg = _parseTargetWeightKg();
+    widget.onNext(weightKg);
   }
 
   @override
@@ -92,77 +105,75 @@ class _StepTargetWeightState extends State<StepTargetWeight> {
     final isImperial = widget.unit == MeasurementUnit.imperial;
     final unitSuffix = isImperial ? 'lbs' : 'kg';
 
+    final isError = _errorText != null;
+    final isNextEnabled = !isError;
+
+    final errorOutline = OutlineInputBorder(
+      borderRadius: BorderRadius.circular(8),
+      borderSide: BorderSide(
+        color: theme.colorScheme.error,
+        width: 2,
+      ),
+    );
+
     return ClampedLayout(
       padding: const EdgeInsets.all(24.0),
-      child: Form(
-        key: _formKey,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Text(
-              'Target Weight',
-              style: theme.textTheme.headlineSmall?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Text(
+            l10n.targetWeightOptionalTitle,
+            style: theme.textTheme.headlineSmall?.copyWith(
+              fontWeight: FontWeight.bold,
             ),
-            const SizedBox(height: 8.0),
-            Text(
-              'What is your target weight goal? This step is optional.',
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant,
-              ),
+          ),
+          const SizedBox(height: 8.0),
+          Text(
+            'What is your target weight goal? This step is optional.',
+            style: theme.textTheme.bodyMedium?.copyWith(
+              color: theme.colorScheme.onSurfaceVariant,
             ),
-            const SizedBox(height: 24.0),
-            TextFormField(
-              key: const Key('target_weight_input'),
-              controller: _weightController,
-              keyboardType: const TextInputType.numberWithOptions(
-                decimal: true,
-              ),
-              decoration: InputDecoration(
-                labelText: 'Target Weight ($unitSuffix)',
-                suffixText: unitSuffix,
-                border: const OutlineInputBorder(),
-                helperText: 'Optional — leave empty or tap Skip to set later',
-              ),
-              validator: (value) {
-                final trimmed = value?.trim() ?? '';
-                if (trimmed.isEmpty) return null;
-
-                final parsed = double.tryParse(trimmed);
-                if (parsed == null || parsed <= 0 || parsed > 500) {
-                  return 'Please enter a valid weight (> 0)';
-                }
-                return null;
-              },
+          ),
+          const SizedBox(height: 24.0),
+          TextField(
+            key: const Key('target_weight_input'),
+            controller: _weightController,
+            keyboardType: const TextInputType.numberWithOptions(
+              decimal: true,
             ),
-            const Spacer(),
-            Row(
-              children: [
-                Expanded(
-                  child: ConstrainedBox(
-                    constraints: const BoxConstraints(minHeight: 48.0),
-                    child: OutlinedButton(
-                      onPressed: _handleSkip,
-                      child: Text(l10n.skip),
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 16.0),
-                Expanded(
-                  child: ConstrainedBox(
-                    constraints: const BoxConstraints(minHeight: 48.0),
-                    child: FilledButton(
-                      onPressed: _handleNext,
-                      child: Text(l10n.next),
-                    ),
-                  ),
-                ),
-              ],
+            decoration: InputDecoration(
+              labelText: '${l10n.targetWeightDialogTitle} ($unitSuffix)',
+              suffixText: unitSuffix,
+              enabledBorder: isError ? errorOutline : null,
+              focusedBorder: isError ? errorOutline : null,
             ),
-          ],
-        ),
+            onChanged: _validate,
+            onSubmitted: (_) {
+              if (isNextEnabled) _handleNext();
+            },
+          ),
+          const SizedBox(height: 8),
+          Text(
+            isError ? _errorText! : 'Optional — leave empty to set later',
+            style: TextStyle(
+              color: isError
+                  ? theme.colorScheme.error
+                  : theme.colorScheme.onSurfaceVariant,
+              fontSize: 12,
+              fontWeight: isError ? FontWeight.w500 : FontWeight.w400,
+            ),
+          ),
+          const Spacer(),
+          ConstrainedBox(
+            constraints: const BoxConstraints(minHeight: 48.0),
+            child: FilledButton(
+              onPressed: isNextEnabled ? _handleNext : null,
+              child: Text(l10n.next),
+            ),
+          ),
+        ],
       ),
     );
   }
 }
+

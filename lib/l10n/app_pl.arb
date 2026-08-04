@@ -33,6 +33,7 @@
   "heightCmLabel": "Wzrost (cm)",
   "heightHint": "np. 177",
   "targetWeightDialogTitle": "Waga docelowa",
+  "targetWeightOptionalTitle": "Waga docelowa (Opcjonalnie)",
   "weightInKgLabel": "Waga (kg)",
   "weightInLbLabel": "Waga w lb",
   "weightHint": "np. 75,5",

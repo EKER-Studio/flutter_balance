@@ -86,7 +86,7 @@ void main() {
         await tester.pumpAndSettle();
 
         expect(find.text('Step 2 of 5'), findsOneWidget);
-        expect(find.text('Target Weight'), findsOneWidget);
+        expect(find.text('Target Weight (Optional)'), findsOneWidget);
         expect(find.byIcon(Icons.arrow_back), findsOneWidget);
 
         // Height is synced to the weight BLoC so AddWeight in step 5 does not
@@ -95,8 +95,8 @@ void main() {
           () => weightBloc.add(any(that: isA<UpdateUserHeight>())),
         ).called(1);
 
-        // Step 2 -> Next (Skip target weight)
-        await tester.tap(find.text('Skip').first);
+        // Step 2 -> Next (Leave empty for optional target weight)
+        await tester.tap(find.text('Next').first);
         await tester.pumpAndSettle();
 
         expect(find.text('Step 3 of 5'), findsOneWidget);
