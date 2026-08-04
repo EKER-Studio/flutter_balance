@@ -103,7 +103,7 @@ void main() {
   });
 
   testWidgets(
-    'shows height error snackbar when entering height outside 50-250 cm range',
+    'shows inline height error when entering height outside 50-250 cm range',
     (tester) async {
       await tester.pumpWidget(createTestWidget());
       await tester.pumpAndSettle();
@@ -149,7 +149,7 @@ void main() {
   });
 
   testWidgets(
-    'shows weight error snackbar when entering target weight outside 20-300 kg range',
+    'shows inline weight error when entering target weight outside 20-300 kg range',
     (tester) async {
       await tester.pumpWidget(createTestWidget());
       await tester.pumpAndSettle();

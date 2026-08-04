@@ -25,6 +25,7 @@ class TargetWeightDialog extends StatefulWidget {
 
 class _TargetWeightDialogState extends State<TargetWeightDialog> {
   late final TextEditingController _controller;
+  String? _errorText;
 
   @override
   void initState() {
@@ -40,8 +41,8 @@ class _TargetWeightDialogState extends State<TargetWeightDialog> {
     super.dispose();
   }
 
-  /// Pops the entered weight on success, `null` when cleared, or shows an
-  /// error [SnackBar] for invalid input.
+  /// Pops the entered weight on success, `null` when cleared, or sets an
+  /// error message for invalid input.
   void _handleSave() {
     FocusScope.of(context).unfocus();
     final text = _controller.text.trim().replaceAll(',', '.');
@@ -53,13 +54,9 @@ class _TargetWeightDialogState extends State<TargetWeightDialog> {
 
     final parsedWeight = double.tryParse(text);
     if (parsedWeight == null) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(AppLocalizations.of(context).invalidPositiveNumber),
-          backgroundColor: Theme.of(context).colorScheme.error,
-        ),
-      );
+      setState(() {
+        _errorText = AppLocalizations.of(context).invalidPositiveNumber;
+      });
       return;
     }
 
@@ -69,13 +66,9 @@ class _TargetWeightDialogState extends State<TargetWeightDialog> {
 
     if (weightKg < WeightEntry.minWeightKg ||
         weightKg > WeightEntry.maxWeightKg) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(AppLocalizations.of(context).weightRangeError),
-          backgroundColor: Theme.of(context).colorScheme.error,
-        ),
-      );
+      setState(() {
+        _errorText = AppLocalizations.of(context).weightRangeError;
+      });
       return;
     }
 
@@ -103,7 +96,13 @@ class _TargetWeightDialogState extends State<TargetWeightDialog> {
                     ? l10n.weightInLbLabel
                     : l10n.weightInKgLabel,
                 hintText: l10n.weightHint,
+                errorText: _errorText,
               ),
+              onChanged: (_) {
+                if (_errorText != null) {
+                  setState(() => _errorText = null);
+                }
+              },
               onSubmitted: (_) => _handleSave(),
             ),
           ],

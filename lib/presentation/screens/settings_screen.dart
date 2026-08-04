@@ -37,6 +37,7 @@ class _HeightDialog extends StatefulWidget {
 
 class _HeightDialogState extends State<_HeightDialog> {
   late final TextEditingController _controller;
+  String? _errorText;
 
   @override
   void initState() {
@@ -64,13 +65,9 @@ class _HeightDialogState extends State<_HeightDialog> {
         height == null ||
         height < AppSettingsState.minHeightCm ||
         height > AppSettingsState.maxHeightCm) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(AppLocalizations.of(context).heightRangeError),
-          backgroundColor: Theme.of(context).colorScheme.error,
-        ),
-      );
+      setState(() {
+        _errorText = AppLocalizations.of(context).heightRangeError;
+      });
       return;
     }
 
@@ -96,9 +93,14 @@ class _HeightDialogState extends State<_HeightDialog> {
               decoration: InputDecoration(
                 labelText: l10n.heightCmLabel,
                 hintText: l10n.heightHint,
-                helperText:
-                    '50 – 250 cm',
+                helperText: _errorText == null ? '50 – 250 cm' : null,
+                errorText: _errorText,
               ),
+              onChanged: (_) {
+                if (_errorText != null) {
+                  setState(() => _errorText = null);
+                }
+              },
               onSubmitted: (_) => _handleSave(),
             ),
           ],
