@@ -14,7 +14,7 @@ class StepUnitsHeight extends StatefulWidget {
 
   /// Callback invoked when the user proceeds to the next step.
   ///
-  /// Passes the chosen [unit] system and valid [heightCm].
+  /// Passes the chosen measurement unit system and a validated height in cm.
   final void Function(MeasurementUnit unit, double heightCm) onNext;
 
   /// Creates a [StepUnitsHeight] widget.
@@ -70,6 +70,7 @@ class _StepUnitsHeightState extends State<StepUnitsHeight> {
     super.dispose();
   }
 
+  /// Re-evaluates input validity and updates the Next button state.
   void _validate() {
     final valid = _calculateHeightCm() != null;
     if (valid != _isValid) {
@@ -79,6 +80,7 @@ class _StepUnitsHeightState extends State<StepUnitsHeight> {
     }
   }
 
+  /// Converts the active unit inputs into centimeters, or `null` when invalid.
   double? _calculateHeightCm() {
     if (_selectedUnit == MeasurementUnit.metric) {
       final cm = double.tryParse(_cmController.text.trim());
@@ -105,6 +107,8 @@ class _StepUnitsHeightState extends State<StepUnitsHeight> {
     }
   }
 
+  /// Switches the input fields between metric and imperial, converting the
+  /// current height value into the new unit system.
   void _onUnitChanged(MeasurementUnit newUnit) {
     if (newUnit == _selectedUnit) return;
 
@@ -124,6 +128,7 @@ class _StepUnitsHeightState extends State<StepUnitsHeight> {
     _validate();
   }
 
+  /// Validates the form and invokes [StepUnitsHeight.onNext] on success.
   void _handleNext() {
     if (_formKey.currentState?.validate() ?? false) {
       final heightCm = _calculateHeightCm();

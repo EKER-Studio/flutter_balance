@@ -28,6 +28,7 @@ class _StepBiometricLockState extends State<StepBiometricLock> {
     _checkBiometrics();
   }
 
+  /// Resolves biometric hardware availability for the switch state.
   Future<void> _checkBiometrics() async {
     final available = await BiometricService.instance.isAvailable();
     if (mounted) {
@@ -37,6 +38,7 @@ class _StepBiometricLockState extends State<StepBiometricLock> {
     }
   }
 
+  /// Toggles the biometric lock, authenticating the user before enabling it.
   Future<void> _handleToggle(BuildContext context, bool enabled) async {
     final l10n = AppLocalizations.of(context);
     final bloc = context.read<AppSettingsBloc>();

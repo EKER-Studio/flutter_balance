@@ -15,6 +15,7 @@ class StepReminderNotification extends StatelessWidget {
   /// Creates a [StepReminderNotification] widget.
   const StepReminderNotification({super.key, required this.onNext});
 
+  /// Toggles reminders, requesting OS notification permission first.
   Future<void> _handleToggle(BuildContext context, bool enabled) async {
     final l10n = AppLocalizations.of(context);
     final bloc = context.read<AppSettingsBloc>();
@@ -44,6 +45,7 @@ class StepReminderNotification extends StatelessWidget {
     bloc.add(ToggleNotifications(enabled));
   }
 
+  /// Shows the time picker and persists the chosen reminder time.
   Future<void> _pickTime(BuildContext context, TimeOfDay initialTime) async {
     final newTime = await showTimePicker(
       context: context,

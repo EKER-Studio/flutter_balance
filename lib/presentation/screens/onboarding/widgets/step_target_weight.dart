@@ -57,6 +57,8 @@ class _StepTargetWeightState extends State<StepTargetWeight> {
     super.dispose();
   }
 
+  /// Parses the target weight input into kilograms, or `null` when empty or
+  /// invalid.
   double? _parseTargetWeightKg() {
     final text = _weightController.text.trim();
     if (text.isEmpty) return null;
@@ -70,6 +72,7 @@ class _StepTargetWeightState extends State<StepTargetWeight> {
     return parsed;
   }
 
+  /// Validates the form and invokes [StepTargetWeight.onNext] on success.
   void _handleNext() {
     if (_formKey.currentState?.validate() ?? false) {
       final weightKg = _parseTargetWeightKg();
@@ -77,6 +80,7 @@ class _StepTargetWeightState extends State<StepTargetWeight> {
     }
   }
 
+  /// Skips the target weight and invokes [StepTargetWeight.onNext] with `null`.
   void _handleSkip() {
     widget.onNext(null);
   }

@@ -12,7 +12,7 @@ class StepInitialWeight extends StatefulWidget {
 
   /// Callback invoked when setup is completed.
   ///
-  /// Passes the initial weight in kg and the chosen [timestamp].
+  /// Passes the initial weight in kg and the chosen measurement timestamp.
   final void Function(double weightKg, DateTime timestamp) onComplete;
 
   /// Creates a [StepInitialWeight] widget.
@@ -37,6 +37,7 @@ class _StepInitialWeightState extends State<StepInitialWeight> {
     super.dispose();
   }
 
+  /// Shows the date and time pickers and updates the selected timestamp.
   Future<void> _pickDateTime() async {
     final now = DateTime.now();
     final pickedDate = await showDatePicker(
@@ -66,6 +67,7 @@ class _StepInitialWeightState extends State<StepInitialWeight> {
     });
   }
 
+  /// Parses the weight input into kilograms, or `null` when invalid.
   double? _parseWeightKg() {
     final text = _weightController.text.trim();
     if (text.isEmpty) return null;
@@ -79,6 +81,7 @@ class _StepInitialWeightState extends State<StepInitialWeight> {
     return parsed;
   }
 
+  /// Validates the form and invokes [StepInitialWeight.onComplete] on success.
   void _handleComplete() {
     if (_formKey.currentState?.validate() ?? false) {
       final weightKg = _parseWeightKg();
