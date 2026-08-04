@@ -26,87 +26,97 @@ class StatisticsScreen extends StatelessWidget {
     final l10n = AppLocalizations.of(context);
 
     return Scaffold(
-      appBar: AppTopBar(title: l10n.tabStats),
-      body: SafeArea(
-        child: BlocBuilder<WeightBloc, WeightState>(
-          builder: (context, weightState) {
-            if (weightState is WeightInitial || weightState is WeightLoading) {
-              return const ClampedLayout(
-                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                child: StatisticsShimmerSkeleton(),
-              );
-            }
+      body: RefreshIndicator(
+        onRefresh: () async {
+          context.read<WeightBloc>().add(const SubscribeToWeightChanges());
+        },
+        child: CustomScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          slivers: [
+            AppTopBar(title: l10n.tabStats),
+            SliverSafeArea(
+              top: false,
+              sliver: SliverToBoxAdapter(
+                child: BlocBuilder<WeightBloc, WeightState>(
+                  builder: (context, weightState) {
+                    if (weightState is WeightInitial ||
+                        weightState is WeightLoading) {
+                      return const ClampedLayout(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 12,
+                        ),
+                        child: StatisticsShimmerSkeleton(),
+                      );
+                    }
 
-            final entries = switch (weightState) {
-              WeightLoaded(:final entries) => entries,
-              WeightError(:final entries) => entries,
-              _ => <WeightEntry>[],
-            };
-            final filteredEntries = switch (weightState) {
-              WeightLoaded(:final filteredEntries) => filteredEntries,
-              WeightError(:final filteredEntries) => filteredEntries,
-              _ => <WeightEntry>[],
-            };
-            final period = weightState.timePeriod;
-            final now = DateTime.now();
-            final streak = _calculateStreak(entries, now);
-            final compliancePct = _calculateMonthlyCompliance(entries, now);
+                    final entries = switch (weightState) {
+                      WeightLoaded(:final entries) => entries,
+                      WeightError(:final entries) => entries,
+                      _ => <WeightEntry>[],
+                    };
+                    final filteredEntries = switch (weightState) {
+                      WeightLoaded(:final filteredEntries) => filteredEntries,
+                      WeightError(:final filteredEntries) => filteredEntries,
+                      _ => <WeightEntry>[],
+                    };
+                    final period = weightState.timePeriod;
+                    final now = DateTime.now();
+                    final streak = _calculateStreak(entries, now);
+                    final compliancePct = _calculateMonthlyCompliance(
+                      entries,
+                      now,
+                    );
 
-            return BlocBuilder<AppSettingsBloc, AppSettingsState>(
-              builder: (context, settingsState) {
-                final unit = settingsState.measurementUnit;
-                final heightCm = settingsState.height;
-                final targetWeight = settingsState.targetWeight;
+                    return BlocBuilder<AppSettingsBloc, AppSettingsState>(
+                      builder: (context, settingsState) {
+                        final unit = settingsState.measurementUnit;
+                        final heightCm = settingsState.height;
+                        final targetWeight = settingsState.targetWeight;
 
-                return RefreshIndicator(
-                  onRefresh: () async {
-                    context.read<WeightBloc>().add(
-                      const SubscribeToWeightChanges(),
+                        return ClampedLayout(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 12,
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              _buildHabitSummaryCards(
+                                context,
+                                streak: streak,
+                                compliancePct: compliancePct,
+                                l10n: l10n,
+                              ),
+                              const SizedBox(height: 16),
+                              _buildHeroTrendCard(
+                                context,
+                                filteredEntries: filteredEntries,
+                                period: period,
+                                targetWeight: targetWeight,
+                                unit: unit,
+                                l10n: l10n,
+                              ),
+                              const SizedBox(height: 16),
+                              _buildKeyMetricsGrid(
+                                context,
+                                entries: filteredEntries.isNotEmpty
+                                    ? filteredEntries
+                                    : entries,
+                                unit: unit,
+                                heightCm: heightCm,
+                                l10n: l10n,
+                              ),
+                            ],
+                          ),
+                        );
+                      },
                     );
                   },
-                  child: SingleChildScrollView(
-                    physics: const AlwaysScrollableScrollPhysics(),
-                    child: ClampedLayout(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 12,
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          _buildHabitSummaryCards(
-                            context,
-                            streak: streak,
-                            compliancePct: compliancePct,
-                            l10n: l10n,
-                          ),
-                          const SizedBox(height: 16),
-                          _buildHeroTrendCard(
-                            context,
-                            filteredEntries: filteredEntries,
-                            period: period,
-                            targetWeight: targetWeight,
-                            unit: unit,
-                            l10n: l10n,
-                          ),
-                          const SizedBox(height: 16),
-                          _buildKeyMetricsGrid(
-                            context,
-                            entries: filteredEntries.isNotEmpty
-                                ? filteredEntries
-                                : entries,
-                            unit: unit,
-                            heightCm: heightCm,
-                            l10n: l10n,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                );
-              },
-            );
-          },
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );

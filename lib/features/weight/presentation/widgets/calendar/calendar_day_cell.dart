@@ -76,9 +76,9 @@ class CalendarDayCell extends StatelessWidget {
               shape: BoxShape.circle,
               color: isSelected
                   ? cs.primary
-                  : (isToday ? cs.primaryContainer : Colors.transparent),
+                  : Colors.transparent,
               border: isToday && !isSelected
-                  ? Border.all(color: cs.primary, width: 1.5)
+                  ? Border.all(color: cs.primary, width: 1.0)
                   : null,
             ),
             child: Stack(
@@ -94,28 +94,23 @@ class CalendarDayCell extends StatelessWidget {
                           : FontWeight.normal,
                       color: isSelected
                           ? cs.onPrimary
-                          : (isToday ? cs.onPrimaryContainer : cs.onSurface),
+                          : (isToday ? cs.primary : cs.onSurface),
                     ),
                   ),
                 ),
-                // Indicator dots for entries
-                if (hasEntries && !isSelected)
+                // Indicator dot for entries
+                if (hasEntries)
                   Positioned(
                     bottom: 4,
                     left: 0,
                     right: 0,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: List.generate(
-                        entries.length > 1 ? 2 : 1,
-                        (index) => Container(
-                          width: 4,
-                          height: 4,
-                          margin: const EdgeInsets.symmetric(horizontal: 1.5),
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: cs.primary,
-                          ),
+                    child: Center(
+                      child: Container(
+                        width: 4,
+                        height: 4,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: isSelected ? cs.onPrimary : cs.primary,
                         ),
                       ),
                     ),

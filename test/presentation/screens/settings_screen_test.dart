@@ -63,10 +63,10 @@ void main() {
     await tester.pumpWidget(createTestWidget());
     await tester.pump();
 
-    expect(find.text('Profile'), findsOneWidget);
-    expect(find.text('Application'), findsOneWidget);
-    expect(find.text('Security'), findsOneWidget);
-    expect(find.text('Data'), findsOneWidget);
+    expect(find.text('PROFILE'), findsOneWidget);
+    expect(find.text('APPLICATION'), findsOneWidget);
+    expect(find.text('SECURITY'), findsOneWidget);
+    expect(find.text('DATA'), findsOneWidget);
   });
 
   testWidgets('renders height value from settings', (tester) async {
@@ -81,7 +81,7 @@ void main() {
     await tester.pumpWidget(createTestWidget());
     await tester.pump();
 
-    await tester.scrollUntilVisible(find.text('System'), 100);
+    await tester.drag(find.text('PROFILE'), const Offset(0, -500)); await tester.pumpAndSettle();
     await tester.tap(find.text('System'));
     await tester.pump();
 
@@ -97,7 +97,7 @@ void main() {
     await tester.tap(find.text('170 cm'));
     await tester.pumpAndSettle();
 
-    expect(find.text('Set height'), findsOneWidget);
+    expect(find.text('Set Height'), findsOneWidget);
     expect(find.text('Height (cm)'), findsOneWidget);
   });
 
@@ -105,6 +105,7 @@ void main() {
     await tester.pumpWidget(createTestWidget());
     await tester.pump();
 
+    await tester.drag(find.text('PROFILE'), const Offset(0, -500)); await tester.pumpAndSettle();
     await tester.tap(find.text('Metric (kg, cm)'));
     await tester.pump();
 
@@ -120,7 +121,7 @@ void main() {
     await tester.tap(find.text('Not set'));
     await tester.pump();
 
-    expect(find.text('Target weight').last, findsOneWidget);
+    expect(find.text('Target Weight').last, findsOneWidget);
     expect(find.text('Weight (kg)'), findsOneWidget);
   });
 
@@ -152,7 +153,7 @@ void main() {
       await tester.pumpWidget(createTestWidget());
       await tester.pump();
 
-      await tester.scrollUntilVisible(find.byType(Switch).first, 100);
+      await tester.drag(find.text('PROFILE'), const Offset(0, -500)); await tester.pumpAndSettle();
       await tester.tap(find.byType(Switch).first);
       await tester.pumpAndSettle();
 
@@ -167,8 +168,8 @@ void main() {
     await tester.pumpWidget(createTestWidget());
     await tester.pump();
 
-    await tester.scrollUntilVisible(find.text('Wipe all data'), 200);
-    await tester.tap(find.text('Wipe all data'));
+    await tester.drag(find.text('PROFILE'), const Offset(0, -500)); await tester.pumpAndSettle();
+    await tester.tap(find.text('Wipe All Data'));
     await tester.pump();
 
     expect(
@@ -177,18 +178,18 @@ void main() {
       ),
       findsOneWidget,
     );
-    expect(find.text('Wipe data'), findsOneWidget);
+    expect(find.text('Wipe Data'), findsOneWidget);
   });
 
   testWidgets('wipe does not clear hydrated storage', (tester) async {
     await tester.pumpWidget(createTestWidget());
     await tester.pump();
 
-    await tester.scrollUntilVisible(find.text('Wipe all data'), 200);
-    await tester.tap(find.text('Wipe all data'));
+    await tester.drag(find.text('PROFILE'), const Offset(0, -500)); await tester.pumpAndSettle();
+    await tester.tap(find.text('Wipe All Data'));
     await tester.pump();
 
-    await tester.tap(find.text('Wipe data'));
+    await tester.tap(find.text('Wipe Data'));
     await tester.pump();
 
     verifyNever(() => storage.clear());
@@ -215,7 +216,7 @@ void main() {
     await tester.pumpWidget(createTestWidget());
     await tester.pump();
 
-    await tester.scrollUntilVisible(find.text('Export data to CSV'), 200);
+    await tester.drag(find.text('PROFILE'), const Offset(0, -500)); await tester.pumpAndSettle();
     await tester.tap(find.text('Export data to CSV'));
     await tester.pump();
 
@@ -235,9 +236,9 @@ void main() {
     await tester.pump();
 
     expect(find.byType(Row), findsWidgets);
-    expect(find.text('Profile'), findsOneWidget);
-    expect(find.text('Application'), findsOneWidget);
-    expect(find.text('Security'), findsOneWidget);
-    expect(find.text('Data'), findsOneWidget);
+    expect(find.text('PROFILE'), findsOneWidget);
+    expect(find.text('APPLICATION'), findsOneWidget);
+    expect(find.text('SECURITY'), findsOneWidget);
+    expect(find.text('DATA'), findsOneWidget);
   });
 }

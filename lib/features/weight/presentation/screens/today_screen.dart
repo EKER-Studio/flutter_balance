@@ -35,7 +35,6 @@ class TodayScreen extends StatelessWidget {
     final l10n = AppLocalizations.of(context);
 
     return Scaffold(
-      appBar: AppTopBar(title: l10n.todayTabTitle),
       body: BlocConsumer<WeightBloc, WeightState>(
         listenWhen: (previous, current) => current is WeightError,
         listener: (context, state) {
@@ -46,6 +45,7 @@ class TodayScreen extends StatelessWidget {
         builder: (context, state) {
           return _RefreshableTodayBody(
             onRefresh: () => _refreshWeightData(context),
+            title: l10n.todayTabTitle,
             child: _buildBody(context, state, l10n),
           );
         },
@@ -261,19 +261,34 @@ class _RefreshableTodayBody extends StatelessWidget {
   /// The scrollable content subtree.
   final Widget child;
 
-  /// Creates a [_RefreshableTodayBody] with [onRefresh] and [child].
-  const _RefreshableTodayBody({required this.onRefresh, required this.child});
+  /// The title for the sliver app bar.
+  final String title;
+
+  /// Creates a [_RefreshableTodayBody] with [onRefresh], [child], and [title].
+  const _RefreshableTodayBody({
+    required this.onRefresh,
+    required this.child,
+    required this.title,
+  });
 
   @override
   Widget build(BuildContext context) {
     return RefreshIndicator(
       onRefresh: onRefresh,
-      child: SingleChildScrollView(
+      child: CustomScrollView(
         physics: const AlwaysScrollableScrollPhysics(),
-        child: ClampedLayout(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-          child: child,
-        ),
+        slivers: [
+          AppTopBar(title: title),
+          SliverSafeArea(
+            top: false,
+            sliver: SliverToBoxAdapter(
+              child: ClampedLayout(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                child: child,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

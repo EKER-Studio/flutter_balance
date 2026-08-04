@@ -81,111 +81,127 @@ class _CalendarScreenState extends State<CalendarScreen> {
     final isSelectedDateFuture = _selectedDate.isAfter(todayEnd);
 
     return Scaffold(
-      appBar: AppTopBar(title: l10n.tabCalendar),
-      body: SafeArea(
-        child: BlocBuilder<WeightBloc, WeightState>(
-          builder: (context, state) {
-            if (state is WeightInitial || state is WeightLoading) {
-              return const ClampedLayout(
-                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                child: CalendarShimmerSkeleton(),
-              );
-            }
-
-            if (state is WeightError) {
-              return ClampedLayout(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 12,
-                ),
-                child: CalendarErrorCard(
-                  errorMessage: state.errorType.localizedMessage(l10n),
-                ),
-              );
-            }
-
-            final entries = switch (state) {
-              WeightLoaded(:final entries) => entries,
-              _ => <WeightEntry>[],
-            };
-
-            // Filter entries for the selected day
-            final dayEntries = entries
-                .where((e) => DateUtils.isSameDay(e.dateTime, _selectedDate))
-                .toList();
-
-            return ClampedLayout(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              child: SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    // Top Calendar Card
-                    Card(
-                      elevation: 0,
-                      color: Theme.of(context).colorScheme.surfaceContainerLow,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(28),
+      body: CustomScrollView(
+        slivers: [
+          AppTopBar(title: l10n.tabCalendar),
+          SliverSafeArea(
+            top: false,
+            sliver: SliverToBoxAdapter(
+              child: BlocBuilder<WeightBloc, WeightState>(
+                builder: (context, state) {
+                  if (state is WeightInitial || state is WeightLoading) {
+                    return const ClampedLayout(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 12,
                       ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(16),
-                        child: Column(
-                          children: [
-                            CalendarMonthHeader(
-                              focusedMonth: _focusedMonth,
-                              onPreviousMonth: _previousMonth,
-                              onNextMonth: _nextMonth,
-                            ),
-                            const SizedBox(height: 16),
-                            const CalendarWeekdayHeader(),
-                            const SizedBox(height: 12),
-                            CalendarGrid(
-                              focusedMonth: _focusedMonth,
-                              selectedDate: _selectedDate,
-                              entries: entries,
-                              targetWeight: targetWeight,
-                              onDaySelected: (date, _) => _onDaySelected(date),
-                            ),
-                          ],
-                        ),
+                      child: CalendarShimmerSkeleton(),
+                    );
+                  }
+
+                  if (state is WeightError) {
+                    return ClampedLayout(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 12,
                       ),
-                    ),
-                    const SizedBox(height: 20),
-                    // Selected Day Header
-                    Padding(
-                      padding: const EdgeInsets.only(left: 8, bottom: 8),
-                      child: Text(
-                        l10n.entriesFromDate(formattedSelectedDate),
-                        style: Theme.of(context).textTheme.titleMedium
-                            ?.copyWith(
-                              fontWeight: FontWeight.bold,
-                              color: Theme.of(
-                                context,
-                              ).colorScheme.onSurfaceVariant,
-                            ),
+                      child: CalendarErrorCard(
+                        errorMessage: state.errorType.localizedMessage(l10n),
                       ),
-                    ),
-                    // Selected Day Details / Future / Empty State Card
-                    if (isSelectedDateFuture)
-                      CalendarDayFutureCard(
-                        selectedDate: _selectedDate,
-                        onSelectToday: () => _onDaySelected(DateTime.now()),
+                    );
+                  }
+
+                  final entries = switch (state) {
+                    WeightLoaded(:final entries) => entries,
+                    _ => <WeightEntry>[],
+                  };
+
+                  // Filter entries for the selected day
+                  final dayEntries = entries
+                      .where(
+                        (e) => DateUtils.isSameDay(e.dateTime, _selectedDate),
                       )
-                    else if (dayEntries.isEmpty)
-                      CalendarDayEmptyCard(selectedDate: _selectedDate)
-                    else
-                      CalendarDayEntriesCard(
-                        selectedDate: _selectedDate,
-                        entries: dayEntries,
-                        targetWeight: targetWeight,
-                      ),
-                    const SizedBox(height: 80),
-                  ],
-                ),
+                      .toList();
+
+                  return ClampedLayout(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 12,
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        // Top Calendar Card
+                        Card(
+                          elevation: 0,
+                          color: Theme.of(
+                            context,
+                          ).colorScheme.surfaceContainerLow,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(28),
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.all(16),
+                            child: Column(
+                              children: [
+                                CalendarMonthHeader(
+                                  focusedMonth: _focusedMonth,
+                                  onPreviousMonth: _previousMonth,
+                                  onNextMonth: _nextMonth,
+                                ),
+                                const SizedBox(height: 16),
+                                const CalendarWeekdayHeader(),
+                                const SizedBox(height: 12),
+                                CalendarGrid(
+                                  focusedMonth: _focusedMonth,
+                                  selectedDate: _selectedDate,
+                                  entries: entries,
+                                  targetWeight: targetWeight,
+                                  onDaySelected: (date, _) =>
+                                      _onDaySelected(date),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 20),
+                        // Selected Day Header
+                        Padding(
+                          padding: const EdgeInsets.only(left: 8, bottom: 8),
+                          child: Text(
+                            l10n.entriesFromDate(formattedSelectedDate),
+                            style: Theme.of(context).textTheme.titleMedium
+                                ?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                  color: Theme.of(
+                                    context,
+                                  ).colorScheme.onSurfaceVariant,
+                                ),
+                          ),
+                        ),
+                        // Selected Day Details / Future / Empty State Card
+                        if (isSelectedDateFuture)
+                          CalendarDayFutureCard(
+                            selectedDate: _selectedDate,
+                            onSelectToday: () => _onDaySelected(DateTime.now()),
+                          )
+                        else if (dayEntries.isEmpty)
+                          CalendarDayEmptyCard(selectedDate: _selectedDate)
+                        else
+                          CalendarDayEntriesCard(
+                            selectedDate: _selectedDate,
+                            entries: dayEntries,
+                            targetWeight: targetWeight,
+                          ),
+                        const SizedBox(height: 80),
+                      ],
+                    ),
+                  );
+                },
               ),
-            );
-          },
-        ),
+            ),
+          ),
+        ],
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => _showAddWeightSheet(context),

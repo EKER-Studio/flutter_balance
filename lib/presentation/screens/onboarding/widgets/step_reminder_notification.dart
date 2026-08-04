@@ -19,17 +19,10 @@ class StepReminderNotification extends StatefulWidget {
 }
 
 class _StepReminderNotificationState extends State<StepReminderNotification> {
-  TimeOfDay? _selectedTime;
-
-  /// Toggles the notification permission and dispatches the event to [AppSettingsBloc].
-  Future<void> _handleToggle(BuildContext context, bool enabled) async {
-    context.read<AppSettingsBloc>().add(ToggleNotifications(enabled));
-  }
-
   /// Opens the time picker and dispatches the selected time to [AppSettingsBloc].
   Future<void> _handleTimePicker(BuildContext context) async {
     final l10n = AppLocalizations.of(context);
-    final initialTime = _selectedTime ?? TimeOfDay.now();
+    final initialTime = context.read<AppSettingsBloc>().state.notificationTime;
 
     final picked = await showTimePicker(
       context: context,
@@ -45,9 +38,6 @@ class _StepReminderNotificationState extends State<StepReminderNotification> {
     );
 
     if (picked != null && context.mounted) {
-      setState(() {
-        _selectedTime = picked;
-      });
       context.read<AppSettingsBloc>().add(UpdateNotificationTime(picked));
 
       ScaffoldMessenger.of(context).showSnackBar(
@@ -57,6 +47,11 @@ class _StepReminderNotificationState extends State<StepReminderNotification> {
         ),
       );
     }
+  }
+
+  /// Toggles the notification permission and dispatches the event to [AppSettingsBloc].
+  Future<void> _handleToggle(BuildContext context, bool enabled) async {
+    context.read<AppSettingsBloc>().add(ToggleNotifications(enabled));
   }
 
   @override
@@ -70,6 +65,7 @@ class _StepReminderNotificationState extends State<StepReminderNotification> {
         builder: (context, settingsState) {
           final enabled = settingsState.notificationsEnabled;
           final permissionDenied = settingsState.notificationPermissionDenied;
+          final notificationTime = settingsState.notificationTime;
 
           return Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -163,6 +159,7 @@ class _StepReminderNotificationState extends State<StepReminderNotification> {
                             Expanded(
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisSize: MainAxisSize.min, // Fix: Prevents layout crash inside Row
                                 children: [
                                   Text(
                                     l10n.reminderTime,
@@ -172,9 +169,7 @@ class _StepReminderNotificationState extends State<StepReminderNotification> {
                                   ),
                                   const SizedBox(height: 4.0),
                                   Text(
-                                    _selectedTime != null
-                                        ? _selectedTime!.format(context)
-                                        :                                     l10n.notSet,
+                                    notificationTime.format(context),
                                     style: theme.textTheme.bodyMedium?.copyWith(
                                       color: theme.colorScheme.onSurfaceVariant,
                                     ),

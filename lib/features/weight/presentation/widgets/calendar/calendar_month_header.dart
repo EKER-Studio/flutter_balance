@@ -28,33 +28,36 @@ class CalendarMonthHeader extends StatelessWidget {
       Localizations.localeOf(context).toString(),
     ).format(focusedMonth);
 
-    return Card(
-      elevation: 0,
-      color: Theme.of(context).colorScheme.surfaceContainerLow,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            IconButton(
-              icon: const Icon(Icons.chevron_left),
-              onPressed: onPreviousMonth,
-              tooltip: l10n.previousMonth,
-            ),
-            Text(
-              monthYearStr,
-              style: Theme.of(
-                context,
-              ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
-            ),
-            IconButton(
-              icon: const Icon(Icons.chevron_right),
-              onPressed: onNextMonth,
-              tooltip: l10n.nextMonth,
-            ),
-          ],
-        ),
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            monthYearStr,
+            style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: Theme.of(context).colorScheme.onSurface,
+                ),
+          ),
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              IconButton(
+                icon: const Icon(Icons.chevron_left),
+                onPressed: onPreviousMonth,
+                tooltip: l10n.previousMonth,
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+              ),
+              IconButton(
+                icon: const Icon(Icons.chevron_right),
+                onPressed: onNextMonth,
+                tooltip: l10n.nextMonth,
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }

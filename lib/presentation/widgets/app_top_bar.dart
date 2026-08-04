@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 ///
 /// Displays a unified 64dp toolbar with the primary weight scale branding icon,
 /// localized screen title, and optional action buttons.
-class AppTopBar extends StatelessWidget implements PreferredSizeWidget {
+class AppTopBar extends StatelessWidget {
   /// The title text to display in the app bar.
   final String title;
 
@@ -15,18 +15,17 @@ class AppTopBar extends StatelessWidget implements PreferredSizeWidget {
   const AppTopBar({super.key, required this.title, this.actions});
 
   @override
-  Size get preferredSize => const Size.fromHeight(64);
-
-  @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
 
-    return AppBar(
+    return SliverAppBar(
       toolbarHeight: 64,
       elevation: 0,
       scrolledUnderElevation: 0,
       backgroundColor: colorScheme.surface,
+      floating: true,
+      snap: true,
       titleSpacing: 16,
       title: Text(
         title,
