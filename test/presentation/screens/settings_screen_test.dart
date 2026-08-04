@@ -168,8 +168,22 @@ void main() {
     expect(find.byIcon(Icons.palette), findsOneWidget);
     expect(find.byIcon(Icons.notifications), findsOneWidget);
     expect(find.byIcon(Icons.fingerprint), findsOneWidget);
-    expect(find.byIcon(Icons.import_export), findsOneWidget);
+    expect(find.byIcon(Icons.file_upload), findsOneWidget);
+    expect(find.byIcon(Icons.file_download), findsOneWidget);
     expect(find.byIcon(Icons.delete_forever), findsOneWidget);
+  });
+
+  testWidgets('shows empty export snackbar when exporting with no entries', (
+    tester,
+  ) async {
+    await tester.pumpWidget(createTestWidget());
+    await tester.pump();
+
+    await tester.scrollUntilVisible(find.text('Export data to CSV'), 200);
+    await tester.tap(find.text('Export data to CSV'));
+    await tester.pump();
+
+    expect(find.text('No weight entries to export.'), findsOneWidget);
   });
 
   testWidgets('renders 2-column layout on wide screen (tablet / landscape)', (

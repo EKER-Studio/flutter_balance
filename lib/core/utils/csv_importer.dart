@@ -146,7 +146,7 @@ class CsvImporter {
   /// Parses a single CSV line respecting quoted fields.
   static List<String> _parseCsvLine(String line, String delimiter) {
     final fields = <String>[];
-    String current = '';
+    final current = StringBuffer();
     bool inQuotes = false;
 
     for (int i = 0; i < line.length; i++) {
@@ -156,26 +156,26 @@ class CsvImporter {
         if (char == '"') {
           // Check for escaped quote
           if (i + 1 < line.length && line[i + 1] == '"') {
-            current += '"';
+            current.write('"');
             i++; // skip next quote
           } else {
             inQuotes = false;
           }
         } else {
-          current += char;
+          current.write(char);
         }
       } else {
         if (char == '"') {
           inQuotes = true;
         } else if (char == delimiter) {
-          fields.add(current);
-          current = '';
+          fields.add(current.toString());
+          current.clear();
         } else {
-          current += char;
+          current.write(char);
         }
       }
     }
-    fields.add(current);
+    fields.add(current.toString());
     return fields;
   }
 }

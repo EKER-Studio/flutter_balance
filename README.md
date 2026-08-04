@@ -69,8 +69,8 @@ lib/
 - Automated BMI calculation from configured height.
 
 ### Data Management
-- **CSV Import**: Batch import entries via `CsvImporter` with row validation.
-- **CSV Export** *(planned)*: Export data via `CsvExporter` to a CSV file on disk once a UI entry point ships.
+- **CSV Import**: Batch import entries via `CsvImporter` with row validation and isolate background parsing.
+- **CSV Export**: Export entries via `CsvExporter` to a CSV file on disk and share via native OS share dialog.
   - Column format: `ID`, `Date`, `Weight (kg)`, `Note`
 - **Unit System**: Seamless switching between Metric (kg, cm) and Imperial (lb, ft/in).
 

@@ -3,10 +3,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pure_weight/l10n/app_localizations.dart';
 import 'package:pure_weight/core/utils/unit_converter.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:pure_weight/core/services/biometric_service.dart';
+import 'package:pure_weight/core/utils/csv_exporter.dart';
 import 'package:pure_weight/core/utils/csv_importer.dart';
+import 'package:pure_weight/features/weight/domain/entities/weight_entry.dart';
 import 'package:pure_weight/features/weight/presentation/bloc/weight_bloc.dart';
 import 'package:pure_weight/features/weight/presentation/bloc/weight_event.dart';
+import 'package:pure_weight/features/weight/presentation/bloc/weight_state.dart';
 import 'package:pure_weight/features/weight/presentation/utils/measurement_unit_localizer.dart';
 import 'package:pure_weight/presentation/bloc/settings/app_settings_bloc.dart';
 import 'package:pure_weight/presentation/bloc/settings/app_settings_event.dart';
@@ -226,6 +230,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                     _DataSection(
                                       l10n: l10n,
                                       onImportTap: () => _importCsv(context),
+                                      onExportTap: () => _exportCsv(context),
                                       onWipeTap: () =>
                                           _showWipeConfirmation(context),
                                     ),
@@ -282,6 +287,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                               _DataSection(
                                 l10n: l10n,
                                 onImportTap: () => _importCsv(context),
+                                onExportTap: () => _exportCsv(context),
                                 onWipeTap: () => _showWipeConfirmation(context),
                               ),
                             ],
@@ -510,6 +516,58 @@ class _SettingsScreenState extends State<SettingsScreen> {
             content: Text(
               AppLocalizations.of(context).importError(e.toString()),
             ),
+          ),
+        );
+      }
+    }
+  }
+
+  Future<void> _exportCsv(BuildContext context) async {
+    final l10n = AppLocalizations.of(context);
+    try {
+      final weightState = context.read<WeightBloc>().state;
+      final entries = weightState is WeightLoaded
+          ? weightState.entries
+          : <WeightEntry>[];
+
+      if (entries.isEmpty) {
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(l10n.exportNoData),
+            ),
+          );
+        }
+        return;
+      }
+
+      final exportedFile = await CsvExporter.exportToFile(entries);
+
+      if (context.mounted) {
+        final box = context.findRenderObject() as RenderBox?;
+        final originRect =
+            box != null ? box.localToGlobal(Offset.zero) & box.size : null;
+
+        await Share.shareXFiles(
+          [XFile(exportedFile.path)],
+          subject: 'PureWeight Export CSV',
+          sharePositionOrigin: originRect,
+        );
+
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(l10n.exportSuccess),
+              backgroundColor: Theme.of(context).colorScheme.tertiary,
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(l10n.exportError(e.toString())),
           ),
         );
       }
@@ -1056,11 +1114,13 @@ class _SecuritySection extends StatelessWidget {
 class _DataSection extends StatelessWidget {
   final AppLocalizations l10n;
   final VoidCallback onImportTap;
+  final VoidCallback onExportTap;
   final VoidCallback onWipeTap;
 
   const _DataSection({
     required this.l10n,
     required this.onImportTap,
+    required this.onExportTap,
     required this.onWipeTap,
   });
 
@@ -1076,10 +1136,16 @@ class _DataSection extends StatelessWidget {
       child: Column(
         children: [
           _CustomSettingsTile(
-            icon: Icons.import_export,
+            icon: Icons.file_upload,
             title: l10n.importCsv,
             sectionLabel: l10n.dataSection,
             onTap: onImportTap,
+          ),
+          _CustomSettingsTile(
+            icon: Icons.file_download,
+            title: l10n.exportCsv,
+            sectionLabel: l10n.dataSection,
+            onTap: onExportTap,
           ),
           _CustomSettingsTile(
             icon: Icons.delete_forever,

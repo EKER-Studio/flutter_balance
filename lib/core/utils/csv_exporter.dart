@@ -1,5 +1,7 @@
+import 'dart:io';
 import 'package:csv/csv.dart';
 import 'package:intl/intl.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:pure_weight/features/weight/domain/entities/weight_entry.dart';
 
 /// Utility class for exporting weight measurements as formatted CSV files.
@@ -7,7 +9,8 @@ class CsvExporter {
   /// Generates a CSV-formatted string from [entries].
   ///
   /// Formats column headers as `['ID', 'Date', 'Weight (kg)', 'Note']` and formats timestamps as `yyyy-MM-dd HH:mm`.
-  /// Returns a [String] containing the encoded CSV data rows separated by newlines (`\n`).
+  ///
+  /// @param entries List of weight entry entities to encode.
   static String generateCsv(List<WeightEntry> entries) {
     final List<List<dynamic>> rows = [
       ['ID', 'Date', 'Weight (kg)', 'Note'],
@@ -24,6 +27,17 @@ class CsvExporter {
       ]);
     }
 
-    return CsvEncoder(lineDelimiter: '\n').convert(rows);
+    return const CsvEncoder(lineDelimiter: '\n').convert(rows);
+  }
+
+  /// Writes [entries] as a temporary CSV file on disk.
+  ///
+  /// @param entries List of weight entry entities to export.
+  static Future<File> exportToFile(List<WeightEntry> entries) async {
+    final csvData = generateCsv(entries);
+    final tempDir = await getTemporaryDirectory();
+    final timestamp = DateFormat('yyyyMMdd_HHmmss').format(DateTime.now());
+    final file = File('${tempDir.path}/pure_weight_export_$timestamp.csv');
+    return file.writeAsString(csvData);
   }
 }
