@@ -8,14 +8,12 @@ import 'package:pure_weight/features/weight/domain/entities/weight_entry.dart';
 import 'package:pure_weight/features/weight/domain/time_period.dart';
 import 'package:pure_weight/features/weight/domain/weight_error_type.dart';
 import 'package:pure_weight/features/weight/presentation/bloc/weight_bloc.dart';
-import 'package:pure_weight/features/weight/presentation/bloc/weight_event.dart';
 import 'package:pure_weight/features/weight/presentation/bloc/weight_state.dart';
 import 'package:pure_weight/features/weight/presentation/screens/today_screen.dart';
 import 'package:pure_weight/features/weight/presentation/widgets/add_weight_sheet.dart';
 import 'package:pure_weight/features/weight/presentation/widgets/today_shimmer_skeleton.dart';
 import 'package:pure_weight/l10n/app_localizations.dart';
 import 'package:pure_weight/presentation/bloc/settings/app_settings_bloc.dart';
-import 'package:pure_weight/presentation/bloc/settings/app_settings_event.dart';
 
 class MockHydratedStorage extends Mock implements HydratedStorage {}
 
@@ -29,11 +27,11 @@ void main() {
   setUp(() {
     storage = MockHydratedStorage();
     HydratedBloc.storage = storage;
-    when(() => storage.read(any())).thenReturn(null);
+    when(() => storage.read(any())).thenReturn({'height': 170.0});
     when(() => storage.write(any(), any())).thenAnswer((_) async {});
 
     weightBloc = MockWeightBloc();
-    settingsBloc = AppSettingsBloc()..add(const UpdateHeight(170.0));
+    settingsBloc = AppSettingsBloc();
   });
 
   Widget createTestWidget(Widget child) {
@@ -58,6 +56,11 @@ void main() {
   testWidgets('renders shimmer skeleton during WeightLoading state', (
     tester,
   ) async {
+    tester.view.physicalSize = const Size(800, 3000);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
     when(() => weightBloc.state).thenReturn(const WeightLoading());
     when(
       () => weightBloc.stream,
@@ -73,6 +76,11 @@ void main() {
   testWidgets(
     'renders error card with retry button during WeightError state with empty entries',
     (tester) async {
+      tester.view.physicalSize = const Size(800, 3000);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+
       when(() => weightBloc.state).thenReturn(
         const WeightError(
           errorType: WeightErrorType.readFailed,
@@ -93,14 +101,22 @@ void main() {
       await tester.pumpWidget(createTestWidget(const TodayScreen()));
       await tester.pump();
 
-      expect(find.text('Failed to read weight data.'), findsWidgets);
-      expect(find.text('Try again'), findsWidgets);
+      expect(
+        find.text('Failed to read weight data.', skipOffstage: false),
+        findsWidgets,
+      );
+      expect(find.text('Try again', skipOffstage: false), findsWidgets);
     },
   );
 
   testWidgets(
     'renders inline error banner when WeightError state occurs with cached entries',
     (tester) async {
+      tester.view.physicalSize = const Size(800, 3000);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+
       final entry = WeightEntry(
         id: 1,
         weightKg: 70.0,
@@ -127,14 +143,25 @@ void main() {
       await tester.pumpWidget(createTestWidget(const TodayScreen()));
       await tester.pump();
 
-      expect(find.byIcon(Icons.warning_amber_rounded), findsOneWidget);
-      expect(find.text('Failed to save weight data.'), findsWidgets);
+      expect(
+        find.byIcon(Icons.warning_amber_rounded, skipOffstage: false),
+        findsOneWidget,
+      );
+      expect(
+        find.text('Failed to save weight data.', skipOffstage: false),
+        findsWidgets,
+      );
     },
   );
 
   testWidgets('renders cold start empty state when no weight entries exist', (
     tester,
   ) async {
+    tester.view.physicalSize = const Size(800, 3000);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
     when(() => weightBloc.state).thenReturn(
       const WeightLoaded(
         entries: [],
@@ -157,14 +184,25 @@ void main() {
     await tester.pumpWidget(createTestWidget(const TodayScreen()));
     await tester.pump();
 
-    expect(find.text('Welcome to PureWeight!'), findsOneWidget);
-    expect(find.text('Add first measurement'), findsOneWidget);
+    expect(
+      find.text('Welcome to PureWeight!', skipOffstage: false),
+      findsOneWidget,
+    );
+    expect(
+      find.text('Add first measurement', skipOffstage: false),
+      findsOneWidget,
+    );
     expect(find.byType(FloatingActionButton), findsNothing);
   });
 
   testWidgets('tapping Add first measurement button opens AddWeightSheet', (
     tester,
   ) async {
+    tester.view.physicalSize = const Size(800, 3000);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
     when(() => weightBloc.state).thenReturn(
       const WeightLoaded(
         entries: [],
@@ -196,6 +234,11 @@ void main() {
   testWidgets('renders cards and FAB when weight entries exist', (
     tester,
   ) async {
+    tester.view.physicalSize = const Size(800, 3000);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
     final entry = WeightEntry(id: 1, weightKg: 72.5, dateTime: DateTime.now());
 
     when(() => weightBloc.state).thenReturn(
@@ -220,17 +263,28 @@ void main() {
     await tester.pumpWidget(createTestWidget(const TodayScreen()));
     await tester.pumpAndSettle();
 
-    expect(find.text('25.1'), findsOneWidget);
-    expect(find.text('Current BMI'), findsOneWidget);
-    expect(find.text('Weight trend'), findsOneWidget);
-    expect(find.text('Latest measurement'), findsOneWidget);
-    expect(find.byIcon(Icons.lightbulb_outline), findsOneWidget);
+    expect(find.text('25.1', skipOffstage: false), findsOneWidget);
+    expect(find.text('Current BMI', skipOffstage: false), findsOneWidget);
+    expect(find.text('Weight trend', skipOffstage: false), findsOneWidget);
+    expect(
+      find.text('Latest measurement', skipOffstage: false),
+      findsOneWidget,
+    );
+    expect(
+      find.byIcon(Icons.lightbulb_outline, skipOffstage: false),
+      findsOneWidget,
+    );
     expect(find.byType(FloatingActionButton), findsOneWidget);
   });
 
   testWidgets('tapping FAB opens AddWeightSheet when entries exist', (
     tester,
   ) async {
+    tester.view.physicalSize = const Size(800, 3000);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
     final entry = WeightEntry(id: 1, weightKg: 72.5, dateTime: DateTime.now());
 
     when(() => weightBloc.state).thenReturn(

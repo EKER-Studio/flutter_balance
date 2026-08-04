@@ -36,21 +36,19 @@ class TodayScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppTopBar(title: l10n.todayTabTitle),
-      body: SafeArea(
-        child: BlocConsumer<WeightBloc, WeightState>(
-          listenWhen: (previous, current) => current is WeightError,
-          listener: (context, state) {
-            if (state is WeightError && state.entries.isNotEmpty) {
-              _showErrorSnackBar(context, state.errorType, l10n);
-            }
-          },
-          builder: (context, state) {
-            return _RefreshableTodayBody(
-              onRefresh: () => _refreshWeightData(context),
-              child: _buildBody(context, state, l10n),
-            );
-          },
-        ),
+      body: BlocConsumer<WeightBloc, WeightState>(
+        listenWhen: (previous, current) => current is WeightError,
+        listener: (context, state) {
+          if (state is WeightError && state.entries.isNotEmpty) {
+            _showErrorSnackBar(context, state.errorType, l10n);
+          }
+        },
+        builder: (context, state) {
+          return _RefreshableTodayBody(
+            onRefresh: () => _refreshWeightData(context),
+            child: _buildBody(context, state, l10n),
+          );
+        },
       ),
       floatingActionButton: BlocBuilder<WeightBloc, WeightState>(
         builder: (context, state) {
