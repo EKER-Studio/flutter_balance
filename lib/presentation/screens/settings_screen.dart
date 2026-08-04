@@ -23,9 +23,12 @@ import 'package:pure_weight/presentation/widgets/app_top_bar.dart';
 import 'package:pure_weight/presentation/widgets/target_weight_dialog.dart';
 import 'dart:io';
 
+/// Dialog for entering the user's height in centimeters.
 class _HeightDialog extends StatefulWidget {
+  /// The currently stored height in cm, or `null` if not set yet.
   final double? currentValue;
 
+  /// Creates a [_HeightDialog] pre-filled with [currentValue].
   const _HeightDialog({required this.currentValue});
 
   @override
@@ -51,6 +54,7 @@ class _HeightDialogState extends State<_HeightDialog> {
     super.dispose();
   }
 
+  /// Validates the entered height and pops it as a result on success.
   void _handleSave() {
     FocusScope.of(context).unfocus();
     final text = _controller.text.trim().replaceAll(',', '.');
@@ -107,8 +111,12 @@ class _HeightDialogState extends State<_HeightDialog> {
 }
 
 /// Screen for managing profile, application, security, and data settings.
+///
+/// Provides height, target weight, theme, measurement unit, daily reminder,
+/// biometric lock, and CSV import/export/wipe controls. On wide layouts the
+/// sections are arranged in a two-column grid.
 class SettingsScreen extends StatefulWidget {
-  /// Creates a settings screen.
+  /// Creates a [SettingsScreen].
   const SettingsScreen({super.key});
 
   @override
@@ -305,6 +313,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
+  /// Shows the height dialog and persists the entered value to both the
+  /// [AppSettingsBloc] and [WeightBloc].
   void _showHeightDialog(BuildContext dialogContext) async {
     final currentHeight = dialogContext.read<AppSettingsBloc>().state.height;
 
@@ -319,6 +329,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     context.read<WeightBloc>().add(UpdateUserHeight(result));
   }
 
+  /// Shows the target weight dialog and persists the result on confirm.
   void _showTargetWeightDialog(BuildContext dialogContext) async {
     final currentTarget = dialogContext
         .read<AppSettingsBloc>()
@@ -339,6 +350,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     }
   }
 
+  /// Shows the theme mode selection dialog and applies the chosen mode.
   void _showThemeSelection(BuildContext dialogContext) {
     final state = dialogContext.read<AppSettingsBloc>().state;
     final l10n = AppLocalizations.of(dialogContext);
@@ -370,6 +382,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
+  /// Shows the measurement unit selection dialog and applies the chosen unit.
   void _showUnitSelection(BuildContext dialogContext) {
     final state = dialogContext.read<AppSettingsBloc>().state;
     final l10n = AppLocalizations.of(dialogContext);
@@ -407,6 +420,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   String _unitLabel(MeasurementUnit unit, AppLocalizations l10n) =>
       unit.localizedName(l10n);
 
+  /// Asks for confirmation before wiping all stored weight data.
   void _showWipeConfirmation(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     showDialog(
@@ -434,6 +448,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
+  /// Clears all weight entries and resets every app setting.
   Future<void> _wipeDatabase(BuildContext context) async {
     try {
       context.read<WeightBloc>().add(const ClearAllWeightData());
@@ -461,6 +476,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
     }
   }
 
+  /// Picks a CSV file, parses it via [CsvImporter], and bulk-imports the
+  /// resulting entries into [WeightBloc].
   Future<void> _importCsv(BuildContext context) async {
     try {
       final result = await FilePicker.pickFiles(
@@ -522,6 +539,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     }
   }
 
+  /// Exports the current weight entries via [CsvExporter] and shares the file.
   Future<void> _exportCsv(BuildContext context) async {
     final l10n = AppLocalizations.of(context);
     try {
@@ -571,6 +589,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     }
   }
 
+  /// Toggles the daily reminder after requesting OS notification permission.
   Future<void> _handleNotificationToggle(
     BuildContext context,
     bool enabled,
@@ -605,6 +624,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     bloc.add(ToggleNotifications(enabled));
   }
 
+  /// Toggles the biometric lock, authenticating the user before enabling it.
   Future<void> _handleBiometricToggle(
     BuildContext context,
     bool enabled,
@@ -651,6 +671,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     }
   }
 
+  /// Shows the time picker and persists the chosen reminder time.
   Future<void> _selectNotificationTime(
     BuildContext context,
     TimeOfDay initialTime,
@@ -665,9 +686,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 }
 
+/// Section header label rendered above each settings group.
 class _SectionHeader extends StatelessWidget {
+  /// The section title text.
   final String label;
 
+  /// Creates a [_SectionHeader] with the given [label].
   const _SectionHeader({required this.label});
 
   @override
@@ -684,14 +708,31 @@ class _SectionHeader extends StatelessWidget {
   }
 }
 
+/// Tappable settings list tile with icon, title, optional trailing value,
+/// error styling, and keyboard focus ring for accessibility.
 class _CustomSettingsTile extends StatefulWidget {
+  /// Leading icon rendered inside a circular container.
   final IconData icon;
+
+  /// Tile title text.
   final String title;
+
+  /// Optional trailing value text shown before the chevron.
   final String? valueText;
+
+  /// Callback invoked when the tile is tapped; `null` disables the tap.
   final VoidCallback? onTap;
+
+  /// Whether the tile is rendered with error colors.
   final bool isError;
+
+  /// Whether a trailing chevron icon is shown.
   final bool showChevron;
+
+  /// Optional parent section label prepended to the accessibility label.
   final String? sectionLabel;
+
+  /// Creates a [_CustomSettingsTile] with the given properties.
   const _CustomSettingsTile({
     required this.icon,
     required this.title,
@@ -843,14 +884,27 @@ class _CustomSettingsTileState extends State<_CustomSettingsTile> {
   }
 }
 
+/// Settings list tile with a trailing switch, used for boolean preferences.
 class _CustomSwitchTile extends StatefulWidget {
+  /// Leading icon rendered inside a circular container.
   final IconData icon;
+
+  /// Tile title text.
   final String title;
+
+  /// Optional supporting text below the title.
   final String? subtitle;
+
+  /// The current switch state.
   final bool value;
+
+  /// Callback invoked when the switch is toggled; `null` disables it.
   final ValueChanged<bool>? onChanged;
+
+  /// Optional parent section label prepended to the accessibility label.
   final String? sectionLabel;
 
+  /// Creates a [_CustomSwitchTile] with the given properties.
   const _CustomSwitchTile({
     required this.icon,
     required this.title,
@@ -953,12 +1007,21 @@ class _CustomSwitchTileState extends State<_CustomSwitchTile> {
   }
 }
 
+/// Profile settings group with height and target weight tiles.
 class _ProfileSection extends StatelessWidget {
+  /// The current app settings state driving the displayed values.
   final AppSettingsState state;
+
+  /// Localized strings for this section.
   final AppLocalizations l10n;
+
+  /// Callback invoked when the height tile is tapped.
   final VoidCallback onHeightTap;
+
+  /// Callback invoked when the target weight tile is tapped.
   final VoidCallback onTargetWeightTap;
 
+  /// Creates a [_ProfileSection] with the given dependencies.
   const _ProfileSection({
     required this.state,
     required this.l10n,
@@ -1005,14 +1068,27 @@ class _ProfileSection extends StatelessWidget {
   }
 }
 
+/// Application settings group with unit, theme, and reminder controls.
 class _ApplicationSection extends StatelessWidget {
+  /// The current app settings state driving the displayed values.
   final AppSettingsState state;
+
+  /// Localized strings for this section.
   final AppLocalizations l10n;
+
+  /// Callback invoked when the theme tile is tapped.
   final VoidCallback onThemeTap;
+
+  /// Callback invoked when the measurement unit tile is tapped.
   final VoidCallback onUnitTap;
+
+  /// Callback invoked when the notifications switch is toggled.
   final ValueChanged<bool> onNotificationsChanged;
+
+  /// Callback invoked when the reminder time tile is tapped.
   final VoidCallback onNotificationTimeTap;
 
+  /// Creates an [_ApplicationSection] with the given dependencies.
   const _ApplicationSection({
     required this.state,
     required this.l10n,
@@ -1072,14 +1148,27 @@ class _ApplicationSection extends StatelessWidget {
   }
 }
 
+/// Security settings group with the biometric lock switch.
 class _SecuritySection extends StatelessWidget {
+  /// The current app settings state driving the displayed values.
   final AppSettingsState state;
+
+  /// Localized strings for this section.
   final AppLocalizations l10n;
+
+  /// Future resolving to whether biometric hardware is available.
   final Future<bool> isBiometricAvailable;
+
+  /// Callback invoked when the biometric lock switch is toggled.
   final ValueChanged<bool> onBiometricChanged;
+
+  /// Label shown when biometrics are available.
   final String biometricsAvailableLabel;
+
+  /// Label shown when biometrics are not available.
   final String biometricsNotAvailableLabel;
 
+  /// Creates a [_SecuritySection] with the given dependencies.
   const _SecuritySection({
     required this.state,
     required this.l10n,
@@ -1122,12 +1211,21 @@ class _SecuritySection extends StatelessWidget {
   }
 }
 
+/// Data settings group with CSV import, export, and wipe controls.
 class _DataSection extends StatelessWidget {
+  /// Localized strings for this section.
   final AppLocalizations l10n;
+
+  /// Callback invoked when the import tile is tapped.
   final VoidCallback onImportTap;
+
+  /// Callback invoked when the export tile is tapped.
   final VoidCallback onExportTap;
+
+  /// Callback invoked when the wipe data tile is tapped.
   final VoidCallback onWipeTap;
 
+  /// Creates a [_DataSection] with the given dependencies.
   const _DataSection({
     required this.l10n,
     required this.onImportTap,

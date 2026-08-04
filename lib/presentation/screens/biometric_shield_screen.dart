@@ -18,6 +18,7 @@ class BiometricShieldScreen extends StatefulWidget {
   State<BiometricShieldScreen> createState() => _BiometricShieldScreenState();
 }
 
+/// Locked state behind the biometric shield, showing the unlock prompt.
 class _BiometricShieldScreenState extends State<BiometricShieldScreen> {
   @override
   void initState() {

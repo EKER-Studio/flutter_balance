@@ -27,6 +27,8 @@ class OnboardingWizardScreen extends StatefulWidget {
   State<OnboardingWizardScreen> createState() => _OnboardingWizardScreenState();
 }
 
+/// Orchestrates the five onboarding steps and persists each step's choices
+/// into [AppSettingsBloc] and [WeightBloc] as the user progresses.
 class _OnboardingWizardScreenState extends State<OnboardingWizardScreen> {
   final PageController _pageController = PageController();
   int _currentStep = 0;
@@ -50,6 +52,7 @@ class _OnboardingWizardScreenState extends State<OnboardingWizardScreen> {
     super.dispose();
   }
 
+  /// Animates the page view to [step] and updates the step indicator.
   void _goToStep(int step) {
     setState(() {
       _currentStep = step;
@@ -61,6 +64,7 @@ class _OnboardingWizardScreenState extends State<OnboardingWizardScreen> {
     );
   }
 
+  /// Persists the chosen [unit] and [heightCm], then advances.
   void _handleUnitsHeightNext(MeasurementUnit unit, double heightCm) {
     setState(() {
       _selectedUnit = unit;
@@ -80,6 +84,7 @@ class _OnboardingWizardScreenState extends State<OnboardingWizardScreen> {
     _goToStep(1);
   }
 
+  /// Persists the chosen [targetWeightKg] (or `null` when skipped), then advances.
   void _handleTargetWeightNext(double? targetWeightKg) {
     setState(() {
       _targetWeightKg = targetWeightKg;
@@ -97,6 +102,8 @@ class _OnboardingWizardScreenState extends State<OnboardingWizardScreen> {
     _goToStep(4);
   }
 
+  /// Logs the initial [weightKg] measurement at [timestamp], completes
+  /// onboarding, and notifies [OnboardingWizardScreen.onWizardCompleted].
   void _handleInitialWeightComplete(double weightKg, DateTime timestamp) {
     // Log initial weight entry
     try {
@@ -113,6 +120,8 @@ class _OnboardingWizardScreenState extends State<OnboardingWizardScreen> {
     widget.onWizardCompleted?.call();
   }
 
+  /// Wraps a step in a scrollable, full-height column for small screens and
+  /// keyboard inset safety.
   Widget _buildStepWrapper(Widget child) {
     return LayoutBuilder(
       builder: (context, constraints) {
