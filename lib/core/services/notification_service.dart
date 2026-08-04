@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:flutter_timezone/flutter_timezone.dart';
 import 'package:timezone/data/latest.dart' as tz_data;
 import 'package:timezone/timezone.dart' as tz;
 
@@ -61,10 +62,9 @@ class NotificationService {
     try {
       tz_data.initializeTimeZones();
 
-      // Use the device's local timezone for scheduling.
-      // tz.local is already set to the device's local timezone by the timezone package.
-      final localLocation = tz.getLocation(tz.local.name);
-      tz.setLocalLocation(localLocation);
+      // Fetch the device's actual local timezone string (e.g. "Europe/Warsaw")
+      final String timeZoneName = await FlutterTimezone.getLocalTimezone();
+      tz.setLocalLocation(tz.getLocation(timeZoneName));
 
       // Create the Android notification channel explicitly.
       final androidChannel = AndroidNotificationChannel(
