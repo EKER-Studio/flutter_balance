@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:pure_weight/core/services/notification_service.dart';
 import 'package:pure_weight/presentation/bloc/settings/app_settings_bloc.dart';
 import 'package:pure_weight/presentation/bloc/settings/bmi_category.dart';
 import 'package:pure_weight/presentation/bloc/settings/app_settings_event.dart';
@@ -12,24 +13,40 @@ import 'package:pure_weight/core/models/measurement_unit.dart';
 
 class MockHydratedStorage extends Mock implements HydratedStorage {}
 
+class MockNotificationService extends Mock implements NotificationService {}
+
 void main() {
   late MockHydratedStorage storage;
+  late MockNotificationService mockNotificationService;
+
+  setUpAll(() {
+    registerFallbackValue(const TimeOfDay(hour: 8, minute: 0));
+  });
 
   setUp(() {
     storage = MockHydratedStorage();
+    mockNotificationService = MockNotificationService();
 
     HydratedBloc.storage = storage;
     when(() => storage.read(any())).thenReturn(null);
     when(() => storage.write(any(), any())).thenAnswer((_) async {});
+    when(() => mockNotificationService.requestPermissions())
+        .thenAnswer((_) async => true);
+    when(() => mockNotificationService.scheduleDailyReminder(any()))
+        .thenAnswer((_) async {});
+    when(() => mockNotificationService.cancelDailyReminder())
+        .thenAnswer((_) async {});
   });
 
   group('AppSettingsBloc', () {
     test('initial state has correct defaults', () {
-      final bloc = AppSettingsBloc();
+      final bloc = AppSettingsBloc(
+        notificationService: mockNotificationService,
+      );
       expect(bloc.state.themeMode, AppThemeMode.system);
       expect(bloc.state.measurementUnit, MeasurementUnit.metric);
       expect(bloc.state.height, 170.0);
-      expect(bloc.state.notificationsEnabled, true);
+      expect(bloc.state.notificationsEnabled, false);
       expect(bloc.state.notificationTime, const TimeOfDay(hour: 8, minute: 0));
       expect(bloc.state.isLocked, false);
       expect(bloc.state.isOnboardingCompleted, false);
@@ -60,7 +77,8 @@ void main() {
 
     blocTest<AppSettingsBloc, AppSettingsState>(
       'emits updated state on UpdateTheme',
-      build: () => AppSettingsBloc(),
+      build: () =>
+          AppSettingsBloc(notificationService: mockNotificationService),
       act: (bloc) => bloc.add(const UpdateTheme(AppThemeMode.dark)),
       expect: () => [
         isA<AppSettingsState>().having(
@@ -73,7 +91,8 @@ void main() {
 
     blocTest<AppSettingsBloc, AppSettingsState>(
       'emits updated state on UpdateMeasurementUnit',
-      build: () => AppSettingsBloc(),
+      build: () =>
+          AppSettingsBloc(notificationService: mockNotificationService),
       act: (bloc) =>
           bloc.add(const UpdateMeasurementUnit(MeasurementUnit.imperial)),
       expect: () => [
@@ -87,7 +106,8 @@ void main() {
 
     blocTest<AppSettingsBloc, AppSettingsState>(
       'emits updated state on UpdateHeight',
-      build: () => AppSettingsBloc(),
+      build: () =>
+          AppSettingsBloc(notificationService: mockNotificationService),
       act: (bloc) => bloc.add(const UpdateHeight(180.0)),
       expect: () => [
         isA<AppSettingsState>().having((s) => s.height, 'height', 180.0),
@@ -95,8 +115,55 @@ void main() {
     );
 
     blocTest<AppSettingsBloc, AppSettingsState>(
-      'emits updated state on ToggleNotifications',
-      build: () => AppSettingsBloc(),
+      'emits notificationsEnabled true and schedules reminder on ToggleNotifications(true) when granted',
+      build: () =>
+          AppSettingsBloc(notificationService: mockNotificationService),
+      act: (bloc) => bloc.add(const ToggleNotifications(true)),
+      expect: () => [
+        isA<AppSettingsState>().having(
+          (s) => s.notificationsEnabled,
+          'notificationsEnabled',
+          true,
+        ),
+      ],
+      verify: (_) {
+        verify(() => mockNotificationService.requestPermissions()).called(1);
+        verify(
+          () => mockNotificationService.scheduleDailyReminder(
+            const TimeOfDay(hour: 8, minute: 0),
+          ),
+        ).called(1);
+      },
+    );
+
+    blocTest<AppSettingsBloc, AppSettingsState>(
+      'emits notificationsEnabled false on ToggleNotifications(true) when permission denied',
+      setUp: () {
+        when(() => mockNotificationService.requestPermissions())
+            .thenAnswer((_) async => false);
+      },
+      build: () =>
+          AppSettingsBloc(notificationService: mockNotificationService),
+      act: (bloc) => bloc.add(const ToggleNotifications(true)),
+      expect: () => [
+        isA<AppSettingsState>().having(
+          (s) => s.notificationsEnabled,
+          'notificationsEnabled',
+          false,
+        ),
+      ],
+      verify: (_) {
+        verify(() => mockNotificationService.requestPermissions()).called(1);
+        verifyNever(
+          () => mockNotificationService.scheduleDailyReminder(any()),
+        );
+      },
+    );
+
+    blocTest<AppSettingsBloc, AppSettingsState>(
+      'emits notificationsEnabled false and cancels reminder on ToggleNotifications(false)',
+      build: () =>
+          AppSettingsBloc(notificationService: mockNotificationService),
       seed: () => const AppSettingsState(notificationsEnabled: true),
       act: (bloc) => bloc.add(const ToggleNotifications(false)),
       expect: () => [
@@ -106,11 +173,16 @@ void main() {
           false,
         ),
       ],
+      verify: (_) {
+        verify(() => mockNotificationService.cancelDailyReminder()).called(1);
+      },
     );
 
     blocTest<AppSettingsBloc, AppSettingsState>(
-      'emits updated state on UpdateNotificationTime',
-      build: () => AppSettingsBloc(),
+      'emits updated state and reschedules when enabled on UpdateNotificationTime',
+      build: () =>
+          AppSettingsBloc(notificationService: mockNotificationService),
+      seed: () => const AppSettingsState(notificationsEnabled: true),
       act: (bloc) => bloc.add(
         const UpdateNotificationTime(TimeOfDay(hour: 12, minute: 30)),
       ),
@@ -121,11 +193,19 @@ void main() {
           const TimeOfDay(hour: 12, minute: 30),
         ),
       ],
+      verify: (_) {
+        verify(
+          () => mockNotificationService.scheduleDailyReminder(
+            const TimeOfDay(hour: 12, minute: 30),
+          ),
+        ).called(1);
+      },
     );
 
     blocTest<AppSettingsBloc, AppSettingsState>(
       'emits locked state on SetLocked(true)',
-      build: () => AppSettingsBloc(),
+      build: () =>
+          AppSettingsBloc(notificationService: mockNotificationService),
       act: (bloc) => bloc.add(const SetLocked(true)),
       expect: () => [
         isA<AppSettingsState>().having((s) => s.isLocked, 'isLocked', true),
@@ -134,7 +214,8 @@ void main() {
 
     blocTest<AppSettingsBloc, AppSettingsState>(
       'clears locked state on SetLocked(false)',
-      build: () => AppSettingsBloc(),
+      build: () =>
+          AppSettingsBloc(notificationService: mockNotificationService),
       seed: () => const AppSettingsState(isLocked: true),
       act: (bloc) => bloc.add(const SetLocked(false)),
       expect: () => [
@@ -144,7 +225,8 @@ void main() {
 
     blocTest<AppSettingsBloc, AppSettingsState>(
       'emits updated state on CompleteOnboarding',
-      build: () => AppSettingsBloc(),
+      build: () =>
+          AppSettingsBloc(notificationService: mockNotificationService),
       act: (bloc) => bloc.add(const CompleteOnboarding()),
       expect: () => [
         isA<AppSettingsState>().having(
@@ -157,7 +239,8 @@ void main() {
 
     blocTest<AppSettingsBloc, AppSettingsState>(
       'preserves other fields when updating theme',
-      build: () => AppSettingsBloc(),
+      build: () =>
+          AppSettingsBloc(notificationService: mockNotificationService),
       seed: () => const AppSettingsState(
         measurementUnit: MeasurementUnit.imperial,
         height: 185.0,
@@ -248,7 +331,7 @@ void main() {
       expect(state.themeMode, AppThemeMode.system);
       expect(state.measurementUnit, MeasurementUnit.metric);
       expect(state.height, 170.0);
-      expect(state.notificationsEnabled, true);
+      expect(state.notificationsEnabled, false);
       expect(state.notificationTime, const TimeOfDay(hour: 8, minute: 0));
       expect(state.isOnboardingCompleted, false);
     });
@@ -313,7 +396,7 @@ void main() {
       expect(json['themeMode'], 'system');
       expect(json['measurementUnit'], 'metric');
       expect(json['heightCm'], 170.0);
-      expect(json['notificationsEnabled'], true);
+      expect(json['notificationsEnabled'], false);
       expect(json['notificationTime']['hour'], 8);
       expect(json['notificationTime']['minute'], 0);
       expect(json['isOnboardingCompleted'], false);

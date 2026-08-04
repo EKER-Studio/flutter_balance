@@ -86,6 +86,41 @@ class NotificationService {
     }
   }
 
+  /// Requests notification permissions on iOS, macOS, and Android 13+.
+  ///
+  /// Returns `true` if permission is granted, `false` otherwise.
+  Future<bool> requestPermissions() async {
+    if (!_initialized) {
+      await initialize();
+    }
+    try {
+      final androidGranted = await _plugin
+          .resolvePlatformSpecificImplementation<
+            AndroidFlutterLocalNotificationsPlugin
+          >()
+          ?.requestNotificationsPermission();
+
+      final iosGranted = await _plugin
+          .resolvePlatformSpecificImplementation<
+            IOSFlutterLocalNotificationsPlugin
+          >()
+          ?.requestPermissions(alert: true, badge: true, sound: true);
+
+      final macosGranted = await _plugin
+          .resolvePlatformSpecificImplementation<
+            MacOSFlutterLocalNotificationsPlugin
+          >()
+          ?.requestPermissions(alert: true, badge: true, sound: true);
+
+      return (androidGranted ?? true) && (iosGranted ?? macosGranted ?? true);
+    } catch (e) {
+      if (kDebugMode) {
+        debugPrint('NotificationService.requestPermissions error: $e');
+      }
+      return false;
+    }
+  }
+
   /// Schedules (or replaces) a repeating daily reminder at [time].
   ///
   /// Takes a mandatory [TimeOfDay] [time] specifying when the daily reminder should fire.

@@ -118,13 +118,13 @@ void main() {
     expect(find.text('Weight (kg)'), findsOneWidget);
   });
 
-  testWidgets('shows notification switch enabled by default', (tester) async {
+  testWidgets('shows notification switch disabled by default', (tester) async {
     await tester.pumpWidget(createTestWidget());
     await tester.pump();
 
     final switchFinder = find.byType(Switch).first;
     expect(switchFinder, findsOneWidget);
-    expect(tester.widget<Switch>(switchFinder).value, isTrue);
+    expect(tester.widget<Switch>(switchFinder).value, isFalse);
   });
 
   testWidgets('shows wipe confirmation dialog', (tester) async {

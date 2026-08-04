@@ -45,7 +45,7 @@ final class AppSettingsState extends Equatable {
     this.themeMode = AppThemeMode.system,
     this.measurementUnit = MeasurementUnit.metric,
     this.height = defaultHeightCm,
-    this.notificationsEnabled = true,
+    this.notificationsEnabled = false,
     this.notificationTime = const TimeOfDay(hour: 8, minute: 0),
     this.targetWeight,
     this.isBiometricLockEnabled = false,
@@ -111,7 +111,7 @@ final class AppSettingsState extends Equatable {
         orElse: () => MeasurementUnit.metric,
       ),
       height: (heightValue as num?)?.toDouble() ?? defaultHeightCm,
-      notificationsEnabled: json['notificationsEnabled'] as bool? ?? true,
+      notificationsEnabled: json['notificationsEnabled'] as bool? ?? false,
       notificationTime: (() {
         final notifTime = json['notificationTime'];
         if (notifTime == null || notifTime is! Map<String, dynamic>) {

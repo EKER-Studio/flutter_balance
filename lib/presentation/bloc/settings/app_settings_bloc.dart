@@ -7,8 +7,13 @@ import 'package:pure_weight/presentation/bloc/settings/app_settings_state.dart';
 ///
 /// All settings are persisted across app restarts via [HydratedBloc].
 class AppSettingsBloc extends HydratedBloc<AppSettingsEvent, AppSettingsState> {
+  final NotificationService _notificationService;
+
   /// Creates an [AppSettingsBloc] initialized with default settings.
-  AppSettingsBloc() : super(const AppSettingsState()) {
+  AppSettingsBloc({NotificationService? notificationService})
+      : _notificationService =
+            notificationService ?? NotificationService.instance,
+        super(const AppSettingsState()) {
     on<UpdateTheme>(_onUpdateTheme);
     on<UpdateMeasurementUnit>(_onUpdateMeasurementUnit);
     on<UpdateHeight>(_onUpdateHeight);
@@ -40,13 +45,19 @@ class AppSettingsBloc extends HydratedBloc<AppSettingsEvent, AppSettingsState> {
     ToggleNotifications event,
     Emitter<AppSettingsState> emit,
   ) async {
-    emit(state.copyWith(notificationsEnabled: event.enabled));
     if (event.enabled) {
-      await NotificationService.instance.scheduleDailyReminder(
-        state.notificationTime,
-      );
+      final granted = await _notificationService.requestPermissions();
+      if (granted) {
+        emit(state.copyWith(notificationsEnabled: true));
+        await _notificationService.scheduleDailyReminder(
+          state.notificationTime,
+        );
+      } else {
+        emit(state.copyWith(notificationsEnabled: false));
+      }
     } else {
-      await NotificationService.instance.cancelDailyReminder();
+      emit(state.copyWith(notificationsEnabled: false));
+      await _notificationService.cancelDailyReminder();
     }
   }
 
@@ -56,7 +67,7 @@ class AppSettingsBloc extends HydratedBloc<AppSettingsEvent, AppSettingsState> {
   ) async {
     emit(state.copyWith(notificationTime: event.notificationTime));
     if (state.notificationsEnabled) {
-      await NotificationService.instance.scheduleDailyReminder(
+      await _notificationService.scheduleDailyReminder(
         event.notificationTime,
       );
     }
