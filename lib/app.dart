@@ -79,12 +79,16 @@ class _AppState extends State<App> {
     }
   }
 
-  Widget _buildAppContent(WeightRepository repository, AppSettingsState settingsState) {
+  Widget _buildAppContent(
+    WeightRepository repository,
+    AppSettingsState settingsState,
+  ) {
     return RepositoryProvider.value(
       value: repository,
       child: BlocProvider(
-        create: (context) => WeightBloc(repository: context.read<WeightRepository>())
-          ..add(const SubscribeToWeightChanges()),
+        create: (context) =>
+            WeightBloc(repository: context.read<WeightRepository>())
+              ..add(const SubscribeToWeightChanges()),
         child: _ObserverRegistrar(
           localizedReason: () => _l10n.biometricAuthReason,
           child: _LocalizationSync(
@@ -100,8 +104,8 @@ class _AppState extends State<App> {
             child: !settingsState.isOnboardingCompleted
                 ? const OnboardingWizardScreen()
                 : (settingsState.isLocked
-                    ? const BiometricShieldScreen()
-                    : const MainNavigationScreen()),
+                      ? const BiometricShieldScreen()
+                      : const MainNavigationScreen()),
           ),
         ),
       ),
@@ -117,7 +121,7 @@ class _AppState extends State<App> {
           AppThemeMode.light => ThemeMode.light,
           AppThemeMode.dark => ThemeMode.dark,
         };
-        
+
         return MaterialApp(
           onGenerateTitle: (context) => AppLocalizations.of(context).appTitle,
           theme: AppTheme.lightTheme,
@@ -126,7 +130,7 @@ class _AppState extends State<App> {
           debugShowCheckedModeBanner: false,
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: widget.repositoryOverride != null 
+          home: widget.repositoryOverride != null
               ? _buildAppContent(widget.repositoryOverride!, settingsState)
               : FutureBuilder<WeightRepository>(
                   future: _initFuture,

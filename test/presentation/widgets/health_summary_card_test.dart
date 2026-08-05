@@ -42,7 +42,9 @@ void main() {
   testWidgets('renders goal and BMI details from app settings', (tester) async {
     final bloc = AppSettingsBloc();
     bloc.add(const UpdateHeight(180)); // Set height to calculate BMI
-    bloc.add(const TargetWeightChanged(70.0)); // Add a target weight so goal section shows
+    bloc.add(
+      const TargetWeightChanged(70.0),
+    ); // Add a target weight so goal section shows
     await tester.pumpAndSettle();
 
     await tester.pumpWidget(
@@ -91,7 +93,9 @@ void main() {
 
   testWidgets('opens TargetWeightDialog on goal button tap', (tester) async {
     final bloc = AppSettingsBloc();
-    bloc.add(const TargetWeightChanged(70.0)); // Ensure button exists and is not achieved
+    bloc.add(
+      const TargetWeightChanged(70.0),
+    ); // Ensure button exists and is not achieved
     await tester.pumpAndSettle();
 
     await tester.pumpWidget(
