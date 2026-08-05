@@ -61,7 +61,10 @@ void main() {
       await tester.enterText(find.byType(TextField), '-5');
       await tester.pump();
 
-      expect(find.text('Please enter a valid positive number.'), findsOneWidget);
+      expect(
+        find.text('Please enter a valid positive number.'),
+        findsOneWidget,
+      );
     });
 
     testWidgets('shows validation error for invalid weight (>500)', (
@@ -76,7 +79,10 @@ void main() {
       await tester.enterText(find.byType(TextField), '600');
       await tester.pump();
 
-      expect(find.text('Please enter a valid positive number.'), findsOneWidget);
+      expect(
+        find.text('Please enter a valid positive number.'),
+        findsOneWidget,
+      );
     });
 
     testWidgets('calls onComplete with valid metric weight', (tester) async {
@@ -97,7 +103,7 @@ void main() {
 
       await tester.enterText(find.byType(TextField), '75.5');
       await tester.pumpAndSettle();
-      
+
       final nextButton = find.text('Complete Setup');
       await tester.ensureVisible(nextButton);
       await tester.tap(nextButton);
@@ -127,7 +133,7 @@ void main() {
 
       await tester.enterText(find.byType(TextField), '150.0');
       await tester.pumpAndSettle();
-      
+
       final nextButton = find.text('Complete Setup');
       await tester.ensureVisible(nextButton);
       await tester.tap(nextButton);

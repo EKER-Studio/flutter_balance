@@ -139,7 +139,7 @@ class _OnboardingWizardScreenState extends State<OnboardingWizardScreen> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context);
-    
+
     final isBiometricSupported = context.select(
       (AppSettingsBloc bloc) => bloc.state.isBiometricSupported,
     );
@@ -159,13 +159,9 @@ class _OnboardingWizardScreenState extends State<OnboardingWizardScreen> {
           onNext: _handleTargetWeightNext,
         ),
       ),
-      _buildStepWrapper(
-        StepReminderNotification(onNext: _handleReminderNext),
-      ),
+      _buildStepWrapper(StepReminderNotification(onNext: _handleReminderNext)),
       if (isBiometricSupported)
-        _buildStepWrapper(
-          StepBiometricLock(onNext: _handleBiometricNext),
-        ),
+        _buildStepWrapper(StepBiometricLock(onNext: _handleBiometricNext)),
       _buildStepWrapper(
         StepInitialWeight(
           unit: _selectedUnit,

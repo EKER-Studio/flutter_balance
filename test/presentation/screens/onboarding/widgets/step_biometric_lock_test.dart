@@ -38,24 +38,21 @@ void main() {
   }
 
   group('StepBiometricLock Widget Tests', () {
-    testWidgets(
-      'renders step title, description, switch, and next button',
-      (tester) async {
-        await tester.pumpWidget(buildSubject(onNext: () {}));
-        await tester.pumpAndSettle();
-
-        expect(find.text('Biometric Lock (Optional)'), findsWidgets);
-        expect(find.byKey(const Key('biometric_step_switch')), findsOneWidget);
-        expect(
-          find.byKey(const Key('biometric_step_next_button')),
-          findsOneWidget,
-        );
-      },
-    );
-
-    testWidgets('invokes onNext when next button is pressed', (
+    testWidgets('renders step title, description, switch, and next button', (
       tester,
     ) async {
+      await tester.pumpWidget(buildSubject(onNext: () {}));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Biometric Lock (Optional)'), findsWidgets);
+      expect(find.byKey(const Key('biometric_step_switch')), findsOneWidget);
+      expect(
+        find.byKey(const Key('biometric_step_next_button')),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('invokes onNext when next button is pressed', (tester) async {
       int nextCount = 0;
       await tester.pumpWidget(buildSubject(onNext: () => nextCount++));
       await tester.pumpAndSettle();

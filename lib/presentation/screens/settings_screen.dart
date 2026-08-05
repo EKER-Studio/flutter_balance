@@ -297,7 +297,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                             crossAxisAlignment:
                                                 CrossAxisAlignment.start,
                                             children: [
-                                              if (state.isBiometricSupported) ...[
+                                              if (state
+                                                  .isBiometricSupported) ...[
                                                 _SectionHeader(
                                                   label: l10n.securitySection,
                                                 ),

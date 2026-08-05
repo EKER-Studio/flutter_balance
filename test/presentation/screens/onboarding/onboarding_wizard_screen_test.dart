@@ -203,9 +203,11 @@ void main() {
       },
     );
 
-    testWidgets('skips Biometric step if device does not support it', (tester) async {
+    testWidgets('skips Biometric step if device does not support it', (
+      tester,
+    ) async {
       settingsBloc.add(const UpdateBiometricSupport(false));
-      
+
       await tester.pumpWidget(buildSubject());
       await tester.pumpAndSettle();
 
@@ -222,7 +224,7 @@ void main() {
 
       expect(find.text('Step 3 of 4'), findsOneWidget);
       expect(find.text('Daily Reminder (Optional)'), findsOneWidget);
-      
+
       // Navigate to next step (Should be Initial Weight, skipping Biometric)
       await tester.tap(find.text('Next').first);
       await tester.pumpAndSettle(); // step 4

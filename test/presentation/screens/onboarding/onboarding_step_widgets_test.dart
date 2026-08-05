@@ -93,7 +93,9 @@ void main() {
       expect(find.text('Next'), findsOneWidget);
     });
 
-    testWidgets('calls onNext(null) when Next pressed with empty input', (tester) async {
+    testWidgets('calls onNext(null) when Next pressed with empty input', (
+      tester,
+    ) async {
       double? result;
       bool called = false;
 
@@ -161,23 +163,24 @@ void main() {
       expect(find.text('Complete Setup'), findsOneWidget);
     });
 
-    testWidgets('Complete Setup button is disabled if initial weight is empty', (
-      tester,
-    ) async {
-      await tester.pumpWidget(
-        buildApp(
-          StepInitialWeight(
-            unit: MeasurementUnit.metric,
-            onComplete: (_, _) {},
+    testWidgets(
+      'Complete Setup button is disabled if initial weight is empty',
+      (tester) async {
+        await tester.pumpWidget(
+          buildApp(
+            StepInitialWeight(
+              unit: MeasurementUnit.metric,
+              onComplete: (_, _) {},
+            ),
           ),
-        ),
-      );
+        );
 
-      final button = tester.widget<FilledButton>(
-        find.widgetWithText(FilledButton, 'Complete Setup'),
-      );
-      expect(button.onPressed, isNull);
-    });
+        final button = tester.widget<FilledButton>(
+          find.widgetWithText(FilledButton, 'Complete Setup'),
+        );
+        expect(button.onPressed, isNull);
+      },
+    );
 
     testWidgets('calls onComplete when valid weight is entered', (
       tester,
@@ -202,7 +205,7 @@ void main() {
         '82.3',
       );
       await tester.pumpAndSettle();
-      
+
       final nextButton = find.text('Complete Setup');
       await tester.ensureVisible(nextButton);
       await tester.tap(nextButton);
