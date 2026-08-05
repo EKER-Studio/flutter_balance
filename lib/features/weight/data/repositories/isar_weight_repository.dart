@@ -58,7 +58,8 @@ class IsarWeightRepository implements WeightRepository {
   /// Secure storage instance for retrieving the encryption key.
   final FlutterSecureStorage secureStorage;
 
-  /// Cached AES-256 encryption key.
+  /// Cached AES-256 encryption key, dropped on stream failures so it is
+  /// re-read from secure storage once the device is unlocked again.
   Uint8List? _encryptionKey;
 
   /// Creates a repository backed by [isar] and managed secure storage.

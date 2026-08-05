@@ -185,6 +185,8 @@ class BiometricService {
     }
   }
 
+  /// Runs the platform authentication flow and maps every outcome (including
+  /// platform exceptions) to a [BiometricAuthResult].
   Future<BiometricAuthResult> _performAuthentication({
     required String localizedReason,
     Iterable<AuthMessages>? authMessages,

@@ -94,10 +94,14 @@ class _OnboardingWizardScreenState extends State<OnboardingWizardScreen> {
     _goToStep(_currentStep + 1);
   }
 
+  /// Advances past the notification step without additional action; the
+  /// reminder state is already persisted by [StepReminderNotification].
   void _handleReminderNext() {
     _goToStep(_currentStep + 1);
   }
 
+  /// Advances past the biometric lock step; the choice is already persisted
+  /// by [StepBiometricLock].
   void _handleBiometricNext() {
     _goToStep(_currentStep + 1);
   }

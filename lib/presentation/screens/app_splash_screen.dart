@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 /// Being a Flutter widget, it correctly responds to the app's internal theme
 /// preferences (dark/light) regardless of the host OS theme.
 class AppSplashScreen extends StatelessWidget {
+  /// Creates an [AppSplashScreen] displayed while the app initializes.
   const AppSplashScreen({super.key});
 
   @override

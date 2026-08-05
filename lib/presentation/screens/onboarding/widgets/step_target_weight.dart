@@ -72,6 +72,7 @@ class _StepTargetWeightState extends State<StepTargetWeight> {
     return parsed;
   }
 
+  /// Validates [value] on every keystroke and updates the inline error text.
   void _validate(String value) {
     final trimmed = value.trim();
     if (trimmed.isEmpty) {
@@ -93,6 +94,8 @@ class _StepTargetWeightState extends State<StepTargetWeight> {
     }
   }
 
+  /// Invokes [StepTargetWeight.onNext] with the parsed target weight (or
+  /// `null` when the field was left empty).
   void _handleNext() {
     final weightKg = _parseTargetWeightKg();
     widget.onNext(weightKg);

@@ -51,6 +51,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
     super.dispose();
   }
 
+  /// Updates [_focusedMonth] to match the page now centered in the view.
   void _onPageChanged(int index) {
     final offset = index - _initialPage;
     final now = DateTime.now();

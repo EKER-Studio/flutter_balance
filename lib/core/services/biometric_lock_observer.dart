@@ -58,6 +58,8 @@ class BiometricLockObserver with WidgetsBindingObserver {
     }
   }
 
+  /// Re-checks the Isar instance after the app resumes and invokes
+  /// [onDatabaseReopened] when the database had to be re-opened.
   Future<void> _verifyDatabaseIntegrity() async {
     try {
       final result = await DatabaseModule.ensureInstanceIntegrity();
@@ -73,6 +75,8 @@ class BiometricLockObserver with WidgetsBindingObserver {
     }
   }
 
+  /// Locks the app when it is backgrounded and biometric lock is enabled,
+  /// unless an authentication dialog is active or the app is already locked.
   Future<void> _checkBiometricLock() async {
     if (!_isLockEnabled) return;
 

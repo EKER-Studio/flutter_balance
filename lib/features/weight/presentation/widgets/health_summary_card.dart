@@ -129,6 +129,8 @@ class HealthSummaryCard extends StatelessWidget {
     );
   }
 
+  /// Builds the latest-measurement column: label, big weight value, and a
+  /// localized relative timestamp.
   Widget _buildLatestMeasurementInfo(
     BuildContext context,
     double displayWeight,
@@ -182,6 +184,8 @@ class HealthSummaryCard extends StatelessWidget {
     );
   }
 
+  /// Builds the tappable BMI badge showing the current value and category
+  /// color; tapping opens the [BmiLegendDialog].
   Widget _buildBmiBadge(
     BuildContext context,
     double bmi,
@@ -280,6 +284,8 @@ class HealthSummaryCard extends StatelessWidget {
     );
   }
 
+  /// Builds the goal progress section: remaining weight text and a progress
+  /// bar; tapping opens the target weight dialog.
   Widget _buildGoalProgress(
     BuildContext context,
     double targetWeightKg,
@@ -371,6 +377,8 @@ class HealthSummaryCard extends StatelessWidget {
     );
   }
 
+  /// Opens the [TargetWeightDialog] and dispatches the resulting target
+  /// weight change (or its removal) to [AppSettingsBloc].
   Future<void> _openTargetWeightDialog(
     BuildContext context,
     double? targetWeightKg,
@@ -400,6 +408,8 @@ class HealthSummaryCard extends StatelessWidget {
     }
   }
 
+  /// Formats [date] as a localized time ("today at 7:30 AM") or a date-time
+  /// pair for older measurements, returning an empty string when [date] is null.
   String _formatTimestamp(
     BuildContext context,
     DateTime? date,

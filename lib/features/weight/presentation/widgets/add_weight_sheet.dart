@@ -30,6 +30,7 @@ class AddWeightSheet extends StatefulWidget {
   State<AddWeightSheet> createState() => _AddWeightSheetState();
 }
 
+/// State owning the form controllers, selected date/time, and save flow.
 class _AddWeightSheetState extends State<AddWeightSheet> {
   final _formKey = GlobalKey<FormState>();
   final _weightController = TextEditingController();

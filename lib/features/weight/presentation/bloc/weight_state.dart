@@ -10,6 +10,7 @@ sealed class WeightState {
   /// Currently selected time period for the chart.
   final TimePeriod timePeriod;
 
+  /// Creates a [WeightState] with optional [heightCm] and a default [timePeriod].
   const WeightState({this.heightCm, this.timePeriod = TimePeriod.week});
 }
 

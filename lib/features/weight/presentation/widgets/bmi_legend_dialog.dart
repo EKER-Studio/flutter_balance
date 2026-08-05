@@ -3,6 +3,7 @@ import 'package:pure_weight/l10n/app_localizations.dart';
 
 /// A dialog that explains the BMI categories and their corresponding colors.
 class BmiLegendDialog extends StatelessWidget {
+  /// Creates a [BmiLegendDialog] explaining the BMI category ranges and colors.
   const BmiLegendDialog({super.key});
 
   @override
@@ -67,6 +68,8 @@ class BmiLegendDialog extends StatelessWidget {
     );
   }
 
+  /// Builds one legend row: a colored range swatch, the category [label],
+  /// and the numeric BMI [range], shaded for light or dark mode.
   Widget _buildLegendItem({
     required BuildContext context,
     required String label,

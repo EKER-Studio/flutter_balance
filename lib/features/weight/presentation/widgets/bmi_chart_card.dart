@@ -7,9 +7,16 @@ import 'package:pure_weight/l10n/app_localizations.dart';
 
 /// A composite card that displays a BMI chart over time with colored zones and a summary header.
 class BmiChartCard extends StatelessWidget {
+  /// All recorded weight entries used to compute and plot the BMI history.
   final List<WeightEntry> entries;
+
+  /// The user's height in centimetres, required to derive BMI values.
+  ///
+  /// When null, zero, or when there are too few entries, the card shows a
+  /// contextual empty-state message instead of a chart.
   final double? heightCm;
 
+  /// Creates a [BmiChartCard] with the given [entries] and [heightCm].
   const BmiChartCard({
     super.key,
     required this.entries,
@@ -43,6 +50,8 @@ class BmiChartCard extends StatelessWidget {
     );
   }
 
+  /// Builds the card header: a title row with a tappable BMI category chip
+  /// when height and entries are available, otherwise a legend help button.
   Widget _buildHeader(
     BuildContext context,
     ColorScheme cs,
@@ -153,6 +162,7 @@ class BmiChartCard extends StatelessWidget {
     );
   }
 
+  /// Opens the [BmiLegendDialog] explaining BMI category colors.
   void _showLegendDialog(BuildContext context) {
     showDialog<void>(
       context: context,
@@ -160,6 +170,8 @@ class BmiChartCard extends StatelessWidget {
     );
   }
 
+  /// Builds the chart area: the BMI [LineChart] when height and at least two
+  /// entries are available, otherwise a contextual empty-state message.
   Widget _buildChartContent(
     BuildContext context,
     ColorScheme cs,
@@ -329,6 +341,8 @@ class BmiChartCard extends StatelessWidget {
     );
   }
 
+  /// Computes the X-axis label interval for [sortedEntries] so roughly four
+  /// labels fit across the visible time span.
   double _getBottomInterval(List<WeightEntry> sortedEntries) {
     if (sortedEntries.length <= 1) return 1;
 
@@ -340,6 +354,8 @@ class BmiChartCard extends StatelessWidget {
     return (days / 4).clamp(1.0, double.infinity);
   }
 
+  /// Formats the date shown under each bottom axis tick, switching to a
+  /// month-year format when the chart spans more than 180 days.
   Widget _buildBottomTitle(
     double value,
     TitleMeta meta,

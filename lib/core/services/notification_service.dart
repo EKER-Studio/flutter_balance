@@ -17,23 +17,36 @@ import 'package:timezone/timezone.dart' as tz;
 /// );
 /// ```
 class NotificationService {
+  /// Private constructor to enforce singleton pattern.
   NotificationService._();
 
   /// The single shared instance of [NotificationService].
   static final NotificationService instance = NotificationService._();
 
+  /// Unique identifier for the daily weight reminder notification.
   static const int _dailyReminderId = 0;
+
+  /// Android notification channel ID for daily weight reminders.
   static const String _channelId = 'daily_weight_reminders_v2';
 
+  /// Underlying plugin instance for local notifications.
   final FlutterLocalNotificationsPlugin _plugin =
       FlutterLocalNotificationsPlugin();
 
+  /// Whether the notification service has been initialized.
   bool _initialized = false;
 
+  /// Display name for the Android notification channel.
   String _channelName = 'Daily Weight Reminders';
+
+  /// Description for the Android notification channel.
   String _channelDescription =
       'Reminds you to record your daily weight measurement.';
+
+  /// Title text for the daily weight reminder notification.
   String _title = 'Time to weigh in!';
+
+  /// Body text for the daily weight reminder notification.
   String _body = "Don't forget to log your weight today.";
 
   /// Updates the localized texts used for scheduled reminder notifications.
@@ -56,6 +69,11 @@ class NotificationService {
     }
   }
 
+  /// Updates the Android notification channel with the current localized texts.
+  ///
+  /// Creates or updates the notification channel on Android devices
+  /// using [_channelId], [_channelName], and [_channelDescription].
+  /// Safe to call multiple times; the channel is recreated each invocation.
   Future<void> _updateAndroidChannel() async {
     final androidChannel = AndroidNotificationChannel(
       _channelId,

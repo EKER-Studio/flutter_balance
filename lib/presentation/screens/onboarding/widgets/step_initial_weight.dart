@@ -81,6 +81,7 @@ class _StepInitialWeightState extends State<StepInitialWeight> {
     return parsed;
   }
 
+  /// Validates [value] on every keystroke and updates the inline error text.
   void _validate(String value) {
     setState(() {
       final trimmed = value.trim();
@@ -98,6 +99,8 @@ class _StepInitialWeightState extends State<StepInitialWeight> {
     });
   }
 
+  /// Invokes [StepInitialWeight.onComplete] with the parsed weight and the
+  /// selected timestamp when the input is valid.
   void _handleComplete() {
     final weightKg = _parseWeightKg();
     if (weightKg != null) {

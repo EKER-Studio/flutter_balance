@@ -373,6 +373,8 @@ class StatisticsScreen extends StatelessWidget {
     );
   }
 
+  /// Builds a single metric column (icon, label, and value) inside the
+  /// habits and activity card.
   Widget _buildHabitMetricItem(
     BuildContext context, {
     required IconData icon,
@@ -512,6 +514,8 @@ class StatisticsScreen extends StatelessWidget {
     );
   }
 
+  /// Builds one detail row (icon, label, date, and formatted value) inside
+  /// the combined weight range card.
   Widget _buildWeightDetailRow(
     BuildContext context, {
     required IconData icon,

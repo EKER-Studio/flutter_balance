@@ -220,6 +220,7 @@
   "doubleTapToOpenCalendarHint": "Double tap to open calendar",
   "doubleTapToChangeTimeHint": "Double tap to change time",
   "@stepOf": {
+    "description": "Onboarding step indicator showing the current step and the total number of steps.",
     "placeholders": {
       "current": {
         "type": "int"
@@ -230,6 +231,7 @@
     }
   },
   "@entriesFromDate": {
+    "description": "Header label for the list of weight entries recorded on a specific date.",
     "placeholders": {
       "date": {
         "type": "String"
@@ -237,6 +239,7 @@
     }
   },
   "@multipleEntries": {
+    "description": "Label describing the number of weight measurements recorded on a single date.",
     "placeholders": {
       "count": {
         "type": "int"
@@ -244,6 +247,7 @@
     }
   },
   "@todayAtTime": {
+    "description": "Label showing that a measurement was recorded today at the given time.",
     "placeholders": {
       "time": {
         "type": "String"
@@ -251,6 +255,7 @@
     }
   },
   "@goalWeightLabel": {
+    "description": "Label showing the user's target weight goal.",
     "placeholders": {
       "weight": {
         "type": "String"
@@ -258,6 +263,7 @@
     }
   },
   "@remainingWeightLabel": {
+    "description": "Label showing the weight still to lose or gain to reach the goal.",
     "placeholders": {
       "weight": {
         "type": "String"
@@ -265,6 +271,7 @@
     }
   },
   "@weightSummarySemanticsLabel": {
+    "description": "Accessibility label summarizing the health status on the Today screen.",
     "placeholders": {
       "weight": {
         "type": "String"
@@ -278,6 +285,7 @@
     }
   },
   "@bmiValueShortLabel": {
+    "description": "Short accessibility label pairing a BMI value with the BMI unit.",
     "placeholders": {
       "value": {
         "type": "String"
@@ -285,6 +293,7 @@
     }
   },
   "@bmiCategoryLabel": {
+    "description": "Accessibility label stating the BMI category.",
     "placeholders": {
       "category": {
         "type": "String"
@@ -292,6 +301,7 @@
     }
   },
   "@bmiValueLabel": {
+    "description": "Accessibility label stating the BMI value in kg/m2.",
     "placeholders": {
       "value": {
         "type": "String"
@@ -300,5 +310,44 @@
   },
   "instantTestNotification": "Instant Test Notification",
   "testNotificationSent": "Test notification sent!",
-  "errorSendingTestNotification": "Error sending test notification: {error}"
+  "errorSendingTestNotification": "Error sending test notification: {error}",
+  "@exportError": {
+    "description": "Error message shown when exporting weight entries to a CSV file fails."
+  },
+  "@errorWipingData": {
+    "description": "Error message shown when clearing all app data fails."
+  },
+  "@importSuccess": {
+    "description": "Confirmation message shown after successfully importing weight entries from a CSV file."
+  },
+  "@importError": {
+    "description": "Error message shown when importing weight entries from a CSV file fails."
+  },
+  "@lastUpdatedDate": {
+    "description": "Label indicating the date on which the weight goal progress was last updated."
+  },
+  "@reminderTimeSet": {
+    "description": "Confirmation message shown after the daily weight reminder time has been set."
+  },
+  "@skippedRows": {
+    "description": "Summary of how many CSV rows were skipped during import because they were invalid."
+  },
+  "@chartSemanticsTitle": {
+    "description": "Accessibility label for the weight history chart, describing the displayed period and the latest recorded weight."
+  },
+  "@addMeasurementForDate": {
+    "description": "Button label for adding a weight measurement for a specific date."
+  },
+  "@streakDays": {
+    "description": "Label describing the current consecutive-days logging streak."
+  },
+  "@trendPercentChange": {
+    "description": "Label showing the weight trend as a percentage change over the selected period."
+  },
+  "@totalProgressUnitSuffix": {
+    "description": "Suffix appended to the total weight change, including the measurement unit."
+  },
+  "@errorSendingTestNotification": {
+    "description": "Error message shown when sending a test push notification fails."
+  }
 }

@@ -33,6 +33,7 @@ class App extends StatefulWidget {
   State<App> createState() => _AppState();
 }
 
+/// State for the root [App] widget; owns service initialization and DI wiring.
 class _AppState extends State<App> {
   late AppLocalizations _l10n;
   late Future<WeightRepository> _initFuture;
@@ -43,6 +44,8 @@ class _AppState extends State<App> {
     _initFuture = _initializeApp();
   }
 
+  /// Bootstraps the core services (database, notifications, biometrics) and
+  /// returns the ready [WeightRepository] once all initialization finished.
   Future<WeightRepository> _initializeApp() async {
     try {
       if (widget.repositoryOverride != null) {
@@ -79,6 +82,8 @@ class _AppState extends State<App> {
     }
   }
 
+  /// Builds the provider stack that wires [repository] into the widget tree
+  /// and resolves the root screen from [settingsState].
   Widget _buildAppContent(
     WeightRepository repository,
     AppSettingsState settingsState,
@@ -179,6 +184,7 @@ class _ObserverRegistrar extends StatefulWidget {
   State<_ObserverRegistrar> createState() => _ObserverRegistrarState();
 }
 
+/// State owning the [BiometricLockObserver] lifecycle and initial lock state.
 class _ObserverRegistrarState extends State<_ObserverRegistrar> {
   BiometricLockObserver? _observer;
 
@@ -234,6 +240,7 @@ class _LocalizationSync extends StatefulWidget {
   State<_LocalizationSync> createState() => _LocalizationSyncState();
 }
 
+/// State that forwards each locale change to [onLocalized].
 class _LocalizationSyncState extends State<_LocalizationSync> {
   @override
   void didChangeDependencies() {

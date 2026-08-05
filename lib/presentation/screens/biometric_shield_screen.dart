@@ -33,6 +33,8 @@ class _BiometricShieldScreenState extends State<BiometricShieldScreen> {
     });
   }
 
+  /// Runs the biometric authentication prompt, unlocks the app on success,
+  /// and routes terminal failures to the lock recovery dialog.
   Future<void> _handleUnlock(BuildContext context, AppSettingsBloc bloc) async {
     if (_isUnlocking) return;
     _isUnlocking = true;
