@@ -109,12 +109,12 @@ void main() {
         buildSubject(settingsBloc: settingsBloc, weightBloc: weightBloc),
       );
 
-      // Check lowest weight (74.0)
-      expect(find.text('74.0'), findsOneWidget);
-      // Check highest weight (80.0)
-      expect(find.text('80.0'), findsOneWidget);
+      // Check lowest weight (74.0 kg)
+      expect(find.textContaining('74.0'), findsOneWidget);
+      // Check highest weight (80.0 kg)
+      expect(find.textContaining('80.0'), findsOneWidget);
       // Check total progress banner (-6.0 kg)
-      expect(find.text('-6.0 kg'), findsOneWidget);
+      expect(find.textContaining('-6.0 kg'), findsOneWidget);
     },
   );
 
@@ -138,7 +138,7 @@ void main() {
         buildSubject(settingsBloc: settingsBloc, weightBloc: weightBloc),
       );
 
-      expect(find.text('70.0'), findsWidgets);
+      expect(find.textContaining('70.0'), findsWidgets);
 
       // Switch to imperial units
       settingsBloc.add(const UpdateMeasurementUnit(MeasurementUnit.imperial));
@@ -276,7 +276,7 @@ void main() {
     expect(find.text('17%'), findsOneWidget);
   });
 
-  testWidgets('StatisticsScreen switches between Variant A and Variant B via SegmentedButton', (
+  testWidgets('StatisticsScreen renders consolidated composite cards with all health metrics', (
     tester,
   ) async {
     final now = DateTime.now();
@@ -290,29 +290,24 @@ void main() {
     ];
 
     final settingsBloc = AppSettingsBloc();
+    settingsBloc.add(const UpdateHeight(175.0));
     final weightBloc = createBloc(
       WeightLoaded(
         entries: entries,
         filteredEntries: [],
         timePeriod: TimePeriod.week,
-        heightCm: null,
+        heightCm: 175.0,
       ),
     );
 
     await tester.pumpWidget(
       buildSubject(settingsBloc: settingsBloc, weightBloc: weightBloc),
     );
-
-    // Initial state is Variant A -> contains 'Tempo'
-    expect(find.text('Tempo'), findsOneWidget);
-    expect(find.text('Wszystkie wpisy'), findsNothing);
-
-    // Switch to Variant B
-    await tester.tap(find.text('Wariant B (Sekcja dolna)'));
     await tester.pumpAndSettle();
 
-    // Variant B -> contains 'Wszystkie wpisy' and 'Liczba pomiarów'
-    expect(find.text('Wszystkie wpisy'), findsOneWidget);
-    expect(find.text('Liczba pomiarów'), findsOneWidget);
+    // Composite cards titles & metrics
+    expect(find.text('Zakres i średnia wagi'), findsOneWidget);
+    expect(find.text('2 wpisy'), findsOneWidget);
+    expect(find.textContaining('Prawidłowa waga dla wzrostu'), findsOneWidget);
   });
 }
