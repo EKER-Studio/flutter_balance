@@ -177,7 +177,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                         final displayAverage = isImperial ? kgToLbs(averageKg) : averageKg;
 
                         final selectedDayHeader = Padding(
-                          padding: const EdgeInsets.only(bottom: 12),
+                          padding: const EdgeInsets.only(bottom: 16),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -241,7 +241,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
                             calendarCard,
-                            const SizedBox(height: 20),
+                            const SizedBox(height: 24),
                             detailSection,
                             const SizedBox(height: 80),
                           ],

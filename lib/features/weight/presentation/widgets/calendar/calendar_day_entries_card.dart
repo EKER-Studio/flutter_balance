@@ -73,17 +73,18 @@ class CalendarDayEntriesCard extends StatelessWidget {
               ],
             ),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 20),
         ],
 
 
 
         // List of Entries for this day
         ListView.separated(
+          padding: EdgeInsets.zero,
           physics: const NeverScrollableScrollPhysics(),
           shrinkWrap: true,
           itemCount: entries.length,
-          separatorBuilder: (_, _) => const SizedBox(height: 8),
+          separatorBuilder: (_, _) => const SizedBox(height: 12),
           itemBuilder: (context, index) {
             final entry = entries[index];
             final displayWeight = isImperial
@@ -197,7 +198,7 @@ class CalendarDayEntriesCard extends StatelessWidget {
             );
           },
         ),
-        const SizedBox(height: 16),
+        const SizedBox(height: 24),
         OutlinedButton.icon(
           onPressed: () {
             showDialog(
