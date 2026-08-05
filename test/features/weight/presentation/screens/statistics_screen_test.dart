@@ -71,15 +71,8 @@ void main() {
       buildSubject(settingsBloc: settingsBloc, weightBloc: weightBloc),
     );
 
-    expect(find.text('Statystyki'), findsOneWidget);
-    expect(find.text('Seria ważenia'), findsOneWidget);
-    expect(find.text('Regularność w miesiącu'), findsOneWidget);
-    expect(find.text('0 dni'), findsOneWidget);
-    expect(find.text('0%'), findsOneWidget);
-    expect(find.text('Najniższa'), findsOneWidget);
-    expect(find.text('Najwyższa'), findsOneWidget);
-    expect(find.text('Całkowita zmiana'), findsOneWidget);
-    expect(find.text('BMI'), findsOneWidget);
+    expect(find.text('Brak danych do analizy'), findsOneWidget);
+    expect(find.text('Dodaj pierwszy pomiar'), findsOneWidget);
   });
 
   testWidgets(
@@ -116,12 +109,12 @@ void main() {
         buildSubject(settingsBloc: settingsBloc, weightBloc: weightBloc),
       );
 
-      // Trend card shows '—' when filteredEntries is empty
-      expect(find.text('—'), findsWidgets);
-      // Bento Grid metrics computed from all entries
+      // Check lowest weight (74.0)
       expect(find.text('74.0'), findsOneWidget);
+      // Check highest weight (80.0)
       expect(find.text('80.0'), findsOneWidget);
-      expect(find.text('-6.0'), findsOneWidget);
+      // Check total progress banner (-6.0 kg)
+      expect(find.text('-6.0 kg'), findsOneWidget);
     },
   );
 

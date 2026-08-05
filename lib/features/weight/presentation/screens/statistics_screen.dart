@@ -1,22 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
 import 'package:pure_weight/core/models/measurement_unit.dart';
 import 'package:pure_weight/core/utils/unit_converter.dart';
 import 'package:pure_weight/features/weight/domain/entities/weight_entry.dart';
 import 'package:pure_weight/features/weight/presentation/bloc/weight_bloc.dart';
 import 'package:pure_weight/features/weight/presentation/bloc/weight_event.dart';
 import 'package:pure_weight/features/weight/presentation/bloc/weight_state.dart';
+import 'package:pure_weight/features/weight/presentation/utils/bmi_category_localizer.dart';
+import 'package:pure_weight/features/weight/presentation/widgets/add_weight_sheet.dart';
+import 'package:pure_weight/features/weight/presentation/widgets/statistics_shimmer_skeleton.dart';
 import 'package:pure_weight/l10n/app_localizations.dart';
 import 'package:pure_weight/presentation/bloc/settings/app_settings_bloc.dart';
 import 'package:pure_weight/presentation/bloc/settings/app_settings_state.dart';
 import 'package:pure_weight/presentation/bloc/settings/bmi_category.dart';
-import 'package:pure_weight/features/weight/presentation/utils/bmi_category_localizer.dart';
 import 'package:pure_weight/presentation/core/clamped_layout.dart';
 import 'package:pure_weight/presentation/widgets/app_top_bar.dart';
+import 'package:pure_weight/presentation/widgets/state_message_card.dart';
 import 'package:pure_weight/presentation/widgets/weight_chart.dart';
-import 'package:pure_weight/features/weight/presentation/widgets/statistics_shimmer_skeleton.dart';
 
-/// Tab 3: Statistics Screen providing habit-tracker analytics, streaks, trends, and key metrics.
+/// Tab 3: Statistics Screen providing Garmin-inspired health analytics, streaks, trends, and detailed key metrics.
 class StatisticsScreen extends StatelessWidget {
   /// Creates [StatisticsScreen].
   const StatisticsScreen({super.key});
@@ -55,6 +58,27 @@ class StatisticsScreen extends StatelessWidget {
                       WeightError(:final entries) => entries,
                       _ => <WeightEntry>[],
                     };
+
+                    if (entries.isEmpty) {
+                      return ClampedLayout(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 32,
+                        ),
+                        child: StateMessageCard(
+                          icon: Icons.bar_chart,
+                          iconColor: Theme.of(context).colorScheme.primary,
+                          iconContainerColor:
+                              Theme.of(context).colorScheme.surfaceContainerHigh,
+                          title: l10n.noDataToAnalyze,
+                          subtitle: l10n.noDataToAnalyzeSubtitle,
+                          buttonLabel: l10n.addFirstMeasurement,
+                          buttonIcon: Icons.add,
+                          onButtonPressed: () => _showAddWeightSheet(context),
+                        ),
+                      );
+                    }
+
                     final filteredEntries = switch (weightState) {
                       WeightLoaded(:final filteredEntries) => filteredEntries,
                       WeightError(:final filteredEntries) => filteredEntries,
@@ -82,6 +106,14 @@ class StatisticsScreen extends StatelessWidget {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.stretch,
                             children: [
+                              _buildHeroProgressBanner(
+                                context,
+                                entries: entries,
+                                targetWeight: targetWeight,
+                                unit: unit,
+                                l10n: l10n,
+                              ),
+                              const SizedBox(height: 16),
                               _buildHabitSummaryCards(
                                 context,
                                 streak: streak,
@@ -100,13 +132,15 @@ class StatisticsScreen extends StatelessWidget {
                               const SizedBox(height: 16),
                               _buildKeyMetricsGrid(
                                 context,
-                                entries: filteredEntries.isNotEmpty
+                                allEntries: entries,
+                                filteredEntries: filteredEntries.isNotEmpty
                                     ? filteredEntries
                                     : entries,
                                 unit: unit,
                                 heightCm: heightCm,
                                 l10n: l10n,
                               ),
+                              const SizedBox(height: 32),
                             ],
                           ),
                         );
@@ -117,6 +151,100 @@ class StatisticsScreen extends StatelessWidget {
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+
+  /// Builds the top hero progress banner displaying total net weight change and motivational status.
+  Widget _buildHeroProgressBanner(
+    BuildContext context, {
+    required List<WeightEntry> entries,
+    required double? targetWeight,
+    required MeasurementUnit unit,
+    required AppLocalizations l10n,
+  }) {
+    final cs = Theme.of(context).colorScheme;
+    final sortedByDate = entries.reversed.toList(); // Ascending date
+    final firstEntry = sortedByDate.first;
+    final latestEntry = sortedByDate.last;
+
+    final totalChangeKg = latestEntry.weightKg - firstEntry.weightKg;
+    final totalChangeDisplay = unit == MeasurementUnit.imperial
+        ? kgToLbs(totalChangeKg)
+        : totalChangeKg;
+    final unitLabel = unitLabelFor(unit);
+
+    final sign = totalChangeDisplay > 0 ? '+' : '';
+    final formattedValue = '$sign${totalChangeDisplay.toStringAsFixed(1)} $unitLabel';
+
+    String? statusBadge;
+    if (targetWeight != null) {
+      if (latestEntry.weightKg <= targetWeight) {
+        statusBadge = '🏆 ${l10n.goalAchieved}';
+      } else {
+        final distKg = latestEntry.weightKg - targetWeight;
+        final distDisplay = unit == MeasurementUnit.imperial
+            ? kgToLbs(distKg)
+            : distKg;
+        statusBadge = '${distDisplay.toStringAsFixed(1)} $unitLabel ${l10n.toTarget}';
+      }
+    } else if (totalChangeKg < 0) {
+      statusBadge = '🎉 ${l10n.greatJob}';
+    }
+
+    final semanticLabel = '${l10n.totalProgress}: $formattedValue${statusBadge != null ? ", $statusBadge" : ""}';
+
+    return Semantics(
+      container: true,
+      label: semanticLabel,
+      child: Card(
+        elevation: 0,
+        color: cs.primaryContainer,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Text(
+                l10n.totalLostHeader,
+                style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                      color: cs.onPrimaryContainer.withValues(alpha: 0.8),
+                      letterSpacing: 1.2,
+                      fontWeight: FontWeight.bold,
+                    ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                formattedValue,
+                style: Theme.of(context).textTheme.displaySmall?.copyWith(
+                      color: cs.onPrimaryContainer,
+                      fontWeight: FontWeight.w800,
+                    ),
+              ),
+              if (statusBadge != null) ...[
+                const SizedBox(height: 12),
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 14,
+                    vertical: 6,
+                  ),
+                  decoration: BoxDecoration(
+                    color: cs.surface.withValues(alpha: 0.25),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Text(
+                    statusBadge,
+                    style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                          color: cs.onPrimaryContainer,
+                          fontWeight: FontWeight.bold,
+                        ),
+                  ),
+                ),
+              ],
+            ],
+          ),
         ),
       ),
     );
@@ -139,7 +267,7 @@ class StatisticsScreen extends StatelessWidget {
             label: '${l10n.loggingStreak}: ${l10n.streakDays(streak)}',
             child: Card(
               elevation: 0,
-              color: cs.primaryContainer,
+              color: cs.surfaceContainerLow,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(28),
               ),
@@ -152,17 +280,14 @@ class StatisticsScreen extends StatelessWidget {
                       children: [
                         Icon(
                           Icons.local_fire_department,
-                          color: cs.onPrimaryContainer,
+                          color: cs.primary,
                         ),
                         const SizedBox(width: 6),
                         Expanded(
                           child: Text(
                             l10n.loggingStreak,
-                            style: Theme.of(context).textTheme.labelMedium
-                                ?.copyWith(
-                                  color: cs.onPrimaryContainer.withValues(
-                                    alpha: 0.8,
-                                  ),
+                            style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                                  color: cs.onSurfaceVariant,
                                 ),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
@@ -173,9 +298,8 @@ class StatisticsScreen extends StatelessWidget {
                     const SizedBox(height: 8),
                     Text(
                       l10n.streakDays(streak),
-                      style: Theme.of(context).textTheme.headlineSmall
-                          ?.copyWith(
-                            color: cs.onPrimaryContainer,
+                      style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                            color: cs.onSurface,
                             fontWeight: FontWeight.bold,
                           ),
                     ),
@@ -208,11 +332,8 @@ class StatisticsScreen extends StatelessWidget {
                         Expanded(
                           child: Text(
                             l10n.monthlyCompliance,
-                            style: Theme.of(context).textTheme.labelMedium
-                                ?.copyWith(
-                                  color: cs.onSecondaryContainer.withValues(
-                                    alpha: 0.8,
-                                  ),
+                            style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                                  color: cs.onSecondaryContainer.withValues(alpha: 0.8),
                                 ),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
@@ -223,8 +344,7 @@ class StatisticsScreen extends StatelessWidget {
                     const SizedBox(height: 8),
                     Text(
                       '$compliancePct%',
-                      style: Theme.of(context).textTheme.headlineSmall
-                          ?.copyWith(
+                      style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                             color: cs.onSecondaryContainer,
                             fontWeight: FontWeight.bold,
                           ),
@@ -239,7 +359,7 @@ class StatisticsScreen extends StatelessWidget {
     );
   }
 
-  /// Builds the Hero Weight Trend card containing the title, current value, trend badge, and chart.
+  /// Builds the Hero Weight Trend card containing title, current value, trend badge, and line chart.
   Widget _buildHeroTrendCard(
     BuildContext context, {
     required List<WeightEntry> filteredEntries,
@@ -249,13 +369,8 @@ class StatisticsScreen extends StatelessWidget {
     required AppLocalizations l10n,
   }) {
     final cs = Theme.of(context).colorScheme;
-    // filteredEntries is newest-first (repository sorts sortByDateTimeDesc).
-    final latestKg = filteredEntries.isNotEmpty
-        ? filteredEntries.first.weightKg
-        : null;
-    final formattedLatest = latestKg != null
-        ? formatWeight(latestKg, unit)
-        : '—';
+    final latestKg = filteredEntries.isNotEmpty ? filteredEntries.first.weightKg : null;
+    final formattedLatest = latestKg != null ? formatWeight(latestKg, unit) : '—';
     final unitLabel = unitLabelFor(unit);
 
     final percentChange = _calculatePercentChange(filteredEntries);
@@ -281,8 +396,7 @@ class StatisticsScreen extends StatelessWidget {
                     children: [
                       Text(
                         l10n.weightTrend,
-                        style: Theme.of(context).textTheme.titleMedium
-                            ?.copyWith(
+                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
                               color: cs.onSurfaceVariant,
                               fontWeight: FontWeight.w500,
                             ),
@@ -294,8 +408,7 @@ class StatisticsScreen extends StatelessWidget {
                         children: [
                           Text(
                             formattedLatest,
-                            style: Theme.of(context).textTheme.headlineMedium
-                                ?.copyWith(
+                            style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                                   color: cs.onSurface,
                                   fontWeight: FontWeight.bold,
                                 ),
@@ -304,8 +417,9 @@ class StatisticsScreen extends StatelessWidget {
                             const SizedBox(width: 4),
                             Text(
                               unitLabel,
-                              style: Theme.of(context).textTheme.titleMedium
-                                  ?.copyWith(color: cs.onSurfaceVariant),
+                              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                    color: cs.onSurfaceVariant,
+                                  ),
                             ),
                           ],
                         ],
@@ -370,9 +484,9 @@ class StatisticsScreen extends StatelessWidget {
             Text(
               formattedValue,
               style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                color: contentColor,
-                fontWeight: FontWeight.bold,
-              ),
+                    color: contentColor,
+                    fontWeight: FontWeight.bold,
+                  ),
             ),
           ],
         ),
@@ -380,49 +494,57 @@ class StatisticsScreen extends StatelessWidget {
     );
   }
 
-  /// Builds a 2x2 Bento Grid section for key metrics.
+  /// Builds a 2x2 Bento Grid section for key metrics including exact dates and period change.
   Widget _buildKeyMetricsGrid(
     BuildContext context, {
-    required List<WeightEntry> entries,
+    required List<WeightEntry> allEntries,
+    required List<WeightEntry> filteredEntries,
     required MeasurementUnit unit,
     required double? heightCm,
     required AppLocalizations l10n,
   }) {
-    final weights = entries.map((e) => e.weightKg).toList();
-    final minWeightKg = weights.isEmpty
-        ? null
-        : weights.reduce((a, b) => a < b ? a : b);
-    final maxWeightKg = weights.isEmpty
-        ? null
-        : weights.reduce((a, b) => a > b ? a : b);
-    final avgWeightKg = weights.isEmpty
-        ? null
-        : weights.reduce((a, b) => a + b) / weights.length;
-
-    final sortedByDate = entries.reversed.toList();
-
-    final netChangeKg = (sortedByDate.length >= 2)
-        ? (sortedByDate.last.weightKg - sortedByDate.first.weightKg)
-        : null;
-
     final unitLabel = unitLabelFor(unit);
 
-    final minDisplay = minWeightKg != null
-        ? (unit == MeasurementUnit.imperial
-              ? kgToLbs(minWeightKg)
-              : minWeightKg)
-        : null;
-    final maxDisplay = maxWeightKg != null
-        ? (unit == MeasurementUnit.imperial
-              ? kgToLbs(maxWeightKg)
-              : maxWeightKg)
-        : null;
-    final netChangeDisplay = netChangeKg != null
-        ? (unit == MeasurementUnit.imperial
-              ? kgToLbs(netChangeKg)
-              : netChangeKg)
+    // Highest Weight calculation
+    final maxEntry = allEntries.reduce(
+      (a, b) => a.weightKg > b.weightKg ? a : b,
+    );
+    final maxDisplay = unit == MeasurementUnit.imperial
+        ? kgToLbs(maxEntry.weightKg)
+        : maxEntry.weightKg;
+    final maxDateText = _formatEntryDate(context, maxEntry.dateTime, l10n);
+
+    // Lowest Weight calculation
+    final minEntry = allEntries.reduce(
+      (a, b) => a.weightKg < b.weightKg ? a : b,
+    );
+    final minDisplay = unit == MeasurementUnit.imperial
+        ? kgToLbs(minEntry.weightKg)
+        : minEntry.weightKg;
+    final minDateText = _formatEntryDate(context, minEntry.dateTime, l10n);
+
+    // Average Weight in selected period calculation
+    final periodWeights = filteredEntries.map((e) => e.weightKg).toList();
+    final avgWeightKg = periodWeights.isEmpty
+        ? null
+        : periodWeights.reduce((a, b) => a + b) / periodWeights.length;
+    final avgDisplay = avgWeightKg != null
+        ? (unit == MeasurementUnit.imperial ? kgToLbs(avgWeightKg) : avgWeightKg)
         : null;
 
+    final sortedFiltered = filteredEntries.reversed.toList(); // Ascending date
+    final periodChangeKg = (sortedFiltered.length >= 2)
+        ? (sortedFiltered.last.weightKg - sortedFiltered.first.weightKg)
+        : null;
+    final periodChangeDisplay = periodChangeKg != null
+        ? (unit == MeasurementUnit.imperial ? kgToLbs(periodChangeKg) : periodChangeKg)
+        : null;
+
+    final periodSubText = periodChangeDisplay != null
+        ? '${periodChangeDisplay > 0 ? '+' : ''}${periodChangeDisplay.toStringAsFixed(1)} $unitLabel w okresie'
+        : unitLabel;
+
+    // Average BMI in selected period
     final bmi = (avgWeightKg != null && heightCm != null && heightCm > 0)
         ? avgWeightKg / ((heightCm / 100) * (heightCm / 100))
         : null;
@@ -440,26 +562,24 @@ class StatisticsScreen extends StatelessWidget {
             Expanded(
               child: _buildBentoCard(
                 context,
-                title: l10n.lowest,
-                value: minDisplay != null ? minDisplay.toStringAsFixed(1) : '—',
-                subtitle: unitLabel,
-                icon: Icons.south_east,
-                iconColor: Theme.of(context).colorScheme.primary,
-                semanticLabel:
-                    '${l10n.lowest}: ${minDisplay != null ? "${minDisplay.toStringAsFixed(1)} $unitLabel" : l10n.missingData}',
+                title: l10n.highest,
+                value: maxDisplay.toStringAsFixed(1),
+                subtitle: maxDateText,
+                icon: Icons.north_east,
+                iconColor: Theme.of(context).colorScheme.error,
+                semanticLabel: '${l10n.highest}: ${maxDisplay.toStringAsFixed(1)} $unitLabel, $maxDateText',
               ),
             ),
             const SizedBox(width: 12),
             Expanded(
               child: _buildBentoCard(
                 context,
-                title: l10n.highest,
-                value: maxDisplay != null ? maxDisplay.toStringAsFixed(1) : '—',
-                subtitle: unitLabel,
-                icon: Icons.north_east,
-                iconColor: Theme.of(context).colorScheme.error,
-                semanticLabel:
-                    '${l10n.highest}: ${maxDisplay != null ? "${maxDisplay.toStringAsFixed(1)} $unitLabel" : l10n.missingData}',
+                title: l10n.lowest,
+                value: minDisplay.toStringAsFixed(1),
+                subtitle: minDateText,
+                icon: Icons.south_east,
+                iconColor: Theme.of(context).colorScheme.primary,
+                semanticLabel: '${l10n.lowest}: ${minDisplay.toStringAsFixed(1)} $unitLabel, $minDateText',
               ),
             ),
           ],
@@ -470,18 +590,12 @@ class StatisticsScreen extends StatelessWidget {
             Expanded(
               child: _buildBentoCard(
                 context,
-                title: l10n.totalProgress,
-                value: netChangeDisplay != null
-                    ? '${netChangeDisplay > 0 ? '+' : ''}${netChangeDisplay.toStringAsFixed(1)}'
-                    : '—',
-                subtitle: l10n.totalProgressUnitSuffix(unitLabel),
-                icon: Icons.stars_outlined,
+                title: l10n.averageWeight,
+                value: avgDisplay != null ? avgDisplay.toStringAsFixed(1) : '—',
+                subtitle: periodSubText,
+                icon: Icons.analytics_outlined,
                 iconColor: Theme.of(context).colorScheme.primary,
-                valueColor: netChangeDisplay != null && netChangeDisplay < 0
-                    ? Theme.of(context).colorScheme.primary
-                    : Theme.of(context).colorScheme.onSurface,
-                semanticLabel:
-                    '${l10n.totalProgress}: ${netChangeDisplay != null ? "${netChangeDisplay.toStringAsFixed(1)} $unitLabel" : l10n.missingData}',
+                semanticLabel: '${l10n.averageWeight}: ${avgDisplay != null ? "${avgDisplay.toStringAsFixed(1)} $unitLabel" : l10n.missingData}',
               ),
             ),
             const SizedBox(width: 12),
@@ -493,8 +607,7 @@ class StatisticsScreen extends StatelessWidget {
                 subtitle: bmiCategoryText,
                 icon: Icons.monitor_heart_outlined,
                 iconColor: Theme.of(context).colorScheme.secondary,
-                semanticLabel:
-                    '${l10n.bmi}: ${bmi != null ? "${bmi.toStringAsFixed(1)}, $bmiCategoryText" : l10n.missingData}',
+                semanticLabel: '${l10n.bmi}: ${bmi != null ? "${bmi.toStringAsFixed(1)}, $bmiCategoryText" : l10n.missingData}',
               ),
             ),
           ],
@@ -537,9 +650,9 @@ class StatisticsScreen extends StatelessWidget {
                     child: Text(
                       title,
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        color: cs.onSurface,
-                        fontWeight: FontWeight.w500,
-                      ),
+                            color: cs.onSurface,
+                            fontWeight: FontWeight.w500,
+                          ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
@@ -553,9 +666,9 @@ class StatisticsScreen extends StatelessWidget {
                   Text(
                     value,
                     style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                      color: valueColor ?? cs.onSurface,
-                      fontWeight: FontWeight.bold,
-                    ),
+                          color: valueColor ?? cs.onSurface,
+                          fontWeight: FontWeight.bold,
+                        ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -563,8 +676,8 @@ class StatisticsScreen extends StatelessWidget {
                   Text(
                     subtitle,
                     style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                      color: cs.onSurfaceVariant,
-                    ),
+                          color: cs.onSurfaceVariant,
+                        ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -581,7 +694,7 @@ class StatisticsScreen extends StatelessWidget {
   double? _calculatePercentChange(List<WeightEntry> entries) {
     if (entries.length < 2) return null;
 
-    final sorted = entries.reversed.toList();
+    final sorted = entries.reversed.toList(); // Ascending date
 
     final first = sorted.first.weightKg;
     final last = sorted.last.weightKg;
@@ -595,15 +708,13 @@ class StatisticsScreen extends StatelessWidget {
   int _calculateStreak(List<WeightEntry> entries, DateTime now) {
     if (entries.isEmpty) return 0;
 
-    final dates =
-        entries
-            .map(
-              (e) =>
-                  DateTime(e.dateTime.year, e.dateTime.month, e.dateTime.day),
-            )
-            .toSet()
-            .toList()
-          ..sort((a, b) => b.compareTo(a));
+    final dates = entries
+        .map(
+          (e) => DateTime(e.dateTime.year, e.dateTime.month, e.dateTime.day),
+        )
+        .toSet()
+        .toList()
+      ..sort((a, b) => b.compareTo(a));
 
     final todayDate = DateTime(now.year, now.month, now.day);
     final yesterdayDate = todayDate.subtract(const Duration(days: 1));
@@ -635,5 +746,29 @@ class StatisticsScreen extends StatelessWidget {
         .length;
 
     return ((loggedDays / monthlyComplianceDays) * 100).round();
+  }
+
+  /// Formats a measurement entry date (e.g. "15 Sty 2023" or "Dzisiaj").
+  String _formatEntryDate(
+    BuildContext context,
+    DateTime date,
+    AppLocalizations l10n,
+  ) {
+    final now = DateTime.now();
+    if (date.year == now.year && date.month == now.month && date.day == now.day) {
+      return l10n.lastUpdatedToday.replaceFirst('Ostatnia aktualizacja: ', '');
+    }
+    final locale = Localizations.localeOf(context).toString();
+    return DateFormat.yMMMd(locale).format(date);
+  }
+
+  /// Shows the [AddWeightSheet] modal bottom sheet.
+  void _showAddWeightSheet(BuildContext context) {
+    showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      useSafeArea: true,
+      builder: (_) => const AddWeightSheet(),
+    );
   }
 }

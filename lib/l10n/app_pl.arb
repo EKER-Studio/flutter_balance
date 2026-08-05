@@ -203,8 +203,13 @@
   "initErrorRetryHint": "Stuknij dwukrotnie, aby ponowić próbę inicjalizacji bazy danych i usług",
   "retryStartup": "Spróbuj ponownie",
   "heightNotSetLabel": "brak podanego wzrostu",
-  "doubleTapToOpenCalendarHint": "Stuknij dwukrotnie, aby otworzyć kalendarz",
-  "doubleTapToChangeTimeHint": "Stuknij dwukrotnie, aby zmienić godzinę",
+  "doubleTapToOpenCalendarHint": "Dotknij dwukrotnie, aby otworzyć kalendarz",
+  "doubleTapToChangeTimeHint": "Dotknij dwukrotnie, aby zmienić godzinę",
+  "noDataToAnalyze": "Brak danych do analizy",
+  "noDataToAnalyzeSubtitle": "Twoje statystyki pojawią się tutaj po kilku dniach regularnych pomiarów. Dodaj wpisy, aby zacząć śledzić swój postęp.",
+  "totalLostHeader": "ŁĄCZNIE STRACONE",
+  "greatJob": "Świetna robota!",
+  "periodProgress": "Zmiana w okresie",
   "@stepOf": {
     "placeholders": {
       "current": {
