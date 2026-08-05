@@ -33,6 +33,8 @@ class CalendarScreen extends StatefulWidget {
 class _CalendarScreenState extends State<CalendarScreen> {
   late DateTime _focusedMonth;
   late DateTime _selectedDate;
+  late PageController _pageController;
+  final int _initialPage = 10000;
 
   @override
   void initState() {
@@ -40,20 +42,37 @@ class _CalendarScreenState extends State<CalendarScreen> {
     final now = DateTime.now();
     _focusedMonth = DateTime(now.year, now.month, 1);
     _selectedDate = now;
+    _pageController = PageController(initialPage: _initialPage);
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
+
+  void _onPageChanged(int index) {
+    final offset = index - _initialPage;
+    final now = DateTime.now();
+    setState(() {
+      _focusedMonth = DateTime(now.year, now.month + offset, 1);
+    });
   }
 
   /// Shifts the focused month one month back.
   void _previousMonth() {
-    setState(() {
-      _focusedMonth = DateTime(_focusedMonth.year, _focusedMonth.month - 1, 1);
-    });
+    _pageController.previousPage(
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeInOut,
+    );
   }
 
   /// Shifts the focused month one month forward.
   void _nextMonth() {
-    setState(() {
-      _focusedMonth = DateTime(_focusedMonth.year, _focusedMonth.month + 1, 1);
-    });
+    _pageController.nextPage(
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeInOut,
+    );
   }
 
   /// Selects [date], moving the focused month if it falls outside it.
@@ -63,7 +82,18 @@ class _CalendarScreenState extends State<CalendarScreen> {
       // Focus month if selected date is in a different month
       if (date.year != _focusedMonth.year ||
           date.month != _focusedMonth.month) {
+        final now = DateTime.now();
+        final monthsDiff = (date.year - now.year) * 12 + (date.month - now.month);
+        final targetPage = _initialPage + monthsDiff;
+        
         _focusedMonth = DateTime(date.year, date.month, 1);
+        if (_pageController.hasClients) {
+          _pageController.animateToPage(
+            targetPage,
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.easeInOut,
+          );
+        }
       }
     });
   }
@@ -155,13 +185,36 @@ class _CalendarScreenState extends State<CalendarScreen> {
                                 const SizedBox(height: 16),
                                 const CalendarWeekdayHeader(),
                                 const SizedBox(height: 12),
-                                CalendarGrid(
-                                  focusedMonth: _focusedMonth,
-                                  selectedDate: _selectedDate,
-                                  entries: entries,
-                                  targetWeight: targetWeight,
-                                  onDaySelected: (date, _) =>
-                                      _onDaySelected(date),
+                                Builder(
+                                  builder: (context) {
+                                    final availableWidth = isLandscape && constraints.maxWidth >= 720
+                                        ? (constraints.maxWidth - 116) / 2
+                                        : constraints.maxWidth - 64;
+                                    final cellWidth = (availableWidth - 24) / 7;
+                                    // 6 rows, 5 main axis spacings (8), plus a little buffer
+                                    final gridHeight = (6 * cellWidth) + 40 + 2;
+
+                                    return SizedBox(
+                                      height: gridHeight,
+                                      child: PageView.builder(
+                                        controller: _pageController,
+                                        onPageChanged: _onPageChanged,
+                                        itemBuilder: (context, index) {
+                                          final offset = index - _initialPage;
+                                          final now = DateTime.now();
+                                          final monthDate = DateTime(now.year, now.month + offset, 1);
+                                          
+                                          return CalendarGrid(
+                                            focusedMonth: monthDate,
+                                            selectedDate: _selectedDate,
+                                            entries: entries,
+                                            targetWeight: targetWeight,
+                                            onDaySelected: (date, _) => _onDaySelected(date),
+                                          );
+                                        },
+                                      ),
+                                    );
+                                  },
                                 ),
                               ],
                             ),
