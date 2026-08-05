@@ -68,4 +68,36 @@ void main() {
 
     settingsBloc.close();
   });
+
+  testWidgets(
+    'App navigates back to OnboardingWizardScreen when app settings are reset',
+    (tester) async {
+      final settingsBloc = AppSettingsBloc();
+      
+      // 1. Arrange: Start with completed onboarding
+      settingsBloc.add(const CompleteOnboarding());
+
+      await tester.pumpWidget(
+        BlocProvider<AppSettingsBloc>.value(
+          value: settingsBloc,
+          child: App(repositoryOverride: repository),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      // Ensure we are on the main screen
+      expect(find.byType(NavigationBar), findsOneWidget);
+
+      // 2. Act: Reset app settings (simulating "Wipe Data")
+      settingsBloc.add(const ResetAppSettings());
+      await tester.pumpAndSettle();
+
+      // 3. Assert: Verify we are back on the Onboarding Screen
+      expect(find.byType(NavigationBar), findsNothing);
+      expect(find.text('Step 1 of 5'), findsOneWidget);
+      expect(find.text('Units & Height'), findsOneWidget);
+
+      settingsBloc.close();
+    },
+  );
 }
