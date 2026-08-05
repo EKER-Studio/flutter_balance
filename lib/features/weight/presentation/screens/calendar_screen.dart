@@ -62,7 +62,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
   /// Shifts the focused month one month back.
   void _previousMonth() {
     _pageController.previousPage(
-      duration: const Duration(milliseconds: 300),
+      duration: const Duration(milliseconds: 200),
       curve: Curves.easeInOut,
     );
   }
@@ -70,7 +70,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
   /// Shifts the focused month one month forward.
   void _nextMonth() {
     _pageController.nextPage(
-      duration: const Duration(milliseconds: 300),
+      duration: const Duration(milliseconds: 200),
       curve: Curves.easeInOut,
     );
   }
@@ -90,7 +90,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
         if (_pageController.hasClients) {
           _pageController.animateToPage(
             targetPage,
-            duration: const Duration(milliseconds: 300),
+            duration: const Duration(milliseconds: 200),
             curve: Curves.easeInOut,
           );
         }
@@ -198,6 +198,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                                       height: gridHeight,
                                       child: PageView.builder(
                                         controller: _pageController,
+                                        allowImplicitScrolling: true,
                                         onPageChanged: _onPageChanged,
                                         itemBuilder: (context, index) {
                                           final offset = index - _initialPage;
