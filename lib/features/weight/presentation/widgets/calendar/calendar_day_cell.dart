@@ -50,7 +50,7 @@ class CalendarDayCell extends StatelessWidget {
     final cs = Theme.of(context).colorScheme;
     final l10n = AppLocalizations.of(context);
     final locale = Localizations.localeOf(context).toString();
-    
+
     if (_cachedLocale != locale || _cachedFormatter == null) {
       _cachedLocale = locale;
       _cachedFormatter = DateFormat.yMMMMd(locale);

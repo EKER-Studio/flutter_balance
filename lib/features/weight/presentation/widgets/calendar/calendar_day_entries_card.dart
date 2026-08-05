@@ -76,8 +76,6 @@ class CalendarDayEntriesCard extends StatelessWidget {
           const SizedBox(height: 20),
         ],
 
-
-
         // List of Entries for this day
         ListView.separated(
           padding: EdgeInsets.zero,

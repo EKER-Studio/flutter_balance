@@ -22,13 +22,18 @@ class CalendarWeekdayHeader extends StatelessWidget {
 
     return Row(
       children: weekDays.map((d) {
+        final fullDayName = DateFormat.EEEE(locale).format(d);
         return Expanded(
           child: Center(
-            child: Text(
-              capitalize3(format.format(d)),
-              style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                color: Theme.of(context).colorScheme.onSurfaceVariant,
-                fontWeight: FontWeight.bold,
+            child: Semantics(
+              label: fullDayName,
+              excludeSemantics: true,
+              child: Text(
+                capitalize3(format.format(d)),
+                style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
           ),

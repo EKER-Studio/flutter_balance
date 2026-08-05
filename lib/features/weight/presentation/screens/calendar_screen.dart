@@ -17,8 +17,8 @@ import 'package:pure_weight/features/weight/presentation/widgets/calendar/calend
 import 'package:pure_weight/features/weight/presentation/widgets/calendar/calendar_weekday_header.dart';
 import 'package:pure_weight/l10n/app_localizations.dart';
 import 'package:pure_weight/presentation/bloc/settings/app_settings_bloc.dart';
-import 'package:pure_weight/presentation/core/clamped_layout.dart';
 import 'package:pure_weight/presentation/widgets/app_top_bar.dart';
+import 'package:pure_weight/presentation/core/clamped_layout.dart';
 
 /// Tab 2: Calendar Screen providing a monthly view with measurement status indicators.
 class CalendarScreen extends StatefulWidget {
@@ -83,9 +83,10 @@ class _CalendarScreenState extends State<CalendarScreen> {
       if (date.year != _focusedMonth.year ||
           date.month != _focusedMonth.month) {
         final now = DateTime.now();
-        final monthsDiff = (date.year - now.year) * 12 + (date.month - now.month);
+        final monthsDiff =
+            (date.year - now.year) * 12 + (date.month - now.month);
         final targetPage = _initialPage + monthsDiff;
-        
+
         _focusedMonth = DateTime(date.year, date.month, 1);
         if (_pageController.hasClients) {
           _pageController.animateToPage(
@@ -187,7 +188,9 @@ class _CalendarScreenState extends State<CalendarScreen> {
                                 const SizedBox(height: 12),
                                 Builder(
                                   builder: (context) {
-                                    final availableWidth = isLandscape && constraints.maxWidth >= 720
+                                    final availableWidth =
+                                        isLandscape &&
+                                            constraints.maxWidth >= 720
                                         ? (constraints.maxWidth - 116) / 2
                                         : constraints.maxWidth - 64;
                                     final cellWidth = (availableWidth - 24) / 7;
@@ -203,14 +206,19 @@ class _CalendarScreenState extends State<CalendarScreen> {
                                         itemBuilder: (context, index) {
                                           final offset = index - _initialPage;
                                           final now = DateTime.now();
-                                          final monthDate = DateTime(now.year, now.month + offset, 1);
-                                          
+                                          final monthDate = DateTime(
+                                            now.year,
+                                            now.month + offset,
+                                            1,
+                                          );
+
                                           return CalendarGrid(
                                             focusedMonth: monthDate,
                                             selectedDate: _selectedDate,
                                             entries: entries,
                                             targetWeight: targetWeight,
-                                            onDaySelected: (date, _) => _onDaySelected(date),
+                                            onDaySelected: (date, _) =>
+                                                _onDaySelected(date),
                                           );
                                         },
                                       ),
@@ -222,13 +230,24 @@ class _CalendarScreenState extends State<CalendarScreen> {
                           ),
                         );
 
-                        final isImperial = appSettingsState.measurementUnit == MeasurementUnit.imperial;
-                        final unitLabel = unitLabelFor(appSettingsState.measurementUnit);
+                        final isImperial =
+                            appSettingsState.measurementUnit ==
+                            MeasurementUnit.imperial;
+                        final unitLabel = unitLabelFor(
+                          appSettingsState.measurementUnit,
+                        );
                         double averageKg = 0;
                         if (dayEntries.isNotEmpty) {
-                          averageKg = dayEntries.fold<double>(0, (sum, e) => sum + e.weightKg) / dayEntries.length;
+                          averageKg =
+                              dayEntries.fold<double>(
+                                0,
+                                (sum, e) => sum + e.weightKg,
+                              ) /
+                              dayEntries.length;
                         }
-                        final displayAverage = isImperial ? kgToLbs(averageKg) : averageKg;
+                        final displayAverage = isImperial
+                            ? kgToLbs(averageKg)
+                            : averageKg;
 
                         final selectedDayHeader = Padding(
                           padding: const EdgeInsets.only(bottom: 16),
@@ -251,7 +270,10 @@ class _CalendarScreenState extends State<CalendarScreen> {
                                   '${l10n.multipleEntries(dayEntries.length)} • ${l10n.averageWeight}: ${displayAverage.toStringAsFixed(1)} $unitLabel',
                                   style: Theme.of(context).textTheme.bodyMedium
                                       ?.copyWith(
-                                        color: Theme.of(context).colorScheme.onSurfaceVariant.withValues(alpha: 0.8),
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .onSurfaceVariant
+                                            .withValues(alpha: 0.8),
                                       ),
                                 ),
                               ],
