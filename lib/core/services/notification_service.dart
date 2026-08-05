@@ -50,6 +50,22 @@ class NotificationService {
     _body = body;
     _channelName = channelName;
     _channelDescription = channelDescription;
+    
+    if (_initialized) {
+      _updateAndroidChannel();
+    }
+  }
+
+  Future<void> _updateAndroidChannel() async {
+    final androidChannel = AndroidNotificationChannel(
+      _channelId,
+      _channelName,
+      description: _channelDescription,
+      importance: Importance.max,
+    );
+    final androidPlugin = _plugin.resolvePlatformSpecificImplementation<
+        AndroidFlutterLocalNotificationsPlugin>();
+    await androidPlugin?.createNotificationChannel(androidChannel);
   }
 
   /// Initializes the local notification plugin and timezone database.
