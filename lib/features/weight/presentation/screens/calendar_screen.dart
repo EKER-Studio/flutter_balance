@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import 'package:pure_weight/core/models/measurement_unit.dart';
+import 'package:pure_weight/core/utils/unit_converter.dart';
 import 'package:pure_weight/features/weight/domain/entities/weight_entry.dart';
 import 'package:pure_weight/features/weight/presentation/bloc/weight_bloc.dart';
 import 'package:pure_weight/features/weight/presentation/bloc/weight_state.dart';
@@ -73,7 +75,8 @@ class _CalendarScreenState extends State<CalendarScreen> {
     final formattedSelectedDate = DateFormat.MMMMd(
       locale,
     ).format(_selectedDate);
-    final targetWeight = context.watch<AppSettingsBloc>().state.targetWeight;
+    final appSettingsState = context.watch<AppSettingsBloc>().state;
+    final targetWeight = appSettingsState.targetWeight;
 
     final now = DateTime.now();
     final todayEnd = DateTime(now.year, now.month, now.day, 23, 59, 59);
@@ -165,17 +168,40 @@ class _CalendarScreenState extends State<CalendarScreen> {
                           ),
                         );
 
+                        final isImperial = appSettingsState.measurementUnit == MeasurementUnit.imperial;
+                        final unitLabel = unitLabelFor(appSettingsState.measurementUnit);
+                        double averageKg = 0;
+                        if (dayEntries.isNotEmpty) {
+                          averageKg = dayEntries.fold<double>(0, (sum, e) => sum + e.weightKg) / dayEntries.length;
+                        }
+                        final displayAverage = isImperial ? kgToLbs(averageKg) : averageKg;
+
                         final selectedDayHeader = Padding(
-                          padding: const EdgeInsets.only(left: 8, bottom: 8),
-                          child: Text(
-                            l10n.entriesFromDate(formattedSelectedDate),
-                            style: Theme.of(context).textTheme.titleMedium
-                                ?.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                  color: Theme.of(
-                                    context,
-                                  ).colorScheme.onSurfaceVariant,
+                          padding: const EdgeInsets.only(bottom: 12),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                l10n.entriesFromDate(formattedSelectedDate),
+                                style: Theme.of(context).textTheme.titleMedium
+                                    ?.copyWith(
+                                      fontWeight: FontWeight.bold,
+                                      color: Theme.of(
+                                        context,
+                                      ).colorScheme.onSurfaceVariant,
+                                    ),
+                              ),
+                              if (dayEntries.length > 1) ...[
+                                const SizedBox(height: 4),
+                                Text(
+                                  '${l10n.multipleEntries(dayEntries.length)} • ${l10n.averageWeight}: ${displayAverage.toStringAsFixed(1)} $unitLabel',
+                                  style: Theme.of(context).textTheme.bodyMedium
+                                      ?.copyWith(
+                                        color: Theme.of(context).colorScheme.onSurfaceVariant.withValues(alpha: 0.8),
+                                      ),
                                 ),
+                              ],
+                            ],
                           ),
                         );
 

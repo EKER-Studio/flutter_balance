@@ -42,28 +42,9 @@ class CalendarDayEntriesCard extends StatelessWidget {
     final isImperial = unit == MeasurementUnit.imperial;
     final unitLabel = unitLabelFor(unit);
 
-    final hasMultiple = entries.length >= 2;
-
     // Check if target weight was reached on this day
     final isGoalAchievedOnDay =
         targetWeight != null && entries.any((e) => e.weightKg <= targetWeight!);
-
-    // Daily Stats
-    double averageKg = 0;
-    double minKg = 0;
-    double maxKg = 0;
-
-    if (hasMultiple) {
-      final totalKg = entries.fold<double>(0, (sum, e) => sum + e.weightKg);
-      averageKg = totalKg / entries.length;
-      minKg = entries.map((e) => e.weightKg).reduce((a, b) => a < b ? a : b);
-      maxKg = entries.map((e) => e.weightKg).reduce((a, b) => a > b ? a : b);
-    }
-
-    final displayAverage = isImperial ? kgToLbs(averageKg) : averageKg;
-    final displayMin = isImperial ? kgToLbs(minKg) : minKg;
-    final displayMax = isImperial ? kgToLbs(maxKg) : maxKg;
-    final displayDelta = displayMax - displayMin;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -95,103 +76,7 @@ class CalendarDayEntriesCard extends StatelessWidget {
           const SizedBox(height: 16),
         ],
 
-        // Daily Summary Stats Bar (when 2+ measurements exist)
-        if (hasMultiple) ...[
-          Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: cs.secondaryContainer,
-              borderRadius: BorderRadius.circular(16),
-            ),
-            child: Column(
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      l10n.dailySummaryTitle,
-                      style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: cs.onSecondaryContainer,
-                      ),
-                    ),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 8,
-                        vertical: 2,
-                      ),
-                      decoration: BoxDecoration(
-                        color: cs.primary.withValues(alpha: 0.15),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Text(
-                        l10n.multipleEntries(entries.length),
-                        style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: cs.primary,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 8),
-                Row(
-                  children: [
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            l10n.averageWeight,
-                            style: Theme.of(context).textTheme.bodySmall
-                                ?.copyWith(
-                                  color: cs.onSecondaryContainer.withValues(
-                                    alpha: 0.8,
-                                  ),
-                                ),
-                          ),
-                          Text(
-                            '${displayAverage.toStringAsFixed(1)} $unitLabel',
-                            style: Theme.of(context).textTheme.titleSmall
-                                ?.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                  color: cs.onSecondaryContainer,
-                                ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            l10n.rangeMinMax,
-                            style: Theme.of(context).textTheme.bodySmall
-                                ?.copyWith(
-                                  color: cs.onSecondaryContainer.withValues(
-                                    alpha: 0.8,
-                                  ),
-                                ),
-                          ),
-                          Text(
-                            '${displayMin.toStringAsFixed(1)} – ${displayMax.toStringAsFixed(1)} $unitLabel (Δ ${displayDelta.toStringAsFixed(1)})',
-                            style: Theme.of(context).textTheme.titleSmall
-                                ?.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                  color: cs.onSecondaryContainer,
-                                ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 16),
-        ],
+
 
         // List of Entries for this day
         ListView.separated(

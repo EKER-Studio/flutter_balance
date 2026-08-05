@@ -284,10 +284,7 @@ void main() {
         ),
       );
 
-      expect(find.text('Podsumowanie dnia'), findsOneWidget);
       expect(find.textContaining('Cel wagi został osiągnięty'), findsOneWidget);
-      expect(find.text('Średnia waga'), findsOneWidget);
-      expect(find.text('72.5 kg'), findsOneWidget);
     },
   );
 
