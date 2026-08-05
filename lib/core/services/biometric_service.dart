@@ -294,7 +294,6 @@ class BiometricService {
       AndroidAuthMessages(
         signInTitle: l10n.biometricStepTitle,
         cancelButton: l10n.cancel,
-        signInHint: l10n.biometricAuthReason,
       ),
       IOSAuthMessages(cancelButton: l10n.cancel),
     ];
