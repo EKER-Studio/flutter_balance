@@ -189,12 +189,46 @@ class HealthSummaryCard extends StatelessWidget {
     ColorScheme colorScheme,
     TextTheme textTheme,
   ) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    MaterialColor? baseColor;
+    if (category != null) {
+      switch (category) {
+        case BmiCategory.underweight:
+          baseColor = Colors.blue;
+          break;
+        case BmiCategory.normal:
+          baseColor = Colors.green;
+          break;
+        case BmiCategory.overweight:
+          baseColor = Colors.orange;
+          break;
+        case BmiCategory.obese:
+          baseColor = Colors.red;
+          break;
+      }
+    }
+
+    final bgColor = baseColor != null
+        ? baseColor.withValues(alpha: 0.15)
+        : colorScheme.primary.withValues(alpha: 0.1);
+
+    final borderColor = baseColor != null
+        ? (isDark ? baseColor.shade300 : baseColor.shade800).withValues(
+            alpha: 0.3,
+          )
+        : colorScheme.primary.withValues(alpha: 0.2);
+
+    final contentColor = baseColor != null
+        ? (isDark ? baseColor.shade300 : baseColor.shade800)
+        : colorScheme.primary;
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
-        color: colorScheme.primary.withValues(alpha: 0.1),
+        color: bgColor,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: colorScheme.primary.withValues(alpha: 0.2)),
+        border: Border.all(color: borderColor),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.end,
@@ -204,12 +238,18 @@ class HealthSummaryCard extends StatelessWidget {
             Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(Icons.check_circle, size: 14, color: colorScheme.primary),
+                Icon(
+                  category == BmiCategory.normal
+                      ? Icons.check_circle
+                      : Icons.info,
+                  size: 14,
+                  color: contentColor,
+                ),
                 const SizedBox(width: 4),
                 Text(
                   category.localizedName(l10n),
                   style: textTheme.labelMedium?.copyWith(
-                    color: colorScheme.primary,
+                    color: contentColor,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -219,7 +259,7 @@ class HealthSummaryCard extends StatelessWidget {
           Text(
             l10n.bmiValueShortLabel(bmi.toStringAsFixed(1)),
             style: textTheme.titleMedium?.copyWith(
-              color: colorScheme.primary,
+              color: contentColor,
               fontWeight: FontWeight.w700,
             ),
           ),

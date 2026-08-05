@@ -223,16 +223,8 @@ class BmiChartCard extends StatelessWidget {
     final range = maxBmi - minBmi;
     final padding = (range * 0.1).clamp(1.0, double.infinity);
 
-    // Expand the bounds so the user can always see the zone boundaries
-    // (e.g. Normal starts at 18.5, Overweight at 25, Obese at 30)
-    final minY = (minBmi - padding).floorToDouble().clamp(10.0, 24.0);
-    final maxY = (maxBmi + padding).ceilToDouble().clamp(26.0, 100.0);
-
-    // Define colors for zones
-    final underweightColor = Colors.blue.withValues(alpha: 0.1);
-    final normalColor = Colors.green.withValues(alpha: 0.15);
-    final overweightColor = Colors.orange.withValues(alpha: 0.15);
-    final obeseColor = Colors.red.withValues(alpha: 0.1);
+    final minY = (minBmi - padding).floorToDouble().clamp(10.0, 100.0);
+    final maxY = (maxBmi + padding).ceilToDouble();
 
     return SizedBox(
       height: 220,
@@ -285,30 +277,6 @@ class BmiChartCard extends StatelessWidget {
               ),
             ),
             borderData: FlBorderData(show: false),
-            rangeAnnotations: RangeAnnotations(
-              horizontalRangeAnnotations: [
-                HorizontalRangeAnnotation(
-                  y1: 0,
-                  y2: 18.5,
-                  color: underweightColor,
-                ),
-                HorizontalRangeAnnotation(
-                  y1: 18.5,
-                  y2: 25.0,
-                  color: normalColor,
-                ),
-                HorizontalRangeAnnotation(
-                  y1: 25.0,
-                  y2: 30.0,
-                  color: overweightColor,
-                ),
-                HorizontalRangeAnnotation(
-                  y1: 30.0,
-                  y2: 100.0,
-                  color: obeseColor,
-                ),
-              ],
-            ),
             lineBarsData: [
               LineChartBarData(
                 spots: spots,
@@ -326,6 +294,17 @@ class BmiChartCard extends StatelessWidget {
                       strokeColor: cs.surface,
                     );
                   },
+                ),
+                belowBarData: BarAreaData(
+                  show: true,
+                  gradient: LinearGradient(
+                    colors: [
+                      cs.primary.withValues(alpha: 0.2),
+                      cs.primary.withValues(alpha: 0.0),
+                    ],
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                  ),
                 ),
               ),
             ],
