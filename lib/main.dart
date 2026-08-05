@@ -16,6 +16,7 @@ import 'package:pure_weight/core/services/notification_service.dart';
 import 'package:pure_weight/features/weight/data/repositories/isar_weight_repository.dart';
 import 'package:pure_weight/features/weight/domain/repositories/weight_repository.dart';
 import 'package:pure_weight/presentation/bloc/settings/app_settings_bloc.dart';
+import 'package:pure_weight/presentation/bloc/settings/app_settings_event.dart';
 import 'package:pure_weight/presentation/screens/app_initialization_error_screen.dart';
 
 /// Entry point of the PureWeight application.
@@ -67,7 +68,10 @@ Future<void> main() async {
 
     await NotificationService.instance.initialize();
 
+    final isBiometricSupported = await BiometricService.instance.isAvailable();
+
     final settingsBloc = AppSettingsBloc();
+    settingsBloc.add(UpdateBiometricSupport(isBiometricSupported));
 
     runApp(
       BlocProvider(
