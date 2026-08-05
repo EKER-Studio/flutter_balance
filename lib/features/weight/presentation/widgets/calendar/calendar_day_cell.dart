@@ -66,6 +66,7 @@ class CalendarDayCell extends StatelessWidget {
       button: true,
       selected: isSelected,
       label: semanticsLabel,
+      excludeSemantics: true,
       child: Padding(
         padding: const EdgeInsets.all(4),
         child: Material(
@@ -76,8 +77,16 @@ class CalendarDayCell extends StatelessWidget {
             child: SizedBox.expand(
               child: Opacity(
                 opacity: isFuture ? 0.40 : 1.0,
-                child: Container(
-                  decoration: BoxDecoration(
+                child: Badge(
+                  isLabelVisible: isGoalAchieved,
+                  backgroundColor: cs.tertiary,
+                  label: Icon(
+                    Icons.star,
+                    size: 10,
+                    color: cs.onTertiary,
+                  ),
+                  child: Container(
+                    decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     color: isSelected ? cs.primary : Colors.transparent,
                     border: isToday && !isSelected
@@ -125,20 +134,10 @@ class CalendarDayCell extends StatelessWidget {
                             ),
                           ),
                         ),
-                      // Goal Achievement Star Badge
-                      if (isGoalAchieved)
-                        Positioned(
-                          top: -2,
-                          right: -2,
-                          child: Icon(
-                            Icons.star,
-                            size: 10,
-                            color: isSelected ? cs.onPrimary : cs.tertiary,
-                          ),
-                        ),
                     ],
                   ),
                 ),
+              ),
               ),
             ),
           ),
