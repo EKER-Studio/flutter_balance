@@ -21,6 +21,7 @@ class AppSettingsBloc extends HydratedBloc<AppSettingsEvent, AppSettingsState> {
     on<UpdateNotificationTime>(_onUpdateNotificationTime);
     on<TargetWeightChanged>(_onTargetWeightChanged);
     on<UpdateBiometricLock>(_onUpdateBiometricLock);
+    on<UpdateBiometricSupport>(_onUpdateBiometricSupport);
     on<SetLocked>(_onSetLocked);
     on<CompleteOnboarding>(_onCompleteOnboarding);
     on<ResetAppSettings>(_onResetAppSettings);
@@ -115,6 +116,14 @@ class AppSettingsBloc extends HydratedBloc<AppSettingsEvent, AppSettingsState> {
   /// biometric shield overlay.
   void _onSetLocked(SetLocked event, Emitter<AppSettingsState> emit) {
     emit(state.copyWith(isLocked: event.locked));
+  }
+
+  /// Updates whether the device hardware supports biometrics.
+  void _onUpdateBiometricSupport(
+    UpdateBiometricSupport event,
+    Emitter<AppSettingsState> emit,
+  ) {
+    emit(state.copyWith(isBiometricSupported: event.isSupported));
   }
 
   /// Marks the initial onboarding wizard as completed.

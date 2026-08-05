@@ -78,10 +78,10 @@ class _OnboardingWizardScreenState extends State<OnboardingWizardScreen> {
     // Sync height into the weight BLoC before the final step persists the
     // initial measurement, otherwise its AddWeight guard rejects the entry
     // with a heightNotSet error on a fresh install (height is only ever
-    // stored in AppSettingsBloc during onboarding).
+    // saved when settings are saved, or here in onboarding).
     context.read<WeightBloc>().add(UpdateUserHeight(heightCm));
 
-    _goToStep(1);
+    _goToStep(_currentStep + 1);
   }
 
   /// Persists the chosen [targetWeightKg] (or `null` when skipped), then advances.
@@ -91,15 +91,15 @@ class _OnboardingWizardScreenState extends State<OnboardingWizardScreen> {
     });
 
     context.read<AppSettingsBloc>().add(TargetWeightChanged(targetWeightKg));
-    _goToStep(2);
+    _goToStep(_currentStep + 1);
   }
 
   void _handleReminderNext() {
-    _goToStep(3);
+    _goToStep(_currentStep + 1);
   }
 
   void _handleBiometricNext() {
-    _goToStep(4);
+    _goToStep(_currentStep + 1);
   }
 
   /// Logs the initial [weightKg] measurement at [timestamp], completes
@@ -139,7 +139,42 @@ class _OnboardingWizardScreenState extends State<OnboardingWizardScreen> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context);
-    final progress = (_currentStep + 1) / 5.0;
+    
+    final isBiometricSupported = context.select(
+      (AppSettingsBloc bloc) => bloc.state.isBiometricSupported,
+    );
+
+    final steps = <Widget>[
+      _buildStepWrapper(
+        StepUnitsHeight(
+          initialUnit: _selectedUnit,
+          initialHeightCm: _selectedHeightCm,
+          onNext: _handleUnitsHeightNext,
+        ),
+      ),
+      _buildStepWrapper(
+        StepTargetWeight(
+          unit: _selectedUnit,
+          initialTargetWeightKg: _targetWeightKg,
+          onNext: _handleTargetWeightNext,
+        ),
+      ),
+      _buildStepWrapper(
+        StepReminderNotification(onNext: _handleReminderNext),
+      ),
+      if (isBiometricSupported)
+        _buildStepWrapper(
+          StepBiometricLock(onNext: _handleBiometricNext),
+        ),
+      _buildStepWrapper(
+        StepInitialWeight(
+          unit: _selectedUnit,
+          onComplete: _handleInitialWeightComplete,
+        ),
+      ),
+    ];
+
+    final progress = (_currentStep + 1) / steps.length;
 
     return PopScope(
       canPop: _currentStep == 0,
@@ -153,7 +188,7 @@ class _OnboardingWizardScreenState extends State<OnboardingWizardScreen> {
         resizeToAvoidBottomInset: true,
         appBar: AppBar(
           title: Text(
-            l10n.stepOf(_currentStep + 1, 5),
+            l10n.stepOf(_currentStep + 1, steps.length),
             style: theme.textTheme.titleMedium?.copyWith(
               color: theme.colorScheme.onSurfaceVariant,
             ),
@@ -178,34 +213,7 @@ class _OnboardingWizardScreenState extends State<OnboardingWizardScreen> {
           child: PageView(
             controller: _pageController,
             physics: const NeverScrollableScrollPhysics(),
-            children: [
-              _buildStepWrapper(
-                StepUnitsHeight(
-                  initialUnit: _selectedUnit,
-                  initialHeightCm: _selectedHeightCm,
-                  onNext: _handleUnitsHeightNext,
-                ),
-              ),
-              _buildStepWrapper(
-                StepTargetWeight(
-                  unit: _selectedUnit,
-                  initialTargetWeightKg: _targetWeightKg,
-                  onNext: _handleTargetWeightNext,
-                ),
-              ),
-              _buildStepWrapper(
-                StepReminderNotification(onNext: _handleReminderNext),
-              ),
-              _buildStepWrapper(
-                StepBiometricLock(onNext: _handleBiometricNext),
-              ),
-              _buildStepWrapper(
-                StepInitialWeight(
-                  unit: _selectedUnit,
-                  onComplete: _handleInitialWeightComplete,
-                ),
-              ),
-            ],
+            children: steps,
           ),
         ),
       ),

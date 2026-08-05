@@ -297,26 +297,28 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                             crossAxisAlignment:
                                                 CrossAxisAlignment.start,
                                             children: [
-                                              _SectionHeader(
-                                                label: l10n.securitySection,
-                                              ),
-                                              const SizedBox(height: 8),
-                                              _SecuritySection(
-                                                state: state,
-                                                l10n: l10n,
-                                                isBiometricAvailable:
-                                                    _isBiometricAvailable,
-                                                onBiometricChanged: (v) =>
-                                                    _handleBiometricToggle(
-                                                      context,
-                                                      v,
-                                                    ),
-                                                biometricsAvailableLabel:
-                                                    l10n.biometricDesc,
-                                                biometricsNotAvailableLabel:
-                                                    l10n.biometricsNotAvailable,
-                                              ),
-                                              const SizedBox(height: 24),
+                                              if (state.isBiometricSupported) ...[
+                                                _SectionHeader(
+                                                  label: l10n.securitySection,
+                                                ),
+                                                const SizedBox(height: 8),
+                                                _SecuritySection(
+                                                  state: state,
+                                                  l10n: l10n,
+                                                  isBiometricAvailable:
+                                                      _isBiometricAvailable,
+                                                  onBiometricChanged: (v) =>
+                                                      _handleBiometricToggle(
+                                                        context,
+                                                        v,
+                                                      ),
+                                                  biometricsAvailableLabel:
+                                                      l10n.biometricDesc,
+                                                  biometricsNotAvailableLabel:
+                                                      l10n.biometricsNotAvailable,
+                                                ),
+                                                const SizedBox(height: 24),
+                                              ],
                                               _SectionHeader(
                                                 label: l10n.dataSection,
                                               ),
@@ -378,26 +380,28 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                               ),
                                         ),
                                         const SizedBox(height: 16),
-                                        _SectionHeader(
-                                          label: l10n.securitySection,
-                                        ),
-                                        const SizedBox(height: 8),
-                                        _SecuritySection(
-                                          state: state,
-                                          l10n: l10n,
-                                          isBiometricAvailable:
-                                              _isBiometricAvailable,
-                                          onBiometricChanged: (v) =>
-                                              _handleBiometricToggle(
-                                                context,
-                                                v,
-                                              ),
-                                          biometricsAvailableLabel:
-                                              l10n.biometricDesc,
-                                          biometricsNotAvailableLabel:
-                                              l10n.biometricsNotAvailable,
-                                        ),
-                                        const SizedBox(height: 16),
+                                        if (state.isBiometricSupported) ...[
+                                          _SectionHeader(
+                                            label: l10n.securitySection,
+                                          ),
+                                          const SizedBox(height: 8),
+                                          _SecuritySection(
+                                            state: state,
+                                            l10n: l10n,
+                                            isBiometricAvailable:
+                                                _isBiometricAvailable,
+                                            onBiometricChanged: (v) =>
+                                                _handleBiometricToggle(
+                                                  context,
+                                                  v,
+                                                ),
+                                            biometricsAvailableLabel:
+                                                l10n.biometricDesc,
+                                            biometricsNotAvailableLabel:
+                                                l10n.biometricsNotAvailable,
+                                          ),
+                                          const SizedBox(height: 16),
+                                        ],
                                         _SectionHeader(label: l10n.dataSection),
                                         const SizedBox(height: 8),
                                         _DataSection(

@@ -85,6 +85,15 @@ final class CompleteOnboarding extends AppSettingsEvent {
   const CompleteOnboarding();
 }
 
+/// Sets whether biometric authentication is supported on this device.
+final class UpdateBiometricSupport extends AppSettingsEvent {
+  /// Whether biometric auth is supported natively.
+  final bool isSupported;
+
+  /// Creates [UpdateBiometricSupport] with the given [isSupported].
+  const UpdateBiometricSupport(this.isSupported);
+}
+
 /// Resets all application settings to factory default values.
 final class ResetAppSettings extends AppSettingsEvent {
   /// Creates [ResetAppSettings].

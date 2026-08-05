@@ -49,6 +49,10 @@ final class AppSettingsState extends Equatable {
   /// never persisted and reset by any subsequent notification-related event.
   final bool notificationPermissionDenied;
 
+  /// Transient flag indicating if the device hardware supports biometrics.
+  /// Not persisted; evaluated freshly on each app launch.
+  final bool isBiometricSupported;
+
   /// Creates [AppSettingsState] with the given parameters.
   const AppSettingsState({
     this.themeMode = AppThemeMode.system,
@@ -61,6 +65,7 @@ final class AppSettingsState extends Equatable {
     this.isLocked = false,
     this.isOnboardingCompleted = false,
     this.notificationPermissionDenied = false,
+    this.isBiometricSupported = true,
   });
 
   /// Creates a copy of this state with the given fields replaced.
@@ -78,6 +83,7 @@ final class AppSettingsState extends Equatable {
     bool? isLocked,
     bool? isOnboardingCompleted,
     bool? notificationPermissionDenied,
+    bool? isBiometricSupported,
   }) {
     return AppSettingsState(
       themeMode: themeMode ?? this.themeMode,
@@ -95,6 +101,7 @@ final class AppSettingsState extends Equatable {
           isOnboardingCompleted ?? this.isOnboardingCompleted,
       notificationPermissionDenied:
           notificationPermissionDenied ?? this.notificationPermissionDenied,
+      isBiometricSupported: isBiometricSupported ?? this.isBiometricSupported,
     );
   }
 
@@ -110,6 +117,7 @@ final class AppSettingsState extends Equatable {
     isLocked,
     isOnboardingCompleted,
     notificationPermissionDenied,
+    isBiometricSupported,
   ];
 
   /// Deserializes [AppSettingsState] from a JSON map.
@@ -149,6 +157,7 @@ final class AppSettingsState extends Equatable {
       isOnboardingCompleted: json['isOnboardingCompleted'] as bool? ?? false,
       // Transient flag: never restored from storage.
       notificationPermissionDenied: false,
+      isBiometricSupported: true,
     );
   }
 
