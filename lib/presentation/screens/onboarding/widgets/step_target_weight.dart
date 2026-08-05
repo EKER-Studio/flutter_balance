@@ -126,7 +126,7 @@ class _StepTargetWeightState extends State<StepTargetWeight> {
           ),
           const SizedBox(height: 8.0),
           Text(
-            'What is your target weight goal? This step is optional.',
+            l10n.targetWeightStepSubtitle,
             style: theme.textTheme.bodyMedium?.copyWith(
               color: theme.colorScheme.onSurfaceVariant,
             ),
@@ -150,7 +150,7 @@ class _StepTargetWeightState extends State<StepTargetWeight> {
           ),
           const SizedBox(height: 8),
           Text(
-            isError ? _errorText! : 'Optional — leave empty to set later',
+            isError ? _errorText! : l10n.targetWeightOptionalHint,
             style: TextStyle(
               color: isError
                   ? theme.colorScheme.error

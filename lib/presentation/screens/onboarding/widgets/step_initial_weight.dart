@@ -85,13 +85,13 @@ class _StepInitialWeightState extends State<StepInitialWeight> {
     setState(() {
       final trimmed = value.trim();
       if (trimmed.isEmpty) {
-        _errorText = 'Initial weight is required';
+        _errorText = AppLocalizations.of(context).initialWeightRequiredError;
         return;
       }
 
       final parsed = double.tryParse(trimmed);
       if (parsed == null || parsed <= 0 || parsed > 500) {
-        _errorText = 'Please enter a valid weight (> 0)';
+        _errorText = AppLocalizations.of(context).invalidPositiveNumber;
       } else {
         _errorText = null;
       }
@@ -129,14 +129,14 @@ class _StepInitialWeightState extends State<StepInitialWeight> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Text(
-            'Initial Weight',
+            l10n.initialWeightStepTitle,
             style: theme.textTheme.headlineSmall?.copyWith(
               fontWeight: FontWeight.bold,
             ),
           ),
           const SizedBox(height: 8.0),
           Text(
-            'Log your starting weight measurement to begin tracking.',
+            l10n.initialWeightStepSubtitle,
             style: theme.textTheme.bodyMedium?.copyWith(
               color: theme.colorScheme.onSurfaceVariant,
             ),
@@ -148,7 +148,7 @@ class _StepInitialWeightState extends State<StepInitialWeight> {
             autofocus: true,
             keyboardType: const TextInputType.numberWithOptions(decimal: true),
             decoration: InputDecoration(
-              labelText: 'Current Weight ($unitSuffix)',
+              labelText: '${l10n.currentWeightLabel} ($unitSuffix)',
               suffixText: unitSuffix,
               enabledBorder: isError ? errorOutline : null,
               focusedBorder: isError ? errorOutline : null,
@@ -160,7 +160,7 @@ class _StepInitialWeightState extends State<StepInitialWeight> {
           ),
           const SizedBox(height: 8),
           Text(
-            isError ? _errorText! : 'Enter your initial weight',
+            isError ? _errorText! : l10n.enterInitialWeightHint,
             style: TextStyle(
               color: isError
                   ? theme.colorScheme.error
@@ -171,7 +171,7 @@ class _StepInitialWeightState extends State<StepInitialWeight> {
           ),
           const SizedBox(height: 20.0),
           Text(
-            'Measurement Date & Time',
+            l10n.measurementDateTimeLabel,
             style: theme.textTheme.bodyMedium?.copyWith(
               fontWeight: FontWeight.w600,
             ),

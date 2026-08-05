@@ -129,7 +129,7 @@ class _StepUnitsHeightState extends State<StepUnitsHeight> {
         if (_selectedUnit == MeasurementUnit.metric) {
           _cmErrorText = AppLocalizations.of(context).heightRangeError;
         } else {
-          _imperialErrorText = 'Invalid height';
+          _imperialErrorText = AppLocalizations.of(context).heightRangeError;
         }
       });
     } else {
@@ -156,14 +156,14 @@ class _StepUnitsHeightState extends State<StepUnitsHeight> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Text(
-            'Units & Height',
+            l10n.onboardingUnitsHeightTitle,
             style: theme.textTheme.headlineSmall?.copyWith(
               fontWeight: FontWeight.bold,
             ),
           ),
           const SizedBox(height: 8.0),
           Text(
-            'Select your preferred unit system and enter your height.',
+            l10n.onboardingUnitsHeightSubtitle,
             style: theme.textTheme.bodyMedium?.copyWith(
               color: theme.colorScheme.onSurfaceVariant,
             ),
@@ -233,7 +233,7 @@ class _StepUnitsHeightState extends State<StepUnitsHeight> {
                     autofocus: true,
                     keyboardType: TextInputType.number,
                     decoration: InputDecoration(
-                      labelText: 'Feet',
+                      labelText: l10n.feetLabel,
                       suffixText: 'ft',
                       enabledBorder: isImperialError ? errorOutline : null,
                       focusedBorder: isImperialError ? errorOutline : null,
@@ -253,7 +253,7 @@ class _StepUnitsHeightState extends State<StepUnitsHeight> {
                     controller: _inchesController,
                     keyboardType: TextInputType.number,
                     decoration: InputDecoration(
-                      labelText: 'Inches',
+                      labelText: l10n.inchesLabel,
                       suffixText: 'in',
                       enabledBorder: isImperialError ? errorOutline : null,
                       focusedBorder: isImperialError ? errorOutline : null,
