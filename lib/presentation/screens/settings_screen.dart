@@ -206,8 +206,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
             final l10n = AppLocalizations.of(context);
             return LayoutBuilder(
               builder: (context, constraints) {
-                final isWide = constraints.maxWidth >= 720;
+                final isWide = constraints.maxWidth >= 600;
                 final maxContentWidth = isWide ? 900.0 : 600.0;
+                final horizontalPadding = isWide ? 24.0 : 16.0;
 
                 return CustomScrollView(
                   slivers: [
@@ -216,7 +217,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       top: false,
                       sliver: SliverToBoxAdapter(
                         child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          padding: EdgeInsets.symmetric(
+                            horizontal: horizontalPadding,
+                          ),
                           child: Align(
                             alignment: Alignment.topCenter,
                             child: ConstrainedBox(
@@ -901,9 +904,6 @@ class _CustomSettingsTileState extends State<_CustomSettingsTile> {
 
     final titleWidget = Text(
       widget.title,
-      semanticsLabel: widget.sectionLabel != null
-          ? '${widget.sectionLabel}, ${widget.title}'
-          : null,
       style: textTheme.bodyLarge?.copyWith(
         color: widget.isError ? colorScheme.error : colorScheme.onSurface,
       ),
@@ -922,6 +922,7 @@ class _CustomSettingsTileState extends State<_CustomSettingsTile> {
                     ? colorScheme.error
                     : colorScheme.onSurfaceVariant,
               ),
+              maxLines: 2,
               overflow: TextOverflow.ellipsis,
             ),
           ),
@@ -944,26 +945,30 @@ class _CustomSettingsTileState extends State<_CustomSettingsTile> {
       borderRadius: BorderRadius.circular(20),
     );
 
-    final tile = MergeSemantics(
+    final tile = Semantics(
+      button: true,
+      label: widget.sectionLabel != null
+          ? '${widget.sectionLabel}, ${widget.title}'
+          : null,
       child: Focus(
         focusNode: _focusNode,
         child: Theme(
           data: Theme.of(context).copyWith(
             highlightColor: widget.isError
-                ? colorScheme.errorContainer
-                : colorScheme.surfaceContainerHighest,
+                ? colorScheme.error.withValues(alpha: 0.12)
+                : colorScheme.primary.withValues(alpha: 0.08),
             splashColor: widget.isError
-                ? colorScheme.errorContainer
-                : colorScheme.surfaceContainerHighest,
+                ? colorScheme.error.withValues(alpha: 0.12)
+                : colorScheme.primary.withValues(alpha: 0.12),
           ),
           child: ListTile(
             shape: shape,
             hoverColor: widget.isError
-                ? colorScheme.errorContainer
-                : colorScheme.surfaceContainerHighest,
+                ? colorScheme.error.withValues(alpha: 0.08)
+                : colorScheme.onSurface.withValues(alpha: 0.08),
             focusColor: widget.isError
-                ? colorScheme.errorContainer
-                : colorScheme.surfaceContainerHighest,
+                ? colorScheme.error.withValues(alpha: 0.12)
+                : colorScheme.onSurface.withValues(alpha: 0.12),
             minLeadingWidth: 40,
             minVerticalPadding: 8,
             onTap: widget.onTap,
@@ -1068,19 +1073,20 @@ class _CustomSwitchTileState extends State<_CustomSwitchTile> {
       borderRadius: BorderRadius.circular(20),
     );
 
-    final tile = MergeSemantics(
+    final tile = Semantics(
+      toggled: widget.value,
+      label: widget.sectionLabel != null
+          ? '${widget.sectionLabel}, ${widget.title}'
+          : widget.title,
       child: Focus(
         focusNode: _focusNode,
         child: SwitchListTile.adaptive(
           shape: shape,
           tileColor: Colors.transparent,
-          hoverColor: colorScheme.surfaceContainerHighest,
+          hoverColor: colorScheme.onSurface.withValues(alpha: 0.08),
           minVerticalPadding: 8,
           title: Text(
             widget.title,
-            semanticsLabel: widget.sectionLabel != null
-                ? '${widget.sectionLabel}, ${widget.title}'
-                : null,
             style: textTheme.bodyLarge?.copyWith(color: colorScheme.onSurface),
           ),
           subtitle: widget.subtitle != null
