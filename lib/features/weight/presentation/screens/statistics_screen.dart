@@ -80,7 +80,7 @@ class StatisticsScreen extends StatelessWidget {
 
                     final now = DateTime.now();
                     final streak = _calculateStreak(entries, now);
-                    final compliancePct = _calculateMonthlyCompliance(
+                    final compliancePct = _calculateTotalCompliance(
                       entries,
                       now,
                     );
@@ -632,18 +632,25 @@ class StatisticsScreen extends StatelessWidget {
     return streak;
   }
 
-  /// Calculates monthly compliance percentage (logged days in last 30 days).
-  int _calculateMonthlyCompliance(List<WeightEntry> entries, DateTime now) {
+  /// Calculates all-time compliance percentage (unique logged days / total days since first entry).
+  int _calculateTotalCompliance(List<WeightEntry> entries, DateTime now) {
+    if (entries.isEmpty) return 0;
+
+    final firstDate = entries
+        .map((e) => e.dateTime)
+        .reduce((a, b) => a.isBefore(b) ? a : b);
+
     final today = DateTime(now.year, now.month, now.day);
-    final monthAgo = today.subtract(Duration(days: monthlyComplianceDays));
+    final start = DateTime(firstDate.year, firstDate.month, firstDate.day);
+
+    int totalDays = today.difference(start).inDays + 1;
+    if (totalDays <= 0) totalDays = 1;
 
     final loggedDays = entries
-        .where((e) => e.dateTime.isAfter(monthAgo))
         .map((e) => DateTime(e.dateTime.year, e.dateTime.month, e.dateTime.day))
         .toSet()
         .length;
-
-    return ((loggedDays / monthlyComplianceDays) * 100).round();
+    return ((loggedDays / totalDays) * 100).round().clamp(0, 100);
   }
 
   /// Formats a measurement entry date (e.g. "15 Sty 2023" or "Dzisiaj").

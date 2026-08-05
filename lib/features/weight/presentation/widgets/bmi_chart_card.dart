@@ -2,9 +2,10 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:pure_weight/features/weight/domain/entities/weight_entry.dart';
+import 'package:pure_weight/features/weight/presentation/widgets/bmi_legend_dialog.dart';
 import 'package:pure_weight/l10n/app_localizations.dart';
 
-/// A composite card that displays a BMI chart over time with colored zones.
+/// A composite card that displays a BMI chart over time with colored zones and a summary header.
 class BmiChartCard extends StatelessWidget {
   final List<WeightEntry> entries;
   final double? heightCm;
@@ -22,7 +23,7 @@ class BmiChartCard extends StatelessWidget {
 
     return Semantics(
       container: true,
-      label: l10n.bmiChartTitle,
+      label: l10n.bmi,
       child: Card(
         elevation: 0,
         color: cs.surfaceContainerLow,
@@ -32,29 +33,130 @@ class BmiChartCard extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(
-                children: [
-                  Icon(
-                    Icons.monitor_heart_outlined,
-                    size: 22,
-                    color: cs.secondary,
-                  ),
-                  const SizedBox(width: 8),
-                  Text(
-                    l10n.bmiChartTitle,
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      color: cs.onSurface,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ],
-              ),
+              _buildHeader(context, cs, l10n),
               const SizedBox(height: 24),
               _buildChartContent(context, cs, l10n),
             ],
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildHeader(
+    BuildContext context,
+    ColorScheme cs,
+    AppLocalizations l10n,
+  ) {
+    if (heightCm == null || heightCm! <= 0 || entries.isEmpty) {
+      return Row(
+        children: [
+          Icon(Icons.monitor_weight_outlined, size: 22, color: cs.secondary),
+          const SizedBox(width: 8),
+          Text(
+            l10n.bmi,
+            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+              color: cs.onSurface,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          const Spacer(),
+          IconButton(
+            icon: Icon(
+              Icons.help_outline,
+              size: 20,
+              color: cs.onSurfaceVariant,
+            ),
+            onPressed: () => _showLegendDialog(context),
+            tooltip: l10n.bmiLegendTitle,
+          ),
+        ],
+      );
+    }
+
+    final sortedEntries = [...entries]
+      ..sort((a, b) => b.dateTime.compareTo(a.dateTime));
+    final latestWeightKg = sortedEntries.first.weightKg;
+    final hMeters = heightCm! / 100.0;
+    final hSquared = hMeters * hMeters;
+    final currentBmi = latestWeightKg / hSquared;
+
+    String categoryLabel;
+    Color categoryColor;
+    Color categoryTextColor;
+
+    if (currentBmi < 18.5) {
+      categoryLabel = l10n.bmiCategoryUnderweight;
+      categoryColor = Colors.blue.withValues(alpha: 0.15);
+      categoryTextColor = Colors.blue.shade700;
+    } else if (currentBmi < 25.0) {
+      categoryLabel = l10n.bmiCategoryNormal;
+      categoryColor = Colors.green.withValues(alpha: 0.15);
+      categoryTextColor = Colors.green.shade700;
+    } else if (currentBmi < 30.0) {
+      categoryLabel = l10n.bmiCategoryOverweight;
+      categoryColor = Colors.orange.withValues(alpha: 0.15);
+      categoryTextColor = Colors.orange.shade800;
+    } else {
+      categoryLabel = l10n.bmiCategoryObese;
+      categoryColor = Colors.red.withValues(alpha: 0.15);
+      categoryTextColor = Colors.red.shade700;
+    }
+
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    if (isDark) {
+      if (currentBmi < 18.5) {
+        categoryTextColor = Colors.blue.shade300;
+      } else if (currentBmi < 25.0) {
+        categoryTextColor = Colors.green.shade300;
+      } else if (currentBmi < 30.0) {
+        categoryTextColor = Colors.orange.shade300;
+      } else {
+        categoryTextColor = Colors.red.shade300;
+      }
+    }
+
+    return InkWell(
+      onTap: () => _showLegendDialog(context),
+      borderRadius: BorderRadius.circular(12),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 4.0),
+        child: Row(
+          children: [
+            Icon(Icons.monitor_weight_outlined, size: 22, color: cs.secondary),
+            const SizedBox(width: 8),
+            Text(
+              l10n.bmi,
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                color: cs.onSurface,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            const Spacer(),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              decoration: BoxDecoration(
+                color: categoryColor,
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Text(
+                categoryLabel,
+                style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                  color: categoryTextColor,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showLegendDialog(BuildContext context) {
+    showDialog<void>(
+      context: context,
+      builder: (ctx) => const BmiLegendDialog(),
     );
   }
 
@@ -120,8 +222,11 @@ class BmiChartCard extends StatelessWidget {
     // Padding for Y axis
     final range = maxBmi - minBmi;
     final padding = (range * 0.1).clamp(1.0, double.infinity);
-    final minY = (minBmi - padding).floorToDouble().clamp(10.0, 100.0);
-    final maxY = (maxBmi + padding).ceilToDouble();
+
+    // Expand the bounds so the user can always see the zone boundaries
+    // (e.g. Normal starts at 18.5, Overweight at 25, Obese at 30)
+    final minY = (minBmi - padding).floorToDouble().clamp(10.0, 24.0);
+    final maxY = (maxBmi + padding).ceilToDouble().clamp(26.0, 100.0);
 
     // Define colors for zones
     final underweightColor = Colors.blue.withValues(alpha: 0.1);
@@ -285,7 +390,10 @@ class BmiChartCard extends StatelessWidget {
     final date = firstDate.add(Duration(days: value.round()));
     // Use the locale dynamically
     final locale = Localizations.localeOf(context).toString();
-    final formattedDate = DateFormat.yMMM(locale).format(date);
+
+    final formattedDate = maxDays > 180
+        ? DateFormat.yMMM(locale).format(date)
+        : DateFormat.MMMd(locale).format(date);
 
     return Padding(
       padding: const EdgeInsets.only(top: 8.0),

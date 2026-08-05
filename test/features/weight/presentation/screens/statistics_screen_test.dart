@@ -246,7 +246,7 @@ void main() {
     expect(find.text('1 dzień'), findsOneWidget);
   });
 
-  testWidgets('StatisticsScreen computes monthly compliance over 30 days', (
+  testWidgets('StatisticsScreen computes total compliance over all days', (
     tester,
   ) async {
     final now = DateTime.now();
@@ -273,8 +273,8 @@ void main() {
       buildSubject(settingsBloc: settingsBloc, weightBloc: weightBloc),
     );
 
-    // 5 of 30 days -> 17% after rounding
-    expect(find.text('17%'), findsOneWidget);
+    // 5 entries over 5 days -> 100%
+    expect(find.text('100%'), findsOneWidget);
   });
 
   testWidgets(
