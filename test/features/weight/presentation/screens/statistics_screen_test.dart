@@ -142,11 +142,11 @@ void main() {
 
       // Switch to imperial units
       settingsBloc.add(const UpdateMeasurementUnit(MeasurementUnit.imperial));
-      await tester.pump();
+      await tester.pumpAndSettle();
 
       // 70.0 kg is ~154.3 lb
-      expect(find.text('154.3'), findsWidgets);
-      expect(find.text('lb'), findsWidgets);
+      expect(find.textContaining('154.3'), findsWidgets);
+      expect(find.textContaining('lb'), findsWidgets);
     },
   );
 

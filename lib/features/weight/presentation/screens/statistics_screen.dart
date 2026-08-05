@@ -17,9 +17,8 @@ import 'package:pure_weight/presentation/bloc/settings/bmi_category.dart';
 import 'package:pure_weight/presentation/core/clamped_layout.dart';
 import 'package:pure_weight/presentation/widgets/app_top_bar.dart';
 import 'package:pure_weight/presentation/widgets/state_message_card.dart';
-import 'package:pure_weight/presentation/widgets/weight_chart.dart';
 
-/// Tab 3: Statistics Screen providing Garmin-inspired health analytics, streaks, trends, and detailed key metrics.
+/// Tab 3: Statistics Screen providing card-based health analytics, streaks, and detailed key metrics.
 class StatisticsScreen extends StatelessWidget {
   /// Creates [StatisticsScreen].
   const StatisticsScreen({super.key});
@@ -79,12 +78,6 @@ class StatisticsScreen extends StatelessWidget {
                       );
                     }
 
-                    final filteredEntries = switch (weightState) {
-                      WeightLoaded(:final filteredEntries) => filteredEntries,
-                      WeightError(:final filteredEntries) => filteredEntries,
-                      _ => <WeightEntry>[],
-                    };
-                    final period = weightState.timePeriod;
                     final now = DateTime.now();
                     final streak = _calculateStreak(entries, now);
                     final compliancePct = _calculateMonthlyCompliance(
@@ -106,7 +99,7 @@ class StatisticsScreen extends StatelessWidget {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.stretch,
                             children: [
-                              _buildHeroProgressBanner(
+                              _buildHeroProgressCard(
                                 context,
                                 entries: entries,
                                 targetWeight: targetWeight,
@@ -121,21 +114,9 @@ class StatisticsScreen extends StatelessWidget {
                                 l10n: l10n,
                               ),
                               const SizedBox(height: 16),
-                              _buildHeroTrendCard(
-                                context,
-                                filteredEntries: filteredEntries,
-                                period: period,
-                                targetWeight: targetWeight,
-                                unit: unit,
-                                l10n: l10n,
-                              ),
-                              const SizedBox(height: 16),
                               _buildKeyMetricsGrid(
                                 context,
-                                allEntries: entries,
-                                filteredEntries: filteredEntries.isNotEmpty
-                                    ? filteredEntries
-                                    : entries,
+                                entries: entries,
                                 unit: unit,
                                 heightCm: heightCm,
                                 l10n: l10n,
@@ -156,8 +137,8 @@ class StatisticsScreen extends StatelessWidget {
     );
   }
 
-  /// Builds the top hero progress banner displaying total net weight change and motivational status.
-  Widget _buildHeroProgressBanner(
+  /// Builds the harmonized top hero progress card displaying total net weight change and motivational status.
+  Widget _buildHeroProgressCard(
     BuildContext context, {
     required List<WeightEntry> entries,
     required double? targetWeight,
@@ -200,49 +181,75 @@ class StatisticsScreen extends StatelessWidget {
       label: semanticLabel,
       child: Card(
         elevation: 0,
-        color: cs.primaryContainer,
+        color: cs.surfaceContainerLow,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
         child: Padding(
           padding: const EdgeInsets.all(20),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                l10n.totalLostHeader,
-                style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                      color: cs.onPrimaryContainer.withValues(alpha: 0.8),
-                      letterSpacing: 1.2,
-                      fontWeight: FontWeight.bold,
-                    ),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                formattedValue,
-                style: Theme.of(context).textTheme.displaySmall?.copyWith(
-                      color: cs.onPrimaryContainer,
-                      fontWeight: FontWeight.w800,
-                    ),
-              ),
-              if (statusBadge != null) ...[
-                const SizedBox(height: 12),
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 14,
-                    vertical: 6,
+              Row(
+                children: [
+                  Icon(
+                    Icons.stars_outlined,
+                    size: 24,
+                    color: cs.primary,
                   ),
-                  decoration: BoxDecoration(
-                    color: cs.surface.withValues(alpha: 0.25),
-                    borderRadius: BorderRadius.circular(20),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      l10n.totalProgress,
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                            color: cs.onSurface,
+                            fontWeight: FontWeight.w600,
+                          ),
+                    ),
                   ),
-                  child: Text(
-                    statusBadge,
-                    style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                          color: cs.onPrimaryContainer,
+                  if (statusBadge != null)
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 4,
+                      ),
+                      decoration: BoxDecoration(
+                        color: cs.primaryContainer,
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Text(
+                        statusBadge,
+                        style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                              color: cs.onPrimaryContainer,
+                              fontWeight: FontWeight.bold,
+                            ),
+                      ),
+                    ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.baseline,
+                textBaseline: TextBaseline.alphabetic,
+                children: [
+                  Text(
+                    formattedValue,
+                    style: Theme.of(context).textTheme.headlineLarge?.copyWith(
+                          color: cs.onSurface,
                           fontWeight: FontWeight.bold,
                         ),
                   ),
-                ),
-              ],
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      'od ${_formatEntryDate(context, firstEntry.dateTime, l10n)}',
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            color: cs.onSurfaceVariant,
+                          ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ],
+              ),
             ],
           ),
         ),
@@ -250,7 +257,7 @@ class StatisticsScreen extends StatelessWidget {
     );
   }
 
-  /// Builds habit summary cards for logging streak and monthly compliance.
+  /// Builds habit summary cards for logging streak and monthly compliance using uniform card styling.
   Widget _buildHabitSummaryCards(
     BuildContext context, {
     required int streak,
@@ -316,7 +323,7 @@ class StatisticsScreen extends StatelessWidget {
             label: '${l10n.monthlyCompliance}: $compliancePct%',
             child: Card(
               elevation: 0,
-              color: cs.secondaryContainer,
+              color: cs.surfaceContainerLow,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(28),
               ),
@@ -327,13 +334,16 @@ class StatisticsScreen extends StatelessWidget {
                   children: [
                     Row(
                       children: [
-                        Icon(Icons.insights, color: cs.onSecondaryContainer),
+                        Icon(
+                          Icons.insights,
+                          color: cs.secondary,
+                        ),
                         const SizedBox(width: 6),
                         Expanded(
                           child: Text(
                             l10n.monthlyCompliance,
                             style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                                  color: cs.onSecondaryContainer.withValues(alpha: 0.8),
+                                  color: cs.onSurfaceVariant,
                                 ),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
@@ -345,7 +355,7 @@ class StatisticsScreen extends StatelessWidget {
                     Text(
                       '$compliancePct%',
                       style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                            color: cs.onSecondaryContainer,
+                            color: cs.onSurface,
                             fontWeight: FontWeight.bold,
                           ),
                     ),
@@ -359,146 +369,10 @@ class StatisticsScreen extends StatelessWidget {
     );
   }
 
-  /// Builds the Hero Weight Trend card containing title, current value, trend badge, and line chart.
-  Widget _buildHeroTrendCard(
-    BuildContext context, {
-    required List<WeightEntry> filteredEntries,
-    required TimePeriod period,
-    required double? targetWeight,
-    required MeasurementUnit unit,
-    required AppLocalizations l10n,
-  }) {
-    final cs = Theme.of(context).colorScheme;
-    final latestKg = filteredEntries.isNotEmpty ? filteredEntries.first.weightKg : null;
-    final formattedLatest = latestKg != null ? formatWeight(latestKg, unit) : '—';
-    final unitLabel = unitLabelFor(unit);
-
-    final percentChange = _calculatePercentChange(filteredEntries);
-
-    return Semantics(
-      container: true,
-      label: '${l10n.weightTrend}: $formattedLatest',
-      child: Card(
-        elevation: 0,
-        color: cs.surfaceContainerLow,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        l10n.weightTrend,
-                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                              color: cs.onSurfaceVariant,
-                              fontWeight: FontWeight.w500,
-                            ),
-                      ),
-                      const SizedBox(height: 4),
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.baseline,
-                        textBaseline: TextBaseline.alphabetic,
-                        children: [
-                          Text(
-                            formattedLatest,
-                            style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                                  color: cs.onSurface,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                          ),
-                          if (latestKg != null) ...[
-                            const SizedBox(width: 4),
-                            Text(
-                              unitLabel,
-                              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                                    color: cs.onSurfaceVariant,
-                                  ),
-                            ),
-                          ],
-                        ],
-                      ),
-                    ],
-                  ),
-                  if (percentChange != null)
-                    _buildTrendBadge(context, percentChange: percentChange),
-                ],
-              ),
-              const SizedBox(height: 16),
-              WeightChart(
-                entries: filteredEntries,
-                period: period,
-                onPeriodChanged: (p) =>
-                    context.read<WeightBloc>().add(ChangeChartFilter(p)),
-                targetWeight: targetWeight,
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  /// Builds a pill-shaped trend badge showing percentage change.
-  Widget _buildTrendBadge(
-    BuildContext context, {
-    required double percentChange,
-  }) {
-    final cs = Theme.of(context).colorScheme;
-    final isDown = percentChange < 0;
-    final isUp = percentChange > 0;
-
-    final badgeColor = isDown
-        ? cs.secondaryContainer
-        : (isUp ? cs.errorContainer : cs.surfaceContainerHigh);
-    final contentColor = isDown
-        ? cs.onSecondaryContainer
-        : (isUp ? cs.onErrorContainer : cs.onSurfaceVariant);
-    final icon = isDown
-        ? Icons.trending_down
-        : (isUp ? Icons.trending_up : Icons.trending_flat);
-
-    final sign = percentChange > 0 ? '+' : '';
-    final formattedValue = '$sign${percentChange.toStringAsFixed(1)}%';
-    final l10n = AppLocalizations.of(context);
-
-    return Semantics(
-      label: l10n.trendPercentChange(formattedValue),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-        decoration: BoxDecoration(
-          color: badgeColor,
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(icon, size: 16, color: contentColor),
-            const SizedBox(width: 4),
-            Text(
-              formattedValue,
-              style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                    color: contentColor,
-                    fontWeight: FontWeight.bold,
-                  ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  /// Builds a 2x2 Bento Grid section for key metrics including exact dates and period change.
+  /// Builds a 2x2 Bento Grid section for key metrics with exact dates and BMI categories.
   Widget _buildKeyMetricsGrid(
     BuildContext context, {
-    required List<WeightEntry> allEntries,
-    required List<WeightEntry> filteredEntries,
+    required List<WeightEntry> entries,
     required MeasurementUnit unit,
     required double? heightCm,
     required AppLocalizations l10n,
@@ -506,7 +380,7 @@ class StatisticsScreen extends StatelessWidget {
     final unitLabel = unitLabelFor(unit);
 
     // Highest Weight calculation
-    final maxEntry = allEntries.reduce(
+    final maxEntry = entries.reduce(
       (a, b) => a.weightKg > b.weightKg ? a : b,
     );
     final maxDisplay = unit == MeasurementUnit.imperial
@@ -515,7 +389,7 @@ class StatisticsScreen extends StatelessWidget {
     final maxDateText = _formatEntryDate(context, maxEntry.dateTime, l10n);
 
     // Lowest Weight calculation
-    final minEntry = allEntries.reduce(
+    final minEntry = entries.reduce(
       (a, b) => a.weightKg < b.weightKg ? a : b,
     );
     final minDisplay = unit == MeasurementUnit.imperial
@@ -523,29 +397,15 @@ class StatisticsScreen extends StatelessWidget {
         : minEntry.weightKg;
     final minDateText = _formatEntryDate(context, minEntry.dateTime, l10n);
 
-    // Average Weight in selected period calculation
-    final periodWeights = filteredEntries.map((e) => e.weightKg).toList();
-    final avgWeightKg = periodWeights.isEmpty
-        ? null
-        : periodWeights.reduce((a, b) => a + b) / periodWeights.length;
-    final avgDisplay = avgWeightKg != null
-        ? (unit == MeasurementUnit.imperial ? kgToLbs(avgWeightKg) : avgWeightKg)
-        : null;
+    // Average Weight calculation across all measurements
+    final weights = entries.map((e) => e.weightKg).toList();
+    final avgWeightKg = weights.reduce((a, b) => a + b) / weights.length;
+    final avgDisplay = unit == MeasurementUnit.imperial
+        ? kgToLbs(avgWeightKg)
+        : avgWeightKg;
 
-    final sortedFiltered = filteredEntries.reversed.toList(); // Ascending date
-    final periodChangeKg = (sortedFiltered.length >= 2)
-        ? (sortedFiltered.last.weightKg - sortedFiltered.first.weightKg)
-        : null;
-    final periodChangeDisplay = periodChangeKg != null
-        ? (unit == MeasurementUnit.imperial ? kgToLbs(periodChangeKg) : periodChangeKg)
-        : null;
-
-    final periodSubText = periodChangeDisplay != null
-        ? '${periodChangeDisplay > 0 ? '+' : ''}${periodChangeDisplay.toStringAsFixed(1)} $unitLabel w okresie'
-        : unitLabel;
-
-    // Average BMI in selected period
-    final bmi = (avgWeightKg != null && heightCm != null && heightCm > 0)
+    // Average BMI calculation
+    final bmi = (heightCm != null && heightCm > 0)
         ? avgWeightKg / ((heightCm / 100) * (heightCm / 100))
         : null;
     final bmiCategory = bmi != null && bmi.isFinite
@@ -591,11 +451,11 @@ class StatisticsScreen extends StatelessWidget {
               child: _buildBentoCard(
                 context,
                 title: l10n.averageWeight,
-                value: avgDisplay != null ? avgDisplay.toStringAsFixed(1) : '—',
-                subtitle: periodSubText,
+                value: avgDisplay.toStringAsFixed(1),
+                subtitle: '$unitLabel (średnia)',
                 icon: Icons.analytics_outlined,
                 iconColor: Theme.of(context).colorScheme.primary,
-                semanticLabel: '${l10n.averageWeight}: ${avgDisplay != null ? "${avgDisplay.toStringAsFixed(1)} $unitLabel" : l10n.missingData}',
+                semanticLabel: '${l10n.averageWeight}: ${avgDisplay.toStringAsFixed(1)} $unitLabel',
               ),
             ),
             const SizedBox(width: 12),
@@ -616,7 +476,7 @@ class StatisticsScreen extends StatelessWidget {
     );
   }
 
-  /// Builds an individual Bento Grid metric card with 28dp rounded corners.
+  /// Builds an individual Bento Grid metric card with uniform 28dp rounded corners.
   Widget _buildBentoCard(
     BuildContext context, {
     required String title,
@@ -688,20 +548,6 @@ class StatisticsScreen extends StatelessWidget {
         ),
       ),
     );
-  }
-
-  /// Calculates percentage weight change between the first and last entry of [entries].
-  double? _calculatePercentChange(List<WeightEntry> entries) {
-    if (entries.length < 2) return null;
-
-    final sorted = entries.reversed.toList(); // Ascending date
-
-    final first = sorted.first.weightKg;
-    final last = sorted.last.weightKg;
-
-    if (first == 0) return null;
-
-    return ((last - first) / first) * 100;
   }
 
   /// Calculates current daily streak.
