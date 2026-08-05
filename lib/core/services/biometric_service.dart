@@ -294,6 +294,7 @@ class BiometricService {
       AndroidAuthMessages(
         signInTitle: l10n.biometricStepTitle,
         cancelButton: l10n.cancel,
+        signInHint: '', // Hides the default "Verify identity" subtitle
       ),
       IOSAuthMessages(cancelButton: l10n.cancel),
     ];
