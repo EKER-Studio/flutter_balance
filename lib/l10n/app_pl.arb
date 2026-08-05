@@ -155,7 +155,7 @@
   "remainingWeightLabel": "Zostało: {weight}",
   "currentBmiTitle": "Bieżące BMI",
   "dailyTipTitle": "Wskazówka",
-  "dailyTipText": "Waż się o tej samej porze każdego dnia.",
+  "dailyTipText": "Waż się o tej samej porze każdego dnia, najlepiej rano, aby uzyskać najbardziej wiarygodne wyniki.",
   "addWeightSemanticsLabel": "Dodaj nowy pomiar wagi",
   "todayTabHomeSemanticsLabel": "Karta Dzisiaj, strona główna",
   "weightSummarySemanticsLabel": "Podsumowanie dzisiejszego stanu zdrowia. Ostatnia waga to {weight}, status BMI {status}. Do celu brakuje {remaining}.",

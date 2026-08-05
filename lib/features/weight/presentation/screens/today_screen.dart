@@ -141,7 +141,7 @@ class TodayScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 16),
                   const _DailyTipCard(),
-                  const SizedBox(height: 80),
+                  const SizedBox(height: 120),
                 ],
               );
             } else {
@@ -167,7 +167,7 @@ class TodayScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 16),
                   const _DailyTipCard(),
-                  const SizedBox(height: 80),
+                  const SizedBox(height: 120),
                 ],
               );
             }
@@ -327,7 +327,7 @@ class _WeightTrendChartCard extends StatelessWidget {
                   l10n.weightTrend,
                   style: textTheme.titleMedium?.copyWith(
                     color: colorScheme.onSurface,
-                    fontWeight: FontWeight.w700,
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
               ),
@@ -427,28 +427,23 @@ class _PeriodPill extends StatelessWidget {
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
 
-    return Material(
-      color: selected ? colorScheme.primary : Colors.transparent,
-      borderRadius: BorderRadius.circular(9999),
-      child: InkWell(
-        onTap: onPressed,
-        borderRadius: BorderRadius.circular(9999),
-        hoverColor: colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
-        focusColor: colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(minWidth: 48, minHeight: 48),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-            child: Text(
-              label,
-              style: textTheme.labelMedium?.copyWith(
-                color: selected
-                    ? colorScheme.onPrimary
-                    : colorScheme.onSurfaceVariant,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ),
+    return TextButton(
+      onPressed: onPressed,
+      style: TextButton.styleFrom(
+        backgroundColor: selected ? colorScheme.primaryContainer : Colors.transparent,
+        foregroundColor: selected ? colorScheme.onPrimary : colorScheme.onSurfaceVariant,
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        minimumSize: Size.zero,
+        tapTargetSize: MaterialTapTargetSize.padded,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(8),
+        ),
+      ),
+      child: Text(
+        label,
+        style: textTheme.labelMedium?.copyWith(
+          fontWeight: FontWeight.w600,
+          color: selected ? Colors.white : colorScheme.onSurfaceVariant,
         ),
       ),
     );
@@ -496,7 +491,7 @@ class _WeightLineChart extends StatelessWidget {
             horizontalInterval: 0.5,
             getDrawingHorizontalLine: (value) {
               return FlLine(
-                color: colorScheme.outlineVariant,
+                color: colorScheme.surfaceContainerHighest,
                 strokeWidth: 1,
                 dashArray: [5, 5],
               );
@@ -557,7 +552,7 @@ class _WeightLineChart extends StatelessWidget {
               }).toList();
             },
             touchTooltipData: LineTouchTooltipData(
-              getTooltipColor: (spot) => colorScheme.secondaryContainer,
+              getTooltipColor: (spot) => colorScheme.inverseSurface,
               getTooltipItems: (spots) {
                 return spots.map((spot) {
                   final weight = measurementUnit == MeasurementUnit.imperial
@@ -566,7 +561,7 @@ class _WeightLineChart extends StatelessWidget {
                   return LineTooltipItem(
                     formatWeight(weight, measurementUnit),
                     TextStyle(
-                      color: colorScheme.onSecondaryContainer,
+                      color: colorScheme.onInverseSurface,
                       fontWeight: FontWeight.w700,
                     ),
                   );
@@ -598,14 +593,7 @@ class _WeightLineChart extends StatelessWidget {
               ),
               belowBarData: BarAreaData(
                 show: true,
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                    colorScheme.primary.withValues(alpha: 0.1),
-                    colorScheme.primary.withValues(alpha: 0),
-                  ],
-                ),
+                color: colorScheme.primary.withValues(alpha: 0.1),
               ),
             ),
           ],
@@ -686,46 +674,26 @@ class _DailyTipCard extends StatelessWidget {
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: colorScheme.surfaceContainerLow,
-          borderRadius: BorderRadius.circular(28),
+          borderRadius: BorderRadius.circular(12),
           border: Border.all(
-            color: colorScheme.outlineVariant.withValues(alpha: 0.3),
+            color: colorScheme.surfaceContainerHigh,
           ),
         ),
         child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: colorScheme.primaryContainer,
-                shape: BoxShape.circle,
-              ),
-              child: Icon(
-                Icons.lightbulb_outline,
-                color: colorScheme.onPrimaryContainer,
-                size: 20,
-              ),
+            Icon(
+              Icons.lightbulb_outline,
+              color: colorScheme.primary,
+              size: 24,
             ),
             const SizedBox(width: 12),
             Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    l10n.dailyTipTitle,
-                    style: textTheme.labelLarge?.copyWith(
-                      color: colorScheme.primary,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    l10n.dailyTipText,
-                    style: textTheme.bodyMedium?.copyWith(
-                      color: colorScheme.onSurfaceVariant,
-                    ),
-                  ),
-                ],
+              child: Text(
+                '${l10n.dailyTipTitle}: ${l10n.dailyTipText}',
+                style: textTheme.bodyMedium?.copyWith(
+                  color: colorScheme.onSurfaceVariant,
+                ),
               ),
             ),
           ],
