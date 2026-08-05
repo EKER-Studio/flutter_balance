@@ -44,11 +44,12 @@ class _AddWeightSheetState extends State<AddWeightSheet> {
     super.initState();
     final now = DateTime.now();
     final initial = widget.initialDate ?? now;
-    
+
     _selectedDate = DateTime(initial.year, initial.month, initial.day);
-    
+
     // Default to the current time unless a specific time was provided.
-    if (widget.initialDate != null && (initial.hour != 0 || initial.minute != 0)) {
+    if (widget.initialDate != null &&
+        (initial.hour != 0 || initial.minute != 0)) {
       _selectedTime = TimeOfDay.fromDateTime(initial);
     } else {
       _selectedTime = TimeOfDay.now();
