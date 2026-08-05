@@ -275,4 +275,44 @@ void main() {
     // 5 of 30 days -> 17% after rounding
     expect(find.text('17%'), findsOneWidget);
   });
+
+  testWidgets('StatisticsScreen switches between Variant A and Variant B via SegmentedButton', (
+    tester,
+  ) async {
+    final now = DateTime.now();
+    final entries = [
+      WeightEntry(id: 2, weightKg: 74.0, dateTime: now),
+      WeightEntry(
+        id: 1,
+        weightKg: 80.0,
+        dateTime: now.subtract(const Duration(days: 10)),
+      ),
+    ];
+
+    final settingsBloc = AppSettingsBloc();
+    final weightBloc = createBloc(
+      WeightLoaded(
+        entries: entries,
+        filteredEntries: [],
+        timePeriod: TimePeriod.week,
+        heightCm: null,
+      ),
+    );
+
+    await tester.pumpWidget(
+      buildSubject(settingsBloc: settingsBloc, weightBloc: weightBloc),
+    );
+
+    // Initial state is Variant A -> contains 'Tempo'
+    expect(find.text('Tempo'), findsOneWidget);
+    expect(find.text('Wszystkie wpisy'), findsNothing);
+
+    // Switch to Variant B
+    await tester.tap(find.text('Wariant B (Sekcja dolna)'));
+    await tester.pumpAndSettle();
+
+    // Variant B -> contains 'Wszystkie wpisy' and 'Liczba pomiarów'
+    expect(find.text('Wszystkie wpisy'), findsOneWidget);
+    expect(find.text('Liczba pomiarów'), findsOneWidget);
+  });
 }

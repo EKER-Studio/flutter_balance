@@ -18,10 +18,20 @@ import 'package:pure_weight/presentation/core/clamped_layout.dart';
 import 'package:pure_weight/presentation/widgets/app_top_bar.dart';
 import 'package:pure_weight/presentation/widgets/state_message_card.dart';
 
-/// Tab 3: Statistics Screen providing card-based health analytics, streaks, and detailed key metrics.
-class StatisticsScreen extends StatelessWidget {
+/// Active layout variant for testing and comparing Statistics Screen designs.
+enum StatsVariant { variantA, variantB }
+
+/// Tab 3: Statistics Screen providing card-based health analytics with selectable Variant A & Variant B layouts.
+class StatisticsScreen extends StatefulWidget {
   /// Creates [StatisticsScreen].
   const StatisticsScreen({super.key});
+
+  @override
+  State<StatisticsScreen> createState() => _StatisticsScreenState();
+}
+
+class _StatisticsScreenState extends State<StatisticsScreen> {
+  StatsVariant _selectedVariant = StatsVariant.variantA;
 
   @override
   Widget build(BuildContext context) {
@@ -84,6 +94,7 @@ class StatisticsScreen extends StatelessWidget {
                       entries,
                       now,
                     );
+                    final weeklyPace = _calculateWeeklyPace(entries);
 
                     return BlocBuilder<AppSettingsBloc, AppSettingsState>(
                       builder: (context, settingsState) {
@@ -99,28 +110,32 @@ class StatisticsScreen extends StatelessWidget {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.stretch,
                             children: [
-                              _buildHeroProgressCard(
-                                context,
-                                entries: entries,
-                                targetWeight: targetWeight,
-                                unit: unit,
-                                l10n: l10n,
-                              ),
+                              _buildVariantSelector(context),
                               const SizedBox(height: 16),
-                              _buildHabitSummaryCards(
-                                context,
-                                streak: streak,
-                                compliancePct: compliancePct,
-                                l10n: l10n,
-                              ),
-                              const SizedBox(height: 16),
-                              _buildKeyMetricsGrid(
-                                context,
-                                entries: entries,
-                                unit: unit,
-                                heightCm: heightCm,
-                                l10n: l10n,
-                              ),
+                              if (_selectedVariant == StatsVariant.variantA)
+                                ..._buildVariantA(
+                                  context,
+                                  entries: entries,
+                                  targetWeight: targetWeight,
+                                  unit: unit,
+                                  heightCm: heightCm,
+                                  streak: streak,
+                                  compliancePct: compliancePct,
+                                  weeklyPace: weeklyPace,
+                                  l10n: l10n,
+                                )
+                              else
+                                ..._buildVariantB(
+                                  context,
+                                  entries: entries,
+                                  targetWeight: targetWeight,
+                                  unit: unit,
+                                  heightCm: heightCm,
+                                  streak: streak,
+                                  compliancePct: compliancePct,
+                                  weeklyPace: weeklyPace,
+                                  l10n: l10n,
+                                ),
                               const SizedBox(height: 32),
                             ],
                           ),
@@ -137,8 +152,128 @@ class StatisticsScreen extends StatelessWidget {
     );
   }
 
-  /// Builds the harmonized top hero progress card displaying total net weight change and motivational status.
-  Widget _buildHeroProgressCard(
+  /// Builds a segmented control button to switch between Variant A and Variant B live in app.
+  Widget _buildVariantSelector(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+
+    return Center(
+      child: SegmentedButton<StatsVariant>(
+        segments: const [
+          ButtonSegment(
+            value: StatsVariant.variantA,
+            label: Text('Wariant A (Karty + Cel)'),
+            icon: Icon(Icons.style_outlined),
+          ),
+          ButtonSegment(
+            value: StatsVariant.variantB,
+            label: Text('Wariant B (Sekcja dolna)'),
+            icon: Icon(Icons.grid_view_outlined),
+          ),
+        ],
+        selected: {_selectedVariant},
+        onSelectionChanged: (newSelection) {
+          setState(() {
+            _selectedVariant = newSelection.first;
+          });
+        },
+        style: ButtonStyle(
+          visualDensity: VisualDensity.compact,
+          side: WidgetStatePropertyAll(
+            BorderSide(color: cs.outlineVariant),
+          ),
+        ),
+      ),
+    );
+  }
+
+  /// Builds Variant A: Thematic Cards with Goal Progress Bar and Pace Row.
+  List<Widget> _buildVariantA(
+    BuildContext context, {
+    required List<WeightEntry> entries,
+    required double? targetWeight,
+    required MeasurementUnit unit,
+    required double? heightCm,
+    required int streak,
+    required int compliancePct,
+    required double? weeklyPace,
+    required AppLocalizations l10n,
+  }) {
+    return [
+      _buildGoalProgressHeroCard(
+        context,
+        entries: entries,
+        targetWeight: targetWeight,
+        unit: unit,
+        l10n: l10n,
+      ),
+      const SizedBox(height: 16),
+      _buildHabitRowVariantA(
+        context,
+        streak: streak,
+        compliancePct: compliancePct,
+        weeklyPace: weeklyPace,
+        unit: unit,
+        l10n: l10n,
+      ),
+      const SizedBox(height: 16),
+      _buildKeyMetricsGrid(
+        context,
+        entries: entries,
+        unit: unit,
+        heightCm: heightCm,
+        l10n: l10n,
+      ),
+    ];
+  }
+
+  /// Builds Variant B: Classic Grid with Expanded Bottom Metrics Row.
+  List<Widget> _buildVariantB(
+    BuildContext context, {
+    required List<WeightEntry> entries,
+    required double? targetWeight,
+    required MeasurementUnit unit,
+    required double? heightCm,
+    required int streak,
+    required int compliancePct,
+    required double? weeklyPace,
+    required AppLocalizations l10n,
+  }) {
+    return [
+      _buildHeroProgressCard(
+        context,
+        entries: entries,
+        targetWeight: targetWeight,
+        unit: unit,
+        l10n: l10n,
+      ),
+      const SizedBox(height: 16),
+      _buildHabitSummaryCards(
+        context,
+        streak: streak,
+        compliancePct: compliancePct,
+        l10n: l10n,
+      ),
+      const SizedBox(height: 16),
+      _buildKeyMetricsGrid(
+        context,
+        entries: entries,
+        unit: unit,
+        heightCm: heightCm,
+        l10n: l10n,
+      ),
+      const SizedBox(height: 16),
+      _buildBottomAnalyticsRow(
+        context,
+        totalEntries: entries.length,
+        weeklyPace: weeklyPace,
+        unit: unit,
+        l10n: l10n,
+      ),
+    ];
+  }
+
+  /// Variant A: Goal Progress Hero Card featuring net progress, goal progress bar, and distance badge.
+  Widget _buildGoalProgressHeroCard(
     BuildContext context, {
     required List<WeightEntry> entries,
     required double? targetWeight,
@@ -147,6 +282,309 @@ class StatisticsScreen extends StatelessWidget {
   }) {
     final cs = Theme.of(context).colorScheme;
     final sortedByDate = entries.reversed.toList(); // Ascending date
+    final firstEntry = sortedByDate.first;
+    final latestEntry = sortedByDate.last;
+
+    final totalChangeKg = latestEntry.weightKg - firstEntry.weightKg;
+    final totalChangeDisplay = unit == MeasurementUnit.imperial
+        ? kgToLbs(totalChangeKg)
+        : totalChangeKg;
+    final unitLabel = unitLabelFor(unit);
+
+    final sign = totalChangeDisplay > 0 ? '+' : '';
+    final formattedValue = '$sign${totalChangeDisplay.toStringAsFixed(1)} $unitLabel';
+
+    double? goalProgressPct;
+    String? statusBadge;
+
+    if (targetWeight != null) {
+      if (latestEntry.weightKg <= targetWeight) {
+        statusBadge = '🏆 ${l10n.goalAchieved}';
+        goalProgressPct = 100.0;
+      } else {
+        final distKg = latestEntry.weightKg - targetWeight;
+        final distDisplay = unit == MeasurementUnit.imperial
+            ? kgToLbs(distKg)
+            : distKg;
+        statusBadge = '${distDisplay.toStringAsFixed(1)} $unitLabel ${l10n.toTarget}';
+        goalProgressPct = _calculateGoalProgressPct(
+          startKg: firstEntry.weightKg,
+          currentKg: latestEntry.weightKg,
+          targetKg: targetWeight,
+        );
+      }
+    } else if (totalChangeKg < 0) {
+      statusBadge = '🎉 ${l10n.greatJob}';
+    }
+
+    return Card(
+      elevation: 0,
+      color: cs.surfaceContainerLow,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(Icons.stars_outlined, size: 24, color: cs.primary),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    l10n.totalProgress,
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          color: cs.onSurface,
+                          fontWeight: FontWeight.w600,
+                        ),
+                  ),
+                ),
+                if (statusBadge != null)
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 4,
+                    ),
+                    decoration: BoxDecoration(
+                      color: cs.primaryContainer,
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Text(
+                      statusBadge,
+                      style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                            color: cs.onPrimaryContainer,
+                            fontWeight: FontWeight.bold,
+                          ),
+                    ),
+                  ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.baseline,
+              textBaseline: TextBaseline.alphabetic,
+              children: [
+                Text(
+                  formattedValue,
+                  style: Theme.of(context).textTheme.headlineLarge?.copyWith(
+                        color: cs.onSurface,
+                        fontWeight: FontWeight.bold,
+                      ),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    'od ${_formatEntryDate(context, firstEntry.dateTime, l10n)}',
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: cs.onSurfaceVariant,
+                        ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+              ],
+            ),
+            if (goalProgressPct != null) ...[
+              const SizedBox(height: 16),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Postęp celu',
+                    style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                          color: cs.onSurfaceVariant,
+                        ),
+                  ),
+                  Text(
+                    '${goalProgressPct.toStringAsFixed(0)}%',
+                    style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                          color: cs.primary,
+                          fontWeight: FontWeight.bold,
+                        ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 6),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(8),
+                child: LinearProgressIndicator(
+                  value: goalProgressPct / 100.0,
+                  minHeight: 8,
+                  backgroundColor: cs.surfaceContainerHigh,
+                  color: cs.primary,
+                ),
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+
+  /// Variant A: 3-column habit & pace summary cards.
+  Widget _buildHabitRowVariantA(
+    BuildContext context, {
+    required int streak,
+    required int compliancePct,
+    required double? weeklyPace,
+    required MeasurementUnit unit,
+    required AppLocalizations l10n,
+  }) {
+    final cs = Theme.of(context).colorScheme;
+    final unitLabel = unitLabelFor(unit);
+
+    final paceDisplay = weeklyPace != null
+        ? (unit == MeasurementUnit.imperial ? kgToLbs(weeklyPace) : weeklyPace)
+        : null;
+    final paceSign = (paceDisplay != null && paceDisplay > 0) ? '+' : '';
+    final paceText = paceDisplay != null
+        ? '$paceSign${paceDisplay.toStringAsFixed(1)} $unitLabel/tydz.'
+        : '—';
+
+    return Row(
+      children: [
+        Expanded(
+          child: _buildMiniHabitCard(
+            context,
+            icon: Icons.local_fire_department,
+            iconColor: cs.primary,
+            title: l10n.loggingStreak,
+            value: l10n.streakDays(streak),
+          ),
+        ),
+        const SizedBox(width: 8),
+        Expanded(
+          child: _buildMiniHabitCard(
+            context,
+            icon: Icons.insights,
+            iconColor: cs.secondary,
+            title: 'Regularność',
+            value: '$compliancePct%',
+          ),
+        ),
+        const SizedBox(width: 8),
+        Expanded(
+          child: _buildMiniHabitCard(
+            context,
+            icon: Icons.speed,
+            iconColor: cs.tertiary,
+            title: 'Tempo',
+            value: paceText,
+          ),
+        ),
+      ],
+    );
+  }
+
+  /// Helper for compact mini habit cards in Variant A.
+  Widget _buildMiniHabitCard(
+    BuildContext context, {
+    required IconData icon,
+    required Color iconColor,
+    required String title,
+    required String value,
+  }) {
+    final cs = Theme.of(context).colorScheme;
+
+    return Card(
+      elevation: 0,
+      color: cs.surfaceContainerLow,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(icon, size: 18, color: iconColor),
+                const SizedBox(width: 4),
+                Expanded(
+                  child: Text(
+                    title,
+                    style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                          color: cs.onSurfaceVariant,
+                        ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Text(
+              value,
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    color: cs.onSurface,
+                    fontWeight: FontWeight.bold,
+                  ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  /// Variant B: Additional bottom analytics section card row (Weekly Pace + Total Entries Count).
+  Widget _buildBottomAnalyticsRow(
+    BuildContext context, {
+    required int totalEntries,
+    required double? weeklyPace,
+    required MeasurementUnit unit,
+    required AppLocalizations l10n,
+  }) {
+    final cs = Theme.of(context).colorScheme;
+    final unitLabel = unitLabelFor(unit);
+
+    final paceDisplay = weeklyPace != null
+        ? (unit == MeasurementUnit.imperial ? kgToLbs(weeklyPace) : weeklyPace)
+        : null;
+    final paceSign = (paceDisplay != null && paceDisplay > 0) ? '+' : '';
+    final paceText = paceDisplay != null
+        ? '$paceSign${paceDisplay.toStringAsFixed(1)} $unitLabel/tydzień'
+        : '—';
+
+    return Row(
+      children: [
+        Expanded(
+          child: _buildBentoCard(
+            context,
+            title: 'Tygodniowe tempo',
+            value: paceText,
+            subtitle: 'Średnia z 30 dni',
+            icon: Icons.speed,
+            iconColor: cs.tertiary,
+            semanticLabel: 'Tygodniowe tempo: $paceText',
+          ),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: _buildBentoCard(
+            context,
+            title: 'Liczba pomiarów',
+            value: '$totalEntries',
+            subtitle: 'Wszystkie wpisy',
+            icon: Icons.format_list_bulleted,
+            iconColor: cs.primary,
+            semanticLabel: 'Liczba pomiarów: $totalEntries',
+          ),
+        ),
+      ],
+    );
+  }
+
+  /// Standard Hero progress card used in Variant B.
+  Widget _buildHeroProgressCard(
+    BuildContext context, {
+    required List<WeightEntry> entries,
+    required double? targetWeight,
+    required MeasurementUnit unit,
+    required AppLocalizations l10n,
+  }) {
+    final cs = Theme.of(context).colorScheme;
+    final sortedByDate = entries.reversed.toList();
     final firstEntry = sortedByDate.first;
     final latestEntry = sortedByDate.last;
 
@@ -257,7 +695,7 @@ class StatisticsScreen extends StatelessWidget {
     );
   }
 
-  /// Builds habit summary cards for logging streak and monthly compliance using uniform card styling.
+  /// Builds 2-column habit summary cards used in Variant B.
   Widget _buildHabitSummaryCards(
     BuildContext context, {
     required int streak,
@@ -548,6 +986,47 @@ class StatisticsScreen extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  /// Calculates weekly weight change pace over the last 30 days.
+  double? _calculateWeeklyPace(List<WeightEntry> entries) {
+    if (entries.length < 2) return null;
+
+    final sorted = entries.reversed.toList(); // Ascending date
+    final now = DateTime.now();
+    final monthAgo = now.subtract(const Duration(days: 30));
+
+    final recentEntries = sorted.where((e) => e.dateTime.isAfter(monthAgo)).toList();
+    if (recentEntries.length < 2) return null;
+
+    final first = recentEntries.first;
+    final last = recentEntries.last;
+
+    final days = last.dateTime.difference(first.dateTime).inDays;
+    if (days < 1) return 0.0;
+
+    final weeks = days / 7.0;
+    final diffKg = last.weightKg - first.weightKg;
+
+    return diffKg / weeks;
+  }
+
+  /// Calculates percentage progress toward goal.
+  double _calculateGoalProgressPct({
+    required double startKg,
+    required double currentKg,
+    required double targetKg,
+  }) {
+    if (startKg == targetKg) return 100.0;
+
+    final totalNeeded = (startKg - targetKg).abs();
+    final isLosing = startKg > targetKg;
+    final achieved = isLosing ? (startKg - currentKg) : (currentKg - startKg);
+
+    if (achieved <= 0) return 0.0;
+
+    final pct = (achieved / totalNeeded) * 100.0;
+    return pct.clamp(0.0, 100.0);
   }
 
   /// Calculates current daily streak.
