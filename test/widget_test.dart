@@ -6,8 +6,6 @@ import 'package:mocktail/mocktail.dart';
 import 'package:pure_weight/app.dart';
 import 'package:pure_weight/features/weight/domain/entities/weight_entry.dart';
 import 'package:pure_weight/features/weight/domain/repositories/weight_repository.dart';
-import 'package:pure_weight/features/weight/presentation/bloc/weight_bloc.dart';
-import 'package:pure_weight/features/weight/presentation/bloc/weight_event.dart';
 import 'package:pure_weight/presentation/bloc/settings/app_settings_bloc.dart';
 import 'package:pure_weight/presentation/bloc/settings/app_settings_event.dart';
 
@@ -37,16 +35,9 @@ void main() {
       final settingsBloc = AppSettingsBloc();
 
       await tester.pumpWidget(
-        MultiBlocProvider(
-          providers: [
-            BlocProvider.value(value: settingsBloc),
-            BlocProvider(
-              create: (context) =>
-                  WeightBloc(repository: repository)
-                    ..add(const SubscribeToWeightChanges()),
-            ),
-          ],
-          child: App(repository: repository),
+        BlocProvider<AppSettingsBloc>.value(
+          value: settingsBloc,
+          child: App(repositoryOverride: repository),
         ),
       );
       await tester.pumpAndSettle();
@@ -65,16 +56,9 @@ void main() {
     settingsBloc.add(const CompleteOnboarding());
 
     await tester.pumpWidget(
-      MultiBlocProvider(
-        providers: [
-          BlocProvider.value(value: settingsBloc),
-          BlocProvider(
-            create: (context) =>
-                WeightBloc(repository: repository)
-                  ..add(const SubscribeToWeightChanges()),
-          ),
-        ],
-        child: App(repository: repository),
+      BlocProvider<AppSettingsBloc>.value(
+        value: settingsBloc,
+        child: App(repositoryOverride: repository),
       ),
     );
     await tester.pumpAndSettle();
