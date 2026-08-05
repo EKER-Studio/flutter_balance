@@ -240,6 +240,7 @@ class BmiChartCard extends StatelessWidget {
         padding: const EdgeInsets.only(right: 16.0),
         child: LineChart(
           LineChartData(
+            clipData: const FlClipData.all(),
             minY: minY,
             maxY: maxY,
             gridData: const FlGridData(show: false),
@@ -325,17 +326,6 @@ class BmiChartCard extends StatelessWidget {
                       strokeColor: cs.surface,
                     );
                   },
-                ),
-                belowBarData: BarAreaData(
-                  show: true,
-                  gradient: LinearGradient(
-                    colors: [
-                      cs.primary.withValues(alpha: 0.2),
-                      cs.primary.withValues(alpha: 0.0),
-                    ],
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                  ),
                 ),
               ),
             ],

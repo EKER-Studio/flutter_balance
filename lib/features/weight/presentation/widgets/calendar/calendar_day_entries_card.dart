@@ -224,10 +224,10 @@ class CalendarDayEntriesCard extends StatelessWidget {
             onPressed: () => Navigator.pop(dialogContext, false),
             child: Text(l10n.cancel),
           ),
-          FilledButton(
+          TextButton(
             onPressed: () => Navigator.pop(dialogContext, true),
-            style: FilledButton.styleFrom(
-              backgroundColor: Theme.of(context).colorScheme.error,
+            style: TextButton.styleFrom(
+              foregroundColor: Theme.of(context).colorScheme.error,
             ),
             child: Text(l10n.deleteEntryTooltip),
           ),

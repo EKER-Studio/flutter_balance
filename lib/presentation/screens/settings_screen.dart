@@ -142,7 +142,7 @@ class _HeightDialogState extends State<_HeightDialog> {
           onPressed: () => Navigator.of(context).pop(),
           child: Text(l10n.cancel),
         ),
-        FilledButton(onPressed: _handleSave, child: Text(l10n.save)),
+        TextButton(onPressed: _handleSave, child: Text(l10n.save)),
       ],
     );
   }
@@ -563,12 +563,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
             onPressed: () => Navigator.pop(ctx),
             child: Text(l10n.cancel),
           ),
-          FilledButton(
+          TextButton(
             onPressed: () async {
               Navigator.pop(ctx);
               await _wipeDatabase();
             },
-            style: FilledButton.styleFrom(backgroundColor: errorColor),
+            style: TextButton.styleFrom(foregroundColor: errorColor),
             child: Text(l10n.wipeDataButton),
           ),
         ],

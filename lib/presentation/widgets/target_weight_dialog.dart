@@ -139,6 +139,7 @@ class _TargetWeightDialogState extends State<TargetWeightDialog> {
           ],
         ),
       ),
+      actionsAlignment: MainAxisAlignment.spaceBetween,
       actions: [
         if (widget.currentValue != null)
           TextButton(
@@ -147,12 +148,20 @@ class _TargetWeightDialogState extends State<TargetWeightDialog> {
               foregroundColor: Theme.of(context).colorScheme.error,
             ),
             child: Text(l10n.removeTargetWeight),
-          ),
-        TextButton(
-          onPressed: () => Navigator.of(context).pop(),
-          child: Text(l10n.cancel),
+          )
+        else
+          const SizedBox.shrink(),
+        Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: Text(l10n.cancel),
+            ),
+            const SizedBox(width: 8),
+            TextButton(onPressed: _handleSave, child: Text(l10n.save)),
+          ],
         ),
-        FilledButton(onPressed: _handleSave, child: Text(l10n.save)),
       ],
     );
   }
