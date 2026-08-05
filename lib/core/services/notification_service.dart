@@ -50,7 +50,7 @@ class NotificationService {
     _body = body;
     _channelName = channelName;
     _channelDescription = channelDescription;
-    
+
     if (_initialized) {
       _updateAndroidChannel();
     }
@@ -63,8 +63,10 @@ class NotificationService {
       description: _channelDescription,
       importance: Importance.max,
     );
-    final androidPlugin = _plugin.resolvePlatformSpecificImplementation<
-        AndroidFlutterLocalNotificationsPlugin>();
+    final androidPlugin = _plugin
+        .resolvePlatformSpecificImplementation<
+          AndroidFlutterLocalNotificationsPlugin
+        >();
     await androidPlugin?.createNotificationChannel(androidChannel);
   }
 
