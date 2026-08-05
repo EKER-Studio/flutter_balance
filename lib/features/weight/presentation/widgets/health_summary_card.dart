@@ -34,12 +34,12 @@ class HealthSummaryCard extends StatelessWidget {
         final targetWeight = state.targetWeight;
         final weightUnit = state.measurementUnit;
         final l10n = AppLocalizations.of(context);
-        
+
         final bmi = (heightCm != null && heightCm > 0)
             ? state.calculateBmi(latestWeightKg)
             : double.nan;
         final category = bmi.isFinite ? BmiCategory.fromBmi(bmi) : null;
-        
+
         final displayWeight = weightUnit == MeasurementUnit.imperial
             ? kgToLbs(latestWeightKg)
             : latestWeightKg;
@@ -48,64 +48,80 @@ class HealthSummaryCard extends StatelessWidget {
         final colorScheme = Theme.of(context).colorScheme;
         final textTheme = Theme.of(context).textTheme;
 
-        return Card(
-          elevation: 0,
-          clipBehavior: Clip.antiAlias,
-          color: colorScheme.surfaceContainerLow,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(28),
-            side: BorderSide(
-              color: colorScheme.outlineVariant.withValues(alpha: 0.3),
+        final semanticsLabel = [
+          '${l10n.lastMeasurementLabel}: ${displayWeight.toStringAsFixed(1)} $unitLabel',
+          if (category != null)
+            '${category.localizedName(l10n)}, ${l10n.bmiValueShortLabel(bmi.toStringAsFixed(1))}',
+          if (targetWeight != null)
+            l10n.goalWeightLabel(
+              '${(weightUnit == MeasurementUnit.imperial ? kgToLbs(targetWeight) : targetWeight).toStringAsFixed(1)} $unitLabel',
             ),
-          ),
-          child: Stack(
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(24),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+        ].join('. ');
+
+        return Semantics(
+          container: true,
+          label: semanticsLabel,
+          child: ExcludeSemantics(
+            child: Card(
+              elevation: 0,
+              clipBehavior: Clip.antiAlias,
+              color: colorScheme.surfaceContainerLow,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(28),
+                side: BorderSide(
+                  color: colorScheme.outlineVariant.withValues(alpha: 0.3),
+                ),
+              ),
+              child: Stack(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(24),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        Expanded(
-                          child: _buildLatestMeasurementInfo(
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Expanded(
+                              child: _buildLatestMeasurementInfo(
+                                context,
+                                displayWeight,
+                                unitLabel,
+                                l10n,
+                                colorScheme,
+                                textTheme,
+                              ),
+                            ),
+                            if (bmi.isFinite)
+                              _buildBmiBadge(
+                                context,
+                                bmi,
+                                category,
+                                l10n,
+                                colorScheme,
+                                textTheme,
+                              ),
+                          ],
+                        ),
+                        if (targetWeight != null) ...[
+                          const SizedBox(height: 16),
+                          _buildGoalProgress(
                             context,
-                            displayWeight,
+                            targetWeight,
+                            latestWeightKg,
+                            weightUnit,
                             unitLabel,
                             l10n,
                             colorScheme,
                             textTheme,
                           ),
-                        ),
-                        if (bmi.isFinite)
-                          _buildBmiBadge(
-                            context,
-                            bmi,
-                            category,
-                            l10n,
-                            colorScheme,
-                            textTheme,
-                          ),
+                        ],
                       ],
                     ),
-                    if (targetWeight != null) ...[
-                      const SizedBox(height: 16),
-                      _buildGoalProgress(
-                        context,
-                        targetWeight,
-                        latestWeightKg,
-                        weightUnit,
-                        unitLabel,
-                        l10n,
-                        colorScheme,
-                        textTheme,
-                      ),
-                    ],
-                  ],
-                ),
+                  ),
+                ],
               ),
-            ],
+            ),
           ),
         );
       },
@@ -178,9 +194,7 @@ class HealthSummaryCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: colorScheme.primary.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          color: colorScheme.primary.withValues(alpha: 0.2),
-        ),
+        border: Border.all(color: colorScheme.primary.withValues(alpha: 0.2)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.end,
@@ -190,11 +204,7 @@ class HealthSummaryCard extends StatelessWidget {
             Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(
-                  Icons.check_circle,
-                  size: 14,
-                  color: colorScheme.primary,
-                ),
+                Icon(Icons.check_circle, size: 14, color: colorScheme.primary),
                 const SizedBox(width: 4),
                 Text(
                   category.localizedName(l10n),
@@ -231,20 +241,20 @@ class HealthSummaryCard extends StatelessWidget {
     final displayTarget = unit == MeasurementUnit.imperial
         ? kgToLbs(targetWeightKg)
         : targetWeightKg;
-        
+
     final differenceKg = currentWeightKg - targetWeightKg;
     final isAchieved = differenceKg <= 0;
-    
+
     final displayDifference = unit == MeasurementUnit.imperial
         ? kgToLbs(differenceKg.abs())
         : differenceKg.abs();
-        
-    // Calculate progress percentage based on some arbitrary reasonable range, 
-    // or just 100% if achieved. For a simple visual, let's assume a 10kg/20lbs range 
-    // from target is 0%, target is 100%. 
+
+    // Calculate progress percentage based on some arbitrary reasonable range,
+    // or just 100% if achieved. For a simple visual, let's assume a 10kg/20lbs range
+    // from target is 0%, target is 100%.
     // Or just a fixed 75% for now if not achieved, since we don't store initial weight easily here.
     // A better approach is to use a fixed max difference to calculate progress.
-    final maxDifference = unit == MeasurementUnit.imperial ? 40.0 : 20.0; 
+    final maxDifference = unit == MeasurementUnit.imperial ? 40.0 : 20.0;
     double progress = 1.0;
     if (!isAchieved) {
       progress = 1.0 - (displayDifference / maxDifference).clamp(0.0, 1.0);
@@ -264,16 +274,20 @@ class HealthSummaryCard extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  l10n.goalWeightLabel('${displayTarget.toStringAsFixed(1)} $unitLabel'),
+                  l10n.goalWeightLabel(
+                    '${displayTarget.toStringAsFixed(1)} $unitLabel',
+                  ),
                   style: textTheme.labelMedium?.copyWith(
                     color: colorScheme.onSurfaceVariant,
                     fontWeight: FontWeight.w500,
                   ),
                 ),
                 Text(
-                  isAchieved 
-                      ? l10n.goalAchieved 
-                      : l10n.remainingWeightLabel('${displayDifference.toStringAsFixed(1)} $unitLabel'),
+                  isAchieved
+                      ? l10n.goalAchieved
+                      : l10n.remainingWeightLabel(
+                          '${displayDifference.toStringAsFixed(1)} $unitLabel',
+                        ),
                   style: textTheme.labelMedium?.copyWith(
                     color: colorScheme.onSurfaceVariant,
                     fontWeight: FontWeight.w500,
@@ -344,7 +358,7 @@ class HealthSummaryCard extends StatelessWidget {
     final timeStr = DateFormat.jm(
       Localizations.localeOf(context).toString(),
     ).format(date);
-    
+
     if (isToday) {
       return l10n.todayAtTime(timeStr);
     }

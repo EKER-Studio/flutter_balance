@@ -41,31 +41,36 @@ void main() {
 
   testWidgets('renders goal and BMI details from app settings', (tester) async {
     final bloc = AppSettingsBloc();
+    bloc.add(const UpdateHeight(180)); // Set height to calculate BMI
+    bloc.add(const TargetWeightChanged(70.0)); // Add a target weight so goal section shows
+    await tester.pumpAndSettle();
 
     await tester.pumpWidget(
       createTestWidget(const HealthSummaryCard(latestWeightKg: 72.0), bloc),
     );
+    await tester.pumpAndSettle();
 
-    expect(find.text('Set weight goal'), findsOneWidget);
     expect(find.textContaining('BMI'), findsAtLeastNWidgets(1));
+    expect(find.text('Remaining: 2.0 kg'), findsOneWidget);
 
-    bloc.add(const TargetWeightChanged(70.0));
-    await tester.pump();
+    bloc.add(const TargetWeightChanged(68.0));
+    await tester.pumpAndSettle();
 
-    expect(find.text('2.0 kg to target'), findsOneWidget);
+    expect(find.text('Remaining: 4.0 kg'), findsOneWidget);
   });
 
   testWidgets('formats the goal in imperial units', (tester) async {
     final bloc = AppSettingsBloc();
     bloc.add(const UpdateMeasurementUnit(MeasurementUnit.imperial));
     bloc.add(const TargetWeightChanged(70.0));
-    await tester.pump();
+    await tester.pumpAndSettle();
 
     await tester.pumpWidget(
       createTestWidget(const HealthSummaryCard(latestWeightKg: 75.0), bloc),
     );
+    await tester.pumpAndSettle();
 
-    expect(find.text('11.0 lb to target'), findsOneWidget);
+    expect(find.text('Remaining: 11.0 lb'), findsOneWidget);
   });
 
   testWidgets(
@@ -73,11 +78,12 @@ void main() {
     (tester) async {
       final bloc = AppSettingsBloc();
       bloc.add(const TargetWeightChanged(75.0));
-      await tester.pump();
+      await tester.pumpAndSettle();
 
       await tester.pumpWidget(
         createTestWidget(const HealthSummaryCard(latestWeightKg: 70.0), bloc),
       );
+      await tester.pumpAndSettle();
 
       expect(find.text('Goal achieved!'), findsOneWidget);
     },
@@ -85,12 +91,17 @@ void main() {
 
   testWidgets('opens TargetWeightDialog on goal button tap', (tester) async {
     final bloc = AppSettingsBloc();
+    bloc.add(const TargetWeightChanged(70.0)); // Ensure button exists and is not achieved
+    await tester.pumpAndSettle();
 
     await tester.pumpWidget(
       createTestWidget(const HealthSummaryCard(latestWeightKg: 72.0), bloc),
     );
+    await tester.pumpAndSettle();
 
-    await tester.tap(find.text('Set weight goal'));
+    // The remaining text might be inside a RichText or Row, but find.text usually works.
+    // However, if we just tap the InkWell that contains 'Remaining: 2.0 kg' it works.
+    await tester.tap(find.text('Remaining: 2.0 kg'));
     await tester.pumpAndSettle();
 
     expect(find.byType(TargetWeightDialog), findsOneWidget);

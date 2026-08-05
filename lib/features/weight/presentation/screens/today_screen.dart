@@ -119,29 +119,43 @@ class TodayScreen extends StatelessWidget {
 
             final Widget cardStack;
             if (isWide) {
-              cardStack = Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
+              cardStack = Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  if (state is WeightError) ...[
-                    _InlineErrorBanner(errorType: state.errorType),
-                    const SizedBox(height: 16),
-                  ],
-                  HealthSummaryCard(
-                    latestWeightKg: latestEntry.weightKg,
-                    lastUpdated: latestEntry.dateTime,
+                  Expanded(
+                    flex: 4,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        if (state is WeightError) ...[
+                          _InlineErrorBanner(errorType: state.errorType),
+                          const SizedBox(height: 16),
+                        ],
+                        HealthSummaryCard(
+                          latestWeightKg: latestEntry.weightKg,
+                          lastUpdated: latestEntry.dateTime,
+                        ),
+                        const SizedBox(height: 16),
+                        const _DailyTipCard(),
+                        const SizedBox(height: 120),
+                      ],
+                    ),
                   ),
-                  const SizedBox(height: 16),
-                  _WeightTrendChartCard(
-                    entries: filteredEntries,
-                    period: state.timePeriod,
-                    measurementUnit: settings.measurementUnit,
-                    onPeriodChanged: (period) {
-                      context.read<WeightBloc>().add(ChangeChartFilter(period));
-                    },
+                  const SizedBox(width: 16),
+                  Expanded(
+                    flex: 6,
+                    child: _WeightTrendChartCard(
+                      entries: filteredEntries,
+                      period: state.timePeriod,
+                      measurementUnit: settings.measurementUnit,
+                      onPeriodChanged: (period) {
+                        context.read<WeightBloc>().add(
+                          ChangeChartFilter(period),
+                        );
+                      },
+                    ),
                   ),
-                  const SizedBox(height: 16),
-                  const _DailyTipCard(),
-                  const SizedBox(height: 120),
                 ],
               );
             } else {
@@ -430,20 +444,26 @@ class _PeriodPill extends StatelessWidget {
     return TextButton(
       onPressed: onPressed,
       style: TextButton.styleFrom(
-        backgroundColor: selected ? colorScheme.primaryContainer : Colors.transparent,
-        foregroundColor: selected ? colorScheme.onPrimary : colorScheme.onSurfaceVariant,
+        backgroundColor: selected
+            ? colorScheme.primaryContainer
+            : Colors.transparent,
+        foregroundColor: selected
+            ? colorScheme.onPrimary
+            : colorScheme.onSurfaceVariant,
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         minimumSize: Size.zero,
         tapTargetSize: MaterialTapTargetSize.padded,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       ),
       child: Text(
         label,
         style: textTheme.labelMedium?.copyWith(
           fontWeight: FontWeight.w600,
-          color: selected ? Colors.white : colorScheme.onSurfaceVariant,
+          color: selected
+              ? (Theme.of(context).brightness == Brightness.light
+                    ? Colors.white
+                    : colorScheme.onPrimaryContainer)
+              : colorScheme.onSurfaceVariant,
         ),
       ),
     );
@@ -477,8 +497,10 @@ class _WeightLineChart extends StatelessWidget {
     final minY = _roundDownToHalf(minWeight - 0.5);
     final maxY = _roundUpToHalf(maxWeight + 0.5);
 
+    final l10n = AppLocalizations.of(context);
     return Semantics(
       container: true,
+      label: '${l10n.weightTrend}, ${entries.length} pomiarów',
       child: LineChart(
         LineChartData(
           minX: 0,
@@ -675,18 +697,12 @@ class _DailyTipCard extends StatelessWidget {
         decoration: BoxDecoration(
           color: colorScheme.surfaceContainerLow,
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(
-            color: colorScheme.surfaceContainerHigh,
-          ),
+          border: Border.all(color: colorScheme.surfaceContainerHigh),
         ),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Icon(
-              Icons.lightbulb_outline,
-              color: colorScheme.primary,
-              size: 24,
-            ),
+            Icon(Icons.lightbulb_outline, color: colorScheme.primary, size: 24),
             const SizedBox(width: 12),
             Expanded(
               child: Text(

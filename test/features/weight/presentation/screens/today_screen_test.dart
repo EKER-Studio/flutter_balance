@@ -265,10 +265,7 @@ void main() {
 
     expect(find.text('25.1 BMI', skipOffstage: false), findsOneWidget);
     expect(find.text('Weight trend', skipOffstage: false), findsOneWidget);
-    expect(
-      find.text('Last measurement', skipOffstage: false),
-      findsOneWidget,
-    );
+    expect(find.text('Last measurement', skipOffstage: false), findsOneWidget);
     expect(
       find.byIcon(Icons.lightbulb_outline, skipOffstage: false),
       findsOneWidget,
