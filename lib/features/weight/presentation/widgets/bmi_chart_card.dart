@@ -1,0 +1,301 @@
+import 'package:fl_chart/fl_chart.dart';
+import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:pure_weight/features/weight/domain/entities/weight_entry.dart';
+import 'package:pure_weight/l10n/app_localizations.dart';
+
+/// A composite card that displays a BMI chart over time with colored zones.
+class BmiChartCard extends StatelessWidget {
+  final List<WeightEntry> entries;
+  final double? heightCm;
+
+  const BmiChartCard({
+    super.key,
+    required this.entries,
+    required this.heightCm,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context);
+
+    return Semantics(
+      container: true,
+      label: l10n.bmiChartTitle,
+      child: Card(
+        elevation: 0,
+        color: cs.surfaceContainerLow,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Icon(
+                    Icons.monitor_heart_outlined,
+                    size: 22,
+                    color: cs.secondary,
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    l10n.bmiChartTitle,
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      color: cs.onSurface,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 24),
+              _buildChartContent(context, cs, l10n),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildChartContent(
+    BuildContext context,
+    ColorScheme cs,
+    AppLocalizations l10n,
+  ) {
+    if (heightCm == null || heightCm! <= 0) {
+      return SizedBox(
+        height: 200,
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Text(
+              l10n.bmiChartNoHeight,
+              textAlign: TextAlign.center,
+              style: Theme.of(
+                context,
+              ).textTheme.bodyMedium?.copyWith(color: cs.onSurfaceVariant),
+            ),
+          ),
+        ),
+      );
+    }
+
+    if (entries.isEmpty || entries.length < 2) {
+      return SizedBox(
+        height: 200,
+        child: Center(
+          child: Text(
+            l10n.chartEmpty,
+            textAlign: TextAlign.center,
+            style: Theme.of(
+              context,
+            ).textTheme.bodyMedium?.copyWith(color: cs.onSurfaceVariant),
+          ),
+        ),
+      );
+    }
+
+    // Prepare data
+    final sortedEntries = [...entries]
+      ..sort((a, b) => a.dateTime.compareTo(b.dateTime));
+
+    final hMeters = heightCm! / 100.0;
+    final hSquared = hMeters * hMeters;
+
+    final spots = <FlSpot>[];
+    final firstDate = sortedEntries.first.dateTime;
+    double minBmi = double.infinity;
+    double maxBmi = double.negativeInfinity;
+
+    for (final entry in sortedEntries) {
+      final bmi = entry.weightKg / hSquared;
+      if (bmi < minBmi) minBmi = bmi;
+      if (bmi > maxBmi) maxBmi = bmi;
+
+      final days = entry.dateTime.difference(firstDate).inDays.toDouble();
+      spots.add(FlSpot(days, bmi));
+    }
+
+    // Padding for Y axis
+    final range = maxBmi - minBmi;
+    final padding = (range * 0.1).clamp(1.0, double.infinity);
+    final minY = (minBmi - padding).floorToDouble().clamp(10.0, 100.0);
+    final maxY = (maxBmi + padding).ceilToDouble();
+
+    // Define colors for zones
+    final underweightColor = Colors.blue.withValues(alpha: 0.1);
+    final normalColor = Colors.green.withValues(alpha: 0.15);
+    final overweightColor = Colors.orange.withValues(alpha: 0.15);
+    final obeseColor = Colors.red.withValues(alpha: 0.1);
+
+    return SizedBox(
+      height: 220,
+      child: Padding(
+        padding: const EdgeInsets.only(right: 16.0),
+        child: LineChart(
+          LineChartData(
+            minY: minY,
+            maxY: maxY,
+            gridData: const FlGridData(show: false),
+            titlesData: FlTitlesData(
+              show: true,
+              rightTitles: const AxisTitles(
+                sideTitles: SideTitles(showTitles: false),
+              ),
+              topTitles: const AxisTitles(
+                sideTitles: SideTitles(showTitles: false),
+              ),
+              bottomTitles: AxisTitles(
+                sideTitles: SideTitles(
+                  showTitles: true,
+                  reservedSize: 30,
+                  interval: _getBottomInterval(sortedEntries),
+                  getTitlesWidget: (value, meta) {
+                    return _buildBottomTitle(
+                      value,
+                      meta,
+                      sortedEntries,
+                      context,
+                    );
+                  },
+                ),
+              ),
+              leftTitles: AxisTitles(
+                sideTitles: SideTitles(
+                  showTitles: true,
+                  reservedSize: 35,
+                  interval: 2,
+                  getTitlesWidget: (value, meta) {
+                    return Text(
+                      value.toStringAsFixed(0),
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: cs.onSurfaceVariant,
+                        fontSize: 11,
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ),
+            borderData: FlBorderData(show: false),
+            rangeAnnotations: RangeAnnotations(
+              horizontalRangeAnnotations: [
+                HorizontalRangeAnnotation(
+                  y1: 0,
+                  y2: 18.5,
+                  color: underweightColor,
+                ),
+                HorizontalRangeAnnotation(
+                  y1: 18.5,
+                  y2: 25.0,
+                  color: normalColor,
+                ),
+                HorizontalRangeAnnotation(
+                  y1: 25.0,
+                  y2: 30.0,
+                  color: overweightColor,
+                ),
+                HorizontalRangeAnnotation(
+                  y1: 30.0,
+                  y2: 100.0,
+                  color: obeseColor,
+                ),
+              ],
+            ),
+            lineBarsData: [
+              LineChartBarData(
+                spots: spots,
+                isCurved: true,
+                color: cs.primary,
+                barWidth: 3,
+                isStrokeCapRound: true,
+                dotData: FlDotData(
+                  show: true,
+                  getDotPainter: (spot, percent, barData, index) {
+                    return FlDotCirclePainter(
+                      radius: 3,
+                      color: cs.primary,
+                      strokeWidth: 2,
+                      strokeColor: cs.surface,
+                    );
+                  },
+                ),
+                belowBarData: BarAreaData(
+                  show: true,
+                  gradient: LinearGradient(
+                    colors: [
+                      cs.primary.withValues(alpha: 0.2),
+                      cs.primary.withValues(alpha: 0.0),
+                    ],
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                  ),
+                ),
+              ),
+            ],
+            lineTouchData: LineTouchData(
+              touchTooltipData: LineTouchTooltipData(
+                getTooltipColor: (_) => cs.secondaryContainer,
+                getTooltipItems: (touchedSpots) {
+                  return touchedSpots.map((touchedSpot) {
+                    final textStyle = TextStyle(
+                      color: cs.onSecondaryContainer,
+                      fontWeight: FontWeight.bold,
+                    );
+                    final formattedValue = touchedSpot.y.toStringAsFixed(1);
+                    return LineTooltipItem(formattedValue, textStyle);
+                  }).toList();
+                },
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  double _getBottomInterval(List<WeightEntry> sortedEntries) {
+    if (sortedEntries.length <= 1) return 1;
+
+    final days = sortedEntries.last.dateTime
+        .difference(sortedEntries.first.dateTime)
+        .inDays;
+
+    if (days <= 0) return 1;
+    return (days / 4).clamp(1.0, double.infinity);
+  }
+
+  Widget _buildBottomTitle(
+    double value,
+    TitleMeta meta,
+    List<WeightEntry> sortedEntries,
+    BuildContext context,
+  ) {
+    if (sortedEntries.isEmpty) return const SizedBox.shrink();
+
+    final firstDate = sortedEntries.first.dateTime;
+    final lastDate = sortedEntries.last.dateTime;
+    final maxDays = lastDate.difference(firstDate).inDays.toDouble();
+
+    if (value < 0 || value > maxDays) {
+      return const SizedBox.shrink();
+    }
+
+    final date = firstDate.add(Duration(days: value.round()));
+    // Use the locale dynamically
+    final locale = Localizations.localeOf(context).toString();
+    final formattedDate = DateFormat.yMMM(locale).format(date);
+
+    return Padding(
+      padding: const EdgeInsets.only(top: 8.0),
+      child: Text(
+        formattedDate,
+        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+          color: Theme.of(context).colorScheme.onSurfaceVariant,
+          fontSize: 10,
+        ),
+      ),
+    );
+  }
+}

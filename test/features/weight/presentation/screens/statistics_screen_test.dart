@@ -13,6 +13,7 @@ import 'package:pure_weight/l10n/app_localizations.dart';
 import 'package:pure_weight/presentation/bloc/settings/app_settings_bloc.dart';
 import 'package:pure_weight/presentation/bloc/settings/app_settings_event.dart';
 import 'package:pure_weight/features/weight/presentation/screens/statistics_screen.dart';
+import 'package:pure_weight/features/weight/presentation/widgets/bmi_chart_card.dart';
 
 class MockWeightRepository extends Mock implements WeightRepository {}
 
@@ -276,38 +277,38 @@ void main() {
     expect(find.text('17%'), findsOneWidget);
   });
 
-  testWidgets('StatisticsScreen renders consolidated composite cards with all health metrics', (
-    tester,
-  ) async {
-    final now = DateTime.now();
-    final entries = [
-      WeightEntry(id: 2, weightKg: 74.0, dateTime: now),
-      WeightEntry(
-        id: 1,
-        weightKg: 80.0,
-        dateTime: now.subtract(const Duration(days: 10)),
-      ),
-    ];
+  testWidgets(
+    'StatisticsScreen renders consolidated composite cards with all health metrics',
+    (tester) async {
+      final now = DateTime.now();
+      final entries = [
+        WeightEntry(id: 2, weightKg: 74.0, dateTime: now),
+        WeightEntry(
+          id: 1,
+          weightKg: 80.0,
+          dateTime: now.subtract(const Duration(days: 10)),
+        ),
+      ];
 
-    final settingsBloc = AppSettingsBloc();
-    settingsBloc.add(const UpdateHeight(175.0));
-    final weightBloc = createBloc(
-      WeightLoaded(
-        entries: entries,
-        filteredEntries: [],
-        timePeriod: TimePeriod.week,
-        heightCm: 175.0,
-      ),
-    );
+      final settingsBloc = AppSettingsBloc();
+      settingsBloc.add(const UpdateHeight(175.0));
+      final weightBloc = createBloc(
+        WeightLoaded(
+          entries: entries,
+          filteredEntries: [],
+          timePeriod: TimePeriod.week,
+          heightCm: 175.0,
+        ),
+      );
 
-    await tester.pumpWidget(
-      buildSubject(settingsBloc: settingsBloc, weightBloc: weightBloc),
-    );
-    await tester.pumpAndSettle();
+      await tester.pumpWidget(
+        buildSubject(settingsBloc: settingsBloc, weightBloc: weightBloc),
+      );
+      await tester.pumpAndSettle();
 
-    // Composite cards titles & metrics
-    expect(find.text('Zakres i średnia wagi'), findsOneWidget);
-    expect(find.text('2 wpisy'), findsOneWidget);
-    expect(find.textContaining('Prawidłowa waga dla wzrostu'), findsOneWidget);
-  });
+      // Composite cards titles & metrics
+      expect(find.text('Zakres i średnia wagi'), findsOneWidget);
+      expect(find.byType(BmiChartCard), findsOneWidget);
+    },
+  );
 }

@@ -461,7 +461,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         .targetWeight;
     final unit = dialogContext.read<AppSettingsBloc>().state.measurementUnit;
 
-    final result = await showDialog<double>(
+    final result = await showDialog<dynamic>(
       context: dialogContext,
       builder: (ctx) =>
           TargetWeightDialog(currentValue: currentTarget, unit: unit),
@@ -470,7 +470,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
     if (!mounted) return;
 
     if (result != null) {
-      context.read<AppSettingsBloc>().add(TargetWeightChanged(result));
+      if (result == 'clear') {
+        context.read<AppSettingsBloc>().add(const TargetWeightChanged(null));
+      } else if (result is double) {
+        context.read<AppSettingsBloc>().add(TargetWeightChanged(result));
+      }
     }
   }
 

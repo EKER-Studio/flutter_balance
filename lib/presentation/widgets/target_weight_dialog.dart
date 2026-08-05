@@ -48,7 +48,7 @@ class _TargetWeightDialogState extends State<TargetWeightDialog> {
     final text = _controller.text.trim().replaceAll(',', '.');
 
     if (text.isEmpty) {
-      Navigator.of(context).pop(null);
+      Navigator.of(context).pop('clear');
       return;
     }
 
@@ -140,6 +140,14 @@ class _TargetWeightDialogState extends State<TargetWeightDialog> {
         ),
       ),
       actions: [
+        if (widget.currentValue != null)
+          TextButton(
+            onPressed: () => Navigator.of(context).pop('clear'),
+            style: TextButton.styleFrom(
+              foregroundColor: Theme.of(context).colorScheme.error,
+            ),
+            child: Text(l10n.removeTargetWeight),
+          ),
         TextButton(
           onPressed: () => Navigator.of(context).pop(),
           child: Text(l10n.cancel),

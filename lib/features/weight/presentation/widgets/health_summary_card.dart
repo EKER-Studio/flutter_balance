@@ -330,17 +330,21 @@ class HealthSummaryCard extends StatelessWidget {
               : targetWeightKg)
         : null;
 
-    final result = await showDialog<double>(
+    final result = await showDialog<dynamic>(
       context: context,
       builder: (ctx) =>
           TargetWeightDialog(currentValue: displayValue, unit: unit),
     );
 
     if (result != null && context.mounted) {
-      final targetKg = unit == MeasurementUnit.imperial
-          ? lbsToKg(result)
-          : result;
-      context.read<AppSettingsBloc>().add(TargetWeightChanged(targetKg));
+      if (result == 'clear') {
+        context.read<AppSettingsBloc>().add(const TargetWeightChanged(null));
+      } else if (result is double) {
+        final targetKg = unit == MeasurementUnit.imperial
+            ? lbsToKg(result)
+            : result;
+        context.read<AppSettingsBloc>().add(TargetWeightChanged(targetKg));
+      }
     }
   }
 

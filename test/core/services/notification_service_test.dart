@@ -20,9 +20,12 @@ void main() {
       );
     });
 
-    test('initialize catches exceptions when method channels are not mocked', () async {
-      await expectLater(NotificationService.instance.initialize(), completes);
-    });
+    test(
+      'initialize catches exceptions when method channels are not mocked',
+      () async {
+        await expectLater(NotificationService.instance.initialize(), completes);
+      },
+    );
 
     test('requestPermissions catches exceptions when not mocked', () async {
       final result = await NotificationService.instance.requestPermissions();
@@ -31,13 +34,18 @@ void main() {
 
     test('scheduleDailyReminder does not crash', () async {
       await expectLater(
-        NotificationService.instance.scheduleDailyReminder(const TimeOfDay(hour: 8, minute: 0)),
+        NotificationService.instance.scheduleDailyReminder(
+          const TimeOfDay(hour: 8, minute: 0),
+        ),
         completes,
       );
     });
 
     test('cancelDailyReminder does not crash', () async {
-      await expectLater(NotificationService.instance.cancelDailyReminder(), completes);
+      await expectLater(
+        NotificationService.instance.cancelDailyReminder(),
+        completes,
+      );
     });
   });
 }

@@ -73,7 +73,7 @@ void main() {
     'App navigates back to OnboardingWizardScreen when app settings are reset',
     (tester) async {
       final settingsBloc = AppSettingsBloc();
-      
+
       // 1. Arrange: Start with completed onboarding
       settingsBloc.add(const CompleteOnboarding());
 

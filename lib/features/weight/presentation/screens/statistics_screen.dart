@@ -7,13 +7,12 @@ import 'package:pure_weight/features/weight/domain/entities/weight_entry.dart';
 import 'package:pure_weight/features/weight/presentation/bloc/weight_bloc.dart';
 import 'package:pure_weight/features/weight/presentation/bloc/weight_event.dart';
 import 'package:pure_weight/features/weight/presentation/bloc/weight_state.dart';
-import 'package:pure_weight/features/weight/presentation/utils/bmi_category_localizer.dart';
 import 'package:pure_weight/features/weight/presentation/widgets/add_weight_sheet.dart';
+import 'package:pure_weight/features/weight/presentation/widgets/bmi_chart_card.dart';
 import 'package:pure_weight/features/weight/presentation/widgets/statistics_shimmer_skeleton.dart';
 import 'package:pure_weight/l10n/app_localizations.dart';
 import 'package:pure_weight/presentation/bloc/settings/app_settings_bloc.dart';
 import 'package:pure_weight/presentation/bloc/settings/app_settings_state.dart';
-import 'package:pure_weight/presentation/bloc/settings/bmi_category.dart';
 import 'package:pure_weight/presentation/core/clamped_layout.dart';
 import 'package:pure_weight/presentation/widgets/app_top_bar.dart';
 import 'package:pure_weight/presentation/widgets/state_message_card.dart';
@@ -67,8 +66,9 @@ class StatisticsScreen extends StatelessWidget {
                         child: StateMessageCard(
                           icon: Icons.bar_chart,
                           iconColor: Theme.of(context).colorScheme.primary,
-                          iconContainerColor:
-                              Theme.of(context).colorScheme.surfaceContainerHigh,
+                          iconContainerColor: Theme.of(
+                            context,
+                          ).colorScheme.surfaceContainerHigh,
                           title: l10n.noDataToAnalyze,
                           subtitle: l10n.noDataToAnalyzeSubtitle,
                           buttonLabel: l10n.addFirstMeasurement,
@@ -113,7 +113,6 @@ class StatisticsScreen extends StatelessWidget {
                                 context,
                                 streak: streak,
                                 compliancePct: compliancePct,
-                                totalEntries: entries.length,
                                 l10n: l10n,
                               ),
                               const SizedBox(height: 16),
@@ -124,12 +123,9 @@ class StatisticsScreen extends StatelessWidget {
                                 l10n: l10n,
                               ),
                               const SizedBox(height: 16),
-                              _buildBmiHealthCard(
-                                context,
+                              BmiChartCard(
                                 entries: entries,
                                 heightCm: heightCm,
-                                unit: unit,
-                                l10n: l10n,
                               ),
                               const SizedBox(height: 32),
                             ],
@@ -168,7 +164,8 @@ class StatisticsScreen extends StatelessWidget {
     final unitLabel = unitLabelFor(unit);
 
     final sign = totalChangeDisplay > 0 ? '+' : '';
-    final formattedValue = '$sign${totalChangeDisplay.toStringAsFixed(1)} $unitLabel';
+    final formattedValue =
+        '$sign${totalChangeDisplay.toStringAsFixed(1)} $unitLabel';
 
     // Weekly pace text
     final paceDisplay = weeklyPace != null
@@ -191,7 +188,8 @@ class StatisticsScreen extends StatelessWidget {
         final distDisplay = unit == MeasurementUnit.imperial
             ? kgToLbs(distKg)
             : distKg;
-        statusBadge = '${distDisplay.toStringAsFixed(1)} $unitLabel ${l10n.toTarget}';
+        statusBadge =
+            '${distDisplay.toStringAsFixed(1)} $unitLabel ${l10n.toTarget}';
         goalProgressPct = _calculateGoalProgressPct(
           startKg: firstEntry.weightKg,
           currentKg: latestEntry.weightKg,
@@ -202,7 +200,8 @@ class StatisticsScreen extends StatelessWidget {
       statusBadge = '🎉 ${l10n.greatJob}';
     }
 
-    final semanticLabel = '${l10n.totalProgress}: $formattedValue${statusBadge != null ? ", $statusBadge" : ""}';
+    final semanticLabel =
+        '${l10n.totalProgress}: $formattedValue${statusBadge != null ? ", $statusBadge" : ""}';
 
     return Semantics(
       container: true,
@@ -224,9 +223,9 @@ class StatisticsScreen extends StatelessWidget {
                     child: Text(
                       l10n.totalProgress,
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                            color: cs.onSurface,
-                            fontWeight: FontWeight.w600,
-                          ),
+                        color: cs.onSurface,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                   ),
                   if (statusBadge != null)
@@ -241,7 +240,8 @@ class StatisticsScreen extends StatelessWidget {
                       ),
                       child: Text(
                         statusBadge,
-                        style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                        style: Theme.of(context).textTheme.labelMedium
+                            ?.copyWith(
                               color: cs.onPrimaryContainer,
                               fontWeight: FontWeight.bold,
                             ),
@@ -257,17 +257,17 @@ class StatisticsScreen extends StatelessWidget {
                   Text(
                     formattedValue,
                     style: Theme.of(context).textTheme.headlineLarge?.copyWith(
-                          color: cs.onSurface,
-                          fontWeight: FontWeight.bold,
-                        ),
+                      color: cs.onSurface,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
                       'od ${_formatEntryDate(context, firstEntry.dateTime, l10n)}',
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: cs.onSurfaceVariant,
-                          ),
+                        color: cs.onSurfaceVariant,
+                      ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
@@ -279,9 +279,9 @@ class StatisticsScreen extends StatelessWidget {
                 Text(
                   paceBadgeText,
                   style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                        color: cs.secondary,
-                        fontWeight: FontWeight.w600,
-                      ),
+                    color: cs.secondary,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
               ],
               if (goalProgressPct != null) ...[
@@ -292,15 +292,15 @@ class StatisticsScreen extends StatelessWidget {
                     Text(
                       'Postęp celu',
                       style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                            color: cs.onSurfaceVariant,
-                          ),
+                        color: cs.onSurfaceVariant,
+                      ),
                     ),
                     Text(
                       '${goalProgressPct.toStringAsFixed(0)}%',
                       style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                            color: cs.primary,
-                            fontWeight: FontWeight.bold,
-                          ),
+                        color: cs.primary,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ],
                 ),
@@ -322,19 +322,19 @@ class StatisticsScreen extends StatelessWidget {
     );
   }
 
-  /// 2. Habits & Activity Composite Card (Streak, Compliance, Total Entries).
+  /// 2. Habits & Activity Composite Card (Streak, Compliance).
   Widget _buildHabitsAndActivityCard(
     BuildContext context, {
     required int streak,
     required int compliancePct,
-    required int totalEntries,
     required AppLocalizations l10n,
   }) {
     final cs = Theme.of(context).colorScheme;
 
     return Semantics(
       container: true,
-      label: '${l10n.loggingStreak}: ${l10n.streakDays(streak)}, ${l10n.monthlyCompliance}: $compliancePct%, Liczba pomiarów: $totalEntries',
+      label:
+          '${l10n.loggingStreak}: ${l10n.streakDays(streak)}, ${l10n.monthlyCompliance}: $compliancePct%',
       child: Card(
         elevation: 0,
         color: cs.surfaceContainerLow,
@@ -366,20 +366,6 @@ class StatisticsScreen extends StatelessWidget {
                   value: '$compliancePct%',
                 ),
               ),
-              Container(
-                height: 36,
-                width: 1,
-                color: cs.outlineVariant.withValues(alpha: 0.5),
-              ),
-              Expanded(
-                child: _buildHabitMetricItem(
-                  context,
-                  icon: Icons.format_list_bulleted,
-                  iconColor: cs.tertiary,
-                  label: 'Pomiary',
-                  value: _formatEntriesCount(totalEntries),
-                ),
-              ),
             ],
           ),
         ),
@@ -408,9 +394,9 @@ class StatisticsScreen extends StatelessWidget {
               Expanded(
                 child: Text(
                   label,
-                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                        color: cs.onSurfaceVariant,
-                      ),
+                  style: Theme.of(
+                    context,
+                  ).textTheme.labelSmall?.copyWith(color: cs.onSurfaceVariant),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -421,9 +407,9 @@ class StatisticsScreen extends StatelessWidget {
           Text(
             value,
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  color: cs.onSurface,
-                  fontWeight: FontWeight.bold,
-                ),
+              color: cs.onSurface,
+              fontWeight: FontWeight.bold,
+            ),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
           ),
@@ -442,17 +428,13 @@ class StatisticsScreen extends StatelessWidget {
     final cs = Theme.of(context).colorScheme;
     final unitLabel = unitLabelFor(unit);
 
-    final maxEntry = entries.reduce(
-      (a, b) => a.weightKg > b.weightKg ? a : b,
-    );
+    final maxEntry = entries.reduce((a, b) => a.weightKg > b.weightKg ? a : b);
     final maxDisplay = unit == MeasurementUnit.imperial
         ? kgToLbs(maxEntry.weightKg)
         : maxEntry.weightKg;
     final maxDateText = _formatEntryDate(context, maxEntry.dateTime, l10n);
 
-    final minEntry = entries.reduce(
-      (a, b) => a.weightKg < b.weightKg ? a : b,
-    );
+    final minEntry = entries.reduce((a, b) => a.weightKg < b.weightKg ? a : b);
     final minDisplay = unit == MeasurementUnit.imperial
         ? kgToLbs(minEntry.weightKg)
         : minEntry.weightKg;
@@ -466,7 +448,8 @@ class StatisticsScreen extends StatelessWidget {
 
     return Semantics(
       container: true,
-      label: 'Zakres wagi: ${l10n.highest} ${maxDisplay.toStringAsFixed(1)} $unitLabel, ${l10n.lowest} ${minDisplay.toStringAsFixed(1)} $unitLabel, ${l10n.averageWeight} ${avgDisplay.toStringAsFixed(1)} $unitLabel',
+      label:
+          'Zakres wagi: ${l10n.highest} ${maxDisplay.toStringAsFixed(1)} $unitLabel, ${l10n.lowest} ${minDisplay.toStringAsFixed(1)} $unitLabel, ${l10n.averageWeight} ${avgDisplay.toStringAsFixed(1)} $unitLabel',
       child: Card(
         elevation: 0,
         color: cs.surfaceContainerLow,
@@ -478,18 +461,14 @@ class StatisticsScreen extends StatelessWidget {
             children: [
               Row(
                 children: [
-                  Icon(
-                    Icons.analytics_outlined,
-                    size: 22,
-                    color: cs.primary,
-                  ),
+                  Icon(Icons.analytics_outlined, size: 22, color: cs.primary),
                   const SizedBox(width: 8),
                   Text(
                     'Zakres i średnia wagi',
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          color: cs.onSurface,
-                          fontWeight: FontWeight.w600,
-                        ),
+                      color: cs.onSurface,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                 ],
               ),
@@ -554,15 +533,15 @@ class StatisticsScreen extends StatelessWidget {
               Text(
                 label,
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: cs.onSurface,
-                      fontWeight: FontWeight.w500,
-                    ),
+                  color: cs.onSurface,
+                  fontWeight: FontWeight.w500,
+                ),
               ),
               Text(
                 date,
-                style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                      color: cs.onSurfaceVariant,
-                    ),
+                style: Theme.of(
+                  context,
+                ).textTheme.labelSmall?.copyWith(color: cs.onSurfaceVariant),
               ),
             ],
           ),
@@ -570,128 +549,11 @@ class StatisticsScreen extends StatelessWidget {
         Text(
           value,
           style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                color: cs.onSurface,
-                fontWeight: FontWeight.bold,
-              ),
-        ),
-      ],
-    );
-  }
-
-  /// 4. BMI & Health Composite Card (BMI, Category, Normal Weight Range).
-  Widget _buildBmiHealthCard(
-    BuildContext context, {
-    required List<WeightEntry> entries,
-    required double? heightCm,
-    required MeasurementUnit unit,
-    required AppLocalizations l10n,
-  }) {
-    final cs = Theme.of(context).colorScheme;
-    final unitLabel = unitLabelFor(unit);
-
-    final weights = entries.map((e) => e.weightKg).toList();
-    final avgWeightKg = weights.reduce((a, b) => a + b) / weights.length;
-
-    final bmi = (heightCm != null && heightCm > 0)
-        ? avgWeightKg / ((heightCm / 100) * (heightCm / 100))
-        : null;
-    final bmiCategory = bmi != null && bmi.isFinite
-        ? BmiCategory.fromBmi(bmi)
-        : null;
-    final bmiCategoryText = bmiCategory != null
-        ? bmiCategory.localizedName(l10n)
-        : '—';
-
-    String? normalWeightRangeText;
-    if (heightCm != null && heightCm > 0) {
-      final hMeters = heightCm / 100.0;
-      final minNormalKg = 18.5 * (hMeters * hMeters);
-      final maxNormalKg = 24.9 * (hMeters * hMeters);
-
-      final minDisplay = unit == MeasurementUnit.imperial
-          ? kgToLbs(minNormalKg)
-          : minNormalKg;
-      final maxDisplay = unit == MeasurementUnit.imperial
-          ? kgToLbs(maxNormalKg)
-          : maxNormalKg;
-
-      normalWeightRangeText =
-          'Prawidłowa waga dla wzrostu: ${minDisplay.toStringAsFixed(1)} – ${maxDisplay.toStringAsFixed(1)} $unitLabel';
-    }
-
-    return Semantics(
-      container: true,
-      label: '${l10n.bmi}: ${bmi != null ? bmi.toStringAsFixed(1) : l10n.missingData}, $bmiCategoryText',
-      child: Card(
-        elevation: 0,
-        color: cs.surfaceContainerLow,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
-        child: Padding(
-          padding: const EdgeInsets.all(20),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Row(
-                    children: [
-                      Icon(
-                        Icons.monitor_heart_outlined,
-                        size: 22,
-                        color: cs.secondary,
-                      ),
-                      const SizedBox(width: 8),
-                      Text(
-                        l10n.bmi,
-                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                              color: cs.onSurface,
-                              fontWeight: FontWeight.w600,
-                            ),
-                      ),
-                    ],
-                  ),
-                  if (bmiCategory != null)
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 4,
-                      ),
-                      decoration: BoxDecoration(
-                        color: cs.secondaryContainer,
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Text(
-                        bmiCategoryText,
-                        style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                              color: cs.onSecondaryContainer,
-                              fontWeight: FontWeight.bold,
-                            ),
-                      ),
-                    ),
-                ],
-              ),
-              const SizedBox(height: 12),
-              Text(
-                bmi != null ? bmi.toStringAsFixed(1) : '—',
-                style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                      color: cs.onSurface,
-                      fontWeight: FontWeight.bold,
-                    ),
-              ),
-              if (normalWeightRangeText != null) ...[
-                const SizedBox(height: 8),
-                Text(
-                  normalWeightRangeText,
-                  style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                        color: cs.onSurfaceVariant,
-                      ),
-                ),
-              ],
-            ],
+            color: cs.onSurface,
+            fontWeight: FontWeight.bold,
           ),
         ),
-      ),
+      ],
     );
   }
 
@@ -703,7 +565,9 @@ class StatisticsScreen extends StatelessWidget {
     final now = DateTime.now();
     final monthAgo = now.subtract(const Duration(days: 30));
 
-    final recentEntries = sorted.where((e) => e.dateTime.isAfter(monthAgo)).toList();
+    final recentEntries = sorted
+        .where((e) => e.dateTime.isAfter(monthAgo))
+        .toList();
     if (recentEntries.length < 2) return null;
 
     final first = recentEntries.first;
@@ -740,13 +604,15 @@ class StatisticsScreen extends StatelessWidget {
   int _calculateStreak(List<WeightEntry> entries, DateTime now) {
     if (entries.isEmpty) return 0;
 
-    final dates = entries
-        .map(
-          (e) => DateTime(e.dateTime.year, e.dateTime.month, e.dateTime.day),
-        )
-        .toSet()
-        .toList()
-      ..sort((a, b) => b.compareTo(a));
+    final dates =
+        entries
+            .map(
+              (e) =>
+                  DateTime(e.dateTime.year, e.dateTime.month, e.dateTime.day),
+            )
+            .toSet()
+            .toList()
+          ..sort((a, b) => b.compareTo(a));
 
     final todayDate = DateTime(now.year, now.month, now.day);
     final yesterdayDate = todayDate.subtract(const Duration(days: 1));
@@ -787,22 +653,13 @@ class StatisticsScreen extends StatelessWidget {
     AppLocalizations l10n,
   ) {
     final now = DateTime.now();
-    if (date.year == now.year && date.month == now.month && date.day == now.day) {
+    if (date.year == now.year &&
+        date.month == now.month &&
+        date.day == now.day) {
       return l10n.lastUpdatedToday.replaceFirst('Ostatnia aktualizacja: ', '');
     }
     final locale = Localizations.localeOf(context).toString();
     return DateFormat.yMMMd(locale).format(date);
-  }
-
-  /// Formats the count of entries with proper Polish pluralization.
-  String _formatEntriesCount(int count) {
-    if (count == 1) return '1 wpis';
-    final mod10 = count % 10;
-    final mod100 = count % 100;
-    if (mod10 >= 2 && mod10 <= 4 && (mod100 < 12 || mod100 > 14)) {
-      return '$count wpisy';
-    }
-    return '$count wpisów';
   }
 
   /// Shows the [AddWeightSheet] modal bottom sheet.
