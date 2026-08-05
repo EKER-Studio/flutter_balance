@@ -10,6 +10,8 @@ import 'package:pure_weight/features/weight/presentation/bloc/weight_event.dart'
 import 'package:pure_weight/features/weight/presentation/bloc/weight_state.dart';
 import 'package:pure_weight/l10n/app_localizations.dart';
 import 'package:pure_weight/presentation/bloc/settings/app_settings_bloc.dart';
+import 'package:pure_weight/presentation/bloc/settings/app_settings_event.dart';
+import 'package:pure_weight/presentation/bloc/settings/app_settings_state.dart';
 import 'package:pure_weight/presentation/screens/onboarding/onboarding_wizard_screen.dart';
 
 class MockHydratedStorage extends Mock implements HydratedStorage {}
@@ -202,5 +204,33 @@ void main() {
         );
       },
     );
+
+    testWidgets('skips Biometric step if device does not support it', (tester) async {
+      settingsBloc.add(const UpdateBiometricSupport(false));
+      
+      await tester.pumpWidget(buildSubject());
+      await tester.pumpAndSettle();
+
+      expect(find.text('Step 1 of 4'), findsOneWidget);
+      expect(find.text('Units & Height'), findsOneWidget);
+
+      // Navigate to step 3 (Daily Reminder)
+      await tester.enterText(find.byKey(const Key('height_cm_input')), '170');
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Next'));
+      await tester.pumpAndSettle(); // step 2
+      await tester.tap(find.text('Next').first);
+      await tester.pumpAndSettle(); // step 3
+
+      expect(find.text('Step 3 of 4'), findsOneWidget);
+      expect(find.text('Daily Reminder (Optional)'), findsOneWidget);
+      
+      // Navigate to next step (Should be Initial Weight, skipping Biometric)
+      await tester.tap(find.text('Next').first);
+      await tester.pumpAndSettle(); // step 4
+
+      expect(find.text('Step 4 of 4'), findsOneWidget);
+      expect(find.text('Initial Weight'), findsOneWidget);
+    });
   });
 }

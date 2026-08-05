@@ -42,11 +42,11 @@ void main() {
 
   group('StepReminderNotification Widget Tests', () {
     testWidgets(
-      'renders step title, description, switch, skip and next buttons',
+      'renders step title, description, switch, and next button',
       (tester) async {
         await tester.pumpWidget(buildSubject(onNext: () {}));
 
-        expect(find.text('Daily Reminder'), findsWidgets);
+        expect(find.text('Daily Reminder (Optional)'), findsWidgets);
         expect(
           find.text(
             'Set a daily reminder to log your weight and stay on track.',
@@ -58,29 +58,21 @@ void main() {
           findsOneWidget,
         );
         expect(
-          find.byKey(const Key('notification_step_skip_button')),
-          findsOneWidget,
-        );
-        expect(
           find.byKey(const Key('notification_step_next_button')),
           findsOneWidget,
         );
       },
     );
 
-    testWidgets('invokes onNext when skip or next button is pressed', (
+    testWidgets('invokes onNext when next button is pressed', (
       tester,
     ) async {
       int nextCount = 0;
       await tester.pumpWidget(buildSubject(onNext: () => nextCount++));
 
-      await tester.tap(find.byKey(const Key('notification_step_skip_button')));
-      await tester.pumpAndSettle();
-      expect(nextCount, equals(1));
-
       await tester.tap(find.byKey(const Key('notification_step_next_button')));
       await tester.pumpAndSettle();
-      expect(nextCount, equals(2));
+      expect(nextCount, equals(1));
     });
 
     testWidgets(

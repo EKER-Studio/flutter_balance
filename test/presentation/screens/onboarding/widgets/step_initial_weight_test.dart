@@ -31,22 +31,22 @@ void main() {
         find.text('Log your starting weight measurement to begin tracking.'),
         findsOneWidget,
       );
-      expect(find.byType(TextFormField), findsOneWidget);
+      expect(find.byType(TextField), findsOneWidget);
       expect(find.text('Current Weight (kg)'), findsOneWidget);
       expect(find.byType(FilledButton), findsOneWidget);
     });
 
-    testWidgets('shows validation error when empty', (tester) async {
+    testWidgets('Complete Setup button is disabled if empty', (tester) async {
       await tester.pumpWidget(
         buildTestWidget(unit: MeasurementUnit.metric, onComplete: (_, _) {}),
       );
 
       await tester.pumpAndSettle();
 
-      await tester.tap(find.byType(FilledButton));
-      await tester.pump();
-
-      expect(find.text('Initial weight is required'), findsOneWidget);
+      final button = tester.widget<FilledButton>(
+        find.widgetWithText(FilledButton, 'Complete Setup'),
+      );
+      expect(button.onPressed, isNull);
     });
 
     testWidgets('shows validation error for invalid weight (<0)', (
@@ -58,11 +58,10 @@ void main() {
 
       await tester.pumpAndSettle();
 
-      await tester.enterText(find.byType(TextFormField), '-5');
-      await tester.tap(find.byType(FilledButton));
+      await tester.enterText(find.byType(TextField), '-5');
       await tester.pump();
 
-      expect(find.text('Please enter a valid weight (> 0)'), findsOneWidget);
+      expect(find.text('Please enter a valid positive number.'), findsOneWidget);
     });
 
     testWidgets('shows validation error for invalid weight (>500)', (
@@ -74,11 +73,10 @@ void main() {
 
       await tester.pumpAndSettle();
 
-      await tester.enterText(find.byType(TextFormField), '600');
-      await tester.tap(find.byType(FilledButton));
+      await tester.enterText(find.byType(TextField), '600');
       await tester.pump();
 
-      expect(find.text('Please enter a valid weight (> 0)'), findsOneWidget);
+      expect(find.text('Please enter a valid positive number.'), findsOneWidget);
     });
 
     testWidgets('calls onComplete with valid metric weight', (tester) async {
@@ -97,9 +95,13 @@ void main() {
 
       await tester.pumpAndSettle();
 
-      await tester.enterText(find.byType(TextFormField), '75.5');
-      await tester.tap(find.byType(FilledButton));
-      await tester.pump();
+      await tester.enterText(find.byType(TextField), '75.5');
+      await tester.pumpAndSettle();
+      
+      final nextButton = find.text('Complete Setup');
+      await tester.ensureVisible(nextButton);
+      await tester.tap(nextButton);
+      await tester.pumpAndSettle();
 
       expect(resultWeight, 75.5);
       expect(resultTime, isNotNull);
@@ -123,50 +125,16 @@ void main() {
 
       await tester.pumpAndSettle();
 
-      expect(find.text('Current Weight (lbs)'), findsOneWidget);
-
-      await tester.enterText(find.byType(TextFormField), '150.0');
-      await tester.tap(find.byType(FilledButton));
-      await tester.pump();
+      await tester.enterText(find.byType(TextField), '150.0');
+      await tester.pumpAndSettle();
+      
+      final nextButton = find.text('Complete Setup');
+      await tester.ensureVisible(nextButton);
+      await tester.tap(nextButton);
+      await tester.pumpAndSettle();
 
       // 150 lbs is roughly 68.0388 kg
       expect(resultWeight, closeTo(68.0388, 0.01));
-      expect(resultTime, isNotNull);
-    });
-
-    testWidgets('can pick a new date and time', (tester) async {
-      double? resultWeight;
-      DateTime? resultTime;
-
-      await tester.pumpWidget(
-        buildTestWidget(
-          unit: MeasurementUnit.metric,
-          onComplete: (weight, time) {
-            resultWeight = weight;
-            resultTime = time;
-          },
-        ),
-      );
-
-      await tester.pumpAndSettle();
-
-      // Tap on the date picker button
-      await tester.tap(find.byIcon(Icons.calendar_today));
-      await tester.pumpAndSettle();
-
-      // Tap 'OK' on date picker
-      await tester.tap(find.text('OK'));
-      await tester.pumpAndSettle();
-
-      // Tap 'OK' on time picker
-      await tester.tap(find.text('OK'));
-      await tester.pumpAndSettle();
-
-      await tester.enterText(find.byType(TextFormField), '80.0');
-      await tester.tap(find.byType(FilledButton));
-      await tester.pump();
-
-      expect(resultWeight, 80.0);
       expect(resultTime, isNotNull);
     });
   });

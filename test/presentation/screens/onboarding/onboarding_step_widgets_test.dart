@@ -88,13 +88,12 @@ void main() {
         ),
       );
 
-      expect(find.text('Target Weight'), findsOneWidget);
+      expect(find.text('Target Weight (Optional)'), findsOneWidget);
       expect(find.byKey(const Key('target_weight_input')), findsOneWidget);
-      expect(find.text('Skip'), findsOneWidget);
       expect(find.text('Next'), findsOneWidget);
     });
 
-    testWidgets('calls onNext(null) when Skip pressed', (tester) async {
+    testWidgets('calls onNext(null) when Next pressed with empty input', (tester) async {
       double? result;
       bool called = false;
 
@@ -110,7 +109,7 @@ void main() {
         ),
       );
 
-      await tester.tap(find.text('Skip'));
+      await tester.tap(find.text('Next'));
       await tester.pumpAndSettle();
 
       expect(called, isTrue);
@@ -162,7 +161,7 @@ void main() {
       expect(find.text('Complete Setup'), findsOneWidget);
     });
 
-    testWidgets('shows validation error if initial weight is empty on submit', (
+    testWidgets('Complete Setup button is disabled if initial weight is empty', (
       tester,
     ) async {
       await tester.pumpWidget(
@@ -174,10 +173,10 @@ void main() {
         ),
       );
 
-      await tester.tap(find.text('Complete Setup'));
-      await tester.pumpAndSettle();
-
-      expect(find.text('Initial weight is required'), findsOneWidget);
+      final button = tester.widget<FilledButton>(
+        find.widgetWithText(FilledButton, 'Complete Setup'),
+      );
+      expect(button.onPressed, isNull);
     });
 
     testWidgets('calls onComplete when valid weight is entered', (
@@ -202,7 +201,11 @@ void main() {
         find.byKey(const Key('initial_weight_input')),
         '82.3',
       );
-      await tester.tap(find.text('Complete Setup'));
+      await tester.pumpAndSettle();
+      
+      final nextButton = find.text('Complete Setup');
+      await tester.ensureVisible(nextButton);
+      await tester.tap(nextButton);
       await tester.pumpAndSettle();
 
       expect(weightResult, closeTo(82.3, 0.01));
