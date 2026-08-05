@@ -17,7 +17,9 @@ void main() {
     });
 
     test('returns distinct labels for distinct units', () {
-      final labels = MeasurementUnit.values.map((u) => u.localizedName(l10n)).toSet();
+      final labels = MeasurementUnit.values
+          .map((u) => u.localizedName(l10n))
+          .toSet();
       expect(labels.length, MeasurementUnit.values.length);
     });
   });

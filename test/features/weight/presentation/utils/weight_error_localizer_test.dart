@@ -9,31 +9,52 @@ void main() {
 
   group('WeightErrorTypeX.localizedMessage', () {
     test('maps streamError to the stream error string', () {
-      expect(WeightErrorType.streamError.localizedMessage(l10n), l10n.errorStream);
+      expect(
+        WeightErrorType.streamError.localizedMessage(l10n),
+        l10n.errorStream,
+      );
     });
 
     test('maps heightNotSet to the height not set string', () {
-      expect(WeightErrorType.heightNotSet.localizedMessage(l10n), l10n.errorHeightNotSet);
+      expect(
+        WeightErrorType.heightNotSet.localizedMessage(l10n),
+        l10n.errorHeightNotSet,
+      );
     });
 
     test('maps addEntryFailed to the add entry failed string', () {
-      expect(WeightErrorType.addEntryFailed.localizedMessage(l10n), l10n.errorAddEntryFailed);
+      expect(
+        WeightErrorType.addEntryFailed.localizedMessage(l10n),
+        l10n.errorAddEntryFailed,
+      );
     });
 
     test('maps deleteEntryFailed to the delete entry failed string', () {
-      expect(WeightErrorType.deleteEntryFailed.localizedMessage(l10n), l10n.errorDeleteEntryFailed);
+      expect(
+        WeightErrorType.deleteEntryFailed.localizedMessage(l10n),
+        l10n.errorDeleteEntryFailed,
+      );
     });
 
     test('maps readFailed to the read failed string', () {
-      expect(WeightErrorType.readFailed.localizedMessage(l10n), l10n.errorReadFailed);
+      expect(
+        WeightErrorType.readFailed.localizedMessage(l10n),
+        l10n.errorReadFailed,
+      );
     });
 
     test('maps writeFailed to the write failed string', () {
-      expect(WeightErrorType.writeFailed.localizedMessage(l10n), l10n.errorWriteFailed);
+      expect(
+        WeightErrorType.writeFailed.localizedMessage(l10n),
+        l10n.errorWriteFailed,
+      );
     });
 
     test('maps wipeFailed to the wipe failed string', () {
-      expect(WeightErrorType.wipeFailed.localizedMessage(l10n), l10n.errorWipeFailed);
+      expect(
+        WeightErrorType.wipeFailed.localizedMessage(l10n),
+        l10n.errorWipeFailed,
+      );
     });
 
     test('returns distinct messages for distinct error types', () {
@@ -69,7 +90,10 @@ void main() {
         type: WeightErrorType.addEntryFailed,
         message: 'nope',
       );
-      expect(exception.toString(), 'WeightRepositoryException(WeightErrorType.addEntryFailed): nope');
+      expect(
+        exception.toString(),
+        'WeightRepositoryException(WeightErrorType.addEntryFailed): nope',
+      );
     });
   });
 }

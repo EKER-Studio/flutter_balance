@@ -56,7 +56,10 @@ void main() {
             matching: find.byType(Container),
           ),
         )
-        .where((c) => c.constraints?.maxWidth == 16 && c.constraints?.maxHeight == 16)
+        .where(
+          (c) =>
+              c.constraints?.maxWidth == 16 && c.constraints?.maxHeight == 16,
+        )
         .toList();
     expect(swatches, hasLength(4));
 

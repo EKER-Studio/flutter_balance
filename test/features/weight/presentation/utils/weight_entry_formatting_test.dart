@@ -16,22 +16,37 @@ void main() {
     });
 
     test('rounds metric weight to one decimal place', () {
-      WeightEntry roundedEntry = WeightEntry(weightKg: 70.45, dateTime: DateTime(2026));
+      WeightEntry roundedEntry = WeightEntry(
+        weightKg: 70.45,
+        dateTime: DateTime(2026),
+      );
       expect(roundedEntry.formattedWeight(MeasurementUnit.metric), '70.5 kg');
     });
 
     test('rounds imperial weight to one decimal place', () {
-      WeightEntry roundedEntry = WeightEntry(weightKg: 70.45, dateTime: DateTime(2026));
-      expect(roundedEntry.formattedWeight(MeasurementUnit.imperial), '155.3 lbs');
+      WeightEntry roundedEntry = WeightEntry(
+        weightKg: 70.45,
+        dateTime: DateTime(2026),
+      );
+      expect(
+        roundedEntry.formattedWeight(MeasurementUnit.imperial),
+        '155.3 lbs',
+      );
     });
 
     test('formats minimum valid weight', () {
-      final minEntry = WeightEntry(weightKg: WeightEntry.minWeightKg, dateTime: DateTime(2026));
+      final minEntry = WeightEntry(
+        weightKg: WeightEntry.minWeightKg,
+        dateTime: DateTime(2026),
+      );
       expect(minEntry.formattedWeight(MeasurementUnit.metric), '20.0 kg');
     });
 
     test('formats maximum valid weight in imperial', () {
-      final maxEntry = WeightEntry(weightKg: WeightEntry.maxWeightKg, dateTime: DateTime(2026));
+      final maxEntry = WeightEntry(
+        weightKg: WeightEntry.maxWeightKg,
+        dateTime: DateTime(2026),
+      );
       expect(maxEntry.formattedWeight(MeasurementUnit.imperial), '661.4 lbs');
     });
   });

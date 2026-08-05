@@ -60,7 +60,10 @@ void main() {
     test('configures input decoration with rounded outline borders', () {
       final input = AppTheme.lightTheme.inputDecorationTheme;
       expect(input.filled, isTrue);
-      expect(input.fillColor, AppTheme.lightColorScheme.surfaceContainerHighest);
+      expect(
+        input.fillColor,
+        AppTheme.lightColorScheme.surfaceContainerHighest,
+      );
       final focused = input.focusedBorder! as OutlineInputBorder;
       expect(focused.borderRadius, BorderRadius.circular(8));
       expect(focused.borderSide.color, AppTheme.lightColorScheme.primary);
@@ -68,7 +71,8 @@ void main() {
 
     test('uses rounded dialog and bottom sheet shapes', () {
       expect(
-        (AppTheme.lightTheme.dialogTheme.shape! as RoundedRectangleBorder).borderRadius,
+        (AppTheme.lightTheme.dialogTheme.shape! as RoundedRectangleBorder)
+            .borderRadius,
         BorderRadius.circular(28),
       );
       expect(

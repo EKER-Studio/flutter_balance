@@ -74,7 +74,9 @@ void main() {
     expect(getResult(), 170.0);
   });
 
-  testWidgets('clears the target weight when the field is empty', (tester) async {
+  testWidgets('clears the target weight when the field is empty', (
+    tester,
+  ) async {
     final getResult = await openDialog(tester, currentValue: 75.5);
 
     await tester.enterText(find.byType(TextField), '   ');
@@ -124,7 +126,9 @@ void main() {
     expect(find.text('Weight must be between 20 and 300 kg'), findsOneWidget);
   });
 
-  testWidgets('clears the error once the user starts typing again', (tester) async {
+  testWidgets('clears the error once the user starts typing again', (
+    tester,
+  ) async {
     await openDialog(tester);
 
     await tester.enterText(find.byType(TextField), 'abc');
@@ -137,7 +141,9 @@ void main() {
     expect(find.text('Please enter a valid positive number.'), findsNothing);
   });
 
-  testWidgets('cancel button closes the dialog without a result', (tester) async {
+  testWidgets('cancel button closes the dialog without a result', (
+    tester,
+  ) async {
     final getResult = await openDialog(tester);
 
     await tester.tap(find.text('Cancel'));

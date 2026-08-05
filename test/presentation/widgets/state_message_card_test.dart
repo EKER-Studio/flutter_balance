@@ -26,7 +26,9 @@ void main() {
     );
   }
 
-  testWidgets('renders icon in a circular container with given colors', (tester) async {
+  testWidgets('renders icon in a circular container with given colors', (
+    tester,
+  ) async {
     await pumpCard(tester);
 
     final container = tester.widget<Container>(
@@ -51,7 +53,9 @@ void main() {
     expect(find.text('Please try again.'), findsOneWidget);
   });
 
-  testWidgets('shows button with default add icon and fires callback', (tester) async {
+  testWidgets('shows button with default add icon and fires callback', (
+    tester,
+  ) async {
     var pressed = false;
     await pumpCard(tester, onButtonPressed: () => pressed = true);
 

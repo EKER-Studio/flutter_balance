@@ -9,7 +9,10 @@ void main() {
 
   group('BmiCategoryX.localizedName', () {
     test('maps underweight to the localized string', () {
-      expect(BmiCategory.underweight.localizedName(l10n), l10n.bmiCategoryUnderweight);
+      expect(
+        BmiCategory.underweight.localizedName(l10n),
+        l10n.bmiCategoryUnderweight,
+      );
     });
 
     test('maps normal to the localized string', () {
@@ -17,7 +20,10 @@ void main() {
     });
 
     test('maps overweight to the localized string', () {
-      expect(BmiCategory.overweight.localizedName(l10n), l10n.bmiCategoryOverweight);
+      expect(
+        BmiCategory.overweight.localizedName(l10n),
+        l10n.bmiCategoryOverweight,
+      );
     });
 
     test('maps obese to the localized string', () {
@@ -25,7 +31,9 @@ void main() {
     });
 
     test('returns distinct labels for distinct categories', () {
-      final labels = BmiCategory.values.map((c) => c.localizedName(l10n)).toSet();
+      final labels = BmiCategory.values
+          .map((c) => c.localizedName(l10n))
+          .toSet();
       expect(labels.length, BmiCategory.values.length);
     });
   });

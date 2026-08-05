@@ -21,7 +21,9 @@ void main() {
     });
 
     test('returns distinct labels for distinct modes', () {
-      final labels = AppThemeMode.values.map((m) => m.localizedName(l10n)).toSet();
+      final labels = AppThemeMode.values
+          .map((m) => m.localizedName(l10n))
+          .toSet();
       expect(labels.length, AppThemeMode.values.length);
     });
   });

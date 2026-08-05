@@ -46,7 +46,10 @@ void main() {
 
     testWidgets('opens the legend dialog from the help button', (tester) async {
       await tester.pumpWidget(
-        buildSubject(entries: [entry(weightKg: 70, daysAgo: 1)], heightCm: null),
+        buildSubject(
+          entries: [entry(weightKg: 70, daysAgo: 1)],
+          heightCm: null,
+        ),
       );
 
       await tester.tap(find.byTooltip('BMI Categories'));
