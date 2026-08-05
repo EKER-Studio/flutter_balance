@@ -10,6 +10,7 @@ import 'package:pure_weight/presentation/bloc/settings/app_settings_state.dart';
 import 'package:pure_weight/presentation/bloc/settings/bmi_category.dart';
 import 'package:pure_weight/features/weight/presentation/utils/bmi_category_localizer.dart';
 import 'package:pure_weight/presentation/widgets/target_weight_dialog.dart';
+import 'package:pure_weight/features/weight/presentation/widgets/bmi_legend_dialog.dart';
 
 /// An integrated summary card displaying latest weight, BMI, and goal progress.
 class HealthSummaryCard extends StatelessWidget {
@@ -223,47 +224,58 @@ class HealthSummaryCard extends StatelessWidget {
         ? (isDark ? baseColor.shade300 : baseColor.shade800)
         : colorScheme.primary;
 
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+    return Ink(
       decoration: BoxDecoration(
         color: bgColor,
         borderRadius: BorderRadius.circular(20),
         border: Border.all(color: borderColor),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.end,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          if (category != null)
-            Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(
-                  category == BmiCategory.normal
-                      ? Icons.check_circle
-                      : Icons.info,
-                  size: 14,
+      child: InkWell(
+        onTap: () {
+          showDialog(
+            context: context,
+            builder: (context) => const BmiLegendDialog(),
+          );
+        },
+        borderRadius: BorderRadius.circular(20),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (category != null)
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      category == BmiCategory.normal
+                          ? Icons.check_circle
+                          : Icons.info,
+                      size: 14,
+                      color: contentColor,
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      category.localizedName(l10n),
+                      style: textTheme.labelMedium?.copyWith(
+                        color: contentColor,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
+                ),
+              const SizedBox(height: 4),
+              Text(
+                l10n.bmiValueShortLabel(bmi.toStringAsFixed(1)),
+                style: textTheme.titleMedium?.copyWith(
                   color: contentColor,
+                  fontWeight: FontWeight.w700,
                 ),
-                const SizedBox(width: 4),
-                Text(
-                  category.localizedName(l10n),
-                  style: textTheme.labelMedium?.copyWith(
-                    color: contentColor,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ],
-            ),
-          const SizedBox(height: 4),
-          Text(
-            l10n.bmiValueShortLabel(bmi.toStringAsFixed(1)),
-            style: textTheme.titleMedium?.copyWith(
-              color: contentColor,
-              fontWeight: FontWeight.w700,
-            ),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
