@@ -263,11 +263,10 @@ void main() {
     await tester.pumpWidget(createTestWidget(const TodayScreen()));
     await tester.pumpAndSettle();
 
-    expect(find.text('25.1', skipOffstage: false), findsOneWidget);
-    expect(find.text('Current BMI', skipOffstage: false), findsOneWidget);
+    expect(find.text('25.1 BMI', skipOffstage: false), findsOneWidget);
     expect(find.text('Weight trend', skipOffstage: false), findsOneWidget);
     expect(
-      find.text('Latest measurement', skipOffstage: false),
+      find.text('Last measurement', skipOffstage: false),
       findsOneWidget,
     );
     expect(

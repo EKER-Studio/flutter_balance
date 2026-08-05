@@ -11,7 +11,7 @@ import 'package:pure_weight/presentation/bloc/settings/bmi_category.dart';
 import 'package:pure_weight/features/weight/presentation/utils/bmi_category_localizer.dart';
 import 'package:pure_weight/presentation/widgets/target_weight_dialog.dart';
 
-/// A health summary card displaying current BMI, last updated status, category badge, and weight goal actions.
+/// An integrated summary card displaying latest weight, BMI, and goal progress.
 class HealthSummaryCard extends StatelessWidget {
   /// The latest recorded weight in kilograms.
   final double latestWeightKg;
@@ -34,212 +34,277 @@ class HealthSummaryCard extends StatelessWidget {
         final targetWeight = state.targetWeight;
         final weightUnit = state.measurementUnit;
         final l10n = AppLocalizations.of(context);
+        
         final bmi = (heightCm != null && heightCm > 0)
             ? state.calculateBmi(latestWeightKg)
             : double.nan;
         final category = bmi.isFinite ? BmiCategory.fromBmi(bmi) : null;
-        final badgeColor = category != null
-            ? _badgeColorForCategory(context, category)
-            : Theme.of(context).colorScheme.primary;
+        
+        final displayWeight = weightUnit == MeasurementUnit.imperial
+            ? kgToLbs(latestWeightKg)
+            : latestWeightKg;
+        final unitLabel = unitLabelFor(weightUnit);
 
-        final lastUpdateText = _formatLastUpdated(context, lastUpdated, l10n);
+        final colorScheme = Theme.of(context).colorScheme;
+        final textTheme = Theme.of(context).textTheme;
 
         return Card(
           elevation: 0,
-          color: Theme.of(context).colorScheme.surfaceContainerLow,
+          clipBehavior: Clip.antiAlias,
+          color: colorScheme.surfaceContainerLow,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(28),
+            side: BorderSide(
+              color: colorScheme.outlineVariant.withValues(alpha: 0.3),
+            ),
           ),
-          child: Padding(
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.start,
+          child: Stack(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(24),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            l10n.currentBmiTitle,
-                            style: Theme.of(context).textTheme.titleMedium
-                                ?.copyWith(fontWeight: FontWeight.bold),
-                          ),
-                          const SizedBox(height: 2),
-                          Text(
-                            lastUpdateText,
-                            style: Theme.of(context).textTheme.bodySmall
-                                ?.copyWith(
-                                  color: Theme.of(
-                                    context,
-                                  ).colorScheme.onSurfaceVariant,
-                                ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    if (category != null)
-                      Semantics(
-                        label: l10n.bmiCategoryLabel(
-                          category.localizedName(l10n),
-                        ),
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 6,
-                          ),
-                          decoration: BoxDecoration(
-                            color: badgeColor.withValues(alpha: 0.15),
-                            borderRadius: BorderRadius.circular(999),
-                          ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Icon(
-                                Icons.check_circle_outline,
-                                size: 16,
-                                color: badgeColor,
-                              ),
-                              const SizedBox(width: 4),
-                              Text(
-                                category.localizedName(l10n),
-                                style: Theme.of(context).textTheme.labelMedium
-                                    ?.copyWith(
-                                      color: badgeColor,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                  ],
-                ),
-                const SizedBox(height: 16),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    Semantics(
-                      label: l10n.bmiValueLabel(
-                        bmi.isFinite
-                            ? bmi.toStringAsFixed(1)
-                            : l10n.heightNotSetLabel,
-                      ),
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.baseline,
-                        textBaseline: TextBaseline.alphabetic,
-                        children: [
-                          Text(
-                            bmi.isFinite ? bmi.toStringAsFixed(1) : '—',
-                            style: Theme.of(context).textTheme.headlineMedium
-                                ?.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                  color: Theme.of(context).colorScheme.primary,
-                                ),
-                          ),
-                          const SizedBox(width: 6),
-                          Text(
-                            bmiUnitLabel,
-                            style: Theme.of(context).textTheme.titleSmall
-                                ?.copyWith(
-                                  color: Theme.of(
-                                    context,
-                                  ).colorScheme.onSurfaceVariant,
-                                ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    _buildGoalButton(context, targetWeight, weightUnit, l10n),
-                  ],
-                ),
-                if (targetWeight != null) ...[
-                  const SizedBox(height: 12),
-                  Divider(
-                    height: 1,
-                    color: Theme.of(
-                      context,
-                    ).colorScheme.outlineVariant.withValues(alpha: 0.5),
-                  ),
-                  const SizedBox(height: 8),
-                  Semantics(
-                    label:
-                        '${l10n.weightGoal}: ${_goalText(targetWeight, latestWeightKg, weightUnit, l10n)}',
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          l10n.weightGoal,
-                          style: Theme.of(context).textTheme.bodySmall
-                              ?.copyWith(
-                                color: Theme.of(
-                                  context,
-                                ).colorScheme.onSurfaceVariant,
-                              ),
-                        ),
-                        Text(
-                          _goalText(
-                            targetWeight,
-                            latestWeightKg,
-                            weightUnit,
+                        Expanded(
+                          child: _buildLatestMeasurementInfo(
+                            context,
+                            displayWeight,
+                            unitLabel,
                             l10n,
+                            colorScheme,
+                            textTheme,
                           ),
-                          style: Theme.of(context).textTheme.labelMedium
-                              ?.copyWith(
-                                fontWeight: FontWeight.bold,
-                                color: Theme.of(context).colorScheme.onSurface,
-                              ),
                         ),
+                        if (bmi.isFinite)
+                          _buildBmiBadge(
+                            context,
+                            bmi,
+                            category,
+                            l10n,
+                            colorScheme,
+                            textTheme,
+                          ),
                       ],
                     ),
-                  ),
-                ],
-              ],
-            ),
+                    if (targetWeight != null) ...[
+                      const SizedBox(height: 16),
+                      _buildGoalProgress(
+                        context,
+                        targetWeight,
+                        latestWeightKg,
+                        weightUnit,
+                        unitLabel,
+                        l10n,
+                        colorScheme,
+                        textTheme,
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+            ],
           ),
         );
       },
     );
   }
 
-  /// Builds the weight goal button that opens [TargetWeightDialog].
-  Widget _buildGoalButton(
+  Widget _buildLatestMeasurementInfo(
     BuildContext context,
-    double? targetWeightKg,
-    MeasurementUnit unit,
+    double displayWeight,
+    String unitLabel,
     AppLocalizations l10n,
+    ColorScheme colorScheme,
+    TextTheme textTheme,
   ) {
-    final buttonLabel = targetWeightKg == null
-        ? l10n.setWeightGoal
-        : l10n.weightGoal;
-
-    return Semantics(
-      button: true,
-      label: buttonLabel,
-      child: TextButton.icon(
-        onPressed: () => _openTargetWeightDialog(context, targetWeightKg, unit),
-        icon: const Icon(Icons.edit_outlined, size: 18),
-        label: Text(
-          buttonLabel,
-          style: const TextStyle(fontWeight: FontWeight.w600),
-        ),
-        style: TextButton.styleFrom(
-          foregroundColor: Theme.of(context).colorScheme.primary,
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-          minimumSize: const Size(48, 48),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          l10n.lastMeasurementLabel,
+          style: textTheme.labelMedium?.copyWith(
+            color: colorScheme.onSurfaceVariant,
+            fontWeight: FontWeight.w500,
           ),
+        ),
+        const SizedBox(height: 4),
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.baseline,
+          textBaseline: TextBaseline.alphabetic,
+          children: [
+            Text(
+              displayWeight.toStringAsFixed(1),
+              style: textTheme.displayLarge?.copyWith(
+                fontWeight: FontWeight.w700,
+                color: colorScheme.primary,
+                letterSpacing: -1,
+                height: 1.1,
+              ),
+            ),
+            const SizedBox(width: 4),
+            Text(
+              unitLabel,
+              style: textTheme.titleLarge?.copyWith(
+                color: colorScheme.onSurfaceVariant,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 4),
+        Text(
+          _formatTimestamp(context, lastUpdated, l10n),
+          style: textTheme.bodyMedium?.copyWith(
+            color: colorScheme.onSurfaceVariant,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildBmiBadge(
+    BuildContext context,
+    double bmi,
+    BmiCategory? category,
+    AppLocalizations l10n,
+    ColorScheme colorScheme,
+    TextTheme textTheme,
+  ) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      decoration: BoxDecoration(
+        color: colorScheme.primary.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: colorScheme.primary.withValues(alpha: 0.2),
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.end,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (category != null)
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  Icons.check_circle,
+                  size: 14,
+                  color: colorScheme.primary,
+                ),
+                const SizedBox(width: 4),
+                Text(
+                  category.localizedName(l10n),
+                  style: textTheme.labelMedium?.copyWith(
+                    color: colorScheme.primary,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
+            ),
+          const SizedBox(height: 4),
+          Text(
+            l10n.bmiValueShortLabel(bmi.toStringAsFixed(1)),
+            style: textTheme.titleMedium?.copyWith(
+              color: colorScheme.primary,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildGoalProgress(
+    BuildContext context,
+    double targetWeightKg,
+    double currentWeightKg,
+    MeasurementUnit unit,
+    String unitLabel,
+    AppLocalizations l10n,
+    ColorScheme colorScheme,
+    TextTheme textTheme,
+  ) {
+    final displayTarget = unit == MeasurementUnit.imperial
+        ? kgToLbs(targetWeightKg)
+        : targetWeightKg;
+        
+    final differenceKg = currentWeightKg - targetWeightKg;
+    final isAchieved = differenceKg <= 0;
+    
+    final displayDifference = unit == MeasurementUnit.imperial
+        ? kgToLbs(differenceKg.abs())
+        : differenceKg.abs();
+        
+    // Calculate progress percentage based on some arbitrary reasonable range, 
+    // or just 100% if achieved. For a simple visual, let's assume a 10kg/20lbs range 
+    // from target is 0%, target is 100%. 
+    // Or just a fixed 75% for now if not achieved, since we don't store initial weight easily here.
+    // A better approach is to use a fixed max difference to calculate progress.
+    final maxDifference = unit == MeasurementUnit.imperial ? 40.0 : 20.0; 
+    double progress = 1.0;
+    if (!isAchieved) {
+      progress = 1.0 - (displayDifference / maxDifference).clamp(0.0, 1.0);
+    }
+    // Clamp to minimum 5% to always show a bit of the bar
+    progress = progress.clamp(0.05, 1.0);
+
+    return InkWell(
+      onTap: () => _openTargetWeightDialog(context, targetWeightKg, unit),
+      borderRadius: BorderRadius.circular(12),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 4),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  l10n.goalWeightLabel('${displayTarget.toStringAsFixed(1)} $unitLabel'),
+                  style: textTheme.labelMedium?.copyWith(
+                    color: colorScheme.onSurfaceVariant,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                Text(
+                  isAchieved 
+                      ? l10n.goalAchieved 
+                      : l10n.remainingWeightLabel('${displayDifference.toStringAsFixed(1)} $unitLabel'),
+                  style: textTheme.labelMedium?.copyWith(
+                    color: colorScheme.onSurfaceVariant,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Container(
+              height: 8,
+              decoration: BoxDecoration(
+                color: colorScheme.surfaceContainerHighest,
+                borderRadius: BorderRadius.circular(4),
+              ),
+              child: FractionallySizedBox(
+                alignment: Alignment.centerLeft,
+                widthFactor: progress,
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: colorScheme.primary,
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );
   }
 
-  /// Opens the [TargetWeightDialog] and persists the chosen target weight.
   Future<void> _openTargetWeightDialog(
     BuildContext context,
     double? targetWeightKg,
@@ -265,53 +330,27 @@ class HealthSummaryCard extends StatelessWidget {
     }
   }
 
-  /// Formats the last updated timestamp as "today" or a localized date.
-  String _formatLastUpdated(
+  String _formatTimestamp(
     BuildContext context,
     DateTime? date,
     AppLocalizations l10n,
   ) {
     if (date == null) {
-      return l10n.bmiSubtitle;
+      return '';
     }
     final now = DateTime.now();
     final isToday =
         date.year == now.year && date.month == now.month && date.day == now.day;
-    if (isToday) {
-      return l10n.lastUpdatedToday;
-    }
-    final formattedDate = DateFormat.yMMMd(
+    final timeStr = DateFormat.jm(
       Localizations.localeOf(context).toString(),
     ).format(date);
-    return l10n.lastUpdatedDate(formattedDate);
-  }
-
-  /// Maps [category] to the color scheme color used for the badge.
-  Color _badgeColorForCategory(BuildContext context, BmiCategory category) {
-    final cs = Theme.of(context).colorScheme;
-    return switch (category) {
-      BmiCategory.underweight => cs.primary,
-      BmiCategory.normal => cs.tertiary,
-      BmiCategory.overweight => cs.secondary,
-      BmiCategory.obese => cs.error,
-    };
-  }
-
-  /// Builds the goal status text: achieved, or the remaining amount to target.
-  String _goalText(
-    double targetWeight,
-    double currentWeightKg,
-    MeasurementUnit unit,
-    AppLocalizations l10n,
-  ) {
-    if (currentWeightKg <= targetWeight) {
-      return l10n.goalAchieved;
+    
+    if (isToday) {
+      return l10n.todayAtTime(timeStr);
     }
-    final difference = currentWeightKg - targetWeight;
-    final displayed = unit == MeasurementUnit.imperial
-        ? kgToLbs(difference)
-        : difference;
-    final unitLabel = unitLabelFor(unit);
-    return '${displayed.toStringAsFixed(1)} $unitLabel ${l10n.toTarget}';
+    final dateStr = DateFormat.MMMd(
+      Localizations.localeOf(context).toString(),
+    ).format(date);
+    return '$dateStr, $timeStr';
   }
 }

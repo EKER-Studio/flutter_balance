@@ -13,7 +13,6 @@ import 'package:pure_weight/features/weight/presentation/bloc/weight_state.dart'
 import 'package:pure_weight/features/weight/presentation/utils/weight_error_localizer.dart';
 import 'package:pure_weight/features/weight/presentation/widgets/add_weight_sheet.dart';
 import 'package:pure_weight/features/weight/presentation/widgets/health_summary_card.dart';
-import 'package:pure_weight/features/weight/presentation/widgets/latest_measurement_card.dart';
 import 'package:pure_weight/features/weight/presentation/widgets/today_shimmer_skeleton.dart';
 import 'package:pure_weight/l10n/app_localizations.dart';
 import 'package:pure_weight/presentation/bloc/settings/app_settings_bloc.dart';
@@ -127,20 +126,9 @@ class TodayScreen extends StatelessWidget {
                     _InlineErrorBanner(errorType: state.errorType),
                     const SizedBox(height: 16),
                   ],
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Expanded(
-                        child: HealthSummaryCard(
-                          latestWeightKg: latestEntry.weightKg,
-                          lastUpdated: latestEntry.dateTime,
-                        ),
-                      ),
-                      const SizedBox(width: 16),
-                      Expanded(
-                        child: LatestMeasurementCard(latestEntry: latestEntry),
-                      ),
-                    ],
+                  HealthSummaryCard(
+                    latestWeightKg: latestEntry.weightKg,
+                    lastUpdated: latestEntry.dateTime,
                   ),
                   const SizedBox(height: 16),
                   _WeightTrendChartCard(
@@ -177,8 +165,6 @@ class TodayScreen extends StatelessWidget {
                       context.read<WeightBloc>().add(ChangeChartFilter(period));
                     },
                   ),
-                  const SizedBox(height: 16),
-                  LatestMeasurementCard(latestEntry: latestEntry),
                   const SizedBox(height: 16),
                   const _DailyTipCard(),
                   const SizedBox(height: 80),
