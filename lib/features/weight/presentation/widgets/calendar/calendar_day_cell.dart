@@ -42,12 +42,20 @@ class CalendarDayCell extends StatelessWidget {
     required this.onTap,
   });
 
+  static String? _cachedLocale;
+  static DateFormat? _cachedFormatter;
+
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
     final l10n = AppLocalizations.of(context);
     final locale = Localizations.localeOf(context).toString();
-    final dateLabel = DateFormat.yMMMMd(locale).format(date);
+    
+    if (_cachedLocale != locale || _cachedFormatter == null) {
+      _cachedLocale = locale;
+      _cachedFormatter = DateFormat.yMMMMd(locale);
+    }
+    final dateLabel = _cachedFormatter!.format(date);
 
     final hasEntries = entries.isNotEmpty;
     final entriesCountLabel = !hasEntries
