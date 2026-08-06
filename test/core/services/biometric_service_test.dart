@@ -18,6 +18,9 @@ class FakeLocalAuthPlatform extends LocalAuthPlatform {
   final List<BiometricType> enrolledBiometrics;
   final Future<bool> Function()? authenticateHandler;
 
+  /// The [AuthenticationOptions] passed to the last [authenticate] call.
+  AuthenticationOptions? lastAuthOptions;
+
   @override
   Future<bool> deviceSupportsBiometrics() async => supportsBiometrics;
 
@@ -34,6 +37,7 @@ class FakeLocalAuthPlatform extends LocalAuthPlatform {
     required Iterable<AuthMessages> authMessages,
     AuthenticationOptions options = const AuthenticationOptions(),
   }) async {
+    lastAuthOptions = options;
     final handler = authenticateHandler;
     return handler != null ? await handler() : true;
   }
@@ -87,6 +91,43 @@ void main() {
     });
   });
 
+  group('BiometricService.canAuthenticate', () {
+    test(
+      'returns true when device supports biometrics or device credentials',
+      () async {
+        expect(await BiometricService.instance.canAuthenticate(), isTrue);
+      },
+    );
+
+    test('returns true for a PIN-only device without biometrics', () async {
+      platform = FakeLocalAuthPlatform(
+        supportsBiometrics: false,
+        deviceSupported: true,
+        enrolledBiometrics: const [],
+      );
+      LocalAuthPlatform.instance = platform;
+
+      expect(await BiometricService.instance.canAuthenticate(), isTrue);
+    });
+
+    test('returns false when no credentials can be presented', () async {
+      platform = FakeLocalAuthPlatform(
+        supportsBiometrics: false,
+        deviceSupported: false,
+        enrolledBiometrics: const [],
+      );
+      LocalAuthPlatform.instance = platform;
+
+      expect(await BiometricService.instance.canAuthenticate(), isFalse);
+    });
+
+    test('returns false when the platform check throws', () async {
+      LocalAuthPlatform.instance = _ThrowingAvailabilityPlatform();
+
+      expect(await BiometricService.instance.canAuthenticate(), isFalse);
+    });
+  });
+
   group('BiometricService.authenticate', () {
     test('returns success and broadcasts the authentication signal', () async {
       final signals = <void>[];
@@ -105,6 +146,41 @@ void main() {
       await subscription.cancel();
     });
 
+    test(
+      'passes biometricOnly false with sticky auth and error dialogs enabled',
+      () async {
+        await BiometricService.instance.authenticate(
+          localizedReason: 'Unlock to view your weight data',
+        );
+
+        final options = platform.lastAuthOptions;
+        expect(options, isNotNull);
+        expect(options!.biometricOnly, isFalse);
+        expect(options.stickyAuth, isTrue);
+        expect(options.useErrorDialogs, isTrue);
+      },
+    );
+
+    test(
+      'succeeds with device credential fallback on a PIN-only device',
+      () async {
+        platform = FakeLocalAuthPlatform(
+          supportsBiometrics: false,
+          deviceSupported: true,
+          enrolledBiometrics: const [],
+          authenticateHandler: () async => true,
+        );
+        LocalAuthPlatform.instance = platform;
+
+        final result = await BiometricService.instance.authenticate(
+          localizedReason: 'Unlock to view your weight data',
+        );
+
+        expect(result, BiometricAuthResult.success);
+        expect(platform.lastAuthOptions!.biometricOnly, isFalse);
+      },
+    );
+
     test('returns canceled when the OS prompt rejects the attempt', () async {
       platform = FakeLocalAuthPlatform(authenticateHandler: () async => false);
       LocalAuthPlatform.instance = platform;
@@ -116,8 +192,12 @@ void main() {
       expect(result, BiometricAuthResult.canceled);
     });
 
-    test('returns notAvailable when the device is not supported', () async {
-      platform = FakeLocalAuthPlatform(deviceSupported: false);
+    test('returns notAvailable when the device has no credentials', () async {
+      platform = FakeLocalAuthPlatform(
+        supportsBiometrics: false,
+        deviceSupported: false,
+        enrolledBiometrics: const [],
+      );
       LocalAuthPlatform.instance = platform;
 
       final result = await BiometricService.instance.authenticate(
@@ -256,6 +336,20 @@ void main() {
         expect(
           await authenticateWith('NotAvailable'),
           BiometricAuthResult.notAvailable,
+        );
+      });
+
+      test('NotAuthenticated to canceled', () async {
+        expect(
+          await authenticateWith('NotAuthenticated'),
+          BiometricAuthResult.canceled,
+        );
+      });
+
+      test('UserCanceled to canceled', () async {
+        expect(
+          await authenticateWith('UserCanceled'),
+          BiometricAuthResult.canceled,
         );
       });
 

@@ -35,11 +35,12 @@ enum BiometricAuthResult {
   error,
 }
 
-/// Singleton service for checking biometric hardware availability and authenticating
-/// the user via Face ID, Touch ID, or fingerprint.
+/// Singleton service for checking device credential availability and
+/// authenticating the user via Face ID, Touch ID, fingerprint, or the OS
+/// lock screen (PIN/pattern/password) as fallback.
 ///
 /// ```dart
-/// final available = await BiometricService.instance.isAvailable();
+/// final available = await BiometricService.instance.canAuthenticate();
 /// if (available) {
 ///   final result = await BiometricService.instance.authenticate(
 ///     localizedReason: 'Unlock to view your weight data',
@@ -138,6 +139,31 @@ class BiometricService {
     }
   }
 
+  /// Checks whether the device can present any OS credential prompt.
+  ///
+  /// Returns a [Future] resolving to `true` if the device supports biometric
+  /// checks OR can fail over to the OS lock screen credentials (PIN, pattern,
+  /// or password), so devices with only a system PIN configured can still use
+  /// the app lock. Catches platform exceptions safely and logs errors.
+  Future<bool> canAuthenticate() async {
+    try {
+      final deviceSupported = await _authentication.isDeviceSupported();
+      if (kDebugMode) {
+        debugPrint('[BiometricService] isDeviceSupported: $deviceSupported');
+      }
+      final canCheck = await _authentication.canCheckBiometrics;
+      if (kDebugMode) {
+        debugPrint('[BiometricService] canCheckBiometrics: $canCheck');
+      }
+      return deviceSupported || canCheck;
+    } catch (e, stack) {
+      if (kDebugMode) {
+        debugPrint('[BiometricService] canAuthenticate error: $e\n$stack');
+      }
+      return false;
+    }
+  }
+
   Future<BiometricAuthResult>? _activeAuthFuture;
   DateTime? _lastAuthCompletionTime;
 
@@ -152,7 +178,8 @@ class BiometricService {
       DateTime.now().difference(_lastAuthCompletionTime!) <
           const Duration(seconds: 1);
 
-  /// Prompts the user for biometric authentication.
+  /// Prompts the user for device credential authentication: biometrics with
+  /// automatic fallback to the OS PIN/pattern/password prompt.
   ///
   /// Takes a mandatory [localizedReason] string explaining the authentication request.
   /// Optional [authMessages] can be provided to customize dialog strings per locale.
@@ -187,32 +214,34 @@ class BiometricService {
 
   /// Runs the platform authentication flow and maps every outcome (including
   /// platform exceptions) to a [BiometricAuthResult].
+  ///
+  /// Authentication is not restricted to biometrics: with `biometricOnly:
+  /// false`, the OS falls back to the system PIN/pattern/password prompt when
+  /// biometrics are unavailable, disabled, or fail.
   Future<BiometricAuthResult> _performAuthentication({
     required String localizedReason,
     Iterable<AuthMessages>? authMessages,
   }) async {
     try {
-      final supported = await isSupported();
+      final canAuth = await canAuthenticate();
       if (kDebugMode) {
         debugPrint(
-          '[BiometricService] authenticate -> isSupported: $supported',
+          '[BiometricService] authenticate -> canAuthenticate: $canAuth',
         );
       }
-      if (!supported) return BiometricAuthResult.notAvailable;
+      if (!canAuth) return BiometricAuthResult.notAvailable;
 
-      final available = await isAvailable();
-      if (kDebugMode) {
-        debugPrint(
-          '[BiometricService] authenticate -> isAvailable: $available',
-        );
-      }
-      if (!available) return BiometricAuthResult.notAvailable;
-
-      final ok = await _authentication.authenticate(
+      final ok = await LocalAuthPlatform.instance.authenticate(
         localizedReason: localizedReason,
         authMessages: authMessages ?? const <AuthMessages>[],
-        biometricOnly: false,
-        persistAcrossBackgrounding: true,
+        // Constructed explicitly because the `LocalAuthentication` wrapper of
+        // local_auth 3.x hardcodes `useErrorDialogs: false` and derives
+        // `stickyAuth` from `persistAcrossBackgrounding`, exposing neither.
+        options: const AuthenticationOptions(
+          biometricOnly: false,
+          stickyAuth: true,
+          useErrorDialogs: true,
+        ),
       );
       if (kDebugMode) {
         debugPrint('[BiometricService] authenticate result: $ok');
@@ -267,6 +296,12 @@ class BiometricService {
         'NotEnrolled' => BiometricAuthResult.notEnrolled,
         'PasscodeNotSet' => BiometricAuthResult.passcodeNotSet,
         'NotAvailable' => BiometricAuthResult.notAvailable,
+        'NotAuthenticated' ||
+        'UserCanceled' ||
+        'SystemCanceled' ||
+        'AuthenticationCanceled' ||
+        'user_canceled' ||
+        'canceled' => BiometricAuthResult.canceled,
         'auth_in_progress' => BiometricAuthResult.error,
         _ => BiometricAuthResult.error,
       };
