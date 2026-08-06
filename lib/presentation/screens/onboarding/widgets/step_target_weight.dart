@@ -85,7 +85,10 @@ class _StepTargetWeightState extends State<StepTargetWeight> {
     final parsed = double.tryParse(trimmed);
     if (parsed == null || parsed <= 0 || parsed > 500) {
       if (_errorText == null) {
-        setState(() => _errorText = 'Please enter a valid weight (> 0)');
+        setState(
+          () =>
+              _errorText = AppLocalizations.of(context).invalidPositiveNumber,
+        );
       }
     } else {
       if (_errorText != null) {
