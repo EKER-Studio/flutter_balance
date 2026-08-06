@@ -60,7 +60,7 @@ class _StepTargetWeightState extends State<StepTargetWeight> {
   /// Parses the target weight input into kilograms, or `null` when empty or
   /// invalid.
   double? _parseTargetWeightKg() {
-    final text = _weightController.text.trim();
+    final text = _weightController.text.trim().replaceAll(',', '.');
     if (text.isEmpty) return null;
 
     final parsed = double.tryParse(text);
@@ -74,7 +74,7 @@ class _StepTargetWeightState extends State<StepTargetWeight> {
 
   /// Validates [value] on every keystroke and updates the inline error text.
   void _validate(String value) {
-    final trimmed = value.trim();
+    final trimmed = value.trim().replaceAll(',', '.');
     if (trimmed.isEmpty) {
       if (_errorText != null) {
         setState(() => _errorText = null);

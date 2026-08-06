@@ -69,7 +69,7 @@ class _StepInitialWeightState extends State<StepInitialWeight> {
 
   /// Parses the weight input into kilograms, or `null` when invalid.
   double? _parseWeightKg() {
-    final text = _weightController.text.trim();
+    final text = _weightController.text.trim().replaceAll(',', '.');
     if (text.isEmpty) return null;
 
     final parsed = double.tryParse(text);
@@ -84,7 +84,7 @@ class _StepInitialWeightState extends State<StepInitialWeight> {
   /// Validates [value] on every keystroke and updates the inline error text.
   void _validate(String value) {
     setState(() {
-      final trimmed = value.trim();
+      final trimmed = value.trim().replaceAll(',', '.');
       if (trimmed.isEmpty) {
         _errorText = AppLocalizations.of(context).initialWeightRequiredError;
         return;

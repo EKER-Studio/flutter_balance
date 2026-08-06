@@ -72,7 +72,9 @@ class _StepUnitsHeightState extends State<StepUnitsHeight> {
   /// Converts the active unit inputs into centimeters, or `null` when invalid.
   double? _calculateHeightCm() {
     if (_selectedUnit == MeasurementUnit.metric) {
-      final cm = double.tryParse(_cmController.text.trim());
+      final cm = double.tryParse(
+        _cmController.text.trim().replaceAll(',', '.'),
+      );
       if (cm != null &&
           cm >= AppSettingsState.minHeightCm &&
           cm <= AppSettingsState.maxHeightCm) {
@@ -80,8 +82,12 @@ class _StepUnitsHeightState extends State<StepUnitsHeight> {
       }
       return null;
     } else {
-      final feet = double.tryParse(_feetController.text.trim());
-      final inches = double.tryParse(_inchesController.text.trim());
+      final feet = double.tryParse(
+        _feetController.text.trim().replaceAll(',', '.'),
+      );
+      final inches = double.tryParse(
+        _inchesController.text.trim().replaceAll(',', '.'),
+      );
       if (feet != null &&
           inches != null &&
           feet >= 1 &&

@@ -78,6 +78,33 @@ void main() {
       expect(selectedUnit, MeasurementUnit.metric);
       expect(selectedHeight, 180.0);
     });
+
+    testWidgets('invokes onNext with comma-separated metric height', (
+      tester,
+    ) async {
+      double? selectedHeight;
+
+      await tester.pumpWidget(
+        buildApp(
+          StepUnitsHeight(
+            initialUnit: MeasurementUnit.metric,
+            initialHeightCm: 180.0,
+            onNext: (unit, height) {
+              selectedHeight = height;
+            },
+          ),
+        ),
+      );
+
+      await tester.enterText(
+        find.byKey(const Key('height_cm_input')),
+        '175,5',
+      );
+      await tester.tap(find.text('Next'));
+      await tester.pumpAndSettle();
+
+      expect(selectedHeight, closeTo(175.5, 0.01));
+    });
   });
 
   group('StepTargetWeight Widget Tests', () {
@@ -137,6 +164,32 @@ void main() {
       await tester.enterText(
         find.byKey(const Key('target_weight_input')),
         '75.5',
+      );
+      await tester.tap(find.text('Next'));
+      await tester.pumpAndSettle();
+
+      expect(result, closeTo(75.5, 0.01));
+    });
+
+    testWidgets('calls onNext with comma-separated target weight', (
+      tester,
+    ) async {
+      double? result;
+
+      await tester.pumpWidget(
+        buildApp(
+          StepTargetWeight(
+            unit: MeasurementUnit.metric,
+            onNext: (val) {
+              result = val;
+            },
+          ),
+        ),
+      );
+
+      await tester.enterText(
+        find.byKey(const Key('target_weight_input')),
+        '75,5',
       );
       await tester.tap(find.text('Next'));
       await tester.pumpAndSettle();

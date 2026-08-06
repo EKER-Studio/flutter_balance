@@ -143,5 +143,33 @@ void main() {
       expect(resultWeight, closeTo(68.0388, 0.01));
       expect(resultTime, isNotNull);
     });
+
+    testWidgets('calls onComplete with comma-separated weight', (tester) async {
+      double? resultWeight;
+      DateTime? resultTime;
+
+      await tester.pumpWidget(
+        buildTestWidget(
+          unit: MeasurementUnit.metric,
+          onComplete: (weight, time) {
+            resultWeight = weight;
+            resultTime = time;
+          },
+        ),
+      );
+
+      await tester.pumpAndSettle();
+
+      await tester.enterText(find.byType(TextField), '75,5');
+      await tester.pumpAndSettle();
+
+      final nextButton = find.text('Complete Setup');
+      await tester.ensureVisible(nextButton);
+      await tester.tap(nextButton);
+      await tester.pumpAndSettle();
+
+      expect(resultWeight, closeTo(75.5, 0.01));
+      expect(resultTime, isNotNull);
+    });
   });
 }
