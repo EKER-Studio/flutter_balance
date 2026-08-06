@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -283,4 +284,40 @@ void main() {
     expect(find.text('SECURITY'), findsOneWidget);
     expect(find.text('DATA'), findsOneWidget);
   });
+
+  testWidgets(
+    'shows app version as subtitle and links title and subtitle in semantics',
+    (tester) async {
+      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+          .setMockMethodCallHandler(
+            const MethodChannel('dev.fluttercommunity.plus/package_info'),
+            (call) async => {
+              'appName': 'PureWeight',
+              'packageName': 'com.example.pure_weight',
+              'version': '1.0.0',
+              'buildNumber': '1',
+            },
+          );
+
+      final semanticsHandle = tester.ensureSemantics();
+
+      await tester.pumpWidget(createTestWidget());
+      await tester.pumpAndSettle();
+
+      final tileFinder = find.ancestor(
+        of: find.text('App version'),
+        matching: find.byType(ListTile),
+      );
+      final tile = tester.widget<ListTile>(tileFinder);
+      expect(tile.subtitle, isNotNull);
+      expect(tile.trailing, isNull);
+
+      expect(
+        find.bySemanticsLabel(RegExp(r'HELP, App version, 1\.0\.0')),
+        findsOneWidget,
+      );
+
+      semanticsHandle.dispose();
+    },
+  );
 }

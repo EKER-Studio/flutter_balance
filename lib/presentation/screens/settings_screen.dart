@@ -432,9 +432,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                               _showWipeConfirmation(context),
                                         ),
                                         const SizedBox(height: 16),
-                                        _SectionHeader(
-                                          label: l10n.helpSection,
-                                        ),
+                                        _SectionHeader(label: l10n.helpSection),
                                         const SizedBox(height: 8),
                                         _HelpSection(
                                           l10n: l10n,
@@ -883,14 +881,17 @@ class _SectionHeader extends StatelessWidget {
   }
 }
 
-/// Tappable settings list tile with icon, title, optional trailing value,
-/// error styling, and keyboard focus ring for accessibility.
+/// Tappable settings list tile with icon, title, optional supporting text and
+/// trailing value, error styling, and keyboard focus ring for accessibility.
 class _CustomSettingsTile extends StatefulWidget {
   /// Leading icon rendered inside a circular container.
   final IconData icon;
 
   /// Tile title text.
   final String title;
+
+  /// Optional supporting text shown below the title.
+  final String? subtitle;
 
   /// Optional trailing value text shown before the chevron.
   final String? valueText;
@@ -911,6 +912,7 @@ class _CustomSettingsTile extends StatefulWidget {
   const _CustomSettingsTile({
     required this.icon,
     required this.title,
+    this.subtitle,
     this.valueText,
     this.onTap,
     this.isError = false,
@@ -976,6 +978,15 @@ class _CustomSettingsTileState extends State<_CustomSettingsTile> {
       ),
     );
 
+    final subtitleWidget = widget.subtitle != null
+        ? Text(
+            widget.subtitle!,
+            style: textTheme.bodyMedium?.copyWith(
+              color: colorScheme.onSurfaceVariant,
+            ),
+          )
+        : null;
+
     Widget? trailingWidget;
     if (widget.valueText != null) {
       trailingWidget = Row(
@@ -1012,11 +1023,15 @@ class _CustomSettingsTileState extends State<_CustomSettingsTile> {
       borderRadius: BorderRadius.circular(20),
     );
 
+    final labelParts = <String>[
+      if (widget.sectionLabel != null) widget.sectionLabel!,
+      widget.title,
+      if (widget.subtitle != null) widget.subtitle!,
+    ];
+
     final tile = Semantics(
       button: true,
-      label: widget.sectionLabel != null
-          ? '${widget.sectionLabel}, ${widget.title}'
-          : null,
+      label: labelParts.length > 1 ? labelParts.join(', ') : null,
       child: Focus(
         focusNode: _focusNode,
         child: Theme(
@@ -1041,6 +1056,7 @@ class _CustomSettingsTileState extends State<_CustomSettingsTile> {
             onTap: widget.onTap,
             leading: leading,
             title: titleWidget,
+            subtitle: subtitleWidget,
             trailing: trailingWidget,
           ),
         ),
@@ -1457,10 +1473,7 @@ class _HelpSection extends StatefulWidget {
   final VoidCallback onCrashLogTap;
 
   /// Creates a [_HelpSection] with the given dependencies.
-  const _HelpSection({
-    required this.l10n,
-    required this.onCrashLogTap,
-  });
+  const _HelpSection({required this.l10n, required this.onCrashLogTap});
 
   @override
   State<_HelpSection> createState() => _HelpSectionState();
@@ -1494,7 +1507,7 @@ class _HelpSectionState extends State<_HelpSection> {
               _CustomSettingsTile(
                 icon: Icons.info_outline,
                 title: l10n.appVersion,
-                valueText: version,
+                subtitle: version,
                 showChevron: false,
                 sectionLabel: l10n.helpSection,
               ),
