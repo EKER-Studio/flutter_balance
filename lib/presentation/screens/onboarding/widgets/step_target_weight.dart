@@ -86,8 +86,7 @@ class _StepTargetWeightState extends State<StepTargetWeight> {
     if (parsed == null || parsed <= 0 || parsed > 500) {
       if (_errorText == null) {
         setState(
-          () =>
-              _errorText = AppLocalizations.of(context).invalidPositiveNumber,
+          () => _errorText = AppLocalizations.of(context).invalidPositiveNumber,
         );
       }
     } else {

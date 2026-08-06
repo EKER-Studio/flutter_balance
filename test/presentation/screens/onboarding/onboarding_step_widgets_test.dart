@@ -96,10 +96,7 @@ void main() {
         ),
       );
 
-      await tester.enterText(
-        find.byKey(const Key('height_cm_input')),
-        '175,5',
-      );
+      await tester.enterText(find.byKey(const Key('height_cm_input')), '175,5');
       await tester.tap(find.text('Next'));
       await tester.pumpAndSettle();
 
