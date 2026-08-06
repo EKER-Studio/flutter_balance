@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:pure_weight/l10n/app_localizations.dart';
 import 'package:pure_weight/presentation/screens/app_initialization_error_screen.dart';
+import 'package:pure_weight/presentation/theme/app_theme.dart';
 
 void main() {
   group('AppInitializationErrorScreen Tests', () {
@@ -66,6 +68,34 @@ void main() {
       expect(find.bySemanticsLabel(RegExp(r'Retry Startup')), findsOneWidget);
 
       handle.dispose();
+    });
+  });
+
+  group('AppInitializationErrorContent Tests', () {
+    testWidgets('renders inside an existing MaterialApp and handles retry', (
+      WidgetTester tester,
+    ) async {
+      bool retried = false;
+
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: AppTheme.lightTheme,
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: AppInitializationErrorContent(
+            error: Exception('Database lock error'),
+            onRetry: () => retried = true,
+          ),
+        ),
+      );
+
+      expect(find.text('Failed to Start PureWeight'), findsOneWidget);
+      expect(find.text('Retry Startup'), findsOneWidget);
+
+      await tester.tap(find.text('Retry Startup'));
+      await tester.pump();
+
+      expect(retried, isTrue);
     });
   });
 }

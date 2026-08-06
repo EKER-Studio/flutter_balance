@@ -143,7 +143,7 @@ class _AppState extends State<App> {
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       return const AppSplashScreen();
                     } else if (snapshot.hasError) {
-                      return AppInitializationErrorScreen(
+                      return AppInitializationErrorContent(
                         error: snapshot.error!,
                         onRetry: () {
                           setState(() {
