@@ -20,6 +20,7 @@ import 'package:pure_weight/presentation/bloc/settings/app_settings_state.dart';
 import 'package:pure_weight/presentation/bloc/settings/app_theme_mode.dart';
 import 'package:pure_weight/presentation/utils/app_theme_mode_localizer.dart';
 import 'package:pure_weight/core/models/measurement_unit.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:pure_weight/presentation/widgets/app_top_bar.dart';
 import 'package:pure_weight/presentation/widgets/target_weight_dialog.dart';
@@ -1447,8 +1448,8 @@ class _DataSection extends StatelessWidget {
   }
 }
 
-/// Help settings group with the crash log sharing tile.
-class _HelpSection extends StatelessWidget {
+/// Help settings group with the crash log sharing and app version tiles.
+class _HelpSection extends StatefulWidget {
   /// Localized strings for this section.
   final AppLocalizations l10n;
 
@@ -1462,19 +1463,44 @@ class _HelpSection extends StatelessWidget {
   });
 
   @override
+  State<_HelpSection> createState() => _HelpSectionState();
+}
+
+class _HelpSectionState extends State<_HelpSection> {
+  late final Future<PackageInfo> _packageInfo = PackageInfo.fromPlatform();
+
+  @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
+    final l10n = widget.l10n;
 
     return Card(
       margin: EdgeInsets.zero,
       color: colorScheme.surfaceContainerLow,
       elevation: 0,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
-      child: _CustomSettingsTile(
-        icon: Icons.bug_report_outlined,
-        title: l10n.sendCrashLog,
-        sectionLabel: l10n.helpSection,
-        onTap: onCrashLogTap,
+      child: FutureBuilder<PackageInfo>(
+        future: _packageInfo,
+        builder: (context, snapshot) {
+          final version = snapshot.data?.version ?? '';
+          return Column(
+            children: [
+              _CustomSettingsTile(
+                icon: Icons.bug_report_outlined,
+                title: l10n.sendCrashLog,
+                sectionLabel: l10n.helpSection,
+                onTap: widget.onCrashLogTap,
+              ),
+              _CustomSettingsTile(
+                icon: Icons.info_outline,
+                title: l10n.appVersion,
+                valueText: version,
+                showChevron: false,
+                sectionLabel: l10n.helpSection,
+              ),
+            ],
+          );
+        },
       ),
     );
   }

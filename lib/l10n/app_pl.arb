@@ -8,6 +8,7 @@
   "securitySection": "BEZPIECZEŃSTWO",
   "dataSection": "DANE",
   "helpSection": "POMOC",
+  "appVersion": "Wersja aplikacji",
   "metricUnit": "Metryczny (kg, cm)",
   "imperialUnit": "Imperialny (lb, ft/in)",
   "height": "Wzrost",

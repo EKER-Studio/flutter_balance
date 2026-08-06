@@ -8,6 +8,7 @@
   "securitySection": "SECURITY",
   "dataSection": "DATA",
   "helpSection": "HELP",
+  "appVersion": "App version",
   "metricUnit": "Metric (kg, cm)",
   "imperialUnit": "Imperial (lb, ft/in)",
   "height": "Height",

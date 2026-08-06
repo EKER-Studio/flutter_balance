@@ -2,6 +2,7 @@
 library;
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -51,6 +52,17 @@ void main() {
     );
 
     settingsBloc = AppSettingsBloc();
+
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+        .setMockMethodCallHandler(
+      const MethodChannel('dev.fluttercommunity.plus/package_info'),
+      (call) async => {
+        'appName': 'PureWeight',
+        'packageName': 'com.example.pure_weight',
+        'version': '1.0.0',
+        'buildNumber': '1',
+      },
+    );
   });
 
   Widget createTestWidget() {
@@ -80,6 +92,8 @@ void main() {
 
     await tester.pumpWidget(createTestWidget());
     await tester.pumpAndSettle();
+
+    expect(find.text('1.0.0'), findsOneWidget);
 
     await expectLater(
       find.byType(SettingsScreen),
