@@ -9,11 +9,7 @@ import 'package:balance/l10n/app_localizations.dart';
 
 /// Test double for [CsvImportService] that returns canned results.
 class FakeCsvImportService extends CsvImportService {
-  FakeCsvImportService({
-    this.results = const [],
-    this.error,
-    this.throwOnCall,
-  });
+  FakeCsvImportService({this.results = const [], this.error, this.throwOnCall});
 
   /// Results returned on successive [pickAndImport] calls, in order.
   final List<CsvImportResult?> results;
@@ -66,9 +62,7 @@ void main() {
     testWidgets('renders idle state with title, pick, and skip buttons', (
       tester,
     ) async {
-      await tester.pumpWidget(
-        buildSubject(service: FakeCsvImportService()),
-      );
+      await tester.pumpWidget(buildSubject(service: FakeCsvImportService()));
       await tester.pumpAndSettle();
 
       expect(find.text('Import existing history?'), findsOneWidget);
@@ -79,10 +73,7 @@ void main() {
         ),
         findsOneWidget,
       );
-      expect(
-        find.byKey(const Key('csv_import_pick_button')),
-        findsOneWidget,
-      );
+      expect(find.byKey(const Key('csv_import_pick_button')), findsOneWidget);
       expect(find.byKey(const Key('csv_import_skip_button')), findsOneWidget);
     });
 
@@ -116,9 +107,7 @@ void main() {
       expect(find.byType(CircularProgressIndicator), findsOneWidget);
       expect(find.text('Processing CSV file...'), findsOneWidget);
 
-      completer.complete(
-        (entries: sampleEntries, skippedRows: 0),
-      );
+      completer.complete((entries: sampleEntries, skippedRows: 0));
       await tester.pumpAndSettle();
       expect(find.byType(CircularProgressIndicator), findsNothing);
     });
@@ -128,9 +117,7 @@ void main() {
       (tester) async {
         List<WeightEntry>? imported;
         final service = FakeCsvImportService(
-          results: [
-            (entries: sampleEntries, skippedRows: 2),
-          ],
+          results: [(entries: sampleEntries, skippedRows: 2)],
         );
         await tester.pumpWidget(
           buildSubject(
@@ -150,9 +137,7 @@ void main() {
           findsOneWidget,
         );
 
-        await tester.tap(
-          find.byKey(const Key('csv_import_continue_button')),
-        );
+        await tester.tap(find.byKey(const Key('csv_import_continue_button')));
         await tester.pumpAndSettle();
 
         expect(imported, sampleEntries);
@@ -163,9 +148,7 @@ void main() {
       tester,
     ) async {
       final service = FakeCsvImportService(
-        results: [
-          (entries: sampleEntries, skippedRows: 0),
-        ],
+        results: [(entries: sampleEntries, skippedRows: 0)],
         error: FormatException('missing columns'),
         throwOnCall: 1,
       );
@@ -182,10 +165,7 @@ void main() {
         ),
         findsOneWidget,
       );
-      expect(
-        find.byKey(const Key('csv_import_retry_button')),
-        findsOneWidget,
-      );
+      expect(find.byKey(const Key('csv_import_retry_button')), findsOneWidget);
 
       // Retry now succeeds because the fake only throws on the first call.
       await tester.tap(find.byKey(const Key('csv_import_retry_button')));
@@ -198,9 +178,7 @@ void main() {
       tester,
     ) async {
       final service = FakeCsvImportService(
-        results: [
-          (entries: <WeightEntry>[], skippedRows: 5),
-        ],
+        results: [(entries: <WeightEntry>[], skippedRows: 5)],
       );
       await tester.pumpWidget(buildSubject(service: service));
       await tester.pumpAndSettle();
@@ -212,10 +190,7 @@ void main() {
         find.text('No valid weight entries found in the imported file.'),
         findsOneWidget,
       );
-      expect(
-        find.byKey(const Key('csv_import_retry_button')),
-        findsOneWidget,
-      );
+      expect(find.byKey(const Key('csv_import_retry_button')), findsOneWidget);
     });
 
     testWidgets('stays idle when the file picker is canceled', (tester) async {
@@ -227,14 +202,8 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.byType(CircularProgressIndicator), findsNothing);
-      expect(
-        find.byKey(const Key('csv_import_pick_button')),
-        findsOneWidget,
-      );
-      expect(
-        find.byKey(const Key('csv_import_skip_button')),
-        findsOneWidget,
-      );
+      expect(find.byKey(const Key('csv_import_pick_button')), findsOneWidget);
+      expect(find.byKey(const Key('csv_import_skip_button')), findsOneWidget);
     });
   });
 }

@@ -217,11 +217,7 @@ class _StepCsvImportState extends State<StepCsvImport> {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         const Spacer(),
-        Icon(
-          Icons.check_circle,
-          size: 64,
-          color: Colors.green.shade600,
-        ),
+        Icon(Icons.check_circle, size: 64, color: Colors.green.shade600),
         const SizedBox(height: 16.0),
         Text(
           l10n.csvImportSuccess(_entries.length),

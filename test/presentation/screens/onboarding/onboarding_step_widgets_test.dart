@@ -154,10 +154,7 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      expect(
-        find.text('-5.5 kg to target'),
-        findsOneWidget,
-      );
+      expect(find.text('-5.5 kg to target'), findsOneWidget);
     });
 
     testWidgets('hides target delta when the input becomes invalid', (
@@ -267,15 +264,10 @@ void main() {
   });
 
   group('StepInitialWeight Widget Tests', () {
-    testWidgets('renders initial weight input and next button', (
-      tester,
-    ) async {
+    testWidgets('renders initial weight input and next button', (tester) async {
       await tester.pumpWidget(
         buildApp(
-          StepInitialWeight(
-            unit: MeasurementUnit.metric,
-            onNext: (_, _) {},
-          ),
+          StepInitialWeight(unit: MeasurementUnit.metric, onNext: (_, _) {}),
         ),
       );
 
@@ -284,28 +276,22 @@ void main() {
       expect(find.text('Next'), findsOneWidget);
     });
 
-    testWidgets(
-      'Next button is disabled if initial weight is empty',
-      (tester) async {
-        await tester.pumpWidget(
-          buildApp(
-            StepInitialWeight(
-              unit: MeasurementUnit.metric,
-              onNext: (_, _) {},
-            ),
-          ),
-        );
-
-        final button = tester.widget<FilledButton>(
-          find.widgetWithText(FilledButton, 'Next'),
-        );
-        expect(button.onPressed, isNull);
-      },
-    );
-
-    testWidgets('calls onNext when valid weight is entered', (
+    testWidgets('Next button is disabled if initial weight is empty', (
       tester,
     ) async {
+      await tester.pumpWidget(
+        buildApp(
+          StepInitialWeight(unit: MeasurementUnit.metric, onNext: (_, _) {}),
+        ),
+      );
+
+      final button = tester.widget<FilledButton>(
+        find.widgetWithText(FilledButton, 'Next'),
+      );
+      expect(button.onPressed, isNull);
+    });
+
+    testWidgets('calls onNext when valid weight is entered', (tester) async {
       double? weightResult;
       DateTime? timeResult;
 
