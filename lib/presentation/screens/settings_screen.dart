@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:pure_weight/l10n/app_localizations.dart';
+import 'package:pure_weight/core/utils/crash_log.dart';
 import 'package:pure_weight/core/utils/unit_converter.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:share_plus/share_plus.dart';
@@ -338,6 +340,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                                     _showWipeConfirmation(
                                                       context,
                                                     ),
+                                                onCrashLogTap: () =>
+                                                    _sendCrashLog(context),
                                               ),
                                             ],
                                           ),
@@ -417,6 +421,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                               _exportCsv(context),
                                           onWipeTap: () =>
                                               _showWipeConfirmation(context),
+                                          onCrashLogTap: () =>
+                                              _sendCrashLog(context),
                                         ),
                                       ],
                                     ),
@@ -716,6 +722,45 @@ class _SettingsScreenState extends State<SettingsScreen> {
         ScaffoldMessenger.of(
           context,
         ).showSnackBar(SnackBar(content: Text(l10n.exportError(e.toString()))));
+      }
+    }
+  }
+
+  /// Shares the on-device crash log via the system share sheet, or informs
+  /// the user when no crash log has been recorded yet.
+  Future<void> _sendCrashLog(BuildContext context) async {
+    final l10n = AppLocalizations.of(context);
+    try {
+      final dir = await getApplicationDocumentsDirectory();
+      final file = File('${dir.path}/$crashLogFileName');
+      if (!await file.exists() || await file.length() == 0) {
+        if (context.mounted) {
+          ScaffoldMessenger.of(context)
+            ..hideCurrentSnackBar()
+            ..showSnackBar(SnackBar(content: Text(l10n.crashLogEmpty)));
+        }
+        return;
+      }
+
+      if (!context.mounted) return;
+
+      final box = context.findRenderObject() as RenderBox?;
+      final originRect = box != null
+          ? box.localToGlobal(Offset.zero) & box.size
+          : null;
+
+      await Share.shareXFiles(
+        [XFile(file.path)],
+        subject: l10n.sendCrashLog,
+        sharePositionOrigin: originRect,
+      );
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context)
+          ..hideCurrentSnackBar()
+          ..showSnackBar(
+            SnackBar(content: Text(l10n.shareCrashLogError(e.toString()))),
+          );
       }
     }
   }
@@ -1327,7 +1372,8 @@ class _SecuritySection extends StatelessWidget {
   }
 }
 
-/// Data settings group with CSV import, export, and wipe controls.
+/// Data settings group with CSV import, export, crash log sharing, and wipe
+/// controls.
 class _DataSection extends StatelessWidget {
   /// Localized strings for this section.
   final AppLocalizations l10n;
@@ -1341,12 +1387,16 @@ class _DataSection extends StatelessWidget {
   /// Callback invoked when the wipe data tile is tapped.
   final VoidCallback onWipeTap;
 
+  /// Callback invoked when the send crash log tile is tapped.
+  final VoidCallback onCrashLogTap;
+
   /// Creates a [_DataSection] with the given dependencies.
   const _DataSection({
     required this.l10n,
     required this.onImportTap,
     required this.onExportTap,
     required this.onWipeTap,
+    required this.onCrashLogTap,
   });
 
   @override
@@ -1371,6 +1421,12 @@ class _DataSection extends StatelessWidget {
             title: l10n.exportCsv,
             sectionLabel: l10n.dataSection,
             onTap: onExportTap,
+          ),
+          _CustomSettingsTile(
+            icon: Icons.bug_report_outlined,
+            title: l10n.sendCrashLog,
+            sectionLabel: l10n.dataSection,
+            onTap: onCrashLogTap,
           ),
           _CustomSettingsTile(
             icon: Icons.delete_forever_outlined,

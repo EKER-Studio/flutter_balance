@@ -9,6 +9,7 @@ import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:pure_weight/app.dart';
+import 'package:pure_weight/core/utils/crash_log.dart';
 import 'package:pure_weight/presentation/bloc/settings/app_settings_bloc.dart';
 import 'package:pure_weight/presentation/screens/app_initialization_error_screen.dart';
 
@@ -87,7 +88,7 @@ const int _maxCrashLogBytes = 1024 * 1024;
 Future<void> _writeCrashLog(Object error, StackTrace stack) async {
   try {
     final dir = await getApplicationDocumentsDirectory();
-    final file = File('${dir.path}/crash_log.txt');
+    final file = File('${dir.path}/$crashLogFileName');
     final entry = '${DateTime.now().toIso8601String()}\n$error\n$stack\n\n';
 
     if (await file.exists() && await file.length() > _maxCrashLogBytes) {
