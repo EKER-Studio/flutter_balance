@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:pure_weight/features/weight/presentation/widgets/bmi_legend_dialog.dart';
-import 'package:pure_weight/l10n/app_localizations.dart';
+import 'package:balance/features/weight/presentation/widgets/bmi_legend_dialog.dart';
+import 'package:balance/l10n/app_localizations.dart';
 
 void main() {
   Future<void> pumpDialog(WidgetTester tester) async {

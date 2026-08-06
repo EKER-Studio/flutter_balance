@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:pure_weight/l10n/app_localizations.dart';
-import 'package:pure_weight/presentation/screens/app_initialization_error_screen.dart';
-import 'package:pure_weight/presentation/theme/app_theme.dart';
+import 'package:balance/l10n/app_localizations.dart';
+import 'package:balance/presentation/screens/app_initialization_error_screen.dart';
+import 'package:balance/presentation/theme/app_theme.dart';
 
 void main() {
   group('AppInitializationErrorScreen Tests', () {
@@ -21,7 +21,7 @@ void main() {
         ),
       );
 
-      expect(find.text('Failed to Start PureWeight'), findsOneWidget);
+      expect(find.text('Failed to Start Balance'), findsOneWidget);
       expect(find.text('Retry Startup'), findsOneWidget);
       expect(find.byIcon(Icons.warning_amber_rounded), findsOneWidget);
 
@@ -44,7 +44,7 @@ void main() {
         ),
       );
 
-      expect(find.text('Failed to Start PureWeight'), findsOneWidget);
+      expect(find.text('Failed to Start Balance'), findsOneWidget);
       expect(find.text('Retry Startup'), findsOneWidget);
     });
 
@@ -89,7 +89,7 @@ void main() {
         ),
       );
 
-      expect(find.text('Failed to Start PureWeight'), findsOneWidget);
+      expect(find.text('Failed to Start Balance'), findsOneWidget);
       expect(find.text('Retry Startup'), findsOneWidget);
 
       await tester.tap(find.text('Retry Startup'));

@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:pure_weight/core/utils/field_cipher.dart';
+import 'package:balance/core/utils/field_cipher.dart';
 
 void main() {
   group('FieldCipher Unit Tests', () {

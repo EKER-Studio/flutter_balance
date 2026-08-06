@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:pure_weight/l10n/app_localizations.dart';
+import 'package:balance/l10n/app_localizations.dart';
 
 /// A Flutter-based splash screen that visually mimics the native splash screen.
 ///

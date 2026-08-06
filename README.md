@@ -1,4 +1,4 @@
-# PureWeight
+# Balance
 
 A local-first weight tracking application built with Flutter using Clean Architecture and BLoC.
 
@@ -104,7 +104,7 @@ flutter run
 ## Project Conventions
 
 ### Database Engine
-- Isar schema configuration uses the `pure_weight_v2` store name (encrypted schema; the pre-encryption `pure_weight_v1` store is quarantined on first launch).
+- Isar schema configuration uses the `balance_v1` store name (encrypted schema; legacy `pure_weight_v1` and `pure_weight_v2` stores are quarantined on first launch).
 - `DatabaseModule` manages initialization, integrity verification, and fallback database recovery (`.isar.bak`).
 - Native database-level sorting via `.where().sortByDateTimeDesc()` runs directly inside Isar query streams.
 

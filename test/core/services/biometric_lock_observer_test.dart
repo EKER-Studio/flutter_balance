@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:pure_weight/core/services/biometric_lock_observer.dart';
+import 'package:balance/core/services/biometric_lock_observer.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -28,7 +28,7 @@ void main() {
           lockStateEmitted = locked;
         },
         lockEnabledStream: lockStreamController.stream,
-        localizedReason: () => 'Authenticate to access PureWeight',
+        localizedReason: () => 'Authenticate to access Balance',
       );
 
       // Verify initialization does not throw
@@ -50,7 +50,7 @@ void main() {
         onLockStateChanged: (_) {
           called = true;
         },
-        localizedReason: () => 'Authenticate to access PureWeight',
+        localizedReason: () => 'Authenticate to access Balance',
       );
 
       observer.didChangeAppLifecycleState(AppLifecycleState.paused);
@@ -67,7 +67,7 @@ void main() {
         final observer = BiometricLockObserver(
           isBiometricLockEnabled: () => false,
           onLockStateChanged: (_) {},
-          localizedReason: () => 'Authenticate to access PureWeight',
+          localizedReason: () => 'Authenticate to access Balance',
         );
 
         // Trigger resumed state

@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:pure_weight/features/weight/domain/time_period.dart';
+import 'package:balance/features/weight/domain/time_period.dart';
 
 void main() {
   group('TimePeriodX.lookbackDuration', () {

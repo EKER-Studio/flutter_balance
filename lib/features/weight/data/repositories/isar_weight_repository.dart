@@ -4,11 +4,11 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:isar_community/isar.dart';
-import 'package:pure_weight/core/utils/field_cipher.dart';
-import 'package:pure_weight/features/weight/data/models/weight_entry_model.dart';
-import 'package:pure_weight/features/weight/domain/entities/weight_entry.dart';
-import 'package:pure_weight/features/weight/domain/repositories/weight_repository.dart';
-import 'package:pure_weight/features/weight/domain/weight_error_type.dart';
+import 'package:balance/core/utils/field_cipher.dart';
+import 'package:balance/features/weight/data/models/weight_entry_model.dart';
+import 'package:balance/features/weight/domain/entities/weight_entry.dart';
+import 'package:balance/features/weight/domain/repositories/weight_repository.dart';
+import 'package:balance/features/weight/domain/weight_error_type.dart';
 
 /// Isar-backed implementation of [WeightRepository] using Field-Level AES-256 Encryption.
 ///

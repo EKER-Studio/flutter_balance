@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:pure_weight/features/weight/domain/entities/weight_entry.dart';
+import 'package:balance/features/weight/domain/entities/weight_entry.dart';
 
 void main() {
   group('WeightEntry', () {

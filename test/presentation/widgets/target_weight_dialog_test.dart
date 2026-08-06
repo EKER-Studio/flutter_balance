@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:pure_weight/core/models/measurement_unit.dart';
-import 'package:pure_weight/l10n/app_localizations.dart';
-import 'package:pure_weight/presentation/widgets/target_weight_dialog.dart';
+import 'package:balance/core/models/measurement_unit.dart';
+import 'package:balance/l10n/app_localizations.dart';
+import 'package:balance/presentation/widgets/target_weight_dialog.dart';
 
 void main() {
   Future<dynamic> openDialog(

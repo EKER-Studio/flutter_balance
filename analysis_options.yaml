@@ -32,22 +32,22 @@ analyzer:
 import_lint:
   rules:
     avoid_infrastructure_imports_in_presentation:
-      target: "package:pure_weight/features/**/presentation/**"
-      from: "package:pure_weight/features/**/data/**"
+      target: "package:balance/features/**/presentation/**"
+      from: "package:balance/features/**/data/**"
       except: []
       severity: error
     avoid_infrastructure_imports_in_app_shell:
-      target: "package:pure_weight/presentation/**"
-      from: "package:pure_weight/features/**/data/**"
+      target: "package:balance/presentation/**"
+      from: "package:balance/features/**/data/**"
       except: []
       severity: error
     avoid_infrastructure_imports_in_domain:
-      target: "package:pure_weight/features/**/domain/**"
-      from: "package:pure_weight/features/**/data/**"
+      target: "package:balance/features/**/domain/**"
+      from: "package:balance/features/**/data/**"
       except: []
       severity: error
     avoid_presentation_imports_in_domain:
-      target: "package:pure_weight/features/**/domain/**"
-      from: "package:pure_weight/features/**/presentation/**"
+      target: "package:balance/features/**/domain/**"
+      from: "package:balance/features/**/presentation/**"
       except: []
       severity: error

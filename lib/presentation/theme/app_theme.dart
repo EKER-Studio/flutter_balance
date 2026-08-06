@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-/// Centralized Material 3 theme definitions for PureWeight (Serene Metric design system).
+/// Centralized Material 3 theme definitions for Balance (Serene Metric design system).
 abstract final class AppTheme {
   /// Primary brand color anchor: Lavender/Purple #4F378A.
   static const Color primaryColor = Color(0xFF4F378A);

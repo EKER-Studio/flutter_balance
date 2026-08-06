@@ -1,5 +1,5 @@
-name: pure_weight
-description: "PureWeight — a local-first weight tracking app."
+name: balance
+description: "Balance — a local-first weight tracking app."
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
@@ -141,10 +141,10 @@ flutter:
 flutter_native_splash:
   color: "#FDF7FF"
   color_dark: "#141218"
-  
+
   image: "assets/icon/app_icon_foreground.png"
   image_dark: "assets/icon/app_icon_foreground.png"
-  
+
   android_12:
     image: "assets/icon/app_icon_foreground.png"
     image_dark: "assets/icon/app_icon_foreground.png"

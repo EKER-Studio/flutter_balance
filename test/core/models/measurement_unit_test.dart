@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:pure_weight/core/models/measurement_unit.dart';
+import 'package:balance/core/models/measurement_unit.dart';
 
 void main() {
   group('MeasurementUnit', () {

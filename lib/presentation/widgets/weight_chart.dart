@@ -2,12 +2,12 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
-import 'package:pure_weight/l10n/app_localizations.dart';
-import 'package:pure_weight/core/utils/unit_converter.dart';
-import 'package:pure_weight/features/weight/domain/entities/weight_entry.dart';
-import 'package:pure_weight/features/weight/domain/time_period.dart';
-import 'package:pure_weight/presentation/bloc/settings/app_settings_bloc.dart';
-import 'package:pure_weight/core/models/measurement_unit.dart';
+import 'package:balance/l10n/app_localizations.dart';
+import 'package:balance/core/utils/unit_converter.dart';
+import 'package:balance/features/weight/domain/entities/weight_entry.dart';
+import 'package:balance/features/weight/domain/time_period.dart';
+import 'package:balance/presentation/bloc/settings/app_settings_bloc.dart';
+import 'package:balance/core/models/measurement_unit.dart';
 
 /// A chart widget that displays weight history over time.
 ///

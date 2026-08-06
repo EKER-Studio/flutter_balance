@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:pure_weight/l10n/app_localizations.dart';
-import 'package:pure_weight/presentation/bloc/settings/app_settings_bloc.dart';
-import 'package:pure_weight/presentation/bloc/settings/app_settings_event.dart';
-import 'package:pure_weight/presentation/bloc/settings/app_settings_state.dart';
-import 'package:pure_weight/presentation/core/clamped_layout.dart';
+import 'package:balance/l10n/app_localizations.dart';
+import 'package:balance/presentation/bloc/settings/app_settings_bloc.dart';
+import 'package:balance/presentation/bloc/settings/app_settings_event.dart';
+import 'package:balance/presentation/bloc/settings/app_settings_state.dart';
+import 'package:balance/presentation/core/clamped_layout.dart';
 
 /// Form widget for Step 3 of the onboarding wizard: setting up daily reminder notifications.
 class StepReminderNotification extends StatefulWidget {

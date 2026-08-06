@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:pure_weight/presentation/bloc/settings/app_theme_mode.dart';
-import 'package:pure_weight/core/models/measurement_unit.dart';
+import 'package:balance/presentation/bloc/settings/app_theme_mode.dart';
+import 'package:balance/core/models/measurement_unit.dart';
 
 /// Base class for all app settings events.
 sealed class AppSettingsEvent {

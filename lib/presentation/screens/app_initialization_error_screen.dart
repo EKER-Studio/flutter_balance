@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:pure_weight/l10n/app_localizations.dart';
-import 'package:pure_weight/presentation/theme/app_theme.dart';
+import 'package:balance/l10n/app_localizations.dart';
+import 'package:balance/presentation/theme/app_theme.dart';
 
 /// Fallback content rendered when app initialization (DB, storage, etc.) fails.
 ///

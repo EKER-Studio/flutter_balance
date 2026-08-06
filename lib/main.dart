@@ -8,12 +8,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:pure_weight/app.dart';
-import 'package:pure_weight/core/utils/crash_log.dart';
-import 'package:pure_weight/presentation/bloc/settings/app_settings_bloc.dart';
-import 'package:pure_weight/presentation/screens/app_initialization_error_screen.dart';
+import 'package:balance/app.dart';
+import 'package:balance/core/utils/crash_log.dart';
+import 'package:balance/presentation/bloc/settings/app_settings_bloc.dart';
+import 'package:balance/presentation/screens/app_initialization_error_screen.dart';
 
-/// Entry point of the PureWeight application.
+/// Entry point of the Balance application.
 ///
 /// Bootstraps platform bindings, [HydratedBloc] storage, and the [AppSettingsBloc]
 /// before running the app. Heavy asynchronous initializations (Isar, Notifications, etc.)

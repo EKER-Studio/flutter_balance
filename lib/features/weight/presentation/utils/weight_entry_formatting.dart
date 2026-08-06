@@ -1,6 +1,6 @@
-import 'package:pure_weight/core/models/measurement_unit.dart';
-import 'package:pure_weight/core/utils/unit_converter.dart';
-import 'package:pure_weight/features/weight/domain/entities/weight_entry.dart';
+import 'package:balance/core/models/measurement_unit.dart';
+import 'package:balance/core/utils/unit_converter.dart';
+import 'package:balance/features/weight/domain/entities/weight_entry.dart';
 
 /// Utility formatting extensions on [WeightEntry] for presentation conversion.
 extension WeightEntryFormatting on WeightEntry {

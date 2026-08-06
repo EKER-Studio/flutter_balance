@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:pure_weight/l10n/app_localizations.dart';
-import 'package:pure_weight/presentation/widgets/app_top_bar.dart';
+import 'package:balance/l10n/app_localizations.dart';
+import 'package:balance/presentation/widgets/app_top_bar.dart';
 
 void main() {
   Widget createTestWidget(Widget child) {

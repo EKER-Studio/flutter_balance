@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    namespace = "com.ekerstudio.pureweight"
+    namespace = "com.ekerstudio.balance"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
@@ -18,7 +18,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.ekerstudio.pureweight"
+        applicationId = "com.ekerstudio.balance"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = flutter.minSdkVersion

@@ -1,5 +1,5 @@
-import 'package:pure_weight/l10n/app_localizations.dart';
-import 'package:pure_weight/presentation/bloc/settings/app_theme_mode.dart';
+import 'package:balance/l10n/app_localizations.dart';
+import 'package:balance/presentation/bloc/settings/app_theme_mode.dart';
 
 /// Extension providing localized labels for [AppThemeMode].
 extension AppThemeModeX on AppThemeMode {

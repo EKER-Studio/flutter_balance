@@ -1,8 +1,8 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:pure_weight/features/weight/domain/weight_error_type.dart';
-import 'package:pure_weight/features/weight/presentation/utils/weight_error_localizer.dart';
-import 'package:pure_weight/l10n/app_localizations.dart';
-import 'package:pure_weight/l10n/app_localizations_en.dart';
+import 'package:balance/features/weight/domain/weight_error_type.dart';
+import 'package:balance/features/weight/presentation/utils/weight_error_localizer.dart';
+import 'package:balance/l10n/app_localizations.dart';
+import 'package:balance/l10n/app_localizations_en.dart';
 
 void main() {
   final AppLocalizations l10n = AppLocalizationsEn();

@@ -1,24 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
-import 'package:pure_weight/core/models/measurement_unit.dart';
-import 'package:pure_weight/core/utils/unit_converter.dart';
-import 'package:pure_weight/features/weight/domain/entities/weight_entry.dart';
-import 'package:pure_weight/features/weight/presentation/bloc/weight_bloc.dart';
-import 'package:pure_weight/features/weight/presentation/bloc/weight_state.dart';
-import 'package:pure_weight/features/weight/presentation/utils/weight_error_localizer.dart';
-import 'package:pure_weight/features/weight/presentation/widgets/calendar/calendar_day_empty_card.dart';
-import 'package:pure_weight/features/weight/presentation/widgets/calendar/calendar_day_entries_card.dart';
-import 'package:pure_weight/features/weight/presentation/widgets/calendar/calendar_day_future_card.dart';
-import 'package:pure_weight/features/weight/presentation/widgets/calendar/calendar_error_card.dart';
-import 'package:pure_weight/features/weight/presentation/widgets/calendar/calendar_grid.dart';
-import 'package:pure_weight/features/weight/presentation/widgets/calendar/calendar_month_header.dart';
-import 'package:pure_weight/features/weight/presentation/widgets/calendar/calendar_shimmer_skeleton.dart';
-import 'package:pure_weight/features/weight/presentation/widgets/calendar/calendar_weekday_header.dart';
-import 'package:pure_weight/l10n/app_localizations.dart';
-import 'package:pure_weight/presentation/bloc/settings/app_settings_bloc.dart';
-import 'package:pure_weight/presentation/widgets/app_top_bar.dart';
-import 'package:pure_weight/presentation/core/clamped_layout.dart';
+import 'package:balance/core/models/measurement_unit.dart';
+import 'package:balance/core/utils/unit_converter.dart';
+import 'package:balance/features/weight/domain/entities/weight_entry.dart';
+import 'package:balance/features/weight/presentation/bloc/weight_bloc.dart';
+import 'package:balance/features/weight/presentation/bloc/weight_state.dart';
+import 'package:balance/features/weight/presentation/utils/weight_error_localizer.dart';
+import 'package:balance/features/weight/presentation/widgets/calendar/calendar_day_empty_card.dart';
+import 'package:balance/features/weight/presentation/widgets/calendar/calendar_day_entries_card.dart';
+import 'package:balance/features/weight/presentation/widgets/calendar/calendar_day_future_card.dart';
+import 'package:balance/features/weight/presentation/widgets/calendar/calendar_error_card.dart';
+import 'package:balance/features/weight/presentation/widgets/calendar/calendar_grid.dart';
+import 'package:balance/features/weight/presentation/widgets/calendar/calendar_month_header.dart';
+import 'package:balance/features/weight/presentation/widgets/calendar/calendar_shimmer_skeleton.dart';
+import 'package:balance/features/weight/presentation/widgets/calendar/calendar_weekday_header.dart';
+import 'package:balance/l10n/app_localizations.dart';
+import 'package:balance/presentation/bloc/settings/app_settings_bloc.dart';
+import 'package:balance/presentation/widgets/app_top_bar.dart';
+import 'package:balance/presentation/core/clamped_layout.dart';
 
 /// Tab 2: Calendar Screen providing a monthly view with measurement status indicators.
 class CalendarScreen extends StatefulWidget {

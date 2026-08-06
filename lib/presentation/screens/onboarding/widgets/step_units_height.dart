@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:pure_weight/core/models/measurement_unit.dart';
-import 'package:pure_weight/core/utils/unit_converter.dart';
-import 'package:pure_weight/l10n/app_localizations.dart';
-import 'package:pure_weight/presentation/bloc/settings/app_settings_state.dart';
-import 'package:pure_weight/presentation/core/clamped_layout.dart';
+import 'package:balance/core/models/measurement_unit.dart';
+import 'package:balance/core/utils/unit_converter.dart';
+import 'package:balance/l10n/app_localizations.dart';
+import 'package:balance/presentation/bloc/settings/app_settings_state.dart';
+import 'package:balance/presentation/core/clamped_layout.dart';
 
 /// Form widget for Step 1 of the onboarding wizard: selecting unit system and height.
 class StepUnitsHeight extends StatefulWidget {

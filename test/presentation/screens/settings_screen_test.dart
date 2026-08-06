@@ -5,13 +5,13 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:pure_weight/core/services/notification_service.dart';
-import 'package:pure_weight/features/weight/presentation/bloc/weight_bloc.dart';
-import 'package:pure_weight/l10n/app_localizations.dart';
-import 'package:pure_weight/presentation/bloc/settings/app_settings_bloc.dart';
-import 'package:pure_weight/presentation/bloc/settings/app_settings_event.dart';
-import 'package:pure_weight/features/weight/presentation/bloc/weight_state.dart';
-import 'package:pure_weight/presentation/screens/settings_screen.dart';
+import 'package:balance/core/services/notification_service.dart';
+import 'package:balance/features/weight/presentation/bloc/weight_bloc.dart';
+import 'package:balance/l10n/app_localizations.dart';
+import 'package:balance/presentation/bloc/settings/app_settings_bloc.dart';
+import 'package:balance/presentation/bloc/settings/app_settings_event.dart';
+import 'package:balance/features/weight/presentation/bloc/weight_state.dart';
+import 'package:balance/presentation/screens/settings_screen.dart';
 
 class MockHydratedStorage extends Mock implements HydratedStorage {}
 
@@ -292,8 +292,8 @@ void main() {
           .setMockMethodCallHandler(
             const MethodChannel('dev.fluttercommunity.plus/package_info'),
             (call) async => {
-              'appName': 'PureWeight',
-              'packageName': 'com.example.pure_weight',
+              'appName': 'Balance',
+              'packageName': 'com.example.balance',
               'version': '1.0.0',
               'buildNumber': '1',
             },

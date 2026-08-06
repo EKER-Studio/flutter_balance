@@ -1,7 +1,7 @@
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:pure_weight/core/utils/csv_exporter.dart';
-import 'package:pure_weight/features/weight/domain/entities/weight_entry.dart';
+import 'package:balance/core/utils/csv_exporter.dart';
+import 'package:balance/features/weight/domain/entities/weight_entry.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:pure_weight/features/weight/presentation/widgets/today_shimmer_skeleton.dart';
+import 'package:balance/features/weight/presentation/widgets/today_shimmer_skeleton.dart';
 
 void main() {
   testWidgets('TodayShimmerSkeleton renders placeholder cards and animates', (

@@ -3,17 +3,17 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:pure_weight/core/models/measurement_unit.dart';
-import 'package:pure_weight/features/weight/domain/entities/weight_entry.dart';
-import 'package:pure_weight/features/weight/domain/repositories/weight_repository.dart';
-import 'package:pure_weight/features/weight/presentation/bloc/weight_bloc.dart';
-import 'package:pure_weight/features/weight/presentation/bloc/weight_event.dart';
-import 'package:pure_weight/features/weight/presentation/bloc/weight_state.dart';
-import 'package:pure_weight/l10n/app_localizations.dart';
-import 'package:pure_weight/presentation/bloc/settings/app_settings_bloc.dart';
-import 'package:pure_weight/presentation/bloc/settings/app_settings_event.dart';
-import 'package:pure_weight/features/weight/presentation/screens/statistics_screen.dart';
-import 'package:pure_weight/features/weight/presentation/widgets/bmi_chart_card.dart';
+import 'package:balance/core/models/measurement_unit.dart';
+import 'package:balance/features/weight/domain/entities/weight_entry.dart';
+import 'package:balance/features/weight/domain/repositories/weight_repository.dart';
+import 'package:balance/features/weight/presentation/bloc/weight_bloc.dart';
+import 'package:balance/features/weight/presentation/bloc/weight_event.dart';
+import 'package:balance/features/weight/presentation/bloc/weight_state.dart';
+import 'package:balance/l10n/app_localizations.dart';
+import 'package:balance/presentation/bloc/settings/app_settings_bloc.dart';
+import 'package:balance/presentation/bloc/settings/app_settings_event.dart';
+import 'package:balance/features/weight/presentation/screens/statistics_screen.dart';
+import 'package:balance/features/weight/presentation/widgets/bmi_chart_card.dart';
 
 class MockWeightRepository extends Mock implements WeightRepository {}
 

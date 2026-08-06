@@ -4,16 +4,16 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:pure_weight/features/weight/domain/entities/weight_entry.dart';
-import 'package:pure_weight/features/weight/domain/time_period.dart';
-import 'package:pure_weight/features/weight/domain/weight_error_type.dart';
-import 'package:pure_weight/features/weight/presentation/bloc/weight_bloc.dart';
-import 'package:pure_weight/features/weight/presentation/bloc/weight_state.dart';
-import 'package:pure_weight/features/weight/presentation/screens/today_screen.dart';
-import 'package:pure_weight/features/weight/presentation/widgets/add_weight_sheet.dart';
-import 'package:pure_weight/features/weight/presentation/widgets/today_shimmer_skeleton.dart';
-import 'package:pure_weight/l10n/app_localizations.dart';
-import 'package:pure_weight/presentation/bloc/settings/app_settings_bloc.dart';
+import 'package:balance/features/weight/domain/entities/weight_entry.dart';
+import 'package:balance/features/weight/domain/time_period.dart';
+import 'package:balance/features/weight/domain/weight_error_type.dart';
+import 'package:balance/features/weight/presentation/bloc/weight_bloc.dart';
+import 'package:balance/features/weight/presentation/bloc/weight_state.dart';
+import 'package:balance/features/weight/presentation/screens/today_screen.dart';
+import 'package:balance/features/weight/presentation/widgets/add_weight_sheet.dart';
+import 'package:balance/features/weight/presentation/widgets/today_shimmer_skeleton.dart';
+import 'package:balance/l10n/app_localizations.dart';
+import 'package:balance/presentation/bloc/settings/app_settings_bloc.dart';
 
 class MockHydratedStorage extends Mock implements HydratedStorage {}
 
@@ -185,7 +185,7 @@ void main() {
     await tester.pump();
 
     expect(
-      find.text('Welcome to PureWeight!', skipOffstage: false),
+      find.text('Welcome to Balance!', skipOffstage: false),
       findsOneWidget,
     );
     expect(

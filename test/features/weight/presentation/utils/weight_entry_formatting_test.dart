@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:pure_weight/core/models/measurement_unit.dart';
-import 'package:pure_weight/features/weight/domain/entities/weight_entry.dart';
-import 'package:pure_weight/features/weight/presentation/utils/weight_entry_formatting.dart';
+import 'package:balance/core/models/measurement_unit.dart';
+import 'package:balance/features/weight/domain/entities/weight_entry.dart';
+import 'package:balance/features/weight/presentation/utils/weight_entry_formatting.dart';
 
 void main() {
   final entry = WeightEntry(weightKg: 70.0, dateTime: DateTime(2026, 1, 1));

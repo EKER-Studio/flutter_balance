@@ -1,29 +1,29 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:pure_weight/l10n/app_localizations.dart';
-import 'package:pure_weight/core/utils/crash_log.dart';
-import 'package:pure_weight/core/utils/unit_converter.dart';
+import 'package:balance/l10n/app_localizations.dart';
+import 'package:balance/core/utils/crash_log.dart';
+import 'package:balance/core/utils/unit_converter.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:share_plus/share_plus.dart';
-import 'package:pure_weight/core/services/biometric_service.dart';
-import 'package:pure_weight/core/utils/csv_exporter.dart';
-import 'package:pure_weight/core/utils/csv_importer.dart';
-import 'package:pure_weight/features/weight/domain/entities/weight_entry.dart';
-import 'package:pure_weight/features/weight/presentation/bloc/weight_bloc.dart';
-import 'package:pure_weight/features/weight/presentation/bloc/weight_event.dart';
-import 'package:pure_weight/features/weight/presentation/bloc/weight_state.dart';
-import 'package:pure_weight/features/weight/presentation/utils/measurement_unit_localizer.dart';
-import 'package:pure_weight/presentation/bloc/settings/app_settings_bloc.dart';
-import 'package:pure_weight/presentation/bloc/settings/app_settings_event.dart';
-import 'package:pure_weight/presentation/bloc/settings/app_settings_state.dart';
-import 'package:pure_weight/presentation/bloc/settings/app_theme_mode.dart';
-import 'package:pure_weight/presentation/utils/app_theme_mode_localizer.dart';
-import 'package:pure_weight/core/models/measurement_unit.dart';
+import 'package:balance/core/services/biometric_service.dart';
+import 'package:balance/core/utils/csv_exporter.dart';
+import 'package:balance/core/utils/csv_importer.dart';
+import 'package:balance/features/weight/domain/entities/weight_entry.dart';
+import 'package:balance/features/weight/presentation/bloc/weight_bloc.dart';
+import 'package:balance/features/weight/presentation/bloc/weight_event.dart';
+import 'package:balance/features/weight/presentation/bloc/weight_state.dart';
+import 'package:balance/features/weight/presentation/utils/measurement_unit_localizer.dart';
+import 'package:balance/presentation/bloc/settings/app_settings_bloc.dart';
+import 'package:balance/presentation/bloc/settings/app_settings_event.dart';
+import 'package:balance/presentation/bloc/settings/app_settings_state.dart';
+import 'package:balance/presentation/bloc/settings/app_theme_mode.dart';
+import 'package:balance/presentation/utils/app_theme_mode_localizer.dart';
+import 'package:balance/core/models/measurement_unit.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:pure_weight/presentation/widgets/app_top_bar.dart';
-import 'package:pure_weight/presentation/widgets/target_weight_dialog.dart';
+import 'package:balance/presentation/widgets/app_top_bar.dart';
+import 'package:balance/presentation/widgets/target_weight_dialog.dart';
 import 'dart:io';
 
 /// Dialog for entering the user's height in centimeters.
@@ -719,7 +719,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
         await Share.shareXFiles(
           [XFile(exportedFile.path)],
-          subject: 'PureWeight Export CSV',
+          subject: 'Balance Export CSV',
           sharePositionOrigin: originRect,
         );
 

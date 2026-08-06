@@ -1,5 +1,5 @@
-import 'package:pure_weight/features/weight/domain/weight_error_type.dart';
-import 'package:pure_weight/l10n/app_localizations.dart';
+import 'package:balance/features/weight/domain/weight_error_type.dart';
+import 'package:balance/l10n/app_localizations.dart';
 
 /// Localized error message helpers for [WeightErrorType].
 extension WeightErrorTypeX on WeightErrorType {

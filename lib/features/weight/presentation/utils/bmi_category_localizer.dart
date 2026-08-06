@@ -1,5 +1,5 @@
-import 'package:pure_weight/l10n/app_localizations.dart';
-import 'package:pure_weight/presentation/bloc/settings/bmi_category.dart';
+import 'package:balance/l10n/app_localizations.dart';
+import 'package:balance/presentation/bloc/settings/bmi_category.dart';
 
 /// Localized display helpers for [BmiCategory].
 extension BmiCategoryX on BmiCategory {

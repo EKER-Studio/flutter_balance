@@ -1,4 +1,4 @@
-import 'package:pure_weight/features/weight/domain/entities/weight_entry.dart';
+import 'package:balance/features/weight/domain/entities/weight_entry.dart';
 
 /// Domain repository contract for managing persistent weight entries.
 ///

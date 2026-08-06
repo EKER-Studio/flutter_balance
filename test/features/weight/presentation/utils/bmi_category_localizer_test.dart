@@ -1,8 +1,8 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:pure_weight/features/weight/presentation/utils/bmi_category_localizer.dart';
-import 'package:pure_weight/l10n/app_localizations.dart';
-import 'package:pure_weight/l10n/app_localizations_en.dart';
-import 'package:pure_weight/presentation/bloc/settings/bmi_category.dart';
+import 'package:balance/features/weight/presentation/utils/bmi_category_localizer.dart';
+import 'package:balance/l10n/app_localizations.dart';
+import 'package:balance/l10n/app_localizations_en.dart';
+import 'package:balance/presentation/bloc/settings/bmi_category.dart';
 
 void main() {
   final AppLocalizations l10n = AppLocalizationsEn();

@@ -1,4 +1,4 @@
-package com.ekerstudio.pureweight
+package com.ekerstudio.balance
 
 import io.flutter.embedding.android.FlutterFragmentActivity
 

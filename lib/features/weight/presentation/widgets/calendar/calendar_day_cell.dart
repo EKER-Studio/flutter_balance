@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:pure_weight/features/weight/domain/entities/weight_entry.dart';
-import 'package:pure_weight/l10n/app_localizations.dart';
+import 'package:balance/features/weight/domain/entities/weight_entry.dart';
+import 'package:balance/l10n/app_localizations.dart';
 
 /// Reusable calendar day cell widget representing a single day in the monthly grid.
 class CalendarDayCell extends StatelessWidget {

@@ -1,7 +1,7 @@
-import 'package:pure_weight/features/weight/domain/entities/weight_entry.dart';
-import 'package:pure_weight/features/weight/domain/time_period.dart';
+import 'package:balance/features/weight/domain/entities/weight_entry.dart';
+import 'package:balance/features/weight/domain/time_period.dart';
 
-export 'package:pure_weight/features/weight/domain/time_period.dart';
+export 'package:balance/features/weight/domain/time_period.dart';
 
 /// Base class for all weight events.
 sealed class WeightEvent {

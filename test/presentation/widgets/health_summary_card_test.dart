@@ -4,12 +4,12 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:pure_weight/core/models/measurement_unit.dart';
-import 'package:pure_weight/features/weight/presentation/widgets/health_summary_card.dart';
-import 'package:pure_weight/l10n/app_localizations.dart';
-import 'package:pure_weight/presentation/bloc/settings/app_settings_bloc.dart';
-import 'package:pure_weight/presentation/bloc/settings/app_settings_event.dart';
-import 'package:pure_weight/presentation/widgets/target_weight_dialog.dart';
+import 'package:balance/core/models/measurement_unit.dart';
+import 'package:balance/features/weight/presentation/widgets/health_summary_card.dart';
+import 'package:balance/l10n/app_localizations.dart';
+import 'package:balance/presentation/bloc/settings/app_settings_bloc.dart';
+import 'package:balance/presentation/bloc/settings/app_settings_event.dart';
+import 'package:balance/presentation/widgets/target_weight_dialog.dart';
 
 class MockHydratedStorage extends Mock implements HydratedStorage {}
 

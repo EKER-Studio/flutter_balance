@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:pure_weight/features/weight/presentation/widgets/add_weight_sheet.dart';
-import 'package:pure_weight/l10n/app_localizations.dart';
+import 'package:balance/features/weight/presentation/widgets/add_weight_sheet.dart';
+import 'package:balance/l10n/app_localizations.dart';
 
 /// Reusable Material 3 empty state card for a selected calendar day without measurements.
 class CalendarDayEmptyCard extends StatelessWidget {

@@ -2,13 +2,13 @@ import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:isar_community/isar.dart';
-import 'package:pure_weight/core/database/database_module.dart';
-import 'package:pure_weight/features/weight/data/models/weight_entry_model.dart';
+import 'package:balance/core/database/database_module.dart';
+import 'package:balance/features/weight/data/models/weight_entry_model.dart';
 
 void main() {
   group('DatabaseModule', () {
     test('dbName is versioned correctly', () {
-      expect(DatabaseModule.dbName, 'pure_weight_v2');
+      expect(DatabaseModule.dbName, 'balance_v1');
     });
 
     test('getInstance returns null when instance is uninitialized', () {

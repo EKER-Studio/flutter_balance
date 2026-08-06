@@ -1,6 +1,6 @@
 import 'dart:isolate';
 import 'package:intl/intl.dart';
-import 'package:pure_weight/features/weight/domain/entities/weight_entry.dart';
+import 'package:balance/features/weight/domain/entities/weight_entry.dart';
 
 /// Parses CSV file content and converts it into a list of [WeightEntry].
 ///

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:pure_weight/features/weight/presentation/bloc/weight_bloc.dart';
-import 'package:pure_weight/features/weight/presentation/bloc/weight_event.dart';
-import 'package:pure_weight/l10n/app_localizations.dart';
+import 'package:balance/features/weight/presentation/bloc/weight_bloc.dart';
+import 'package:balance/features/weight/presentation/bloc/weight_event.dart';
+import 'package:balance/l10n/app_localizations.dart';
 
 /// Reusable Material 3 error card displayed when a local database read error occurs.
 class CalendarErrorCard extends StatelessWidget {

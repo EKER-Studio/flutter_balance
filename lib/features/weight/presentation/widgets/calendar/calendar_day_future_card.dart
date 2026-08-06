@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:pure_weight/l10n/app_localizations.dart';
+import 'package:balance/l10n/app_localizations.dart';
 
 /// Reusable Material 3 informational card displayed when a user selects a future date.
 class CalendarDayFutureCard extends StatelessWidget {

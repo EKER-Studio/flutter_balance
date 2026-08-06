@@ -6,31 +6,35 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:isar_community/isar.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:pure_weight/features/weight/data/models/weight_entry_model.dart';
+import 'package:balance/features/weight/data/models/weight_entry_model.dart';
 
 /// Initializes and provides the [Isar] database instance.
 ///
 /// ## Schema Versioning & Recovery
 /// Isar Community 3.x uses automatic schema migration for non-breaking additions
 /// (e.g. indices or new optional fields). For breaking schema changes:
-/// 1. Increment database version name suffix (e.g. `pure_weight_v2`).
+/// 1. Increment database version name suffix (e.g. `balance_v2`).
 /// 2. If initialization fails due to schema corruption or file lock issues,
 ///    [initialize] captures the failure, creates a timestamped backup of the
 ///    corrupted database, cleans up stale locks, and safely re-opens a fresh instance.
 class DatabaseModule {
   /// The versioned database name. Increment suffix on breaking schema changes.
   ///
-  /// Bumped v1 -> v2 when [WeightEntryModel] moved from plaintext
-  /// `weightKg`/`note` fields to `encryptedWeight`/`encryptedNote`. This is a
-  /// breaking rename, not an additive change, so per the policy above it
-  /// requires a new database file rather than reopening v1 under the new
-  /// schema (which would silently read empty ciphertext for every historical
-  /// entry and decrypt it as 0.0 kg — see [_quarantineLegacyDatabase]).
-  static const String dbName = 'pure_weight_v2';
+  /// The name changed from `pure_weight_v2` to `balance_v1` during the
+  /// PureWeight -> Balance rebrand (2026-08). The old `pure_weight_v2` file is
+  /// not reopened: it holds data from the previous app identity, so it is
+  /// quarantined on first launch instead (see [_quarantineLegacyDatabase]).
+  static const String dbName = 'balance_v1';
 
-  /// Name of the pre-encryption database, kept only so any existing v1 file
-  /// can be quarantined instead of being left as a silently-orphaned file.
-  static const String _legacyDbName = 'pure_weight_v1';
+  /// Names of databases from previous app versions, kept only so any existing
+  /// files can be quarantined instead of being left as silently-orphaned files.
+  ///
+  /// - `pure_weight_v1`: pre-encryption database (plaintext fields).
+  /// - `pure_weight_v2`: encrypted database from the PureWeight era.
+  static const List<String> _legacyDbNames = [
+    'pure_weight_v1',
+    'pure_weight_v2',
+  ];
 
   static const String _encryptionKeyKey = 'isar_encryption_key';
 
@@ -76,8 +80,8 @@ class DatabaseModule {
     // Ensure 256-bit AES key is generated and persisted in secure storage.
     await getEncryptionKey();
 
-    // One-time migration guard: move any pre-encryption v1 file out of the
-    // way so it can never be opened under the v2 (encrypted) schema.
+    // One-time migration guard: move any legacy database file out of the
+    // way so it can never be opened under the current schema.
     await _quarantineLegacyDatabase(dir.path);
 
     try {
@@ -145,7 +149,7 @@ class DatabaseModule {
   }
 
   /// Opens the Isar instance for [directoryPath] with automatic compaction
-  /// and the v2 encrypted schema registered.
+  /// and the encrypted schema registered.
   static Future<Isar> _openIsar(String directoryPath) {
     return Isar.open(
       [WeightEntryModelSchema],
@@ -158,54 +162,53 @@ class DatabaseModule {
     );
   }
 
-  /// Moves a pre-encryption `pure_weight_v1.isar` file (if present) to a
-  /// `.legacy_unencrypted.bak` file so it is never opened under the v2
-  /// (encrypted) schema.
+  /// Moves database files from previous app versions (if present) to
+  /// `.legacy.bak` files so they are never opened under the current schema.
   ///
   /// This is a safety guard, not a data migration: values inside the legacy
-  /// file remain in plaintext and are NOT copied into the new v2 database.
-  /// It only prevents the silent-corruption failure mode where Isar reopens
-  /// the old file under the new schema and every historical entry decrypts
-  /// to `0.0 kg` (see [dbName] doc comment). Runs at most once — if the
-  /// legacy file is already gone (already quarantined, or a fresh install),
-  /// this is a no-op.
+  /// files are NOT copied into the new `balance_v1` database. It prevents the
+  /// silent-corruption failure mode where Isar reopens an old file under a new
+  /// schema and historical entries decrypt to `0.0 kg` (see [dbName] doc
+  /// comment). Runs at most once — if a legacy file is already gone (already
+  /// quarantined, or a fresh install), it is a no-op.
   @visibleForTesting
   static Future<void> quarantineLegacyDatabaseForTesting(
     String directoryPath,
   ) => _quarantineLegacyDatabase(directoryPath);
 
   static Future<void> _quarantineLegacyDatabase(String directoryPath) async {
-    final legacyFile = File('$directoryPath/$_legacyDbName.isar');
-    if (!await legacyFile.exists()) {
-      return;
-    }
-    final quarantinePath =
-        '$directoryPath/$_legacyDbName.legacy_unencrypted.bak';
-    try {
-      await legacyFile.rename(quarantinePath);
-      if (kDebugMode) {
-        debugPrint(
-          '[DatabaseModule] Quarantined pre-encryption database to '
-          '$quarantinePath (data not auto-migrated into v2).',
-        );
+    for (final legacyName in _legacyDbNames) {
+      final legacyFile = File('$directoryPath/$legacyName.isar');
+      if (!await legacyFile.exists()) {
+        continue;
       }
-    } catch (e, stack) {
-      // rename() can fail across filesystems/volumes; fall back to copy+delete.
-      if (kDebugMode) {
-        debugPrint(
-          '[DatabaseModule] rename() failed for legacy db, falling back to '
-          'copy+delete: $e\n$stack',
-        );
-      }
+      final quarantinePath = '$directoryPath/$legacyName.legacy.bak';
       try {
-        await legacyFile.copy(quarantinePath);
-        await legacyFile.delete();
-      } catch (fallbackError, fallbackStack) {
+        await legacyFile.rename(quarantinePath);
         if (kDebugMode) {
           debugPrint(
-            '[DatabaseModule] Failed to quarantine legacy database: '
-            '$fallbackError\n$fallbackStack',
+            '[DatabaseModule] Quarantined legacy database to $quarantinePath '
+            '(data not auto-migrated into $dbName).',
           );
+        }
+      } catch (e, stack) {
+        // rename() can fail across filesystems/volumes; fall back to copy+delete.
+        if (kDebugMode) {
+          debugPrint(
+            '[DatabaseModule] rename() failed for legacy db, falling back to '
+            'copy+delete: $e\n$stack',
+          );
+        }
+        try {
+          await legacyFile.copy(quarantinePath);
+          await legacyFile.delete();
+        } catch (fallbackError, fallbackStack) {
+          if (kDebugMode) {
+            debugPrint(
+              '[DatabaseModule] Failed to quarantine legacy database: '
+              '$fallbackError\n$fallbackStack',
+            );
+          }
         }
       }
     }

@@ -2,7 +2,7 @@ import 'dart:io';
 import 'package:csv/csv.dart';
 import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:pure_weight/features/weight/domain/entities/weight_entry.dart';
+import 'package:balance/features/weight/domain/entities/weight_entry.dart';
 
 /// Utility class for exporting weight measurements as formatted CSV files.
 class CsvExporter {
@@ -46,7 +46,7 @@ class CsvExporter {
     final csvData = generateCsv(entries);
     final tempDir = await getTemporaryDirectory();
     final timestamp = DateFormat('yyyyMMdd_HHmmss').format(DateTime.now());
-    final file = File('${tempDir.path}/pure_weight_export_$timestamp.csv');
+    final file = File('${tempDir.path}/balance_export_$timestamp.csv');
     return file.writeAsString(csvData);
   }
 }
