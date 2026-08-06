@@ -120,6 +120,14 @@
   "deleteEntryTitle": "Usuń wpis",
   "deleteEntryMessage": "Ten wpis zostanie trwale usunięty.",
   "skippedRows": "Pominięto {count} wierszy",
+  "csvImportStepTitle": "Masz już historię pomiarów?",
+  "csvImportStepSubtitle": "Możesz zaimportować wcześniejsze pomiary z pliku CSV albo pominąć ten krok.",
+  "csvImportPickButton": "Wybierz plik CSV",
+  "csvImportSkipButton": "Pomiń",
+  "csvImportLoading": "Przetwarzanie pliku CSV...",
+  "csvImportSuccess": "Zaimportowano {count} pomiarów!",
+  "csvImportContinueButton": "Przejdź dalej",
+  "csvImportError": "Nie udało się odczytać tego pliku. Upewnij się, że to poprawny plik CSV z kolumnami daty i wagi.",
   "chartSemanticsTitle": "Wykres liniowy historii wagi dla okresu {period}. Ostatni zarejestrowany wynik to {weight}.",
   "chartSemanticsFilter": "filtr",
   "tabToday": "Dzisiaj",
@@ -304,5 +312,13 @@
   },
   "instantTestNotification": "Test Powiadomienia",
   "testNotificationSent": "Wysłano testowe powiadomienie!",
-  "errorSendingTestNotification": "Błąd wysyłania testowego powiadomienia: {error}"
+  "errorSendingTestNotification": "Błąd wysyłania testowego powiadomienia: {error}",
+  "@csvImportSuccess": {
+    "description": "Potwierdzenie po imporcie historii wagi z pliku CSV podczas onboardingu.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  }
 }

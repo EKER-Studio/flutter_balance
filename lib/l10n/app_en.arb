@@ -122,6 +122,14 @@
   "deleteEntryTitle": "Delete entry",
   "deleteEntryMessage": "This will permanently delete this entry.",
   "skippedRows": "Skipped {count} rows",
+  "csvImportStepTitle": "Import existing history?",
+  "csvImportStepSubtitle": "You can import past measurements from a CSV file, or skip this step for now.",
+  "csvImportPickButton": "Choose CSV file",
+  "csvImportSkipButton": "Skip for now",
+  "csvImportLoading": "Processing CSV file...",
+  "csvImportSuccess": "Imported {count} measurements!",
+  "csvImportContinueButton": "Continue",
+  "csvImportError": "We couldn't read this file. Make sure it is a valid CSV file with date and weight columns.",
   "chartSemanticsTitle": "Weight history line chart for {period} period. Latest recorded weight is {weight}.",
   "chartSemanticsFilter": "filter",
   "tabToday": "Today",
@@ -326,6 +334,14 @@
   },
   "@importSuccess": {
     "description": "Confirmation message shown after successfully importing weight entries from a CSV file."
+  },
+  "@csvImportSuccess": {
+    "description": "Confirmation shown after the user imports their weight history from a CSV file during onboarding.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   },
   "@importError": {
     "description": "Error message shown when importing weight entries from a CSV file fails."
