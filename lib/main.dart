@@ -73,6 +73,12 @@ Future<void> main() async {
   }
 }
 
+/// Maximum size of the crash log file before the oldest entries are trimmed.
+///
+/// Prevents the log from growing without bound during long-running installs or
+/// crash loops, at the cost of at most one extra entry past this limit.
+const int _maxCrashLogBytes = 1024 * 1024;
+
 /// Appends an uncaught [error] to the on-device crash log in release builds.
 ///
 /// Errors would otherwise vanish silently because the platform error handler
@@ -83,8 +89,23 @@ Future<void> _writeCrashLog(Object error, StackTrace stack) async {
     final dir = await getApplicationDocumentsDirectory();
     final file = File('${dir.path}/crash_log.txt');
     final entry = '${DateTime.now().toIso8601String()}\n$error\n$stack\n\n';
+
+    if (await file.exists() && await file.length() > _maxCrashLogBytes) {
+      await _trimCrashLog(file);
+    }
+
     await file.writeAsString(entry, mode: FileMode.append, flush: true);
   } catch (_) {
     // Crash logging must never throw.
   }
+}
+
+/// Removes the oldest half of [file], aligned to an entry boundary, so the
+/// newest crash entries survive and the log never exceeds the cap by much.
+Future<void> _trimCrashLog(File file) async {
+  final content = await file.readAsString();
+  final tail = content.substring(content.length ~/ 2);
+  final firstEntryStart = tail.indexOf('\n\n');
+  final kept = firstEntryStart == -1 ? '' : tail.substring(firstEntryStart + 2);
+  await file.writeAsString(kept, flush: true);
 }
