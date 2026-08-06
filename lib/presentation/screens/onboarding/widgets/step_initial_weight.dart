@@ -5,21 +5,21 @@ import 'package:balance/core/utils/unit_converter.dart';
 import 'package:balance/l10n/app_localizations.dart';
 import 'package:balance/presentation/core/clamped_layout.dart';
 
-/// Form widget for Step 3 of the onboarding wizard: logging initial weight.
+/// Form widget for Step 2 of the onboarding wizard: logging initial weight.
 class StepInitialWeight extends StatefulWidget {
   /// The user's active measurement unit system.
   final MeasurementUnit unit;
 
-  /// Callback invoked when setup is completed.
+  /// Callback invoked when the user proceeds to the next step.
   ///
   /// Passes the initial weight in kg and the chosen measurement timestamp.
-  final void Function(double weightKg, DateTime timestamp) onComplete;
+  final void Function(double weightKg, DateTime timestamp) onNext;
 
   /// Creates a [StepInitialWeight] widget.
   const StepInitialWeight({
     super.key,
     required this.unit,
-    required this.onComplete,
+    required this.onNext,
   });
 
   @override
@@ -99,12 +99,12 @@ class _StepInitialWeightState extends State<StepInitialWeight> {
     });
   }
 
-  /// Invokes [StepInitialWeight.onComplete] with the parsed weight and the
+  /// Invokes [StepInitialWeight.onNext] with the parsed weight and the
   /// selected timestamp when the input is valid.
-  void _handleComplete() {
+  void _handleNext() {
     final weightKg = _parseWeightKg();
     if (weightKg != null) {
-      widget.onComplete(weightKg, _selectedTimestamp);
+      widget.onNext(weightKg, _selectedTimestamp);
     }
   }
 
@@ -158,7 +158,7 @@ class _StepInitialWeightState extends State<StepInitialWeight> {
             ),
             onChanged: _validate,
             onSubmitted: (_) {
-              if (isNextEnabled) _handleComplete();
+              if (isNextEnabled) _handleNext();
             },
           ),
           const SizedBox(height: 8),
@@ -192,8 +192,8 @@ class _StepInitialWeightState extends State<StepInitialWeight> {
           ConstrainedBox(
             constraints: const BoxConstraints(minHeight: 48.0),
             child: FilledButton(
-              onPressed: isNextEnabled ? _handleComplete : null,
-              child: Text(l10n.completeSetup),
+              onPressed: isNextEnabled ? _handleNext : null,
+              child: Text(l10n.next),
             ),
           ),
         ],

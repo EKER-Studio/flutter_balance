@@ -6,7 +6,7 @@ import 'package:balance/presentation/bloc/settings/app_settings_event.dart';
 import 'package:balance/presentation/bloc/settings/app_settings_state.dart';
 import 'package:balance/presentation/core/clamped_layout.dart';
 
-/// Form widget for Step 3 of the onboarding wizard: setting up daily reminder notifications.
+/// Form widget for Step 4 of the onboarding wizard: setting up daily reminder notifications.
 class StepReminderNotification extends StatefulWidget {
   /// Callback invoked when proceeding to the next step.
   final VoidCallback onNext;

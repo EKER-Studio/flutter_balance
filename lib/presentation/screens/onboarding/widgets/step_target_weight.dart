@@ -4,13 +4,17 @@ import 'package:balance/core/utils/unit_converter.dart';
 import 'package:balance/l10n/app_localizations.dart';
 import 'package:balance/presentation/core/clamped_layout.dart';
 
-/// Form widget for Step 2 of the onboarding wizard: setting an optional target weight.
+/// Form widget for Step 3 of the onboarding wizard: setting an optional target weight.
 class StepTargetWeight extends StatefulWidget {
   /// The user's active measurement unit system.
   final MeasurementUnit unit;
 
   /// Initial target weight in kg (if already set).
   final double? initialTargetWeightKg;
+
+  /// Initial weight in kg logged in the previous step, used to display the
+  /// remaining delta to the entered target (e.g. "-5.0 kg to target").
+  final double? initialWeightKg;
 
   /// Callback invoked when the user submits or skips this step.
   ///
@@ -22,6 +26,7 @@ class StepTargetWeight extends StatefulWidget {
     super.key,
     required this.unit,
     this.initialTargetWeightKg,
+    this.initialWeightKg,
     required this.onNext,
   });
 
@@ -49,12 +54,37 @@ class _StepTargetWeightState extends State<StepTargetWeight> {
     }
 
     _weightController = TextEditingController(text: initialText);
+    _weightController.addListener(_handleWeightInputChanged);
   }
 
   @override
   void dispose() {
+    _weightController.removeListener(_handleWeightInputChanged);
     _weightController.dispose();
     super.dispose();
+  }
+
+  /// Rebuilds the step on every keystroke so the live target delta stays in
+  /// sync with the input.
+  void _handleWeightInputChanged() {
+    setState(() {});
+  }
+
+  /// Formats the remaining delta (initial weight minus target) in the active
+  /// unit, or returns `null` when no initial weight or valid target is set.
+  String? _buildDeltaText(String toTargetLabel) {
+    final initialWeight = widget.initialWeightKg;
+    if (initialWeight == null || initialWeight <= 0) return null;
+
+    final targetKg = _parseTargetWeightKg();
+    if (targetKg == null) return null;
+
+    final delta = targetKg - initialWeight;
+    final formatted = widget.unit == MeasurementUnit.imperial
+        ? kgToLbs(delta).toStringAsFixed(1)
+        : delta.toStringAsFixed(1);
+    final unitSuffix = widget.unit == MeasurementUnit.imperial ? 'lbs' : 'kg';
+    return '$formatted $unitSuffix $toTargetLabel';
   }
 
   /// Parses the target weight input into kilograms, or `null` when empty or
@@ -112,6 +142,7 @@ class _StepTargetWeightState extends State<StepTargetWeight> {
 
     final isError = _errorText != null;
     final isNextEnabled = !isError;
+    final deltaText = _buildDeltaText(l10n.toTarget);
 
     final errorOutline = OutlineInputBorder(
       borderRadius: BorderRadius.circular(8),
@@ -164,6 +195,18 @@ class _StepTargetWeightState extends State<StepTargetWeight> {
               fontWeight: isError ? FontWeight.w500 : FontWeight.w400,
             ),
           ),
+          if (deltaText != null) ...[
+            const SizedBox(height: 8),
+            Text(
+              key: const Key('target_delta_text'),
+              deltaText,
+              style: TextStyle(
+                color: theme.colorScheme.primary,
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ],
           const Spacer(),
           ConstrainedBox(
             constraints: const BoxConstraints(minHeight: 48.0),

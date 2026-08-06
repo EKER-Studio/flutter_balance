@@ -7,7 +7,7 @@ import 'package:balance/presentation/bloc/settings/app_settings_event.dart';
 import 'package:balance/presentation/bloc/settings/app_settings_state.dart';
 import 'package:balance/presentation/core/clamped_layout.dart';
 
-/// Form widget for Step 4 of the onboarding wizard: setting optional biometric lock.
+/// Form widget for Step 5 of the onboarding wizard: setting optional biometric lock.
 class StepBiometricLock extends StatefulWidget {
   /// Callback invoked when proceeding to the next step (or skipping).
   final VoidCallback onNext;

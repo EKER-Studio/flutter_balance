@@ -117,6 +117,77 @@ void main() {
       expect(find.text('Next'), findsOneWidget);
     });
 
+    testWidgets('does not show target delta when initial weight is missing', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        buildApp(
+          StepTargetWeight(unit: MeasurementUnit.metric, onNext: (_) {}),
+        ),
+      );
+
+      await tester.enterText(
+        find.byKey(const Key('target_weight_input')),
+        '70.0',
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.byKey(const Key('target_delta_text')), findsNothing);
+    });
+
+    testWidgets('shows live target delta relative to the initial weight', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        buildApp(
+          StepTargetWeight(
+            unit: MeasurementUnit.metric,
+            initialWeightKg: 75.5,
+            onNext: (_) {},
+          ),
+        ),
+      );
+
+      await tester.enterText(
+        find.byKey(const Key('target_weight_input')),
+        '70',
+      );
+      await tester.pumpAndSettle();
+
+      expect(
+        find.text('-5.5 kg to target'),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('hides target delta when the input becomes invalid', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        buildApp(
+          StepTargetWeight(
+            unit: MeasurementUnit.metric,
+            initialWeightKg: 75.5,
+            onNext: (_) {},
+          ),
+        ),
+      );
+
+      await tester.enterText(
+        find.byKey(const Key('target_weight_input')),
+        '70',
+      );
+      await tester.pumpAndSettle();
+      expect(find.byKey(const Key('target_delta_text')), findsOneWidget);
+
+      await tester.enterText(
+        find.byKey(const Key('target_weight_input')),
+        'abc',
+      );
+      await tester.pumpAndSettle();
+      expect(find.byKey(const Key('target_delta_text')), findsNothing);
+    });
+
     testWidgets('calls onNext(null) when Next pressed with empty input', (
       tester,
     ) async {
@@ -196,43 +267,43 @@ void main() {
   });
 
   group('StepInitialWeight Widget Tests', () {
-    testWidgets('renders initial weight input and complete button', (
+    testWidgets('renders initial weight input and next button', (
       tester,
     ) async {
       await tester.pumpWidget(
         buildApp(
           StepInitialWeight(
             unit: MeasurementUnit.metric,
-            onComplete: (_, _) {},
+            onNext: (_, _) {},
           ),
         ),
       );
 
       expect(find.text('Initial Weight'), findsOneWidget);
       expect(find.byKey(const Key('initial_weight_input')), findsOneWidget);
-      expect(find.text('Complete Setup'), findsOneWidget);
+      expect(find.text('Next'), findsOneWidget);
     });
 
     testWidgets(
-      'Complete Setup button is disabled if initial weight is empty',
+      'Next button is disabled if initial weight is empty',
       (tester) async {
         await tester.pumpWidget(
           buildApp(
             StepInitialWeight(
               unit: MeasurementUnit.metric,
-              onComplete: (_, _) {},
+              onNext: (_, _) {},
             ),
           ),
         );
 
         final button = tester.widget<FilledButton>(
-          find.widgetWithText(FilledButton, 'Complete Setup'),
+          find.widgetWithText(FilledButton, 'Next'),
         );
         expect(button.onPressed, isNull);
       },
     );
 
-    testWidgets('calls onComplete when valid weight is entered', (
+    testWidgets('calls onNext when valid weight is entered', (
       tester,
     ) async {
       double? weightResult;
@@ -242,7 +313,7 @@ void main() {
         buildApp(
           StepInitialWeight(
             unit: MeasurementUnit.metric,
-            onComplete: (w, t) {
+            onNext: (w, t) {
               weightResult = w;
               timeResult = t;
             },
@@ -256,7 +327,7 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      final nextButton = find.text('Complete Setup');
+      final nextButton = find.text('Next');
       await tester.ensureVisible(nextButton);
       await tester.tap(nextButton);
       await tester.pumpAndSettle();

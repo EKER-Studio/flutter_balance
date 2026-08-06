@@ -29,12 +29,22 @@ class OnboardingWizardScreen extends StatefulWidget {
 
 /// Orchestrates the five onboarding steps and persists each step's choices
 /// into [AppSettingsBloc] and [WeightBloc] as the user progresses.
+///
+/// Step order: Units & Height, Initial Weight, Target Weight (optional),
+/// Daily Reminder (optional), Biometric Lock (optional, skipped when the
+/// device does not support credentials). Completing the final step dispatches
+/// [CompleteOnboarding] and invokes [OnboardingWizardScreen.onWizardCompleted].
 class _OnboardingWizardScreenState extends State<OnboardingWizardScreen> {
   final PageController _pageController = PageController();
   int _currentStep = 0;
 
+  /// Total number of steps for the current build; the biometric step is
+  /// omitted on devices without credential support.
+  int _totalSteps = 5;
+
   late MeasurementUnit _selectedUnit;
   late double? _selectedHeightCm;
+  double? _initialWeightKg;
   double? _targetWeightKg;
 
   @override
@@ -75,13 +85,31 @@ class _OnboardingWizardScreenState extends State<OnboardingWizardScreen> {
     settingsBloc.add(UpdateMeasurementUnit(unit));
     settingsBloc.add(UpdateHeight(heightCm));
 
-    // Sync height into the weight BLoC before the final step persists the
-    // initial measurement, otherwise its AddWeight guard rejects the entry
-    // with a heightNotSet error on a fresh install (height is only ever
+    // Sync height into the weight BLoC before the initial-weight step
+    // persists the measurement, otherwise its AddWeight guard rejects the
+    // entry with a heightNotSet error on a fresh install (height is only ever
     // saved when settings are saved, or here in onboarding).
     context.read<WeightBloc>().add(UpdateUserHeight(heightCm));
 
-    _goToStep(_currentStep + 1);
+    _goToNextStep();
+  }
+
+  /// Persists the initial [weightKg] measurement at [timestamp], then advances
+  /// to the target-weight step.
+  void _handleInitialWeightNext(double weightKg, DateTime timestamp) {
+    setState(() {
+      _initialWeightKg = weightKg;
+    });
+
+    try {
+      context.read<WeightBloc>().add(
+        AddWeight(weightKg: weightKg, dateTime: timestamp),
+      );
+    } catch (_) {
+      // Safe fallback if WeightBloc is not provided in context (e.g. unit tests)
+    }
+
+    _goToNextStep();
   }
 
   /// Persists the chosen [targetWeightKg] (or `null` when skipped), then advances.
@@ -91,36 +119,35 @@ class _OnboardingWizardScreenState extends State<OnboardingWizardScreen> {
     });
 
     context.read<AppSettingsBloc>().add(TargetWeightChanged(targetWeightKg));
-    _goToStep(_currentStep + 1);
+    _goToNextStep();
   }
 
   /// Advances past the notification step without additional action; the
   /// reminder state is already persisted by [StepReminderNotification].
   void _handleReminderNext() {
-    _goToStep(_currentStep + 1);
+    _goToNextStep();
   }
 
   /// Advances past the biometric lock step; the choice is already persisted
   /// by [StepBiometricLock].
   void _handleBiometricNext() {
-    _goToStep(_currentStep + 1);
+    _goToNextStep();
   }
 
-  /// Logs the initial [weightKg] measurement at [timestamp], completes
-  /// onboarding, and notifies [OnboardingWizardScreen.onWizardCompleted].
-  void _handleInitialWeightComplete(double weightKg, DateTime timestamp) {
-    // Log initial weight entry
-    try {
-      context.read<WeightBloc>().add(
-        AddWeight(weightKg: weightKg, dateTime: timestamp),
-      );
-    } catch (_) {
-      // Safe fallback if WeightBloc is not provided in context (e.g. unit tests)
+  /// Advances to the next step, or completes onboarding when the current step
+  /// is the final one.
+  void _goToNextStep() {
+    if (_currentStep + 1 >= _totalSteps) {
+      _completeOnboarding();
+    } else {
+      _goToStep(_currentStep + 1);
     }
+  }
 
-    // Complete onboarding setup
+  /// Dispatches [CompleteOnboarding] and notifies
+  /// [OnboardingWizardScreen.onWizardCompleted].
+  void _completeOnboarding() {
     context.read<AppSettingsBloc>().add(const CompleteOnboarding());
-
     widget.onWizardCompleted?.call();
   }
 
@@ -157,22 +184,24 @@ class _OnboardingWizardScreenState extends State<OnboardingWizardScreen> {
         ),
       ),
       _buildStepWrapper(
+        StepInitialWeight(
+          unit: _selectedUnit,
+          onNext: _handleInitialWeightNext,
+        ),
+      ),
+      _buildStepWrapper(
         StepTargetWeight(
           unit: _selectedUnit,
           initialTargetWeightKg: _targetWeightKg,
+          initialWeightKg: _initialWeightKg,
           onNext: _handleTargetWeightNext,
         ),
       ),
       _buildStepWrapper(StepReminderNotification(onNext: _handleReminderNext)),
       if (isBiometricSupported)
         _buildStepWrapper(StepBiometricLock(onNext: _handleBiometricNext)),
-      _buildStepWrapper(
-        StepInitialWeight(
-          unit: _selectedUnit,
-          onComplete: _handleInitialWeightComplete,
-        ),
-      ),
     ];
+    _totalSteps = steps.length;
 
     final progress = (_currentStep + 1) / steps.length;
 

@@ -7,13 +7,13 @@ import 'package:balance/presentation/screens/onboarding/widgets/step_initial_wei
 void main() {
   Widget buildTestWidget({
     required MeasurementUnit unit,
-    required void Function(double, DateTime) onComplete,
+    required void Function(double, DateTime) onNext,
   }) {
     return MaterialApp(
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
       home: Scaffold(
-        body: StepInitialWeight(unit: unit, onComplete: onComplete),
+        body: StepInitialWeight(unit: unit, onNext: onNext),
       ),
     );
   }
@@ -21,7 +21,7 @@ void main() {
   group('StepInitialWeight', () {
     testWidgets('renders correctly', (tester) async {
       await tester.pumpWidget(
-        buildTestWidget(unit: MeasurementUnit.metric, onComplete: (_, _) {}),
+        buildTestWidget(unit: MeasurementUnit.metric, onNext: (_, _) {}),
       );
 
       await tester.pumpAndSettle();
@@ -36,15 +36,15 @@ void main() {
       expect(find.byType(FilledButton), findsOneWidget);
     });
 
-    testWidgets('Complete Setup button is disabled if empty', (tester) async {
+    testWidgets('Next button is disabled if empty', (tester) async {
       await tester.pumpWidget(
-        buildTestWidget(unit: MeasurementUnit.metric, onComplete: (_, _) {}),
+        buildTestWidget(unit: MeasurementUnit.metric, onNext: (_, _) {}),
       );
 
       await tester.pumpAndSettle();
 
       final button = tester.widget<FilledButton>(
-        find.widgetWithText(FilledButton, 'Complete Setup'),
+        find.widgetWithText(FilledButton, 'Next'),
       );
       expect(button.onPressed, isNull);
     });
@@ -53,7 +53,7 @@ void main() {
       tester,
     ) async {
       await tester.pumpWidget(
-        buildTestWidget(unit: MeasurementUnit.metric, onComplete: (_, _) {}),
+        buildTestWidget(unit: MeasurementUnit.metric, onNext: (_, _) {}),
       );
 
       await tester.pumpAndSettle();
@@ -71,7 +71,7 @@ void main() {
       tester,
     ) async {
       await tester.pumpWidget(
-        buildTestWidget(unit: MeasurementUnit.metric, onComplete: (_, _) {}),
+        buildTestWidget(unit: MeasurementUnit.metric, onNext: (_, _) {}),
       );
 
       await tester.pumpAndSettle();
@@ -85,14 +85,14 @@ void main() {
       );
     });
 
-    testWidgets('calls onComplete with valid metric weight', (tester) async {
+    testWidgets('calls onNext with valid metric weight', (tester) async {
       double? resultWeight;
       DateTime? resultTime;
 
       await tester.pumpWidget(
         buildTestWidget(
           unit: MeasurementUnit.metric,
-          onComplete: (weight, time) {
+          onNext: (weight, time) {
             resultWeight = weight;
             resultTime = time;
           },
@@ -104,7 +104,7 @@ void main() {
       await tester.enterText(find.byType(TextField), '75.5');
       await tester.pumpAndSettle();
 
-      final nextButton = find.text('Complete Setup');
+      final nextButton = find.text('Next');
       await tester.ensureVisible(nextButton);
       await tester.tap(nextButton);
       await tester.pumpAndSettle();
@@ -113,7 +113,7 @@ void main() {
       expect(resultTime, isNotNull);
     });
 
-    testWidgets('calls onComplete with valid imperial weight converted to kg', (
+    testWidgets('calls onNext with valid imperial weight converted to kg', (
       tester,
     ) async {
       double? resultWeight;
@@ -122,7 +122,7 @@ void main() {
       await tester.pumpWidget(
         buildTestWidget(
           unit: MeasurementUnit.imperial,
-          onComplete: (weight, time) {
+          onNext: (weight, time) {
             resultWeight = weight;
             resultTime = time;
           },
@@ -134,7 +134,7 @@ void main() {
       await tester.enterText(find.byType(TextField), '150.0');
       await tester.pumpAndSettle();
 
-      final nextButton = find.text('Complete Setup');
+      final nextButton = find.text('Next');
       await tester.ensureVisible(nextButton);
       await tester.tap(nextButton);
       await tester.pumpAndSettle();
@@ -144,14 +144,14 @@ void main() {
       expect(resultTime, isNotNull);
     });
 
-    testWidgets('calls onComplete with comma-separated weight', (tester) async {
+    testWidgets('calls onNext with comma-separated weight', (tester) async {
       double? resultWeight;
       DateTime? resultTime;
 
       await tester.pumpWidget(
         buildTestWidget(
           unit: MeasurementUnit.metric,
-          onComplete: (weight, time) {
+          onNext: (weight, time) {
             resultWeight = weight;
             resultTime = time;
           },
@@ -163,7 +163,7 @@ void main() {
       await tester.enterText(find.byType(TextField), '75,5');
       await tester.pumpAndSettle();
 
-      final nextButton = find.text('Complete Setup');
+      final nextButton = find.text('Next');
       await tester.ensureVisible(nextButton);
       await tester.tap(nextButton);
       await tester.pumpAndSettle();
