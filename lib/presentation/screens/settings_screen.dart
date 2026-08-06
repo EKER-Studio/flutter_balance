@@ -340,6 +340,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                                     _showWipeConfirmation(
                                                       context,
                                                     ),
+                                              ),
+                                              const SizedBox(height: 24),
+                                              _SectionHeader(
+                                                label: l10n.helpSection,
+                                              ),
+                                              const SizedBox(height: 8),
+                                              _HelpSection(
+                                                l10n: l10n,
                                                 onCrashLogTap: () =>
                                                     _sendCrashLog(context),
                                               ),
@@ -421,6 +429,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                               _exportCsv(context),
                                           onWipeTap: () =>
                                               _showWipeConfirmation(context),
+                                        ),
+                                        const SizedBox(height: 16),
+                                        _SectionHeader(
+                                          label: l10n.helpSection,
+                                        ),
+                                        const SizedBox(height: 8),
+                                        _HelpSection(
+                                          l10n: l10n,
                                           onCrashLogTap: () =>
                                               _sendCrashLog(context),
                                         ),
@@ -1372,8 +1388,7 @@ class _SecuritySection extends StatelessWidget {
   }
 }
 
-/// Data settings group with CSV import, export, crash log sharing, and wipe
-/// controls.
+/// Data settings group with CSV import, export, and wipe controls.
 class _DataSection extends StatelessWidget {
   /// Localized strings for this section.
   final AppLocalizations l10n;
@@ -1387,16 +1402,12 @@ class _DataSection extends StatelessWidget {
   /// Callback invoked when the wipe data tile is tapped.
   final VoidCallback onWipeTap;
 
-  /// Callback invoked when the send crash log tile is tapped.
-  final VoidCallback onCrashLogTap;
-
   /// Creates a [_DataSection] with the given dependencies.
   const _DataSection({
     required this.l10n,
     required this.onImportTap,
     required this.onExportTap,
     required this.onWipeTap,
-    required this.onCrashLogTap,
   });
 
   @override
@@ -1423,12 +1434,6 @@ class _DataSection extends StatelessWidget {
             onTap: onExportTap,
           ),
           _CustomSettingsTile(
-            icon: Icons.bug_report_outlined,
-            title: l10n.sendCrashLog,
-            sectionLabel: l10n.dataSection,
-            onTap: onCrashLogTap,
-          ),
-          _CustomSettingsTile(
             icon: Icons.delete_forever_outlined,
             title: l10n.wipeData,
             isError: true,
@@ -1437,6 +1442,39 @@ class _DataSection extends StatelessWidget {
             onTap: onWipeTap,
           ),
         ],
+      ),
+    );
+  }
+}
+
+/// Help settings group with the crash log sharing tile.
+class _HelpSection extends StatelessWidget {
+  /// Localized strings for this section.
+  final AppLocalizations l10n;
+
+  /// Callback invoked when the send crash log tile is tapped.
+  final VoidCallback onCrashLogTap;
+
+  /// Creates a [_HelpSection] with the given dependencies.
+  const _HelpSection({
+    required this.l10n,
+    required this.onCrashLogTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return Card(
+      margin: EdgeInsets.zero,
+      color: colorScheme.surfaceContainerLow,
+      elevation: 0,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
+      child: _CustomSettingsTile(
+        icon: Icons.bug_report_outlined,
+        title: l10n.sendCrashLog,
+        sectionLabel: l10n.helpSection,
+        onTap: onCrashLogTap,
       ),
     );
   }
