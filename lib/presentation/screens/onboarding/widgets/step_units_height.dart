@@ -219,7 +219,12 @@ class _StepUnitsHeightState extends State<StepUnitsHeight> {
             ),
             const SizedBox(height: 8),
             Text(
-              isMetricError ? _cmErrorText! : '50 – 250 cm',
+              isMetricError
+                  ? _cmErrorText!
+                  : l10n.heightRangeHint(
+                      AppSettingsState.maxHeightCm.toStringAsFixed(0),
+                      AppSettingsState.minHeightCm.toStringAsFixed(0),
+                    ),
               style: TextStyle(
                 color: isMetricError
                     ? theme.colorScheme.error
