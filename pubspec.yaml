@@ -68,6 +68,22 @@ dev_dependencies:
   build_runner: ^2.15.1
   isar_community_generator: ^3.3.2
   import_lint: ^2.0.0
+  flutter_launcher_icons: ^0.14.1
+
+flutter_launcher_icons:
+  android: true
+  ios: true
+  remove_alpha_ios: true
+  
+  # Zmiana na .png rozwiązuje błąd dekodera dla iOS i starego Androida
+  image_path: "assets/icon/app_icon_foreground.png"
+  
+  # Android Adaptive Icons (API 26+)
+  adaptive_icon_background: "#4f378a"
+  adaptive_icon_foreground: "assets/icon/app_icon_foreground.png"
+  
+  # Android 13+ Dynamic Themed Icons
+  adaptive_icon_monochrome: "assets/icon/app_icon_monochrome.png"
 
 dependency_overrides:
   # Temporary compatibility shim pinned on 2026-08-01.
@@ -125,13 +141,15 @@ flutter:
 flutter_native_splash:
   color: "#FDF7FF"
   color_dark: "#141218"
-  image: assets/app_icon.png
-  image_dark: assets/app_icon.png
-
+  
+  image: "assets/icon/app_icon_foreground.png"
+  image_dark: "assets/icon/app_icon_foreground.png"
+  
   android_12:
-    image: assets/app_icon.png
-    icon_background_color: "#FDF7FF"
-    icon_background_color_dark: "#141218"
+    image: "assets/icon/app_icon_foreground.png"
+    image_dark: "assets/icon/app_icon_foreground.png"
+    icon_background_color: "#4f378a"
+    icon_background_color_dark: "#4f378a"
 
   android: true
   ios: true
