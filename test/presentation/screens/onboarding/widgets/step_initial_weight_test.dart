@@ -8,12 +8,17 @@ void main() {
   Widget buildTestWidget({
     required MeasurementUnit unit,
     required void Function(double, DateTime) onNext,
+    double? initialWeightKg,
   }) {
     return MaterialApp(
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
       home: Scaffold(
-        body: StepInitialWeight(unit: unit, onNext: onNext),
+        body: StepInitialWeight(
+          unit: unit,
+          initialWeightKg: initialWeightKg,
+          onNext: onNext,
+        ),
       ),
     );
   }
@@ -170,6 +175,64 @@ void main() {
 
       expect(resultWeight, closeTo(75.5, 0.01));
       expect(resultTime, isNotNull);
+    });
+
+    testWidgets('pre-fills the input with the imported weight in kg', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        buildTestWidget(
+          unit: MeasurementUnit.metric,
+          initialWeightKg: 86.0,
+          onNext: (_, _) {},
+        ),
+      );
+
+      await tester.pumpAndSettle();
+
+      final field = tester.widget<TextField>(find.byType(TextField));
+      expect(field.controller!.text, '86.0');
+
+      // Next is immediately enabled with the pre-filled value.
+      final button = tester.widget<FilledButton>(
+        find.widgetWithText(FilledButton, 'Next'),
+      );
+      expect(button.onPressed, isNotNull);
+    });
+
+    testWidgets('pre-fills the input converted to lbs for imperial units', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        buildTestWidget(
+          unit: MeasurementUnit.imperial,
+          initialWeightKg: 68.0,
+          onNext: (_, _) {},
+        ),
+      );
+
+      await tester.pumpAndSettle();
+
+      final field = tester.widget<TextField>(find.byType(TextField));
+      // 68 kg is roughly 149.9 lbs.
+      expect(field.controller!.text, '149.9');
+    });
+
+    testWidgets('ignores out-of-range imported weights and stays blank', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        buildTestWidget(
+          unit: MeasurementUnit.metric,
+          initialWeightKg: 900,
+          onNext: (_, _) {},
+        ),
+      );
+
+      await tester.pumpAndSettle();
+
+      final field = tester.widget<TextField>(find.byType(TextField));
+      expect(field.controller!.text, isEmpty);
     });
   });
 }

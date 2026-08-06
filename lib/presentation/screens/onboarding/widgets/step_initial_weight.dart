@@ -5,10 +5,14 @@ import 'package:balance/core/utils/unit_converter.dart';
 import 'package:balance/l10n/app_localizations.dart';
 import 'package:balance/presentation/core/clamped_layout.dart';
 
-/// Form widget for Step 2 of the onboarding wizard: logging initial weight.
+/// Form widget for Step 3 of the onboarding wizard: logging initial weight.
 class StepInitialWeight extends StatefulWidget {
   /// The user's active measurement unit system.
   final MeasurementUnit unit;
+
+  /// Pre-filled initial weight in kilograms (e.g. imported from CSV), or
+  /// `null` when the input should start blank.
+  final double? initialWeightKg;
 
   /// Callback invoked when the user proceeds to the next step.
   ///
@@ -19,6 +23,7 @@ class StepInitialWeight extends StatefulWidget {
   const StepInitialWeight({
     super.key,
     required this.unit,
+    this.initialWeightKg,
     required this.onNext,
   });
 
@@ -30,6 +35,17 @@ class _StepInitialWeightState extends State<StepInitialWeight> {
   final TextEditingController _weightController = TextEditingController();
   DateTime _selectedTimestamp = DateTime.now();
   String? _errorText;
+
+  @override
+  void initState() {
+    super.initState();
+    final weightKg = widget.initialWeightKg;
+    if (weightKg != null && weightKg > 0 && weightKg <= 500) {
+      _weightController.text = widget.unit == MeasurementUnit.imperial
+          ? kgToLbs(weightKg).toStringAsFixed(1)
+          : weightKg.toStringAsFixed(1);
+    }
+  }
 
   @override
   void dispose() {

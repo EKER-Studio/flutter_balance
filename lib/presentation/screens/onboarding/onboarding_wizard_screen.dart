@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:balance/core/models/measurement_unit.dart';
+import 'package:balance/core/services/csv_import_service.dart';
+import 'package:balance/features/onboarding/presentation/widgets/steps/step_csv_import.dart';
+import 'package:balance/features/weight/domain/entities/weight_entry.dart';
 import 'package:balance/features/weight/presentation/bloc/weight_bloc.dart';
 import 'package:balance/features/weight/presentation/bloc/weight_event.dart';
 import 'package:balance/l10n/app_localizations.dart';
@@ -20,32 +23,45 @@ class OnboardingWizardScreen extends StatefulWidget {
   /// Optional callback invoked upon completing all onboarding steps.
   final VoidCallback? onWizardCompleted;
 
+  /// Service used by the CSV import step; defaults to a real
+  /// [CsvImportService] and can be replaced with a fake in tests.
+  final CsvImportService? csvImportService;
+
   /// Creates an [OnboardingWizardScreen].
-  const OnboardingWizardScreen({super.key, this.onWizardCompleted});
+  const OnboardingWizardScreen({
+    super.key,
+    this.onWizardCompleted,
+    this.csvImportService,
+  });
 
   @override
   State<OnboardingWizardScreen> createState() => _OnboardingWizardScreenState();
 }
 
-/// Orchestrates the five onboarding steps and persists each step's choices
+/// Orchestrates the six onboarding steps and persists each step's choices
 /// into [AppSettingsBloc] and [WeightBloc] as the user progresses.
 ///
-/// Step order: Units & Height, Initial Weight, Target Weight (optional),
-/// Daily Reminder (optional), Biometric Lock (optional, skipped when the
-/// device does not support credentials). Completing the final step dispatches
-/// [CompleteOnboarding] and invokes [OnboardingWizardScreen.onWizardCompleted].
+/// Step order: Units & Height, CSV Import (optional), Initial Weight,
+/// Target Weight (optional), Daily Reminder (optional), Biometric Lock
+/// (optional, skipped when the device does not support credentials).
+/// Completing the final step dispatches [CompleteOnboarding] and invokes
+/// [OnboardingWizardScreen.onWizardCompleted].
 class _OnboardingWizardScreenState extends State<OnboardingWizardScreen> {
   final PageController _pageController = PageController();
   int _currentStep = 0;
 
   /// Total number of steps for the current build; the biometric step is
   /// omitted on devices without credential support.
-  int _totalSteps = 5;
+  int _totalSteps = 6;
 
   late MeasurementUnit _selectedUnit;
   late double? _selectedHeightCm;
   double? _initialWeightKg;
   double? _targetWeightKg;
+
+  /// History imported from CSV in step 2; its latest chronological entry
+  /// pre-fills the initial-weight step.
+  List<WeightEntry> _importedEntries = const [];
 
   @override
   void initState() {
@@ -94,6 +110,21 @@ class _OnboardingWizardScreenState extends State<OnboardingWizardScreen> {
     _goToNextStep();
   }
 
+  /// Stores the imported history and advances to the initial-weight step,
+  /// which is pre-filled with the latest imported measurement.
+  void _handleCsvImported(List<WeightEntry> entries) {
+    setState(() {
+      _importedEntries = entries;
+    });
+    _goToNextStep();
+  }
+
+  /// Advances to the initial-weight step without importing; the step stays
+  /// blank and units chosen in step 1 remain untouched.
+  void _handleCsvSkipped() {
+    _goToNextStep();
+  }
+
   /// Persists the initial [weightKg] measurement at [timestamp], then advances
   /// to the target-weight step.
   void _handleInitialWeightNext(double weightKg, DateTime timestamp) {
@@ -132,6 +163,16 @@ class _OnboardingWizardScreenState extends State<OnboardingWizardScreen> {
   /// by [StepBiometricLock].
   void _handleBiometricNext() {
     _goToNextStep();
+  }
+
+  /// Latest chronological weight in kg from the imported CSV history, or
+  /// `null` when nothing was imported.
+  double? get _latestImportedWeightKg {
+    if (_importedEntries.isEmpty) return null;
+    final latest = _importedEntries.reduce(
+      (a, b) => a.dateTime.isAfter(b.dateTime) ? a : b,
+    );
+    return latest.weightKg;
   }
 
   /// Advances to the next step, or completes onboarding when the current step
@@ -184,8 +225,16 @@ class _OnboardingWizardScreenState extends State<OnboardingWizardScreen> {
         ),
       ),
       _buildStepWrapper(
+        StepCsvImport(
+          importService: widget.csvImportService,
+          onFileImported: _handleCsvImported,
+          onSkipped: _handleCsvSkipped,
+        ),
+      ),
+      _buildStepWrapper(
         StepInitialWeight(
           unit: _selectedUnit,
+          initialWeightKg: _latestImportedWeightKg,
           onNext: _handleInitialWeightNext,
         ),
       ),
