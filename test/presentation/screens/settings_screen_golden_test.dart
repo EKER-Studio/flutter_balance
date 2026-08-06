@@ -55,14 +55,14 @@ void main() {
 
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
         .setMockMethodCallHandler(
-      const MethodChannel('dev.fluttercommunity.plus/package_info'),
-      (call) async => {
-        'appName': 'PureWeight',
-        'packageName': 'com.example.pure_weight',
-        'version': '1.0.0',
-        'buildNumber': '1',
-      },
-    );
+          const MethodChannel('dev.fluttercommunity.plus/package_info'),
+          (call) async => {
+            'appName': 'PureWeight',
+            'packageName': 'com.example.pure_weight',
+            'version': '1.0.0',
+            'buildNumber': '1',
+          },
+        );
   });
 
   Widget createTestWidget() {
