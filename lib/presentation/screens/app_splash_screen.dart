@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pure_weight/l10n/app_localizations.dart';
 
 /// A Flutter-based splash screen that visually mimics the native splash screen.
 ///
@@ -16,7 +17,7 @@ class AppSplashScreen extends StatelessWidget {
     return Scaffold(
       body: Center(
         child: Semantics(
-          label: 'Aplikacja się ładuje', // Fallback localized later if needed.
+          label: AppLocalizations.of(context).appLoadingSemantics,
           textDirection: TextDirection.ltr,
           child: Image.asset(
             'assets/app_icon.png',

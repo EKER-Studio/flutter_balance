@@ -73,6 +73,7 @@
   "weightRangeError": "Weight must be between 20 and 300 kg",
   "heightRangeError": "Height must be between 50 and 250 cm",
   "heightRangeHint": "{min} – {max} cm",
+  "appLoadingSemantics": "The app is loading",
   "bmi": "BMI",
   "bmiSubtitle": "Based on your height and latest weight",
   "bmiLegendTitle": "BMI Categories",
