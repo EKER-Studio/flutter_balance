@@ -7,7 +7,8 @@ import 'package:balance/features/weight/domain/entities/weight_entry.dart';
 import 'package:balance/features/weight/presentation/bloc/weight_bloc.dart';
 import 'package:balance/features/weight/presentation/bloc/weight_event.dart';
 import 'package:balance/l10n/app_localizations.dart';
-import 'package:balance/presentation/bloc/onboarding/onboarding_cubit.dart';
+import 'package:balance/presentation/bloc/onboarding/onboarding_bloc.dart';
+import 'package:balance/presentation/bloc/onboarding/onboarding_event.dart';
 import 'package:balance/presentation/bloc/onboarding/onboarding_state.dart';
 import 'package:balance/presentation/bloc/settings/app_settings_bloc.dart';
 import 'package:balance/presentation/bloc/settings/app_settings_event.dart';
@@ -20,7 +21,7 @@ import 'package:balance/presentation/screens/onboarding/widgets/step_units_heigh
 
 /// Main container screen for the multi-step initial onboarding setup wizard.
 ///
-/// Wraps the wizard content in an [OnboardingCubit] that owns all temporary
+/// Wraps the wizard content in an [OnboardingBloc] that owns all temporary
 /// wizard state (step index, drafts, imported CSV entries) and handles
 /// keyboard avoidance, screen orientation safety, and hardware back button
 /// behavior via [PopScope].
@@ -45,16 +46,16 @@ class OnboardingWizardScreen extends StatelessWidget {
       (AppSettingsBloc bloc) => bloc.state.isBiometricSupported,
     );
 
-    return BlocProvider<OnboardingCubit>(
+    return BlocProvider<OnboardingBloc>(
       create: (context) {
         final settingsState = context.read<AppSettingsBloc>().state;
-        return OnboardingCubit(
+        return OnboardingBloc(
           appSettingsBloc: context.read<AppSettingsBloc>(),
           weightBloc: context.read<WeightBloc>(),
           totalSteps: isBiometricSupported ? 7 : 6,
           initialUnit: settingsState.measurementUnit,
           initialTargetWeight: settingsState.targetWeight,
-        );
+        )..add(const OnboardingStarted());
       },
       child: _OnboardingWizardContent(
         onWizardCompleted: onWizardCompleted,
@@ -65,13 +66,13 @@ class OnboardingWizardScreen extends StatelessWidget {
 }
 
 /// Renders the onboarding steps and forwards every interaction to
-/// [OnboardingCubit]; the only local state owned here is the [PageController].
+/// [OnboardingBloc]; the only local state owned here is the [PageController].
 ///
 /// Step order: Units & Height, CSV Import (optional), Initial Weight,
 /// Target Weight (optional), Daily Reminder (optional), Health Sync
 /// (optional), Biometric Lock (optional, skipped when the device does not
 /// support credentials). Completing the final step dispatches
-/// [OnboardingCubit.completeOnboarding] and invokes
+/// [OnboardingCompleted] and invokes
 /// [OnboardingWizardScreen.onWizardCompleted].
 class _OnboardingWizardContent extends StatefulWidget {
   final VoidCallback? onWizardCompleted;
@@ -100,12 +101,12 @@ class _OnboardingWizardContentState extends State<_OnboardingWizardContent> {
   /// Advances to the next step, or completes the wizard when the current step
   /// is the final one.
   void _goToNextStep() {
-    final cubit = context.read<OnboardingCubit>();
-    if (cubit.state.currentStepIndex + 1 >= cubit.state.totalSteps) {
-      cubit.completeOnboarding();
+    final bloc = context.read<OnboardingBloc>();
+    if (bloc.state.currentStepIndex + 1 >= bloc.state.totalSteps) {
+      bloc.add(const OnboardingCompleted());
       widget.onWizardCompleted?.call();
     } else {
-      cubit.nextStep();
+      bloc.add(const OnboardingStepAdvanced());
     }
   }
 
@@ -117,7 +118,7 @@ class _OnboardingWizardContentState extends State<_OnboardingWizardContent> {
   /// entry with a heightNotSet error on a fresh install (height is only ever
   /// saved when settings are saved, or here in onboarding).
   void _handleUnitsHeightNext(MeasurementUnit unit, double heightCm) {
-    context.read<OnboardingCubit>().setUnit(unit);
+    context.read<OnboardingBloc>().add(OnboardingUnitSelected(unit));
 
     final settingsBloc = context.read<AppSettingsBloc>();
     settingsBloc.add(UpdateMeasurementUnit(unit));
@@ -131,7 +132,7 @@ class _OnboardingWizardContentState extends State<_OnboardingWizardContent> {
   /// Stores the imported history and advances to the initial-weight step,
   /// which is pre-filled with the latest imported measurement.
   void _handleCsvImported(List<WeightEntry> entries) {
-    context.read<OnboardingCubit>().setCsvEntries(entries);
+    context.read<OnboardingBloc>().add(OnboardingCsvImported(entries));
     _goToNextStep();
   }
 
@@ -142,18 +143,18 @@ class _OnboardingWizardContentState extends State<_OnboardingWizardContent> {
   }
 
   /// Stores the initial [weightKg] measurement at [timestamp] as a draft; the
-  /// measurement itself is persisted to [WeightBloc] by the cubit right away.
+  /// measurement itself is persisted to [WeightBloc] by the bloc right away.
   void _handleInitialWeightNext(double weightKg, DateTime timestamp) {
     context
-        .read<OnboardingCubit>()
-        .setInitialWeight(weightKg: weightKg, timestamp: timestamp);
+        .read<OnboardingBloc>()
+        .add(OnboardingInitialWeightSet(weightKg: weightKg, timestamp: timestamp));
     _goToNextStep();
   }
 
   /// Stores the chosen [targetWeightKg] (or `null` when skipped) and persists
   /// it into [AppSettingsBloc], then advances.
   void _handleTargetWeightNext(double? targetWeightKg) {
-    context.read<OnboardingCubit>().setTargetWeight(targetWeightKg);
+    context.read<OnboardingBloc>().add(OnboardingTargetWeightSet(targetWeightKg));
     context.read<AppSettingsBloc>().add(TargetWeightChanged(targetWeightKg));
     _goToNextStep();
   }
@@ -168,9 +169,11 @@ class _OnboardingWizardContentState extends State<_OnboardingWizardContent> {
   /// advances; the connection state is persisted by [StepHealthSync].
   void _handleHealthSyncNext() {
     context
-        .read<OnboardingCubit>()
-        .toggleHealthSync(
-          context.read<AppSettingsBloc>().state.isHealthSyncEnabled,
+        .read<OnboardingBloc>()
+        .add(
+          OnboardingHealthSyncToggled(
+            context.read<AppSettingsBloc>().state.isHealthSyncEnabled,
+          ),
         );
     _goToNextStep();
   }
@@ -179,9 +182,11 @@ class _OnboardingWizardContentState extends State<_OnboardingWizardContent> {
   /// and advances; the choice is persisted by [StepBiometricLock].
   void _handleBiometricNext() {
     context
-        .read<OnboardingCubit>()
-        .toggleBiometric(
-          context.read<AppSettingsBloc>().state.isBiometricLockEnabled,
+        .read<OnboardingBloc>()
+        .add(
+          OnboardingBiometricsToggled(
+            context.read<AppSettingsBloc>().state.isBiometricLockEnabled,
+          ),
         );
     _goToNextStep();
   }
@@ -210,7 +215,7 @@ class _OnboardingWizardContentState extends State<_OnboardingWizardContent> {
       (AppSettingsBloc bloc) => bloc.state.isBiometricSupported,
     );
 
-    return BlocListener<OnboardingCubit, OnboardingState>(
+    return BlocListener<OnboardingBloc, OnboardingState>(
       listenWhen: (previous, current) =>
           previous.currentStepIndex != current.currentStepIndex,
       listener: (context, state) {
@@ -220,7 +225,7 @@ class _OnboardingWizardContentState extends State<_OnboardingWizardContent> {
           curve: Curves.easeInOut,
         );
       },
-      child: BlocBuilder<OnboardingCubit, OnboardingState>(
+      child: BlocBuilder<OnboardingBloc, OnboardingState>(
         builder: (context, state) {
           final steps = <Widget>[
             _buildStepWrapper(
@@ -276,7 +281,7 @@ class _OnboardingWizardContentState extends State<_OnboardingWizardContent> {
             onPopInvokedWithResult: (didPop, result) {
               if (didPop) return;
               if (state.currentStepIndex > 0) {
-                context.read<OnboardingCubit>().previousStep();
+                context.read<OnboardingBloc>().add(const OnboardingStepRewound());
               }
             },
             child: Scaffold(
@@ -294,7 +299,9 @@ class _OnboardingWizardContentState extends State<_OnboardingWizardContent> {
                         icon: const Icon(Icons.arrow_back),
                         tooltip: l10n.previousStepTooltip,
                         onPressed: () =>
-                            context.read<OnboardingCubit>().previousStep(),
+                            context.read<OnboardingBloc>().add(
+                              const OnboardingStepRewound(),
+                            ),
                       )
                     : null,
                 bottom: PreferredSize(
