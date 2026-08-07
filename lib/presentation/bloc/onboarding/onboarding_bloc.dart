@@ -106,9 +106,7 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
     OnboardingCsvImported event,
     Emitter<OnboardingState> emit,
   ) {
-    emit(
-      state.copyWith(importedCsvEntries: List.unmodifiable(event.entries)),
-    );
+    emit(state.copyWith(importedCsvEntries: List.unmodifiable(event.entries)));
   }
 
   /// Stores the initial weight (and its timestamp) confirmed by the user and
@@ -117,7 +115,9 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
     OnboardingInitialWeightSet event,
     Emitter<OnboardingState> emit,
   ) {
-    weightBloc.add(AddWeight(weightKg: event.weightKg, dateTime: event.timestamp));
+    weightBloc.add(
+      AddWeight(weightKg: event.weightKg, dateTime: event.timestamp),
+    );
     emit(
       state.copyWith(
         draftInitialWeight: event.weightKg,

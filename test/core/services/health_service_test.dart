@@ -67,14 +67,15 @@ void main() {
   }
 
   group('NativeHealthService.isHealthApiAvailable', () {
-    test('returns true on iOS-like hosts without consulting the plugin', () async {
-      final available = await service.isHealthApiAvailable();
+    test(
+      'returns true on iOS-like hosts without consulting the plugin',
+      () async {
+        final available = await service.isHealthApiAvailable();
 
-      expect(available, isTrue);
-      verifyNever(
-        () => health.isHealthConnectAvailable(),
-      );
-    });
+        expect(available, isTrue);
+        verifyNever(() => health.isHealthConnectAvailable());
+      },
+    );
   });
 
   group('NativeHealthService.hasPermissions', () {
@@ -227,10 +228,7 @@ void main() {
         ],
       );
 
-      final entries = await service.fetchWeightHistory(
-        start: date,
-        end: date,
-      );
+      final entries = await service.fetchWeightHistory(start: date, end: date);
 
       expect(entries, isEmpty);
     });
@@ -255,37 +253,39 @@ void main() {
   });
 
   group('NativeHealthService.writeWeight', () {
-    test('delegates with the manual recording method and returns the result',
-        () async {
-      final timestamp = DateTime(2026, 1, 1, 8, 30);
-      when(
-        () => health.writeHealthData(
-          value: any(named: 'value'),
-          unit: any(named: 'unit'),
-          type: any(named: 'type'),
-          startTime: any(named: 'startTime'),
-          endTime: any(named: 'endTime'),
-          recordingMethod: any(named: 'recordingMethod'),
-        ),
-      ).thenAnswer((_) async => true);
+    test(
+      'delegates with the manual recording method and returns the result',
+      () async {
+        final timestamp = DateTime(2026, 1, 1, 8, 30);
+        when(
+          () => health.writeHealthData(
+            value: any(named: 'value'),
+            unit: any(named: 'unit'),
+            type: any(named: 'type'),
+            startTime: any(named: 'startTime'),
+            endTime: any(named: 'endTime'),
+            recordingMethod: any(named: 'recordingMethod'),
+          ),
+        ).thenAnswer((_) async => true);
 
-      final written = await service.writeWeight(
-        weightKg: 72.5,
-        timestamp: timestamp,
-      );
+        final written = await service.writeWeight(
+          weightKg: 72.5,
+          timestamp: timestamp,
+        );
 
-      expect(written, isTrue);
-      verify(
-        () => health.writeHealthData(
-          value: 72.5,
-          unit: HealthDataUnit.KILOGRAM,
-          type: HealthDataType.WEIGHT,
-          startTime: timestamp,
-          endTime: timestamp,
-          recordingMethod: RecordingMethod.manual,
-        ),
-      ).called(1);
-    });
+        expect(written, isTrue);
+        verify(
+          () => health.writeHealthData(
+            value: 72.5,
+            unit: HealthDataUnit.KILOGRAM,
+            type: HealthDataType.WEIGHT,
+            startTime: timestamp,
+            endTime: timestamp,
+            recordingMethod: RecordingMethod.manual,
+          ),
+        ).called(1);
+      },
+    );
 
     test('catches plugin errors and reports failure', () async {
       when(
@@ -310,42 +310,41 @@ void main() {
   });
 
   group('NativeHealthService.deleteWeight', () {
-    test('deletes the point matching weight and timestamp within tolerance',
-        () async {
-      final timestamp = DateTime(2026, 1, 1, 8, 30);
-      when(
-        () => health.getHealthDataFromTypes(
-          types: any(named: 'types'),
-          preferredUnits: any(named: 'preferredUnits'),
-          startTime: any(named: 'startTime'),
-          endTime: any(named: 'endTime'),
-        ),
-      ).thenAnswer(
-        (_) async => [
-          point(uuid: 'other', value: 80, dateFrom: timestamp),
-          point(uuid: 'match', value: 72.5, dateFrom: timestamp),
-        ],
-      );
-      when(
-        () => health.deleteByUUID(
-          uuid: any(named: 'uuid'),
-          type: any(named: 'type'),
-        ),
-      ).thenAnswer((_) async => true);
+    test(
+      'deletes the point matching weight and timestamp within tolerance',
+      () async {
+        final timestamp = DateTime(2026, 1, 1, 8, 30);
+        when(
+          () => health.getHealthDataFromTypes(
+            types: any(named: 'types'),
+            preferredUnits: any(named: 'preferredUnits'),
+            startTime: any(named: 'startTime'),
+            endTime: any(named: 'endTime'),
+          ),
+        ).thenAnswer(
+          (_) async => [
+            point(uuid: 'other', value: 80, dateFrom: timestamp),
+            point(uuid: 'match', value: 72.5, dateFrom: timestamp),
+          ],
+        );
+        when(
+          () => health.deleteByUUID(
+            uuid: any(named: 'uuid'),
+            type: any(named: 'type'),
+          ),
+        ).thenAnswer((_) async => true);
 
-      final deleted = await service.deleteWeight(
-        weightKg: 72.5,
-        timestamp: timestamp,
-      );
+        final deleted = await service.deleteWeight(
+          weightKg: 72.5,
+          timestamp: timestamp,
+        );
 
-      expect(deleted, isTrue);
-      verify(
-        () => health.deleteByUUID(
-          uuid: 'match',
-          type: HealthDataType.WEIGHT,
-        ),
-      ).called(1);
-    });
+        expect(deleted, isTrue);
+        verify(
+          () => health.deleteByUUID(uuid: 'match', type: HealthDataType.WEIGHT),
+        ).called(1);
+      },
+    );
 
     test('does not delete anything when no point matches', () async {
       final timestamp = DateTime(2026, 1, 1, 8, 30);
@@ -386,10 +385,7 @@ void main() {
       ).thenThrow(Exception('Native query failed'));
 
       expect(
-        await service.deleteWeight(
-          weightKg: 72.5,
-          timestamp: timestamp,
-        ),
+        await service.deleteWeight(weightKg: 72.5, timestamp: timestamp),
         isFalse,
       );
     });

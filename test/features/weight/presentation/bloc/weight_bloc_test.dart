@@ -45,9 +45,7 @@ void main() {
     when(() => repository.getAllEntries()).thenAnswer((_) async => []);
     when(() => repository.addEntry(any())).thenAnswer((_) async {});
     when(() => repository.deleteEntry(any())).thenAnswer((_) async {});
-    when(
-      () => repository.bulkImportEntries(any()),
-    ).thenAnswer((_) async => 1);
+    when(() => repository.bulkImportEntries(any())).thenAnswer((_) async => 1);
     when(
       () => healthService.writeWeight(
         weightKg: any(named: 'weightKg'),
@@ -72,9 +70,9 @@ void main() {
 
   MockAppSettingsBloc buildSettingsBloc({bool isHealthSyncEnabled = true}) {
     final settingsBloc = MockAppSettingsBloc();
-    when(() => settingsBloc.state).thenReturn(
-      AppSettingsState(isHealthSyncEnabled: isHealthSyncEnabled),
-    );
+    when(
+      () => settingsBloc.state,
+    ).thenReturn(AppSettingsState(isHealthSyncEnabled: isHealthSyncEnabled));
     return settingsBloc;
   }
 
@@ -566,9 +564,11 @@ void main() {
           isA<WeightLoaded>().having((s) => s.entries.length, 'entries', 3),
         ],
         verify: (_) {
-          final imported = verify(
-            () => repository.bulkImportEntries(captureAny()),
-          ).captured.single as List<WeightEntry>;
+          final imported =
+              verify(
+                    () => repository.bulkImportEntries(captureAny()),
+                  ).captured.single
+                  as List<WeightEntry>;
           expect(imported.length, 1);
           expect(imported.single.weightKg, 73);
           expect(imported.single.dateTime, DateTime(2026, 1, 2, 8));
@@ -637,9 +637,8 @@ void main() {
         },
         seed: () =>
             const WeightLoaded(entries: [], filteredEntries: [], heightCm: 170),
-        act: (bloc) => bloc.add(
-          SyncHealthEntries(startDate: DateTime(2026, 3, 1)),
-        ),
+        act: (bloc) =>
+            bloc.add(SyncHealthEntries(startDate: DateTime(2026, 3, 1))),
         verify: (_) {
           verify(
             () => healthService.fetchWeightHistory(

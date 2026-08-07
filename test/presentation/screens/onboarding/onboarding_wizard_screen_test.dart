@@ -109,93 +109,86 @@ void main() {
       expect(find.byIcon(Icons.arrow_back), findsNothing);
     });
 
-    testWidgets(
-      'navigates through all 7 steps and completes wizard',
-      (tester) async {
-        bool completed = false;
-        await tester.pumpWidget(
-          buildSubject(onWizardCompleted: () => completed = true),
-        );
+    testWidgets('navigates through all 7 steps and completes wizard', (
+      tester,
+    ) async {
+      bool completed = false;
+      await tester.pumpWidget(
+        buildSubject(onWizardCompleted: () => completed = true),
+      );
 
-        // Step 1 (Units & Height) -> Next
-        await tester.enterText(find.byKey(const Key('height_cm_input')), '170');
-        await tester.pumpAndSettle();
-        await tester.tap(find.text('Next'));
-        await tester.pumpAndSettle();
+      // Step 1 (Units & Height) -> Next
+      await tester.enterText(find.byKey(const Key('height_cm_input')), '170');
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Next'));
+      await tester.pumpAndSettle();
 
-        expect(find.text('Step 2 of 7'), findsOneWidget);
-        expect(find.text('Import existing history?'), findsOneWidget);
-        expect(find.byIcon(Icons.arrow_back), findsOneWidget);
+      expect(find.text('Step 2 of 7'), findsOneWidget);
+      expect(find.text('Import existing history?'), findsOneWidget);
+      expect(find.byIcon(Icons.arrow_back), findsOneWidget);
 
-        // Height is synced to the weight BLoC so AddWeight in step 3 does not
-        // get rejected with a heightNotSet error on a fresh install.
-        verify(
-          () => weightBloc.add(any(that: isA<UpdateUserHeight>())),
-        ).called(1);
+      // Height is synced to the weight BLoC so AddWeight in step 3 does not
+      // get rejected with a heightNotSet error on a fresh install.
+      verify(
+        () => weightBloc.add(any(that: isA<UpdateUserHeight>())),
+      ).called(1);
 
-        // Step 2 (CSV Import) -> Skip
-        await tester.tap(find.byKey(const Key('csv_import_skip_button')));
-        await tester.pumpAndSettle();
+      // Step 2 (CSV Import) -> Skip
+      await tester.tap(find.byKey(const Key('csv_import_skip_button')));
+      await tester.pumpAndSettle();
 
-        expect(find.text('Step 3 of 7'), findsOneWidget);
-        expect(find.text('Initial Weight'), findsOneWidget);
+      expect(find.text('Step 3 of 7'), findsOneWidget);
+      expect(find.text('Initial Weight'), findsOneWidget);
 
-        // Step 3 (Initial Weight) -> Next
-        await tester.enterText(
-          find.byKey(const Key('initial_weight_input')),
-          '75.5',
-        );
-        await tester.pumpAndSettle();
-        await tester.tap(find.text('Next'));
-        await tester.pumpAndSettle();
+      // Step 3 (Initial Weight) -> Next
+      await tester.enterText(
+        find.byKey(const Key('initial_weight_input')),
+        '75.5',
+      );
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Next'));
+      await tester.pumpAndSettle();
 
-        // Initial weight is logged before the wizard completes.
-        verify(
-          () => weightBloc.add(
-            any(
-              that: isA<AddWeight>().having(
-                (w) => w.weightKg,
-                'weightKg',
-                75.5,
-              ),
-            ),
+      // Initial weight is logged before the wizard completes.
+      verify(
+        () => weightBloc.add(
+          any(
+            that: isA<AddWeight>().having((w) => w.weightKg, 'weightKg', 75.5),
           ),
-        ).called(1);
+        ),
+      ).called(1);
 
-        expect(find.text('Step 4 of 7'), findsOneWidget);
-        expect(find.text('Target Weight (Optional)'), findsOneWidget);
+      expect(find.text('Step 4 of 7'), findsOneWidget);
+      expect(find.text('Target Weight (Optional)'), findsOneWidget);
 
-        // Step 4 (Target Weight) -> Next (Leave empty for optional target weight)
-        await tester.tap(find.text('Next').first);
-        await tester.pumpAndSettle();
+      // Step 4 (Target Weight) -> Next (Leave empty for optional target weight)
+      await tester.tap(find.text('Next').first);
+      await tester.pumpAndSettle();
 
-        expect(find.text('Step 5 of 7'), findsOneWidget);
-        expect(find.text('Daily Reminder (Optional)'), findsOneWidget);
+      expect(find.text('Step 5 of 7'), findsOneWidget);
+      expect(find.text('Daily Reminder (Optional)'), findsOneWidget);
 
-        // Step 5 (Daily Reminder) -> Next (Skip/Next reminder)
-        await tester.tap(
-          find.byKey(const Key('notification_step_next_button')),
-        );
-        await tester.pumpAndSettle();
+      // Step 5 (Daily Reminder) -> Next (Skip/Next reminder)
+      await tester.tap(find.byKey(const Key('notification_step_next_button')));
+      await tester.pumpAndSettle();
 
-        expect(find.text('Step 6 of 7'), findsOneWidget);
-        expect(find.text('Health Sync (Optional)'), findsOneWidget);
+      expect(find.text('Step 6 of 7'), findsOneWidget);
+      expect(find.text('Health Sync (Optional)'), findsOneWidget);
 
-        // Step 6 (Health Sync) -> Skip
-        await tester.tap(find.byKey(const Key('health_sync_skip_button')));
-        await tester.pumpAndSettle();
+      // Step 6 (Health Sync) -> Skip
+      await tester.tap(find.byKey(const Key('health_sync_skip_button')));
+      await tester.pumpAndSettle();
 
-        expect(find.text('Step 7 of 7'), findsOneWidget);
-        expect(find.text('Biometric Lock (Optional)'), findsOneWidget);
+      expect(find.text('Step 7 of 7'), findsOneWidget);
+      expect(find.text('Biometric Lock (Optional)'), findsOneWidget);
 
-        // Step 7 (Biometric Lock) -> Next (Skip/Next biometric lock)
-        await tester.tap(find.byKey(const Key('biometric_step_next_button')));
-        await tester.pumpAndSettle();
+      // Step 7 (Biometric Lock) -> Next (Skip/Next biometric lock)
+      await tester.tap(find.byKey(const Key('biometric_step_next_button')));
+      await tester.pumpAndSettle();
 
-        expect(completed, isTrue);
-        expect(settingsBloc.state.isOnboardingCompleted, isTrue);
-      },
-    );
+      expect(completed, isTrue);
+      expect(settingsBloc.state.isOnboardingCompleted, isTrue);
+    });
 
     testWidgets('navigates back through steps 3 -> 2 -> 1 via back button', (
       tester,

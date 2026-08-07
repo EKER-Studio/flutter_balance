@@ -86,7 +86,8 @@ class _OnboardingWizardContent extends StatefulWidget {
   });
 
   @override
-  State<_OnboardingWizardContent> createState() => _OnboardingWizardContentState();
+  State<_OnboardingWizardContent> createState() =>
+      _OnboardingWizardContentState();
 }
 
 class _OnboardingWizardContentState extends State<_OnboardingWizardContent> {
@@ -145,16 +146,18 @@ class _OnboardingWizardContentState extends State<_OnboardingWizardContent> {
   /// Stores the initial [weightKg] measurement at [timestamp] as a draft; the
   /// measurement itself is persisted to [WeightBloc] by the bloc right away.
   void _handleInitialWeightNext(double weightKg, DateTime timestamp) {
-    context
-        .read<OnboardingBloc>()
-        .add(OnboardingInitialWeightSet(weightKg: weightKg, timestamp: timestamp));
+    context.read<OnboardingBloc>().add(
+      OnboardingInitialWeightSet(weightKg: weightKg, timestamp: timestamp),
+    );
     _goToNextStep();
   }
 
   /// Stores the chosen [targetWeightKg] (or `null` when skipped) and persists
   /// it into [AppSettingsBloc], then advances.
   void _handleTargetWeightNext(double? targetWeightKg) {
-    context.read<OnboardingBloc>().add(OnboardingTargetWeightSet(targetWeightKg));
+    context.read<OnboardingBloc>().add(
+      OnboardingTargetWeightSet(targetWeightKg),
+    );
     context.read<AppSettingsBloc>().add(TargetWeightChanged(targetWeightKg));
     _goToNextStep();
   }
@@ -168,26 +171,22 @@ class _OnboardingWizardContentState extends State<_OnboardingWizardContent> {
   /// Mirrors the already-persisted health sync flag into the wizard state and
   /// advances; the connection state is persisted by [StepHealthSync].
   void _handleHealthSyncNext() {
-    context
-        .read<OnboardingBloc>()
-        .add(
-          OnboardingHealthSyncToggled(
-            context.read<AppSettingsBloc>().state.isHealthSyncEnabled,
-          ),
-        );
+    context.read<OnboardingBloc>().add(
+      OnboardingHealthSyncToggled(
+        context.read<AppSettingsBloc>().state.isHealthSyncEnabled,
+      ),
+    );
     _goToNextStep();
   }
 
   /// Mirrors the already-persisted biometric lock flag into the wizard state
   /// and advances; the choice is persisted by [StepBiometricLock].
   void _handleBiometricNext() {
-    context
-        .read<OnboardingBloc>()
-        .add(
-          OnboardingBiometricsToggled(
-            context.read<AppSettingsBloc>().state.isBiometricLockEnabled,
-          ),
-        );
+    context.read<OnboardingBloc>().add(
+      OnboardingBiometricsToggled(
+        context.read<AppSettingsBloc>().state.isBiometricLockEnabled,
+      ),
+    );
     _goToNextStep();
   }
 
@@ -231,8 +230,7 @@ class _OnboardingWizardContentState extends State<_OnboardingWizardContent> {
             _buildStepWrapper(
               StepUnitsHeight(
                 initialUnit: state.selectedUnit,
-                initialHeightCm:
-                    context.read<AppSettingsBloc>().state.height,
+                initialHeightCm: context.read<AppSettingsBloc>().state.height,
                 onNext: _handleUnitsHeightNext,
               ),
             ),
@@ -281,7 +279,9 @@ class _OnboardingWizardContentState extends State<_OnboardingWizardContent> {
             onPopInvokedWithResult: (didPop, result) {
               if (didPop) return;
               if (state.currentStepIndex > 0) {
-                context.read<OnboardingBloc>().add(const OnboardingStepRewound());
+                context.read<OnboardingBloc>().add(
+                  const OnboardingStepRewound(),
+                );
               }
             },
             child: Scaffold(
@@ -298,10 +298,9 @@ class _OnboardingWizardContentState extends State<_OnboardingWizardContent> {
                     ? IconButton(
                         icon: const Icon(Icons.arrow_back),
                         tooltip: l10n.previousStepTooltip,
-                        onPressed: () =>
-                            context.read<OnboardingBloc>().add(
-                              const OnboardingStepRewound(),
-                            ),
+                        onPressed: () => context.read<OnboardingBloc>().add(
+                          const OnboardingStepRewound(),
+                        ),
                       )
                     : null,
                 bottom: PreferredSize(

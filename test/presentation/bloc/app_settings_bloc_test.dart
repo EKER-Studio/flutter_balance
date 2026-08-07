@@ -284,11 +284,7 @@ void main() {
         act: (bloc) => bloc.add(const ToggleHealthSync(true)),
         expect: () => [
           isA<AppSettingsState>()
-              .having(
-                (s) => s.isHealthSyncEnabled,
-                'isHealthSyncEnabled',
-                true,
-              )
+              .having((s) => s.isHealthSyncEnabled, 'isHealthSyncEnabled', true)
               .having(
                 (s) => s.isHealthApiAvailable,
                 'isHealthApiAvailable',
@@ -473,11 +469,7 @@ void main() {
         act: (bloc) => bloc.add(const CheckHealthSyncStatus()),
         expect: () => [
           isA<AppSettingsState>()
-              .having(
-                (s) => s.isHealthSyncEnabled,
-                'isHealthSyncEnabled',
-                true,
-              )
+              .having((s) => s.isHealthSyncEnabled, 'isHealthSyncEnabled', true)
               .having(
                 (s) => s.isHealthApiAvailable,
                 'isHealthApiAvailable',

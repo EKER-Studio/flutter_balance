@@ -50,9 +50,9 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
     required this.repository,
     AppSettingsBloc? appSettingsBloc,
     HealthService? healthService,
-  })  : _settingsBloc = appSettingsBloc,
-        _healthService = healthService ?? NativeHealthService.instance,
-        super(const WeightInitial()) {
+  }) : _settingsBloc = appSettingsBloc,
+       _healthService = healthService ?? NativeHealthService.instance,
+       super(const WeightInitial()) {
     on<SubscribeToWeightChanges>(_onSubscribeToWeightChanges);
     on<UpdateUserHeight>(_onUpdateUserHeight);
     on<AddWeight>(_onAddWeight);
