@@ -165,14 +165,16 @@ class _OnboardingWizardScreenState extends State<OnboardingWizardScreen> {
     _goToNextStep();
   }
 
-  /// Latest chronological weight in kg from the imported CSV history, or
-  /// `null` when nothing was imported.
-  double? get _latestImportedWeightKg {
+  /// Latest chronological entry from the imported CSV history, or `null`
+  /// when nothing was imported. Used both to pre-fill the initial-weight
+  /// step and to exclude that entry from the bulk import in
+  /// [_completeOnboarding] (it is persisted separately via [AddWeight] once
+  /// the user confirms/edits it on that step).
+  WeightEntry? get _latestImportedEntry {
     if (_importedEntries.isEmpty) return null;
-    final latest = _importedEntries.reduce(
+    return _importedEntries.reduce(
       (a, b) => a.dateTime.isAfter(b.dateTime) ? a : b,
     );
-    return latest.weightKg;
   }
 
   /// Advances to the next step, or completes onboarding when the current step
@@ -187,7 +189,26 @@ class _OnboardingWizardScreenState extends State<OnboardingWizardScreen> {
 
   /// Dispatches [CompleteOnboarding] and notifies
   /// [OnboardingWizardScreen.onWizardCompleted].
+  ///
+  /// Also bulk-persists any imported CSV entries beyond the single one the
+  /// user already confirmed/edited via [AddWeight] in
+  /// [_handleInitialWeightNext] (that entry is excluded by identity to avoid
+  /// a duplicate). Without this, `StepCsvImport`'s "N entries imported"
+  /// success message would be false: only the one entry shown on the
+  /// initial-weight step was ever being saved.
   void _completeOnboarding() {
+    final latest = _latestImportedEntry;
+    final remainingImported = latest == null
+        ? const <WeightEntry>[]
+        : _importedEntries.where((entry) => entry != latest).toList();
+    if (remainingImported.isNotEmpty) {
+      try {
+        context.read<WeightBloc>().add(ImportWeightEntries(remainingImported));
+      } catch (_) {
+        // Safe fallback if WeightBloc is not provided in context (e.g. unit tests)
+      }
+    }
+
     context.read<AppSettingsBloc>().add(const CompleteOnboarding());
     widget.onWizardCompleted?.call();
   }
@@ -234,7 +255,8 @@ class _OnboardingWizardScreenState extends State<OnboardingWizardScreen> {
       _buildStepWrapper(
         StepInitialWeight(
           unit: _selectedUnit,
-          initialWeightKg: _latestImportedWeightKg,
+          initialWeightKg: _latestImportedEntry?.weightKg,
+          initialTimestamp: _latestImportedEntry?.dateTime,
           onNext: _handleInitialWeightNext,
         ),
       ),

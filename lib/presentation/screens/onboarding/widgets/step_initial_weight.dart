@@ -14,6 +14,11 @@ class StepInitialWeight extends StatefulWidget {
   /// `null` when the input should start blank.
   final double? initialWeightKg;
 
+  /// Timestamp of the pre-filled [initialWeightKg] (e.g. the imported
+  /// entry's original date), or `null` to default to now. Ignored when
+  /// [initialWeightKg] is `null`.
+  final DateTime? initialTimestamp;
+
   /// Callback invoked when the user proceeds to the next step.
   ///
   /// Passes the initial weight in kg and the chosen measurement timestamp.
@@ -24,6 +29,7 @@ class StepInitialWeight extends StatefulWidget {
     super.key,
     required this.unit,
     this.initialWeightKg,
+    this.initialTimestamp,
     required this.onNext,
   });
 
@@ -33,12 +39,13 @@ class StepInitialWeight extends StatefulWidget {
 
 class _StepInitialWeightState extends State<StepInitialWeight> {
   final TextEditingController _weightController = TextEditingController();
-  DateTime _selectedTimestamp = DateTime.now();
+  late DateTime _selectedTimestamp;
   String? _errorText;
 
   @override
   void initState() {
     super.initState();
+    _selectedTimestamp = widget.initialTimestamp ?? DateTime.now();
     final weightKg = widget.initialWeightKg;
     if (weightKg != null && weightKg > 0 && weightKg <= 500) {
       _weightController.text = widget.unit == MeasurementUnit.imperial
