@@ -101,16 +101,16 @@ void main() {
   }
 
   group('OnboardingWizardScreen Widget Tests', () {
-    testWidgets('renders initial Step 1 of 6', (tester) async {
+    testWidgets('renders initial Step 1 of 7', (tester) async {
       await tester.pumpWidget(buildSubject());
 
-      expect(find.text('Step 1 of 6'), findsOneWidget);
+      expect(find.text('Step 1 of 7'), findsOneWidget);
       expect(find.text('Units & Height'), findsOneWidget);
       expect(find.byIcon(Icons.arrow_back), findsNothing);
     });
 
     testWidgets(
-      'navigates through steps 1 -> 2 -> 3 -> 4 -> 5 -> 6 and completes wizard',
+      'navigates through all 7 steps and completes wizard',
       (tester) async {
         bool completed = false;
         await tester.pumpWidget(
@@ -123,7 +123,7 @@ void main() {
         await tester.tap(find.text('Next'));
         await tester.pumpAndSettle();
 
-        expect(find.text('Step 2 of 6'), findsOneWidget);
+        expect(find.text('Step 2 of 7'), findsOneWidget);
         expect(find.text('Import existing history?'), findsOneWidget);
         expect(find.byIcon(Icons.arrow_back), findsOneWidget);
 
@@ -137,7 +137,7 @@ void main() {
         await tester.tap(find.byKey(const Key('csv_import_skip_button')));
         await tester.pumpAndSettle();
 
-        expect(find.text('Step 3 of 6'), findsOneWidget);
+        expect(find.text('Step 3 of 7'), findsOneWidget);
         expect(find.text('Initial Weight'), findsOneWidget);
 
         // Step 3 (Initial Weight) -> Next
@@ -162,14 +162,14 @@ void main() {
           ),
         ).called(1);
 
-        expect(find.text('Step 4 of 6'), findsOneWidget);
+        expect(find.text('Step 4 of 7'), findsOneWidget);
         expect(find.text('Target Weight (Optional)'), findsOneWidget);
 
         // Step 4 (Target Weight) -> Next (Leave empty for optional target weight)
         await tester.tap(find.text('Next').first);
         await tester.pumpAndSettle();
 
-        expect(find.text('Step 5 of 6'), findsOneWidget);
+        expect(find.text('Step 5 of 7'), findsOneWidget);
         expect(find.text('Daily Reminder (Optional)'), findsOneWidget);
 
         // Step 5 (Daily Reminder) -> Next (Skip/Next reminder)
@@ -178,10 +178,17 @@ void main() {
         );
         await tester.pumpAndSettle();
 
-        expect(find.text('Step 6 of 6'), findsOneWidget);
+        expect(find.text('Step 6 of 7'), findsOneWidget);
+        expect(find.text('Health Sync (Optional)'), findsOneWidget);
+
+        // Step 6 (Health Sync) -> Skip
+        await tester.tap(find.byKey(const Key('health_sync_skip_button')));
+        await tester.pumpAndSettle();
+
+        expect(find.text('Step 7 of 7'), findsOneWidget);
         expect(find.text('Biometric Lock (Optional)'), findsOneWidget);
 
-        // Step 6 (Biometric Lock) -> Next (Skip/Next biometric lock)
+        // Step 7 (Biometric Lock) -> Next (Skip/Next biometric lock)
         await tester.tap(find.byKey(const Key('biometric_step_next_button')));
         await tester.pumpAndSettle();
 
@@ -198,21 +205,21 @@ void main() {
       // Advance to Step 3 (Initial Weight)
       await pumpToStep3(tester);
 
-      expect(find.text('Step 3 of 6'), findsOneWidget);
+      expect(find.text('Step 3 of 7'), findsOneWidget);
       expect(find.text('Initial Weight'), findsOneWidget);
 
       // Back to Step 2 (CSV Import)
       await tester.tap(find.byIcon(Icons.arrow_back));
       await tester.pumpAndSettle();
 
-      expect(find.text('Step 2 of 6'), findsOneWidget);
+      expect(find.text('Step 2 of 7'), findsOneWidget);
       expect(find.text('Import existing history?'), findsOneWidget);
 
       // Back to Step 1 (Units & Height)
       await tester.tap(find.byIcon(Icons.arrow_back));
       await tester.pumpAndSettle();
 
-      expect(find.text('Step 1 of 6'), findsOneWidget);
+      expect(find.text('Step 1 of 7'), findsOneWidget);
     });
 
     testWidgets(
@@ -241,7 +248,7 @@ void main() {
         await tester.pumpAndSettle();
 
         // Step 3 (Initial Weight) shows the latest entry pre-filled.
-        expect(find.text('Step 3 of 6'), findsOneWidget);
+        expect(find.text('Step 3 of 7'), findsOneWidget);
         final field = tester.widget<TextField>(
           find.byKey(const Key('initial_weight_input')),
         );
@@ -262,7 +269,7 @@ void main() {
             ),
           ),
         ).called(1);
-        expect(find.text('Step 4 of 6'), findsOneWidget);
+        expect(find.text('Step 4 of 7'), findsOneWidget);
       },
     );
 
@@ -279,7 +286,7 @@ void main() {
       await tester.pumpAndSettle();
 
       // Step 3 (Initial Weight) starts blank with Next disabled.
-      expect(find.text('Step 3 of 6'), findsOneWidget);
+      expect(find.text('Step 3 of 7'), findsOneWidget);
       final field = tester.widget<TextField>(
         find.byKey(const Key('initial_weight_input')),
       );
@@ -301,7 +308,7 @@ void main() {
       await tester.pumpWidget(buildSubject());
       await tester.pumpAndSettle();
 
-      expect(find.text('Step 1 of 6'), findsOneWidget);
+      expect(find.text('Step 1 of 7'), findsOneWidget);
       expect(tester.takeException(), isNull);
     });
 
@@ -320,7 +327,7 @@ void main() {
         await tester.pumpAndSettle();
 
         // Should not navigate to step 2
-        expect(find.text('Step 2 of 6'), findsNothing);
+        expect(find.text('Step 2 of 7'), findsNothing);
 
         // Should display the validation error text
         expect(
@@ -341,20 +348,20 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      expect(find.text('Step 1 of 5'), findsOneWidget);
+      expect(find.text('Step 1 of 6'), findsOneWidget);
       expect(find.text('Units & Height'), findsOneWidget);
 
       // Navigate to step 2 (CSV Import)
       await pumpToStep2(tester);
 
-      expect(find.text('Step 2 of 5'), findsOneWidget);
+      expect(find.text('Step 2 of 6'), findsOneWidget);
       expect(find.text('Import existing history?'), findsOneWidget);
 
       // Skip the optional CSV import and advance to step 3 (Initial Weight)
       await tester.tap(find.byKey(const Key('csv_import_skip_button')));
       await tester.pumpAndSettle();
 
-      expect(find.text('Step 3 of 5'), findsOneWidget);
+      expect(find.text('Step 3 of 6'), findsOneWidget);
       expect(find.text('Initial Weight'), findsOneWidget);
 
       // Log the initial weight and advance to step 4 (Target Weight)
@@ -366,19 +373,25 @@ void main() {
       await tester.tap(find.text('Next'));
       await tester.pumpAndSettle();
 
-      expect(find.text('Step 4 of 5'), findsOneWidget);
+      expect(find.text('Step 4 of 6'), findsOneWidget);
       expect(find.text('Target Weight (Optional)'), findsOneWidget);
 
       // Skip the optional target weight and advance to step 5 (Daily Reminder)
       await tester.tap(find.text('Next').first);
       await tester.pumpAndSettle();
 
-      expect(find.text('Step 5 of 5'), findsOneWidget);
+      expect(find.text('Step 5 of 6'), findsOneWidget);
       expect(find.text('Daily Reminder (Optional)'), findsOneWidget);
 
-      // Step 5 is the final step without biometrics: completing it finishes
-      // the wizard (no further navigation).
+      // Step 6 (Health Sync) is the final step without biometrics: skipping
+      // it finishes the wizard (no further navigation).
       await tester.tap(find.byKey(const Key('notification_step_next_button')));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Step 6 of 6'), findsOneWidget);
+      expect(find.text('Health Sync (Optional)'), findsOneWidget);
+
+      await tester.tap(find.byKey(const Key('health_sync_skip_button')));
       await tester.pumpAndSettle();
 
       expect(completed, isTrue);

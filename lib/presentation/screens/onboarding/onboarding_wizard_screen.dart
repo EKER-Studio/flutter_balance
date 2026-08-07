@@ -10,6 +10,7 @@ import 'package:balance/l10n/app_localizations.dart';
 import 'package:balance/presentation/bloc/settings/app_settings_bloc.dart';
 import 'package:balance/presentation/bloc/settings/app_settings_event.dart';
 import 'package:balance/presentation/screens/onboarding/widgets/step_biometric_lock.dart';
+import 'package:balance/presentation/screens/onboarding/widgets/step_health_sync.dart';
 import 'package:balance/presentation/screens/onboarding/widgets/step_initial_weight.dart';
 import 'package:balance/presentation/screens/onboarding/widgets/step_reminder_notification.dart';
 import 'package:balance/presentation/screens/onboarding/widgets/step_target_weight.dart';
@@ -38,12 +39,13 @@ class OnboardingWizardScreen extends StatefulWidget {
   State<OnboardingWizardScreen> createState() => _OnboardingWizardScreenState();
 }
 
-/// Orchestrates the six onboarding steps and persists each step's choices
+/// Orchestrates the seven onboarding steps and persists each step's choices
 /// into [AppSettingsBloc] and [WeightBloc] as the user progresses.
 ///
 /// Step order: Units & Height, CSV Import (optional), Initial Weight,
-/// Target Weight (optional), Daily Reminder (optional), Biometric Lock
-/// (optional, skipped when the device does not support credentials).
+/// Target Weight (optional), Daily Reminder (optional), Health Sync
+/// (optional), Biometric Lock (optional, skipped when the device does not
+/// support credentials).
 /// Completing the final step dispatches [CompleteOnboarding] and invokes
 /// [OnboardingWizardScreen.onWizardCompleted].
 class _OnboardingWizardScreenState extends State<OnboardingWizardScreen> {
@@ -52,7 +54,7 @@ class _OnboardingWizardScreenState extends State<OnboardingWizardScreen> {
 
   /// Total number of steps for the current build; the biometric step is
   /// omitted on devices without credential support.
-  int _totalSteps = 6;
+  int _totalSteps = 7;
 
   late MeasurementUnit _selectedUnit;
   late double? _selectedHeightCm;
@@ -156,6 +158,12 @@ class _OnboardingWizardScreenState extends State<OnboardingWizardScreen> {
   /// Advances past the notification step without additional action; the
   /// reminder state is already persisted by [StepReminderNotification].
   void _handleReminderNext() {
+    _goToNextStep();
+  }
+
+  /// Advances past the health sync step; the connection state is already
+  /// persisted by [StepHealthSync].
+  void _handleHealthSyncNext() {
     _goToNextStep();
   }
 
@@ -269,6 +277,12 @@ class _OnboardingWizardScreenState extends State<OnboardingWizardScreen> {
         ),
       ),
       _buildStepWrapper(StepReminderNotification(onNext: _handleReminderNext)),
+      _buildStepWrapper(
+        StepHealthSync(
+          onNext: _handleHealthSyncNext,
+          onSkip: _handleHealthSyncNext,
+        ),
+      ),
       if (isBiometricSupported)
         _buildStepWrapper(StepBiometricLock(onNext: _handleBiometricNext)),
     ];

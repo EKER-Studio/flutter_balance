@@ -42,7 +42,7 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      expect(find.text('Step 1 of 6'), findsOneWidget);
+      expect(find.text('Step 1 of 7'), findsOneWidget);
       expect(find.text('Units & Height'), findsOneWidget);
 
       settingsBloc.close();
@@ -94,7 +94,7 @@ void main() {
 
       // 3. Assert: Verify we are back on the Onboarding Screen
       expect(find.byType(NavigationBar), findsNothing);
-      expect(find.text('Step 1 of 6'), findsOneWidget);
+      expect(find.text('Step 1 of 7'), findsOneWidget);
       expect(find.text('Units & Height'), findsOneWidget);
 
       settingsBloc.close();
