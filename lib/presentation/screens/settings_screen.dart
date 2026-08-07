@@ -171,7 +171,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   @override
   void initState() {
     super.initState();
-    _isBiometricAvailable = BiometricService.instance.isAvailable();
+    _isBiometricAvailable = BiometricService.instance.canAuthenticate();
   }
 
   @override
@@ -795,8 +795,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final bloc = context.read<AppSettingsBloc>();
 
     if (enabled) {
-      // Guard: verify biometrics are enrolled before prompting.
-      final available = await BiometricService.instance.isAvailable();
+      // Guard: verify a device credential (biometric or OS PIN/pattern/
+      // password) is available before prompting.
+      final available = await BiometricService.instance.canAuthenticate();
       if (!available) {
         if (context.mounted) {
           ScaffoldMessenger.of(

@@ -63,9 +63,11 @@ class _AppState extends State<App> {
       // 2. Notifications
       await NotificationService.instance.initialize();
 
-      // 3. Biometrics
+      // 3. Biometrics — canAuthenticate() also covers OS PIN/pattern/password
+      // fallback, not just enrolled biometric hardware (see
+      // BiometricService.authenticate, which already supports it).
       final isBiometricSupported = await BiometricService.instance
-          .isAvailable();
+          .canAuthenticate();
       if (mounted) {
         context.read<AppSettingsBloc>().add(
           UpdateBiometricSupport(isBiometricSupported),

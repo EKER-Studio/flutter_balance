@@ -28,9 +28,10 @@ class _StepBiometricLockState extends State<StepBiometricLock> {
     _checkBiometrics();
   }
 
-  /// Resolves biometric hardware availability for the switch state.
+  /// Resolves device credential availability (biometric or OS PIN/pattern/
+  /// password fallback) for the switch state.
   Future<void> _checkBiometrics() async {
-    final available = await BiometricService.instance.isAvailable();
+    final available = await BiometricService.instance.canAuthenticate();
     if (mounted) {
       setState(() {
         _isAvailable = available;
@@ -44,7 +45,7 @@ class _StepBiometricLockState extends State<StepBiometricLock> {
     final bloc = context.read<AppSettingsBloc>();
 
     if (enabled) {
-      final available = await BiometricService.instance.isAvailable();
+      final available = await BiometricService.instance.canAuthenticate();
       if (!available) {
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
