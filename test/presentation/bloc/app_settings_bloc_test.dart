@@ -4,6 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:balance/core/services/notification_service.dart';
+import 'package:balance/core/services/health_service.dart';
 import 'package:balance/presentation/bloc/settings/app_settings_bloc.dart';
 import 'package:balance/presentation/bloc/settings/bmi_category.dart';
 import 'package:balance/presentation/bloc/settings/app_settings_event.dart';
@@ -15,9 +16,12 @@ class MockHydratedStorage extends Mock implements HydratedStorage {}
 
 class MockNotificationService extends Mock implements NotificationService {}
 
+class MockHealthService extends Mock implements HealthService {}
+
 void main() {
   late MockHydratedStorage storage;
   late MockNotificationService mockNotificationService;
+  late MockHealthService mockHealthService;
 
   setUpAll(() {
     registerFallbackValue(const TimeOfDay(hour: 8, minute: 0));
@@ -26,10 +30,20 @@ void main() {
   setUp(() {
     storage = MockHydratedStorage();
     mockNotificationService = MockNotificationService();
+    mockHealthService = MockHealthService();
 
     HydratedBloc.storage = storage;
     when(() => storage.read(any())).thenReturn(null);
     when(() => storage.write(any(), any())).thenAnswer((_) async {});
+    when(
+      () => mockHealthService.isHealthApiAvailable(),
+    ).thenAnswer((_) async => true);
+    when(
+      () => mockHealthService.requestPermissions(),
+    ).thenAnswer((_) async => true);
+    when(
+      () => mockHealthService.hasPermissions(),
+    ).thenAnswer((_) async => true);
     when(
       () => mockNotificationService.requestPermissions(),
     ).thenAnswer((_) async => true);
@@ -259,6 +273,248 @@ void main() {
         ).called(1);
       },
     );
+
+    group('ToggleHealthSync', () {
+      blocTest<AppSettingsBloc, AppSettingsState>(
+        'requests permissions, enables sync, and persists the enabled flag',
+        build: () => AppSettingsBloc(
+          notificationService: mockNotificationService,
+          healthService: mockHealthService,
+        ),
+        act: (bloc) => bloc.add(const ToggleHealthSync(true)),
+        expect: () => [
+          isA<AppSettingsState>()
+              .having(
+                (s) => s.isHealthSyncEnabled,
+                'isHealthSyncEnabled',
+                true,
+              )
+              .having(
+                (s) => s.isHealthApiAvailable,
+                'isHealthApiAvailable',
+                true,
+              )
+              .having(
+                (s) => s.healthPermissionDenied,
+                'healthPermissionDenied',
+                false,
+              ),
+        ],
+        verify: (_) {
+          verify(() => mockHealthService.isHealthApiAvailable()).called(1);
+          verify(() => mockHealthService.requestPermissions()).called(1);
+          final writes = verify(
+            () => storage.write(
+              'AppSettingsBloc',
+              captureAny<Map<String, dynamic>>(),
+            ),
+          ).captured;
+          expect(
+            (writes.last as Map<String, dynamic>)['isHealthSyncEnabled'],
+            true,
+          );
+        },
+      );
+
+      blocTest<AppSettingsBloc, AppSettingsState>(
+        'emits healthPermissionDenied and keeps sync disabled when '
+        'permission request is denied',
+        setUp: () {
+          when(
+            () => mockHealthService.requestPermissions(),
+          ).thenAnswer((_) async => false);
+        },
+        build: () => AppSettingsBloc(
+          notificationService: mockNotificationService,
+          healthService: mockHealthService,
+        ),
+        act: (bloc) => bloc.add(const ToggleHealthSync(true)),
+        expect: () => [
+          isA<AppSettingsState>()
+              .having(
+                (s) => s.isHealthSyncEnabled,
+                'isHealthSyncEnabled',
+                false,
+              )
+              .having(
+                (s) => s.healthPermissionDenied,
+                'healthPermissionDenied',
+                true,
+              ),
+        ],
+        verify: (_) {
+          verify(() => mockHealthService.requestPermissions()).called(1);
+        },
+      );
+
+      blocTest<AppSettingsBloc, AppSettingsState>(
+        'flags the health API as unavailable when the platform lacks it',
+        setUp: () {
+          when(
+            () => mockHealthService.isHealthApiAvailable(),
+          ).thenAnswer((_) async => false);
+        },
+        build: () => AppSettingsBloc(
+          notificationService: mockNotificationService,
+          healthService: mockHealthService,
+        ),
+        act: (bloc) => bloc.add(const ToggleHealthSync(true)),
+        expect: () => [
+          isA<AppSettingsState>()
+              .having(
+                (s) => s.isHealthSyncEnabled,
+                'isHealthSyncEnabled',
+                false,
+              )
+              .having(
+                (s) => s.isHealthApiAvailable,
+                'isHealthApiAvailable',
+                false,
+              ),
+        ],
+        verify: (_) {
+          verifyNever(() => mockHealthService.requestPermissions());
+        },
+      );
+
+      blocTest<AppSettingsBloc, AppSettingsState>(
+        'disables sync and clears transient flags on ToggleHealthSync(false)',
+        build: () => AppSettingsBloc(
+          notificationService: mockNotificationService,
+          healthService: mockHealthService,
+        ),
+        seed: () => const AppSettingsState(
+          isHealthSyncEnabled: true,
+          healthPermissionDenied: true,
+        ),
+        act: (bloc) => bloc.add(const ToggleHealthSync(false)),
+        expect: () => [
+          isA<AppSettingsState>()
+              .having(
+                (s) => s.isHealthSyncEnabled,
+                'isHealthSyncEnabled',
+                false,
+              )
+              .having(
+                (s) => s.healthPermissionDenied,
+                'healthPermissionDenied',
+                false,
+              ),
+        ],
+        verify: (_) {
+          verifyNever(() => mockHealthService.requestPermissions());
+          final writes = verify(
+            () => storage.write(
+              'AppSettingsBloc',
+              captureAny<Map<String, dynamic>>(),
+            ),
+          ).captured;
+          expect(
+            (writes.last as Map<String, dynamic>)['isHealthSyncEnabled'],
+            false,
+          );
+        },
+      );
+    });
+
+    group('CheckHealthSyncStatus', () {
+      blocTest<AppSettingsBloc, AppSettingsState>(
+        'revokes and persists sync when native permissions were revoked '
+        'outside the app',
+        setUp: () {
+          when(
+            () => mockHealthService.hasPermissions(),
+          ).thenAnswer((_) async => false);
+        },
+        build: () => AppSettingsBloc(
+          notificationService: mockNotificationService,
+          healthService: mockHealthService,
+        ),
+        seed: () => const AppSettingsState(isHealthSyncEnabled: true),
+        act: (bloc) => bloc.add(const CheckHealthSyncStatus()),
+        expect: () => [
+          isA<AppSettingsState>()
+              .having(
+                (s) => s.isHealthSyncEnabled,
+                'isHealthSyncEnabled',
+                false,
+              )
+              .having(
+                (s) => s.isHealthApiAvailable,
+                'isHealthApiAvailable',
+                true,
+              ),
+        ],
+        verify: (_) {
+          verify(() => mockHealthService.hasPermissions()).called(1);
+          final writes = verify(
+            () => storage.write(
+              'AppSettingsBloc',
+              captureAny<Map<String, dynamic>>(),
+            ),
+          ).captured;
+          expect(
+            (writes.last as Map<String, dynamic>)['isHealthSyncEnabled'],
+            false,
+          );
+        },
+      );
+
+      blocTest<AppSettingsBloc, AppSettingsState>(
+        'keeps sync enabled while native permissions remain granted',
+        build: () => AppSettingsBloc(
+          notificationService: mockNotificationService,
+          healthService: mockHealthService,
+        ),
+        seed: () => const AppSettingsState(
+          isHealthSyncEnabled: true,
+          isHealthApiAvailable: false,
+        ),
+        act: (bloc) => bloc.add(const CheckHealthSyncStatus()),
+        expect: () => [
+          isA<AppSettingsState>()
+              .having(
+                (s) => s.isHealthSyncEnabled,
+                'isHealthSyncEnabled',
+                true,
+              )
+              .having(
+                (s) => s.isHealthApiAvailable,
+                'isHealthApiAvailable',
+                true,
+              ),
+        ],
+        verify: (_) {
+          verify(() => mockHealthService.isHealthApiAvailable()).called(1);
+          verify(() => mockHealthService.hasPermissions()).called(1);
+        },
+      );
+
+      blocTest<AppSettingsBloc, AppSettingsState>(
+        'updates availability when the health API is unavailable',
+        setUp: () {
+          when(
+            () => mockHealthService.isHealthApiAvailable(),
+          ).thenAnswer((_) async => false);
+        },
+        build: () => AppSettingsBloc(
+          notificationService: mockNotificationService,
+          healthService: mockHealthService,
+        ),
+        act: (bloc) => bloc.add(const CheckHealthSyncStatus()),
+        expect: () => [
+          isA<AppSettingsState>().having(
+            (s) => s.isHealthApiAvailable,
+            'isHealthApiAvailable',
+            false,
+          ),
+        ],
+        verify: (_) {
+          verify(() => mockHealthService.isHealthApiAvailable()).called(1);
+          verifyNever(() => mockHealthService.hasPermissions());
+        },
+      );
+    });
 
     blocTest<AppSettingsBloc, AppSettingsState>(
       'emits locked state on SetLocked(true)',

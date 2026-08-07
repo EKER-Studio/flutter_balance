@@ -499,10 +499,15 @@ void main() {
       blocTest<WeightBloc, WeightState>(
         'SyncHealthEntries imports only genuinely new entries',
         build: () {
-          final existing = WeightEntry(
+          final existing1 = WeightEntry(
             id: 1,
             weightKg: 72,
             dateTime: DateTime(2026, 1, 1, 10, 30, 0),
+          );
+          final existing2 = WeightEntry(
+            id: 2,
+            weightKg: 71.5,
+            dateTime: DateTime(2026, 1, 3, 7, 0, 0),
           );
           when(
             () => healthService.fetchWeightHistory(
@@ -511,11 +516,18 @@ void main() {
             ),
           ).thenAnswer(
             (_) async => [
-              // Duplicate: same second-precision timestamp and weight.
+              // Duplicate of existing1: same second-precision timestamp and
+              // weight, only the millisecond component differs.
               WeightEntry(
                 id: 0,
                 weightKg: 72,
                 dateTime: DateTime(2026, 1, 1, 10, 30, 0, 750),
+              ),
+              // Duplicate of existing2: exact timestamp and weight.
+              WeightEntry(
+                id: 0,
+                weightKg: 71.5,
+                dateTime: DateTime(2026, 1, 3, 7, 0, 0),
               ),
               // Genuinely new measurement.
               WeightEntry(
@@ -529,12 +541,13 @@ void main() {
           when(() => repository.getAllEntries()).thenAnswer((_) async {
             fetchCount++;
             if (fetchCount == 1) {
-              return [existing];
+              return [existing1, existing2];
             }
             return [
-              existing,
+              existing1,
+              existing2,
               WeightEntry(
-                id: 2,
+                id: 3,
                 weightKg: 73,
                 dateTime: DateTime(2026, 1, 2, 8),
               ),
@@ -550,7 +563,7 @@ void main() {
             const WeightLoaded(entries: [], filteredEntries: [], heightCm: 170),
         act: (bloc) => bloc.add(const SyncHealthEntries()),
         expect: () => [
-          isA<WeightLoaded>().having((s) => s.entries.length, 'entries', 2),
+          isA<WeightLoaded>().having((s) => s.entries.length, 'entries', 3),
         ],
         verify: (_) {
           final imported = verify(
