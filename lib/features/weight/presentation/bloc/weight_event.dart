@@ -79,3 +79,13 @@ final class ImportWeightEntries extends WeightEvent {
   /// Creates [ImportWeightEntries] with the given [entries].
   const ImportWeightEntries(this.entries);
 }
+
+/// Pulls weight history from HealthKit / Health Connect and merges records
+/// that do not already exist locally.
+final class SyncHealthEntries extends WeightEvent {
+  /// Optional start of the sync window; defaults to the last 30 days.
+  final DateTime? startDate;
+
+  /// Creates [SyncHealthEntries] with an optional [startDate].
+  const SyncHealthEntries({this.startDate});
+}

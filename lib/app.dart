@@ -93,9 +93,10 @@ class _AppState extends State<App> {
     return RepositoryProvider.value(
       value: repository,
       child: BlocProvider(
-        create: (context) =>
-            WeightBloc(repository: context.read<WeightRepository>())
-              ..add(const SubscribeToWeightChanges()),
+        create: (context) => WeightBloc(
+          repository: context.read<WeightRepository>(),
+          appSettingsBloc: context.read<AppSettingsBloc>(),
+        )..add(const SubscribeToWeightChanges()),
         child: _ObserverRegistrar(
           localizedReason: () => _l10n.biometricAuthReason,
           child: _LocalizationSync(

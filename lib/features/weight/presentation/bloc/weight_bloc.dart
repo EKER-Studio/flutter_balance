@@ -1,11 +1,13 @@
 import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
+import 'package:balance/core/services/health_service.dart';
 import 'package:balance/features/weight/domain/entities/weight_entry.dart';
 import 'package:balance/features/weight/domain/repositories/weight_repository.dart';
 import 'package:balance/features/weight/domain/weight_error_type.dart';
 import 'package:balance/features/weight/presentation/bloc/weight_event.dart';
 import 'package:balance/features/weight/presentation/bloc/weight_state.dart';
+import 'package:balance/presentation/bloc/settings/app_settings_bloc.dart';
 
 /// BLoC managing weight entries and user height.
 ///
@@ -26,12 +28,31 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
   /// The [WeightRepository] backing data operations.
   final WeightRepository repository;
 
+  /// Optional settings BLoC used to gate health synchronization; when null,
+  /// all health-sync behavior is dormant.
+  final AppSettingsBloc? _settingsBloc;
+
+  /// Backend used for every HealthKit / Health Connect interaction.
+  final HealthService _healthService;
+
   List<WeightEntry>? _memoEntries;
   TimePeriod _memoPeriod = TimePeriod.week;
   List<WeightEntry> _memoResult = const [];
 
   /// Creates a [WeightBloc] backed by the given [repository].
-  WeightBloc({required this.repository}) : super(const WeightInitial()) {
+  ///
+  /// @param repository Source of weight data.
+  /// @param appSettingsBloc Optional settings BLoC consulted for the health
+  /// sync toggle; health-sync behavior stays dormant when omitted.
+  /// @param healthService Optional health backend; defaults to
+  /// [NativeHealthService.instance].
+  WeightBloc({
+    required this.repository,
+    AppSettingsBloc? appSettingsBloc,
+    HealthService? healthService,
+  })  : _settingsBloc = appSettingsBloc,
+        _healthService = healthService ?? NativeHealthService.instance,
+        super(const WeightInitial()) {
     on<SubscribeToWeightChanges>(_onSubscribeToWeightChanges);
     on<UpdateUserHeight>(_onUpdateUserHeight);
     on<AddWeight>(_onAddWeight);
@@ -40,7 +61,12 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
     on<RefreshWeightData>(_onRefreshWeightData);
     on<ClearAllWeightData>(_onClearAllWeightData);
     on<ImportWeightEntries>(_onImportWeightEntries);
+    on<SyncHealthEntries>(_onSyncHealthEntries);
   }
+
+  /// Whether health synchronization is currently enabled in app settings.
+  bool get _isHealthSyncEnabled =>
+      _settingsBloc?.state.isHealthSyncEnabled ?? false;
 
   /// Extracts the persisted entries from any [WeightState], falling back to
   /// an empty list for [WeightInitial] and [WeightLoading].
@@ -229,6 +255,9 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
 
     try {
       await repository.addEntry(entry);
+      if (_isHealthSyncEnabled) {
+        unawaited(_mirrorWriteToHealth(entry));
+      }
     } catch (e, stack) {
       if (kDebugMode) {
         debugPrint('[WeightBloc] Failed to add entry: $e\n$stack');
@@ -251,13 +280,23 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
     DeleteWeight event,
     Emitter<WeightState> emit,
   ) async {
+    final entries = _entriesFromState(state);
+    WeightEntry? target;
+    for (final entry in entries) {
+      if (entry.id == event.id) {
+        target = entry;
+        break;
+      }
+    }
     try {
       await repository.deleteEntry(event.id);
+      if (_isHealthSyncEnabled && target != null) {
+        unawaited(_mirrorDeleteToHealth(target));
+      }
     } catch (e, stack) {
       if (kDebugMode) {
         debugPrint('[WeightBloc] Failed to delete entry: $e\n$stack');
       }
-      final entries = _entriesFromState(state);
       emit(
         WeightError(
           errorType: WeightErrorType.deleteEntryFailed,
@@ -268,6 +307,110 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
         ),
       );
     }
+  }
+
+  /// Mirrors a locally persisted [entry] to the health platform on a
+  /// best-effort basis; failures are logged but never propagated.
+  Future<void> _mirrorWriteToHealth(WeightEntry entry) async {
+    try {
+      await _healthService.writeWeight(
+        weightKg: entry.weightKg,
+        timestamp: entry.dateTime,
+      );
+    } catch (e, stack) {
+      if (kDebugMode) {
+        debugPrint('[WeightBloc] Health mirror write failed: $e\n$stack');
+      }
+    }
+  }
+
+  /// Mirrors a local deletion of [entry] to the health platform on a
+  /// best-effort basis; failures are logged but never propagated.
+  Future<void> _mirrorDeleteToHealth(WeightEntry entry) async {
+    try {
+      await _healthService.deleteWeight(
+        weightKg: entry.weightKg,
+        timestamp: entry.dateTime,
+      );
+    } catch (e, stack) {
+      if (kDebugMode) {
+        debugPrint('[WeightBloc] Health mirror delete failed: $e\n$stack');
+      }
+    }
+  }
+
+  /// Pulls weight history from the health platform and merges records that do
+  /// not already exist locally, emitting a refreshed [WeightLoaded] state.
+  ///
+  /// Aborts silently when health sync is disabled or the platform errors out,
+  /// so the local database and UI are never blocked.
+  Future<void> _onSyncHealthEntries(
+    SyncHealthEntries event,
+    Emitter<WeightState> emit,
+  ) async {
+    if (!_isHealthSyncEnabled) return;
+    try {
+      final end = DateTime.now();
+      final start = event.startDate ?? end.subtract(const Duration(days: 30));
+      final remoteEntries = await _healthService.fetchWeightHistory(
+        start: start,
+        end: end,
+      );
+      if (remoteEntries.isEmpty) return;
+
+      final localEntries = await repository.getAllEntries();
+      final newEntries = remoteEntries
+          .where((remote) => !_isLocalDuplicate(remote, localEntries))
+          .toList();
+      if (newEntries.isEmpty) return;
+
+      await repository.bulkImportEntries(newEntries);
+      final entries = await repository.getAllEntries();
+      emit(
+        WeightLoaded(
+          heightCm: state.heightCm,
+          timePeriod: state.timePeriod,
+          entries: entries,
+          filteredEntries: _filterEntries(entries, state.timePeriod),
+        ),
+      );
+    } catch (e, stack) {
+      if (kDebugMode) {
+        debugPrint('[WeightBloc] Health sync failed: $e\n$stack');
+      }
+    }
+  }
+
+  /// Returns true when [remote] already exists in [localEntries]: an entry
+  /// with the same timestamp truncated to seconds (UTC-normalized) and the
+  /// exact same weight value.
+  static bool _isLocalDuplicate(
+    WeightEntry remote,
+    List<WeightEntry> localEntries,
+  ) {
+    final remoteInstant = _truncateToSecondUtc(remote.dateTime);
+    for (final local in localEntries) {
+      if (local.weightKg == remote.weightKg &&
+          _truncateToSecondUtc(local.dateTime) == remoteInstant) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  /// Truncates [dateTime] to second precision in UTC so measurements recorded
+  /// milliseconds apart — possibly in different timezone representations — are
+  /// still treated as the same measurement.
+  static DateTime _truncateToSecondUtc(DateTime dateTime) {
+    final utc = dateTime.toUtc();
+    return DateTime.utc(
+      utc.year,
+      utc.month,
+      utc.day,
+      utc.hour,
+      utc.minute,
+      utc.second,
+    );
   }
 
   /// Re-emits the current entries filtered by the newly selected chart

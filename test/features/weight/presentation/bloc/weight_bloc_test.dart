@@ -4,28 +4,38 @@ import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:balance/core/services/health_service.dart';
 import 'package:balance/features/weight/domain/entities/weight_entry.dart';
 import 'package:balance/features/weight/domain/repositories/weight_repository.dart';
 import 'package:balance/features/weight/domain/weight_error_type.dart';
 import 'package:balance/features/weight/presentation/bloc/weight_bloc.dart';
 import 'package:balance/features/weight/presentation/bloc/weight_event.dart';
 import 'package:balance/features/weight/presentation/bloc/weight_state.dart';
+import 'package:balance/presentation/bloc/settings/app_settings_bloc.dart';
+import 'package:balance/presentation/bloc/settings/app_settings_state.dart';
 
 class MockWeightRepository extends Mock implements WeightRepository {}
 
 class MockHydratedStorage extends Mock implements HydratedStorage {}
 
+class MockHealthService extends Mock implements HealthService {}
+
+class MockAppSettingsBloc extends Mock implements AppSettingsBloc {}
+
 void main() {
   late MockWeightRepository repository;
+  late MockHealthService healthService;
   late MockHydratedStorage storage;
   late StreamController<List<WeightEntry>> streamController;
 
   setUpAll(() {
     registerFallbackValue(WeightEntry(weightKg: 0, dateTime: DateTime(2000)));
+    registerFallbackValue(DateTime(2026));
   });
 
   setUp(() {
     repository = MockWeightRepository();
+    healthService = MockHealthService();
     storage = MockHydratedStorage();
     streamController = StreamController<List<WeightEntry>>.broadcast();
 
@@ -35,6 +45,21 @@ void main() {
     when(() => repository.getAllEntries()).thenAnswer((_) async => []);
     when(() => repository.addEntry(any())).thenAnswer((_) async {});
     when(() => repository.deleteEntry(any())).thenAnswer((_) async {});
+    when(
+      () => repository.bulkImportEntries(any()),
+    ).thenAnswer((_) async => 1);
+    when(
+      () => healthService.writeWeight(
+        weightKg: any(named: 'weightKg'),
+        timestamp: any(named: 'timestamp'),
+      ),
+    ).thenAnswer((_) async => true);
+    when(
+      () => healthService.deleteWeight(
+        weightKg: any(named: 'weightKg'),
+        timestamp: any(named: 'timestamp'),
+      ),
+    ).thenAnswer((_) async => true);
 
     HydratedBloc.storage = storage;
     when(() => storage.write(any(), any())).thenAnswer((_) async {});
@@ -44,6 +69,14 @@ void main() {
   tearDown(() {
     streamController.close();
   });
+
+  MockAppSettingsBloc buildSettingsBloc({bool isHealthSyncEnabled = true}) {
+    final settingsBloc = MockAppSettingsBloc();
+    when(() => settingsBloc.state).thenReturn(
+      AppSettingsState(isHealthSyncEnabled: isHealthSyncEnabled),
+    );
+    return settingsBloc;
+  }
 
   group('WeightBloc', () {
     blocTest<WeightBloc, WeightState>(
@@ -340,6 +373,269 @@ void main() {
     test('close cancels stream subscription cleanly', () async {
       final bloc = WeightBloc(repository: repository);
       await bloc.close();
+    });
+
+    group('health sync', () {
+      blocTest<WeightBloc, WeightState>(
+        'mirrors AddWeight to the health service when sync is enabled',
+        build: () => WeightBloc(
+          repository: repository,
+          appSettingsBloc: buildSettingsBloc(),
+          healthService: healthService,
+        ),
+        seed: () =>
+            const WeightLoaded(entries: [], filteredEntries: [], heightCm: 170),
+        act: (bloc) => bloc.add(const AddWeight(weightKg: 72)),
+        verify: (_) {
+          verify(
+            () => healthService.writeWeight(
+              weightKg: 72,
+              timestamp: any(named: 'timestamp'),
+            ),
+          ).called(1);
+          verify(() => repository.addEntry(any())).called(1);
+        },
+      );
+
+      blocTest<WeightBloc, WeightState>(
+        'does not mirror AddWeight when sync is disabled',
+        build: () => WeightBloc(
+          repository: repository,
+          appSettingsBloc: buildSettingsBloc(isHealthSyncEnabled: false),
+          healthService: healthService,
+        ),
+        seed: () =>
+            const WeightLoaded(entries: [], filteredEntries: [], heightCm: 170),
+        act: (bloc) => bloc.add(const AddWeight(weightKg: 72)),
+        verify: (_) {
+          verifyNever(
+            () => healthService.writeWeight(
+              weightKg: any(named: 'weightKg'),
+              timestamp: any(named: 'timestamp'),
+            ),
+          );
+        },
+      );
+
+      blocTest<WeightBloc, WeightState>(
+        'keeps the local entry persisted when the health mirror write fails',
+        build: () {
+          when(
+            () => healthService.writeWeight(
+              weightKg: any(named: 'weightKg'),
+              timestamp: any(named: 'timestamp'),
+            ),
+          ).thenThrow(Exception('Health write failed'));
+          return WeightBloc(
+            repository: repository,
+            appSettingsBloc: buildSettingsBloc(),
+            healthService: healthService,
+          );
+        },
+        seed: () =>
+            const WeightLoaded(entries: [], filteredEntries: [], heightCm: 170),
+        act: (bloc) => bloc.add(const AddWeight(weightKg: 72)),
+        expect: () => [isA<WeightLoading>()],
+        verify: (_) {
+          verify(() => repository.addEntry(any())).called(1);
+        },
+      );
+
+      blocTest<WeightBloc, WeightState>(
+        'mirrors DeleteWeight to the health service when sync is enabled',
+        build: () => WeightBloc(
+          repository: repository,
+          appSettingsBloc: buildSettingsBloc(),
+          healthService: healthService,
+        ),
+        seed: () => WeightLoaded(
+          entries: [
+            WeightEntry(id: 1, weightKg: 72, dateTime: DateTime(2026, 1, 1, 9)),
+          ],
+          filteredEntries: [
+            WeightEntry(id: 1, weightKg: 72, dateTime: DateTime(2026, 1, 1, 9)),
+          ],
+          heightCm: 170,
+        ),
+        act: (bloc) => bloc.add(const DeleteWeight(1)),
+        verify: (_) {
+          verify(
+            () => healthService.deleteWeight(
+              weightKg: 72,
+              timestamp: DateTime(2026, 1, 1, 9),
+            ),
+          ).called(1);
+          verify(() => repository.deleteEntry(1)).called(1);
+        },
+      );
+
+      blocTest<WeightBloc, WeightState>(
+        'does not mirror DeleteWeight when sync is disabled',
+        build: () => WeightBloc(
+          repository: repository,
+          appSettingsBloc: buildSettingsBloc(isHealthSyncEnabled: false),
+          healthService: healthService,
+        ),
+        seed: () => WeightLoaded(
+          entries: [
+            WeightEntry(id: 1, weightKg: 72, dateTime: DateTime(2026, 1, 1, 9)),
+          ],
+          filteredEntries: [
+            WeightEntry(id: 1, weightKg: 72, dateTime: DateTime(2026, 1, 1, 9)),
+          ],
+          heightCm: 170,
+        ),
+        act: (bloc) => bloc.add(const DeleteWeight(1)),
+        verify: (_) {
+          verifyNever(
+            () => healthService.deleteWeight(
+              weightKg: any(named: 'weightKg'),
+              timestamp: any(named: 'timestamp'),
+            ),
+          );
+        },
+      );
+
+      blocTest<WeightBloc, WeightState>(
+        'SyncHealthEntries imports only genuinely new entries',
+        build: () {
+          final existing = WeightEntry(
+            id: 1,
+            weightKg: 72,
+            dateTime: DateTime(2026, 1, 1, 10, 30, 0),
+          );
+          when(
+            () => healthService.fetchWeightHistory(
+              start: any(named: 'start'),
+              end: any(named: 'end'),
+            ),
+          ).thenAnswer(
+            (_) async => [
+              // Duplicate: same second-precision timestamp and weight.
+              WeightEntry(
+                id: 0,
+                weightKg: 72,
+                dateTime: DateTime(2026, 1, 1, 10, 30, 0, 750),
+              ),
+              // Genuinely new measurement.
+              WeightEntry(
+                id: 0,
+                weightKg: 73,
+                dateTime: DateTime(2026, 1, 2, 8),
+              ),
+            ],
+          );
+          var fetchCount = 0;
+          when(() => repository.getAllEntries()).thenAnswer((_) async {
+            fetchCount++;
+            if (fetchCount == 1) {
+              return [existing];
+            }
+            return [
+              existing,
+              WeightEntry(
+                id: 2,
+                weightKg: 73,
+                dateTime: DateTime(2026, 1, 2, 8),
+              ),
+            ];
+          });
+          return WeightBloc(
+            repository: repository,
+            appSettingsBloc: buildSettingsBloc(),
+            healthService: healthService,
+          );
+        },
+        seed: () =>
+            const WeightLoaded(entries: [], filteredEntries: [], heightCm: 170),
+        act: (bloc) => bloc.add(const SyncHealthEntries()),
+        expect: () => [
+          isA<WeightLoaded>().having((s) => s.entries.length, 'entries', 2),
+        ],
+        verify: (_) {
+          final imported = verify(
+            () => repository.bulkImportEntries(captureAny()),
+          ).captured.single as List<WeightEntry>;
+          expect(imported.length, 1);
+          expect(imported.single.weightKg, 73);
+          expect(imported.single.dateTime, DateTime(2026, 1, 2, 8));
+        },
+      );
+
+      blocTest<WeightBloc, WeightState>(
+        'SyncHealthEntries is a no-op when sync is disabled',
+        build: () => WeightBloc(
+          repository: repository,
+          appSettingsBloc: buildSettingsBloc(isHealthSyncEnabled: false),
+          healthService: healthService,
+        ),
+        seed: () =>
+            const WeightLoaded(entries: [], filteredEntries: [], heightCm: 170),
+        act: (bloc) => bloc.add(const SyncHealthEntries()),
+        expect: () => [],
+        verify: (_) {
+          verifyNever(
+            () => healthService.fetchWeightHistory(
+              start: any(named: 'start'),
+              end: any(named: 'end'),
+            ),
+          );
+        },
+      );
+
+      blocTest<WeightBloc, WeightState>(
+        'SyncHealthEntries swallows health fetch failures without crashing',
+        build: () {
+          when(
+            () => healthService.fetchWeightHistory(
+              start: any(named: 'start'),
+              end: any(named: 'end'),
+            ),
+          ).thenThrow(Exception('Health fetch failed'));
+          return WeightBloc(
+            repository: repository,
+            appSettingsBloc: buildSettingsBloc(),
+            healthService: healthService,
+          );
+        },
+        seed: () =>
+            const WeightLoaded(entries: [], filteredEntries: [], heightCm: 170),
+        act: (bloc) => bloc.add(const SyncHealthEntries()),
+        expect: () => [],
+        verify: (_) {
+          verifyNever(() => repository.bulkImportEntries(any()));
+        },
+      );
+
+      blocTest<WeightBloc, WeightState>(
+        'SyncHealthEntries uses the custom startDate window when provided',
+        build: () {
+          when(
+            () => healthService.fetchWeightHistory(
+              start: any(named: 'start'),
+              end: any(named: 'end'),
+            ),
+          ).thenAnswer((_) async => const []);
+          return WeightBloc(
+            repository: repository,
+            appSettingsBloc: buildSettingsBloc(),
+            healthService: healthService,
+          );
+        },
+        seed: () =>
+            const WeightLoaded(entries: [], filteredEntries: [], heightCm: 170),
+        act: (bloc) => bloc.add(
+          SyncHealthEntries(startDate: DateTime(2026, 3, 1)),
+        ),
+        verify: (_) {
+          verify(
+            () => healthService.fetchWeightHistory(
+              start: DateTime(2026, 3, 1),
+              end: any(named: 'end'),
+            ),
+          ).called(1);
+        },
+      );
     });
   });
 }
