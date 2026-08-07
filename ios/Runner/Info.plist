@@ -51,6 +51,10 @@
 		<true/>
 		<key>NSFaceIDUsageDescription</key>
 		<string>Unlock the app with Face ID for faster and more secure access.</string>
+		<key>NSHealthShareUsageDescription</key>
+		<string>PureWeight potrzebuje dostępu do odczytu wagi, aby synchronizować Twoje pomiary.</string>
+		<key>NSHealthUpdateUsageDescription</key>
+		<string>PureWeight potrzebuje dostępu do zapisu wagi, aby dodawać nowe pomiary do Apple Health.</string>
 		<key>NSUserNotificationsUsageDescription</key>
 		<string>Allow notifications for workout and weight tracking reminders.</string>
 		<key>UIBackgroundModes</key>
