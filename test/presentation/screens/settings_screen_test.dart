@@ -5,6 +5,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:balance/core/services/health_service.dart';
 import 'package:balance/core/services/notification_service.dart';
 import 'package:balance/features/weight/presentation/bloc/weight_bloc.dart';
 import 'package:balance/l10n/app_localizations.dart';
@@ -19,9 +20,12 @@ class MockWeightBloc extends Mock implements WeightBloc {}
 
 class MockNotificationService extends Mock implements NotificationService {}
 
+class MockHealthService extends Mock implements HealthService {}
+
 void main() {
   late MockHydratedStorage storage;
   late MockWeightBloc weightBloc;
+  late MockHealthService healthService;
   late AppSettingsBloc settingsBloc;
 
   setUp(() {
@@ -38,7 +42,12 @@ void main() {
       (_) => Stream.value(const WeightLoaded(entries: [], filteredEntries: [])),
     );
 
-    settingsBloc = AppSettingsBloc();
+    healthService = MockHealthService();
+    when(
+      () => healthService.isHealthApiAvailable(),
+    ).thenAnswer((_) async => true);
+
+    settingsBloc = AppSettingsBloc(healthService: healthService);
   });
 
   Widget createTestWidget() {
@@ -68,6 +77,7 @@ void main() {
     expect(find.text('APPLICATION'), findsOneWidget);
     expect(find.text('SECURITY'), findsOneWidget);
     expect(find.text('DATA'), findsOneWidget);
+    expect(find.text('INTEGRATIONS'), findsOneWidget);
   });
 
   testWidgets('renders height value from settings', (tester) async {
@@ -192,7 +202,7 @@ void main() {
       await tester.pumpWidget(createTestWidget());
       await tester.pump();
 
-      await tester.drag(find.text('PROFILE'), const Offset(0, -500));
+      await tester.ensureVisible(find.byType(Switch).first);
       await tester.pumpAndSettle();
       await tester.tap(find.byType(Switch).first);
       await tester.pumpAndSettle();
@@ -208,7 +218,7 @@ void main() {
     await tester.pumpWidget(createTestWidget());
     await tester.pump();
 
-    await tester.drag(find.text('PROFILE'), const Offset(0, -500));
+    await tester.ensureVisible(find.text('Wipe All Data'));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Wipe All Data'));
     await tester.pump();
@@ -226,7 +236,7 @@ void main() {
     await tester.pumpWidget(createTestWidget());
     await tester.pump();
 
-    await tester.drag(find.text('PROFILE'), const Offset(0, -500));
+    await tester.ensureVisible(find.text('Wipe All Data'));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Wipe All Data'));
     await tester.pump();
@@ -235,6 +245,117 @@ void main() {
     await tester.pump();
 
     verifyNever(() => storage.clear());
+  });
+
+  group('Health sync', () {
+    Finder healthSyncSwitch() => find.descendant(
+      of: find.widgetWithText(ListTile, 'Health Sync'),
+      matching: find.byType(Switch),
+    );
+
+    testWidgets('renders the health sync switch enabled by default', (
+      tester,
+    ) async {
+      await tester.pumpWidget(createTestWidget());
+      await tester.pump();
+
+      expect(find.text('Health Sync'), findsOneWidget);
+      expect(
+        find.text('Sync weight data with Apple Health / Health Connect'),
+        findsOneWidget,
+      );
+      expect(tester.widget<Switch>(healthSyncSwitch()).value, isFalse);
+      expect(tester.widget<Switch>(healthSyncSwitch()).onChanged, isNotNull);
+    });
+
+    testWidgets('enables sync and requests permissions when toggled on', (
+      tester,
+    ) async {
+      settingsBloc = AppSettingsBloc(healthService: healthService);
+      when(
+        () => healthService.requestPermissions(),
+      ).thenAnswer((_) async => true);
+
+      await tester.pumpWidget(createTestWidget());
+      await tester.pump();
+
+      await tester.ensureVisible(healthSyncSwitch());
+      await tester.pumpAndSettle();
+      await tester.tap(healthSyncSwitch());
+      await tester.pumpAndSettle();
+
+      verify(() => healthService.requestPermissions()).called(1);
+      expect(tester.widget<Switch>(healthSyncSwitch()).value, isTrue);
+    });
+
+    testWidgets(
+      'shows info snackbar with system settings hint when toggled off',
+      (tester) async {
+        settingsBloc = AppSettingsBloc(healthService: healthService);
+        when(
+          () => healthService.requestPermissions(),
+        ).thenAnswer((_) async => true);
+
+        settingsBloc.add(const ToggleHealthSync(true));
+        await tester.pumpWidget(createTestWidget());
+        await tester.pumpAndSettle();
+
+        await tester.ensureVisible(healthSyncSwitch());
+        await tester.pumpAndSettle();
+        await tester.tap(healthSyncSwitch());
+        await tester.pumpAndSettle();
+
+        expect(
+          find.textContaining(
+            'To fully revoke system-level access, go to system settings',
+          ),
+          findsOneWidget,
+        );
+      },
+    );
+
+    testWidgets(
+      'shows permission denied snackbar with settings action when denied',
+      (tester) async {
+        settingsBloc = AppSettingsBloc(healthService: healthService);
+        when(
+          () => healthService.requestPermissions(),
+        ).thenAnswer((_) async => false);
+
+        await tester.pumpWidget(createTestWidget());
+        await tester.pump();
+
+        await tester.ensureVisible(healthSyncSwitch());
+        await tester.pumpAndSettle();
+        await tester.tap(healthSyncSwitch());
+        await tester.pumpAndSettle();
+
+        expect(
+          find.text('Health data permissions are required to sync weight.'),
+          findsOneWidget,
+        );
+        expect(find.text('Settings'), findsOneWidget);
+        expect(tester.widget<Switch>(healthSyncSwitch()).value, isFalse);
+      },
+    );
+
+    testWidgets('disables the switch when the health API is unavailable', (
+      tester,
+    ) async {
+      settingsBloc = AppSettingsBloc(healthService: healthService);
+      when(
+        () => healthService.isHealthApiAvailable(),
+      ).thenAnswer((_) async => false);
+      when(() => healthService.hasPermissions()).thenAnswer((_) async => false);
+
+      settingsBloc.add(const CheckHealthSyncStatus());
+      await tester.pumpWidget(createTestWidget());
+      await tester.pumpAndSettle();
+
+      expect(find.text('Unavailable on this device'), findsOneWidget);
+      expect(tester.widget<Switch>(healthSyncSwitch()).onChanged, isNull);
+      verifyNever(() => healthService.requestPermissions());
+    });
   });
 
   testWidgets('renders Material Icons for settings items', (tester) async {
@@ -246,6 +367,7 @@ void main() {
     expect(find.byIcon(Icons.straighten), findsOneWidget);
     expect(find.byIcon(Icons.palette_outlined), findsOneWidget);
     expect(find.byIcon(Icons.notifications_outlined), findsOneWidget);
+    expect(find.byIcon(Icons.monitor_heart_outlined), findsOneWidget);
     expect(find.byIcon(Icons.fingerprint), findsOneWidget);
     expect(find.byIcon(Icons.file_upload_outlined), findsOneWidget);
     expect(find.byIcon(Icons.file_download_outlined), findsOneWidget);
@@ -258,7 +380,7 @@ void main() {
     await tester.pumpWidget(createTestWidget());
     await tester.pump();
 
-    await tester.drag(find.text('PROFILE'), const Offset(0, -500));
+    await tester.ensureVisible(find.text('Export data to CSV'));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Export data to CSV'));
     await tester.pump();
@@ -283,6 +405,7 @@ void main() {
     expect(find.text('APPLICATION'), findsOneWidget);
     expect(find.text('SECURITY'), findsOneWidget);
     expect(find.text('DATA'), findsOneWidget);
+    expect(find.text('INTEGRATIONS'), findsOneWidget);
   });
 
   testWidgets(

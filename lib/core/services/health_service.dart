@@ -118,10 +118,9 @@ class NativeHealthService implements HealthService {
         );
         return writeGranted ?? false;
       }
-      final granted = await _health.hasPermissions(
-        const [_weightType],
-        permissions: _readWriteAccess,
-      );
+      final granted = await _health.hasPermissions(const [
+        _weightType,
+      ], permissions: _readWriteAccess);
       return granted ?? false;
     } catch (e, stack) {
       if (kDebugMode) {
@@ -134,10 +133,9 @@ class NativeHealthService implements HealthService {
   @override
   Future<bool> requestPermissions() async {
     try {
-      final granted = await _health.requestAuthorization(
-        const [_weightType],
-        permissions: _readWriteAccess,
-      );
+      final granted = await _health.requestAuthorization(const [
+        _weightType,
+      ], permissions: _readWriteAccess);
       if (!granted) {
         return false;
       }
@@ -183,8 +181,7 @@ class NativeHealthService implements HealthService {
         for (final point in points)
           if (point.value is NumericHealthValue)
             WeightEntry(
-              weightKg: (point.value as NumericHealthValue)
-                  .numericValue
+              weightKg: (point.value as NumericHealthValue).numericValue
                   .toDouble(),
               dateTime: point.dateFrom,
             ),
@@ -239,7 +236,8 @@ class NativeHealthService implements HealthService {
       HealthDataPoint? match;
       for (final point in points) {
         if (point.value is NumericHealthValue &&
-            ((point.value as NumericHealthValue).numericValue - weightKg).abs() <=
+            ((point.value as NumericHealthValue).numericValue - weightKg)
+                    .abs() <=
                 _deleteWeightToleranceKg) {
           match = point;
           break;
@@ -248,10 +246,7 @@ class NativeHealthService implements HealthService {
       if (match == null) {
         return false;
       }
-      return await _health.deleteByUUID(
-        uuid: match.uuid,
-        type: _weightType,
-      );
+      return await _health.deleteByUUID(uuid: match.uuid, type: _weightType);
     } catch (e, stack) {
       if (kDebugMode) {
         debugPrint('[HealthService] deleteWeight error: $e\n$stack');

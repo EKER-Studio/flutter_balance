@@ -15,11 +15,13 @@ class AppSettingsBloc extends HydratedBloc<AppSettingsEvent, AppSettingsState> {
   ///
   /// @param notificationService Optional notification service, defaults to the shared instance.
   /// @param healthService Optional health service, defaults to the shared instance.
-  AppSettingsBloc({NotificationService? notificationService, HealthService? healthService})
-    : _notificationService =
-          notificationService ?? NotificationService.instance,
-      _healthService = healthService ?? NativeHealthService.instance,
-      super(const AppSettingsState()) {
+  AppSettingsBloc({
+    NotificationService? notificationService,
+    HealthService? healthService,
+  }) : _notificationService =
+           notificationService ?? NotificationService.instance,
+       _healthService = healthService ?? NativeHealthService.instance,
+       super(const AppSettingsState()) {
     on<UpdateTheme>(_onUpdateTheme);
     on<UpdateMeasurementUnit>(_onUpdateMeasurementUnit);
     on<UpdateHeight>(_onUpdateHeight);
