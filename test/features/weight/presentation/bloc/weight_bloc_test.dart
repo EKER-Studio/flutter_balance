@@ -495,6 +495,43 @@ void main() {
       );
 
       blocTest<WeightBloc, WeightState>(
+        'keeps local deletion successful when health mirror delete throws',
+        build: () {
+          when(
+            () => healthService.deleteWeight(
+              weightKg: any(named: 'weightKg'),
+              timestamp: any(named: 'timestamp'),
+            ),
+          ).thenThrow(Exception('Health delete failed'));
+          return WeightBloc(
+            repository: repository,
+            appSettingsBloc: buildSettingsBloc(),
+            healthService: healthService,
+          );
+        },
+        seed: () => WeightLoaded(
+          entries: [
+            WeightEntry(id: 1, weightKg: 72, dateTime: DateTime(2026, 1, 1, 9)),
+          ],
+          filteredEntries: [
+            WeightEntry(id: 1, weightKg: 72, dateTime: DateTime(2026, 1, 1, 9)),
+          ],
+          heightCm: 170,
+        ),
+        act: (bloc) => bloc.add(const DeleteWeight(1)),
+        expect: () => <WeightState>[],
+        verify: (_) {
+          verify(() => repository.deleteEntry(1)).called(1);
+          verify(
+            () => healthService.deleteWeight(
+              weightKg: 72,
+              timestamp: DateTime(2026, 1, 1, 9),
+            ),
+          ).called(1);
+        },
+      );
+
+      blocTest<WeightBloc, WeightState>(
         'SyncHealthEntries imports only genuinely new entries',
         build: () {
           final existing1 = WeightEntry(
