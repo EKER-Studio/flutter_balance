@@ -94,6 +94,24 @@ final class UpdateBiometricSupport extends AppSettingsEvent {
   const UpdateBiometricSupport(this.isSupported);
 }
 
+/// Toggles the health sync (HealthKit / Health Connect) integration.
+final class ToggleHealthSync extends AppSettingsEvent {
+  /// Whether health sync should be enabled.
+  final bool enabled;
+
+  /// Creates [ToggleHealthSync] with the given [enabled].
+  const ToggleHealthSync(this.enabled);
+}
+
+/// Re-evaluates health API availability and permission grants on app start.
+///
+/// If health sync is enabled but the native permissions were revoked, the
+/// sync flag is automatically disabled and persisted.
+final class CheckHealthSyncStatus extends AppSettingsEvent {
+  /// Creates [CheckHealthSyncStatus].
+  const CheckHealthSyncStatus();
+}
+
 /// Resets all application settings to factory default values.
 final class ResetAppSettings extends AppSettingsEvent {
   /// Creates [ResetAppSettings].

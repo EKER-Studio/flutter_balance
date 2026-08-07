@@ -53,6 +53,9 @@ void main() {
       expect(bloc.state.notificationTime, const TimeOfDay(hour: 8, minute: 0));
       expect(bloc.state.isLocked, false);
       expect(bloc.state.isOnboardingCompleted, false);
+      expect(bloc.state.isHealthSyncEnabled, false);
+      expect(bloc.state.isHealthApiAvailable, true);
+      expect(bloc.state.healthPermissionDenied, false);
     });
 
     group('AppSettingsX', () {
@@ -339,6 +342,7 @@ void main() {
         'notificationsEnabled': false,
         'notificationTime': {'hour': 14, 'minute': 30},
         'isOnboardingCompleted': true,
+        'isHealthSyncEnabled': true,
       };
 
       final state = AppSettingsState.fromJson(json);
@@ -349,6 +353,7 @@ void main() {
       expect(state.notificationsEnabled, false);
       expect(state.notificationTime, const TimeOfDay(hour: 14, minute: 30));
       expect(state.isOnboardingCompleted, true);
+      expect(state.isHealthSyncEnabled, true);
       expect(state.notificationPermissionDenied, false);
     });
 
@@ -442,6 +447,7 @@ void main() {
       expect(json['notificationTime']['hour'], 14);
       expect(json['notificationTime']['minute'], 30);
       expect(json['isOnboardingCompleted'], true);
+      expect(json['isHealthSyncEnabled'], false);
     });
 
     test('toJson serializes defaults correctly', () {
@@ -456,6 +462,7 @@ void main() {
       expect(json['notificationTime']['hour'], 8);
       expect(json['notificationTime']['minute'], 0);
       expect(json['isOnboardingCompleted'], false);
+      expect(json['isHealthSyncEnabled'], false);
     });
 
     test('copyWith creates updated copy', () {
@@ -472,6 +479,9 @@ void main() {
         themeMode: AppThemeMode.dark,
         height: 180.0,
         isOnboardingCompleted: true,
+        isHealthSyncEnabled: true,
+        isHealthApiAvailable: false,
+        healthPermissionDenied: true,
       );
 
       expect(updated.themeMode, AppThemeMode.dark);
@@ -480,6 +490,9 @@ void main() {
       expect(updated.notificationsEnabled, true);
       expect(updated.notificationTime, const TimeOfDay(hour: 7, minute: 0));
       expect(updated.isOnboardingCompleted, true);
+      expect(updated.isHealthSyncEnabled, true);
+      expect(updated.isHealthApiAvailable, false);
+      expect(updated.healthPermissionDenied, true);
     });
   });
 }

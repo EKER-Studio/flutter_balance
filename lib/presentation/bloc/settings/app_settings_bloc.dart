@@ -1,4 +1,5 @@
 import 'package:hydrated_bloc/hydrated_bloc.dart';
+import 'package:balance/core/services/health_service.dart';
 import 'package:balance/core/services/notification_service.dart';
 import 'package:balance/presentation/bloc/settings/app_settings_event.dart';
 import 'package:balance/presentation/bloc/settings/app_settings_state.dart';
@@ -8,11 +9,16 @@ import 'package:balance/presentation/bloc/settings/app_settings_state.dart';
 /// All settings are persisted across app restarts via [HydratedBloc].
 class AppSettingsBloc extends HydratedBloc<AppSettingsEvent, AppSettingsState> {
   final NotificationService _notificationService;
+  final HealthService _healthService;
 
   /// Creates an [AppSettingsBloc] initialized with default settings.
-  AppSettingsBloc({NotificationService? notificationService})
+  ///
+  /// @param notificationService Optional notification service, defaults to the shared instance.
+  /// @param healthService Optional health service, defaults to the shared instance.
+  AppSettingsBloc({NotificationService? notificationService, HealthService? healthService})
     : _notificationService =
           notificationService ?? NotificationService.instance,
+      _healthService = healthService ?? NativeHealthService.instance,
       super(const AppSettingsState()) {
     on<UpdateTheme>(_onUpdateTheme);
     on<UpdateMeasurementUnit>(_onUpdateMeasurementUnit);
@@ -24,6 +30,8 @@ class AppSettingsBloc extends HydratedBloc<AppSettingsEvent, AppSettingsState> {
     on<UpdateBiometricSupport>(_onUpdateBiometricSupport);
     on<SetLocked>(_onSetLocked);
     on<CompleteOnboarding>(_onCompleteOnboarding);
+    on<ToggleHealthSync>(_onToggleHealthSync);
+    on<CheckHealthSyncStatus>(_onCheckHealthSyncStatus);
     on<ResetAppSettings>(_onResetAppSettings);
   }
 
@@ -132,6 +140,73 @@ class AppSettingsBloc extends HydratedBloc<AppSettingsEvent, AppSettingsState> {
     Emitter<AppSettingsState> emit,
   ) {
     emit(state.copyWith(isOnboardingCompleted: true));
+  }
+
+  /// Enables or disables health sync (HealthKit / Health Connect).
+  ///
+  /// When enabling, verifies the OS health API is available and requests
+  /// native permissions first; a granted request activates the sync flag, a
+  /// denied one emits the transient [AppSettingsState.healthPermissionDenied]
+  /// flag instead. When disabling, deactivates the sync flag and clears the
+  /// transient denied flag.
+  Future<void> _onToggleHealthSync(
+    ToggleHealthSync event,
+    Emitter<AppSettingsState> emit,
+  ) async {
+    if (!event.enabled) {
+      emit(
+        state.copyWith(
+          isHealthSyncEnabled: false,
+          healthPermissionDenied: false,
+        ),
+      );
+      return;
+    }
+
+    final apiAvailable = await _healthService.isHealthApiAvailable();
+    if (!apiAvailable) {
+      emit(
+        state.copyWith(
+          isHealthApiAvailable: false,
+          healthPermissionDenied: false,
+        ),
+      );
+      return;
+    }
+
+    final granted = await _healthService.requestPermissions();
+    emit(
+      state.copyWith(
+        isHealthSyncEnabled: granted,
+        isHealthApiAvailable: true,
+        healthPermissionDenied: !granted,
+      ),
+    );
+  }
+
+  /// Re-evaluates health API availability and permission grants.
+  ///
+  /// Runs during app initialization: refreshes [AppSettingsState.isHealthApiAvailable]
+  /// and, when the persisted sync flag is set but the native permissions were
+  /// revoked in the OS settings, disables and persists the sync flag.
+  Future<void> _onCheckHealthSyncStatus(
+    CheckHealthSyncStatus event,
+    Emitter<AppSettingsState> emit,
+  ) async {
+    final apiAvailable = await _healthService.isHealthApiAvailable();
+    var syncEnabled = state.isHealthSyncEnabled;
+    if (syncEnabled) {
+      final granted = await _healthService.hasPermissions();
+      if (!granted) {
+        syncEnabled = false;
+      }
+    }
+    emit(
+      state.copyWith(
+        isHealthApiAvailable: apiAvailable,
+        isHealthSyncEnabled: syncEnabled,
+      ),
+    );
   }
 
   /// Resets every setting back to the default [AppSettingsState].

@@ -53,6 +53,18 @@ final class AppSettingsState extends Equatable {
   /// Not persisted; evaluated freshly on each app launch.
   final bool isBiometricSupported;
 
+  /// Whether health sync (HealthKit / Health Connect) is activated by the user.
+  final bool isHealthSyncEnabled;
+
+  /// Whether the OS supports HealthKit (iOS) / Health Connect (Android).
+  /// Not persisted; evaluated freshly on each app launch.
+  final bool isHealthApiAvailable;
+
+  /// Transient flag set when the last health permission request was denied.
+  /// Consumed by the UI to surface a permission-required message;
+  /// never persisted and reset by any subsequent health-related event.
+  final bool healthPermissionDenied;
+
   /// Creates [AppSettingsState] with the given parameters.
   const AppSettingsState({
     this.themeMode = AppThemeMode.system,
@@ -66,6 +78,9 @@ final class AppSettingsState extends Equatable {
     this.isOnboardingCompleted = false,
     this.notificationPermissionDenied = false,
     this.isBiometricSupported = true,
+    this.isHealthSyncEnabled = false,
+    this.isHealthApiAvailable = true,
+    this.healthPermissionDenied = false,
   });
 
   /// Creates a copy of this state with the given fields replaced.
@@ -84,6 +99,9 @@ final class AppSettingsState extends Equatable {
     bool? isOnboardingCompleted,
     bool? notificationPermissionDenied,
     bool? isBiometricSupported,
+    bool? isHealthSyncEnabled,
+    bool? isHealthApiAvailable,
+    bool? healthPermissionDenied,
   }) {
     return AppSettingsState(
       themeMode: themeMode ?? this.themeMode,
@@ -102,6 +120,10 @@ final class AppSettingsState extends Equatable {
       notificationPermissionDenied:
           notificationPermissionDenied ?? this.notificationPermissionDenied,
       isBiometricSupported: isBiometricSupported ?? this.isBiometricSupported,
+      isHealthSyncEnabled: isHealthSyncEnabled ?? this.isHealthSyncEnabled,
+      isHealthApiAvailable: isHealthApiAvailable ?? this.isHealthApiAvailable,
+      healthPermissionDenied:
+          healthPermissionDenied ?? this.healthPermissionDenied,
     );
   }
 
@@ -118,6 +140,9 @@ final class AppSettingsState extends Equatable {
     isOnboardingCompleted,
     notificationPermissionDenied,
     isBiometricSupported,
+    isHealthSyncEnabled,
+    isHealthApiAvailable,
+    healthPermissionDenied,
   ];
 
   /// Deserializes [AppSettingsState] from a JSON map.
@@ -155,9 +180,13 @@ final class AppSettingsState extends Equatable {
           ? true
           : (json['isLocked'] as bool? ?? false),
       isOnboardingCompleted: json['isOnboardingCompleted'] as bool? ?? false,
+      isHealthSyncEnabled: json['isHealthSyncEnabled'] as bool? ?? false,
       // Transient flag: never restored from storage.
       notificationPermissionDenied: false,
       isBiometricSupported: true,
+      // Transient flags: never restored from storage.
+      isHealthApiAvailable: true,
+      healthPermissionDenied: false,
     );
   }
 
@@ -176,6 +205,7 @@ final class AppSettingsState extends Equatable {
       'isBiometricLockEnabled': isBiometricLockEnabled,
       'isLocked': isLocked,
       'isOnboardingCompleted': isOnboardingCompleted,
+      'isHealthSyncEnabled': isHealthSyncEnabled,
     };
   }
 }

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:balance/core/models/measurement_unit.dart';
+import 'package:balance/core/services/health_service.dart';
 import 'package:balance/core/services/notification_service.dart';
 import 'package:balance/presentation/bloc/settings/app_settings_bloc.dart';
 import 'package:balance/presentation/bloc/settings/app_settings_event.dart';
@@ -12,10 +13,13 @@ import 'package:hydrated_bloc/hydrated_bloc.dart';
 
 class MockNotificationService extends Mock implements NotificationService {}
 
+class MockHealthService extends Mock implements HealthService {}
+
 class MockStorage extends Mock implements Storage {}
 
 void main() {
   late MockNotificationService mockNotificationService;
+  late MockHealthService mockHealthService;
   late MockStorage mockStorage;
 
   setUpAll(() {
@@ -24,6 +28,7 @@ void main() {
 
   setUp(() {
     mockNotificationService = MockNotificationService();
+    mockHealthService = MockHealthService();
     mockStorage = MockStorage();
     when(
       () => mockStorage.write(any(), any<dynamic>()),
@@ -36,6 +41,7 @@ void main() {
       when(() => mockStorage.read('AppSettingsBloc')).thenReturn(null);
       final bloc = AppSettingsBloc(
         notificationService: mockNotificationService,
+        healthService: mockHealthService,
       );
       expect(bloc.state, const AppSettingsState());
     });
@@ -44,7 +50,10 @@ void main() {
       'emits updated themeMode on UpdateTheme',
       build: () {
         when(() => mockStorage.read('AppSettingsBloc')).thenReturn(null);
-        return AppSettingsBloc(notificationService: mockNotificationService);
+        return AppSettingsBloc(
+          notificationService: mockNotificationService,
+          healthService: mockHealthService,
+        );
       },
       act: (bloc) => bloc.add(const UpdateTheme(AppThemeMode.dark)),
       expect: () => [const AppSettingsState(themeMode: AppThemeMode.dark)],
@@ -54,7 +63,10 @@ void main() {
       'emits updated measurementUnit on UpdateMeasurementUnit',
       build: () {
         when(() => mockStorage.read('AppSettingsBloc')).thenReturn(null);
-        return AppSettingsBloc(notificationService: mockNotificationService);
+        return AppSettingsBloc(
+          notificationService: mockNotificationService,
+          healthService: mockHealthService,
+        );
       },
       act: (bloc) =>
           bloc.add(const UpdateMeasurementUnit(MeasurementUnit.imperial)),
@@ -67,7 +79,10 @@ void main() {
       'emits updated height on UpdateHeight',
       build: () {
         when(() => mockStorage.read('AppSettingsBloc')).thenReturn(null);
-        return AppSettingsBloc(notificationService: mockNotificationService);
+        return AppSettingsBloc(
+          notificationService: mockNotificationService,
+          healthService: mockHealthService,
+        );
       },
       act: (bloc) => bloc.add(const UpdateHeight(180.0)),
       expect: () => [const AppSettingsState(height: 180.0)],
@@ -77,7 +92,10 @@ void main() {
       'emits updated targetWeight on TargetWeightChanged',
       build: () {
         when(() => mockStorage.read('AppSettingsBloc')).thenReturn(null);
-        return AppSettingsBloc(notificationService: mockNotificationService);
+        return AppSettingsBloc(
+          notificationService: mockNotificationService,
+          healthService: mockHealthService,
+        );
       },
       act: (bloc) => bloc.add(const TargetWeightChanged(70.0)),
       expect: () => [const AppSettingsState(targetWeight: 70.0)],
@@ -87,7 +105,10 @@ void main() {
       'emits updated biometric lock on UpdateBiometricLock',
       build: () {
         when(() => mockStorage.read('AppSettingsBloc')).thenReturn(null);
-        return AppSettingsBloc(notificationService: mockNotificationService);
+        return AppSettingsBloc(
+          notificationService: mockNotificationService,
+          healthService: mockHealthService,
+        );
       },
       act: (bloc) => bloc.add(const UpdateBiometricLock(true)),
       expect: () => [const AppSettingsState(isBiometricLockEnabled: true)],
@@ -97,7 +118,10 @@ void main() {
       'emits updated locked state on SetLocked',
       build: () {
         when(() => mockStorage.read('AppSettingsBloc')).thenReturn(null);
-        return AppSettingsBloc(notificationService: mockNotificationService);
+        return AppSettingsBloc(
+          notificationService: mockNotificationService,
+          healthService: mockHealthService,
+        );
       },
       act: (bloc) => bloc.add(const SetLocked(true)),
       expect: () => [const AppSettingsState(isLocked: true)],
@@ -107,7 +131,10 @@ void main() {
       'emits onboarding completed on CompleteOnboarding',
       build: () {
         when(() => mockStorage.read('AppSettingsBloc')).thenReturn(null);
-        return AppSettingsBloc(notificationService: mockNotificationService);
+        return AppSettingsBloc(
+          notificationService: mockNotificationService,
+          healthService: mockHealthService,
+        );
       },
       act: (bloc) => bloc.add(const CompleteOnboarding()),
       expect: () => [const AppSettingsState(isOnboardingCompleted: true)],
@@ -117,7 +144,10 @@ void main() {
       'emits default state on ResetAppSettings',
       build: () {
         when(() => mockStorage.read('AppSettingsBloc')).thenReturn(null);
-        return AppSettingsBloc(notificationService: mockNotificationService);
+        return AppSettingsBloc(
+          notificationService: mockNotificationService,
+          healthService: mockHealthService,
+        );
       },
       seed: () =>
           const AppSettingsState(themeMode: AppThemeMode.dark, height: 180.0),
@@ -138,7 +168,10 @@ void main() {
         },
         build: () {
           when(() => mockStorage.read('AppSettingsBloc')).thenReturn(null);
-          return AppSettingsBloc(notificationService: mockNotificationService);
+          return AppSettingsBloc(
+            notificationService: mockNotificationService,
+            healthService: mockHealthService,
+          );
         },
         act: (bloc) => bloc.add(const ToggleNotifications(true)),
         expect: () => [
@@ -166,7 +199,10 @@ void main() {
         },
         build: () {
           when(() => mockStorage.read('AppSettingsBloc')).thenReturn(null);
-          return AppSettingsBloc(notificationService: mockNotificationService);
+          return AppSettingsBloc(
+            notificationService: mockNotificationService,
+            healthService: mockHealthService,
+          );
         },
         act: (bloc) => bloc.add(const ToggleNotifications(true)),
         expect: () => [
@@ -192,7 +228,10 @@ void main() {
         },
         build: () {
           when(() => mockStorage.read('AppSettingsBloc')).thenReturn(null);
-          return AppSettingsBloc(notificationService: mockNotificationService);
+          return AppSettingsBloc(
+            notificationService: mockNotificationService,
+            healthService: mockHealthService,
+          );
         },
         seed: () => const AppSettingsState(notificationsEnabled: true),
         act: (bloc) => bloc.add(const ToggleNotifications(false)),
@@ -213,7 +252,10 @@ void main() {
         'emits new time but does not schedule if notifications are disabled',
         build: () {
           when(() => mockStorage.read('AppSettingsBloc')).thenReturn(null);
-          return AppSettingsBloc(notificationService: mockNotificationService);
+          return AppSettingsBloc(
+            notificationService: mockNotificationService,
+            healthService: mockHealthService,
+          );
         },
         act: (bloc) => bloc.add(
           const UpdateNotificationTime(TimeOfDay(hour: 9, minute: 30)),
@@ -240,7 +282,10 @@ void main() {
         },
         build: () {
           when(() => mockStorage.read('AppSettingsBloc')).thenReturn(null);
-          return AppSettingsBloc(notificationService: mockNotificationService);
+          return AppSettingsBloc(
+            notificationService: mockNotificationService,
+            healthService: mockHealthService,
+          );
         },
         seed: () => const AppSettingsState(notificationsEnabled: true),
         act: (bloc) => bloc.add(
@@ -263,6 +308,222 @@ void main() {
       );
     });
 
+    group('ToggleHealthSync', () {
+      blocTest<AppSettingsBloc, AppSettingsState>(
+        'requests permissions and enables sync if granted',
+        setUp: () {
+          when(
+            () => mockHealthService.isHealthApiAvailable(),
+          ).thenAnswer((_) async => true);
+          when(
+            () => mockHealthService.requestPermissions(),
+          ).thenAnswer((_) async => true);
+        },
+        build: () {
+          when(() => mockStorage.read('AppSettingsBloc')).thenReturn(null);
+          return AppSettingsBloc(
+            notificationService: mockNotificationService,
+            healthService: mockHealthService,
+          );
+        },
+        act: (bloc) => bloc.add(const ToggleHealthSync(true)),
+        expect: () => [
+          const AppSettingsState(
+            isHealthSyncEnabled: true,
+            isHealthApiAvailable: true,
+            healthPermissionDenied: false,
+          ),
+        ],
+        verify: (_) {
+          verify(() => mockHealthService.isHealthApiAvailable()).called(1);
+          verify(() => mockHealthService.requestPermissions()).called(1);
+        },
+      );
+
+      blocTest<AppSettingsBloc, AppSettingsState>(
+        'emits healthPermissionDenied if permission request fails',
+        setUp: () {
+          when(
+            () => mockHealthService.isHealthApiAvailable(),
+          ).thenAnswer((_) async => true);
+          when(
+            () => mockHealthService.requestPermissions(),
+          ).thenAnswer((_) async => false);
+        },
+        build: () {
+          when(() => mockStorage.read('AppSettingsBloc')).thenReturn(null);
+          return AppSettingsBloc(
+            notificationService: mockNotificationService,
+            healthService: mockHealthService,
+          );
+        },
+        act: (bloc) => bloc.add(const ToggleHealthSync(true)),
+        expect: () => [
+          const AppSettingsState(
+            isHealthSyncEnabled: false,
+            isHealthApiAvailable: true,
+            healthPermissionDenied: true,
+          ),
+        ],
+        verify: (_) {
+          verify(() => mockHealthService.requestPermissions()).called(1);
+        },
+      );
+
+      blocTest<AppSettingsBloc, AppSettingsState>(
+        'emits isHealthApiAvailable false and stops if API is unavailable',
+        setUp: () {
+          when(
+            () => mockHealthService.isHealthApiAvailable(),
+          ).thenAnswer((_) async => false);
+        },
+        build: () {
+          when(() => mockStorage.read('AppSettingsBloc')).thenReturn(null);
+          return AppSettingsBloc(
+            notificationService: mockNotificationService,
+            healthService: mockHealthService,
+          );
+        },
+        act: (bloc) => bloc.add(const ToggleHealthSync(true)),
+        expect: () => [
+          const AppSettingsState(
+            isHealthSyncEnabled: false,
+            isHealthApiAvailable: false,
+            healthPermissionDenied: false,
+          ),
+        ],
+        verify: (_) {
+          verifyNever(() => mockHealthService.requestPermissions());
+        },
+      );
+
+      blocTest<AppSettingsBloc, AppSettingsState>(
+        'disables sync and clears denied flag when toggling off',
+        setUp: () {
+          when(
+            () => mockHealthService.isHealthApiAvailable(),
+          ).thenAnswer((_) async => true);
+        },
+        build: () {
+          when(() => mockStorage.read('AppSettingsBloc')).thenReturn(null);
+          return AppSettingsBloc(
+            notificationService: mockNotificationService,
+            healthService: mockHealthService,
+          );
+        },
+        seed: () => const AppSettingsState(
+          isHealthSyncEnabled: true,
+          healthPermissionDenied: true,
+        ),
+        act: (bloc) => bloc.add(const ToggleHealthSync(false)),
+        expect: () => [
+          const AppSettingsState(
+            isHealthSyncEnabled: false,
+            healthPermissionDenied: false,
+          ),
+        ],
+        verify: (_) {
+          verifyNever(() => mockHealthService.requestPermissions());
+        },
+      );
+    });
+
+    group('CheckHealthSyncStatus', () {
+      blocTest<AppSettingsBloc, AppSettingsState>(
+        'updates API availability when health API is unavailable',
+        setUp: () {
+          when(
+            () => mockHealthService.isHealthApiAvailable(),
+          ).thenAnswer((_) async => false);
+        },
+        build: () {
+          when(() => mockStorage.read('AppSettingsBloc')).thenReturn(null);
+          return AppSettingsBloc(
+            notificationService: mockNotificationService,
+            healthService: mockHealthService,
+          );
+        },
+        act: (bloc) => bloc.add(const CheckHealthSyncStatus()),
+        expect: () => [const AppSettingsState(isHealthApiAvailable: false)],
+        verify: (_) {
+          verifyNever(() => mockHealthService.hasPermissions());
+        },
+      );
+
+      blocTest<AppSettingsBloc, AppSettingsState>(
+        'keeps sync enabled when permissions are still granted',
+        setUp: () {
+          when(
+            () => mockHealthService.isHealthApiAvailable(),
+          ).thenAnswer((_) async => true);
+          when(
+            () => mockHealthService.hasPermissions(),
+          ).thenAnswer((_) async => true);
+        },
+        build: () {
+          when(() => mockStorage.read('AppSettingsBloc')).thenReturn(null);
+          return AppSettingsBloc(
+            notificationService: mockNotificationService,
+            healthService: mockHealthService,
+          );
+        },
+        seed: () => const AppSettingsState(
+          isHealthSyncEnabled: true,
+          isHealthApiAvailable: false,
+        ),
+        act: (bloc) => bloc.add(const CheckHealthSyncStatus()),
+        expect: () => [
+          const AppSettingsState(
+            isHealthSyncEnabled: true,
+            isHealthApiAvailable: true,
+          ),
+        ],
+        verify: (_) {
+          verify(() => mockHealthService.hasPermissions()).called(1);
+        },
+      );
+
+      blocTest<AppSettingsBloc, AppSettingsState>(
+        'disables and persists sync when permissions were revoked',
+        setUp: () {
+          when(
+            () => mockHealthService.isHealthApiAvailable(),
+          ).thenAnswer((_) async => true);
+          when(
+            () => mockHealthService.hasPermissions(),
+          ).thenAnswer((_) async => false);
+        },
+        build: () {
+          when(() => mockStorage.read('AppSettingsBloc')).thenReturn(null);
+          return AppSettingsBloc(
+            notificationService: mockNotificationService,
+            healthService: mockHealthService,
+          );
+        },
+        seed: () => const AppSettingsState(isHealthSyncEnabled: true),
+        act: (bloc) => bloc.add(const CheckHealthSyncStatus()),
+        expect: () => [
+          const AppSettingsState(
+            isHealthSyncEnabled: false,
+            isHealthApiAvailable: true,
+          ),
+        ],
+        verify: (_) {
+          verify(() => mockHealthService.hasPermissions()).called(1);
+          final writes = verify(
+            () => mockStorage.write(
+              'AppSettingsBloc',
+              captureAny<Map<String, dynamic>>(),
+            ),
+          ).captured;
+          expect(
+            (writes.last as Map<String, dynamic>)['isHealthSyncEnabled'],
+            false,
+          );
+        },
+      );
+    });
+
     group('fromJson / toJson', () {
       test('fromJson works correctly', () {
         when(() => mockStorage.read('AppSettingsBloc')).thenReturn(null);
@@ -279,6 +540,7 @@ void main() {
           'isBiometricLockEnabled': true,
           'isLocked': true,
           'isOnboardingCompleted': true,
+          'isHealthSyncEnabled': true,
         });
 
         expect(
@@ -294,6 +556,7 @@ void main() {
             isLocked: true,
             isOnboardingCompleted: true,
             notificationPermissionDenied: false,
+            isHealthSyncEnabled: true,
           ),
         );
       });
@@ -315,6 +578,8 @@ void main() {
             isLocked: true,
             isOnboardingCompleted: true,
             notificationPermissionDenied: false, // Not serialized
+            isHealthSyncEnabled: true,
+            healthPermissionDenied: true, // Not serialized
           ),
         );
 
@@ -328,6 +593,7 @@ void main() {
           'isBiometricLockEnabled': true,
           'isLocked': true,
           'isOnboardingCompleted': true,
+          'isHealthSyncEnabled': true,
         });
       });
     });
