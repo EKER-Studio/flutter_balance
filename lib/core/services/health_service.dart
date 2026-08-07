@@ -109,6 +109,12 @@ class NativeHealthService implements HealthService {
   /// Half-width of the lookup window around the deletion timestamp.
   static const Duration _deleteLookupWindow = Duration(minutes: 1);
 
+  /// Lower bound for a plausible weight reading in kilograms.
+  static const double _minWeightKg = 20.0;
+
+  /// Upper bound for a plausible weight reading in kilograms.
+  static const double _maxWeightKg = 300.0;
+
   /// Maximum time allowed for permission and settings calls before fallback.
   static const Duration _operationTimeout = Duration(seconds: 5);
 
@@ -209,15 +215,17 @@ class NativeHealthService implements HealthService {
         endTime: end,
         preferredUnits: const {_weightType: _weightUnit},
       );
-      final entries = <WeightEntry>[
-        for (final point in points)
-          if (point.value is NumericHealthValue)
-            WeightEntry(
-              weightKg: (point.value as NumericHealthValue).numericValue
-                  .toDouble(),
-              dateTime: point.dateFrom,
-            ),
-      ];
+      final entries = <WeightEntry>[];
+      for (final point in points) {
+        if (point.value is! NumericHealthValue) {
+          continue;
+        }
+        final value = (point.value as NumericHealthValue).numericValue
+            .toDouble();
+        if (value >= _minWeightKg && value <= _maxWeightKg) {
+          entries.add(WeightEntry(weightKg: value, dateTime: point.dateFrom));
+        }
+      }
       entries.sort((a, b) => b.dateTime.compareTo(a.dateTime));
       return entries;
     } catch (e, stack) {

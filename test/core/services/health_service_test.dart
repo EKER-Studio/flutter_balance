@@ -489,6 +489,92 @@ void main() {
 
       expect(entries, isEmpty);
     });
+
+    test('filters out entries below minimum weight threshold', () async {
+      final date = DateTime(2026, 1, 1, 8, 30);
+      when(
+        () => health.getHealthDataFromTypes(
+          types: any(named: 'types'),
+          preferredUnits: any(named: 'preferredUnits'),
+          startTime: any(named: 'startTime'),
+          endTime: any(named: 'endTime'),
+        ),
+      ).thenAnswer(
+        (_) async => [
+          point(uuid: 'corrupt-low', value: 19.9, dateFrom: date),
+          point(uuid: 'valid', value: 75.5, dateFrom: date),
+        ],
+      );
+
+      final entries = await service.fetchWeightHistory(start: date, end: date);
+
+      expect(entries, hasLength(1));
+      expect(entries.first.weightKg, 75.5);
+    });
+
+    test('filters out entries above maximum weight threshold', () async {
+      final date = DateTime(2026, 1, 1, 8, 30);
+      when(
+        () => health.getHealthDataFromTypes(
+          types: any(named: 'types'),
+          preferredUnits: any(named: 'preferredUnits'),
+          startTime: any(named: 'startTime'),
+          endTime: any(named: 'endTime'),
+        ),
+      ).thenAnswer(
+        (_) async => [
+          point(uuid: 'corrupt-high', value: 300.1, dateFrom: date),
+          point(uuid: 'valid', value: 80.0, dateFrom: date),
+        ],
+      );
+
+      final entries = await service.fetchWeightHistory(start: date, end: date);
+
+      expect(entries, hasLength(1));
+      expect(entries.first.weightKg, 80.0);
+    });
+
+    test('filters out all entries when none are within bounds', () async {
+      final date = DateTime(2026, 1, 1, 8, 30);
+      when(
+        () => health.getHealthDataFromTypes(
+          types: any(named: 'types'),
+          preferredUnits: any(named: 'preferredUnits'),
+          startTime: any(named: 'startTime'),
+          endTime: any(named: 'endTime'),
+        ),
+      ).thenAnswer(
+        (_) async => [
+          point(uuid: 'corrupt-low', value: 5.0, dateFrom: date),
+          point(uuid: 'corrupt-high', value: 500.0, dateFrom: date),
+        ],
+      );
+
+      final entries = await service.fetchWeightHistory(start: date, end: date);
+
+      expect(entries, isEmpty);
+    });
+
+    test('keeps entries exactly at boundary values', () async {
+      final date = DateTime(2026, 1, 1, 8, 30);
+      when(
+        () => health.getHealthDataFromTypes(
+          types: any(named: 'types'),
+          preferredUnits: any(named: 'preferredUnits'),
+          startTime: any(named: 'startTime'),
+          endTime: any(named: 'endTime'),
+        ),
+      ).thenAnswer(
+        (_) async => [
+          point(uuid: 'lower-bound', value: 20.0, dateFrom: date),
+          point(uuid: 'upper-bound', value: 300.0, dateFrom: date),
+        ],
+      );
+
+      final entries = await service.fetchWeightHistory(start: date, end: date);
+
+      expect(entries, hasLength(2));
+    });
   });
 
   group('NativeHealthService.writeWeight', () {
@@ -545,6 +631,34 @@ void main() {
         ),
         isFalse,
       );
+    });
+
+    test('passes exact weight value and timestamp to the plugin', () async {
+      final weight = 93.7;
+      final timestamp = DateTime(2026, 6, 15, 14, 22, 33);
+      when(
+        () => health.writeHealthData(
+          value: any(named: 'value'),
+          unit: any(named: 'unit'),
+          type: any(named: 'type'),
+          startTime: any(named: 'startTime'),
+          endTime: any(named: 'endTime'),
+          recordingMethod: any(named: 'recordingMethod'),
+        ),
+      ).thenAnswer((_) async => true);
+
+      await service.writeWeight(weightKg: weight, timestamp: timestamp);
+
+      verify(
+        () => health.writeHealthData(
+          value: weight,
+          unit: HealthDataUnit.KILOGRAM,
+          type: HealthDataType.WEIGHT,
+          startTime: timestamp,
+          endTime: timestamp,
+          recordingMethod: RecordingMethod.manual,
+        ),
+      ).called(1);
     });
   });
 
@@ -627,6 +741,43 @@ void main() {
         await service.deleteWeight(weightKg: 72.5, timestamp: timestamp),
         isFalse,
       );
+    });
+
+    test('passes exact weight and timestamp for lookup and deletion', () async {
+      final weight = 88.3;
+      final timestamp = DateTime(2026, 3, 20, 11, 5, 10);
+      when(
+        () => health.getHealthDataFromTypes(
+          types: any(named: 'types'),
+          preferredUnits: any(named: 'preferredUnits'),
+          startTime: any(named: 'startTime'),
+          endTime: any(named: 'endTime'),
+        ),
+      ).thenAnswer(
+        (_) async => [
+          point(uuid: 'target', value: weight, dateFrom: timestamp),
+        ],
+      );
+      when(
+        () => health.deleteByUUID(
+          uuid: any(named: 'uuid'),
+          type: any(named: 'type'),
+        ),
+      ).thenAnswer((_) async => true);
+
+      await service.deleteWeight(weightKg: weight, timestamp: timestamp);
+
+      verify(
+        () => health.getHealthDataFromTypes(
+          types: any(named: 'types'),
+          preferredUnits: any(named: 'preferredUnits'),
+          startTime: timestamp.subtract(const Duration(minutes: 1)),
+          endTime: timestamp.add(const Duration(minutes: 1)),
+        ),
+      ).called(1);
+      verify(
+        () => health.deleteByUUID(uuid: 'target', type: HealthDataType.WEIGHT),
+      ).called(1);
     });
   });
 }
