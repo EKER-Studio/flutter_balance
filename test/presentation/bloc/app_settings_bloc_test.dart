@@ -457,7 +457,8 @@ void main() {
       );
 
       blocTest<AppSettingsBloc, AppSettingsState>(
-        'keeps sync enabled while native permissions remain granted',
+        'emits isHealthApiAvailable true and preserves persisted '
+        'isHealthSyncEnabled when API is available',
         build: () => AppSettingsBloc(
           notificationService: mockNotificationService,
           healthService: mockHealthService,
@@ -479,6 +480,37 @@ void main() {
         verify: (_) {
           verify(() => mockHealthService.isHealthApiAvailable()).called(1);
           verify(() => mockHealthService.hasPermissions()).called(1);
+        },
+      );
+
+      blocTest<AppSettingsBloc, AppSettingsState>(
+        'keeps isHealthSyncEnabled false when it was not enabled and '
+        'permissions are granted',
+        build: () => AppSettingsBloc(
+          notificationService: mockNotificationService,
+          healthService: mockHealthService,
+        ),
+        seed: () => const AppSettingsState(
+          isHealthSyncEnabled: false,
+          isHealthApiAvailable: false,
+        ),
+        act: (bloc) => bloc.add(const CheckHealthSyncStatus()),
+        expect: () => [
+          isA<AppSettingsState>()
+              .having(
+                (s) => s.isHealthSyncEnabled,
+                'isHealthSyncEnabled',
+                false,
+              )
+              .having(
+                (s) => s.isHealthApiAvailable,
+                'isHealthApiAvailable',
+                true,
+              ),
+        ],
+        verify: (_) {
+          verify(() => mockHealthService.isHealthApiAvailable()).called(1);
+          verifyNever(() => mockHealthService.hasPermissions());
         },
       );
 
