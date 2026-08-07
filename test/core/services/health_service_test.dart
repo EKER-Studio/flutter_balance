@@ -25,6 +25,25 @@ class _ThrowingPermissionHandler extends PermissionHandlerPlatform {
       throw Exception('Native settings channel unavailable');
 }
 
+/// Permission platform stub whose [openAppSettings] delays beyond the service
+/// timeout threshold, simulating an unresponsive native channel.
+class _SlowPermissionHandler extends PermissionHandlerPlatform {
+  @override
+  Future<bool> openAppSettings() async =>
+      Future.delayed(const Duration(seconds: 6), () => true);
+}
+
+/// Permission platform stub that tracks invocation count.
+class _TrackingPermissionHandler extends PermissionHandlerPlatform {
+  static int callCount = 0;
+
+  @override
+  Future<bool> openAppSettings() async {
+    callCount++;
+    return true;
+  }
+}
+
 // Add mock for PlatformDetector
 class MockPlatformDetector extends Mock implements PlatformDetector {}
 
@@ -49,6 +68,7 @@ void main() {
       platformDetector: platformDetector,
     );
     PermissionHandlerPlatform.instance = FakePermissionHandler(true);
+    _TrackingPermissionHandler.callCount = 0;
 
     // Default to iOS for tests that don't specify otherwise
     when(() => platformDetector.isAndroid).thenReturn(false);
@@ -57,6 +77,7 @@ void main() {
 
   tearDown(() {
     PermissionHandlerPlatform.instance = FakePermissionHandler(true);
+    _TrackingPermissionHandler.callCount = 0;
   });
 
   HealthDataPoint point({
@@ -141,15 +162,64 @@ void main() {
   });
 
   group('NativeHealthService.hasPermissions', () {
-    test('returns true when the platform reports granted access', () async {
+    test(
+      'returns true when WEIGHT read/write permissions are granted on iOS',
+      () async {
+        when(() => platformDetector.isIOS).thenReturn(true);
+
+        when(
+          () => health.hasPermissions(
+            any(),
+            permissions: any(named: 'permissions'),
+          ),
+        ).thenAnswer((_) async => true);
+
+        expect(await service.hasPermissions(), isTrue);
+      },
+    );
+
+    test(
+      'returns true when WEIGHT read/write permissions are granted on Android',
+      () async {
+        when(() => platformDetector.isIOS).thenReturn(false);
+        when(() => platformDetector.isAndroid).thenReturn(true);
+
+        when(
+          () => health.hasPermissions(
+            any(),
+            permissions: any(named: 'permissions'),
+          ),
+        ).thenAnswer((_) async => true);
+
+        expect(await service.hasPermissions(), isTrue);
+      },
+    );
+
+    test('returns false when user denies permissions on iOS', () async {
+      when(() => platformDetector.isIOS).thenReturn(true);
+
       when(
         () => health.hasPermissions(
           any(),
           permissions: any(named: 'permissions'),
         ),
-      ).thenAnswer((_) async => true);
+      ).thenAnswer((_) async => false);
 
-      expect(await service.hasPermissions(), isTrue);
+      expect(await service.hasPermissions(), isFalse);
+    });
+
+    test('returns false when user denies permissions on Android', () async {
+      when(() => platformDetector.isIOS).thenReturn(false);
+      when(() => platformDetector.isAndroid).thenReturn(true);
+
+      when(
+        () => health.hasPermissions(
+          any(),
+          permissions: any(named: 'permissions'),
+        ),
+      ).thenAnswer((_) async => false);
+
+      expect(await service.hasPermissions(), isFalse);
     });
 
     test('treats a null grant as denied', () async {
@@ -228,16 +298,39 @@ void main() {
       ).called(1);
     });
 
-    test('returns false when authorization is declined', () async {
-      when(
-        () => health.requestAuthorization(
-          any(),
-          permissions: any(named: 'permissions'),
-        ),
-      ).thenAnswer((_) async => false);
+    test(
+      'returns false on iOS when authorization is declined by the user',
+      () async {
+        when(() => platformDetector.isIOS).thenReturn(true);
+        when(() => platformDetector.isAndroid).thenReturn(false);
 
-      expect(await service.requestPermissions(), isFalse);
-    });
+        when(
+          () => health.requestAuthorization(
+            any(),
+            permissions: any(named: 'permissions'),
+          ),
+        ).thenAnswer((_) async => false);
+
+        expect(await service.requestPermissions(), isFalse);
+      },
+    );
+
+    test(
+      'returns false on Android when authorization is declined by the user',
+      () async {
+        when(() => platformDetector.isIOS).thenReturn(false);
+        when(() => platformDetector.isAndroid).thenReturn(true);
+
+        when(
+          () => health.requestAuthorization(
+            any(),
+            permissions: any(named: 'permissions'),
+          ),
+        ).thenAnswer((_) async => false);
+
+        expect(await service.requestPermissions(), isFalse);
+      },
+    );
 
     test('catches plugin errors and reports denial', () async {
       when(
@@ -267,6 +360,55 @@ void main() {
 
       expect(await service.openSystemSettings(), isFalse);
     });
+
+    test('triggers the OS settings call via permission_handler', () async {
+      PermissionHandlerPlatform.instance = _TrackingPermissionHandler();
+
+      await service.openSystemSettings();
+
+      expect(_TrackingPermissionHandler.callCount, 1);
+    });
+  });
+
+  group('NativeHealthService timeout behavior', () {
+    test(
+      'hasPermissions falls back to false when plugin exceeds timeout',
+      () async {
+        when(
+          () => health.hasPermissions(
+            any(),
+            permissions: any(named: 'permissions'),
+          ),
+        ).thenAnswer((_) async => Future.delayed(const Duration(seconds: 6)));
+
+        expect(await service.hasPermissions(), isFalse);
+      },
+    );
+
+    test(
+      'requestPermissions falls back to false when plugin exceeds timeout',
+      () async {
+        when(
+          () => health.requestAuthorization(
+            any(),
+            permissions: any(named: 'permissions'),
+          ),
+        ).thenAnswer(
+          (_) async => Future.delayed(const Duration(seconds: 6), () => true),
+        );
+
+        expect(await service.requestPermissions(), isFalse);
+      },
+    );
+
+    test(
+      'openSystemSettings falls back to false when plugin exceeds timeout',
+      () async {
+        PermissionHandlerPlatform.instance = _SlowPermissionHandler();
+
+        expect(await service.openSystemSettings(), isFalse);
+      },
+    );
   });
 
   group('NativeHealthService.fetchWeightHistory', () {

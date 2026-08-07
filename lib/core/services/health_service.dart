@@ -109,6 +109,9 @@ class NativeHealthService implements HealthService {
   /// Half-width of the lookup window around the deletion timestamp.
   static const Duration _deleteLookupWindow = Duration(minutes: 1);
 
+  /// Maximum time allowed for permission and settings calls before fallback.
+  static const Duration _operationTimeout = Duration(seconds: 5);
+
   /// The underlying `health` plugin instance.
   final Health _health;
 
@@ -137,15 +140,17 @@ class NativeHealthService implements HealthService {
       if (_platformDetector.isIOS) {
         // HealthKit intentionally does not disclose READ grants, so the WRITE
         // grant is the only reliable signal that the app is authorized.
-        final writeGranted = await _health.hasPermissions(
-          const [_weightType],
-          permissions: const [HealthDataAccess.WRITE],
-        );
+        final writeGranted = await _health
+            .hasPermissions(
+              const [_weightType],
+              permissions: const [HealthDataAccess.WRITE],
+            )
+            .timeout(_operationTimeout);
         return writeGranted ?? false;
       }
-      final granted = await _health.hasPermissions(const [
-        _weightType,
-      ], permissions: _readWriteAccess);
+      final granted = await _health
+          .hasPermissions(const [_weightType], permissions: _readWriteAccess)
+          .timeout(_operationTimeout);
       return granted ?? false;
     } catch (e, stack) {
       if (kDebugMode) {
@@ -158,9 +163,11 @@ class NativeHealthService implements HealthService {
   @override
   Future<bool> requestPermissions() async {
     try {
-      final granted = await _health.requestAuthorization(const [
-        _weightType,
-      ], permissions: _readWriteAccess);
+      final granted = await _health
+          .requestAuthorization(const [
+            _weightType,
+          ], permissions: _readWriteAccess)
+          .timeout(_operationTimeout);
       if (!granted) {
         return false;
       }
@@ -181,7 +188,7 @@ class NativeHealthService implements HealthService {
   @override
   Future<bool> openSystemSettings() async {
     try {
-      return await openAppSettings();
+      return await openAppSettings().timeout(_operationTimeout);
     } catch (e, stack) {
       if (kDebugMode) {
         debugPrint('[HealthService] openSystemSettings error: $e\n$stack');
