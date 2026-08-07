@@ -7,6 +7,8 @@ import 'package:balance/features/weight/domain/entities/weight_entry.dart';
 import 'package:balance/features/weight/presentation/bloc/weight_bloc.dart';
 import 'package:balance/features/weight/presentation/bloc/weight_event.dart';
 import 'package:balance/l10n/app_localizations.dart';
+import 'package:balance/presentation/bloc/onboarding/onboarding_cubit.dart';
+import 'package:balance/presentation/bloc/onboarding/onboarding_state.dart';
 import 'package:balance/presentation/bloc/settings/app_settings_bloc.dart';
 import 'package:balance/presentation/bloc/settings/app_settings_event.dart';
 import 'package:balance/presentation/screens/onboarding/widgets/step_biometric_lock.dart';
@@ -18,9 +20,11 @@ import 'package:balance/presentation/screens/onboarding/widgets/step_units_heigh
 
 /// Main container screen for the multi-step initial onboarding setup wizard.
 ///
-/// Manages step transitions, keyboard avoidance, screen orientation safety,
-/// and hardware back button behavior via [PopScope].
-class OnboardingWizardScreen extends StatefulWidget {
+/// Wraps the wizard content in an [OnboardingCubit] that owns all temporary
+/// wizard state (step index, drafts, imported CSV entries) and handles
+/// keyboard avoidance, screen orientation safety, and hardware back button
+/// behavior via [PopScope].
+class OnboardingWizardScreen extends StatelessWidget {
   /// Optional callback invoked upon completing all onboarding steps.
   final VoidCallback? onWizardCompleted;
 
@@ -36,43 +40,56 @@ class OnboardingWizardScreen extends StatefulWidget {
   });
 
   @override
-  State<OnboardingWizardScreen> createState() => _OnboardingWizardScreenState();
+  Widget build(BuildContext context) {
+    final isBiometricSupported = context.select(
+      (AppSettingsBloc bloc) => bloc.state.isBiometricSupported,
+    );
+
+    return BlocProvider<OnboardingCubit>(
+      create: (context) {
+        final settingsState = context.read<AppSettingsBloc>().state;
+        return OnboardingCubit(
+          appSettingsBloc: context.read<AppSettingsBloc>(),
+          weightBloc: context.read<WeightBloc>(),
+          totalSteps: isBiometricSupported ? 7 : 6,
+          initialUnit: settingsState.measurementUnit,
+          initialTargetWeight: settingsState.targetWeight,
+        );
+      },
+      child: _OnboardingWizardContent(
+        onWizardCompleted: onWizardCompleted,
+        csvImportService: csvImportService,
+      ),
+    );
+  }
 }
 
-/// Orchestrates the seven onboarding steps and persists each step's choices
-/// into [AppSettingsBloc] and [WeightBloc] as the user progresses.
+/// Renders the onboarding steps and forwards every interaction to
+/// [OnboardingCubit]; the only local state owned here is the [PageController].
 ///
 /// Step order: Units & Height, CSV Import (optional), Initial Weight,
 /// Target Weight (optional), Daily Reminder (optional), Health Sync
 /// (optional), Biometric Lock (optional, skipped when the device does not
-/// support credentials).
-/// Completing the final step dispatches [CompleteOnboarding] and invokes
+/// support credentials). Completing the final step dispatches
+/// [OnboardingCubit.completeOnboarding] and invokes
 /// [OnboardingWizardScreen.onWizardCompleted].
-class _OnboardingWizardScreenState extends State<OnboardingWizardScreen> {
-  final PageController _pageController = PageController();
-  int _currentStep = 0;
+class _OnboardingWizardContent extends StatefulWidget {
+  final VoidCallback? onWizardCompleted;
+  final CsvImportService? csvImportService;
 
-  /// Total number of steps for the current build; the biometric step is
-  /// omitted on devices without credential support.
-  int _totalSteps = 7;
-
-  late MeasurementUnit _selectedUnit;
-  late double? _selectedHeightCm;
-  double? _initialWeightKg;
-  double? _targetWeightKg;
-
-  /// History imported from CSV in step 2; its latest chronological entry
-  /// pre-fills the initial-weight step.
-  List<WeightEntry> _importedEntries = const [];
+  /// Creates an [_OnboardingWizardContent] with [onWizardCompleted] and
+  /// [csvImportService] forwarded from [OnboardingWizardScreen].
+  const _OnboardingWizardContent({
+    required this.onWizardCompleted,
+    required this.csvImportService,
+  });
 
   @override
-  void initState() {
-    super.initState();
-    final settingsState = context.read<AppSettingsBloc>().state;
-    _selectedUnit = settingsState.measurementUnit;
-    _selectedHeightCm = settingsState.height;
-    _targetWeightKg = settingsState.targetWeight;
-  }
+  State<_OnboardingWizardContent> createState() => _OnboardingWizardContentState();
+}
+
+class _OnboardingWizardContentState extends State<_OnboardingWizardContent> {
+  final PageController _pageController = PageController();
 
   @override
   void dispose() {
@@ -80,33 +97,32 @@ class _OnboardingWizardScreenState extends State<OnboardingWizardScreen> {
     super.dispose();
   }
 
-  /// Animates the page view to [step] and updates the step indicator.
-  void _goToStep(int step) {
-    setState(() {
-      _currentStep = step;
-    });
-    _pageController.animateToPage(
-      step,
-      duration: const Duration(milliseconds: 300),
-      curve: Curves.easeInOut,
-    );
+  /// Advances to the next step, or completes the wizard when the current step
+  /// is the final one.
+  void _goToNextStep() {
+    final cubit = context.read<OnboardingCubit>();
+    if (cubit.state.currentStepIndex + 1 >= cubit.state.totalSteps) {
+      cubit.completeOnboarding();
+      widget.onWizardCompleted?.call();
+    } else {
+      cubit.nextStep();
+    }
   }
 
-  /// Persists the chosen [unit] and [heightCm], then advances.
+  /// Stores the chosen [unit] and persists unit, height, and user height into
+  /// the settings/weight BLoCs, then advances.
+  ///
+  /// Height is synced into the weight BLoC before the initial-weight step
+  /// persists the measurement, otherwise its AddWeight guard rejects the
+  /// entry with a heightNotSet error on a fresh install (height is only ever
+  /// saved when settings are saved, or here in onboarding).
   void _handleUnitsHeightNext(MeasurementUnit unit, double heightCm) {
-    setState(() {
-      _selectedUnit = unit;
-      _selectedHeightCm = heightCm;
-    });
+    context.read<OnboardingCubit>().setUnit(unit);
 
     final settingsBloc = context.read<AppSettingsBloc>();
     settingsBloc.add(UpdateMeasurementUnit(unit));
     settingsBloc.add(UpdateHeight(heightCm));
 
-    // Sync height into the weight BLoC before the initial-weight step
-    // persists the measurement, otherwise its AddWeight guard rejects the
-    // entry with a heightNotSet error on a fresh install (height is only ever
-    // saved when settings are saved, or here in onboarding).
     context.read<WeightBloc>().add(UpdateUserHeight(heightCm));
 
     _goToNextStep();
@@ -115,9 +131,7 @@ class _OnboardingWizardScreenState extends State<OnboardingWizardScreen> {
   /// Stores the imported history and advances to the initial-weight step,
   /// which is pre-filled with the latest imported measurement.
   void _handleCsvImported(List<WeightEntry> entries) {
-    setState(() {
-      _importedEntries = entries;
-    });
+    context.read<OnboardingCubit>().setCsvEntries(entries);
     _goToNextStep();
   }
 
@@ -127,30 +141,19 @@ class _OnboardingWizardScreenState extends State<OnboardingWizardScreen> {
     _goToNextStep();
   }
 
-  /// Persists the initial [weightKg] measurement at [timestamp], then advances
-  /// to the target-weight step.
+  /// Stores the initial [weightKg] measurement at [timestamp] as a draft; the
+  /// measurement itself is persisted to [WeightBloc] by the cubit right away.
   void _handleInitialWeightNext(double weightKg, DateTime timestamp) {
-    setState(() {
-      _initialWeightKg = weightKg;
-    });
-
-    try {
-      context.read<WeightBloc>().add(
-        AddWeight(weightKg: weightKg, dateTime: timestamp),
-      );
-    } catch (_) {
-      // Safe fallback if WeightBloc is not provided in context (e.g. unit tests)
-    }
-
+    context
+        .read<OnboardingCubit>()
+        .setInitialWeight(weightKg: weightKg, timestamp: timestamp);
     _goToNextStep();
   }
 
-  /// Persists the chosen [targetWeightKg] (or `null` when skipped), then advances.
+  /// Stores the chosen [targetWeightKg] (or `null` when skipped) and persists
+  /// it into [AppSettingsBloc], then advances.
   void _handleTargetWeightNext(double? targetWeightKg) {
-    setState(() {
-      _targetWeightKg = targetWeightKg;
-    });
-
+    context.read<OnboardingCubit>().setTargetWeight(targetWeightKg);
     context.read<AppSettingsBloc>().add(TargetWeightChanged(targetWeightKg));
     _goToNextStep();
   }
@@ -161,64 +164,26 @@ class _OnboardingWizardScreenState extends State<OnboardingWizardScreen> {
     _goToNextStep();
   }
 
-  /// Advances past the health sync step; the connection state is already
-  /// persisted by [StepHealthSync].
+  /// Mirrors the already-persisted health sync flag into the wizard state and
+  /// advances; the connection state is persisted by [StepHealthSync].
   void _handleHealthSyncNext() {
+    context
+        .read<OnboardingCubit>()
+        .toggleHealthSync(
+          context.read<AppSettingsBloc>().state.isHealthSyncEnabled,
+        );
     _goToNextStep();
   }
 
-  /// Advances past the biometric lock step; the choice is already persisted
-  /// by [StepBiometricLock].
+  /// Mirrors the already-persisted biometric lock flag into the wizard state
+  /// and advances; the choice is persisted by [StepBiometricLock].
   void _handleBiometricNext() {
+    context
+        .read<OnboardingCubit>()
+        .toggleBiometric(
+          context.read<AppSettingsBloc>().state.isBiometricLockEnabled,
+        );
     _goToNextStep();
-  }
-
-  /// Latest chronological entry from the imported CSV history, or `null`
-  /// when nothing was imported. Used both to pre-fill the initial-weight
-  /// step and to exclude that entry from the bulk import in
-  /// [_completeOnboarding] (it is persisted separately via [AddWeight] once
-  /// the user confirms/edits it on that step).
-  WeightEntry? get _latestImportedEntry {
-    if (_importedEntries.isEmpty) return null;
-    return _importedEntries.reduce(
-      (a, b) => a.dateTime.isAfter(b.dateTime) ? a : b,
-    );
-  }
-
-  /// Advances to the next step, or completes onboarding when the current step
-  /// is the final one.
-  void _goToNextStep() {
-    if (_currentStep + 1 >= _totalSteps) {
-      _completeOnboarding();
-    } else {
-      _goToStep(_currentStep + 1);
-    }
-  }
-
-  /// Dispatches [CompleteOnboarding] and notifies
-  /// [OnboardingWizardScreen.onWizardCompleted].
-  ///
-  /// Also bulk-persists any imported CSV entries beyond the single one the
-  /// user already confirmed/edited via [AddWeight] in
-  /// [_handleInitialWeightNext] (that entry is excluded by identity to avoid
-  /// a duplicate). Without this, `StepCsvImport`'s "N entries imported"
-  /// success message would be false: only the one entry shown on the
-  /// initial-weight step was ever being saved.
-  void _completeOnboarding() {
-    final latest = _latestImportedEntry;
-    final remainingImported = latest == null
-        ? const <WeightEntry>[]
-        : _importedEntries.where((entry) => entry != latest).toList();
-    if (remainingImported.isNotEmpty) {
-      try {
-        context.read<WeightBloc>().add(ImportWeightEntries(remainingImported));
-      } catch (_) {
-        // Safe fallback if WeightBloc is not provided in context (e.g. unit tests)
-      }
-    }
-
-    context.read<AppSettingsBloc>().add(const CompleteOnboarding());
-    widget.onWizardCompleted?.call();
   }
 
   /// Wraps a step in a scrollable, full-height column for small screens and
@@ -245,91 +210,111 @@ class _OnboardingWizardScreenState extends State<OnboardingWizardScreen> {
       (AppSettingsBloc bloc) => bloc.state.isBiometricSupported,
     );
 
-    final steps = <Widget>[
-      _buildStepWrapper(
-        StepUnitsHeight(
-          initialUnit: _selectedUnit,
-          initialHeightCm: _selectedHeightCm,
-          onNext: _handleUnitsHeightNext,
-        ),
-      ),
-      _buildStepWrapper(
-        StepCsvImport(
-          importService: widget.csvImportService,
-          onFileImported: _handleCsvImported,
-          onSkipped: _handleCsvSkipped,
-        ),
-      ),
-      _buildStepWrapper(
-        StepInitialWeight(
-          unit: _selectedUnit,
-          initialWeightKg: _latestImportedEntry?.weightKg,
-          initialTimestamp: _latestImportedEntry?.dateTime,
-          onNext: _handleInitialWeightNext,
-        ),
-      ),
-      _buildStepWrapper(
-        StepTargetWeight(
-          unit: _selectedUnit,
-          initialTargetWeightKg: _targetWeightKg,
-          initialWeightKg: _initialWeightKg,
-          onNext: _handleTargetWeightNext,
-        ),
-      ),
-      _buildStepWrapper(StepReminderNotification(onNext: _handleReminderNext)),
-      _buildStepWrapper(
-        StepHealthSync(
-          onNext: _handleHealthSyncNext,
-          onSkip: _handleHealthSyncNext,
-        ),
-      ),
-      if (isBiometricSupported)
-        _buildStepWrapper(StepBiometricLock(onNext: _handleBiometricNext)),
-    ];
-    _totalSteps = steps.length;
-
-    final progress = (_currentStep + 1) / steps.length;
-
-    return PopScope(
-      canPop: _currentStep == 0,
-      onPopInvokedWithResult: (didPop, result) {
-        if (didPop) return;
-        if (_currentStep > 0) {
-          _goToStep(_currentStep - 1);
-        }
+    return BlocListener<OnboardingCubit, OnboardingState>(
+      listenWhen: (previous, current) =>
+          previous.currentStepIndex != current.currentStepIndex,
+      listener: (context, state) {
+        _pageController.animateToPage(
+          state.currentStepIndex,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeInOut,
+        );
       },
-      child: Scaffold(
-        resizeToAvoidBottomInset: true,
-        appBar: AppBar(
-          title: Text(
-            l10n.stepOf(_currentStep + 1, steps.length),
-            style: theme.textTheme.titleMedium?.copyWith(
-              color: theme.colorScheme.onSurfaceVariant,
+      child: BlocBuilder<OnboardingCubit, OnboardingState>(
+        builder: (context, state) {
+          final steps = <Widget>[
+            _buildStepWrapper(
+              StepUnitsHeight(
+                initialUnit: state.selectedUnit,
+                initialHeightCm:
+                    context.read<AppSettingsBloc>().state.height,
+                onNext: _handleUnitsHeightNext,
+              ),
             ),
-          ),
-          centerTitle: true,
-          leading: _currentStep > 0
-              ? IconButton(
-                  icon: const Icon(Icons.arrow_back),
-                  tooltip: l10n.previousStepTooltip,
-                  onPressed: () => _goToStep(_currentStep - 1),
-                )
-              : null,
-          bottom: PreferredSize(
-            preferredSize: const Size.fromHeight(4.0),
-            child: LinearProgressIndicator(
-              value: progress,
-              backgroundColor: theme.colorScheme.surfaceContainerHighest,
+            _buildStepWrapper(
+              StepCsvImport(
+                importService: widget.csvImportService,
+                onFileImported: _handleCsvImported,
+                onSkipped: _handleCsvSkipped,
+              ),
             ),
-          ),
-        ),
-        body: SafeArea(
-          child: PageView(
-            controller: _pageController,
-            physics: const NeverScrollableScrollPhysics(),
-            children: steps,
-          ),
-        ),
+            _buildStepWrapper(
+              StepInitialWeight(
+                unit: state.selectedUnit,
+                initialWeightKg: state.latestImportedEntry?.weightKg,
+                initialTimestamp: state.latestImportedEntry?.dateTime,
+                onNext: _handleInitialWeightNext,
+              ),
+            ),
+            _buildStepWrapper(
+              StepTargetWeight(
+                unit: state.selectedUnit,
+                initialTargetWeightKg: state.draftTargetWeight,
+                initialWeightKg: state.draftInitialWeight,
+                onNext: _handleTargetWeightNext,
+              ),
+            ),
+            _buildStepWrapper(
+              StepReminderNotification(onNext: _handleReminderNext),
+            ),
+            _buildStepWrapper(
+              StepHealthSync(
+                onNext: _handleHealthSyncNext,
+                onSkip: _handleHealthSyncNext,
+              ),
+            ),
+            if (isBiometricSupported)
+              _buildStepWrapper(
+                StepBiometricLock(onNext: _handleBiometricNext),
+              ),
+          ];
+
+          final progress = (state.currentStepIndex + 1) / steps.length;
+
+          return PopScope(
+            canPop: state.currentStepIndex == 0,
+            onPopInvokedWithResult: (didPop, result) {
+              if (didPop) return;
+              if (state.currentStepIndex > 0) {
+                context.read<OnboardingCubit>().previousStep();
+              }
+            },
+            child: Scaffold(
+              resizeToAvoidBottomInset: true,
+              appBar: AppBar(
+                title: Text(
+                  l10n.stepOf(state.currentStepIndex + 1, steps.length),
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
+                ),
+                centerTitle: true,
+                leading: state.currentStepIndex > 0
+                    ? IconButton(
+                        icon: const Icon(Icons.arrow_back),
+                        tooltip: l10n.previousStepTooltip,
+                        onPressed: () =>
+                            context.read<OnboardingCubit>().previousStep(),
+                      )
+                    : null,
+                bottom: PreferredSize(
+                  preferredSize: const Size.fromHeight(4.0),
+                  child: LinearProgressIndicator(
+                    value: progress,
+                    backgroundColor: theme.colorScheme.surfaceContainerHighest,
+                  ),
+                ),
+              ),
+              body: SafeArea(
+                child: PageView(
+                  controller: _pageController,
+                  physics: const NeverScrollableScrollPhysics(),
+                  children: steps,
+                ),
+              ),
+            ),
+          );
+        },
       ),
     );
   }
