@@ -5,6 +5,25 @@ import 'package:health/health.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:balance/features/weight/domain/entities/weight_entry.dart';
 
+/// Abstraction over platform-specific checks.
+///
+/// Allows mocking platform behavior in tests without modifying global state.
+abstract class PlatformDetector {
+  /// Returns true if running on Android.
+  bool get isAndroid;
+
+  /// Returns true if running on iOS.
+  bool get isIOS;
+}
+
+/// Default implementation using [dart:io].
+class NativePlatformDetector implements PlatformDetector {
+  @override
+  bool get isAndroid => Platform.isAndroid;
+  @override
+  bool get isIOS => Platform.isIOS;
+}
+
 /// Abstraction over the native health data platform.
 ///
 /// Exposes a platform-neutral API for querying and modifying body weight
@@ -64,7 +83,10 @@ class NativeHealthService implements HealthService {
   /// Creates a service wrapping [health], which defaults to a fresh plugin instance.
   ///
   /// @param health Optional plugin instance, useful for tests.
-  NativeHealthService({Health? health}) : _health = health ?? Health();
+  /// @param platformDetector Platform detector, defaults to native implementation.
+  NativeHealthService({Health? health, PlatformDetector? platformDetector})
+    : _health = health ?? Health(),
+      _platformDetector = platformDetector ?? NativePlatformDetector();
 
   /// The single shared instance of [NativeHealthService].
   static final NativeHealthService instance = NativeHealthService();
@@ -90,10 +112,13 @@ class NativeHealthService implements HealthService {
   /// The underlying `health` plugin instance.
   final Health _health;
 
+  /// Platform detector for testing.
+  final PlatformDetector _platformDetector;
+
   @override
   Future<bool> isHealthApiAvailable() async {
     try {
-      if (!Platform.isAndroid) {
+      if (!_platformDetector.isAndroid) {
         // HealthKit is available on every iOS device.
         return true;
       }
@@ -109,7 +134,7 @@ class NativeHealthService implements HealthService {
   @override
   Future<bool> hasPermissions() async {
     try {
-      if (Platform.isIOS) {
+      if (_platformDetector.isIOS) {
         // HealthKit intentionally does not disclose READ grants, so the WRITE
         // grant is the only reliable signal that the app is authorized.
         final writeGranted = await _health.hasPermissions(
@@ -139,7 +164,7 @@ class NativeHealthService implements HealthService {
       if (!granted) {
         return false;
       }
-      if (Platform.isIOS) {
+      if (_platformDetector.isIOS) {
         // On iOS the plugin reports that the prompt was shown, not the actual
         // grant, so the result is verified through [hasPermissions].
         return await hasPermissions();

@@ -25,9 +25,13 @@ class _ThrowingPermissionHandler extends PermissionHandlerPlatform {
       throw Exception('Native settings channel unavailable');
 }
 
+// Add mock for PlatformDetector
+class MockPlatformDetector extends Mock implements PlatformDetector {}
+
 void main() {
   late MockHealthPlugin health;
   late NativeHealthService service;
+  late MockPlatformDetector platformDetector;
 
   setUpAll(() {
     registerFallbackValue(DateTime(2026));
@@ -39,8 +43,16 @@ void main() {
 
   setUp(() {
     health = MockHealthPlugin();
-    service = NativeHealthService(health: health);
+    platformDetector = MockPlatformDetector();
+    service = NativeHealthService(
+      health: health,
+      platformDetector: platformDetector,
+    );
     PermissionHandlerPlatform.instance = FakePermissionHandler(true);
+
+    // Default to iOS for tests that don't specify otherwise
+    when(() => platformDetector.isAndroid).thenReturn(false);
+    when(() => platformDetector.isIOS).thenReturn(true);
   });
 
   tearDown(() {
@@ -70,12 +82,62 @@ void main() {
     test(
       'returns true on iOS-like hosts without consulting the plugin',
       () async {
+        // Simulate iOS platform
+        when(() => platformDetector.isAndroid).thenReturn(false);
+        when(() => platformDetector.isIOS).thenReturn(true);
+
         final available = await service.isHealthApiAvailable();
 
         expect(available, isTrue);
         verifyNever(() => health.isHealthConnectAvailable());
       },
     );
+    test('returns true on Android when Health Connect is available', () async {
+      // Simulate Android platform with Health Connect available
+      when(() => platformDetector.isAndroid).thenReturn(true);
+      when(() => platformDetector.isIOS).thenReturn(false);
+      when(
+        () => health.isHealthConnectAvailable(),
+      ).thenAnswer((_) async => true);
+      final available = await service.isHealthApiAvailable();
+
+      expect(available, isTrue);
+      verify(() => platformDetector.isAndroid).called(1);
+      verify(() => health.isHealthConnectAvailable()).called(1);
+    });
+
+    test(
+      'returns false on Android when Health Connect is unavailable',
+      () async {
+        // Simulate Android platform with Health Connect unavailable
+        when(() => platformDetector.isAndroid).thenReturn(true);
+        when(() => platformDetector.isIOS).thenReturn(false);
+        when(
+          () => health.isHealthConnectAvailable(),
+        ).thenAnswer((_) async => false);
+
+        final available = await service.isHealthApiAvailable();
+
+        expect(available, isFalse);
+        verify(() => platformDetector.isAndroid).called(1);
+        verify(() => health.isHealthConnectAvailable()).called(1);
+      },
+    );
+
+    test('returns false on Android when Health Connect check throws', () async {
+      // Simulate Android platform with Health Connect check throwing
+      when(() => platformDetector.isAndroid).thenReturn(true);
+      when(() => platformDetector.isIOS).thenReturn(false);
+      when(
+        () => health.isHealthConnectAvailable(),
+      ).thenThrow(Exception('Health Connect unavailable'));
+
+      final available = await service.isHealthApiAvailable();
+
+      expect(available, isFalse);
+      verify(() => platformDetector.isAndroid).called(1);
+      verify(() => health.isHealthConnectAvailable()).called(1);
+    });
   });
 
   group('NativeHealthService.hasPermissions', () {
@@ -114,7 +176,10 @@ void main() {
   });
 
   group('NativeHealthService.requestPermissions', () {
-    test('returns true when authorization is granted', () async {
+    test('returns true on Android when authorization is granted', () async {
+      when(() => platformDetector.isAndroid).thenReturn(true);
+      when(() => platformDetector.isIOS).thenReturn(false);
+
       when(
         () => health.requestAuthorization(
           any(),
@@ -122,11 +187,43 @@ void main() {
         ),
       ).thenAnswer((_) async => true);
 
-      expect(await service.requestPermissions(), isTrue);
-      verify(
+      final granted = await service.requestPermissions();
+
+      expect(granted, isTrue);
+      verifyNever(
+        () => health.hasPermissions(
+          any(),
+          permissions: any(named: 'permissions'),
+        ),
+      );
+    });
+
+    test('returns true on iOS when authorization prompt is shown and '
+        'hasPermissions returns true', () async {
+      when(() => platformDetector.isAndroid).thenReturn(false);
+      when(() => platformDetector.isIOS).thenReturn(true);
+
+      when(
         () => health.requestAuthorization(
-          [HealthDataType.WEIGHT],
-          permissions: [HealthDataAccess.READ, HealthDataAccess.WRITE],
+          any(),
+          permissions: any(named: 'permissions'),
+        ),
+      ).thenAnswer((_) async => true);
+
+      when(
+        () => health.hasPermissions(
+          any(),
+          permissions: any(named: 'permissions'),
+        ),
+      ).thenAnswer((_) async => true);
+
+      final granted = await service.requestPermissions();
+
+      expect(granted, isTrue);
+      verify(
+        () => health.hasPermissions(
+          any(),
+          permissions: any(named: 'permissions'),
         ),
       ).called(1);
     });
