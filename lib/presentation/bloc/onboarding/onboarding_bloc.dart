@@ -8,7 +8,7 @@ import 'package:balance/presentation/bloc/onboarding/onboarding_state.dart';
 import 'package:balance/presentation/bloc/settings/app_settings_bloc.dart';
 import 'package:balance/presentation/bloc/settings/app_settings_event.dart';
 
-/// BLoC managing the ephemeral state of the onboarding wizard via an
+/// BLoC managing the ephemeral state of the 6-step onboarding wizard via an
 /// event-driven state machine.
 ///
 /// Lives only while the wizard is on screen and holds temporary draft data
@@ -134,7 +134,10 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
     emit(state.copyWith(draftTargetWeight: event.weightKg));
   }
 
-  /// Records whether the user connected health sync during onboarding.
+  /// Records the user's health sync request during onboarding.
+  ///
+  /// The draft is persisted to [AppSettingsBloc] only when still requested at
+  /// [OnboardingCompleted] dispatch time.
   void _onHealthSyncToggled(
     OnboardingHealthSyncToggled event,
     Emitter<OnboardingState> emit,
@@ -142,7 +145,10 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
     emit(state.copyWith(isHealthSyncRequested: event.enabled));
   }
 
-  /// Records whether the user enabled the biometric lock during onboarding.
+  /// Records the user's biometric lock request during onboarding.
+  ///
+  /// The draft is persisted to [AppSettingsBloc] only when still requested at
+  /// [OnboardingCompleted] dispatch time.
   void _onBiometricsToggled(
     OnboardingBiometricsToggled event,
     Emitter<OnboardingState> emit,
