@@ -4,6 +4,7 @@ import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:balance/core/database/database_module.dart';
 import 'package:balance/core/services/biometric_lock_observer.dart';
 import 'package:balance/core/services/biometric_service.dart';
+import 'package:balance/core/services/health_service.dart';
 import 'package:balance/core/services/notification_service.dart';
 import 'package:balance/features/weight/data/repositories/isar_weight_repository.dart';
 import 'package:balance/features/weight/domain/repositories/weight_repository.dart';
@@ -26,8 +27,14 @@ class App extends StatefulWidget {
   /// Optional repository override for testing.
   final WeightRepository? repositoryOverride;
 
+  /// Optional health backend override for testing.
+  final HealthService? healthServiceOverride;
+
   /// Creates the root [App] widget.
-  const App({super.key, this.repositoryOverride});
+  ///
+  /// @param repositoryOverride Optional repository override for testing.
+  /// @param healthServiceOverride Optional health backend override for testing.
+  const App({super.key, this.repositoryOverride, this.healthServiceOverride});
 
   @override
   State<App> createState() => _AppState();
@@ -93,27 +100,40 @@ class _AppState extends State<App> {
     return RepositoryProvider.value(
       value: repository,
       child: BlocProvider(
-        create: (context) => WeightBloc(
-          repository: context.read<WeightRepository>(),
-          appSettingsBloc: context.read<AppSettingsBloc>(),
-        )..add(const SubscribeToWeightChanges()),
-        child: _ObserverRegistrar(
-          localizedReason: () => _l10n.biometricAuthReason,
-          child: _LocalizationSync(
-            onLocalized: (l10n) {
-              _l10n = l10n;
-              NotificationService.instance.setLocalizedTexts(
-                title: l10n.notificationReminderTitle,
-                body: l10n.notificationReminderBody,
-                channelName: l10n.notificationChannelName,
-                channelDescription: l10n.notificationChannelDescription,
-              );
-            },
-            child: !settingsState.isOnboardingCompleted
-                ? const OnboardingWizardScreen()
-                : (settingsState.isLocked
-                      ? const BiometricShieldScreen()
-                      : const MainNavigationScreen()),
+        create: (context) {
+          final settingsBloc = context.read<AppSettingsBloc>();
+          final bloc = WeightBloc(
+            repository: context.read<WeightRepository>(),
+            appSettingsBloc: settingsBloc,
+            healthService: widget.healthServiceOverride,
+          )..add(const SubscribeToWeightChanges());
+          // Pull in records recorded in Apple Health / Health Connect (e.g.
+          // by a smart scale) since the last session when the user already
+          // enabled health sync; the pull itself is gated inside the BLoC.
+          if (settingsBloc.state.isHealthSyncEnabled) {
+            bloc.add(const SyncHealthEntries());
+          }
+          return bloc;
+        },
+        child: _HealthSyncLifecycleObserver(
+          child: _ObserverRegistrar(
+            localizedReason: () => _l10n.biometricAuthReason,
+            child: _LocalizationSync(
+              onLocalized: (l10n) {
+                _l10n = l10n;
+                NotificationService.instance.setLocalizedTexts(
+                  title: l10n.notificationReminderTitle,
+                  body: l10n.notificationReminderBody,
+                  channelName: l10n.notificationChannelName,
+                  channelDescription: l10n.notificationChannelDescription,
+                );
+              },
+              child: !settingsState.isOnboardingCompleted
+                  ? const OnboardingWizardScreen()
+                  : (settingsState.isLocked
+                        ? const BiometricShieldScreen()
+                        : const MainNavigationScreen()),
+            ),
           ),
         ),
       ),
@@ -222,6 +242,54 @@ class _ObserverRegistrarState extends State<_ObserverRegistrar> {
       _observer = null;
     }
     super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => widget.child;
+}
+
+/// Dispatches [SyncHealthEntries] when the app returns to the foreground and
+/// health sync is enabled.
+///
+/// Lives below the [BlocProvider] so the observer can resolve the weight and
+/// settings BLoCs dynamically through its own context instead of capturing
+/// direct instance references, which could go stale if the providers are ever
+/// recreated. Entries recorded in Apple Health / Health Connect while the app
+/// was backgrounded are thereby pulled in without any user action.
+class _HealthSyncLifecycleObserver extends StatefulWidget {
+  /// The subtree rendered below the app-level providers.
+  final Widget child;
+
+  /// Creates a [_HealthSyncLifecycleObserver] wrapping [child].
+  const _HealthSyncLifecycleObserver({required this.child});
+
+  @override
+  State<_HealthSyncLifecycleObserver> createState() =>
+      _HealthSyncLifecycleObserverState();
+}
+
+/// State owning the [WidgetsBindingObserver] registration for foreground sync.
+class _HealthSyncLifecycleObserverState
+    extends State<_HealthSyncLifecycleObserver>
+    with WidgetsBindingObserver {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state != AppLifecycleState.resumed || !mounted) return;
+    final settingsBloc = context.read<AppSettingsBloc>();
+    if (!settingsBloc.state.isHealthSyncEnabled) return;
+    context.read<WeightBloc>().add(const SyncHealthEntries());
   }
 
   @override

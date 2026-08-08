@@ -9,6 +9,7 @@ import 'package:mocktail/mocktail.dart';
 import 'package:balance/core/services/health_service.dart';
 import 'package:balance/core/services/notification_service.dart';
 import 'package:balance/features/weight/presentation/bloc/weight_bloc.dart';
+import 'package:balance/features/weight/presentation/bloc/weight_event.dart';
 import 'package:balance/l10n/app_localizations.dart';
 import 'package:balance/presentation/bloc/settings/app_settings_bloc.dart';
 import 'package:balance/presentation/bloc/settings/app_settings_event.dart';
@@ -306,6 +307,46 @@ void main() {
       verify(() => healthService.requestPermissions()).called(1);
       expect(tester.widget<Switch>(healthSyncSwitch()).value, isTrue);
     });
+
+    testWidgets(
+      'dispatches SyncHealthEntries when sync is enabled with granted permissions',
+      (tester) async {
+        settingsBloc = AppSettingsBloc(healthService: healthService);
+        when(
+          () => healthService.requestPermissions(),
+        ).thenAnswer((_) async => true);
+
+        await tester.pumpWidget(createTestWidget());
+        await tester.pump();
+
+        await tester.ensureVisible(healthSyncSwitch());
+        await tester.pumpAndSettle();
+        await tester.tap(healthSyncSwitch());
+        await tester.pumpAndSettle();
+
+        verify(() => weightBloc.add(const SyncHealthEntries())).called(1);
+      },
+    );
+
+    testWidgets(
+      'does not dispatch SyncHealthEntries when permissions are denied',
+      (tester) async {
+        settingsBloc = AppSettingsBloc(healthService: healthService);
+        when(
+          () => healthService.requestPermissions(),
+        ).thenAnswer((_) async => false);
+
+        await tester.pumpWidget(createTestWidget());
+        await tester.pump();
+
+        await tester.ensureVisible(healthSyncSwitch());
+        await tester.pumpAndSettle();
+        await tester.tap(healthSyncSwitch());
+        await tester.pumpAndSettle();
+
+        verifyNever(() => weightBloc.add(const SyncHealthEntries()));
+      },
+    );
 
     testWidgets(
       'shows info snackbar with system settings hint when toggled off',
