@@ -175,8 +175,8 @@ void main() {
       expect(find.text('Step 6 of 7'), findsOneWidget);
       expect(find.text('Health Sync (Optional)'), findsOneWidget);
 
-      // Step 6 (Health Sync) -> Skip
-      await tester.tap(find.byKey(const Key('health_sync_skip_button')));
+      // Step 6 (Health Sync) -> Next (skip by not enabling the switch)
+      await tester.tap(find.byKey(const Key('health_sync_step_next_button')));
       await tester.pumpAndSettle();
 
       expect(find.text('Step 7 of 7'), findsOneWidget);
@@ -376,15 +376,16 @@ void main() {
       expect(find.text('Step 5 of 6'), findsOneWidget);
       expect(find.text('Daily Reminder (Optional)'), findsOneWidget);
 
-      // Step 6 (Health Sync) is the final step without biometrics: skipping
-      // it finishes the wizard (no further navigation).
+      // Advance from step 5 (Daily Reminder) to step 6 (Health Sync)
       await tester.tap(find.byKey(const Key('notification_step_next_button')));
       await tester.pumpAndSettle();
 
       expect(find.text('Step 6 of 6'), findsOneWidget);
       expect(find.text('Health Sync (Optional)'), findsOneWidget);
 
-      await tester.tap(find.byKey(const Key('health_sync_skip_button')));
+      // Step 6 (Health Sync) is the final step without biometrics: pressing
+      // next without enabling the switch finishes the wizard.
+      await tester.tap(find.byKey(const Key('health_sync_step_next_button')));
       await tester.pumpAndSettle();
 
       expect(completed, isTrue);

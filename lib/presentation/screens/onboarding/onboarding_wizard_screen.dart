@@ -266,7 +266,6 @@ class _OnboardingWizardContentState extends State<_OnboardingWizardContent> {
             _buildStepWrapper(
               StepHealthSync(
                 onNext: _handleHealthSyncNext,
-                onSkip: _handleHealthSyncNext,
               ),
             ),
             if (isBiometricSupported)

@@ -20,11 +20,18 @@ class MockAppSettingsBloc extends Mock implements AppSettingsBloc {}
 ///
 /// The broadcast stream never emits, so the widget renders from the stubbed
 /// state and recorded [AppSettingsBloc.add] calls can be verified.
-MockAppSettingsBloc _buildMockSettingsBloc() {
+MockAppSettingsBloc _buildMockSettingsBloc({
+  bool isHealthSyncEnabled = false,
+}) {
   final bloc = MockAppSettingsBloc();
   when(
     () => bloc.state,
-  ).thenReturn(const AppSettingsState(isHealthApiAvailable: true));
+  ).thenReturn(
+    AppSettingsState(
+      isHealthApiAvailable: true,
+      isHealthSyncEnabled: isHealthSyncEnabled,
+    ),
+  );
   when(
     () => bloc.stream,
   ).thenAnswer((_) => Stream<AppSettingsState>.multi((controller) {}));
@@ -35,6 +42,10 @@ void main() {
   late MockHydratedStorage storage;
   late MockHealthService healthService;
 
+  setUpAll(() {
+    registerFallbackValue(const ToggleHealthSync(false));
+  });
+
   setUp(() {
     storage = MockHydratedStorage();
     HydratedBloc.storage = storage;
@@ -44,7 +55,6 @@ void main() {
 
   Widget buildSubject({
     required VoidCallback onNext,
-    required VoidCallback onSkip,
     required AppSettingsBloc bloc,
   }) {
     return BlocProvider<AppSettingsBloc>.value(
@@ -53,25 +63,22 @@ void main() {
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
         home: Scaffold(
-          body: StepHealthSync(onNext: onNext, onSkip: onSkip),
+          body: StepHealthSync(onNext: onNext),
         ),
       ),
     );
   }
 
+  final switchFinder = find.byKey(const Key('health_sync_step_switch'));
+  final nextButtonFinder = find.byKey(const Key('health_sync_step_next_button'));
+
   group('StepHealthSync Widget Tests', () {
-    testWidgets('renders title, description, connect, and skip buttons', (
+    testWidgets('renders title, description, settings card, and next button', (
       tester,
     ) async {
-      healthService = MockHealthService();
-      when(
-        () => healthService.isHealthApiAvailable(),
-      ).thenAnswer((_) async => true);
-      final bloc = AppSettingsBloc(healthService: healthService);
+      final bloc = _buildMockSettingsBloc();
 
-      await tester.pumpWidget(
-        buildSubject(onNext: () {}, onSkip: () {}, bloc: bloc),
-      );
+      await tester.pumpWidget(buildSubject(onNext: () {}, bloc: bloc));
 
       expect(find.text('Health Sync (Optional)'), findsWidgets);
       expect(
@@ -81,96 +88,83 @@ void main() {
         ),
         findsOneWidget,
       );
+      expect(find.text('Health Sync'), findsOneWidget);
       expect(
-        find.byKey(const Key('health_sync_connect_button')),
+        find.text('Sync weight data with Apple Health / Health Connect'),
         findsOneWidget,
       );
-      expect(find.byKey(const Key('health_sync_skip_button')), findsOneWidget);
-
-      addTearDown(bloc.close);
+      expect(switchFinder, findsOneWidget);
+      expect(nextButtonFinder, findsOneWidget);
+      expect(tester.widget<SwitchListTile>(switchFinder).value, isFalse);
     });
 
-    testWidgets('invokes onSkip when skip button is pressed', (tester) async {
-      healthService = MockHealthService();
-      when(
-        () => healthService.isHealthApiAvailable(),
-      ).thenAnswer((_) async => true);
-      final bloc = AppSettingsBloc(healthService: healthService);
-
-      int skipCount = 0;
-      await tester.pumpWidget(
-        buildSubject(onNext: () {}, onSkip: () => skipCount++, bloc: bloc),
-      );
-
-      await tester.tap(find.byKey(const Key('health_sync_skip_button')));
-      await tester.pumpAndSettle();
-      expect(skipCount, equals(1));
-
-      addTearDown(bloc.close);
-    });
-
-    testWidgets(
-      'dispatches ToggleHealthSync(true) when the Connect button is pressed',
-      (tester) async {
-        final bloc = _buildMockSettingsBloc();
-
-        await tester.pumpWidget(
-          buildSubject(onNext: () {}, onSkip: () {}, bloc: bloc),
-        );
-        await tester.pump();
-
-        await tester.tap(find.byKey(const Key('health_sync_connect_button')));
-        await tester.pump();
-
-        verify(() => bloc.add(const ToggleHealthSync(true))).called(1);
-      },
-    );
-
-    testWidgets('invokes onSkip when the Skip button is pressed', (
+    testWidgets('invokes onNext when the Next button is pressed', (
       tester,
     ) async {
       final bloc = _buildMockSettingsBloc();
 
-      int skipCount = 0;
+      int nextCount = 0;
       await tester.pumpWidget(
-        buildSubject(onNext: () {}, onSkip: () => skipCount++, bloc: bloc),
+        buildSubject(onNext: () => nextCount++, bloc: bloc),
       );
-      await tester.pump();
 
-      await tester.tap(find.text('Skip'));
-      await tester.pump();
+      await tester.tap(nextButtonFinder);
+      await tester.pumpAndSettle();
 
-      expect(skipCount, equals(1));
+      expect(nextCount, equals(1));
     });
 
-    testWidgets(
-      'connects via the bloc and auto-advances after a short success state',
-      (tester) async {
-        healthService = MockHealthService();
-        when(
-          () => healthService.isHealthApiAvailable(),
-        ).thenAnswer((_) async => true);
-        when(
-          () => healthService.requestPermissions(),
-        ).thenAnswer((_) async => true);
-        final bloc = AppSettingsBloc(healthService: healthService);
+    testWidgets('dispatches ToggleHealthSync(true) when the switch is toggled '
+        'on', (tester) async {
+      final bloc = _buildMockSettingsBloc();
 
-        int nextCount = 0;
-        await tester.pumpWidget(
-          buildSubject(onNext: () => nextCount++, onSkip: () {}, bloc: bloc),
-        );
+      await tester.pumpWidget(buildSubject(onNext: () {}, bloc: bloc));
+      await tester.pump();
 
-        await tester.tap(find.byKey(const Key('health_sync_connect_button')));
-        await tester.pump();
-        await tester.pump(const Duration(milliseconds: 900));
+      await tester.tap(switchFinder);
+      await tester.pump();
 
-        expect(bloc.state.isHealthSyncEnabled, isTrue);
-        expect(find.text('Health sync connected!'), findsOneWidget);
-        expect(nextCount, equals(1));
+      final captured = verify(() => bloc.add(captureAny())).captured;
+      final event = captured.single as ToggleHealthSync;
+      expect(event.enabled, isTrue);
+    });
 
-        addTearDown(bloc.close);
-      },
-    );
+    testWidgets('dispatches ToggleHealthSync(false) when the switch is toggled '
+        'off', (tester) async {
+      final bloc = _buildMockSettingsBloc(isHealthSyncEnabled: true);
+
+      await tester.pumpWidget(buildSubject(onNext: () {}, bloc: bloc));
+      await tester.pump();
+
+      await tester.tap(switchFinder);
+      await tester.pump();
+
+      final captured = verify(() => bloc.add(captureAny())).captured;
+      final event = captured.single as ToggleHealthSync;
+      expect(event.enabled, isFalse);
+    });
+
+    testWidgets('enables sync and reflects it in the switch when permissions '
+        'are granted', (tester) async {
+      healthService = MockHealthService();
+      when(
+        () => healthService.isHealthApiAvailable(),
+      ).thenAnswer((_) async => true);
+      when(
+        () => healthService.requestPermissions(),
+      ).thenAnswer((_) async => true);
+      final bloc = AppSettingsBloc(healthService: healthService);
+
+      await tester.pumpWidget(buildSubject(onNext: () {}, bloc: bloc));
+
+      await tester.tap(switchFinder);
+      await tester.pumpAndSettle();
+
+      expect(bloc.state.isHealthSyncEnabled, isTrue);
+      expect(tester.widget<SwitchListTile>(switchFinder).value, isTrue);
+
+      addTearDown(bloc.close);
+    });
 
     testWidgets('shows inline warning when permission request is denied', (
       tester,
@@ -184,11 +178,9 @@ void main() {
       ).thenAnswer((_) async => false);
       final bloc = AppSettingsBloc(healthService: healthService);
 
-      await tester.pumpWidget(
-        buildSubject(onNext: () {}, onSkip: () {}, bloc: bloc),
-      );
+      await tester.pumpWidget(buildSubject(onNext: () {}, bloc: bloc));
 
-      await tester.tap(find.byKey(const Key('health_sync_connect_button')));
+      await tester.tap(switchFinder);
       await tester.pumpAndSettle();
 
       expect(
@@ -196,6 +188,7 @@ void main() {
         findsOneWidget,
       );
       expect(bloc.state.isHealthSyncEnabled, isFalse);
+      expect(tester.widget<SwitchListTile>(switchFinder).value, isFalse);
 
       addTearDown(bloc.close);
     });
@@ -215,11 +208,9 @@ void main() {
         ).thenAnswer((_) async => false);
         final bloc = AppSettingsBloc(healthService: healthService);
 
-        await tester.pumpWidget(
-          buildSubject(onNext: () {}, onSkip: () {}, bloc: bloc),
-        );
+        await tester.pumpWidget(buildSubject(onNext: () {}, bloc: bloc));
 
-        await tester.tap(find.byKey(const Key('health_sync_connect_button')));
+        await tester.tap(switchFinder);
         await tester.pumpAndSettle();
 
         expect(
