@@ -370,6 +370,25 @@ void main() {
     });
   });
 
+  group('NativeHealthService.installHealthConnect', () {
+    test('is a no-op on non-Android platforms', () async {
+      when(() => platformDetector.isAndroid).thenReturn(false);
+      when(() => platformDetector.isIOS).thenReturn(true);
+
+      await expectLater(service.installHealthConnect(), completes);
+    });
+
+    test(
+      'completes without throwing when the launcher channel is missing',
+      () async {
+        when(() => platformDetector.isAndroid).thenReturn(true);
+        when(() => platformDetector.isIOS).thenReturn(false);
+
+        await expectLater(service.installHealthConnect(), completes);
+      },
+    );
+  });
+
   group('NativeHealthService timeout behavior', () {
     test(
       'hasPermissions falls back to false when plugin exceeds timeout',

@@ -338,6 +338,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                                         context,
                                                         v,
                                                       ),
+                                                  onInstallHealthConnect: () =>
+                                                      _showHealthConnectInstallDialog(
+                                                        context,
+                                                      ),
                                                 ),
                                               ],
                                             ),
@@ -455,6 +459,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                                 _handleHealthSyncToggle(
                                                   context,
                                                   v,
+                                                ),
+                                            onInstallHealthConnect: () =>
+                                                _showHealthConnectInstallDialog(
+                                                  context,
                                                 ),
                                           ),
                                           const SizedBox(height: 16),
@@ -869,6 +877,32 @@ class _SettingsScreenState extends State<SettingsScreen> {
           ),
         );
     }
+  }
+
+  /// Shows a dialog explaining that Health Connect must be installed before
+  /// sync can be enabled, with an action opening its Play Store listing.
+  void _showHealthConnectInstallDialog(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(l10n.healthConnectRequiredTitle),
+        content: Text(l10n.healthConnectRequiredSubtitle),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: Text(l10n.cancel),
+          ),
+          FilledButton(
+            onPressed: () {
+              Navigator.pop(ctx);
+              NativeHealthService.instance.installHealthConnect();
+            },
+            child: Text(l10n.installFromPlayStore),
+          ),
+        ],
+      ),
+    );
   }
 
   /// Toggles the biometric lock, authenticating the user before enabling it.
@@ -1439,37 +1473,54 @@ class _IntegrationsSection extends StatelessWidget {
   /// Callback invoked when the health sync switch is toggled.
   final ValueChanged<bool> onHealthSyncChanged;
 
+  /// Callback invoked when the tile asks to install Health Connect.
+  ///
+  /// Only invoked on Android when the health API is unavailable.
+  final VoidCallback onInstallHealthConnect;
+
   /// Creates an [_IntegrationsSection] with the given dependencies.
   ///
   /// @param state The current app settings state driving the displayed values.
   /// @param l10n Localized strings for this section.
   /// @param onHealthSyncChanged Callback invoked when the health sync switch is toggled.
+  /// @param onInstallHealthConnect Callback invoked when the tile asks to install Health Connect.
   const _IntegrationsSection({
     required this.state,
     required this.l10n,
     required this.onHealthSyncChanged,
+    required this.onInstallHealthConnect,
   });
 
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
     final apiAvailable = state.isHealthApiAvailable;
+    final isAndroid = Theme.of(context).platform == TargetPlatform.android;
+    final showInstallAction = !apiAvailable && isAndroid;
 
     return Card(
       margin: EdgeInsets.zero,
       color: colorScheme.surfaceContainerLow,
       elevation: 0,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
-      child: _CustomSwitchTile(
-        icon: Icons.monitor_heart_outlined,
-        title: l10n.healthSync,
-        subtitle: apiAvailable
-            ? l10n.healthSyncDesc
-            : l10n.healthSyncUnavailable,
-        sectionLabel: l10n.integrationsSection,
-        value: state.isHealthSyncEnabled,
-        onChanged: apiAvailable ? onHealthSyncChanged : null,
-      ),
+      child: showInstallAction
+          ? _CustomSettingsTile(
+              icon: Icons.monitor_heart_outlined,
+              title: l10n.healthSync,
+              subtitle: l10n.healthSyncUnavailable,
+              sectionLabel: l10n.integrationsSection,
+              onTap: onInstallHealthConnect,
+            )
+          : _CustomSwitchTile(
+              icon: Icons.monitor_heart_outlined,
+              title: l10n.healthSync,
+              subtitle: apiAvailable
+                  ? l10n.healthSyncDesc
+                  : l10n.healthSyncUnavailable,
+              sectionLabel: l10n.integrationsSection,
+              value: state.isHealthSyncEnabled,
+              onChanged: apiAvailable ? onHealthSyncChanged : null,
+            ),
     );
   }
 }

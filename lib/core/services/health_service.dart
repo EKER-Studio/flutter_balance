@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:health/health.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:balance/features/weight/domain/entities/weight_entry.dart';
 
 /// Abstraction over platform-specific checks.
@@ -41,6 +42,12 @@ abstract class HealthService {
 
   /// Opens native app system settings so the user can manage permissions manually.
   Future<bool> openSystemSettings();
+
+  /// Opens the Google Play Store listing for Health Connect on Android.
+  ///
+  /// Intended for devices where [isHealthApiAvailable] reports `false`; a
+  /// no-op on other platforms.
+  Future<void> installHealthConnect();
 
   /// Fetches weight entries within a date range.
   ///
@@ -122,6 +129,20 @@ class NativeHealthService implements HealthService {
 
   /// Maximum time allowed for permission and settings calls before fallback.
   static const Duration _operationTimeout = Duration(seconds: 5);
+
+  /// Package name of the official Google Health Connect app.
+  static const String _healthConnectPackageId =
+      'com.google.android.apps.healthdata';
+
+  /// Play Store deep link for the Health Connect app.
+  static final Uri _healthConnectMarketUri = Uri.parse(
+    'market://details?id=$_healthConnectPackageId',
+  );
+
+  /// Web fallback for devices without a `market://` handler.
+  static final Uri _healthConnectPlayStoreUri = Uri.parse(
+    'https://play.google.com/store/apps/details?id=$_healthConnectPackageId',
+  );
 
   /// The underlying `health` plugin instance.
   final Health _health;
@@ -224,6 +245,31 @@ class NativeHealthService implements HealthService {
         debugPrint('[HealthService] openSystemSettings error: $e\n$stack');
       }
       return false;
+    }
+  }
+
+  /// Opens the Google Play Store listing for Health Connect on Android.
+  ///
+  /// Attempts the `market://` deep link first and falls back to the web Play
+  /// Store URL when no market handler is installed. A no-op on other
+  /// platforms; any launch failure degrades to doing nothing.
+  @override
+  Future<void> installHealthConnect() async {
+    if (!_platformDetector.isAndroid) {
+      return;
+    }
+    try {
+      final marketLaunched = await launchUrl(_healthConnectMarketUri);
+      if (!marketLaunched) {
+        await launchUrl(
+          _healthConnectPlayStoreUri,
+          mode: LaunchMode.externalApplication,
+        );
+      }
+    } catch (e, stack) {
+      if (kDebugMode) {
+        debugPrint('[HealthService] installHealthConnect error: $e\n$stack');
+      }
     }
   }
 

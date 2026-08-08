@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -364,23 +365,83 @@ void main() {
       },
     );
 
-    testWidgets('disables the switch when the health API is unavailable', (
-      tester,
-    ) async {
-      settingsBloc = AppSettingsBloc(healthService: healthService);
-      when(
-        () => healthService.isHealthApiAvailable(),
-      ).thenAnswer((_) async => false);
-      when(() => healthService.hasPermissions()).thenAnswer((_) async => false);
+    testWidgets(
+      'on non-Android keeps the switch disabled when API is unavailable',
+      (tester) async {
+        debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
+        try {
+          settingsBloc = AppSettingsBloc(healthService: healthService);
+          when(
+            () => healthService.isHealthApiAvailable(),
+          ).thenAnswer((_) async => false);
+          when(
+            () => healthService.hasPermissions(),
+          ).thenAnswer((_) async => false);
 
-      settingsBloc.add(const CheckHealthSyncStatus());
-      await tester.pumpWidget(createTestWidget());
-      await tester.pumpAndSettle();
+          settingsBloc.add(const CheckHealthSyncStatus());
+          await tester.pumpWidget(createTestWidget());
+          await tester.pumpAndSettle();
 
-      expect(find.text('Unavailable on this device'), findsOneWidget);
-      expect(tester.widget<Switch>(healthSyncSwitch()).onChanged, isNull);
-      verifyNever(() => healthService.requestPermissions());
-    });
+          expect(find.text('Unavailable on this device'), findsOneWidget);
+          expect(tester.widget<Switch>(healthSyncSwitch()).onChanged, isNull);
+          verifyNever(() => healthService.requestPermissions());
+        } finally {
+          debugDefaultTargetPlatformOverride = null;
+        }
+      },
+    );
+
+    testWidgets(
+      'on Android shows install dialog when the health API is unavailable',
+      (tester) async {
+        debugDefaultTargetPlatformOverride = TargetPlatform.android;
+        try {
+          settingsBloc = AppSettingsBloc(healthService: healthService);
+          when(
+            () => healthService.isHealthApiAvailable(),
+          ).thenAnswer((_) async => false);
+          when(
+            () => healthService.hasPermissions(),
+          ).thenAnswer((_) async => false);
+
+          settingsBloc.add(const CheckHealthSyncStatus());
+          await tester.pumpWidget(createTestWidget());
+          await tester.pumpAndSettle();
+
+          // The disabled switch is replaced by a tappable tile.
+          expect(find.text('Unavailable on this device'), findsOneWidget);
+          expect(
+            find.descendant(
+              of: find.widgetWithText(ListTile, 'Health Sync'),
+              matching: find.byType(Switch),
+            ),
+            findsNothing,
+          );
+
+          await tester.ensureVisible(find.text('Health Sync'));
+          await tester.pumpAndSettle();
+          await tester.tap(find.text('Health Sync'));
+          await tester.pumpAndSettle();
+
+          expect(find.text('Health Connect App Required'), findsOneWidget);
+          expect(
+            find.text(
+              'Download the official Google Health Connect app from the Play '
+              'Store to enable sync.',
+            ),
+            findsOneWidget,
+          );
+          expect(find.text('Install from Play Store'), findsOneWidget);
+
+          await tester.tap(find.text('Install from Play Store'));
+          await tester.pumpAndSettle();
+
+          expect(find.text('Health Connect App Required'), findsNothing);
+        } finally {
+          debugDefaultTargetPlatformOverride = null;
+        }
+      },
+    );
   });
 
   testWidgets('renders Material Icons for settings items', (tester) async {
