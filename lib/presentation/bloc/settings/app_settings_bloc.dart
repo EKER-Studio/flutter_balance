@@ -146,11 +146,12 @@ class AppSettingsBloc extends HydratedBloc<AppSettingsEvent, AppSettingsState> {
 
   /// Enables or disables health sync (HealthKit / Health Connect).
   ///
-  /// When enabling, verifies the OS health API is available and requests
-  /// native permissions first; a granted request activates the sync flag, a
-  /// denied one emits the transient [AppSettingsState.healthPermissionDenied]
-  /// flag instead. When disabling, deactivates the sync flag and clears the
-  /// transient denied flag.
+  /// Side effects: when enabling, verifies the OS health API is available and
+  /// requests native permissions first; a granted request activates the sync
+  /// flag, a denied one emits the transient
+  /// [AppSettingsState.healthPermissionDenied] flag instead. When disabling,
+  /// deactivates the sync flag and clears the transient denied flag. Every
+  /// emitted state is persisted to disk via [HydratedBloc].
   Future<void> _onToggleHealthSync(
     ToggleHealthSync event,
     Emitter<AppSettingsState> emit,
@@ -188,9 +189,12 @@ class AppSettingsBloc extends HydratedBloc<AppSettingsEvent, AppSettingsState> {
 
   /// Re-evaluates health API availability and permission grants.
   ///
-  /// Runs during app initialization: refreshes [AppSettingsState.isHealthApiAvailable]
-  /// and, when the persisted sync flag is set but the native permissions were
-  /// revoked in the OS settings, disables and persists the sync flag.
+  /// Runs during app initialization. Side effects: checks native OS health
+  /// permissions (no prompt is shown) and refreshes
+  /// [AppSettingsState.isHealthApiAvailable]; when the persisted sync flag is
+  /// set but the permissions were revoked in the OS settings, disables the
+  /// flag. The emitted state is persisted to disk via [HydratedBloc], keeping
+  /// the stored sync flag in sync with the actual native permission state.
   Future<void> _onCheckHealthSyncStatus(
     CheckHealthSyncStatus event,
     Emitter<AppSettingsState> emit,
