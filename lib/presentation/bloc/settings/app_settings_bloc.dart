@@ -177,6 +177,12 @@ class AppSettingsBloc extends HydratedBloc<AppSettingsEvent, AppSettingsState> {
         healthPermissionDenied: !granted,
       ),
     );
+    if (!granted) {
+      // Reset the transient denied flag so a subsequent denial produces a
+      // distinct state; otherwise equatable de-duplication would swallow all
+      // later denial events and the UI Snackbar would never show again.
+      emit(state.copyWith(healthPermissionDenied: false));
+    }
   }
 
   /// Re-evaluates health API availability and permission grants.

@@ -260,8 +260,10 @@ class NativeHealthService implements HealthService {
       final bool granted;
       try {
         granted = await _health
-            .requestAuthorization(_weightTypesReadWrite,
-                permissions: _readWriteAccess)
+            .requestAuthorization(
+              _weightTypesReadWrite,
+              permissions: _readWriteAccess,
+            )
             .timeout(_operationTimeout);
       } catch (e) {
         if (kDebugMode) {

@@ -364,6 +364,13 @@ void main() {
             isHealthApiAvailable: true,
             healthPermissionDenied: true,
           ),
+          // The transient denied flag is immediately reset so a subsequent
+          // denial can be re-emitted instead of being swallowed by equatable.
+          const AppSettingsState(
+            isHealthSyncEnabled: false,
+            isHealthApiAvailable: true,
+            healthPermissionDenied: false,
+          ),
         ],
         verify: (_) {
           verify(() => mockHealthService.requestPermissions()).called(1);
@@ -395,6 +402,11 @@ void main() {
             isHealthSyncEnabled: false,
             isHealthApiAvailable: true,
             healthPermissionDenied: true,
+          ),
+          const AppSettingsState(
+            isHealthSyncEnabled: false,
+            isHealthApiAvailable: true,
+            healthPermissionDenied: false,
           ),
         ],
         verify: (_) {

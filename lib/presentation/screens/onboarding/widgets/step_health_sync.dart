@@ -36,6 +36,12 @@ class _StepHealthSyncState extends State<StepHealthSync> {
   /// state, so revisiting the step does not auto-advance twice.
   bool _advanceScheduled = false;
 
+  /// Whether the last permission request was denied. Held in local state
+  /// because the transient [AppSettingsState.healthPermissionDenied] flag is
+  /// reset immediately after each denial to keep repeated denials observable;
+  /// a [BlocBuilder] would therefore never render it.
+  bool _permissionDenied = false;
+
   Timer? _advanceTimer;
 
   @override
@@ -70,96 +76,112 @@ class _StepHealthSyncState extends State<StepHealthSync> {
     return ClampedLayout(
       padding: const EdgeInsets.all(24.0),
       child: BlocListener<AppSettingsBloc, AppSettingsState>(
+        // Edge-triggered on the transient denial flag: the bloc resets the
+        // flag immediately after each denial, so only the transition is
+        // observable here.
         listenWhen: (previous, current) =>
-            !previous.isHealthSyncEnabled && current.isHealthSyncEnabled,
-        listener: (context, state) => _scheduleAdvance(),
-        child: BlocBuilder<AppSettingsBloc, AppSettingsState>(
-          builder: (context, settingsState) {
-            final enabled = settingsState.isHealthSyncEnabled;
-            final apiAvailable = settingsState.isHealthApiAvailable;
-            final permissionDenied = settingsState.healthPermissionDenied;
+            !previous.healthPermissionDenied && current.healthPermissionDenied,
+        listener: (context, state) {
+          if (!_permissionDenied) {
+            setState(() => _permissionDenied = true);
+          }
+        },
+        child: BlocListener<AppSettingsBloc, AppSettingsState>(
+          listenWhen: (previous, current) =>
+              !previous.isHealthSyncEnabled && current.isHealthSyncEnabled,
+          listener: (context, state) {
+            if (_permissionDenied) {
+              setState(() => _permissionDenied = false);
+            }
+            _scheduleAdvance();
+          },
+          child: BlocBuilder<AppSettingsBloc, AppSettingsState>(
+            builder: (context, settingsState) {
+              final enabled = settingsState.isHealthSyncEnabled;
+              final apiAvailable = settingsState.isHealthApiAvailable;
 
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                // Title
-                Text(
-                  l10n.healthSyncStepOptionalTitle,
-                  style: theme.textTheme.headlineSmall?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 8.0),
-                // Subtitle
-                Text(
-                  l10n.healthSyncStepSubtitle,
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    color: theme.colorScheme.onSurfaceVariant,
-                  ),
-                ),
-                const SizedBox(height: 24.0),
-                if (enabled)
-                  _buildConnected(theme, l10n)
-                else
-                  _buildConnectCard(theme, l10n, apiAvailable),
-                // Permission denied warning
-                if (permissionDenied) ...[
-                  const SizedBox(height: 12.0),
-                  Container(
-                    padding: const EdgeInsets.all(12.0),
-                    decoration: BoxDecoration(
-                      color: theme.colorScheme.errorContainer,
-                      borderRadius: BorderRadius.circular(12.0),
-                    ),
-                    child: Row(
-                      children: [
-                        Icon(
-                          Icons.warning_amber_rounded,
-                          color: theme.colorScheme.onErrorContainer,
-                          size: 20.0,
-                        ),
-                        const SizedBox(width: 8.0),
-                        Expanded(
-                          child: Text(
-                            l10n.healthPermissionDenied,
-                            style: theme.textTheme.bodySmall?.copyWith(
-                              color: theme.colorScheme.onErrorContainer,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-                const Spacer(),
-                if (!enabled) ...[
-                  ConstrainedBox(
-                    constraints: const BoxConstraints(minHeight: 48.0),
-                    child: FilledButton.icon(
-                      key: const Key('health_sync_connect_button'),
-                      onPressed: _handleConnect,
-                      icon: const Icon(Icons.favorite),
-                      label: Text(l10n.healthSyncConnectButton),
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  // Title
+                  Text(
+                    l10n.healthSyncStepOptionalTitle,
+                    style: theme.textTheme.headlineSmall?.copyWith(
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
                   const SizedBox(height: 8.0),
-                  TextButton(
-                    key: const Key('health_sync_skip_button'),
-                    onPressed: widget.onSkip,
-                    child: Text(l10n.skip),
-                  ),
-                ] else
-                  ConstrainedBox(
-                    constraints: const BoxConstraints(minHeight: 48.0),
-                    child: FilledButton(
-                      key: const Key('health_sync_continue_button'),
-                      onPressed: widget.onNext,
-                      child: Text(l10n.next),
+                  // Subtitle
+                  Text(
+                    l10n.healthSyncStepSubtitle,
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant,
                     ),
                   ),
-              ],
-            );
-          },
+                  const SizedBox(height: 24.0),
+                  if (enabled)
+                    _buildConnected(theme, l10n)
+                  else
+                    _buildConnectCard(theme, l10n, apiAvailable),
+                  // Permission denied warning
+                  if (_permissionDenied) ...[
+                    const SizedBox(height: 12.0),
+                    Container(
+                      padding: const EdgeInsets.all(12.0),
+                      decoration: BoxDecoration(
+                        color: theme.colorScheme.errorContainer,
+                        borderRadius: BorderRadius.circular(12.0),
+                      ),
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.warning_amber_rounded,
+                            color: theme.colorScheme.onErrorContainer,
+                            size: 20.0,
+                          ),
+                          const SizedBox(width: 8.0),
+                          Expanded(
+                            child: Text(
+                              l10n.healthPermissionDenied,
+                              style: theme.textTheme.bodySmall?.copyWith(
+                                color: theme.colorScheme.onErrorContainer,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                  const Spacer(),
+                  if (!enabled) ...[
+                    ConstrainedBox(
+                      constraints: const BoxConstraints(minHeight: 48.0),
+                      child: FilledButton.icon(
+                        key: const Key('health_sync_connect_button'),
+                        onPressed: _handleConnect,
+                        icon: const Icon(Icons.favorite),
+                        label: Text(l10n.healthSyncConnectButton),
+                      ),
+                    ),
+                    const SizedBox(height: 8.0),
+                    TextButton(
+                      key: const Key('health_sync_skip_button'),
+                      onPressed: widget.onSkip,
+                      child: Text(l10n.skip),
+                    ),
+                  ] else
+                    ConstrainedBox(
+                      constraints: const BoxConstraints(minHeight: 48.0),
+                      child: FilledButton(
+                        key: const Key('health_sync_continue_button'),
+                        onPressed: widget.onNext,
+                        child: Text(l10n.next),
+                      ),
+                    ),
+                ],
+              );
+            },
+          ),
         ),
       ),
     );

@@ -57,9 +57,7 @@ void main() {
     registerFallbackValue(HealthDataType.WEIGHT);
     registerFallbackValue(HealthDataUnit.KILOGRAM);
     registerFallbackValue(RecordingMethod.manual);
-    registerFallbackValue(
-      const [HealthDataType.WEIGHT, HealthDataType.WEIGHT],
-    );
+    registerFallbackValue(const [HealthDataType.WEIGHT, HealthDataType.WEIGHT]);
   });
 
   setUp(() {
