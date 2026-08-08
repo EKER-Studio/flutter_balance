@@ -44,9 +44,12 @@ abstract class HealthService {
 
   /// Fetches weight entries within a date range.
   ///
+  /// Only readings between 20 kg and 300 kg are returned; out-of-range or
+  /// non-numeric points are discarded. Entries are sorted newest first.
+  ///
   /// @param start Inclusive start of the query window.
   /// @param end Inclusive end of the query window.
-  /// Returns entries sorted newest first, or an empty list on failure.
+  /// Returns an empty list on failure.
   Future<List<WeightEntry>> fetchWeightHistory({
     required DateTime start,
     required DateTime end,
@@ -78,7 +81,9 @@ abstract class HealthService {
 ///
 /// All plugin calls are wrapped in try-catch blocks so missing Health Connect
 /// installations, revoked permissions, or platform errors degrade to `false`
-/// or an empty result instead of throwing unhandled exceptions.
+/// or an empty result instead of throwing unhandled exceptions. Permission
+/// and settings calls are additionally bounded by a five-second timeout
+/// (_operationTimeout) whose expiry is treated as a failure.
 class NativeHealthService implements HealthService {
   /// Creates a service wrapping [health], which defaults to a fresh plugin instance.
   ///
@@ -124,6 +129,10 @@ class NativeHealthService implements HealthService {
   /// Platform detector for testing.
   final PlatformDetector _platformDetector;
 
+  /// Reports whether the native health platform is reachable on this device.
+  ///
+  /// Returns `true` unconditionally on iOS (HealthKit is always present) and
+  /// probes Health Connect on Android. Any plugin error degrades to `false`.
   @override
   Future<bool> isHealthApiAvailable() async {
     try {
@@ -140,6 +149,11 @@ class NativeHealthService implements HealthService {
     }
   }
 
+  /// Checks whether weight read/write permissions were already granted.
+  ///
+  /// On iOS only the WRITE grant is checked, because HealthKit does not expose
+  /// READ grant status. Calls are subject to [_operationTimeout]; a timeout
+  /// or plugin error degrades to `false`.
   @override
   Future<bool> hasPermissions() async {
     try {
@@ -166,6 +180,12 @@ class NativeHealthService implements HealthService {
     }
   }
 
+  /// Requests native OS permissions for weight read/write access.
+  ///
+  /// On iOS the result is verified through [hasPermissions], because the
+  /// plugin only reports whether the authorization prompt was shown. Calls are
+  /// subject to [_operationTimeout]; a timeout or plugin error degrades to
+  /// `false`.
   @override
   Future<bool> requestPermissions() async {
     try {
@@ -191,6 +211,10 @@ class NativeHealthService implements HealthService {
     }
   }
 
+  /// Opens the app entry in the native system settings.
+  ///
+  /// Subject to [_operationTimeout]; a timeout or failure to launch the
+  /// settings app degrades to `false`.
   @override
   Future<bool> openSystemSettings() async {
     try {
@@ -203,6 +227,14 @@ class NativeHealthService implements HealthService {
     }
   }
 
+  /// Fetches and filters weight entries within an inclusive date window.
+  ///
+  /// Non-numeric points and readings outside the plausible 20-300 kg range are
+  /// discarded; surviving entries are sorted newest first. Any plugin error
+  /// degrades to an empty list.
+  ///
+  /// @param start Inclusive start of the query window.
+  /// @param end Inclusive end of the query window.
   @override
   Future<List<WeightEntry>> fetchWeightHistory({
     required DateTime start,
@@ -236,6 +268,14 @@ class NativeHealthService implements HealthService {
     }
   }
 
+  /// Writes a weight reading as a manually recorded health entry.
+  ///
+  /// The manual recording method is required on iOS, which only accepts manual
+  /// or automatic entries for weight records. Any plugin error degrades to
+  /// `false`.
+  ///
+  /// @param weightKg Weight value in kilograms.
+  /// @param timestamp Instant the measurement was recorded.
   @override
   Future<bool> writeWeight({
     required double weightKg,
@@ -260,6 +300,14 @@ class NativeHealthService implements HealthService {
     }
   }
 
+  /// Deletes the weight entry matching [weightKg] near [timestamp].
+  ///
+  /// The entry is located within a one-minute window around [timestamp],
+  /// tolerating a [_deleteWeightToleranceKg] kg difference, and removed by its
+  /// UUID. Returns `false` when no match is found or the plugin call fails.
+  ///
+  /// @param weightKg Weight value in kilograms of the entry to delete.
+  /// @param timestamp Instant the entry to delete was recorded.
   @override
   Future<bool> deleteWeight({
     required double weightKg,
