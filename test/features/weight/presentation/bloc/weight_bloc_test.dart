@@ -658,6 +658,35 @@ void main() {
       );
 
       blocTest<WeightBloc, WeightState>(
+        'SyncHealthEntries uses a deep past default window when no startDate '
+        'is provided',
+        build: () {
+          when(
+            () => healthService.fetchWeightHistory(
+              start: any(named: 'start'),
+              end: any(named: 'end'),
+            ),
+          ).thenAnswer((_) async => const []);
+          return WeightBloc(
+            repository: repository,
+            appSettingsBloc: buildSettingsBloc(),
+            healthService: healthService,
+          );
+        },
+        seed: () =>
+            const WeightLoaded(entries: [], filteredEntries: [], heightCm: 170),
+        act: (bloc) => bloc.add(const SyncHealthEntries()),
+        verify: (_) {
+          verify(
+            () => healthService.fetchWeightHistory(
+              start: DateTime(2000),
+              end: any(named: 'end'),
+            ),
+          ).called(1);
+        },
+      );
+
+      blocTest<WeightBloc, WeightState>(
         'SyncHealthEntries uses the custom startDate window when provided',
         build: () {
           when(

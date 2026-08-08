@@ -359,7 +359,8 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
   /// not already exist locally, emitting a refreshed [WeightLoaded] state.
   ///
   /// The sync window spans [SyncHealthEntries.startDate] (defaulting to the
-  /// trailing 30 days) through the current instant. Each remote record is
+  /// deep past so historical records are never missed) through the current
+  /// instant. Each remote record is
   /// deduplicated against the local database: it is imported only when no
   /// local entry matches its weight and its timestamp truncated to seconds in
   /// UTC (see [_isLocalDuplicate]). This also filters out entries that were
@@ -378,7 +379,7 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
     if (!_isHealthSyncEnabled) return;
     try {
       final end = DateTime.now();
-      final start = event.startDate ?? end.subtract(const Duration(days: 30));
+      final start = event.startDate ?? DateTime(2000);
       final remoteEntries = await _healthService.fetchWeightHistory(
         start: start,
         end: end,
