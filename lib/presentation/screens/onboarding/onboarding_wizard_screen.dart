@@ -19,12 +19,15 @@ import 'package:balance/presentation/screens/onboarding/widgets/step_reminder_no
 import 'package:balance/presentation/screens/onboarding/widgets/step_target_weight.dart';
 import 'package:balance/presentation/screens/onboarding/widgets/step_units_height.dart';
 
-/// Main container screen for the multi-step initial onboarding setup wizard.
+/// Container screen for the initial onboarding wizard.
 ///
-/// Wraps the wizard content in an [OnboardingBloc] that owns all temporary
-/// wizard state (step index, drafts, imported CSV entries) and handles
-/// keyboard avoidance, screen orientation safety, and hardware back button
-/// behavior via [PopScope].
+/// Hosts the 6-step onboarding flow (extended with an optional biometric
+/// step when the device supports credentials) and scopes an [OnboardingBloc]
+/// to the wizard via [BlocProvider]. The bloc is seeded from the current
+/// [AppSettingsBloc] state and wired to the [WeightBloc]/[AppSettingsBloc]
+/// targets it hands persistent outcomes off to. Also handles keyboard
+/// avoidance, screen orientation safety, and hardware back button behavior
+/// via [PopScope].
 class OnboardingWizardScreen extends StatelessWidget {
   /// Optional callback invoked upon completing all onboarding steps.
   final VoidCallback? onWizardCompleted;
@@ -68,12 +71,12 @@ class OnboardingWizardScreen extends StatelessWidget {
 /// Renders the onboarding steps and forwards every interaction to
 /// [OnboardingBloc]; the only local state owned here is the [PageController].
 ///
-/// Step order: Units & Height, CSV Import (optional), Initial Weight,
-/// Target Weight (optional), Daily Reminder (optional), Health Sync
-/// (optional), Biometric Lock (optional, skipped when the device does not
-/// support credentials). Completing the final step dispatches
-/// [OnboardingCompleted] and invokes
-/// [OnboardingWizardScreen.onWizardCompleted].
+/// Step mapping (index 0-5): Units & Height, CSV Import (optional), Initial
+/// Weight, Target Weight (optional), Daily Reminder (optional), Health Sync
+/// (optional). When the device supports credentials, a Biometric Lock step
+/// (optional) is appended at index 6, so the wizard runs 6 or 7 steps in
+/// total. Completing the final step dispatches [OnboardingCompleted] and
+/// invokes [OnboardingWizardScreen.onWizardCompleted].
 class _OnboardingWizardContent extends StatefulWidget {
   final VoidCallback? onWizardCompleted;
   final CsvImportService? csvImportService;
