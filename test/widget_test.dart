@@ -7,8 +7,8 @@ import 'package:balance/app.dart';
 import 'package:balance/core/services/health_service.dart';
 import 'package:balance/features/weight/domain/entities/weight_entry.dart';
 import 'package:balance/features/weight/domain/repositories/weight_repository.dart';
-import 'package:balance/presentation/bloc/settings/app_settings_bloc.dart';
-import 'package:balance/presentation/bloc/settings/app_settings_event.dart';
+import 'package:balance/features/settings/presentation/bloc/app_settings_bloc.dart';
+import 'package:balance/features/settings/presentation/bloc/app_settings_event.dart';
 
 class MockWeightRepository extends Mock implements WeightRepository {}
 

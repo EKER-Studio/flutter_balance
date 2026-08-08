@@ -11,9 +11,9 @@ import 'package:balance/features/weight/presentation/screens/calendar_screen.dar
 import 'package:balance/features/weight/presentation/screens/statistics_screen.dart';
 import 'package:balance/features/weight/presentation/screens/today_screen.dart';
 import 'package:balance/l10n/app_localizations.dart';
-import 'package:balance/presentation/bloc/settings/app_settings_bloc.dart';
-import 'package:balance/presentation/screens/main_navigation_screen.dart';
-import 'package:balance/presentation/screens/settings_screen.dart';
+import 'package:balance/features/settings/presentation/bloc/app_settings_bloc.dart';
+import 'package:balance/features/navigation/presentation/screens/main_navigation_screen.dart';
+import 'package:balance/features/settings/presentation/screens/settings_screen.dart';
 
 class MockWeightRepository extends Mock implements WeightRepository {}
 

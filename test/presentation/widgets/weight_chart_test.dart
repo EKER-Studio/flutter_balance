@@ -7,8 +7,8 @@ import 'package:balance/core/models/measurement_unit.dart';
 import 'package:balance/features/weight/domain/entities/weight_entry.dart';
 import 'package:balance/features/weight/presentation/bloc/weight_event.dart';
 import 'package:balance/l10n/app_localizations.dart';
-import 'package:balance/presentation/bloc/settings/app_settings_bloc.dart';
-import 'package:balance/presentation/bloc/settings/app_settings_event.dart';
+import 'package:balance/features/settings/presentation/bloc/app_settings_bloc.dart';
+import 'package:balance/features/settings/presentation/bloc/app_settings_event.dart';
 import 'package:balance/presentation/widgets/weight_chart.dart';
 
 class MockHydratedStorage extends Mock implements HydratedStorage {}

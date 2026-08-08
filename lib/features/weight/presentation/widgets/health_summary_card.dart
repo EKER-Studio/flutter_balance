@@ -4,12 +4,12 @@ import 'package:intl/intl.dart';
 import 'package:balance/core/models/measurement_unit.dart';
 import 'package:balance/core/utils/unit_converter.dart';
 import 'package:balance/l10n/app_localizations.dart';
-import 'package:balance/presentation/bloc/settings/app_settings_bloc.dart';
-import 'package:balance/presentation/bloc/settings/app_settings_event.dart';
-import 'package:balance/presentation/bloc/settings/app_settings_state.dart';
-import 'package:balance/presentation/bloc/settings/bmi_category.dart';
+import 'package:balance/features/settings/presentation/bloc/app_settings_bloc.dart';
+import 'package:balance/features/settings/presentation/bloc/app_settings_event.dart';
+import 'package:balance/features/settings/presentation/bloc/app_settings_state.dart';
+import 'package:balance/features/settings/presentation/bloc/bmi_category.dart';
 import 'package:balance/features/weight/presentation/utils/bmi_category_localizer.dart';
-import 'package:balance/presentation/widgets/target_weight_dialog.dart';
+import 'package:balance/features/settings/presentation/widgets/target_weight_dialog.dart';
 import 'package:balance/features/weight/presentation/widgets/bmi_legend_dialog.dart';
 
 /// An integrated summary card displaying latest weight, BMI, and goal progress.

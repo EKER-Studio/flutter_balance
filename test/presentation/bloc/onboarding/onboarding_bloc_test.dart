@@ -5,7 +5,7 @@ import 'package:balance/features/weight/presentation/bloc/weight_bloc.dart';
 import 'package:balance/presentation/bloc/onboarding/onboarding_bloc.dart';
 import 'package:balance/presentation/bloc/onboarding/onboarding_event.dart';
 import 'package:balance/presentation/bloc/onboarding/onboarding_state.dart';
-import 'package:balance/presentation/bloc/settings/app_settings_bloc.dart';
+import 'package:balance/features/settings/presentation/bloc/app_settings_bloc.dart';
 
 class MockAppSettingsBloc extends Mock implements AppSettingsBloc {}
 

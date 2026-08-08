@@ -5,7 +5,7 @@ import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:balance/core/services/notification_service.dart';
 import 'package:balance/l10n/app_localizations.dart';
-import 'package:balance/presentation/bloc/settings/app_settings_bloc.dart';
+import 'package:balance/features/settings/presentation/bloc/app_settings_bloc.dart';
 import 'package:balance/presentation/screens/onboarding/widgets/step_reminder_notification.dart';
 
 class MockHydratedStorage extends Mock implements HydratedStorage {}

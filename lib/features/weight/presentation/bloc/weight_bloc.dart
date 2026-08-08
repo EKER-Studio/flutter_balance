@@ -7,7 +7,7 @@ import 'package:balance/features/weight/domain/repositories/weight_repository.da
 import 'package:balance/features/weight/domain/weight_error_type.dart';
 import 'package:balance/features/weight/presentation/bloc/weight_event.dart';
 import 'package:balance/features/weight/presentation/bloc/weight_state.dart';
-import 'package:balance/presentation/bloc/settings/app_settings_bloc.dart';
+import 'package:balance/features/settings/presentation/bloc/app_settings_bloc.dart';
 
 /// BLoC managing weight entries and user height.
 ///

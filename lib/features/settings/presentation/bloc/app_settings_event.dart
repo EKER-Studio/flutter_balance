@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:balance/presentation/bloc/settings/app_theme_mode.dart';
+import 'package:balance/features/settings/presentation/bloc/app_theme_mode.dart';
 import 'package:balance/core/models/measurement_unit.dart';
 
 /// Base class for all app settings events.

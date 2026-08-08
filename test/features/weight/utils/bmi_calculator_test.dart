@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:balance/presentation/bloc/settings/app_settings_state.dart';
-import 'package:balance/presentation/bloc/settings/bmi_category.dart';
+import 'package:balance/features/settings/presentation/bloc/app_settings_state.dart';
+import 'package:balance/features/settings/presentation/bloc/bmi_category.dart';
 import 'package:balance/core/models/measurement_unit.dart';
 import 'package:balance/core/utils/unit_converter.dart';
 

@@ -10,7 +10,7 @@ import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:balance/app.dart';
 import 'package:balance/core/utils/crash_log.dart';
-import 'package:balance/presentation/bloc/settings/app_settings_bloc.dart';
+import 'package:balance/features/settings/presentation/bloc/app_settings_bloc.dart';
 import 'package:balance/presentation/screens/app_initialization_error_screen.dart';
 
 /// Entry point of the Balance application.

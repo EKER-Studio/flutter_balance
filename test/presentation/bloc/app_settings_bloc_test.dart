@@ -5,11 +5,11 @@ import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:balance/core/services/notification_service.dart';
 import 'package:balance/core/services/health_service.dart';
-import 'package:balance/presentation/bloc/settings/app_settings_bloc.dart';
-import 'package:balance/presentation/bloc/settings/bmi_category.dart';
-import 'package:balance/presentation/bloc/settings/app_settings_event.dart';
-import 'package:balance/presentation/bloc/settings/app_settings_state.dart';
-import 'package:balance/presentation/bloc/settings/app_theme_mode.dart';
+import 'package:balance/features/settings/presentation/bloc/app_settings_bloc.dart';
+import 'package:balance/features/settings/presentation/bloc/bmi_category.dart';
+import 'package:balance/features/settings/presentation/bloc/app_settings_event.dart';
+import 'package:balance/features/settings/presentation/bloc/app_settings_state.dart';
+import 'package:balance/features/settings/presentation/bloc/app_theme_mode.dart';
 import 'package:balance/core/models/measurement_unit.dart';
 
 class MockHydratedStorage extends Mock implements HydratedStorage {}

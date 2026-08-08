@@ -5,8 +5,8 @@ import 'package:balance/features/weight/presentation/bloc/weight_bloc.dart';
 import 'package:balance/features/weight/presentation/bloc/weight_event.dart';
 import 'package:balance/presentation/bloc/onboarding/onboarding_event.dart';
 import 'package:balance/presentation/bloc/onboarding/onboarding_state.dart';
-import 'package:balance/presentation/bloc/settings/app_settings_bloc.dart';
-import 'package:balance/presentation/bloc/settings/app_settings_event.dart';
+import 'package:balance/features/settings/presentation/bloc/app_settings_bloc.dart';
+import 'package:balance/features/settings/presentation/bloc/app_settings_event.dart';
 
 /// BLoC managing the ephemeral state of the 6-step onboarding wizard via an
 /// event-driven state machine.

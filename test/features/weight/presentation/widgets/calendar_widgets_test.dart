@@ -19,7 +19,7 @@ import 'package:balance/features/weight/presentation/widgets/calendar/calendar_m
 import 'package:balance/features/weight/presentation/widgets/calendar/calendar_shimmer_skeleton.dart';
 import 'package:balance/features/weight/presentation/widgets/calendar/calendar_weekday_header.dart';
 import 'package:balance/l10n/app_localizations.dart';
-import 'package:balance/presentation/bloc/settings/app_settings_bloc.dart';
+import 'package:balance/features/settings/presentation/bloc/app_settings_bloc.dart';
 
 class MockWeightRepository extends Mock implements WeightRepository {}
 

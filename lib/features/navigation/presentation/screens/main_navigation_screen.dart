@@ -3,7 +3,7 @@ import 'package:balance/features/weight/presentation/screens/calendar_screen.dar
 import 'package:balance/features/weight/presentation/screens/statistics_screen.dart';
 import 'package:balance/features/weight/presentation/screens/today_screen.dart';
 import 'package:balance/l10n/app_localizations.dart';
-import 'package:balance/presentation/screens/settings_screen.dart';
+import 'package:balance/features/settings/presentation/screens/settings_screen.dart';
 
 /// Main container screen featuring a 4-tab Material 3 Bottom Navigation Bar.
 class MainNavigationScreen extends StatefulWidget {

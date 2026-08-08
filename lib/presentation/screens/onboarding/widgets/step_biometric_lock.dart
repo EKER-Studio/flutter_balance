@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:balance/core/services/biometric_service.dart';
 import 'package:balance/l10n/app_localizations.dart';
-import 'package:balance/presentation/bloc/settings/app_settings_bloc.dart';
-import 'package:balance/presentation/bloc/settings/app_settings_event.dart';
-import 'package:balance/presentation/bloc/settings/app_settings_state.dart';
+import 'package:balance/features/settings/presentation/bloc/app_settings_bloc.dart';
+import 'package:balance/features/settings/presentation/bloc/app_settings_event.dart';
+import 'package:balance/features/settings/presentation/bloc/app_settings_state.dart';
 import 'package:balance/presentation/core/clamped_layout.dart';
 
 /// Form widget for Step 5 of the onboarding wizard: setting optional biometric lock.

@@ -13,14 +13,14 @@ import 'package:balance/features/weight/domain/repositories/weight_repository.da
 import 'package:balance/features/weight/presentation/bloc/weight_bloc.dart';
 import 'package:balance/features/weight/presentation/bloc/weight_event.dart';
 import 'package:balance/l10n/app_localizations.dart';
-import 'package:balance/presentation/bloc/settings/app_settings_bloc.dart';
-import 'package:balance/presentation/bloc/settings/app_settings_event.dart';
-import 'package:balance/presentation/bloc/settings/app_settings_state.dart';
-import 'package:balance/presentation/bloc/settings/app_theme_mode.dart';
+import 'package:balance/features/settings/presentation/bloc/app_settings_bloc.dart';
+import 'package:balance/features/settings/presentation/bloc/app_settings_event.dart';
+import 'package:balance/features/settings/presentation/bloc/app_settings_state.dart';
+import 'package:balance/features/settings/presentation/bloc/app_theme_mode.dart';
 import 'package:balance/presentation/screens/app_initialization_error_screen.dart';
 import 'package:balance/presentation/screens/app_splash_screen.dart';
 import 'package:balance/presentation/screens/biometric_shield_screen.dart';
-import 'package:balance/presentation/screens/main_navigation_screen.dart';
+import 'package:balance/features/navigation/presentation/screens/main_navigation_screen.dart';
 import 'package:balance/presentation/screens/onboarding/onboarding_wizard_screen.dart';
 import 'package:balance/presentation/theme/app_theme.dart';
 

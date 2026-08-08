@@ -7,7 +7,7 @@ import 'package:balance/features/weight/domain/entities/weight_entry.dart';
 import 'package:balance/features/weight/presentation/bloc/weight_bloc.dart';
 import 'package:balance/features/weight/presentation/bloc/weight_event.dart';
 import 'package:balance/l10n/app_localizations.dart';
-import 'package:balance/presentation/bloc/settings/app_settings_bloc.dart';
+import 'package:balance/features/settings/presentation/bloc/app_settings_bloc.dart';
 
 /// Modal dialog form for adding a new weight measurement with date, time, and note selection,
 /// adhering to Material 3 dialog guidelines and accessibility (a11y) standards.
