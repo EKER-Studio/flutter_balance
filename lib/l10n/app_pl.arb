@@ -111,7 +111,7 @@
   "healthSync": "Synchronizacja zdrowia",
   "healthSyncDesc": "Synchronizuj dane wagi z Apple Health / Health Connect",
   "healthSyncUnavailable": "Niedostępne na tym urządzeniu",
-  "healthSyncDisabledInfo": "Synchronizacja została wyłączona w aplikacji PureWeight. Aby całkowicie cofnąć uprawnienia dostępowe w systemie, przejdź do Ustawień systemowych (Apple Health / Health Connect).",
+  "healthSyncDisabledInfo": "Synchronizacja została wyłączona w aplikacji Balance. Aby całkowicie cofnąć uprawnienia dostępowe w systemie, przejdź do Ustawień systemowych (Apple Health / Health Connect).",
   "healthPermissionDenied": "Brak uprawnień do danych zdrowotnych",
   "healthConnectRequiredTitle": "Wymagana aplikacja Health Connect",
   "healthConnectRequiredSubtitle": "Pobierz oficjalną aplikację Google Health Connect ze Sklepu Play, aby włączyć synchronizację.",

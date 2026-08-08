@@ -113,7 +113,7 @@
   "healthSync": "Health Sync",
   "healthSyncDesc": "Sync weight data with Apple Health / Health Connect",
   "healthSyncUnavailable": "Unavailable on this device",
-  "healthSyncDisabledInfo": "Sync has been turned off in the PureWeight app. To fully revoke system-level access, go to system settings (Apple Health / Health Connect).",
+  "healthSyncDisabledInfo": "Sync has been turned off in the Balance app. To fully revoke system-level access, go to system settings (Apple Health / Health Connect).",
   "healthPermissionDenied": "Health data permissions are required to sync weight.",
   "healthConnectRequiredTitle": "Health Connect App Required",
   "healthConnectRequiredSubtitle": "Download the official Google Health Connect app from the Play Store to enable sync.",

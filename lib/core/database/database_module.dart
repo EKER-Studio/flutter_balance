@@ -28,13 +28,7 @@ class DatabaseModule {
 
   /// Names of databases from previous app versions, kept only so any existing
   /// files can be quarantined instead of being left as silently-orphaned files.
-  ///
-  /// - `pure_weight_v1`: pre-encryption database (plaintext fields).
-  /// - `pure_weight_v2`: encrypted database from the PureWeight era.
-  static const List<String> _legacyDbNames = [
-    'pure_weight_v1',
-    'pure_weight_v2',
-  ];
+  static const List<String> _legacyDbNames = [];
 
   static const String _encryptionKeyKey = 'isar_encryption_key';
 
