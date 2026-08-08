@@ -22,6 +22,9 @@ class StepHealthSync extends StatefulWidget {
   final VoidCallback onSkip;
 
   /// Creates a [StepHealthSync] widget.
+  ///
+  /// @param onNext Callback invoked when health sync is connected and the step advances.
+  /// @param onSkip Callback invoked when the user skips the step without connecting.
   const StepHealthSync({super.key, required this.onNext, required this.onSkip});
 
   @override
