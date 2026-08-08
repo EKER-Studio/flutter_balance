@@ -191,6 +191,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
         listenWhen: (previous, current) =>
             !previous.healthPermissionDenied && current.healthPermissionDenied,
         listener: (context, state) {
+          // Health permission denied: show a snackbar whose action redirects
+          // the user to the OS health permissions page, where the grant can be
+          // made from the system settings.
           final l10n = AppLocalizations.of(context);
           ScaffoldMessenger.of(context)
             ..hideCurrentSnackBar()
@@ -210,6 +213,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
               !previous.notificationPermissionDenied &&
               current.notificationPermissionDenied,
           listener: (context, state) {
+            // Notification permission denied: show a snackbar whose action
+            // redirects the user to the OS app settings page.
             final l10n = AppLocalizations.of(context);
             ScaffoldMessenger.of(context)
               ..hideCurrentSnackBar()
@@ -849,6 +854,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
   /// Toggles health sync via the [AppSettingsBloc], which requests native
   /// health permissions when enabling. When the user disables the sync, a
   /// brief informational message explains how to fully revoke access.
+  ///
+  /// A denied permission request is surfaced separately via a snackbar whose
+  /// "Open Settings" action redirects to the OS health permissions page.
   void _handleHealthSyncToggle(BuildContext context, bool enabled) {
     context.read<AppSettingsBloc>().add(ToggleHealthSync(enabled));
     if (!enabled) {
@@ -1432,6 +1440,10 @@ class _IntegrationsSection extends StatelessWidget {
   final ValueChanged<bool> onHealthSyncChanged;
 
   /// Creates an [_IntegrationsSection] with the given dependencies.
+  ///
+  /// @param state The current app settings state driving the displayed values.
+  /// @param l10n Localized strings for this section.
+  /// @param onHealthSyncChanged Callback invoked when the health sync switch is toggled.
   const _IntegrationsSection({
     required this.state,
     required this.l10n,
