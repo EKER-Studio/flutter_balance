@@ -37,6 +37,9 @@ class _StepUnitsHeightState extends State<StepUnitsHeight> {
   late final TextEditingController _feetController;
   late final TextEditingController _inchesController;
 
+  late final FocusNode _cmFocusNode;
+  late final FocusNode _feetFocusNode;
+
   String? _cmErrorText;
   String? _imperialErrorText;
 
@@ -44,6 +47,19 @@ class _StepUnitsHeightState extends State<StepUnitsHeight> {
   void initState() {
     super.initState();
     _selectedUnit = widget.initialUnit;
+
+    _cmFocusNode = FocusNode();
+    _feetFocusNode = FocusNode();
+
+    // Request focus after the step's frame renders so the keyboard opens
+    // exactly when the step becomes visible, never while it is offstage.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      (_selectedUnit == MeasurementUnit.metric
+              ? _cmFocusNode
+              : _feetFocusNode)
+          .requestFocus();
+    });
 
     final initialCm = widget.initialHeightCm;
     final hasHeight = initialCm != null && initialCm > 0;
@@ -66,6 +82,8 @@ class _StepUnitsHeightState extends State<StepUnitsHeight> {
     _cmController.dispose();
     _feetController.dispose();
     _inchesController.dispose();
+    _cmFocusNode.dispose();
+    _feetFocusNode.dispose();
     super.dispose();
   }
 
@@ -200,7 +218,7 @@ class _StepUnitsHeightState extends State<StepUnitsHeight> {
             TextField(
               key: const Key('height_cm_input'),
               controller: _cmController,
-              autofocus: true,
+              focusNode: _cmFocusNode,
               keyboardType: const TextInputType.numberWithOptions(
                 decimal: true,
               ),
@@ -241,7 +259,7 @@ class _StepUnitsHeightState extends State<StepUnitsHeight> {
                   child: TextField(
                     key: const Key('height_feet_input'),
                     controller: _feetController,
-                    autofocus: true,
+                    focusNode: _feetFocusNode,
                     keyboardType: TextInputType.number,
                     decoration: InputDecoration(
                       labelText: l10n.feetLabel,

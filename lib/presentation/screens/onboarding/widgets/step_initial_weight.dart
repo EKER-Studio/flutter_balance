@@ -39,6 +39,7 @@ class StepInitialWeight extends StatefulWidget {
 
 class _StepInitialWeightState extends State<StepInitialWeight> {
   final TextEditingController _weightController = TextEditingController();
+  final FocusNode _focusNode = FocusNode();
   late DateTime _selectedTimestamp;
   String? _errorText;
 
@@ -46,6 +47,14 @@ class _StepInitialWeightState extends State<StepInitialWeight> {
   void initState() {
     super.initState();
     _selectedTimestamp = widget.initialTimestamp ?? DateTime.now();
+
+    // Request focus after the step's frame renders so the keyboard opens
+    // exactly when the step becomes visible, never while it is offstage.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      _focusNode.requestFocus();
+    });
+
     final weightKg = widget.initialWeightKg;
     if (weightKg != null && weightKg > 0 && weightKg <= 500) {
       _weightController.text = widget.unit == MeasurementUnit.imperial
@@ -57,6 +66,7 @@ class _StepInitialWeightState extends State<StepInitialWeight> {
   @override
   void dispose() {
     _weightController.dispose();
+    _focusNode.dispose();
     super.dispose();
   }
 
@@ -171,7 +181,7 @@ class _StepInitialWeightState extends State<StepInitialWeight> {
           TextField(
             key: const Key('initial_weight_input'),
             controller: _weightController,
-            autofocus: true,
+            focusNode: _focusNode,
             keyboardType: const TextInputType.numberWithOptions(decimal: true),
             decoration: InputDecoration(
               labelText: '${l10n.currentWeightLabel} ($unitSuffix)',

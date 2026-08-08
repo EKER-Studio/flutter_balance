@@ -104,7 +104,11 @@ class _OnboardingWizardContentState extends State<_OnboardingWizardContent> {
 
   /// Advances to the next step, or completes the wizard when the current step
   /// is the final one.
+  ///
+  /// The keyboard is dismissed before the page transition so the focus never
+  /// leaks onto the next step.
   void _goToNextStep() {
+    FocusManager.instance.primaryFocus?.unfocus();
     final bloc = context.read<OnboardingBloc>();
     if (bloc.state.currentStepIndex + 1 >= bloc.state.totalSteps) {
       bloc.add(const OnboardingCompleted());
@@ -281,6 +285,7 @@ class _OnboardingWizardContentState extends State<_OnboardingWizardContent> {
             onPopInvokedWithResult: (didPop, result) {
               if (didPop) return;
               if (state.currentStepIndex > 0) {
+                FocusManager.instance.primaryFocus?.unfocus();
                 context.read<OnboardingBloc>().add(
                   const OnboardingStepRewound(),
                 );
@@ -296,15 +301,18 @@ class _OnboardingWizardContentState extends State<_OnboardingWizardContent> {
                   ),
                 ),
                 centerTitle: true,
-                leading: state.currentStepIndex > 0
-                    ? IconButton(
-                        icon: const Icon(Icons.arrow_back),
-                        tooltip: l10n.previousStepTooltip,
-                        onPressed: () => context.read<OnboardingBloc>().add(
-                          const OnboardingStepRewound(),
-                        ),
-                      )
-                    : null,
+                    leading: state.currentStepIndex > 0
+                        ? IconButton(
+                            icon: const Icon(Icons.arrow_back),
+                            tooltip: l10n.previousStepTooltip,
+                            onPressed: () {
+                              FocusManager.instance.primaryFocus?.unfocus();
+                              context.read<OnboardingBloc>().add(
+                                const OnboardingStepRewound(),
+                              );
+                            },
+                          )
+                        : null,
                 bottom: PreferredSize(
                   preferredSize: const Size.fromHeight(4.0),
                   child: LinearProgressIndicator(

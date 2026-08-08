@@ -36,11 +36,19 @@ class StepTargetWeight extends StatefulWidget {
 
 class _StepTargetWeightState extends State<StepTargetWeight> {
   late final TextEditingController _weightController;
+  final FocusNode _focusNode = FocusNode();
   String? _errorText;
 
   @override
   void initState() {
     super.initState();
+
+    // Request focus after the step's frame renders so the keyboard opens
+    // exactly when the step becomes visible, never while it is offstage.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      _focusNode.requestFocus();
+    });
 
     String initialText = '';
     if (widget.initialTargetWeightKg != null &&
@@ -61,6 +69,7 @@ class _StepTargetWeightState extends State<StepTargetWeight> {
   void dispose() {
     _weightController.removeListener(_handleWeightInputChanged);
     _weightController.dispose();
+    _focusNode.dispose();
     super.dispose();
   }
 
@@ -171,7 +180,7 @@ class _StepTargetWeightState extends State<StepTargetWeight> {
           TextField(
             key: const Key('target_weight_input'),
             controller: _weightController,
-            autofocus: true,
+            focusNode: _focusNode,
             keyboardType: const TextInputType.numberWithOptions(decimal: true),
             decoration: InputDecoration(
               labelText: '${l10n.targetWeightDialogTitle} ($unitSuffix)',
