@@ -82,10 +82,15 @@ final class ImportWeightEntries extends WeightEvent {
 
 /// Pulls weight history from HealthKit / Health Connect and merges records
 /// that do not already exist locally.
+///
+/// The pull is best-effort: it aborts silently when health sync is disabled
+/// or the platform errors out, so the local database and UI are never blocked.
 final class SyncHealthEntries extends WeightEvent {
   /// Optional start of the sync window; defaults to the last 30 days.
   final DateTime? startDate;
 
-  /// Creates [SyncHealthEntries] with an optional [startDate].
+  /// Creates [SyncHealthEntries].
+  ///
+  /// @param startDate Start of the sync window, or `null` to default to the last 30 days.
   const SyncHealthEntries({this.startDate});
 }
