@@ -223,6 +223,16 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
 
   /// Persists a new [WeightEntry] via the repository, validating that the
   /// user's height is set first (emits [WeightErrorType.heightNotSet] otherwise).
+  ///
+  /// Local-first: the entry is committed to the local repository before any
+  /// platform interaction, and only then mirrored to the health platform as
+  /// an unawaited, best-effort write when health sync is enabled (see
+  /// [_mirrorWriteToHealth]); mirror failures never fail the local add, and
+  /// no platform call is made when sync is off.
+  ///
+  /// When the database holds no entries yet (e.g. the first onboarding
+  /// measurement), a [WeightLoading] state is emitted so the UI never flashes
+  /// the empty view while the write is in flight.
   Future<void> _onAddWeight(AddWeight event, Emitter<WeightState> emit) async {
     final heightCm = state.heightCm;
     final entries = _entriesFromState(state);
@@ -276,6 +286,12 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
 
   /// Deletes the entry with [DeleteWeight.id] via the repository and emits
   /// [WeightErrorType.deleteEntryFailed] on failure.
+  ///
+  /// Local-first: the local entry is removed first, and the deletion is then
+  /// mirrored to the health platform as an unawaited, best-effort operation
+  /// (see [_mirrorDeleteToHealth]) only when health sync is enabled and the
+  /// target entry was found locally; mirror failures never fail the local
+  /// delete.
   Future<void> _onDeleteWeight(
     DeleteWeight event,
     Emitter<WeightState> emit,
@@ -342,8 +358,19 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
   /// Pulls weight history from the health platform and merges records that do
   /// not already exist locally, emitting a refreshed [WeightLoaded] state.
   ///
-  /// Aborts silently when health sync is disabled or the platform errors out,
-  /// so the local database and UI are never blocked.
+  /// The sync window spans [SyncHealthEntries.startDate] (defaulting to the
+  /// trailing 30 days) through the current instant. Each remote record is
+  /// deduplicated against the local database: it is imported only when no
+  /// local entry matches its weight and its timestamp truncated to seconds in
+  /// UTC (see [_isLocalDuplicate]). This also filters out entries that were
+  /// previously mirrored to the health platform via [_mirrorWriteToHealth],
+  /// which breaks the write -> sync -> write ping-pong loop.
+  ///
+  /// Local-first: the database is the single source of truth. Remote records
+  /// are merged in but never overwrite or delete local data, and the import
+  /// itself never triggers mirror writes, so a sync pass cannot re-enter
+  /// itself. The pull aborts silently (no state change) when health sync is
+  /// disabled, the platform errors out, or there are no new records.
   Future<void> _onSyncHealthEntries(
     SyncHealthEntries event,
     Emitter<WeightState> emit,
