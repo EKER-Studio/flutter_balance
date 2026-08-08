@@ -54,6 +54,8 @@ final class AppSettingsState extends Equatable {
   final bool isBiometricSupported;
 
   /// Whether health sync (HealthKit / Health Connect) is activated by the user.
+  /// Persisted across app restarts; see [isHealthApiAvailable] for platform
+  /// support and [healthPermissionDenied] for authorization failures.
   final bool isHealthSyncEnabled;
 
   /// Whether the OS supports HealthKit (iOS) / Health Connect (Android).

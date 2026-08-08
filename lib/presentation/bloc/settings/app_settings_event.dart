@@ -95,6 +95,8 @@ final class UpdateBiometricSupport extends AppSettingsEvent {
 }
 
 /// Toggles the health sync (HealthKit / Health Connect) integration.
+///
+/// The resulting preference is persisted and restored on the next launch.
 final class ToggleHealthSync extends AppSettingsEvent {
   /// Whether health sync should be enabled.
   final bool enabled;
