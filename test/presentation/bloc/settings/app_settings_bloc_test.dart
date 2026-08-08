@@ -335,7 +335,7 @@ void main() {
           ),
         ],
         verify: (_) {
-          verify(() => mockHealthService.isHealthApiAvailable()).called(1);
+          verifyNever(() => mockHealthService.isHealthApiAvailable());
           verify(() => mockHealthService.requestPermissions()).called(1);
         },
       );
@@ -371,10 +371,15 @@ void main() {
       );
 
       blocTest<AppSettingsBloc, AppSettingsState>(
-        'emits isHealthApiAvailable false and stops if API is unavailable',
+        // TEMPORARY DIAGNOSTIC: reflects the debug bypass of the availability
+        // gate; restore together with the gate in app_settings_bloc.dart.
+        'requests permissions even when API check reports unavailable',
         setUp: () {
           when(
             () => mockHealthService.isHealthApiAvailable(),
+          ).thenAnswer((_) async => false);
+          when(
+            () => mockHealthService.requestPermissions(),
           ).thenAnswer((_) async => false);
         },
         build: () {
@@ -388,12 +393,12 @@ void main() {
         expect: () => [
           const AppSettingsState(
             isHealthSyncEnabled: false,
-            isHealthApiAvailable: false,
-            healthPermissionDenied: false,
+            isHealthApiAvailable: true,
+            healthPermissionDenied: true,
           ),
         ],
         verify: (_) {
-          verifyNever(() => mockHealthService.requestPermissions());
+          verify(() => mockHealthService.requestPermissions()).called(1);
         },
       );
 

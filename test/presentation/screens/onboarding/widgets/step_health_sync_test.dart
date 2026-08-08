@@ -200,25 +200,35 @@ void main() {
       addTearDown(bloc.close);
     });
 
-    testWidgets('shows unavailable message when the health API is missing', (
-      tester,
-    ) async {
-      healthService = MockHealthService();
-      when(
-        () => healthService.isHealthApiAvailable(),
-      ).thenAnswer((_) async => false);
-      final bloc = AppSettingsBloc(healthService: healthService);
+    // TEMPORARY DIAGNOSTIC: reflects the debug bypass of the availability
+    // gate in AppSettingsBloc; restore together with the gate.
+    testWidgets(
+      'shows inline warning when permission request is denied even if the '
+      'API check reports unavailable',
+      (tester) async {
+        healthService = MockHealthService();
+        when(
+          () => healthService.isHealthApiAvailable(),
+        ).thenAnswer((_) async => false);
+        when(
+          () => healthService.requestPermissions(),
+        ).thenAnswer((_) async => false);
+        final bloc = AppSettingsBloc(healthService: healthService);
 
-      await tester.pumpWidget(
-        buildSubject(onNext: () {}, onSkip: () {}, bloc: bloc),
-      );
+        await tester.pumpWidget(
+          buildSubject(onNext: () {}, onSkip: () {}, bloc: bloc),
+        );
 
-      await tester.tap(find.byKey(const Key('health_sync_connect_button')));
-      await tester.pumpAndSettle();
+        await tester.tap(find.byKey(const Key('health_sync_connect_button')));
+        await tester.pumpAndSettle();
 
-      expect(find.text('Unavailable on this device'), findsOneWidget);
+        expect(
+          find.text('Health data permissions are required to sync weight.'),
+          findsOneWidget,
+        );
 
-      addTearDown(bloc.close);
-    });
+        addTearDown(bloc.close);
+      },
+    );
   });
 }

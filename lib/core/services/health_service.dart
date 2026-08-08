@@ -251,11 +251,19 @@ class NativeHealthService implements HealthService {
         debugPrint('[HealthService] Requesting permissions for WEIGHT...');
       }
       await _ensureConfigured();
-      final granted = await _health
-          .requestAuthorization(const [
-            _weightType,
-          ], permissions: _readWriteAccess)
-          .timeout(_operationTimeout);
+      final bool granted;
+      try {
+        granted = await _health
+            .requestAuthorization(const [
+              _weightType,
+            ], permissions: _readWriteAccess)
+            .timeout(_operationTimeout);
+      } catch (e) {
+        if (kDebugMode) {
+          debugPrint('[HealthService] Native Auth Exception: $e');
+        }
+        return false;
+      }
       if (!granted) {
         return false;
       }
