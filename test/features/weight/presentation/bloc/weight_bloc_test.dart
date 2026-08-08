@@ -375,7 +375,8 @@ void main() {
 
     group('health sync', () {
       blocTest<WeightBloc, WeightState>(
-        'mirrors AddWeight to the health service when sync is enabled',
+        'mirrors new weight entry to HealthService when AddWeight is '
+        'dispatched and sync is enabled',
         build: () => WeightBloc(
           repository: repository,
           appSettingsBloc: buildSettingsBloc(),
@@ -396,7 +397,7 @@ void main() {
       );
 
       blocTest<WeightBloc, WeightState>(
-        'does not mirror AddWeight when sync is disabled',
+        'does NOT mirror weight entry to HealthService when sync is disabled',
         build: () => WeightBloc(
           repository: repository,
           appSettingsBloc: buildSettingsBloc(isHealthSyncEnabled: false),
@@ -528,6 +529,55 @@ void main() {
               timestamp: DateTime(2026, 1, 1, 9),
             ),
           ).called(1);
+        },
+      );
+
+      blocTest<WeightBloc, WeightState>(
+        'fetches historical data from HealthService and saves to local '
+        'repository on SyncHealthEntries',
+        build: () {
+          when(
+            () => healthService.fetchWeightHistory(
+              start: any(named: 'start'),
+              end: any(named: 'end'),
+            ),
+          ).thenAnswer(
+            (_) async => [
+              WeightEntry(
+                weightKg: 80,
+                dateTime: DateTime(2025, 6, 1, 8, 30),
+              ),
+              WeightEntry(
+                weightKg: 79.5,
+                dateTime: DateTime(2025, 6, 2, 8, 30),
+              ),
+            ],
+          );
+          return WeightBloc(
+            repository: repository,
+            appSettingsBloc: buildSettingsBloc(),
+            healthService: healthService,
+          );
+        },
+        seed: () =>
+            const WeightLoaded(entries: [], filteredEntries: [], heightCm: 170),
+        act: (bloc) => bloc.add(const SyncHealthEntries()),
+        verify: (_) {
+          final imported =
+              verify(
+                    () => repository.bulkImportEntries(captureAny()),
+                  ).captured.single
+                  as List<WeightEntry>;
+          expect(imported.length, 2);
+          expect(imported[0].weightKg, 80);
+          expect(imported[1].weightKg, 79.5);
+          // Loop prevention: the import path never mirrors back to Health.
+          verifyNever(
+            () => healthService.writeWeight(
+              weightKg: any(named: 'weightKg'),
+              timestamp: any(named: 'timestamp'),
+            ),
+          );
         },
       );
 
