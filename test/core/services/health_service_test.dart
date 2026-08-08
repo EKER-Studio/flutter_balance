@@ -57,7 +57,9 @@ void main() {
     registerFallbackValue(HealthDataType.WEIGHT);
     registerFallbackValue(HealthDataUnit.KILOGRAM);
     registerFallbackValue(RecordingMethod.manual);
-    registerFallbackValue(const [HealthDataType.WEIGHT]);
+    registerFallbackValue(
+      const [HealthDataType.WEIGHT, HealthDataType.WEIGHT],
+    );
   });
 
   setUp(() {
@@ -195,6 +197,12 @@ void main() {
         ).thenAnswer((_) async => true);
 
         expect(await service.hasPermissions(), isTrue);
+        verify(
+          () => health.hasPermissions(
+            [HealthDataType.WEIGHT, HealthDataType.WEIGHT],
+            permissions: [HealthDataAccess.READ, HealthDataAccess.WRITE],
+          ),
+        ).called(1);
       },
     );
 
@@ -223,6 +231,12 @@ void main() {
       ).thenAnswer((_) async => false);
 
       expect(await service.hasPermissions(), isFalse);
+      verify(
+        () => health.hasPermissions(
+          [HealthDataType.WEIGHT, HealthDataType.WEIGHT],
+          permissions: [HealthDataAccess.READ, HealthDataAccess.WRITE],
+        ),
+      ).called(1);
     });
 
     test('treats a null grant as denied', () async {
@@ -263,6 +277,12 @@ void main() {
       final granted = await service.requestPermissions();
 
       expect(granted, isTrue);
+      verify(
+        () => health.requestAuthorization(
+          [HealthDataType.WEIGHT, HealthDataType.WEIGHT],
+          permissions: [HealthDataAccess.READ, HealthDataAccess.WRITE],
+        ),
+      ).called(1);
       verifyNever(
         () => health.hasPermissions(
           any(),

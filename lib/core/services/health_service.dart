@@ -109,6 +109,12 @@ class NativeHealthService implements HealthService {
   /// Unit used for every weight interaction.
   static const HealthDataUnit _weightUnit = HealthDataUnit.KILOGRAM;
 
+  /// Data types corresponding 1-to-1 with [_readWriteAccess].
+  static const List<HealthDataType> _weightTypesReadWrite = [
+    HealthDataType.WEIGHT,
+    HealthDataType.WEIGHT,
+  ];
+
   /// Read and write access requested for weight records.
   static const List<HealthDataAccess> _readWriteAccess = [
     HealthDataAccess.READ,
@@ -227,7 +233,7 @@ class NativeHealthService implements HealthService {
         return writeGranted ?? false;
       }
       final granted = await _health
-          .hasPermissions(const [_weightType], permissions: _readWriteAccess)
+          .hasPermissions(_weightTypesReadWrite, permissions: _readWriteAccess)
           .timeout(_operationTimeout);
       return granted ?? false;
     } catch (e, stack) {
@@ -254,9 +260,8 @@ class NativeHealthService implements HealthService {
       final bool granted;
       try {
         granted = await _health
-            .requestAuthorization(const [
-              _weightType,
-            ], permissions: _readWriteAccess)
+            .requestAuthorization(_weightTypesReadWrite,
+                permissions: _readWriteAccess)
             .timeout(_operationTimeout);
       } catch (e) {
         if (kDebugMode) {
