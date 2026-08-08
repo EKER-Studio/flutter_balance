@@ -51,12 +51,9 @@ class _StepUnitsHeightState extends State<StepUnitsHeight> {
     _cmFocusNode = FocusNode();
     _feetFocusNode = FocusNode();
 
-    // The keyboard request issued at build time (autofocus) is swallowed by
-    // the platform while the app's startup frames are still settling, leaving
-    // the field focused with no keyboard. Re-requesting focus after startup
-    // has settled performs the real focus + keyboard request, so autofocus is
-    // intentionally not used on this step.
-    Future.delayed(const Duration(milliseconds: 300), () {
+    // Request focus after the step's frame renders so the keyboard opens
+    // exactly when the step becomes visible, never while it is offstage.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
       (_selectedUnit == MeasurementUnit.metric ? _cmFocusNode : _feetFocusNode)
           .requestFocus();
@@ -142,6 +139,16 @@ class _StepUnitsHeightState extends State<StepUnitsHeight> {
         } else {
           _cmController.text = currentCm.toStringAsFixed(0);
         }
+      }
+    });
+    // Defer focus request past the current frame so setState completes first.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      final targetNode = newUnit == MeasurementUnit.metric
+          ? _cmFocusNode
+          : _feetFocusNode;
+      if (!targetNode.hasFocus) {
+        targetNode.requestFocus();
       }
     });
   }
