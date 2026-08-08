@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:balance/features/weight/presentation/screens/calendar_screen.dart';
-import 'package:balance/features/weight/presentation/screens/statistics_screen.dart';
-import 'package:balance/features/weight/presentation/screens/today_screen.dart';
+import 'package:balance/features/calendar/presentation/screens/calendar_screen.dart';
+import 'package:balance/features/statistics/presentation/screens/statistics_screen.dart';
+import 'package:balance/features/dashboard/presentation/screens/today_screen.dart';
 import 'package:balance/l10n/app_localizations.dart';
 import 'package:balance/features/settings/presentation/screens/settings_screen.dart';
 

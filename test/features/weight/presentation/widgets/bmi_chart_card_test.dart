@@ -2,7 +2,7 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:balance/features/weight/domain/entities/weight_entry.dart';
-import 'package:balance/features/weight/presentation/widgets/bmi_chart_card.dart';
+import 'package:balance/features/statistics/presentation/widgets/bmi_chart_card.dart';
 import 'package:balance/l10n/app_localizations.dart';
 
 void main() {

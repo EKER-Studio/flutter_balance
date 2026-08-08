@@ -9,9 +9,9 @@ import 'package:balance/features/weight/domain/time_period.dart';
 import 'package:balance/features/weight/domain/weight_error_type.dart';
 import 'package:balance/features/weight/presentation/bloc/weight_bloc.dart';
 import 'package:balance/features/weight/presentation/bloc/weight_state.dart';
-import 'package:balance/features/weight/presentation/screens/today_screen.dart';
+import 'package:balance/features/dashboard/presentation/screens/today_screen.dart';
 import 'package:balance/features/weight/presentation/widgets/add_weight_sheet.dart';
-import 'package:balance/features/weight/presentation/widgets/today_shimmer_skeleton.dart';
+import 'package:balance/features/dashboard/presentation/widgets/today_shimmer_skeleton.dart';
 import 'package:balance/l10n/app_localizations.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_bloc.dart';
 
