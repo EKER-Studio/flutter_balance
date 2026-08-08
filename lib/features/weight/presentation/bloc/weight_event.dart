@@ -85,12 +85,16 @@ final class ImportWeightEntries extends WeightEvent {
 ///
 /// The pull is best-effort: it aborts silently when health sync is disabled
 /// or the platform errors out, so the local database and UI are never blocked.
+///
+/// The window starts at [startDate] (or the trailing 30 days when it is
+/// `null`) and ends at the present.
 final class SyncHealthEntries extends WeightEvent {
-  /// Optional start of the sync window; defaults to the last 30 days.
+  /// Start of the sync window; `null` defaults to the last 30 days.
   final DateTime? startDate;
 
-  /// Creates [SyncHealthEntries].
+  /// Creates [SyncHealthEntries] with the given [startDate].
   ///
-  /// @param startDate Start of the sync window, or `null` to default to the last 30 days.
+  /// @param startDate Start of the sync window, or `null` to default to the
+  ///   last 30 days.
   const SyncHealthEntries({this.startDate});
 }
