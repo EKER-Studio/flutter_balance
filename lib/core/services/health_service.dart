@@ -150,10 +150,41 @@ class NativeHealthService implements HealthService {
   /// Platform detector for testing.
   final PlatformDetector _platformDetector;
 
+  /// Whether [_health.configure] has completed successfully at least once.
+  ///
+  /// The plugin requires a one-time configuration before any other API call;
+  /// the flag makes [_ensureConfigured] idempotent so the first call on each
+  /// public method initializes the plugin without repeated device-info lookups.
+  bool _isConfigured = false;
+
+  /// Configures the health plugin exactly once before the first plugin call.
+  ///
+  /// A configuration failure never throws: it is logged in debug builds and
+  /// the plugin is simply left unconfigured, letting every public method
+  /// degrade gracefully through its own error handling.
+  Future<void> _ensureConfigured() async {
+    if (!_isConfigured) {
+      try {
+        await _health.configure();
+        _isConfigured = true;
+        if (kDebugMode) {
+          debugPrint('[HealthService] Health plugin configured successfully.');
+        }
+      } catch (e, stack) {
+        if (kDebugMode) {
+          debugPrint(
+            '[HealthService] Health plugin configuration error: $e\n$stack',
+          );
+        }
+      }
+    }
+  }
+
   /// Reports whether the native health platform is reachable on this device.
   ///
   /// Returns `true` unconditionally on iOS (HealthKit is always present) and
-  /// probes Health Connect on Android. Any plugin error degrades to `false`.
+  /// probes the Health Connect SDK status on Android. Any plugin error
+  /// degrades to `false`.
   @override
   Future<bool> isHealthApiAvailable() async {
     try {
@@ -161,7 +192,12 @@ class NativeHealthService implements HealthService {
         // HealthKit is available on every iOS device.
         return true;
       }
-      return await _health.isHealthConnectAvailable();
+      await _ensureConfigured();
+      final sdkStatus = await _health.getHealthConnectSdkStatus();
+      if (kDebugMode) {
+        debugPrint('[HealthService] Health Connect SDK Status: $sdkStatus');
+      }
+      return sdkStatus == HealthConnectSdkStatus.sdkAvailable;
     } catch (e, stack) {
       if (kDebugMode) {
         debugPrint('[HealthService] isHealthApiAvailable error: $e\n$stack');
@@ -178,6 +214,7 @@ class NativeHealthService implements HealthService {
   @override
   Future<bool> hasPermissions() async {
     try {
+      await _ensureConfigured();
       if (_platformDetector.isIOS) {
         // HealthKit intentionally does not disclose READ grants, so the WRITE
         // grant is the only reliable signal that the app is authorized.
@@ -210,6 +247,10 @@ class NativeHealthService implements HealthService {
   @override
   Future<bool> requestPermissions() async {
     try {
+      if (kDebugMode) {
+        debugPrint('[HealthService] Requesting permissions for WEIGHT...');
+      }
+      await _ensureConfigured();
       final granted = await _health
           .requestAuthorization(const [
             _weightType,
@@ -287,6 +328,7 @@ class NativeHealthService implements HealthService {
     required DateTime end,
   }) async {
     try {
+      await _ensureConfigured();
       final points = await _health.getHealthDataFromTypes(
         types: const [_weightType],
         startTime: start,
@@ -328,6 +370,7 @@ class NativeHealthService implements HealthService {
     required DateTime timestamp,
   }) async {
     try {
+      await _ensureConfigured();
       return await _health.writeHealthData(
         value: weightKg,
         unit: _weightUnit,
@@ -360,6 +403,7 @@ class NativeHealthService implements HealthService {
     required DateTime timestamp,
   }) async {
     try {
+      await _ensureConfigured();
       final points = await _health.getHealthDataFromTypes(
         types: const [_weightType],
         startTime: timestamp.subtract(_deleteLookupWindow),

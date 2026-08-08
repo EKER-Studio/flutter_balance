@@ -70,6 +70,9 @@ void main() {
     PermissionHandlerPlatform.instance = FakePermissionHandler(true);
     _TrackingPermissionHandler.callCount = 0;
 
+    // Configuration must never throw in tests.
+    when(() => health.configure()).thenAnswer((_) async {});
+
     // Default to iOS for tests that don't specify otherwise
     when(() => platformDetector.isAndroid).thenReturn(false);
     when(() => platformDetector.isIOS).thenReturn(true);
@@ -118,13 +121,13 @@ void main() {
       when(() => platformDetector.isAndroid).thenReturn(true);
       when(() => platformDetector.isIOS).thenReturn(false);
       when(
-        () => health.isHealthConnectAvailable(),
-      ).thenAnswer((_) async => true);
+        () => health.getHealthConnectSdkStatus(),
+      ).thenAnswer((_) async => HealthConnectSdkStatus.sdkAvailable);
       final available = await service.isHealthApiAvailable();
 
       expect(available, isTrue);
       verify(() => platformDetector.isAndroid).called(1);
-      verify(() => health.isHealthConnectAvailable()).called(1);
+      verify(() => health.getHealthConnectSdkStatus()).called(1);
     });
 
     test(
@@ -134,14 +137,14 @@ void main() {
         when(() => platformDetector.isAndroid).thenReturn(true);
         when(() => platformDetector.isIOS).thenReturn(false);
         when(
-          () => health.isHealthConnectAvailable(),
-        ).thenAnswer((_) async => false);
+          () => health.getHealthConnectSdkStatus(),
+        ).thenAnswer((_) async => HealthConnectSdkStatus.sdkUnavailable);
 
         final available = await service.isHealthApiAvailable();
 
         expect(available, isFalse);
         verify(() => platformDetector.isAndroid).called(1);
-        verify(() => health.isHealthConnectAvailable()).called(1);
+        verify(() => health.getHealthConnectSdkStatus()).called(1);
       },
     );
 
@@ -150,14 +153,14 @@ void main() {
       when(() => platformDetector.isAndroid).thenReturn(true);
       when(() => platformDetector.isIOS).thenReturn(false);
       when(
-        () => health.isHealthConnectAvailable(),
+        () => health.getHealthConnectSdkStatus(),
       ).thenThrow(Exception('Health Connect unavailable'));
 
       final available = await service.isHealthApiAvailable();
 
       expect(available, isFalse);
       verify(() => platformDetector.isAndroid).called(1);
-      verify(() => health.isHealthConnectAvailable()).called(1);
+      verify(() => health.getHealthConnectSdkStatus()).called(1);
     });
   });
 
