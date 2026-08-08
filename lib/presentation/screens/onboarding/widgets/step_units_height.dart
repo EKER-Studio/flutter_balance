@@ -1,9 +1,9 @@
-import 'package:flutter/material.dart';
 import 'package:balance/core/models/measurement_unit.dart';
 import 'package:balance/core/utils/unit_converter.dart';
 import 'package:balance/l10n/app_localizations.dart';
 import 'package:balance/presentation/bloc/settings/app_settings_state.dart';
 import 'package:balance/presentation/core/clamped_layout.dart';
+import 'package:flutter/material.dart';
 
 /// Form widget for Step 1 of the onboarding wizard: selecting unit system and height.
 class StepUnitsHeight extends StatefulWidget {
@@ -12,6 +12,9 @@ class StepUnitsHeight extends StatefulWidget {
 
   /// Initial height in centimeters, or `null` if not yet set.
   final double? initialHeightCm;
+
+  /// Whether this step is currently visible in the PageView.
+  final bool isCurrentPage;
 
   /// Callback invoked when the user proceeds to the next step.
   ///
@@ -23,6 +26,7 @@ class StepUnitsHeight extends StatefulWidget {
     super.key,
     required this.initialUnit,
     required this.initialHeightCm,
+    required this.isCurrentPage,
     required this.onNext,
   });
 
@@ -39,6 +43,7 @@ class _StepUnitsHeightState extends State<StepUnitsHeight> {
 
   late final FocusNode _cmFocusNode;
   late final FocusNode _feetFocusNode;
+  late final FocusNode _inchesFocusNode;
 
   String? _cmErrorText;
   String? _imperialErrorText;
@@ -50,14 +55,7 @@ class _StepUnitsHeightState extends State<StepUnitsHeight> {
 
     _cmFocusNode = FocusNode();
     _feetFocusNode = FocusNode();
-
-    // Request focus after the step's frame renders so the keyboard opens
-    // exactly when the step becomes visible, never while it is offstage.
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted) return;
-      (_selectedUnit == MeasurementUnit.metric ? _cmFocusNode : _feetFocusNode)
-          .requestFocus();
-    });
+    _inchesFocusNode = FocusNode();
 
     final initialCm = widget.initialHeightCm;
     final hasHeight = initialCm != null && initialCm > 0;
@@ -73,6 +71,28 @@ class _StepUnitsHeightState extends State<StepUnitsHeight> {
     _inchesController = TextEditingController(
       text: hasHeight ? inches.round().toString() : '',
     );
+
+    if (widget.isCurrentPage) {
+      _requestFocus();
+    }
+  }
+
+  @override
+  void didUpdateWidget(covariant StepUnitsHeight oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (!oldWidget.isCurrentPage && widget.isCurrentPage) {
+      _requestFocus();
+    }
+  }
+
+  void _requestFocus() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      final targetNode = _selectedUnit == MeasurementUnit.metric
+          ? _cmFocusNode
+          : _feetFocusNode;
+      targetNode.requestFocus();
+    });
   }
 
   @override
@@ -82,6 +102,7 @@ class _StepUnitsHeightState extends State<StepUnitsHeight> {
     _inchesController.dispose();
     _cmFocusNode.dispose();
     _feetFocusNode.dispose();
+    _inchesFocusNode.dispose();
     super.dispose();
   }
 
@@ -288,6 +309,7 @@ class _StepUnitsHeightState extends State<StepUnitsHeight> {
                   child: TextField(
                     key: const Key('height_inches_input'),
                     controller: _inchesController,
+                    focusNode: _inchesFocusNode,
                     keyboardType: TextInputType.number,
                     decoration: InputDecoration(
                       labelText: l10n.inchesLabel,

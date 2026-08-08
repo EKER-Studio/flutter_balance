@@ -18,6 +18,7 @@ import 'package:balance/presentation/screens/onboarding/widgets/step_initial_wei
 import 'package:balance/presentation/screens/onboarding/widgets/step_reminder_notification.dart';
 import 'package:balance/presentation/screens/onboarding/widgets/step_target_weight.dart';
 import 'package:balance/presentation/screens/onboarding/widgets/step_units_height.dart';
+import 'package:balance/presentation/screens/onboarding/widgets/step_welcome.dart';
 
 /// Container screen for the initial onboarding wizard.
 ///
@@ -55,7 +56,7 @@ class OnboardingWizardScreen extends StatelessWidget {
         return OnboardingBloc(
           appSettingsBloc: context.read<AppSettingsBloc>(),
           weightBloc: context.read<WeightBloc>(),
-          totalSteps: isBiometricSupported ? 7 : 6,
+          totalSteps: isBiometricSupported ? 8 : 7,
           initialUnit: settingsState.measurementUnit,
           initialTargetWeight: settingsState.targetWeight,
         )..add(const OnboardingStarted());
@@ -116,6 +117,11 @@ class _OnboardingWizardContentState extends State<_OnboardingWizardContent> {
     } else {
       bloc.add(const OnboardingStepAdvanced());
     }
+  }
+
+  /// Advances from the welcome screen to the first configuration step.
+  void _handleWelcomeNext() {
+    context.read<OnboardingBloc>().add(const OnboardingStepAdvanced());
   }
 
   /// Stores the chosen [unit] and persists unit, height, and user height into
@@ -212,11 +218,51 @@ class _OnboardingWizardContentState extends State<_OnboardingWizardContent> {
     );
   }
 
-  @override
-  Widget build(BuildContext context) {
+  PreferredSizeWidget _buildAppBar(
+    BuildContext context, {
+    required bool isWelcomeStep,
+    required int currentStep,
+    required int totalSteps,
+    required double progress,
+  }) {
     final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context);
 
+    if (isWelcomeStep) {
+      return const PreferredSize(
+        preferredSize: Size.zero,
+        child: SizedBox.shrink(),
+      );
+    }
+
+    return AppBar(
+      title: Text(
+        l10n.stepOf(currentStep, totalSteps),
+        style: theme.textTheme.titleMedium?.copyWith(
+          color: theme.colorScheme.onSurfaceVariant,
+        ),
+      ),
+      centerTitle: true,
+      leading: IconButton(
+        icon: const Icon(Icons.arrow_back),
+        tooltip: l10n.previousStepTooltip,
+        onPressed: () {
+          FocusManager.instance.primaryFocus?.unfocus();
+          context.read<OnboardingBloc>().add(const OnboardingStepRewound());
+        },
+      ),
+      bottom: PreferredSize(
+        preferredSize: const Size.fromHeight(4.0),
+        child: LinearProgressIndicator(
+          value: progress,
+          backgroundColor: theme.colorScheme.surfaceContainerHighest,
+        ),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final isBiometricSupported = context.select(
       (AppSettingsBloc bloc) => bloc.state.isBiometricSupported,
     );
@@ -234,10 +280,12 @@ class _OnboardingWizardContentState extends State<_OnboardingWizardContent> {
       child: BlocBuilder<OnboardingBloc, OnboardingState>(
         builder: (context, state) {
           final steps = <Widget>[
+            StepWelcome(onNext: _handleWelcomeNext),
             _buildStepWrapper(
               StepUnitsHeight(
                 initialUnit: state.selectedUnit,
                 initialHeightCm: context.read<AppSettingsBloc>().state.height,
+                isCurrentPage: state.currentStepIndex == 1,
                 onNext: _handleUnitsHeightNext,
               ),
             ),
@@ -274,13 +322,17 @@ class _OnboardingWizardContentState extends State<_OnboardingWizardContent> {
               ),
           ];
 
-          final progress = (state.currentStepIndex + 1) / steps.length;
+          final isWelcomeStep = state.currentStepIndex == 0;
+
+          final displayStep = state.currentStepIndex + 1;
+          final progress = displayStep / state.totalSteps;
 
           return PopScope(
-            canPop: state.currentStepIndex == 0,
+            canPop: isWelcomeStep,
             onPopInvokedWithResult: (didPop, result) {
               if (didPop) return;
-              if (state.currentStepIndex > 0) {
+
+              if (!isWelcomeStep) {
                 FocusManager.instance.primaryFocus?.unfocus();
                 context.read<OnboardingBloc>().add(
                   const OnboardingStepRewound(),
@@ -289,33 +341,12 @@ class _OnboardingWizardContentState extends State<_OnboardingWizardContent> {
             },
             child: Scaffold(
               resizeToAvoidBottomInset: true,
-              appBar: AppBar(
-                title: Text(
-                  l10n.stepOf(state.currentStepIndex + 1, steps.length),
-                  style: theme.textTheme.titleMedium?.copyWith(
-                    color: theme.colorScheme.onSurfaceVariant,
-                  ),
-                ),
-                centerTitle: true,
-                leading: state.currentStepIndex > 0
-                    ? IconButton(
-                        icon: const Icon(Icons.arrow_back),
-                        tooltip: l10n.previousStepTooltip,
-                        onPressed: () {
-                          FocusManager.instance.primaryFocus?.unfocus();
-                          context.read<OnboardingBloc>().add(
-                            const OnboardingStepRewound(),
-                          );
-                        },
-                      )
-                    : null,
-                bottom: PreferredSize(
-                  preferredSize: const Size.fromHeight(4.0),
-                  child: LinearProgressIndicator(
-                    value: progress,
-                    backgroundColor: theme.colorScheme.surfaceContainerHighest,
-                  ),
-                ),
+              appBar: _buildAppBar(
+                context,
+                isWelcomeStep: isWelcomeStep,
+                currentStep: displayStep,
+                totalSteps: state.totalSteps,
+                progress: progress,
               ),
               body: SafeArea(
                 child: PageView(

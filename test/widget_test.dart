@@ -47,7 +47,7 @@ void main() {
       // Flush the delayed initial-focus request of the first step.
       await tester.pump(const Duration(milliseconds: 300));
 
-      expect(find.text('Step 1 of 7'), findsOneWidget);
+      expect(find.text('Welcome to Balance'), findsOneWidget);
       expect(find.text('Units & Height'), findsOneWidget);
 
       settingsBloc.close();
@@ -101,7 +101,7 @@ void main() {
 
       // 3. Assert: Verify we are back on the Onboarding Screen
       expect(find.byType(NavigationBar), findsNothing);
-      expect(find.text('Step 1 of 7'), findsOneWidget);
+      expect(find.text('Welcome to Balance'), findsOneWidget);
       expect(find.text('Units & Height'), findsOneWidget);
 
       settingsBloc.close();

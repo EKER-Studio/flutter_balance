@@ -85,66 +85,78 @@ void main() {
     );
   }
 
-  /// Advances from step 1 (Units & Height) to step 2 (CSV Import).
-  Future<void> pumpToStep2(WidgetTester tester) async {
+  /// Advances from step 1 (Welcome) to step 2 (Units & Height) to step 3
+  /// (CSV Import).
+  Future<void> pumpToStep3(WidgetTester tester) async {
+    // Step 1 (Welcome) -> Next
+    await tester.tap(find.text('Get Started'));
+    await tester.pumpAndSettle();
+
+    // Step 2 (Units & Height) -> Next
     await tester.enterText(find.byKey(const Key('height_cm_input')), '170');
     await tester.pumpAndSettle();
     await tester.tap(find.text('Next'));
     await tester.pumpAndSettle();
   }
 
-  /// Skips step 2 (CSV Import) and lands on step 3 (Initial Weight).
-  Future<void> pumpToStep3(WidgetTester tester) async {
-    await pumpToStep2(tester);
+  /// Skips step 3 (CSV Import) and lands on step 4 (Initial Weight).
+  Future<void> pumpToStep4(WidgetTester tester) async {
+    await pumpToStep3(tester);
     await tester.tap(find.byKey(const Key('csv_import_skip_button')));
     await tester.pumpAndSettle();
   }
 
   group('OnboardingWizardScreen Widget Tests', () {
-    testWidgets('renders initial Step 1 of 7', (tester) async {
+    testWidgets('renders initial Step 1 of 8 (Welcome)', (tester) async {
       await tester.pumpWidget(buildSubject());
-      // Flush the delayed initial-focus request of the first step.
-      await tester.pump(const Duration(milliseconds: 300));
+      await tester.pumpAndSettle();
 
-      expect(find.text('Step 1 of 7'), findsOneWidget);
-      expect(find.text('Units & Height'), findsOneWidget);
+      // Step indicator should NOT be visible on the Welcome screen.
+      expect(find.text('Step 1 of 8'), findsNothing);
+      expect(find.text('Welcome to Balance'), findsOneWidget);
       expect(find.byIcon(Icons.arrow_back), findsNothing);
     });
 
-    testWidgets('navigates through all 7 steps and completes wizard', (
+    testWidgets('navigates through all 8 steps and completes wizard', (
       tester,
     ) async {
       bool completed = false;
       await tester.pumpWidget(
         buildSubject(onWizardCompleted: () => completed = true),
       );
-      // Flush the delayed initial-focus request of the first step.
-      await tester.pump(const Duration(milliseconds: 300));
+      await tester.pumpAndSettle();
 
-      // Step 1 (Units & Height) -> Next
+      // Step 1 (Welcome) -> Next
+      await tester.tap(find.text('Get Started'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Step 2 of 8'), findsOneWidget);
+      expect(find.text('Units & Height'), findsOneWidget);
+
+      // Step 2 (Units & Height) -> Next
       await tester.enterText(find.byKey(const Key('height_cm_input')), '170');
       await tester.pumpAndSettle();
       await tester.tap(find.text('Next'));
       await tester.pumpAndSettle();
 
-      expect(find.text('Step 2 of 7'), findsOneWidget);
+      expect(find.text('Step 3 of 8'), findsOneWidget);
       expect(find.text('Import existing history?'), findsOneWidget);
       expect(find.byIcon(Icons.arrow_back), findsOneWidget);
 
-      // Height is synced to the weight BLoC so AddWeight in step 3 does not
+      // Height is synced to the weight BLoC so AddWeight in step 4 does not
       // get rejected with a heightNotSet error on a fresh install.
       verify(
         () => weightBloc.add(any(that: isA<UpdateUserHeight>())),
       ).called(1);
 
-      // Step 2 (CSV Import) -> Skip
+      // Step 3 (CSV Import) -> Skip
       await tester.tap(find.byKey(const Key('csv_import_skip_button')));
       await tester.pumpAndSettle();
 
-      expect(find.text('Step 3 of 7'), findsOneWidget);
+      expect(find.text('Step 4 of 8'), findsOneWidget);
       expect(find.text('Initial Weight'), findsOneWidget);
 
-      // Step 3 (Initial Weight) -> Next
+      // Step 4 (Initial Weight) -> Next
       await tester.enterText(
         find.byKey(const Key('initial_weight_input')),
         '75.5',
@@ -162,31 +174,31 @@ void main() {
         ),
       ).called(1);
 
-      expect(find.text('Step 4 of 7'), findsOneWidget);
+      expect(find.text('Step 5 of 8'), findsOneWidget);
       expect(find.text('Target Weight (Optional)'), findsOneWidget);
 
-      // Step 4 (Target Weight) -> Next (Leave empty for optional target weight)
+      // Step 5 (Target Weight) -> Next (Leave empty for optional target weight)
       await tester.tap(find.text('Next').first);
       await tester.pumpAndSettle();
 
-      expect(find.text('Step 5 of 7'), findsOneWidget);
+      expect(find.text('Step 6 of 8'), findsOneWidget);
       expect(find.text('Daily Reminder (Optional)'), findsOneWidget);
 
-      // Step 5 (Daily Reminder) -> Next (Skip/Next reminder)
+      // Step 6 (Daily Reminder) -> Next (Skip/Next reminder)
       await tester.tap(find.byKey(const Key('notification_step_next_button')));
       await tester.pumpAndSettle();
 
-      expect(find.text('Step 6 of 7'), findsOneWidget);
+      expect(find.text('Step 7 of 8'), findsOneWidget);
       expect(find.text('Health Sync (Optional)'), findsOneWidget);
 
-      // Step 6 (Health Sync) -> Next (skip by not enabling the switch)
+      // Step 7 (Health Sync) -> Next (skip by not enabling the switch)
       await tester.tap(find.byKey(const Key('health_sync_step_next_button')));
       await tester.pumpAndSettle();
 
-      expect(find.text('Step 7 of 7'), findsOneWidget);
+      expect(find.text('Step 8 of 8'), findsOneWidget);
       expect(find.text('Biometric Lock (Optional)'), findsOneWidget);
 
-      // Step 7 (Biometric Lock) -> Next (Skip/Next biometric lock)
+      // Step 8 (Biometric Lock) -> Next (Skip/Next biometric lock)
       await tester.tap(find.byKey(const Key('biometric_step_next_button')));
       await tester.pumpAndSettle();
 
@@ -194,31 +206,30 @@ void main() {
       expect(settingsBloc.state.isOnboardingCompleted, isTrue);
     });
 
-    testWidgets('navigates back through steps 3 -> 2 -> 1 via back button', (
+    testWidgets('navigates back through steps 4 -> 3 -> 2 via back button', (
       tester,
     ) async {
       await tester.pumpWidget(buildSubject());
-      // Flush the delayed initial-focus request of the first step.
-      await tester.pump(const Duration(milliseconds: 300));
+      await tester.pumpAndSettle();
 
-      // Advance to Step 3 (Initial Weight)
-      await pumpToStep3(tester);
+      // Advance to Step 4 (Initial Weight)
+      await pumpToStep4(tester);
 
-      expect(find.text('Step 3 of 7'), findsOneWidget);
+      expect(find.text('Step 4 of 8'), findsOneWidget);
       expect(find.text('Initial Weight'), findsOneWidget);
 
-      // Back to Step 2 (CSV Import)
+      // Back to Step 3 (CSV Import)
       await tester.tap(find.byIcon(Icons.arrow_back));
       await tester.pumpAndSettle();
 
-      expect(find.text('Step 2 of 7'), findsOneWidget);
+      expect(find.text('Step 3 of 8'), findsOneWidget);
       expect(find.text('Import existing history?'), findsOneWidget);
 
-      // Back to Step 1 (Units & Height)
+      // Back to Step 2 (Units & Height)
       await tester.tap(find.byIcon(Icons.arrow_back));
       await tester.pumpAndSettle();
 
-      expect(find.text('Step 1 of 7'), findsOneWidget);
+      expect(find.text('Step 2 of 8'), findsOneWidget);
     });
 
     testWidgets(
@@ -234,13 +245,12 @@ void main() {
         ));
 
         await tester.pumpWidget(buildSubject(csvImportService: service));
-        // Flush the delayed initial-focus request of the first step.
-        await tester.pump(const Duration(milliseconds: 300));
+        await tester.pumpAndSettle();
 
-        // Step 1 (Units & Height) -> Next
-        await pumpToStep2(tester);
+        // Advance to Step 3 (CSV Import)
+        await pumpToStep3(tester);
 
-        // Step 2 (CSV Import) -> pick file -> continue
+        // Step 3 (CSV Import) -> pick file -> continue
         await tester.tap(find.byKey(const Key('csv_import_pick_button')));
         await tester.pumpAndSettle();
         expect(find.text('Imported 2 measurements!'), findsOneWidget);
@@ -248,8 +258,8 @@ void main() {
         await tester.tap(find.byKey(const Key('csv_import_continue_button')));
         await tester.pumpAndSettle();
 
-        // Step 3 (Initial Weight) shows the latest entry pre-filled.
-        expect(find.text('Step 3 of 7'), findsOneWidget);
+        // Step 4 (Initial Weight) shows the latest entry pre-filled.
+        expect(find.text('Step 4 of 8'), findsOneWidget);
         final field = tester.widget<TextField>(
           find.byKey(const Key('initial_weight_input')),
         );
@@ -270,7 +280,7 @@ void main() {
             ),
           ),
         ).called(1);
-        expect(find.text('Step 4 of 7'), findsOneWidget);
+        expect(find.text('Step 5 of 8'), findsOneWidget);
       },
     );
 
@@ -278,18 +288,17 @@ void main() {
       tester,
     ) async {
       await tester.pumpWidget(buildSubject());
-      // Flush the delayed initial-focus request of the first step.
-      await tester.pump(const Duration(milliseconds: 300));
+      await tester.pumpAndSettle();
 
-      // Step 1 (Units & Height) -> Next
-      await pumpToStep2(tester);
+      // Advance to Step 3 (CSV Import)
+      await pumpToStep3(tester);
 
-      // Step 2 (CSV Import) -> Skip
+      // Step 3 (CSV Import) -> Skip
       await tester.tap(find.byKey(const Key('csv_import_skip_button')));
       await tester.pumpAndSettle();
 
-      // Step 3 (Initial Weight) starts blank with Next disabled.
-      expect(find.text('Step 3 of 7'), findsOneWidget);
+      // Step 4 (Initial Weight) starts blank with Next disabled.
+      expect(find.text('Step 4 of 8'), findsOneWidget);
       final field = tester.widget<TextField>(
         find.byKey(const Key('initial_weight_input')),
       );
@@ -310,10 +319,9 @@ void main() {
 
       await tester.pumpWidget(buildSubject());
       await tester.pumpAndSettle();
-      // Flush the delayed initial-focus request of the first step.
-      await tester.pump(const Duration(milliseconds: 300));
 
-      expect(find.text('Step 1 of 7'), findsOneWidget);
+      // Ensure the welcome text is visible on start
+      expect(find.text('Welcome to Balance'), findsOneWidget);
       expect(tester.takeException(), isNull);
     });
 
@@ -322,8 +330,10 @@ void main() {
       (tester) async {
         await tester.pumpWidget(buildSubject());
         await tester.pumpAndSettle();
-        // Flush the delayed initial-focus request of the first step.
-        await tester.pump(const Duration(milliseconds: 300));
+
+        // Step 1 (Welcome) -> Next
+        await tester.tap(find.text('Get Started'));
+        await tester.pumpAndSettle();
 
         final heightField = find.byKey(const Key('height_cm_input'));
         await tester.enterText(heightField, '20');
@@ -333,8 +343,8 @@ void main() {
         await tester.tap(nextButton);
         await tester.pumpAndSettle();
 
-        // Should not navigate to step 2
-        expect(find.text('Step 2 of 7'), findsNothing);
+        // Should not navigate to step 3
+        expect(find.text('Step 3 of 8'), findsNothing);
 
         // Should display the validation error text
         expect(
@@ -354,26 +364,32 @@ void main() {
         buildSubject(onWizardCompleted: () => completed = true),
       );
       await tester.pumpAndSettle();
-      // Flush the delayed initial-focus request of the first step.
-      await tester.pump(const Duration(milliseconds: 300));
 
-      expect(find.text('Step 1 of 6'), findsOneWidget);
+      expect(find.text('Welcome to Balance'), findsOneWidget);
+
+      await tester.tap(find.text('Get Started'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Step 2 of 7'), findsOneWidget);
       expect(find.text('Units & Height'), findsOneWidget);
 
-      // Navigate to step 2 (CSV Import)
-      await pumpToStep2(tester);
+      // Navigate to step 3 (CSV Import)
+      await tester.enterText(find.byKey(const Key('height_cm_input')), '170');
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Next'));
+      await tester.pumpAndSettle();
 
-      expect(find.text('Step 2 of 6'), findsOneWidget);
+      expect(find.text('Step 3 of 7'), findsOneWidget);
       expect(find.text('Import existing history?'), findsOneWidget);
 
-      // Skip the optional CSV import and advance to step 3 (Initial Weight)
+      // Skip the optional CSV import and advance to step 4 (Initial Weight)
       await tester.tap(find.byKey(const Key('csv_import_skip_button')));
       await tester.pumpAndSettle();
 
-      expect(find.text('Step 3 of 6'), findsOneWidget);
+      expect(find.text('Step 4 of 7'), findsOneWidget);
       expect(find.text('Initial Weight'), findsOneWidget);
 
-      // Log the initial weight and advance to step 4 (Target Weight)
+      // Log the initial weight and advance to step 5 (Target Weight)
       await tester.enterText(
         find.byKey(const Key('initial_weight_input')),
         '75.5',
@@ -382,24 +398,24 @@ void main() {
       await tester.tap(find.text('Next'));
       await tester.pumpAndSettle();
 
-      expect(find.text('Step 4 of 6'), findsOneWidget);
+      expect(find.text('Step 5 of 7'), findsOneWidget);
       expect(find.text('Target Weight (Optional)'), findsOneWidget);
 
-      // Skip the optional target weight and advance to step 5 (Daily Reminder)
+      // Skip the optional target weight and advance to step 6 (Daily Reminder)
       await tester.tap(find.text('Next').first);
       await tester.pumpAndSettle();
 
-      expect(find.text('Step 5 of 6'), findsOneWidget);
+      expect(find.text('Step 6 of 7'), findsOneWidget);
       expect(find.text('Daily Reminder (Optional)'), findsOneWidget);
 
-      // Advance from step 5 (Daily Reminder) to step 6 (Health Sync)
+      // Advance from step 6 (Daily Reminder) to step 7 (Health Sync)
       await tester.tap(find.byKey(const Key('notification_step_next_button')));
       await tester.pumpAndSettle();
 
-      expect(find.text('Step 6 of 6'), findsOneWidget);
+      expect(find.text('Step 7 of 7'), findsOneWidget);
       expect(find.text('Health Sync (Optional)'), findsOneWidget);
 
-      // Step 6 (Health Sync) is the final step without biometrics: pressing
+      // Step 7 (Health Sync) is the final step without biometrics: pressing
       // next without enabling the switch finishes the wizard.
       await tester.tap(find.byKey(const Key('health_sync_step_next_button')));
       await tester.pumpAndSettle();

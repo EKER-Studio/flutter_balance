@@ -24,6 +24,7 @@ void main() {
           StepUnitsHeight(
             initialUnit: MeasurementUnit.metric,
             initialHeightCm: 175.0,
+            isCurrentPage: true,
             onNext: (_, _) {},
           ),
         ),
@@ -45,6 +46,7 @@ void main() {
           StepUnitsHeight(
             initialUnit: MeasurementUnit.metric,
             initialHeightCm: 175.0,
+            isCurrentPage: true,
             onNext: (_, _) {},
           ),
         ),
@@ -68,6 +70,7 @@ void main() {
           StepUnitsHeight(
             initialUnit: MeasurementUnit.metric,
             initialHeightCm: 180.0,
+            isCurrentPage: true,
             onNext: (unit, height) {
               selectedUnit = unit;
               selectedHeight = height;
@@ -95,6 +98,7 @@ void main() {
           StepUnitsHeight(
             initialUnit: MeasurementUnit.metric,
             initialHeightCm: 180.0,
+            isCurrentPage: true,
             onNext: (unit, height) {
               selectedHeight = height;
             },
