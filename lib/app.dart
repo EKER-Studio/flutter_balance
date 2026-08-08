@@ -1,6 +1,8 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
+import 'package:health/health.dart';
 import 'package:balance/core/database/database_module.dart';
 import 'package:balance/core/services/biometric_lock_observer.dart';
 import 'package:balance/core/services/biometric_service.dart';
@@ -51,8 +53,9 @@ class _AppState extends State<App> {
     _initFuture = _initializeApp();
   }
 
-  /// Bootstraps the core services (database, notifications, biometrics) and
-  /// returns the ready [WeightRepository] once all initialization finished.
+  /// Bootstraps the core services (database, notifications, health platform,
+  /// biometrics) and returns the ready [WeightRepository] once all
+  /// initialization finished.
   Future<WeightRepository> _initializeApp() async {
     try {
       if (widget.repositoryOverride != null) {
@@ -70,7 +73,19 @@ class _AppState extends State<App> {
       // 2. Notifications
       await NotificationService.instance.initialize();
 
-      // 3. Biometrics — canAuthenticate() also covers OS PIN/pattern/password
+      // 3. Health — the plugin requires configure() before any other API call.
+      // A failure (e.g. device_info channel error on devices without health
+      // platform support) must not block app startup; every HealthService call
+      // already degrades gracefully, so the plugin is simply left unconfigured.
+      try {
+        await Health().configure();
+      } catch (e, stack) {
+        if (kDebugMode) {
+          debugPrint('[App] Health().configure() failed: $e\n$stack');
+        }
+      }
+
+      // 4. Biometrics — canAuthenticate() also covers OS PIN/pattern/password
       // fallback, not just enrolled biometric hardware (see
       // BiometricService.authenticate, which already supports it).
       final isBiometricSupported = await BiometricService.instance
