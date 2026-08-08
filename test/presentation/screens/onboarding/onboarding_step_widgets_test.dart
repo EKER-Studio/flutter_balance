@@ -28,6 +28,8 @@ void main() {
           ),
         ),
       );
+      // Flush the delayed initial-focus request scheduled in initState.
+      await tester.pump(const Duration(milliseconds: 300));
 
       expect(find.text('Units & Height'), findsOneWidget);
       expect(find.text('Metric (kg / cm)'), findsOneWidget);
@@ -47,6 +49,8 @@ void main() {
           ),
         ),
       );
+      // Flush the delayed initial-focus request scheduled in initState.
+      await tester.pump(const Duration(milliseconds: 300));
 
       await tester.tap(find.text('Imperial (lbs / ft-in)'));
       await tester.pumpAndSettle();
@@ -71,6 +75,8 @@ void main() {
           ),
         ),
       );
+      // Flush the delayed initial-focus request scheduled in initState.
+      await tester.pump(const Duration(milliseconds: 300));
 
       await tester.tap(find.text('Next'));
       await tester.pumpAndSettle();
@@ -95,6 +101,8 @@ void main() {
           ),
         ),
       );
+      // Flush the delayed initial-focus request scheduled in initState.
+      await tester.pump(const Duration(milliseconds: 300));
 
       await tester.enterText(find.byKey(const Key('height_cm_input')), '175,5');
       await tester.tap(find.text('Next'));

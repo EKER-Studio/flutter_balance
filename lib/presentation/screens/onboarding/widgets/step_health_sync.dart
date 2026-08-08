@@ -52,8 +52,7 @@ class _StepHealthSyncState extends State<StepHealthSync> {
         // flag immediately after each denial, so only the transition is
         // observable here.
         listenWhen: (previous, current) =>
-            !previous.healthPermissionDenied &&
-            current.healthPermissionDenied,
+            !previous.healthPermissionDenied && current.healthPermissionDenied,
         listener: (context, state) {
           if (!_permissionDenied) {
             setState(() => _permissionDenied = true);

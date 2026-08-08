@@ -543,10 +543,7 @@ void main() {
             ),
           ).thenAnswer(
             (_) async => [
-              WeightEntry(
-                weightKg: 80,
-                dateTime: DateTime(2025, 6, 1, 8, 30),
-              ),
+              WeightEntry(weightKg: 80, dateTime: DateTime(2025, 6, 1, 8, 30)),
               WeightEntry(
                 weightKg: 79.5,
                 dateTime: DateTime(2025, 6, 2, 8, 30),

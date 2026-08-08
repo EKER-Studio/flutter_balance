@@ -51,6 +51,17 @@ class _StepUnitsHeightState extends State<StepUnitsHeight> {
     _cmFocusNode = FocusNode();
     _feetFocusNode = FocusNode();
 
+    // The keyboard request issued at build time (autofocus) is swallowed by
+    // the platform while the app's startup frames are still settling, leaving
+    // the field focused with no keyboard. Re-requesting focus after startup
+    // has settled performs the real focus + keyboard request, so autofocus is
+    // intentionally not used on this step.
+    Future.delayed(const Duration(milliseconds: 300), () {
+      if (!mounted) return;
+      (_selectedUnit == MeasurementUnit.metric ? _cmFocusNode : _feetFocusNode)
+          .requestFocus();
+    });
+
     final initialCm = widget.initialHeightCm;
     final hasHeight = initialCm != null && initialCm > 0;
 
@@ -209,7 +220,6 @@ class _StepUnitsHeightState extends State<StepUnitsHeight> {
               key: const Key('height_cm_input'),
               controller: _cmController,
               focusNode: _cmFocusNode,
-              autofocus: true,
               keyboardType: const TextInputType.numberWithOptions(
                 decimal: true,
               ),
@@ -251,7 +261,6 @@ class _StepUnitsHeightState extends State<StepUnitsHeight> {
                     key: const Key('height_feet_input'),
                     controller: _feetController,
                     focusNode: _feetFocusNode,
-                    autofocus: true,
                     keyboardType: TextInputType.number,
                     decoration: InputDecoration(
                       labelText: l10n.feetLabel,

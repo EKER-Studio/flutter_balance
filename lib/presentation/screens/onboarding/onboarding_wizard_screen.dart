@@ -267,11 +267,7 @@ class _OnboardingWizardContentState extends State<_OnboardingWizardContent> {
             _buildStepWrapper(
               StepReminderNotification(onNext: _handleReminderNext),
             ),
-            _buildStepWrapper(
-              StepHealthSync(
-                onNext: _handleHealthSyncNext,
-              ),
-            ),
+            _buildStepWrapper(StepHealthSync(onNext: _handleHealthSyncNext)),
             if (isBiometricSupported)
               _buildStepWrapper(
                 StepBiometricLock(onNext: _handleBiometricNext),
@@ -301,18 +297,18 @@ class _OnboardingWizardContentState extends State<_OnboardingWizardContent> {
                   ),
                 ),
                 centerTitle: true,
-                    leading: state.currentStepIndex > 0
-                        ? IconButton(
-                            icon: const Icon(Icons.arrow_back),
-                            tooltip: l10n.previousStepTooltip,
-                            onPressed: () {
-                              FocusManager.instance.primaryFocus?.unfocus();
-                              context.read<OnboardingBloc>().add(
-                                const OnboardingStepRewound(),
-                              );
-                            },
-                          )
-                        : null,
+                leading: state.currentStepIndex > 0
+                    ? IconButton(
+                        icon: const Icon(Icons.arrow_back),
+                        tooltip: l10n.previousStepTooltip,
+                        onPressed: () {
+                          FocusManager.instance.primaryFocus?.unfocus();
+                          context.read<OnboardingBloc>().add(
+                            const OnboardingStepRewound(),
+                          );
+                        },
+                      )
+                    : null,
                 bottom: PreferredSize(
                   preferredSize: const Size.fromHeight(4.0),
                   child: LinearProgressIndicator(

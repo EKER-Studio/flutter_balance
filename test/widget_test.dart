@@ -44,6 +44,8 @@ void main() {
         ),
       );
       await tester.pumpAndSettle();
+      // Flush the delayed initial-focus request of the first step.
+      await tester.pump(const Duration(milliseconds: 300));
 
       expect(find.text('Step 1 of 7'), findsOneWidget);
       expect(find.text('Units & Height'), findsOneWidget);
@@ -94,6 +96,8 @@ void main() {
       // 2. Act: Reset app settings (simulating "Wipe Data")
       settingsBloc.add(const ResetAppSettings());
       await tester.pumpAndSettle();
+      // Flush the delayed initial-focus request of the first step.
+      await tester.pump(const Duration(milliseconds: 300));
 
       // 3. Assert: Verify we are back on the Onboarding Screen
       expect(find.byType(NavigationBar), findsNothing);
@@ -148,6 +152,8 @@ void main() {
           ),
         );
         await tester.pumpAndSettle();
+        // Flush the delayed initial-focus request of the first step.
+        await tester.pump(const Duration(milliseconds: 300));
 
         final imported =
             verify(
@@ -179,6 +185,8 @@ void main() {
           ),
         );
         await tester.pumpAndSettle();
+        // Flush the delayed initial-focus request of the first step.
+        await tester.pump(const Duration(milliseconds: 300));
 
         verifyNever(() => repository.bulkImportEntries(any()));
 
@@ -206,6 +214,8 @@ void main() {
           ),
         );
         await tester.pumpAndSettle();
+        // Flush the delayed initial-focus request of the first step.
+        await tester.pump(const Duration(milliseconds: 300));
 
         // Background and resume the app; the lifecycle observer must pull
         // again, importing the entry a second time.

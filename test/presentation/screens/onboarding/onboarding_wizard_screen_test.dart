@@ -103,6 +103,8 @@ void main() {
   group('OnboardingWizardScreen Widget Tests', () {
     testWidgets('renders initial Step 1 of 7', (tester) async {
       await tester.pumpWidget(buildSubject());
+      // Flush the delayed initial-focus request of the first step.
+      await tester.pump(const Duration(milliseconds: 300));
 
       expect(find.text('Step 1 of 7'), findsOneWidget);
       expect(find.text('Units & Height'), findsOneWidget);
@@ -116,6 +118,8 @@ void main() {
       await tester.pumpWidget(
         buildSubject(onWizardCompleted: () => completed = true),
       );
+      // Flush the delayed initial-focus request of the first step.
+      await tester.pump(const Duration(milliseconds: 300));
 
       // Step 1 (Units & Height) -> Next
       await tester.enterText(find.byKey(const Key('height_cm_input')), '170');
@@ -194,6 +198,8 @@ void main() {
       tester,
     ) async {
       await tester.pumpWidget(buildSubject());
+      // Flush the delayed initial-focus request of the first step.
+      await tester.pump(const Duration(milliseconds: 300));
 
       // Advance to Step 3 (Initial Weight)
       await pumpToStep3(tester);
@@ -228,6 +234,8 @@ void main() {
         ));
 
         await tester.pumpWidget(buildSubject(csvImportService: service));
+        // Flush the delayed initial-focus request of the first step.
+        await tester.pump(const Duration(milliseconds: 300));
 
         // Step 1 (Units & Height) -> Next
         await pumpToStep2(tester);
@@ -270,6 +278,8 @@ void main() {
       tester,
     ) async {
       await tester.pumpWidget(buildSubject());
+      // Flush the delayed initial-focus request of the first step.
+      await tester.pump(const Duration(milliseconds: 300));
 
       // Step 1 (Units & Height) -> Next
       await pumpToStep2(tester);
@@ -300,6 +310,8 @@ void main() {
 
       await tester.pumpWidget(buildSubject());
       await tester.pumpAndSettle();
+      // Flush the delayed initial-focus request of the first step.
+      await tester.pump(const Duration(milliseconds: 300));
 
       expect(find.text('Step 1 of 7'), findsOneWidget);
       expect(tester.takeException(), isNull);
@@ -310,6 +322,8 @@ void main() {
       (tester) async {
         await tester.pumpWidget(buildSubject());
         await tester.pumpAndSettle();
+        // Flush the delayed initial-focus request of the first step.
+        await tester.pump(const Duration(milliseconds: 300));
 
         final heightField = find.byKey(const Key('height_cm_input'));
         await tester.enterText(heightField, '20');
@@ -340,6 +354,8 @@ void main() {
         buildSubject(onWizardCompleted: () => completed = true),
       );
       await tester.pumpAndSettle();
+      // Flush the delayed initial-focus request of the first step.
+      await tester.pump(const Duration(milliseconds: 300));
 
       expect(find.text('Step 1 of 6'), findsOneWidget);
       expect(find.text('Units & Height'), findsOneWidget);

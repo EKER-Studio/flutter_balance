@@ -20,13 +20,9 @@ class MockAppSettingsBloc extends Mock implements AppSettingsBloc {}
 ///
 /// The broadcast stream never emits, so the widget renders from the stubbed
 /// state and recorded [AppSettingsBloc.add] calls can be verified.
-MockAppSettingsBloc _buildMockSettingsBloc({
-  bool isHealthSyncEnabled = false,
-}) {
+MockAppSettingsBloc _buildMockSettingsBloc({bool isHealthSyncEnabled = false}) {
   final bloc = MockAppSettingsBloc();
-  when(
-    () => bloc.state,
-  ).thenReturn(
+  when(() => bloc.state).thenReturn(
     AppSettingsState(
       isHealthApiAvailable: true,
       isHealthSyncEnabled: isHealthSyncEnabled,
@@ -62,15 +58,15 @@ void main() {
       child: MaterialApp(
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
-        home: Scaffold(
-          body: StepHealthSync(onNext: onNext),
-        ),
+        home: Scaffold(body: StepHealthSync(onNext: onNext)),
       ),
     );
   }
 
   final switchFinder = find.byKey(const Key('health_sync_step_switch'));
-  final nextButtonFinder = find.byKey(const Key('health_sync_step_next_button'));
+  final nextButtonFinder = find.byKey(
+    const Key('health_sync_step_next_button'),
+  );
 
   group('StepHealthSync Widget Tests', () {
     testWidgets('renders title, description, settings card, and next button', (
