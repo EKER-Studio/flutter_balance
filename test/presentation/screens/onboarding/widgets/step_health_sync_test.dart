@@ -6,11 +6,30 @@ import 'package:mocktail/mocktail.dart';
 import 'package:balance/core/services/health_service.dart';
 import 'package:balance/l10n/app_localizations.dart';
 import 'package:balance/presentation/bloc/settings/app_settings_bloc.dart';
+import 'package:balance/presentation/bloc/settings/app_settings_event.dart';
+import 'package:balance/presentation/bloc/settings/app_settings_state.dart';
 import 'package:balance/presentation/screens/onboarding/widgets/step_health_sync.dart';
 
 class MockHydratedStorage extends Mock implements HydratedStorage {}
 
 class MockHealthService extends Mock implements HealthService {}
+
+class MockAppSettingsBloc extends Mock implements AppSettingsBloc {}
+
+/// Builds a mocked [AppSettingsBloc] that reports an available health API.
+///
+/// The broadcast stream never emits, so the widget renders from the stubbed
+/// state and recorded [AppSettingsBloc.add] calls can be verified.
+MockAppSettingsBloc _buildMockSettingsBloc() {
+  final bloc = MockAppSettingsBloc();
+  when(
+    () => bloc.state,
+  ).thenReturn(const AppSettingsState(isHealthApiAvailable: true));
+  when(
+    () => bloc.stream,
+  ).thenAnswer((_) => Stream<AppSettingsState>.multi((controller) {}));
+  return bloc;
+}
 
 void main() {
   late MockHydratedStorage storage;
@@ -88,6 +107,40 @@ void main() {
       expect(skipCount, equals(1));
 
       addTearDown(bloc.close);
+    });
+
+    testWidgets(
+      'dispatches ToggleHealthSync(true) when the Connect button is pressed',
+      (tester) async {
+        final bloc = _buildMockSettingsBloc();
+
+        await tester.pumpWidget(
+          buildSubject(onNext: () {}, onSkip: () {}, bloc: bloc),
+        );
+        await tester.pump();
+
+        await tester.tap(find.byKey(const Key('health_sync_connect_button')));
+        await tester.pump();
+
+        verify(() => bloc.add(const ToggleHealthSync(true))).called(1);
+      },
+    );
+
+    testWidgets('invokes onSkip when the Skip button is pressed', (
+      tester,
+    ) async {
+      final bloc = _buildMockSettingsBloc();
+
+      int skipCount = 0;
+      await tester.pumpWidget(
+        buildSubject(onNext: () {}, onSkip: () => skipCount++, bloc: bloc),
+      );
+      await tester.pump();
+
+      await tester.tap(find.text('Skip'));
+      await tester.pump();
+
+      expect(skipCount, equals(1));
     });
 
     testWidgets(
