@@ -268,6 +268,24 @@ void main() {
       expect(tester.widget<Switch>(healthSyncSwitch()).onChanged, isNotNull);
     });
 
+    testWidgets('switch reflects a persisted enabled health sync state', (
+      tester,
+    ) async {
+      settingsBloc = AppSettingsBloc(healthService: healthService);
+      when(
+        () => healthService.requestPermissions(),
+      ).thenAnswer((_) async => true);
+
+      settingsBloc.add(const ToggleHealthSync(true));
+      await tester.pumpWidget(createTestWidget());
+      await tester.pumpAndSettle();
+
+      await tester.ensureVisible(healthSyncSwitch());
+      await tester.pumpAndSettle();
+
+      expect(tester.widget<Switch>(healthSyncSwitch()).value, isTrue);
+    });
+
     testWidgets('enables sync and requests permissions when toggled on', (
       tester,
     ) async {
@@ -335,6 +353,13 @@ void main() {
           findsOneWidget,
         );
         expect(find.text('Settings'), findsOneWidget);
+        expect(
+          find.descendant(
+            of: find.byType(SnackBar),
+            matching: find.byType(SnackBarAction),
+          ),
+          findsOneWidget,
+        );
         expect(tester.widget<Switch>(healthSyncSwitch()).value, isFalse);
       },
     );
