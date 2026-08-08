@@ -51,16 +51,6 @@ class _StepUnitsHeightState extends State<StepUnitsHeight> {
     _cmFocusNode = FocusNode();
     _feetFocusNode = FocusNode();
 
-    // Request focus after the step's frame renders so the keyboard opens
-    // exactly when the step becomes visible, never while it is offstage.
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted) return;
-      (_selectedUnit == MeasurementUnit.metric
-              ? _cmFocusNode
-              : _feetFocusNode)
-          .requestFocus();
-    });
-
     final initialCm = widget.initialHeightCm;
     final hasHeight = initialCm != null && initialCm > 0;
 
@@ -219,6 +209,7 @@ class _StepUnitsHeightState extends State<StepUnitsHeight> {
               key: const Key('height_cm_input'),
               controller: _cmController,
               focusNode: _cmFocusNode,
+              autofocus: true,
               keyboardType: const TextInputType.numberWithOptions(
                 decimal: true,
               ),
@@ -260,6 +251,7 @@ class _StepUnitsHeightState extends State<StepUnitsHeight> {
                     key: const Key('height_feet_input'),
                     controller: _feetController,
                     focusNode: _feetFocusNode,
+                    autofocus: true,
                     keyboardType: TextInputType.number,
                     decoration: InputDecoration(
                       labelText: l10n.feetLabel,
