@@ -77,9 +77,15 @@ flutter_launcher_icons:
   android: true
   ios: true
   remove_alpha_ios: true
-  
-  # Zmiana na .png rozwiązuje błąd dekodera dla iOS i starego Androida
-  image_path: "assets/icon/app_icon_foreground.png"
+
+  #1. Standard Icon (Light Theme / Old iOS / Fallback)
+  image_path: "assets/icon/app_icon.png"
+
+  # 2. iOS 18+ Dark Mode (black background #000000)
+  image_path_ios_dark: "assets/icon/app_icon_dark.png"
+
+  #3. iOS 18+ Tinted Mode (uses a transparent monochrome variant)
+  image_path_ios_tinted: "assets/icon/app_icon_monochrome.png"
   
   # Android Adaptive Icons (API 26+)
   adaptive_icon_background: "#4f378a"
