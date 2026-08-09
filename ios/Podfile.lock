@@ -1,0 +1,34 @@
+PODS:
+  - Flutter (1.0.0)
+  - flutter_timezone (0.0.1):
+    - Flutter
+  - health (13.3.1):
+    - Flutter
+  - isar_community_flutter_libs (1.0.0):
+    - Flutter
+
+DEPENDENCIES:
+  - Flutter (from `Flutter`)
+  - flutter_timezone (from `.symlinks/plugins/flutter_timezone/ios`)
+  - health (from `.symlinks/plugins/health/ios`)
+  - isar_community_flutter_libs (from `.symlinks/plugins/isar_community_flutter_libs/ios`)
+
+EXTERNAL SOURCES:
+  Flutter:
+    :path: Flutter
+  flutter_timezone:
+    :path: ".symlinks/plugins/flutter_timezone/ios"
+  health:
+    :path: ".symlinks/plugins/health/ios"
+  isar_community_flutter_libs:
+    :path: ".symlinks/plugins/isar_community_flutter_libs/ios"
+
+SPEC CHECKSUMS:
+  Flutter: cabc95a1d2626b1b06e7179b784ebcf0c0cde467
+  flutter_timezone: ee50ce7786b5fde27e2fe5375bbc8c9661ffc13f
+  health: 4decf5d74e8f54c58a8c07a385fc72f629a831d9
+  isar_community_flutter_libs: bede843185a61a05ff364a05c9b23209523f7e0d
+
+PODFILE CHECKSUM: a21e1655dcc8725bbd9aed03b632cb80e1b7c38e
+
+COCOAPODS: 1.17.0

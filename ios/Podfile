@@ -1,5 +1,5 @@
-# Uncomment this line to define a global platform for your project
-# platform :ios, '13.0'
+# Minimum iOS deployment target required by the 'health' plugin.
+platform :ios, '14.0'
 
 # CocoaPods analytics sends network stats synchronously affecting flutter build latency.
 ENV['COCOAPODS_DISABLE_STATS'] = 'true'
@@ -39,5 +39,15 @@ end
 post_install do |installer|
   installer.pods_project.targets.each do |target|
     flutter_additional_ios_build_settings(target)
+    target.build_configurations.each do |config|
+      # Raise pod deployment targets to the app minimum (14.0) if set lower.
+      min_ios_deployment_target = '14.0'
+      if config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'].to_f < min_ios_deployment_target.to_f
+        config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = min_ios_deployment_target
+      end
+      if config.build_settings['IPAD_OS_DEPLOYMENT_TARGET'].to_f < min_ios_deployment_target.to_f
+        config.build_settings['IPAD_OS_DEPLOYMENT_TARGET'] = min_ios_deployment_target
+      end
+    end
   end
 end
