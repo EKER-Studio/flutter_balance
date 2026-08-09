@@ -170,7 +170,7 @@ class BmiChartCard extends StatelessWidget {
     );
   }
 
-  /// Builds the chart area: the BMI [LineChart] when height and at least two
+  /// Builds the chart area: the BMI LineChart when height and at least two
   /// entries are available, otherwise a contextual empty-state message.
   Widget _buildChartContent(
     BuildContext context,

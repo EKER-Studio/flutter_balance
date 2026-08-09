@@ -6,7 +6,7 @@ import 'package:balance/core/models/measurement_unit.dart';
 
 /// Persistent app settings state.
 ///
-/// All fields are persisted across app restarts via [HydratedBloc].
+/// All fields are persisted across app restarts via `HydratedBloc`.
 final class AppSettingsState extends Equatable {
   static const Object _targetWeightSentinel = Object();
   static const Object _heightSentinel = Object();
@@ -44,12 +44,14 @@ final class AppSettingsState extends Equatable {
   /// Whether the user has completed the initial onboarding wizard.
   final bool isOnboardingCompleted;
 
-  /// Transient flag set when the last notification permission request was
-  /// denied. Consumed by the UI to surface a permission-required message;
-  /// never persisted and reset by any subsequent notification-related event.
+  /// Whether the last notification permission request was denied.
+  ///
+  /// Transient: consumed by the UI to surface a permission-required message,
+  /// never persisted, and reset by any subsequent notification-related event.
   final bool notificationPermissionDenied;
 
-  /// Transient flag indicating if the device hardware supports biometrics.
+  /// Whether the device hardware supports biometrics.
+  ///
   /// Not persisted; evaluated freshly on each app launch.
   final bool isBiometricSupported;
 
@@ -62,9 +64,10 @@ final class AppSettingsState extends Equatable {
   /// Not persisted; evaluated freshly on each app launch.
   final bool isHealthApiAvailable;
 
-  /// Transient flag set when the last health permission request was denied.
-  /// Consumed by the UI to surface a permission-required message;
-  /// never persisted and reset by any subsequent health-related event.
+  /// Whether the last health permission request was denied.
+  ///
+  /// Transient: consumed by the UI to surface a permission-required message,
+  /// never persisted, and reset by any subsequent health-related event.
   final bool healthPermissionDenied;
 
   /// Creates [AppSettingsState] with the given parameters.

@@ -10,14 +10,14 @@ import 'package:balance/features/weight/domain/entities/weight_entry.dart';
 ///
 /// Allows mocking platform behavior in tests without modifying global state.
 abstract class PlatformDetector {
-  /// Returns true if running on Android.
+  /// True if running on Android.
   bool get isAndroid;
 
-  /// Returns true if running on iOS.
+  /// True if running on iOS.
   bool get isIOS;
 }
 
-/// Default implementation using [dart:io].
+/// Default implementation using dart:io.
 class NativePlatformDetector implements PlatformDetector {
   @override
   bool get isAndroid => Platform.isAndroid;
@@ -90,7 +90,7 @@ abstract class HealthService {
 /// installations, revoked permissions, or platform errors degrade to `false`
 /// or an empty result instead of throwing unhandled exceptions. Permission
 /// and settings calls are additionally bounded by a five-second timeout
-/// (_operationTimeout) whose expiry is treated as a failure.
+/// ([_operationTimeout]) whose expiry is treated as a failure.
 class NativeHealthService implements HealthService {
   /// Creates a service wrapping [health], which defaults to a fresh plugin instance.
   ///

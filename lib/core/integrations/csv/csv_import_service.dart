@@ -7,14 +7,14 @@ import 'package:balance/features/weight/domain/entities/weight_entry.dart';
 /// Outcome of picking and parsing a CSV file.
 typedef CsvImportResult = ({List<WeightEntry> entries, int skippedRows});
 
-/// Picks a CSV file from the system file picker and parses its contents into
-/// [WeightEntry] entities entirely in memory.
+/// A service that picks a CSV file from the system file picker and parses its
+/// contents into [WeightEntry] entities entirely in memory.
 class CsvImportService {
   /// Opens the system file picker filtered to CSV files and parses the
   /// selected file content via [CsvImporter].
   ///
   /// Returns `null` when the user cancels the picker. Throws
-  /// [FormatException] when the file is not a valid weight-history CSV.
+  /// a FormatException when the file is not a valid weight-history CSV.
   Future<CsvImportResult?> pickAndImport() async {
     final result = await FilePicker.pickFiles(
       type: FileType.custom,

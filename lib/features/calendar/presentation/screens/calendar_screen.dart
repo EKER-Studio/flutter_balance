@@ -29,7 +29,7 @@ class CalendarScreen extends StatefulWidget {
   State<CalendarScreen> createState() => _CalendarScreenState();
 }
 
-/// Tracks the focused month and selected day for the calendar grid.
+/// State tracking the focused month and selected day for the calendar grid.
 class _CalendarScreenState extends State<CalendarScreen> {
   late DateTime _focusedMonth;
   late DateTime _selectedDate;

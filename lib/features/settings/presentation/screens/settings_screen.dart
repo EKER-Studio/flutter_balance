@@ -158,7 +158,6 @@ class _HeightDialogState extends State<_HeightDialog> {
 /// biometric lock, and CSV import/export/wipe controls. On wide layouts the
 /// sections are arranged in a two-column grid.
 class SettingsScreen extends StatefulWidget {
-  /// Creates a [SettingsScreen].
   const SettingsScreen({super.key});
 
   @override
@@ -878,8 +877,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   /// Toggles health sync via the [AppSettingsBloc], which requests native
-  /// health permissions when enabling. When the user disables the sync, a
-  /// brief informational message explains how to fully revoke access.
+  /// health permissions when enabling.
+  ///
+  /// When the user disables the sync, a brief informational message explains
+  /// how to fully revoke access.
   ///
   /// A denied permission request is surfaced separately via a snackbar whose
   /// "Open Settings" action redirects to the OS health permissions page.
@@ -973,7 +974,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   /// Shows the time picker and persists the chosen reminder time, confirming
-  /// the new schedule with a [SnackBar].
+  /// the new schedule with a `SnackBar`.
   Future<void> _selectNotificationTime(
     BuildContext context,
     TimeOfDay initialTime,

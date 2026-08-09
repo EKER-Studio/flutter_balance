@@ -8,7 +8,7 @@ import 'package:isar_community/isar.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:balance/features/weight/data/models/weight_entry_model.dart';
 
-/// Initializes and provides the [Isar] database instance.
+/// A module that initializes and provides the app database instance.
 ///
 /// ## Schema Versioning & Recovery
 /// Isar Community 3.x uses automatic schema migration for non-breaking additions
@@ -18,7 +18,9 @@ import 'package:balance/features/weight/data/models/weight_entry_model.dart';
 ///    [initialize] captures the failure, creates a timestamped backup of the
 ///    corrupted database, cleans up stale locks, and safely re-opens a fresh instance.
 class DatabaseModule {
-  /// The versioned database name. Increment suffix on breaking schema changes.
+  /// The versioned database name.
+  ///
+  /// Increment the suffix on breaking schema changes.
   ///
   /// The name changed from `pure_weight_v2` to `balance_v1` during the
   /// PureWeight -> Balance rebrand (2026-08). The old `pure_weight_v2` file is
@@ -51,7 +53,7 @@ class DatabaseModule {
     return key;
   }
 
-  /// Opens and returns an [Isar] instance with all registered schemas.
+  /// Opens and returns an Isar instance with all registered schemas.
   ///
   /// Features:
   /// - Field-Level Encryption key managed via platform secure storage

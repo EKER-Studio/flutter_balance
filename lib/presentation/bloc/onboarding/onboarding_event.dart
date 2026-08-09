@@ -10,25 +10,23 @@ sealed class OnboardingEvent extends Equatable {
   List<Object?> get props => const [];
 }
 
-/// Initializes (or resets) the wizard to its starting state.
+/// An event that initializes (or resets) the wizard to its starting state.
 final class OnboardingStarted extends OnboardingEvent {
-  /// Creates [OnboardingStarted].
   const OnboardingStarted();
 }
 
-/// Advances the wizard to the next step.
+/// An event that advances the wizard to the next step.
 final class OnboardingStepAdvanced extends OnboardingEvent {
-  /// Creates [OnboardingStepAdvanced].
   const OnboardingStepAdvanced();
 }
 
-/// Rewinds the wizard to the previous step.
+/// An event that rewinds the wizard to the previous step.
 final class OnboardingStepRewound extends OnboardingEvent {
-  /// Creates [OnboardingStepRewound].
   const OnboardingStepRewound();
 }
 
-/// Updates the measurement unit selected on the units & height step.
+/// An event that updates the measurement unit selected on the units & height
+/// step.
 final class OnboardingUnitSelected extends OnboardingEvent {
   /// The newly selected unit system.
   final MeasurementUnit unit;
@@ -42,7 +40,7 @@ final class OnboardingUnitSelected extends OnboardingEvent {
   List<Object?> get props => [unit];
 }
 
-/// Stores the history parsed by the CSV import step.
+/// An event that stores the history parsed by the CSV import step.
 final class OnboardingCsvImported extends OnboardingEvent {
   /// Parsed entries to keep as draft data for the wizard.
   final List<WeightEntry> entries;
@@ -56,7 +54,8 @@ final class OnboardingCsvImported extends OnboardingEvent {
   List<Object?> get props => [entries];
 }
 
-/// Updates the draft initial weight (and its optional timestamp).
+/// An event that updates the draft initial weight (and its optional
+/// timestamp).
 final class OnboardingInitialWeightSet extends OnboardingEvent {
   /// Initial weight in kilograms.
   final double weightKg;
@@ -74,7 +73,8 @@ final class OnboardingInitialWeightSet extends OnboardingEvent {
   List<Object?> get props => [weightKg, timestamp];
 }
 
-/// Updates the draft target weight (`null` clears it when the step is skipped).
+/// An event that updates the draft target weight (`null` clears it when the
+/// step is skipped).
 final class OnboardingTargetWeightSet extends OnboardingEvent {
   /// Target weight in kilograms, or `null` when no target was set.
   final double? weightKg;
@@ -88,7 +88,8 @@ final class OnboardingTargetWeightSet extends OnboardingEvent {
   List<Object?> get props => [weightKg];
 }
 
-/// Records whether the user connected health sync during onboarding.
+/// An event that records whether the user connected health sync during
+/// onboarding.
 final class OnboardingHealthSyncToggled extends OnboardingEvent {
   /// Whether health sync was requested.
   final bool enabled;
@@ -102,7 +103,8 @@ final class OnboardingHealthSyncToggled extends OnboardingEvent {
   List<Object?> get props => [enabled];
 }
 
-/// Records whether the user enabled the biometric lock during onboarding.
+/// An event that records whether the user enabled the biometric lock during
+/// onboarding.
 final class OnboardingBiometricsToggled extends OnboardingEvent {
   /// Whether the biometric lock was enabled.
   final bool enabled;
@@ -116,8 +118,7 @@ final class OnboardingBiometricsToggled extends OnboardingEvent {
   List<Object?> get props => [enabled];
 }
 
-/// Performs the final persistence of the wizard's draft data.
+/// An event that performs the final persistence of the wizard's draft data.
 final class OnboardingCompleted extends OnboardingEvent {
-  /// Creates [OnboardingCompleted].
   const OnboardingCompleted();
 }

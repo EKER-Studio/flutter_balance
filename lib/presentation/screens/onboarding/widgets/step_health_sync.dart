@@ -30,7 +30,7 @@ class _StepHealthSyncState extends State<StepHealthSync> {
   /// Whether the last permission request was denied. Held in local state
   /// because the transient [AppSettingsState.healthPermissionDenied] flag is
   /// reset immediately after each denial to keep repeated denials observable;
-  /// a [BlocBuilder] would therefore never render it.
+  /// a BlocBuilder would therefore never render it.
   bool _permissionDenied = false;
 
   /// Dispatches the sync toggle to [AppSettingsBloc]; enabling triggers the

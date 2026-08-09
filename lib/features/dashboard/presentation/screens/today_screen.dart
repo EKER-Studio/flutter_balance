@@ -26,7 +26,7 @@ class TodayScreen extends StatelessWidget {
   /// Optional callback to navigate to Settings when profile icon is pressed.
   final VoidCallback? onNavigateToSettings;
 
-  /// Creates a [TodayScreen] with optional navigation callbacks.
+  /// Creates a [TodayScreen] with an optional navigation callback.
   const TodayScreen({super.key, this.onNavigateToSettings});
 
   @override
@@ -226,7 +226,7 @@ class TodayScreen extends StatelessWidget {
         .timeout(const Duration(seconds: 2), onTimeout: () => bloc.state);
   }
 
-  /// Shows a localized error [SnackBar] with a retry action.
+  /// Shows a localized error SnackBar with a retry action.
   void _showErrorSnackBar(
     BuildContext context,
     WeightErrorType errorType,
@@ -253,7 +253,7 @@ class TodayScreen extends StatelessWidget {
   }
 }
 
-/// Wraps [child] in a pull-to-refresh [RefreshIndicator] backed by [onRefresh].
+/// Wraps [child] in a pull-to-refresh RefreshIndicator backed by [onRefresh].
 class _RefreshableTodayBody extends StatelessWidget {
   /// Callback invoked when the user pulls to refresh.
   final Future<void> Function() onRefresh;

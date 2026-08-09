@@ -8,9 +8,9 @@ import 'package:balance/presentation/theme/app_theme.dart';
 /// (a11y) support so users on TalkBack/VoiceOver are informed of initialization
 /// failures and can retry without getting stuck on a native splash screen.
 ///
-/// Renders inside an existing [MaterialApp] and resolves colors and text styles
-/// from the ambient [Theme], so it can be embedded anywhere without owning its
-/// own [Navigator], localization, or overlay scope.
+/// Renders inside an existing MaterialApp and resolves colors and text styles
+/// from the ambient Theme, so it can be embedded anywhere without owning its
+/// own Navigator, localization, or overlay scope.
 class AppInitializationErrorContent extends StatelessWidget {
   /// Error details for diagnostic display.
   final Object error;
@@ -101,10 +101,10 @@ class AppInitializationErrorContent extends StatelessWidget {
 }
 
 /// Root-level wrapper rendering [AppInitializationErrorContent] inside its own
-/// [MaterialApp].
+/// MaterialApp.
 ///
 /// Only needed when the app itself could not be constructed (see `main.dart`);
-/// when embedded in an existing [MaterialApp] use [AppInitializationErrorContent]
+/// when embedded in an existing MaterialApp use [AppInitializationErrorContent]
 /// directly instead.
 class AppInitializationErrorScreen extends StatelessWidget {
   /// Error details for diagnostic display.

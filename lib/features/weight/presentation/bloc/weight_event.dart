@@ -8,13 +8,12 @@ sealed class WeightEvent {
   const WeightEvent();
 }
 
-/// Triggers subscription to the reactive weight stream.
+/// An event that triggers subscription to the reactive weight stream.
 final class SubscribeToWeightChanges extends WeightEvent {
-  /// Creates [SubscribeToWeightChanges].
   const SubscribeToWeightChanges();
 }
 
-/// Updates the user's height (in cm), persisted via HydratedBloc.
+/// An event that updates the user's height (in cm), persisted via HydratedBloc.
 final class UpdateUserHeight extends WeightEvent {
   /// Height in centimetres.
   final double heightCm;
@@ -23,7 +22,8 @@ final class UpdateUserHeight extends WeightEvent {
   const UpdateUserHeight(this.heightCm);
 }
 
-/// Adds a new weight measurement; BMI is auto-calculated from stored height.
+/// An event that adds a new weight measurement; BMI is auto-calculated from
+/// stored height.
 final class AddWeight extends WeightEvent {
   /// Weight in kilograms.
   final double weightKg;
@@ -38,7 +38,7 @@ final class AddWeight extends WeightEvent {
   const AddWeight({required this.weightKg, this.note, this.dateTime});
 }
 
-/// Removes the entry with the given [id].
+/// An event that removes the entry with the given [id].
 final class DeleteWeight extends WeightEvent {
   /// Identifier of the entry to remove.
   final int id;
@@ -47,7 +47,7 @@ final class DeleteWeight extends WeightEvent {
   const DeleteWeight(this.id);
 }
 
-/// Changes the active time filter for the weight chart.
+/// An event that changes the active time filter for the weight chart.
 final class ChangeChartFilter extends WeightEvent {
   /// The newly selected time period.
   final TimePeriod period;
@@ -56,22 +56,21 @@ final class ChangeChartFilter extends WeightEvent {
   const ChangeChartFilter(this.period);
 }
 
-/// Requests a fresh read of all weight entries from the repository.
+/// An event that requests a fresh read of all weight entries from the
+/// repository.
 ///
 /// Useful after external data mutations (e.g. CSV import) to ensure the
 /// UI reflects the latest database state.
 final class RefreshWeightData extends WeightEvent {
-  /// Creates [RefreshWeightData].
   const RefreshWeightData();
 }
 
-/// Clears all weight entries from the database.
+/// An event that clears all weight entries from the database.
 final class ClearAllWeightData extends WeightEvent {
-  /// Creates [ClearAllWeightData].
   const ClearAllWeightData();
 }
 
-/// Bulk imports weight entries into the database.
+/// An event that bulk imports weight entries into the database.
 final class ImportWeightEntries extends WeightEvent {
   /// Entries to import.
   final List<WeightEntry> entries;
@@ -80,8 +79,8 @@ final class ImportWeightEntries extends WeightEvent {
   const ImportWeightEntries(this.entries);
 }
 
-/// Pulls weight history from HealthKit / Health Connect and merges records
-/// that do not already exist locally.
+/// An event that pulls weight history from HealthKit / Health Connect and
+/// merges records that do not already exist locally.
 ///
 /// The pull is best-effort: it aborts silently when health sync is disabled
 /// or the platform errors out, so the local database and UI are never blocked.

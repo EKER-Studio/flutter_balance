@@ -1,7 +1,7 @@
 /// Domain enum and constants for time-based filtering of weight history.
 library;
 
-/// Defines the selected time period for the chart filter.
+/// The selected time period for the chart filter.
 enum TimePeriod {
   /// Last 7 days.
   week,

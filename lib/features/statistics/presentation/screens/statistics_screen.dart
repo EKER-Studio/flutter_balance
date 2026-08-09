@@ -143,7 +143,8 @@ class StatisticsScreen extends StatelessWidget {
     );
   }
 
-  /// 1. Hero Progress & Goal Composite Card.
+  /// Builds the hero progress and goal composite card with the total change,
+  /// weekly pace, and goal progress.
   Widget _buildHeroProgressAndGoalCard(
     BuildContext context, {
     required List<WeightEntry> entries,
@@ -322,7 +323,8 @@ class StatisticsScreen extends StatelessWidget {
     );
   }
 
-  /// 2. Habits & Activity Composite Card (Streak, Compliance).
+  /// Builds the habits and activity composite card showing the logging streak
+  /// and compliance.
   Widget _buildHabitsAndActivityCard(
     BuildContext context, {
     required int streak,
@@ -420,7 +422,8 @@ class StatisticsScreen extends StatelessWidget {
     );
   }
 
-  /// 3. Combined Weight Range Composite Card (Highest, Lowest, Average).
+  /// Builds the combined weight range composite card with the highest, lowest,
+  /// and average weights.
   Widget _buildCombinedWeightRangeCard(
     BuildContext context, {
     required List<WeightEntry> entries,

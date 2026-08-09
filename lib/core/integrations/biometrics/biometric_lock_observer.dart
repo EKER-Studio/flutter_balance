@@ -94,6 +94,7 @@ class BiometricLockObserver with WidgetsBindingObserver {
   }
 
   /// Disposes this observer and cancels the settings stream subscription.
+  ///
   /// Safe to call multiple times — subsequent calls are no-ops.
   void dispose() {
     if (_disposed) return;
@@ -104,6 +105,7 @@ class BiometricLockObserver with WidgetsBindingObserver {
   }
 
   /// Removes this observer and cancels the settings stream subscription.
+  ///
   /// Convenience alias for [dispose].
   void removeThisObserver() => dispose();
 }

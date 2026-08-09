@@ -118,8 +118,10 @@ class IsarWeightRepository implements WeightRepository {
   }
 
   /// Converts a stored [WeightEntryModel] into its domain [WeightEntry],
-  /// decrypting the weight and note fields. Undecryptable values degrade to
-  /// `0.0 kg` and a `[Decryption Error]` note respectively.
+  /// decrypting the weight and note fields.
+  ///
+  /// Undecryptable values degrade to `0.0 kg` and a `[Decryption Error]` note
+  /// respectively.
   WeightEntry _modelToEntity(WeightEntryModel model, Uint8List key) {
     double weight = 0.0;
     String? note;

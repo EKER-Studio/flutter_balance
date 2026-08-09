@@ -24,11 +24,11 @@ import 'package:balance/presentation/screens/onboarding/widgets/step_welcome.dar
 ///
 /// Hosts the 6-step onboarding flow (extended with an optional biometric
 /// step when the device supports credentials) and scopes an [OnboardingBloc]
-/// to the wizard via [BlocProvider]. The bloc is seeded from the current
+/// to the wizard via BlocProvider. The bloc is seeded from the current
 /// [AppSettingsBloc] state and wired to the [WeightBloc]/[AppSettingsBloc]
 /// targets it hands persistent outcomes off to. Also handles keyboard
 /// avoidance, screen orientation safety, and hardware back button behavior
-/// via [PopScope].
+/// via PopScope.
 class OnboardingWizardScreen extends StatelessWidget {
   /// Optional callback invoked upon completing all onboarding steps.
   final VoidCallback? onWizardCompleted;
@@ -69,8 +69,8 @@ class OnboardingWizardScreen extends StatelessWidget {
   }
 }
 
-/// Renders the onboarding steps and forwards every interaction to
-/// [OnboardingBloc]; the only local state owned here is the [PageController].
+/// A widget that renders the onboarding steps and forwards every interaction
+/// to [OnboardingBloc]; the only local state owned here is the PageController.
 ///
 /// Step mapping (index 0-5): Units & Height, CSV Import (optional), Initial
 /// Weight, Target Weight (optional), Daily Reminder (optional), Health Sync
@@ -128,7 +128,7 @@ class _OnboardingWizardContentState extends State<_OnboardingWizardContent> {
   /// the settings/weight BLoCs, then advances.
   ///
   /// Height is synced into the weight BLoC before the initial-weight step
-  /// persists the measurement, otherwise its AddWeight guard rejects the
+  /// persists the measurement, otherwise its [AddWeight] guard rejects the
   /// entry with a heightNotSet error on a fresh install (height is only ever
   /// saved when settings are saved, or here in onboarding).
   void _handleUnitsHeightNext(MeasurementUnit unit, double heightCm) {

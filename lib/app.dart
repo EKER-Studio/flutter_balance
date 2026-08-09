@@ -55,7 +55,7 @@ class _AppState extends State<App> {
 
   /// Bootstraps the core services (database, notifications, health platform,
   /// biometrics) and returns the ready [WeightRepository] once all
-  /// initialization finished.
+  /// initialization has finished.
   Future<WeightRepository> _initializeApp() async {
     try {
       if (widget.repositoryOverride != null) {
@@ -200,9 +200,10 @@ class _AppState extends State<App> {
   }
 }
 
-/// Registers the [BiometricLockObserver] once the [WeightBloc] provider is in scope.
+/// A widget that registers the [BiometricLockObserver] once the [WeightBloc]
+/// provider is in scope.
 ///
-/// Lives below the [BlocProvider] so the observer can resolve the weight BLoC
+/// Lives below the BlocProvider so the observer can resolve the weight BLoC
 /// dynamically through its own context instead of capturing a direct instance
 /// reference, which could go stale if the provider is ever recreated.
 class _ObserverRegistrar extends StatefulWidget {
@@ -263,10 +264,10 @@ class _ObserverRegistrarState extends State<_ObserverRegistrar> {
   Widget build(BuildContext context) => widget.child;
 }
 
-/// Dispatches [SyncHealthEntries] when the app returns to the foreground and
-/// health sync is enabled.
+/// A widget that dispatches [SyncHealthEntries] when the app returns to the
+/// foreground and health sync is enabled.
 ///
-/// Lives below the [BlocProvider] so the observer can resolve the weight and
+/// Lives below the BlocProvider so the observer can resolve the weight and
 /// settings BLoCs dynamically through its own context instead of capturing
 /// direct instance references, which could go stale if the providers are ever
 /// recreated. Entries recorded in Apple Health / Health Connect while the app
@@ -283,7 +284,7 @@ class _HealthSyncLifecycleObserver extends StatefulWidget {
       _HealthSyncLifecycleObserverState();
 }
 
-/// State owning the [WidgetsBindingObserver] registration for foreground sync.
+/// State owning the WidgetsBindingObserver registration for foreground sync.
 class _HealthSyncLifecycleObserverState
     extends State<_HealthSyncLifecycleObserver>
     with WidgetsBindingObserver {
@@ -311,7 +312,8 @@ class _HealthSyncLifecycleObserverState
   Widget build(BuildContext context) => widget.child;
 }
 
-/// Synchronizes the active locale with services that live outside the widget tree.
+/// A widget that synchronizes the active locale with services that live
+/// outside the widget tree.
 class _LocalizationSync extends StatefulWidget {
   /// Child rendered below the [AppLocalizations] scope.
   final Widget child;

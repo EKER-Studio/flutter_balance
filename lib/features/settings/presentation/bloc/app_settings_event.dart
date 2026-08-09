@@ -7,7 +7,7 @@ sealed class AppSettingsEvent {
   const AppSettingsEvent();
 }
 
-/// Updates the app's theme mode preference.
+/// An event that updates the app's theme mode preference.
 final class UpdateTheme extends AppSettingsEvent {
   /// The new theme mode.
   final AppThemeMode themeMode;
@@ -16,7 +16,7 @@ final class UpdateTheme extends AppSettingsEvent {
   const UpdateTheme(this.themeMode);
 }
 
-/// Updates the weight measurement unit system.
+/// An event that updates the weight measurement unit system.
 final class UpdateMeasurementUnit extends AppSettingsEvent {
   /// The new measurement unit.
   final MeasurementUnit measurementUnit;
@@ -25,7 +25,7 @@ final class UpdateMeasurementUnit extends AppSettingsEvent {
   const UpdateMeasurementUnit(this.measurementUnit);
 }
 
-/// Updates the user's height in centimeters.
+/// An event that updates the user's height in centimeters.
 final class UpdateHeight extends AppSettingsEvent {
   /// Height in centimeters.
   final double height;
@@ -34,7 +34,7 @@ final class UpdateHeight extends AppSettingsEvent {
   const UpdateHeight(this.height);
 }
 
-/// Toggles the daily notification reminder on or off.
+/// An event that toggles the daily notification reminder on or off.
 final class ToggleNotifications extends AppSettingsEvent {
   /// Whether notifications should be enabled.
   final bool enabled;
@@ -43,7 +43,7 @@ final class ToggleNotifications extends AppSettingsEvent {
   const ToggleNotifications(this.enabled);
 }
 
-/// Updates the time of day for the daily notification reminder.
+/// An event that updates the time of day for the daily notification reminder.
 final class UpdateNotificationTime extends AppSettingsEvent {
   /// The new notification time.
   final TimeOfDay notificationTime;
@@ -52,7 +52,7 @@ final class UpdateNotificationTime extends AppSettingsEvent {
   const UpdateNotificationTime(this.notificationTime);
 }
 
-/// Updates the user's target weight in kg.
+/// An event that updates the user's target weight in kg.
 final class TargetWeightChanged extends AppSettingsEvent {
   /// The new target weight in kg (null to clear).
   final double? weight;
@@ -61,7 +61,7 @@ final class TargetWeightChanged extends AppSettingsEvent {
   const TargetWeightChanged(this.weight);
 }
 
-/// Updates the biometric lock enabled state.
+/// An event that updates the biometric lock enabled state.
 final class UpdateBiometricLock extends AppSettingsEvent {
   /// Whether biometric lock should be enabled.
   final bool enabled;
@@ -70,7 +70,7 @@ final class UpdateBiometricLock extends AppSettingsEvent {
   const UpdateBiometricLock(this.enabled);
 }
 
-/// Sets the app-wide locked state for the biometric shield.
+/// An event that sets the app-wide locked state for the biometric shield.
 final class SetLocked extends AppSettingsEvent {
   /// Whether the app should be locked.
   final bool locked;
@@ -79,13 +79,13 @@ final class SetLocked extends AppSettingsEvent {
   const SetLocked(this.locked);
 }
 
-/// Marks the initial onboarding wizard as completed.
+/// An event that marks the initial onboarding wizard as completed.
 final class CompleteOnboarding extends AppSettingsEvent {
-  /// Creates [CompleteOnboarding].
   const CompleteOnboarding();
 }
 
-/// Sets whether biometric authentication is supported on this device.
+/// An event that sets whether biometric authentication is supported on this
+/// device.
 final class UpdateBiometricSupport extends AppSettingsEvent {
   /// Whether biometric auth is supported natively.
   final bool isSupported;
@@ -94,7 +94,8 @@ final class UpdateBiometricSupport extends AppSettingsEvent {
   const UpdateBiometricSupport(this.isSupported);
 }
 
-/// Toggles the health sync (HealthKit / Health Connect) integration.
+/// An event that toggles the health sync (HealthKit / Health Connect)
+/// integration.
 ///
 /// The resulting preference is persisted and restored on the next launch.
 final class ToggleHealthSync extends AppSettingsEvent {
@@ -105,17 +106,16 @@ final class ToggleHealthSync extends AppSettingsEvent {
   const ToggleHealthSync(this.enabled);
 }
 
-/// Re-evaluates health API availability and permission grants on app start.
+/// An event that re-evaluates health API availability and permission grants
+/// on app start.
 ///
 /// If health sync is enabled but the native permissions were revoked, the
 /// sync flag is automatically disabled and persisted.
 final class CheckHealthSyncStatus extends AppSettingsEvent {
-  /// Creates [CheckHealthSyncStatus].
   const CheckHealthSyncStatus();
 }
 
-/// Resets all application settings to factory default values.
+/// An event that resets all application settings to factory default values.
 final class ResetAppSettings extends AppSettingsEvent {
-  /// Creates [ResetAppSettings].
   const ResetAppSettings();
 }

@@ -13,9 +13,9 @@ import 'package:balance/core/utils/crash_log.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_bloc.dart';
 import 'package:balance/presentation/screens/app_initialization_error_screen.dart';
 
-/// Entry point of the Balance application.
+/// Serves as the entry point of the Balance application.
 ///
-/// Bootstraps platform bindings, [HydratedBloc] storage, and the [AppSettingsBloc]
+/// Bootstraps platform bindings, HydratedBloc storage, and the [AppSettingsBloc]
 /// before running the app. Heavy asynchronous initializations (Isar, Notifications, etc.)
 /// are deferred to [App], which displays a theme-aware splash screen during loading.
 Future<void> main() async {

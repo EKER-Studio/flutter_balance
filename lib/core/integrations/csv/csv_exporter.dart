@@ -38,7 +38,7 @@ class CsvExporter {
   ///
   /// @param entries List of weight entry entities to export.
   ///
-  /// Returns the created [File], suitable for sharing via `share_plus`.
+  /// Returns the created File, suitable for sharing via `share_plus`.
   /// ```dart
   /// final file = await CsvExporter.exportToFile(entries);
   /// ```

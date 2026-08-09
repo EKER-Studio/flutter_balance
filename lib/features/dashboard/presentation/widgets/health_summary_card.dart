@@ -285,7 +285,7 @@ class HealthSummaryCard extends StatelessWidget {
   }
 
   /// Builds the goal progress section: remaining weight text and a progress
-  /// bar; tapping opens the target weight dialog.
+  /// bar; tapping opens the [TargetWeightDialog].
   Widget _buildGoalProgress(
     BuildContext context,
     double targetWeightKg,

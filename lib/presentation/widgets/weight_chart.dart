@@ -266,7 +266,7 @@ class WeightChart extends StatelessWidget {
     );
   }
 
-  /// Builds the row of period filter [ChoiceChip]s above the chart.
+  /// Builds the row of period filter ChoiceChips above the chart.
   Widget _buildFilterChips(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     return Wrap(
@@ -311,8 +311,8 @@ class WeightChart extends StatelessWidget {
     }
   }
 
-  /// Maps [sortedEntries] to [FlSpot]s with minutes-since-first as X and the
-  /// weight converted into [unit] as Y.
+  /// Maps [sortedEntries] to FlSpot instances with minutes-since-first as X
+  /// and the weight converted into [unit] as Y.
   List<FlSpot> _getSpots(
     List<WeightEntry> sortedEntries,
     MeasurementUnit unit,

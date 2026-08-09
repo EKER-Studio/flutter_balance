@@ -26,8 +26,10 @@ enum WeightErrorType {
 }
 
 /// Domain exception thrown by [WeightRepository] implementations when a database
-/// operation fails. Carries a [WeightErrorType] so the presentation layer can map
-/// it to a user-facing error state without depending on infrastructure exception types.
+/// operation fails.
+///
+/// Carries a [WeightErrorType] so the presentation layer can map it to a
+/// user-facing error state without depending on infrastructure exception types.
 class WeightRepositoryException implements Exception {
   /// Categorizes the failed operation.
   final WeightErrorType type;

@@ -14,7 +14,7 @@ class MainNavigationScreen extends StatefulWidget {
   State<MainNavigationScreen> createState() => _MainNavigationScreenState();
 }
 
-/// Holds the active tab index and renders the selected screen.
+/// State holding the active tab index and rendering the selected screen.
 class _MainNavigationScreenState extends State<MainNavigationScreen> {
   int _currentIndex = 0;
 

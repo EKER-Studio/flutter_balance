@@ -4,7 +4,7 @@ import 'dart:typed_data';
 import 'package:crypto/crypto.dart';
 import 'package:encrypt/encrypt.dart' as enc;
 
-/// Provides Field-Level AES-256 CBC encryption, decryption, and integrity verification services.
+/// A utility for field-level AES-256 CBC encryption, decryption, and integrity verification.
 ///
 /// Implements Encrypt-then-MAC using HMAC-SHA256 over `IV || Ciphertext` to guarantee
 /// confidentiality, authenticity, and integrity against data corruption or bit-flipping.
@@ -17,9 +17,9 @@ class FieldCipher {
   static const int _ivLength = 16;
   static const int _macLength = 32;
 
-  /// Encrypts plaintext string using AES-256 CBC with a prepended 16-byte IV and 32-byte HMAC-SHA256.
+  /// Encrypts the plaintext string using AES-256 CBC with a prepended 16-byte IV and 32-byte HMAC-SHA256.
   ///
-  /// Payload format: `Base64(IV [16 B] + HMAC [32 B] + Ciphertext [N B])`
+  /// Payload format: `Base64(IV [16 B] + HMAC [32 B] + Ciphertext [N B])`.
   /// [plainText] Content string to encrypt.
   /// [keyBytes] 32-byte AES secret key.
   static String encrypt(String plainText, Uint8List keyBytes) {
@@ -47,11 +47,11 @@ class FieldCipher {
     return base64Encode(combined);
   }
 
-  /// Decrypts Base64 payload, verifying HMAC-SHA256 integrity before decryption.
+  /// Decrypts a Base64 payload, verifying HMAC-SHA256 integrity before decryption.
   ///
   /// [base64String] Base64 encoded payload.
   /// [keyBytes] 32-byte AES secret key.
-  /// Throws [FormatException] if payload is truncated, corrupted, or integrity check fails.
+  /// Throws a FormatException if payload is truncated, corrupted, or integrity check fails.
   static String decrypt(String base64String, Uint8List keyBytes) {
     final combined = base64Decode(base64String);
     if (combined.length < _ivLength) {
@@ -95,7 +95,7 @@ class FieldCipher {
     }
   }
 
-  /// Constant-time byte array equality check to prevent timing attacks.
+  /// Compares byte arrays in constant time to prevent timing attacks.
   static bool _constantTimeEquals(List<int> a, List<int> b) {
     if (a.length != b.length) return false;
     int result = 0;

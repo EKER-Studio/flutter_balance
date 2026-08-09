@@ -91,7 +91,7 @@ class BiometricService {
 
   /// Checks whether the device has active biometric hardware and enrolled credentials.
   ///
-  /// Returns a [Future] resolving to `true` if the device supports biometric
+  /// Returns a Future resolving to `true` if the device supports biometric
   /// sensors and at least one credential is enrolled, `false` otherwise.
   /// Catches hardware or platform exceptions safely and logs errors.
   Future<bool> isAvailable() async {
@@ -116,7 +116,7 @@ class BiometricService {
 
   /// Checks whether biometric authentication is fully supported on the device.
   ///
-  /// Returns a [Future] resolving to `true` if biometrics are both available and
+  /// Returns a Future resolving to `true` if biometrics are both available and
   /// supported by OS hardware abstractions, `false` otherwise.
   /// Catches platform exceptions safely and logs errors.
   Future<bool> isSupported() async {
@@ -141,7 +141,7 @@ class BiometricService {
 
   /// Checks whether the device can present any OS credential prompt.
   ///
-  /// Returns a [Future] resolving to `true` if the device supports biometric
+  /// Returns a Future resolving to `true` if the device supports biometric
   /// checks OR can fail over to the OS lock screen credentials (PIN, pattern,
   /// or password), so devices with only a system PIN configured can still use
   /// the app lock. Catches platform exceptions safely and logs errors.
@@ -171,6 +171,7 @@ class BiometricService {
   bool get isAuthenticating => _activeAuthFuture != null;
 
   /// Whether biometric authentication finished very recently (within 1 second).
+  ///
   /// Useful to prevent app lifecycle observers from instantly re-triggering logic
   /// when returning from the native biometric dialog.
   bool get wasAuthenticatingRecently =>
@@ -185,7 +186,7 @@ class BiometricService {
   /// Optional [authMessages] can be provided to customize dialog strings per locale.
   /// Concurrent calls while authentication is in progress await the same active
   /// operation rather than launching overlapping native dialogs.
-  /// Returns a [Future] resolving to a [BiometricAuthResult] describing the outcome.
+  /// Returns a Future resolving to a [BiometricAuthResult] describing the outcome.
   Future<BiometricAuthResult> authenticate({
     required String localizedReason,
     Iterable<AuthMessages>? authMessages,
@@ -325,7 +326,7 @@ class BiometricService {
     };
   }
 
-  /// Creates localized [AuthMessages] based on [AppLocalizations].
+  /// Creates localized AuthMessages based on [AppLocalizations].
   static List<AuthMessages> createAuthMessages(AppLocalizations l10n) {
     return [
       AndroidAuthMessages(

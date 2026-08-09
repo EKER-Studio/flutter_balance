@@ -2,7 +2,7 @@ import 'dart:isolate';
 import 'package:intl/intl.dart';
 import 'package:balance/features/weight/domain/entities/weight_entry.dart';
 
-/// Parses CSV file content and converts it into a list of [WeightEntry].
+/// A parser that converts CSV file content into a list of [WeightEntry].
 ///
 /// Expected CSV format (matches [CsvExporter] output):
 /// ```dart
@@ -24,7 +24,7 @@ class CsvImporter {
   ///
   /// Passes the raw [csvContent] string across the isolate boundary and returns
   /// the parsed [WeightEntry] entities and count of skipped invalid rows.
-  /// Throws [FormatException] if the CSV has no valid header row or is corrupted.
+  /// Throws a FormatException if the CSV has no valid header row or is corrupted.
   ///
   /// ```dart
   /// final result = await CsvImporter.parse(fileContent);

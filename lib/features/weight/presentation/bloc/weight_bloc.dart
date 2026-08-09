@@ -13,7 +13,7 @@ import 'package:balance/features/settings/presentation/bloc/app_settings_bloc.da
 ///
 /// Subscribes to the reactive [WeightRepository.watchAllEntries] stream,
 /// aggregates measurements per calendar day for chart display, and maps
-/// repository failures to typed [WeightErrorType] states. Uses [HydratedBloc]
+/// repository failures to typed [WeightErrorType] states. Uses `HydratedBloc`
 /// to persist [WeightState.heightCm] and the selected chart [TimePeriod]
 /// across restarts.
 ///

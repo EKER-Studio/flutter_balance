@@ -180,7 +180,7 @@ class NotificationService {
 
   /// Schedules (or replaces) a repeating daily reminder at [time].
   ///
-  /// Takes a mandatory [TimeOfDay] [time] specifying when the daily reminder should fire.
+  /// Takes the mandatory [time] specifying when the daily reminder should fire.
   /// The notification fires every day at [time] in the device's local time zone
   /// using the localized texts configured via [setLocalizedTexts].
   /// Any previously scheduled reminder is cancelled first.
@@ -238,7 +238,7 @@ class NotificationService {
 
   /// Cancels the active daily weight reminder notification, if any.
   ///
-  /// Returns a [Future] that completes when cancellation is registered.
+  /// Returns a Future that completes when cancellation is registered.
   /// Catches and logs non-fatal cancellation errors.
   Future<void> cancelDailyReminder() async {
     if (!_initialized) return;

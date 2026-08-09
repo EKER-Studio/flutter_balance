@@ -7,20 +7,20 @@ import 'package:balance/core/models/measurement_unit.dart';
 ///
 /// Takes [kg] in kilograms.
 /// Multiplies by constant factor 2.20462.
-/// Returns calculated weight in pounds as a [double].
+/// Returns the calculated weight in pounds as a double.
 double kgToLbs(double kg) => kg * 2.20462;
 
 /// Converts a body weight from pounds (lbs) to kilograms.
 ///
 /// Takes [lbs] in pounds.
 /// Divides by constant factor 2.20462.
-/// Returns calculated weight in kilograms as a [double].
+/// Returns the calculated weight in kilograms as a double.
 double lbsToKg(double lbs) => lbs / 2.20462;
 
 /// Converts a height in centimeters into feet and remaining inches.
 ///
 /// Takes [cm] in centimeters.
-/// Returns a [List] of two doubles `[feet, remainingInches]`.
+/// Returns a List of two doubles `[feet, remainingInches]`.
 List<double> cmToFeetInches(double cm) {
   final totalInches = cm / 2.54;
   final feet = (totalInches / 12).floorToDouble();
@@ -30,7 +30,7 @@ List<double> cmToFeetInches(double cm) {
 
 /// Formats a body weight stored in kilograms for user display according to [unit].
 ///
-/// Takes [weightKg] in kilograms and target [MeasurementUnit] system [unit].
+/// Takes [weightKg] in kilograms and the target [MeasurementUnit] [unit].
 /// Formats as `X.X kg` for metric or `X.X lbs` for imperial.
 /// Returns a formatted string representation.
 String formatWeight(double weightKg, MeasurementUnit unit) {
@@ -51,7 +51,7 @@ const String bmiUnitLabel = 'kg/m²';
 
 /// Formats a height stored in centimeters for user display according to [unit].
 ///
-/// Takes [heightCm] in centimeters and target [MeasurementUnit] system [unit].
+/// Takes [heightCm] in centimeters and the target [MeasurementUnit] [unit].
 /// Formats as `X cm` for metric or `X'Y"` for imperial.
 /// Returns a formatted string representation.
 String formatHeight(double heightCm, MeasurementUnit unit) {
