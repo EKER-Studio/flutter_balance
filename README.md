@@ -4,7 +4,7 @@ A local-first weight tracking application built with Flutter using Clean Archite
 
 ## Architecture
 
-Clean Architecture under a Feature-First layout:
+Clean Architecture strictly organized under a **Feature-First** (vertical slice) layout:
 
 ```
 lib/
@@ -12,35 +12,36 @@ lib/
 ├── main.dart                     # App entry point & database initialization
 ├── core/                         # Cross-cutting concerns
 │   ├── database/                 # Database module & recovery logic
+│   ├── integrations/             # Native platform & 3rd-party services
+│   │   ├── biometrics/           # Local authentication & lock observer
+│   │   ├── csv/                  # CSV import/export pipelines
+│   │   ├── health/               # Apple HealthKit & Android Health Connect
+│   │   └── notifications/        # Scheduled daily local reminders
 │   ├── models/                   # Core models (MeasurementUnit)
-│   ├── services/                 # Platform services (BiometricService, NotificationService, BiometricLockObserver)
-│   └── utils/                    # Utilities (CsvExporter, CsvImporter, UnitConverter)
-├── features/
-│   └── weight/                   # Weight tracking feature
-│       ├── data/
-│       │   ├── models/           # WeightEntryModel (Isar schema model)
-│       │   └── repositories/     # IsarWeightRepository implementation
-│       ├── domain/
-│       │   ├── entities/         # WeightEntry domain entity
-│       │   ├── repositories/     # WeightRepository interface contract
-│       │   └── weight_error_type.dart # Typed domain error enum
-│       └── presentation/
-│           ├── bloc/             # WeightBloc, WeightEvent & WeightState
-│           ├── screens/          # TodayScreen, CalendarScreen, StatisticsScreen
-│           └── widgets/          # AddWeightSheet, HealthSummaryCard
+│   └── utils/                    # Shared utilities (FieldCipher, UnitConverter)
+├── features/                     # Feature modules
+│   ├── calendar/                 # Calendar view and historical day entries
+│   ├── dashboard/                # Today's overview, BMI, and quick-add
+│   ├── navigation/               # Main bottom navigation scaffold
+│   ├── onboarding/               # 8-step initial setup wizard
+│   ├── settings/                 # User preferences & configuration
+│   ├── statistics/               # Analytical charts and history trends
+│   └── weight/                   # Core weight tracking domain & data
+│       ├── data/                 # WeightEntryModel (Isar) & Repositories
+│       ├── domain/               # Entities, Domain Contracts, Error Types
+│       └── presentation/         # Shared WeightBloc & Events
 ├── l10n/                         # Localization ARB assets (app_en.arb, app_pl.arb)
-└── presentation/
-    ├── bloc/settings/            # AppSettingsBloc, AppSettingsEvent, AppSettingsState, AppThemeMode, BmiCategory
+└── presentation/                 # Global UI & App-level components
     ├── core/                     # ClampedLayout responsive wrapper
-    ├── screens/                  # SettingsScreen, BiometricShieldScreen
+    ├── screens/                  # AppSplash, InitializationError, BiometricShield
     ├── theme/                    # AppTheme (Light & Dark Material 3)
-    └── widgets/                  # WeightChart
+    └── widgets/                  # Shared global widgets (AppTopBar, StateMessageCard)
 ```
 
 ### Design Principles
 
 - **Local-first**: All weight entries persist on-device using Isar (`isar_community`). No cloud dependency.
-- **Feature-First**: Features encapsulate data, domain, and presentation boundaries.
+- **Feature-First**: Strict vertical slicing. Features (`calendar`, `dashboard`, `settings`, etc.) encapsulate their own presentation boundaries, while core business logic remains in the `weight` domain.
 - **Dependency Inversion**: Domain defines repository contracts; data layer provides concrete implementations.
 - **State Management**: `flutter_bloc` with `hydrated_bloc` for persistent application configuration.
 - **Dependency Injection**: Manual DI in `main.dart` — dependencies instantiated explicitly and passed down via widget constructors and BLoC providers.
@@ -55,31 +56,33 @@ lib/
 | **Database** | isar_community | High-performance local NoSQL database |
 | **Charts** | fl_chart | Interactive weight history visualizations |
 | **Biometrics** | local_auth | Native biometric authentication (Face ID, Touch ID, fingerprint) |
+| **Health** | health | Integration with Apple HealthKit & Android Health Connect |
 | **CSV Handling** | csv | CSV encoding and parsing pipeline |
 | **Localization** | flutter_localizations + gen-l10n | Internationalization (English, Polish) |
 | **Notifications** | flutter_local_notifications | Local scheduled daily reminders |
 
 ## Key Features
 
-### Weight Tracking
+### Weight Tracking & Analytics
 - Log daily weight measurements with optional text notes.
 - Interactive line charts powered by `fl_chart` with daily entry aggregation.
 - Filter data by timeframe (`Week`, `Month`, `Year`, `All`).
 - Summary metrics: BMI calculation, BMI category badge, target weight progress, and remaining weight delta.
 - Automated BMI calculation from configured height.
 
-### Data Management
+### Data Management & Integrations
+- **Health Sync**: Native synchronization with Apple Health (iOS) and Health Connect (Android).
 - **CSV Import**: Batch import entries via `CsvImporter` with row validation and isolate background parsing.
 - **CSV Export**: Export entries via `CsvExporter` to a CSV file on disk and share via native OS share dialog.
   - Column format: `ID`, `Date`, `Weight (kg)`, `Note`
 - **Unit System**: Seamless switching between Metric (kg, cm) and Imperial (lb, ft/in).
 
-### Settings & Security
-- Theme options: Light, Dark, or System mode.
-- Height configuration (cm).
-- Target weight goal tracking.
-- Daily reminder notifications with custom time selection.
-- Native biometric lock shielding on app cold start and backgrounding with `persistAcrossBackgrounding` set to `false`.
+### Settings, Onboarding & Security
+- **8-Step Onboarding**: A comprehensive wizard guiding users through unit selection, initial logging, CSV imports, and permission setups.
+- **Theme Options**: Light, Dark, or System mode.
+- **Target Tracking**: Configurable target weight goals.
+- **Reminders**: Daily reminder notifications with custom time selection.
+- **Biometric Lock**: Native biometric lock shielding on app cold start and backgrounding with `persistAcrossBackgrounding` set to `false`.
 
 ## Getting Started
 
@@ -113,7 +116,7 @@ flutter run
   - Events: `SubscribeToWeightChanges`, `UpdateUserHeight`, `AddWeight`, `DeleteWeight`, `ChangeChartFilter`, `RefreshWeightData`
   - States: `WeightInitial`, `WeightLoading`, `WeightLoaded`, `WeightError`
 - **`AppSettingsBloc`**: Manages user configuration via `HydratedBloc`.
-  - Events: `UpdateTheme`, `UpdateMeasurementUnit`, `UpdateHeight`, `TargetWeightChanged`, `UpdateBiometricLock`, `ToggleNotifications`, `UpdateNotificationTime`, `SetLocked`
+  - Events: `UpdateTheme`, `UpdateMeasurementUnit`, `UpdateHeight`, `TargetWeightChanged`, `UpdateBiometricLock`, `ToggleNotifications`, `UpdateNotificationTime`, `SetLocked`, etc.
   - State: `AppSettingsState` (persisted to storage).
 
 ### Code Generation
@@ -126,13 +129,13 @@ dart run build_runner build
 
 ## Testing
 
-Run full verification suite:
+Run full verification suite (over 500+ tests):
 
 ```bash
 ./before_push.sh
 ```
 
-Or execute unit tests directly:
+Or execute unit/widget tests directly:
 
 ```bash
 flutter test
