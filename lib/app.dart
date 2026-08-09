@@ -98,8 +98,8 @@ class _AppState extends State<App> {
 
       return repository;
     } finally {
-      // Regardless of success or failure, we drop the OS native splash screen
-      // so Flutter can render either the fake splash, error screen, or the app.
+      // Drop the native splash screen regardless of outcome so Flutter can render
+      // the fake splash, the error screen, or the app.
       WidgetsBinding.instance.addPostFrameCallback((_) {
         FlutterNativeSplash.remove();
       });

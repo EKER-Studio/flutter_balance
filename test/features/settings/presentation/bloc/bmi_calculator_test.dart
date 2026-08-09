@@ -93,8 +93,8 @@ void main() {
       test('BMI returns 0.0 when height is very small positive (0.001cm)', () {
         final smallHeightState = const AppSettingsState(height: 0.001);
         final bmi = smallHeightState.calculateBmi(70.0);
-        // With height = 0.001cm = 0.00001m, BMI = 70 / 1e-10 = 7e11
-        // This is a very large number but not infinity - mathematically valid
+        // With height = 0.001cm = 0.00001m, BMI = 70 / 1e-10 = 7e11.
+        // Very large but finite; mathematically valid.
         expect(bmi, isPositive);
         expect(bmi, isNot(equals(double.infinity)));
       });

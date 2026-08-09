@@ -306,7 +306,7 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      // Composite cards titles & metrics
+      // Composite card titles & metrics
       expect(find.text('Zakres i średnia wagi'), findsOneWidget);
       expect(find.byType(BmiChartCard), findsOneWidget);
     },

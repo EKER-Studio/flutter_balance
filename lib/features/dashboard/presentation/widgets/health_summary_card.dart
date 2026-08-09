@@ -307,17 +307,14 @@ class HealthSummaryCard extends StatelessWidget {
         ? kgToLbs(differenceKg.abs())
         : differenceKg.abs();
 
-    // Calculate progress percentage based on some arbitrary reasonable range,
-    // or just 100% if achieved. For a simple visual, let's assume a 10kg/20lbs range
-    // from target is 0%, target is 100%.
-    // Or just a fixed 75% for now if not achieved, since we don't store initial weight easily here.
-    // A better approach is to use a fixed max difference to calculate progress.
+    // Progress maps the remaining difference onto a fixed 20kg / 40lb reference
+    // range: reaching the target yields 100%, exceeding the range floors at 0%.
     final maxDifference = unit == MeasurementUnit.imperial ? 40.0 : 20.0;
     double progress = 1.0;
     if (!isAchieved) {
       progress = 1.0 - (displayDifference / maxDifference).clamp(0.0, 1.0);
     }
-    // Clamp to minimum 5% to always show a bit of the bar
+    // Floor progress at 5% so the bar stays visible.
     progress = progress.clamp(0.05, 1.0);
 
     return InkWell(

@@ -111,7 +111,7 @@ class CalendarDayEntriesCard extends StatelessWidget {
               child: InkWell(
                 borderRadius: BorderRadius.circular(28),
                 onTap: () {
-                  // Optional: handle tap (edit?)
+                  // Reserved: tap-to-edit entry handling.
                 },
                 child: Padding(
                   padding: const EdgeInsets.all(16),

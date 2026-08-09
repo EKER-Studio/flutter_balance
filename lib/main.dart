@@ -65,7 +65,7 @@ Future<void> main() async {
     }
     _writeCrashLog(error, stackTrace);
 
-    // If storage initialization fails, we must remove splash manually here.
+    // Remove the splash manually when storage initialization fails.
     WidgetsBinding.instance.addPostFrameCallback((_) {
       FlutterNativeSplash.remove();
     });

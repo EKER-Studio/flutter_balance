@@ -195,7 +195,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                                         ? (constraints.maxWidth - 116) / 2
                                         : constraints.maxWidth - 64;
                                     final cellWidth = (availableWidth - 24) / 7;
-                                    // 6 rows, 5 main axis spacings (8), plus a little buffer
+                                    // 6 rows, 5 main-axis spacings of 8, plus a small buffer.
                                     final gridHeight = (6 * cellWidth) + 40 + 2;
 
                                     return SizedBox(

@@ -34,10 +34,10 @@ void main() {
       (WidgetTester tester) async {
         final widgetsBinding = tester.binding;
 
-        // Preserve holds the first frame
+        // preserve() holds the first frame on screen.
         FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
 
-        // Remove allows the first frame to render
+        // remove() releases it so the first frame can render.
         FlutterNativeSplash.remove();
 
         await tester.pumpWidget(const SizedBox());

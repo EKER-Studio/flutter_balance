@@ -103,8 +103,7 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    // The remaining text might be inside a RichText or Row, but find.text usually works.
-    // However, if we just tap the InkWell that contains 'Remaining: 2.0 kg' it works.
+    // Tapping the remaining-weight text resolves to its InkWell row.
     await tester.tap(find.text('Remaining: 2.0 kg'));
     await tester.pumpAndSettle();
 

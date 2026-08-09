@@ -99,7 +99,7 @@ void main() {
       test('weightKg is immutable', () {
         final entry = WeightEntry(weightKg: 70.0, dateTime: testDateTime);
 
-        // Since it's a const class, we can't actually modify it after creation
+        // Const values cannot be modified after creation.
         expect(entry.weightKg, 70.0);
       });
 

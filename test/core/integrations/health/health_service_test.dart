@@ -44,7 +44,7 @@ class _TrackingPermissionHandler extends PermissionHandlerPlatform {
   }
 }
 
-// Add mock for PlatformDetector
+// Register the PlatformDetector mock.
 class MockPlatformDetector extends Mock implements PlatformDetector {}
 
 void main() {

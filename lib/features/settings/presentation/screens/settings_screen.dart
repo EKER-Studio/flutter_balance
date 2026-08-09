@@ -195,7 +195,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           // in Apple Health / Health Connect (e.g. by a smart scale) into the
           // local database. The transition only fires when the permission
           // request succeeded, because [AppSettingsState.isHealthSyncEnabled]
-          // is set to true exclusively after a granted grant.
+          // is set to true only after the OS permission is granted.
           context.read<WeightBloc>().add(const SyncHealthEntries());
         },
         child: BlocListener<AppSettingsBloc, AppSettingsState>(

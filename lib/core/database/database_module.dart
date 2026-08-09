@@ -98,7 +98,7 @@ class DatabaseModule {
         }
       }
 
-      // Re-attempt opening freshly initialized database after recovery cleanup
+      // Re-attempt opening the freshly initialized database after recovery cleanup.
       try {
         return await _openIsar(dir.path);
       } catch (retryError, retryStack) {

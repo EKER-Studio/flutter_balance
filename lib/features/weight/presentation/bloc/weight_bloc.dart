@@ -147,7 +147,7 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
 
     final sortedKeys = grouped.keys.toList()..sort();
     return sortedKeys.map((key) {
-      // key is drawn from grouped.keys, so the lookup always succeeds.
+      // The key is taken from grouped.keys, so the lookup always succeeds.
       final dayEntries = grouped[key]!;
       final avgWeight =
           dayEntries.map((e) => e.weightKg).reduce((a, b) => a + b) /
