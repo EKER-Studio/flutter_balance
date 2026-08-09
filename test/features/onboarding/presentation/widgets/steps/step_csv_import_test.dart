@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:balance/core/services/csv_import_service.dart';
+import 'package:balance/core/integrations/csv/csv_import_service.dart';
 import 'package:balance/features/onboarding/presentation/widgets/steps/step_csv_import.dart';
 import 'package:balance/features/weight/domain/entities/weight_entry.dart';
 import 'package:balance/l10n/app_localizations.dart';

@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:balance/core/services/notification_service.dart';
-import 'package:balance/core/services/health_service.dart';
+import 'package:balance/core/integrations/notifications/notification_service.dart';
+import 'package:balance/core/integrations/health/health_service.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_bloc.dart';
 import 'package:balance/features/settings/presentation/bloc/bmi_category.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_event.dart';
@@ -135,6 +135,34 @@ void main() {
     );
 
     blocTest<AppSettingsBloc, AppSettingsState>(
+      'emits updated targetWeight on TargetWeightChanged',
+      build: () =>
+          AppSettingsBloc(notificationService: mockNotificationService),
+      act: (bloc) => bloc.add(const TargetWeightChanged(70.0)),
+      expect: () => [
+        isA<AppSettingsState>().having(
+          (s) => s.targetWeight,
+          'targetWeight',
+          70.0,
+        ),
+      ],
+    );
+
+    blocTest<AppSettingsBloc, AppSettingsState>(
+      'emits updated biometric lock on UpdateBiometricLock',
+      build: () =>
+          AppSettingsBloc(notificationService: mockNotificationService),
+      act: (bloc) => bloc.add(const UpdateBiometricLock(true)),
+      expect: () => [
+        isA<AppSettingsState>().having(
+          (s) => s.isBiometricLockEnabled,
+          'isBiometricLockEnabled',
+          true,
+        ),
+      ],
+    );
+
+    blocTest<AppSettingsBloc, AppSettingsState>(
       'emits notificationsEnabled true and schedules reminder on ToggleNotifications(true) when granted',
       build: () =>
           AppSettingsBloc(notificationService: mockNotificationService),
@@ -223,6 +251,51 @@ void main() {
       ],
       verify: (_) {
         verifyNever(() => mockNotificationService.scheduleDailyReminder(any()));
+      },
+    );
+
+    blocTest<AppSettingsBloc, AppSettingsState>(
+      'emits new time but does not schedule if notifications are disabled',
+      build: () =>
+          AppSettingsBloc(notificationService: mockNotificationService),
+      act: (bloc) => bloc.add(
+        const UpdateNotificationTime(TimeOfDay(hour: 9, minute: 30)),
+      ),
+      expect: () => [
+        isA<AppSettingsState>().having(
+          (s) => s.notificationTime,
+          'notificationTime',
+          const TimeOfDay(hour: 9, minute: 30),
+        ),
+      ],
+      verify: (_) {
+        verifyNever(() => mockNotificationService.scheduleDailyReminder(any()));
+      },
+    );
+
+    blocTest<AppSettingsBloc, AppSettingsState>(
+      'emits new time and schedules if notifications are enabled',
+      build: () =>
+          AppSettingsBloc(notificationService: mockNotificationService),
+      seed: () => const AppSettingsState(notificationsEnabled: true),
+      act: (bloc) => bloc.add(
+        const UpdateNotificationTime(TimeOfDay(hour: 9, minute: 30)),
+      ),
+      expect: () => [
+        isA<AppSettingsState>()
+            .having((s) => s.notificationsEnabled, 'notificationsEnabled', true)
+            .having(
+              (s) => s.notificationTime,
+              'notificationTime',
+              const TimeOfDay(hour: 9, minute: 30),
+            ),
+      ],
+      verify: (_) {
+        verify(
+          () => mockNotificationService.scheduleDailyReminder(
+            const TimeOfDay(hour: 9, minute: 30),
+          ),
+        ).called(1);
       },
     );
 
@@ -615,6 +688,22 @@ void main() {
     );
 
     blocTest<AppSettingsBloc, AppSettingsState>(
+      'emits default state on ResetAppSettings',
+      build: () =>
+          AppSettingsBloc(notificationService: mockNotificationService),
+      seed: () =>
+          const AppSettingsState(themeMode: AppThemeMode.dark, height: 180.0),
+      act: (bloc) => bloc.add(const ResetAppSettings()),
+      expect: () => [
+        isA<AppSettingsState>().having(
+          (s) => s.themeMode,
+          'themeMode',
+          AppThemeMode.system,
+        ),
+      ],
+    );
+
+    blocTest<AppSettingsBloc, AppSettingsState>(
       'preserves other fields when updating theme',
       build: () =>
           AppSettingsBloc(notificationService: mockNotificationService),
@@ -768,6 +857,23 @@ void main() {
       expect(json['isOnboardingCompleted'], true);
       expect(json['isHealthSyncEnabled'], false);
     });
+
+    test(
+      'toJson serializes targetWeight and biometric lock fields correctly',
+      () {
+        final state = const AppSettingsState(
+          targetWeight: 65.0,
+          isBiometricLockEnabled: true,
+          isLocked: true,
+        );
+
+        final json = state.toJson();
+
+        expect(json['targetWeight'], 65.0);
+        expect(json['isBiometricLockEnabled'], true);
+        expect(json['isLocked'], true);
+      },
+    );
 
     test('toJson serializes defaults correctly', () {
       final state = const AppSettingsState();

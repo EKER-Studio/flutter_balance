@@ -1,7 +1,7 @@
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:local_auth_platform_interface/local_auth_platform_interface.dart';
-import 'package:balance/core/services/biometric_service.dart';
+import 'package:balance/core/integrations/biometrics/biometric_service.dart';
 
 /// Test double for [LocalAuthPlatform] that inherits the platform token via
 /// `extends`, so [LocalAuthPlatform.instance] accepts it.

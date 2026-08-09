@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:balance/core/models/measurement_unit.dart';
-import 'package:balance/core/services/csv_import_service.dart';
+import 'package:balance/core/integrations/csv/csv_import_service.dart';
 import 'package:balance/features/onboarding/presentation/widgets/steps/step_csv_import.dart';
 import 'package:balance/features/weight/domain/entities/weight_entry.dart';
 import 'package:balance/features/weight/presentation/bloc/weight_bloc.dart';

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:balance/core/services/csv_import_service.dart';
+import 'package:balance/core/integrations/csv/csv_import_service.dart';
 import 'package:balance/features/weight/domain/entities/weight_entry.dart';
 import 'package:balance/l10n/app_localizations.dart';
 import 'package:balance/presentation/core/clamped_layout.dart';

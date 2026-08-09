@@ -2,7 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:health/health.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:permission_handler_platform_interface/permission_handler_platform_interface.dart';
-import 'package:balance/core/services/health_service.dart';
+import 'package:balance/core/integrations/health/health_service.dart';
 
 /// Mock for the `health` plugin facade.
 class MockHealthPlugin extends Mock implements Health {}

@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
-import 'package:balance/core/utils/csv_importer.dart';
+import 'package:balance/core/integrations/csv/csv_importer.dart';
 import 'package:balance/features/weight/domain/entities/weight_entry.dart';
 
 /// Outcome of picking and parsing a CSV file.

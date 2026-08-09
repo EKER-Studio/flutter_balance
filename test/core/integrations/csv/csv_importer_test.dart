@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:balance/core/utils/csv_importer.dart';
+import 'package:balance/core/integrations/csv/csv_importer.dart';
 
 void main() {
   group('CsvImporter.parse', () {

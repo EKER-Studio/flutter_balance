@@ -2,7 +2,7 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:balance/core/database/database_module.dart';
-import 'package:balance/core/services/biometric_service.dart';
+import 'package:balance/core/integrations/biometrics/biometric_service.dart';
 
 /// Lifecycle observer that enforces biometric lock and verifies database integrity when the app resumes.
 class BiometricLockObserver with WidgetsBindingObserver {
