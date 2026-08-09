@@ -1,3 +1,5 @@
+import 'dart:isolate';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
@@ -146,6 +148,7 @@ class NotificationService {
   /// Requests notification permissions on iOS, macOS, and Android 13+.
   ///
   /// Returns `true` if permission is granted, `false` otherwise.
+  /// Logs the per-platform grant results for diagnostic purposes.
   Future<bool> requestPermissions() async {
     if (!_initialized) {
       await initialize();
@@ -169,12 +172,60 @@ class NotificationService {
           >()
           ?.requestPermissions(alert: true, badge: true, sound: true);
 
-      return (androidGranted ?? true) && (iosGranted ?? macosGranted ?? true);
+      final granted =
+          (androidGranted ?? true) && (iosGranted ?? macosGranted ?? true);
+      debugPrint(
+        '[NotificationService] requestPermissions -> '
+        'android=$androidGranted ios=$iosGranted macOS=$macosGranted '
+        'granted=$granted',
+      );
+      return granted;
     } catch (e) {
       if (kDebugMode) {
         debugPrint('NotificationService.requestPermissions error: $e');
       }
       return false;
+    }
+  }
+
+  /// Shows an immediate test notification with full iOS presentation options.
+  ///
+  /// Diagnostic helper for verifying that the plugin, permissions, and iOS
+  /// delegate are wired correctly. Must be called from the main isolate.
+  Future<void> showTestNotification() async {
+    if (!_initialized) {
+      await initialize();
+    }
+    try {
+      final iosPlugin = _plugin
+          .resolvePlatformSpecificImplementation<
+            IOSFlutterLocalNotificationsPlugin
+          >();
+      final permissionState = await iosPlugin?.checkPermissions();
+      debugPrint(
+        '[NotificationService] showTestNotification iOS permission state: '
+        '$permissionState',
+      );
+      await _plugin.show(
+        id: _dailyReminderId + 1,
+        title: _title,
+        body: _body,
+        notificationDetails: const NotificationDetails(
+          iOS: DarwinNotificationDetails(
+            presentAlert: true,
+            presentSound: true,
+            presentBadge: true,
+          ),
+        ),
+      );
+      debugPrint(
+        '[NotificationService] showTestNotification displayed (id='
+        '${_dailyReminderId + 1})',
+      );
+    } catch (e) {
+      if (kDebugMode) {
+        debugPrint('NotificationService.showTestNotification error: $e');
+      }
     }
   }
 
@@ -228,6 +279,10 @@ class NotificationService {
         title: _title,
         body: _body,
         matchDateTimeComponents: DateTimeComponents.time,
+      );
+      debugPrint(
+        '[NotificationService] scheduled daily reminder for $scheduledDate '
+        '(main isolate: ${Isolate.current.debugName == 'main'})',
       );
     } catch (e) {
       if (kDebugMode) {
