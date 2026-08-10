@@ -1,7 +1,9 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:balance/features/settings/presentation/bloc/bmi_category.dart';
 import 'package:balance/features/weight/domain/entities/weight_entry.dart';
+import 'package:balance/features/weight/presentation/utils/bmi_category_localizer.dart';
 import 'package:balance/features/weight/presentation/widgets/bmi_legend_dialog.dart';
 import 'package:balance/l10n/app_localizations.dart';
 
@@ -90,40 +92,11 @@ class BmiChartCard extends StatelessWidget {
     final hSquared = hMeters * hMeters;
     final currentBmi = latestWeightKg / hSquared;
 
-    String categoryLabel;
-    Color categoryColor;
-    Color categoryTextColor;
-
-    if (currentBmi < 18.5) {
-      categoryLabel = l10n.bmiCategoryUnderweight;
-      categoryColor = Colors.blue.withValues(alpha: 0.15);
-      categoryTextColor = Colors.blue.shade700;
-    } else if (currentBmi < 25.0) {
-      categoryLabel = l10n.bmiCategoryNormal;
-      categoryColor = Colors.green.withValues(alpha: 0.15);
-      categoryTextColor = Colors.green.shade700;
-    } else if (currentBmi < 30.0) {
-      categoryLabel = l10n.bmiCategoryOverweight;
-      categoryColor = Colors.orange.withValues(alpha: 0.15);
-      categoryTextColor = Colors.orange.shade800;
-    } else {
-      categoryLabel = l10n.bmiCategoryObese;
-      categoryColor = Colors.red.withValues(alpha: 0.15);
-      categoryTextColor = Colors.red.shade700;
-    }
-
+    final category = BmiCategory.fromBmi(currentBmi);
+    final categoryLabel = category.localizedName(l10n);
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    if (isDark) {
-      if (currentBmi < 18.5) {
-        categoryTextColor = Colors.blue.shade300;
-      } else if (currentBmi < 25.0) {
-        categoryTextColor = Colors.green.shade300;
-      } else if (currentBmi < 30.0) {
-        categoryTextColor = Colors.orange.shade300;
-      } else {
-        categoryTextColor = Colors.red.shade300;
-      }
-    }
+    final categoryColor = category.chipBackgroundColor();
+    final categoryTextColor = category.chipContentColor(isDark: isDark);
 
     return InkWell(
       onTap: () => _showLegendDialog(context),

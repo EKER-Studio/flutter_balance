@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:balance/features/settings/presentation/bloc/bmi_category.dart';
+import 'package:balance/features/weight/presentation/utils/bmi_category_localizer.dart';
 import 'package:balance/l10n/app_localizations.dart';
 
 /// A dialog that explains the BMI categories and their corresponding colors.
@@ -27,33 +29,29 @@ class BmiLegendDialog extends StatelessWidget {
           children: [
             _buildLegendItem(
               context: context,
-              label: l10n.bmiCategoryUnderweight,
+              category: BmiCategory.underweight,
               range: '< 18.5',
-              baseColor: Colors.blue,
               isDark: isDark,
             ),
             const SizedBox(height: 12),
             _buildLegendItem(
               context: context,
-              label: l10n.bmiCategoryNormal,
+              category: BmiCategory.normal,
               range: '18.5 – 24.9',
-              baseColor: Colors.green,
               isDark: isDark,
             ),
             const SizedBox(height: 12),
             _buildLegendItem(
               context: context,
-              label: l10n.bmiCategoryOverweight,
+              category: BmiCategory.overweight,
               range: '25.0 – 29.9',
-              baseColor: Colors.orange,
               isDark: isDark,
             ),
             const SizedBox(height: 12),
             _buildLegendItem(
               context: context,
-              label: l10n.bmiCategoryObese,
+              category: BmiCategory.obese,
               range: '≥ 30.0',
-              baseColor: Colors.red,
               isDark: isDark,
             ),
           ],
@@ -68,17 +66,17 @@ class BmiLegendDialog extends StatelessWidget {
     );
   }
 
-  /// Builds one legend row: a colored range swatch, the category [label],
+  /// Builds one legend row: a colored range swatch, the category label,
   /// and the numeric BMI [range], shaded for light or dark mode.
   Widget _buildLegendItem({
     required BuildContext context,
-    required String label,
+    required BmiCategory category,
     required String range,
-    required MaterialColor baseColor,
     required bool isDark,
   }) {
-    final bgColor = baseColor.withValues(alpha: 0.15);
-    final textColor = isDark ? baseColor.shade300 : baseColor.shade800;
+    final label = category.localizedName(AppLocalizations.of(context));
+    final bgColor = category.chipBackgroundColor();
+    final textColor = category.chipContentColor(isDark: isDark);
 
     return Row(
       children: [

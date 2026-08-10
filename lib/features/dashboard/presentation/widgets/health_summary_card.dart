@@ -196,36 +196,16 @@ class HealthSummaryCard extends StatelessWidget {
   ) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
-    MaterialColor? baseColor;
-    if (category != null) {
-      switch (category) {
-        case BmiCategory.underweight:
-          baseColor = Colors.blue;
-          break;
-        case BmiCategory.normal:
-          baseColor = Colors.green;
-          break;
-        case BmiCategory.overweight:
-          baseColor = Colors.orange;
-          break;
-        case BmiCategory.obese:
-          baseColor = Colors.red;
-          break;
-      }
-    }
-
-    final bgColor = baseColor != null
-        ? baseColor.withValues(alpha: 0.15)
+    final bgColor = category != null
+        ? category.chipBackgroundColor()
         : colorScheme.primary.withValues(alpha: 0.1);
 
-    final borderColor = baseColor != null
-        ? (isDark ? baseColor.shade300 : baseColor.shade800).withValues(
-            alpha: 0.3,
-          )
+    final borderColor = category != null
+        ? category.chipContentColor(isDark: isDark).withValues(alpha: 0.3)
         : colorScheme.primary.withValues(alpha: 0.2);
 
-    final contentColor = baseColor != null
-        ? (isDark ? baseColor.shade300 : baseColor.shade800)
+    final contentColor = category != null
+        ? category.chipContentColor(isDark: isDark)
         : colorScheme.primary;
 
     return Ink(
