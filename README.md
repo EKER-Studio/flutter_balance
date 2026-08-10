@@ -82,7 +82,7 @@ lib/
 - **Theme Options**: Light, Dark, or System mode.
 - **Target Tracking**: Configurable target weight goals.
 - **Reminders**: Daily reminder notifications with custom time selection.
-- **Biometric Lock**: Native biometric lock shielding on app cold start and backgrounding with `persistAcrossBackgrounding` set to `false`.
+- **Biometric Lock**: Native biometric lock shielding on app cold start and backgrounding with `stickyAuth` set to `true` (persists the authentication prompt across brief backgrounding).
 
 ## Getting Started
 
