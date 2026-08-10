@@ -177,7 +177,7 @@ class CalendarDayEntriesCard extends StatelessWidget {
                           children: [
                             Text(
                               bmi.isFinite
-                                  ? 'BMI ${bmi.toStringAsFixed(1)}'
+                                  ? l10n.bmiValueLabel(bmi.toStringAsFixed(1))
                                   : '',
                               style: Theme.of(context).textTheme.titleMedium
                                   ?.copyWith(

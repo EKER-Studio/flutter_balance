@@ -440,5 +440,13 @@
         "type": "String"
       }
     }
+  },
+  "bmiValueLabel": "BMI {bmi}",
+  "@bmiValueLabel": {
+    "placeholders": {
+      "bmi": {
+        "type": "String"
+      }
+    }
   }
 }
