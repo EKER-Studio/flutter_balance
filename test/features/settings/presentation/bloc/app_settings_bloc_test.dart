@@ -1,5 +1,5 @@
 import 'package:bloc_test/bloc_test.dart';
-import 'package:flutter/material.dart';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:mocktail/mocktail.dart';
@@ -24,7 +24,7 @@ void main() {
   late MockHealthService mockHealthService;
 
   setUpAll(() {
-    registerFallbackValue(const TimeOfDay(hour: 8, minute: 0));
+    registerFallbackValue(const (hour: 8, minute: 0));
   });
 
   setUp(() {
@@ -64,7 +64,7 @@ void main() {
       expect(bloc.state.measurementUnit, MeasurementUnit.metric);
       expect(bloc.state.height, isNull);
       expect(bloc.state.notificationsEnabled, false);
-      expect(bloc.state.notificationTime, const TimeOfDay(hour: 8, minute: 0));
+      expect(bloc.state.notificationTime, const (hour: 8, minute: 0));
       expect(bloc.state.isLocked, false);
       expect(bloc.state.isOnboardingCompleted, false);
       expect(bloc.state.isHealthSyncEnabled, false);
@@ -178,7 +178,7 @@ void main() {
         verify(() => mockNotificationService.requestPermissions()).called(1);
         verify(
           () => mockNotificationService.scheduleDailyReminder(
-            const TimeOfDay(hour: 8, minute: 0),
+            const (hour: 8, minute: 0),
           ),
         ).called(1);
       },
@@ -279,7 +279,7 @@ void main() {
           AppSettingsBloc(notificationService: mockNotificationService),
       seed: () => const AppSettingsState(notificationsEnabled: true),
       act: (bloc) => bloc.add(
-        const UpdateNotificationTime(TimeOfDay(hour: 9, minute: 30)),
+        const UpdateNotificationTime((hour: 9, minute: 30)),
       ),
       expect: () => [
         isA<AppSettingsState>().having(
@@ -333,7 +333,7 @@ void main() {
           AppSettingsBloc(notificationService: mockNotificationService),
       seed: () => const AppSettingsState(notificationPermissionDenied: true),
       act: (bloc) => bloc.add(
-        const UpdateNotificationTime(TimeOfDay(hour: 12, minute: 30)),
+        const UpdateNotificationTime((hour: 12, minute: 30)),
       ),
       expect: () => [
         isA<AppSettingsState>().having(
@@ -352,13 +352,13 @@ void main() {
       build: () =>
           AppSettingsBloc(notificationService: mockNotificationService),
       act: (bloc) => bloc.add(
-        const UpdateNotificationTime(TimeOfDay(hour: 9, minute: 30)),
+        const UpdateNotificationTime((hour: 9, minute: 30)),
       ),
       expect: () => [
         isA<AppSettingsState>().having(
           (s) => s.notificationTime,
           'notificationTime',
-          const TimeOfDay(hour: 9, minute: 30),
+          const (hour: 9, minute: 30),
         ),
       ],
       verify: (_) {
@@ -372,7 +372,7 @@ void main() {
           AppSettingsBloc(notificationService: mockNotificationService),
       seed: () => const AppSettingsState(notificationsEnabled: true),
       act: (bloc) => bloc.add(
-        const UpdateNotificationTime(TimeOfDay(hour: 9, minute: 30)),
+        const UpdateNotificationTime((hour: 9, minute: 30)),
       ),
       expect: () => [
         isA<AppSettingsState>()
@@ -380,13 +380,13 @@ void main() {
             .having(
               (s) => s.notificationTime,
               'notificationTime',
-              const TimeOfDay(hour: 9, minute: 30),
+              const (hour: 9, minute: 30),
             ),
       ],
       verify: (_) {
         verify(
           () => mockNotificationService.scheduleDailyReminder(
-            const TimeOfDay(hour: 9, minute: 30),
+            const (hour: 9, minute: 30),
           ),
         ).called(1);
       },
@@ -422,19 +422,19 @@ void main() {
           AppSettingsBloc(notificationService: mockNotificationService),
       seed: () => const AppSettingsState(notificationsEnabled: true),
       act: (bloc) => bloc.add(
-        const UpdateNotificationTime(TimeOfDay(hour: 12, minute: 30)),
+        const UpdateNotificationTime((hour: 12, minute: 30)),
       ),
       expect: () => [
         isA<AppSettingsState>().having(
           (s) => s.notificationTime,
           'notificationTime',
-          const TimeOfDay(hour: 12, minute: 30),
+          const (hour: 12, minute: 30),
         ),
       ],
       verify: (_) {
         verify(
           () => mockNotificationService.scheduleDailyReminder(
-            const TimeOfDay(hour: 12, minute: 30),
+            const (hour: 12, minute: 30),
           ),
         ).called(1);
       },
@@ -791,7 +791,7 @@ void main() {
         measurementUnit: MeasurementUnit.imperial,
         height: 185.0,
         notificationsEnabled: false,
-        notificationTime: TimeOfDay(hour: 10, minute: 0),
+        notificationTime: (hour: 10, minute: 0),
         isOnboardingCompleted: true,
       ),
       act: (bloc) => bloc.add(const UpdateTheme(AppThemeMode.light)),
@@ -812,7 +812,7 @@ void main() {
             .having(
               (s) => s.notificationTime,
               'notificationTime',
-              const TimeOfDay(hour: 10, minute: 0),
+              const (hour: 10, minute: 0),
             )
             .having(
               (s) => s.isOnboardingCompleted,
@@ -839,7 +839,7 @@ void main() {
       expect(state.measurementUnit, MeasurementUnit.imperial);
       expect(state.height, 175.5);
       expect(state.notificationsEnabled, false);
-      expect(state.notificationTime, const TimeOfDay(hour: 14, minute: 30));
+      expect(state.notificationTime, const (hour: 14, minute: 30));
       expect(state.isOnboardingCompleted, true);
       expect(state.isHealthSyncEnabled, true);
       expect(state.notificationPermissionDenied, false);
@@ -881,7 +881,7 @@ void main() {
       expect(state.measurementUnit, MeasurementUnit.metric);
       expect(state.height, isNull);
       expect(state.notificationsEnabled, false);
-      expect(state.notificationTime, const TimeOfDay(hour: 8, minute: 0));
+      expect(state.notificationTime, const (hour: 8, minute: 0));
       expect(state.isOnboardingCompleted, false);
     });
 
@@ -896,7 +896,7 @@ void main() {
 
       final state = AppSettingsState.fromJson(json);
 
-      expect(state.notificationTime, const TimeOfDay(hour: 8, minute: 0));
+      expect(state.notificationTime, const (hour: 8, minute: 0));
     });
 
     test(
@@ -912,7 +912,7 @@ void main() {
 
         final state = AppSettingsState.fromJson(json);
 
-        expect(state.notificationTime, const TimeOfDay(hour: 8, minute: 0));
+        expect(state.notificationTime, const (hour: 8, minute: 0));
       },
     );
 
@@ -922,7 +922,7 @@ void main() {
         measurementUnit: MeasurementUnit.imperial,
         height: 175.5,
         notificationsEnabled: false,
-        notificationTime: TimeOfDay(hour: 14, minute: 30),
+        notificationTime: (hour: 14, minute: 30),
         isOnboardingCompleted: true,
       );
 
@@ -976,7 +976,7 @@ void main() {
         measurementUnit: MeasurementUnit.metric,
         height: 165.0,
         notificationsEnabled: true,
-        notificationTime: TimeOfDay(hour: 7, minute: 0),
+        notificationTime: (hour: 7, minute: 0),
         isOnboardingCompleted: false,
       );
 
@@ -993,7 +993,7 @@ void main() {
       expect(updated.measurementUnit, MeasurementUnit.metric);
       expect(updated.height, 180.0);
       expect(updated.notificationsEnabled, true);
-      expect(updated.notificationTime, const TimeOfDay(hour: 7, minute: 0));
+      expect(updated.notificationTime, const (hour: 7, minute: 0));
       expect(updated.isOnboardingCompleted, true);
       expect(updated.isHealthSyncEnabled, true);
       expect(updated.isHealthApiAvailable, false);

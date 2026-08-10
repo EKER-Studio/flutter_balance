@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:balance/core/database/database_module.dart';
+
 import 'package:balance/core/integrations/biometrics/biometric_service.dart';
 
 /// Lifecycle observer that enforces biometric lock and verifies database integrity when the app resumes.
@@ -25,6 +25,9 @@ class BiometricLockObserver with WidgetsBindingObserver {
   /// app resumption, so consumers can re-subscribe to Isar streams.
   final Future<void> Function()? onDatabaseReopened;
 
+  /// Callback to verify database integrity on resumption.
+  final Future<({bool reopened})> Function() verifyDatabaseIntegrity;
+
   bool _isLockEnabled = false;
   bool _disposed = false;
   StreamSubscription<bool>? _subscription;
@@ -40,6 +43,7 @@ class BiometricLockObserver with WidgetsBindingObserver {
     this.isAppLocked,
     this.lockEnabledStream,
     this.onDatabaseReopened,
+    required this.verifyDatabaseIntegrity,
   }) {
     _isLockEnabled = isBiometricLockEnabled();
     WidgetsBinding.instance.addObserver(this);
@@ -62,7 +66,7 @@ class BiometricLockObserver with WidgetsBindingObserver {
   /// [onDatabaseReopened] when the database had to be re-opened.
   Future<void> _verifyDatabaseIntegrity() async {
     try {
-      final result = await DatabaseModule.ensureInstanceIntegrity();
+      final result = await verifyDatabaseIntegrity();
       if (result.reopened) {
         await onDatabaseReopened?.call();
       }

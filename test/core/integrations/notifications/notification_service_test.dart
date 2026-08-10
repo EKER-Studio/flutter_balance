@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:balance/core/integrations/notifications/notification_service.dart';
 
@@ -34,7 +34,7 @@ void main() {
 
     test('scheduleDailyReminder does not crash', () async {
       final result = await NotificationService.instance.scheduleDailyReminder(
-        const TimeOfDay(hour: 8, minute: 0),
+        const (hour: 8, minute: 0),
       );
       expect(result, isA<bool>());
     });

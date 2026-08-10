@@ -1,7 +1,7 @@
 import 'dart:isolate';
 
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
+
 
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_timezone/flutter_timezone.dart';
@@ -246,7 +246,7 @@ class NotificationService {
   /// so the reminder fell back to the less precise inexact scheduling, or
   /// scheduling failed entirely.
   /// Catches and logs non-fatal notification scheduling errors.
-  Future<bool> scheduleDailyReminder(TimeOfDay time) async {
+  Future<bool> scheduleDailyReminder(({int hour, int minute}) time) async {
     if (!_initialized) return false;
     try {
       await _plugin.cancel(id: _dailyReminderId);

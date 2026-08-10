@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import 'package:flutter/material.dart';
+
 import 'package:balance/features/settings/presentation/bloc/app_theme_mode.dart';
 import 'package:balance/features/settings/presentation/bloc/bmi_category.dart';
 import 'package:balance/core/models/measurement_unit.dart';
@@ -30,7 +30,7 @@ final class AppSettingsState extends Equatable {
   final bool notificationsEnabled;
 
   /// The time of day for the daily reminder (default: 08:00).
-  final TimeOfDay notificationTime;
+  final ({int hour, int minute}) notificationTime;
 
   /// The user's target weight in kg (null means no target set).
   final double? targetWeight;
@@ -83,7 +83,7 @@ final class AppSettingsState extends Equatable {
     this.measurementUnit = MeasurementUnit.metric,
     this.height,
     this.notificationsEnabled = false,
-    this.notificationTime = const TimeOfDay(hour: 8, minute: 0),
+    this.notificationTime = const (hour: 8, minute: 0),
     this.targetWeight,
     this.isBiometricLockEnabled = false,
     this.isLocked = false,
@@ -105,7 +105,7 @@ final class AppSettingsState extends Equatable {
     MeasurementUnit? measurementUnit,
     Object? height = _heightSentinel,
     bool? notificationsEnabled,
-    TimeOfDay? notificationTime,
+    ({int hour, int minute})? notificationTime,
     Object? targetWeight = _targetWeightSentinel,
     bool? isBiometricLockEnabled,
     bool? isLocked,
@@ -182,14 +182,14 @@ final class AppSettingsState extends Equatable {
       notificationTime: (() {
         final notifTime = json['notificationTime'];
         if (notifTime == null || notifTime is! Map<String, dynamic>) {
-          return const TimeOfDay(hour: 8, minute: 0);
+          return const (hour: 8, minute: 0);
         }
         final hour = notifTime['hour'];
         final minute = notifTime['minute'];
         if (hour is int && minute is int) {
-          return TimeOfDay(hour: hour, minute: minute);
+          return (hour: hour, minute: minute);
         }
-        return const TimeOfDay(hour: 8, minute: 0);
+        return const (hour: 8, minute: 0);
       })(),
       targetWeight: (json['targetWeight'] as num?)?.toDouble(),
       isBiometricLockEnabled: biometricLockEnabled,

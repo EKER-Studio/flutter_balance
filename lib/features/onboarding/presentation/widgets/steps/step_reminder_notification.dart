@@ -23,7 +23,8 @@ class _StepReminderNotificationState extends State<StepReminderNotification> {
   /// Opens the time picker and dispatches the selected time to [AppSettingsBloc].
   Future<void> _handleTimePicker(BuildContext context) async {
     final l10n = AppLocalizations.of(context);
-    final initialTime = context.read<AppSettingsBloc>().state.notificationTime;
+    final recordTime = context.read<AppSettingsBloc>().state.notificationTime;
+    final initialTime = TimeOfDay(hour: recordTime.hour, minute: recordTime.minute);
 
     final picked = await showTimePicker(
       context: context,
@@ -37,7 +38,7 @@ class _StepReminderNotificationState extends State<StepReminderNotification> {
     );
 
     if (picked != null && context.mounted) {
-      context.read<AppSettingsBloc>().add(UpdateNotificationTime(picked));
+      context.read<AppSettingsBloc>().add(UpdateNotificationTime((hour: picked.hour, minute: picked.minute)));
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -168,7 +169,7 @@ class _StepReminderNotificationState extends State<StepReminderNotification> {
                                   ),
                                   const SizedBox(height: 4.0),
                                   Text(
-                                    notificationTime.format(context),
+                                    TimeOfDay(hour: notificationTime.hour, minute: notificationTime.minute).format(context),
                                     style: theme.textTheme.bodyMedium?.copyWith(
                                       color: theme.colorScheme.onSurfaceVariant,
                                     ),

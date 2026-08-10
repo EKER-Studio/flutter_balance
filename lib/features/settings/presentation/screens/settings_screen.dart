@@ -999,15 +999,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
   /// the new schedule with a `SnackBar`.
   Future<void> _selectNotificationTime(
     BuildContext context,
-    TimeOfDay initialTime,
+    ({int hour, int minute}) initialTimeRecord,
   ) async {
+    final initialTime = TimeOfDay(hour: initialTimeRecord.hour, minute: initialTimeRecord.minute);
     final newTime = await showTimePicker(
       context: context,
       initialTime: initialTime,
     );
     if (newTime != null && context.mounted) {
       final l10n = AppLocalizations.of(context);
-      context.read<AppSettingsBloc>().add(UpdateNotificationTime(newTime));
+      context.read<AppSettingsBloc>().add(UpdateNotificationTime((hour: newTime.hour, minute: newTime.minute)));
       ScaffoldMessenger.of(context)
         ..hideCurrentSnackBar()
         ..showSnackBar(
@@ -1458,7 +1459,7 @@ class _ApplicationSection extends StatelessWidget {
     final colorScheme = Theme.of(context).colorScheme;
     final themeLabel = state.themeMode.localizedName(l10n);
     final unitLabel = state.measurementUnit.localizedName(l10n);
-    final notificationTimeText = state.notificationTime.format(context);
+    final notificationTimeText = TimeOfDay(hour: state.notificationTime.hour, minute: state.notificationTime.minute).format(context);
 
     return Card(
       margin: EdgeInsets.zero,

@@ -190,7 +190,7 @@ void main() {
     'shows permission denied snackbar when notification permission is rejected',
     (tester) async {
       final mockNotificationService = MockNotificationService();
-      registerFallbackValue(const TimeOfDay(hour: 8, minute: 0));
+      registerFallbackValue(const (hour: 8, minute: 0));
       when(
         () => mockNotificationService.requestPermissions(),
       ).thenAnswer((_) async => false);
@@ -221,7 +221,7 @@ void main() {
     'shows inexact reminder hint when exact alarm permission is missing',
     (tester) async {
       final mockNotificationService = MockNotificationService();
-      registerFallbackValue(const TimeOfDay(hour: 8, minute: 0));
+      registerFallbackValue(const (hour: 8, minute: 0));
       when(
         () => mockNotificationService.requestPermissions(),
       ).thenAnswer((_) async => true);

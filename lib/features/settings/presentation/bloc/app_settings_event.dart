@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+
 import 'package:balance/features/settings/presentation/bloc/app_theme_mode.dart';
 import 'package:balance/core/models/measurement_unit.dart';
 
@@ -46,7 +46,7 @@ final class ToggleNotifications extends AppSettingsEvent {
 /// An event that updates the time of day for the daily notification reminder.
 final class UpdateNotificationTime extends AppSettingsEvent {
   /// The new notification time.
-  final TimeOfDay notificationTime;
+  final ({int hour, int minute}) notificationTime;
 
   /// Creates [UpdateNotificationTime] with the given [notificationTime].
   const UpdateNotificationTime(this.notificationTime);

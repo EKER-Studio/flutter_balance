@@ -256,6 +256,10 @@ class _ObserverRegistrarState extends State<_ObserverRegistrar> {
           context.read<WeightBloc>().add(const SubscribeToWeightChanges());
         }
       },
+      verifyDatabaseIntegrity: () async {
+        final result = await DatabaseModule.ensureInstanceIntegrity();
+        return (reopened: result.reopened);
+      },
     );
   }
 

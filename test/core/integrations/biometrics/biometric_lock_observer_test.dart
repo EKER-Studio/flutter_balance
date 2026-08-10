@@ -29,6 +29,7 @@ void main() {
         },
         lockEnabledStream: lockStreamController.stream,
         localizedReason: () => 'Authenticate to access Balance',
+        verifyDatabaseIntegrity: () async => (reopened: false),
       );
 
       // Verify initialization does not throw
@@ -51,6 +52,7 @@ void main() {
           called = true;
         },
         localizedReason: () => 'Authenticate to access Balance',
+        verifyDatabaseIntegrity: () async => (reopened: false),
       );
 
       observer.didChangeAppLifecycleState(AppLifecycleState.paused);
@@ -68,6 +70,7 @@ void main() {
           isBiometricLockEnabled: () => false,
           onLockStateChanged: (_) {},
           localizedReason: () => 'Authenticate to access Balance',
+          verifyDatabaseIntegrity: () async => (reopened: false),
         );
 
         // Trigger resumed state

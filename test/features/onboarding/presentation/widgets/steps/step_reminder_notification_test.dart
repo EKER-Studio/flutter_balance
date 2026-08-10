@@ -71,7 +71,7 @@ void main() {
       'toggling the switch enables notifications via the bloc and shows time tile',
       (tester) async {
         final mockNotificationService = MockNotificationService();
-        registerFallbackValue(const TimeOfDay(hour: 8, minute: 0));
+        registerFallbackValue(const (hour: 8, minute: 0));
         when(
           () => mockNotificationService.requestPermissions(),
         ).thenAnswer((_) async => true);
