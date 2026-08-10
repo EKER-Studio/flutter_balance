@@ -72,12 +72,14 @@ class OnboardingWizardScreen extends StatelessWidget {
 /// A widget that renders the onboarding steps and forwards every interaction
 /// to [OnboardingBloc]; the only local state owned here is the PageController.
 ///
-/// Step mapping (index 0-5): Units & Height, CSV Import (optional), Initial
-/// Weight, Target Weight (optional), Daily Reminder (optional), Health Sync
-/// (optional). When the device supports credentials, a Biometric Lock step
-/// (optional) is appended at index 6, so the wizard runs 6 or 7 steps in
-/// total. Completing the final step dispatches [OnboardingCompleted] and
-/// invokes [OnboardingWizardScreen.onWizardCompleted].
+/// Page mapping: index 0 is the Welcome page, followed by Units & Height,
+/// CSV Import (optional), Initial Weight, Target Weight (optional), Daily
+/// Reminder (optional), and Health Sync (optional) at indices 1-6. When the
+/// device supports credentials, a Biometric Lock step (optional) is appended
+/// at index 7, so the wizard runs 7 or 8 pages in total. The Welcome page
+/// counts as step 0, so the step indicator shows 1..6 or 1..7. Completing the
+/// final step dispatches [OnboardingCompleted] and invokes
+/// [OnboardingWizardScreen.onWizardCompleted].
 class _OnboardingWizardContent extends StatefulWidget {
   final VoidCallback? onWizardCompleted;
   final CsvImportService? csvImportService;
@@ -221,8 +223,8 @@ class _OnboardingWizardContentState extends State<_OnboardingWizardContent> {
   PreferredSizeWidget _buildAppBar(
     BuildContext context, {
     required bool isWelcomeStep,
-    required int currentStep,
-    required int totalSteps,
+    required int displayStep,
+    required int displayTotalSteps,
     required double progress,
   }) {
     final theme = Theme.of(context);
@@ -237,7 +239,7 @@ class _OnboardingWizardContentState extends State<_OnboardingWizardContent> {
 
     return AppBar(
       title: Text(
-        l10n.stepOf(currentStep, totalSteps),
+        l10n.stepOf(displayStep, displayTotalSteps),
         style: theme.textTheme.titleMedium?.copyWith(
           color: theme.colorScheme.onSurfaceVariant,
         ),
@@ -324,8 +326,12 @@ class _OnboardingWizardContentState extends State<_OnboardingWizardContent> {
 
           final isWelcomeStep = state.currentStepIndex == 0;
 
-          final displayStep = state.currentStepIndex + 1;
-          final progress = displayStep / state.totalSteps;
+          // UX MATH: Welcome screen is step 0. Actual steps start from index 1.
+          final displayStep = state.currentStepIndex;
+          final displayTotalSteps = state.totalSteps - 1;
+          final progress = displayStep > 0
+              ? (displayStep / displayTotalSteps)
+              : 0.0;
 
           return PopScope(
             canPop: isWelcomeStep,
@@ -344,8 +350,8 @@ class _OnboardingWizardContentState extends State<_OnboardingWizardContent> {
               appBar: _buildAppBar(
                 context,
                 isWelcomeStep: isWelcomeStep,
-                currentStep: displayStep,
-                totalSteps: state.totalSteps,
+                displayStep: displayStep,
+                displayTotalSteps: displayTotalSteps,
                 progress: progress,
               ),
               body: SafeArea(
