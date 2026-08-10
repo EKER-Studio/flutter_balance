@@ -500,7 +500,7 @@ class _WeightLineChart extends StatelessWidget {
     final l10n = AppLocalizations.of(context);
     return Semantics(
       container: true,
-      label: '${l10n.weightTrend}, ${entries.length} pomiarów',
+      label: '${l10n.weightTrend}, ${l10n.weightTrendChartSemantics(entries.length)}',
       child: LineChart(
         LineChartData(
           minX: 0,
