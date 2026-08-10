@@ -135,6 +135,7 @@
   "csvImportStepSubtitle": "You can import past measurements from a CSV file, or skip this step for now.",
   "csvImportTileTitle": "Import CSV file",
   "csvImportTileSubtitle": "Select a file from your device",
+  "csvFormatHintTitle": "Required column format:",
   "csvImportLoading": "Processing CSV file...",
   "csvImportSuccess": "Imported {count} measurements!",
   "csvImportContinueButton": "Continue",

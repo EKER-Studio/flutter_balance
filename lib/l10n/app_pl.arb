@@ -133,6 +133,7 @@
   "csvImportStepSubtitle": "Możesz zaimportować wcześniejsze pomiary z pliku CSV albo pominąć ten krok.",
   "csvImportTileTitle": "Importuj plik CSV",
   "csvImportTileSubtitle": "Wybierz plik ze swojego urządzenia",
+  "csvFormatHintTitle": "Wymagany format kolumn:",
   "csvImportLoading": "Przetwarzanie pliku CSV...",
   "csvImportSuccess": "Zaimportowano {count} pomiarów!",
   "csvImportContinueButton": "Przejdź dalej",

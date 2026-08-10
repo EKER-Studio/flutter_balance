@@ -185,6 +185,39 @@ class _StepCsvImportState extends State<StepCsvImport> {
             ),
           ),
         ),
+        Padding(
+          padding: const EdgeInsets.only(top: 12.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                l10n.csvFormatHintTitle,
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
+              ),
+              const SizedBox(height: 4.0),
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12.0,
+                  vertical: 8.0,
+                ),
+                decoration: BoxDecoration(
+                  color: theme.colorScheme.surfaceContainerHighest,
+                  borderRadius: BorderRadius.circular(8.0),
+                ),
+                child: Text(
+                  'ID, Date, Weight (kg), Note',
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    fontFamily: 'monospace',
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
         const Spacer(),
         ConstrainedBox(
           constraints: const BoxConstraints(minHeight: 48.0),
