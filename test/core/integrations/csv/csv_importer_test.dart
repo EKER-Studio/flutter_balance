@@ -1,5 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:balance/core/integrations/csv/csv_importer.dart';
+import 'package:balance/core/integrations/csv/csv_exporter.dart';
+import 'package:balance/features/weight/domain/entities/weight_entry.dart';
 
 void main() {
   group('CsvImporter.parse', () {
@@ -299,5 +301,40 @@ Data;Waga
         expect(entries[1].weightKg, 80.0);
       },
     );
+
+    test('flawless export -> re-import roundtrip', () async {
+      final originalEntries = [
+        WeightEntry(
+          id: 1,
+          weightKg: 72.4,
+          dateTime: DateTime(2026, 8, 10, 12, 34),
+          note: 'Roundtrip test 1',
+        ),
+        WeightEntry(
+          id: 2,
+          weightKg: 71.9,
+          dateTime: DateTime(2026, 8, 11, 7, 15),
+          note: 'Roundtrip test 2',
+        ),
+      ];
+
+      // Export
+      final csvContent = CsvExporter.generateCsv(originalEntries);
+
+      // Import
+      final result = await CsvImporter.parse(csvContent);
+      final importedEntries = result.entries;
+
+      expect(importedEntries.length, 2);
+      expect(result.skippedRows, 0);
+
+      expect(importedEntries[0].weightKg, 72.4);
+      expect(importedEntries[0].dateTime, DateTime(2026, 8, 10, 12, 34));
+      expect(importedEntries[0].note, 'Roundtrip test 1');
+
+      expect(importedEntries[1].weightKg, 71.9);
+      expect(importedEntries[1].dateTime, DateTime(2026, 8, 11, 7, 15));
+      expect(importedEntries[1].note, 'Roundtrip test 2');
+    });
   });
 }

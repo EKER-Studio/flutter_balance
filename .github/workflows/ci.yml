@@ -79,7 +79,7 @@ jobs:
           fi
 
       - name: Run unit and widget tests
-        run: flutter test -j 1 --exclude-tags golden
+        run: flutter test --exclude-tags golden
 
       - name: Verify Android Build
         run: flutter build apk --debug

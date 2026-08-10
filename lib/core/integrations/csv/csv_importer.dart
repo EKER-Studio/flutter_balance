@@ -15,6 +15,7 @@ import 'package:balance/features/weight/domain/entities/weight_entry.dart';
 class CsvImporter {
   /// Attempted date formats in order of precedence.
   static final List<DateFormat> _dateFormats = [
+    DateFormat('yyyy-MM-dd HH:mm'),
     DateFormat('yyyy-MM-dd'),
     DateFormat('dd.MM.yyyy'),
     DateFormat('dd/MM/yyyy'),
