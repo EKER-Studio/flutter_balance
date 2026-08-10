@@ -157,6 +157,7 @@
   "loggingStreak": "Seria ważenia",
   "streakDays": "{count, plural, =0{0 dni} one{{count} dzień} few{{count} dni} many{{count} dni} other{{count} dni}}",
   "trendPercentChange": "Trend: {value}",
+  "weeklyPaceBadge": "⚡ {value}/tydzień",
   "totalProgressUnitSuffix": "{unit} łącznie",
   "previousMonth": "Poprzedni miesiąc",
   "nextMonth": "Następny miesiąc",
