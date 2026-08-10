@@ -20,7 +20,7 @@ class AppSplashScreen extends StatelessWidget {
           label: AppLocalizations.of(context).appLoadingSemantics,
           textDirection: TextDirection.ltr,
           child: Image.asset(
-            'assets/app_icon.png',
+            'assets/icon/app_icon.png',
             width: 144,
             height: 144,
             excludeFromSemantics: true,
