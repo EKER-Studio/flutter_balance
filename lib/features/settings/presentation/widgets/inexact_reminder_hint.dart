@@ -1,0 +1,38 @@
+import 'package:flutter/material.dart';
+import 'package:balance/l10n/app_localizations.dart';
+
+/// alarm scheduling because the exact alarm permission was revoked.
+class InexactReminderHint extends StatelessWidget {
+  /// Localized strings for the hint.
+  final AppLocalizations l10n;
+
+  /// Creates an [InexactReminderHint] with the given [l10n].
+  const InexactReminderHint({super.key, required this.l10n});
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 2, 16, 14),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(
+            Icons.info_outline,
+            size: 18,
+            color: colorScheme.onSurfaceVariant,
+          ),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              l10n.notificationInexactHint,
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                color: colorScheme.onSurfaceVariant,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
