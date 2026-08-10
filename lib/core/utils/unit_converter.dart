@@ -23,7 +23,7 @@ double lbsToKg(double lbs) => lbs / 2.20462;
 /// Returns a List of two doubles `[feet, remainingInches]`.
 List<double> cmToFeetInches(double cm) {
   final totalInches = cm / 2.54;
-  final feet = (totalInches / 12).floorToDouble();
+  final feet = (totalInches / 12).truncateToDouble();
   final remainingInches = totalInches - (feet * 12);
   return [feet, remainingInches];
 }

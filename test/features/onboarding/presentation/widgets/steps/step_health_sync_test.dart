@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -79,14 +80,19 @@ void main() {
       expect(find.text('Health Sync (Optional)'), findsWidgets);
       expect(
         find.text(
-          'Automatically import and export your weight measurements with '
-          'Apple Health / Google Health Connect.',
+          Platform.isIOS
+              ? 'Automatically import and export your measurements from Apple Health.'
+              : 'Automatically import and export your measurements from Google Health Connect.',
         ),
         findsOneWidget,
       );
       expect(find.text('Health Sync'), findsOneWidget);
       expect(
-        find.text('Sync weight data with Apple Health / Health Connect'),
+        find.text(
+          Platform.isIOS
+              ? 'Sync weight data with Apple Health'
+              : 'Sync weight data with Health Connect',
+        ),
         findsOneWidget,
       );
       expect(switchFinder, findsOneWidget);

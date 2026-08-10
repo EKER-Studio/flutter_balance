@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:balance/l10n/app_localizations.dart';
@@ -85,7 +86,9 @@ class _StepHealthSyncState extends State<StepHealthSync> {
                   const SizedBox(height: 8.0),
                   // Subtitle
                   Text(
-                    l10n.healthSyncStepSubtitle,
+                    Platform.isIOS
+                        ? l10n.healthSyncDescriptionIOS
+                        : l10n.healthSyncDescriptionAndroid,
                     style: theme.textTheme.bodyMedium?.copyWith(
                       color: theme.colorScheme.onSurfaceVariant,
                     ),
@@ -116,7 +119,9 @@ class _StepHealthSyncState extends State<StepHealthSync> {
                         ),
                         subtitle: Text(
                           apiAvailable
-                              ? l10n.healthSyncDesc
+                              ? (Platform.isIOS
+                                    ? l10n.healthSyncTileSubtitleIOS
+                                    : l10n.healthSyncTileSubtitleAndroid)
                               : l10n.healthSyncUnavailable,
                         ),
                         secondary: Icon(

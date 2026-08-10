@@ -235,6 +235,66 @@ void main() {
     );
 
     blocTest<WeightBloc, WeightState>(
+      'emits WeightError when repository.getAllEntries fails on RefreshWeightData',
+      build: () {
+        when(
+          () => repository.getAllEntries(),
+        ).thenThrow(Exception('Read failed'));
+        return WeightBloc(repository: repository);
+      },
+      seed: () =>
+          const WeightLoaded(entries: [], filteredEntries: [], heightCm: 170),
+      act: (bloc) => bloc.add(const RefreshWeightData()),
+      expect: () => [
+        isA<WeightError>().having(
+          (s) => s.errorType,
+          'errorType',
+          WeightErrorType.readFailed,
+        ),
+      ],
+    );
+
+    blocTest<WeightBloc, WeightState>(
+      'emits WeightError when repository.clearAllData fails on ClearAllWeightData',
+      build: () {
+        when(
+          () => repository.clearAllData(),
+        ).thenThrow(Exception('Wipe failed'));
+        return WeightBloc(repository: repository);
+      },
+      seed: () =>
+          const WeightLoaded(entries: [], filteredEntries: [], heightCm: 170),
+      act: (bloc) => bloc.add(const ClearAllWeightData()),
+      expect: () => [
+        isA<WeightError>().having(
+          (s) => s.errorType,
+          'errorType',
+          WeightErrorType.wipeFailed,
+        ),
+      ],
+    );
+
+    blocTest<WeightBloc, WeightState>(
+      'emits WeightError when repository.bulkImportEntries fails on ImportWeightEntries',
+      build: () {
+        when(
+          () => repository.bulkImportEntries(any()),
+        ).thenThrow(Exception('Import failed'));
+        return WeightBloc(repository: repository);
+      },
+      seed: () =>
+          const WeightLoaded(entries: [], filteredEntries: [], heightCm: 170),
+      act: (bloc) => bloc.add(const ImportWeightEntries([])),
+      expect: () => [
+        isA<WeightError>().having(
+          (s) => s.errorType,
+          'errorType',
+          WeightErrorType.writeFailed,
+        ),
+      ],
+    );
+
+    blocTest<WeightBloc, WeightState>(
       'emits WeightError on AddWeight when height is not set',
       build: () => WeightBloc(repository: repository),
       seed: () => const WeightInitial(),

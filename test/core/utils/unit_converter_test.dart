@@ -19,6 +19,14 @@ void main() {
     test('converts 80 kg to approximately 176.37 lbs', () {
       expect(kgToLbs(80), closeTo(176.3696, 0.0001));
     });
+
+    test('handles negative values correctly', () {
+      expect(kgToLbs(-10), closeTo(-22.0462, 0.0001));
+    });
+
+    test('handles extremely large values', () {
+      expect(kgToLbs(10000), closeTo(22046.2, 0.1));
+    });
   });
 
   group('lbsToKg', () {
@@ -32,6 +40,14 @@ void main() {
 
     test('converts 154.3234 lbs to approximately 70 kg', () {
       expect(lbsToKg(154.3234), closeTo(70.0, 0.0001));
+    });
+
+    test('handles negative values correctly', () {
+      expect(lbsToKg(-22.0462), closeTo(-10.0, 0.0001));
+    });
+
+    test('handles extremely large values', () {
+      expect(lbsToKg(22046.2), closeTo(10000.0, 0.1));
     });
   });
 
@@ -52,6 +68,18 @@ void main() {
       final result = cmToFeetInches(183);
       expect(result[0], 6.0);
       expect(result[1], closeTo(0.05, 0.01));
+    });
+
+    test('handles negative values correctly', () {
+      final result = cmToFeetInches(-170);
+      expect(result[0], -5.0);
+      expect(result[1], closeTo(-6.93, 0.01));
+    });
+
+    test('handles extremely large values', () {
+      final result = cmToFeetInches(10000); // 100 meters
+      expect(result[0], 328.0);
+      expect(result[1], closeTo(1.01, 0.01));
     });
   });
 

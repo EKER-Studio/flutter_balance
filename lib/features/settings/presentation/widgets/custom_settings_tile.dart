@@ -149,6 +149,7 @@ class CustomSettingsTileState extends State<CustomSettingsTile> {
 
     final tile = Semantics(
       button: true,
+      excludeSemantics: labelParts.length > 1,
       label: labelParts.length > 1 ? labelParts.join(', ') : null,
       child: Focus(
         focusNode: _focusNode,
