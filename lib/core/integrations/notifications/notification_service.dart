@@ -174,11 +174,13 @@ class NotificationService {
 
       final granted =
           (androidGranted ?? true) && (iosGranted ?? macosGranted ?? true);
-      debugPrint(
-        '[NotificationService] requestPermissions -> '
-        'android=$androidGranted ios=$iosGranted macOS=$macosGranted '
-        'granted=$granted',
-      );
+      if (kDebugMode) {
+        debugPrint(
+          '[NotificationService] requestPermissions -> '
+          'android=$androidGranted ios=$iosGranted macOS=$macosGranted '
+          'granted=$granted',
+        );
+      }
       return granted;
     } catch (e) {
       if (kDebugMode) {
@@ -299,10 +301,12 @@ class NotificationService {
         body: _body,
         matchDateTimeComponents: DateTimeComponents.time,
       );
-      debugPrint(
-        '[NotificationService] scheduled daily reminder for $scheduledDate '
-        '(main isolate: ${Isolate.current.debugName == 'main'})',
-      );
+      if (kDebugMode) {
+        debugPrint(
+          '[NotificationService] scheduled daily reminder for $scheduledDate '
+          '(main isolate: ${Isolate.current.debugName == 'main'})',
+        );
+      }
       return exactScheduling;
     } catch (e) {
       if (kDebugMode) {
