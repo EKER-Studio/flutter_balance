@@ -188,47 +188,6 @@ class NotificationService {
     }
   }
 
-  /// Shows an immediate test notification with full iOS presentation options.
-  ///
-  /// Diagnostic helper for verifying that the plugin, permissions, and iOS
-  /// delegate are wired correctly. Must be called from the main isolate.
-  Future<void> showTestNotification() async {
-    if (!_initialized) {
-      await initialize();
-    }
-    try {
-      final iosPlugin = _plugin
-          .resolvePlatformSpecificImplementation<
-            IOSFlutterLocalNotificationsPlugin
-          >();
-      final permissionState = await iosPlugin?.checkPermissions();
-      debugPrint(
-        '[NotificationService] showTestNotification iOS permission state: '
-        '$permissionState',
-      );
-      await _plugin.show(
-        id: _dailyReminderId + 1,
-        title: _title,
-        body: _body,
-        notificationDetails: const NotificationDetails(
-          iOS: DarwinNotificationDetails(
-            presentAlert: true,
-            presentSound: true,
-            presentBadge: true,
-          ),
-        ),
-      );
-      debugPrint(
-        '[NotificationService] showTestNotification displayed (id='
-        '${_dailyReminderId + 1})',
-      );
-    } catch (e) {
-      if (kDebugMode) {
-        debugPrint('NotificationService.showTestNotification error: $e');
-      }
-    }
-  }
-
   /// Returns whether exact alarm scheduling is currently permitted.
   ///
   /// Reflects the `SCHEDULE_EXACT_ALARM` permission on Android 12+, which the
