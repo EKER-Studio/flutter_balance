@@ -10,22 +10,6 @@ import 'package:balance/features/weight/domain/entities/weight_entry.dart';
 import 'package:balance/features/weight/domain/repositories/weight_repository.dart';
 import 'package:balance/features/weight/domain/weight_error_type.dart';
 
-/// Isar-backed implementation of [WeightRepository] using Field-Level AES-256 Encryption.
-///
-/// Weight and note values are encrypted with [FieldCipher] before persistence
-/// and decrypted on read. The watch stream is resilient: transient failures
-/// (e.g. an inaccessible encryption key while the device is locked) trigger an
-/// exponential retry that is immediately short-circuited by the optional
-/// [unlockSignal] emitted after successful biometric authentication.
-///
-/// ```dart
-/// final repository = IsarWeightRepository(
-///   isar: isar,
-///   unlockSignal: BiometricService.instance.authenticationSuccesses,
-/// );
-/// final stream = repository.watchAllEntries();
-/// ```
-
 typedef _DecryptionPayload = (
   int id,
   DateTime dateTime,
@@ -70,6 +54,21 @@ List<WeightEntry> _decryptPayloads((List<_DecryptionPayload>, Uint8List) args) {
   }).toList();
 }
 
+/// Isar-backed implementation of [WeightRepository] using Field-Level AES-256 Encryption.
+///
+/// Weight and note values are encrypted with [FieldCipher] before persistence
+/// and decrypted on read. The watch stream is resilient: transient failures
+/// (e.g. an inaccessible encryption key while the device is locked) trigger an
+/// exponential retry that is immediately short-circuited by the optional
+/// [unlockSignal] emitted after successful biometric authentication.
+///
+/// ```dart
+/// final repository = IsarWeightRepository(
+///   isar: isar,
+///   unlockSignal: BiometricService.instance.authenticationSuccesses,
+/// );
+/// final stream = repository.watchAllEntries();
+/// ```
 class IsarWeightRepository implements WeightRepository {
   /// Default cap on entries loaded/watched at once, newest-first.
   ///

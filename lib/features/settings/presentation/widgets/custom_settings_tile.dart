@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+/// A generic interactive settings list tile used across the app's configuration screens.
 class CustomSettingsTile extends StatefulWidget {
   /// Leading icon rendered inside a circular container.
   final IconData icon;
