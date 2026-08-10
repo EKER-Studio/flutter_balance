@@ -102,7 +102,7 @@ void main() {
   /// Skips step 3 (CSV Import) and lands on step 4 (Initial Weight).
   Future<void> pumpToStep4(WidgetTester tester) async {
     await pumpToStep3(tester);
-    await tester.tap(find.byKey(const Key('csv_import_skip_button')));
+    await tester.tap(find.byKey(const Key('csv_import_next_button')));
     await tester.pumpAndSettle();
   }
 
@@ -140,7 +140,7 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('Step 3 of 8'), findsOneWidget);
-      expect(find.text('Import existing history?'), findsOneWidget);
+      expect(find.text('Import existing history? (Optional)'), findsOneWidget);
       expect(find.byIcon(Icons.arrow_back), findsOneWidget);
 
       // Height is synced to the weight BLoC so AddWeight in step 4 does not
@@ -150,7 +150,7 @@ void main() {
       ).called(1);
 
       // Step 3 (CSV Import) -> Skip
-      await tester.tap(find.byKey(const Key('csv_import_skip_button')));
+      await tester.tap(find.byKey(const Key('csv_import_next_button')));
       await tester.pumpAndSettle();
 
       expect(find.text('Step 4 of 8'), findsOneWidget);
@@ -223,7 +223,7 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('Step 3 of 8'), findsOneWidget);
-      expect(find.text('Import existing history?'), findsOneWidget);
+      expect(find.text('Import existing history? (Optional)'), findsOneWidget);
 
       // Back to Step 2 (Units & Height)
       await tester.tap(find.byIcon(Icons.arrow_back));
@@ -251,7 +251,7 @@ void main() {
         await pumpToStep3(tester);
 
         // Step 3 (CSV Import) -> pick file -> continue
-        await tester.tap(find.byKey(const Key('csv_import_pick_button')));
+        await tester.tap(find.byKey(const Key('csv_import_tile')));
         await tester.pumpAndSettle();
         expect(find.text('Imported 2 measurements!'), findsOneWidget);
 
@@ -294,7 +294,7 @@ void main() {
       await pumpToStep3(tester);
 
       // Step 3 (CSV Import) -> Skip
-      await tester.tap(find.byKey(const Key('csv_import_skip_button')));
+      await tester.tap(find.byKey(const Key('csv_import_next_button')));
       await tester.pumpAndSettle();
 
       // Step 4 (Initial Weight) starts blank with Next disabled.
@@ -380,10 +380,10 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('Step 3 of 7'), findsOneWidget);
-      expect(find.text('Import existing history?'), findsOneWidget);
+      expect(find.text('Import existing history? (Optional)'), findsOneWidget);
 
       // Skip the optional CSV import and advance to step 4 (Initial Weight)
-      await tester.tap(find.byKey(const Key('csv_import_skip_button')));
+      await tester.tap(find.byKey(const Key('csv_import_next_button')));
       await tester.pumpAndSettle();
 
       expect(find.text('Step 4 of 7'), findsOneWidget);

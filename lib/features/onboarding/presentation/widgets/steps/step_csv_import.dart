@@ -144,49 +144,55 @@ class _StepCsvImportState extends State<StepCsvImport> {
     );
   }
 
-  /// Builds the idle view: import card and the skip action.
+  /// Builds the idle view: the import tile and the next action.
   Widget _buildIdle(ThemeData theme, AppLocalizations l10n) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Material(
           color: theme.colorScheme.surfaceContainerLow,
-          borderRadius: BorderRadius.circular(28.0),
+          borderRadius: BorderRadius.circular(16.0),
           clipBehavior: Clip.antiAlias,
           child: Container(
-            padding: const EdgeInsets.all(24.0),
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(28.0),
+              borderRadius: BorderRadius.circular(16.0),
               border: Border.all(
                 color: theme.colorScheme.outlineVariant.withValues(alpha: 0.3),
               ),
             ),
-            child: Column(
-              children: [
-                Icon(
+            child: InkWell(
+              key: const Key('csv_import_tile'),
+              onTap: _handlePickFile,
+              child: ListTile(
+                leading: Icon(
                   Icons.upload_file,
-                  size: 48,
                   color: theme.colorScheme.primary,
                 ),
-                const SizedBox(height: 16.0),
-                ConstrainedBox(
-                  constraints: const BoxConstraints(minHeight: 48.0),
-                  child: FilledButton.icon(
-                    key: const Key('csv_import_pick_button'),
-                    onPressed: _handlePickFile,
-                    icon: const Icon(Icons.folder_open),
-                    label: Text(l10n.csvImportPickButton),
+                title: Text(
+                  l10n.csvImportTileTitle,
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
-              ],
+                subtitle: Text(
+                  l10n.csvImportTileSubtitle,
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
+                ),
+                trailing: const Icon(Icons.chevron_right),
+              ),
             ),
           ),
         ),
         const Spacer(),
-        TextButton(
-          key: const Key('csv_import_skip_button'),
-          onPressed: widget.onSkipped,
-          child: Text(l10n.csvImportSkipButton),
+        ConstrainedBox(
+          constraints: const BoxConstraints(minHeight: 48.0),
+          child: FilledButton(
+            key: const Key('csv_import_next_button'),
+            onPressed: widget.onSkipped,
+            child: Text(l10n.next),
+          ),
         ),
       ],
     );

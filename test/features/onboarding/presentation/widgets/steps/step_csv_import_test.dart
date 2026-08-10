@@ -59,13 +59,13 @@ void main() {
   }
 
   group('StepCsvImport', () {
-    testWidgets('renders idle state with title, pick, and skip buttons', (
+    testWidgets('renders idle state with title, import tile, and next button', (
       tester,
     ) async {
       await tester.pumpWidget(buildSubject(service: FakeCsvImportService()));
       await tester.pumpAndSettle();
 
-      expect(find.text('Import existing history?'), findsOneWidget);
+      expect(find.text('Import existing history? (Optional)'), findsOneWidget);
       expect(
         find.text(
           'You can import past measurements from a CSV file, or skip this '
@@ -73,11 +73,13 @@ void main() {
         ),
         findsOneWidget,
       );
-      expect(find.byKey(const Key('csv_import_pick_button')), findsOneWidget);
-      expect(find.byKey(const Key('csv_import_skip_button')), findsOneWidget);
+      expect(find.text('Import CSV file'), findsOneWidget);
+      expect(find.text('Select a file from your device'), findsOneWidget);
+      expect(find.byKey(const Key('csv_import_tile')), findsOneWidget);
+      expect(find.byKey(const Key('csv_import_next_button')), findsOneWidget);
     });
 
-    testWidgets('invokes onSkipped when the skip button is pressed', (
+    testWidgets('invokes onSkipped when the next button is pressed', (
       tester,
     ) async {
       var skipped = false;
@@ -89,7 +91,7 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      await tester.tap(find.byKey(const Key('csv_import_skip_button')));
+      await tester.tap(find.byKey(const Key('csv_import_next_button')));
       await tester.pumpAndSettle();
 
       expect(skipped, isTrue);
@@ -101,7 +103,7 @@ void main() {
       await tester.pumpWidget(buildSubject(service: service));
       await tester.pumpAndSettle();
 
-      await tester.tap(find.byKey(const Key('csv_import_pick_button')));
+      await tester.tap(find.byKey(const Key('csv_import_tile')));
       await tester.pump();
 
       expect(find.byType(CircularProgressIndicator), findsOneWidget);
@@ -127,7 +129,7 @@ void main() {
         );
         await tester.pumpAndSettle();
 
-        await tester.tap(find.byKey(const Key('csv_import_pick_button')));
+        await tester.tap(find.byKey(const Key('csv_import_tile')));
         await tester.pumpAndSettle();
 
         expect(find.text('Imported 2 measurements!'), findsOneWidget);
@@ -155,7 +157,7 @@ void main() {
       await tester.pumpWidget(buildSubject(service: service));
       await tester.pumpAndSettle();
 
-      await tester.tap(find.byKey(const Key('csv_import_pick_button')));
+      await tester.tap(find.byKey(const Key('csv_import_tile')));
       await tester.pumpAndSettle();
 
       expect(
@@ -183,7 +185,7 @@ void main() {
       await tester.pumpWidget(buildSubject(service: service));
       await tester.pumpAndSettle();
 
-      await tester.tap(find.byKey(const Key('csv_import_pick_button')));
+      await tester.tap(find.byKey(const Key('csv_import_tile')));
       await tester.pumpAndSettle();
 
       expect(
@@ -198,12 +200,12 @@ void main() {
       await tester.pumpWidget(buildSubject(service: service));
       await tester.pumpAndSettle();
 
-      await tester.tap(find.byKey(const Key('csv_import_pick_button')));
+      await tester.tap(find.byKey(const Key('csv_import_tile')));
       await tester.pumpAndSettle();
 
       expect(find.byType(CircularProgressIndicator), findsNothing);
-      expect(find.byKey(const Key('csv_import_pick_button')), findsOneWidget);
-      expect(find.byKey(const Key('csv_import_skip_button')), findsOneWidget);
+      expect(find.byKey(const Key('csv_import_tile')), findsOneWidget);
+      expect(find.byKey(const Key('csv_import_next_button')), findsOneWidget);
     });
   });
 }
