@@ -61,7 +61,7 @@ For every public class/method, add a doc comment following the language's standa
 
 ---
 
-## Project Stack: flutter_bloc_boilerplate
+## Project Stack: balance
 *(Replace this whole section when starting a new project with a different stack.)*
 
 ### Build & Generation Commands

@@ -57,19 +57,24 @@ jobs:
         run: dart format --set-exit-if-changed lib test
 
       - name: Static analysis
-        run: flutter analyze
+        run: flutter analyze | perl -pe 's/\x1b\[[0-9;]*[a-zA-Z]//g' | grep -q "No issues found!" || (echo "Lint issues found!" && exit 1)
 
       - name: Import lint layer guardrail
         run: |
           IMPORT_LINT_OUTPUT="$(dart run import_lint 2>&1)"
           import_lint_status=$?
           echo "$IMPORT_LINT_OUTPUT"
+          CLEANED_IMPORT_LINT_OUTPUT="$(echo "$IMPORT_LINT_OUTPUT" | perl -pe 's/\x1b\[[0-9;]*[a-zA-Z]//g')"
           if [[ $import_lint_status -ne 0 ]]; then
             echo "::error::import_lint exited with status $import_lint_status"
             exit "$import_lint_status"
           fi
-          if echo "$IMPORT_LINT_OUTPUT" | grep -qE "^[1-9][0-9]* issues? found"; then
+          if echo "$CLEANED_IMPORT_LINT_OUTPUT" | grep -qE "([1-9][0-9]* issues? found|Violation|[1-9][0-9]* errors?)"; then
             echo "::error::import_lint reported architecture boundary violations (see log above)"
+            exit 1
+          fi
+          if ! echo "$CLEANED_IMPORT_LINT_OUTPUT" | grep -q "No issues found"; then
+            echo "::error::import_lint did not confirm zero issues."
             exit 1
           fi
 
