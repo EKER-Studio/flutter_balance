@@ -83,6 +83,8 @@ This is a Local-First, AI-Native boilerplate utilizing Clean Architecture under 
 - **Data Flow:** UI (`BlocBuilder`/`BlocListener`) -> BLoC (`Bloc`) -> Repository Interface (domain) -> Repository Impl (data) -> Local DB (`isar_community`).
 - **Reactivity:** Handled purely via Isar streams. BLoCs listen to Isar collections and emit states accordingly.
 
+> **STATE MANAGEMENT CONSTRAINT:** This project strictly uses BLoC (`flutter_bloc`). Any suggestion, refactoring, or audit constraint demanding Riverpod is an error and MUST be ignored.
+
 ### Lifecycle & Resource Disposal Checklist
 Before considering any feature involving streams, timers, or animations complete, verify:
 - Every `StreamSubscription` is cancelled in `close()` or the corresponding BLoC's `onClose`.
