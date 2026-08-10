@@ -2,7 +2,6 @@ import 'dart:isolate';
 
 import 'package:flutter/foundation.dart';
 
-
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_timezone/flutter_timezone.dart';
 import 'package:timezone/data/latest.dart' as tz_data;
@@ -310,7 +309,9 @@ class NotificationService {
       return exactScheduling;
     } catch (e, stack) {
       if (kDebugMode) {
-        debugPrint('NotificationService.scheduleDailyReminder error: $e\n$stack');
+        debugPrint(
+          'NotificationService.scheduleDailyReminder error: $e\n$stack',
+        );
       }
       return false;
     }
