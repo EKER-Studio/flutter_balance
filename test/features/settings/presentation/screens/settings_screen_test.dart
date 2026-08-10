@@ -10,6 +10,7 @@ import 'package:balance/core/integrations/health/health_service.dart';
 import 'package:balance/core/integrations/notifications/notification_service.dart';
 import 'package:balance/features/weight/presentation/bloc/weight_bloc.dart';
 import 'package:balance/features/weight/presentation/bloc/weight_event.dart';
+import 'package:balance/features/weight/domain/weight_error_type.dart';
 import 'package:balance/l10n/app_localizations.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_bloc.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_event.dart';
@@ -247,6 +248,55 @@ void main() {
     await tester.pump();
 
     verifyNever(() => storage.clear());
+  });
+
+  testWidgets('shows success snackbar only after the wipe completes', (
+    tester,
+  ) async {
+    when(() => weightBloc.stream).thenAnswer(
+      (_) => Stream.value(const WeightLoaded(entries: [], filteredEntries: [])),
+    );
+
+    await tester.pumpWidget(createTestWidget());
+    await tester.pump();
+
+    await tester.ensureVisible(find.text('Wipe All Data'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Wipe All Data'));
+    await tester.pump();
+
+    await tester.tap(find.text('Wipe Data'));
+    await tester.pumpAndSettle();
+
+    expect(
+      find.text('All data has been wiped. Restart the app.'),
+      findsOneWidget,
+    );
+  });
+
+  testWidgets('shows error snackbar when the wipe fails', (tester) async {
+    when(() => weightBloc.stream).thenAnswer(
+      (_) => Stream.value(
+        const WeightError(
+          errorType: WeightErrorType.wipeFailed,
+          entries: [],
+          filteredEntries: [],
+        ),
+      ),
+    );
+
+    await tester.pumpWidget(createTestWidget());
+    await tester.pump();
+
+    await tester.ensureVisible(find.text('Wipe All Data'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Wipe All Data'));
+    await tester.pump();
+
+    await tester.tap(find.text('Wipe Data'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Failed to clear weight data.'), findsOneWidget);
   });
 
   group('Health sync', () {

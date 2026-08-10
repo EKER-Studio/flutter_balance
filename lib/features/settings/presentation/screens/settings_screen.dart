@@ -11,10 +11,12 @@ import 'package:balance/core/integrations/health/health_service.dart';
 import 'package:balance/core/integrations/csv/csv_exporter.dart';
 import 'package:balance/core/integrations/csv/csv_importer.dart';
 import 'package:balance/features/weight/domain/entities/weight_entry.dart';
+import 'package:balance/features/weight/domain/weight_error_type.dart';
 import 'package:balance/features/weight/presentation/bloc/weight_bloc.dart';
 import 'package:balance/features/weight/presentation/bloc/weight_event.dart';
 import 'package:balance/features/weight/presentation/bloc/weight_state.dart';
 import 'package:balance/features/weight/presentation/utils/measurement_unit_localizer.dart';
+import 'package:balance/features/weight/presentation/utils/weight_error_localizer.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_bloc.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_event.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_state.dart';
@@ -689,6 +691,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   /// Clears all weight entries and resets every app setting.
+  ///
+  /// The outcome snackbar is shown only once the wipe has actually completed,
+  /// because BLoC events are processed asynchronously and a failing clear
+  /// surfaces as a [WeightError] state instead of a thrown exception.
   Future<void> _wipeDatabase() async {
     final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
@@ -700,11 +706,27 @@ class _SettingsScreenState extends State<SettingsScreen> {
       appSettingsBloc.add(const ResetAppSettings());
       weightBloc.add(const RefreshWeightData());
 
+      final outcome = await weightBloc.stream
+          .firstWhere(
+            (state) =>
+                (state is WeightLoaded && state.entries.isEmpty) ||
+                (state is WeightError &&
+                    state.errorType == WeightErrorType.wipeFailed),
+          )
+          .timeout(const Duration(seconds: 10));
+
       if (!mounted) return;
+      final isError = outcome is WeightError;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(l10n.dataWipedSuccess),
-          backgroundColor: theme.colorScheme.tertiary,
+          content: Text(
+            isError
+                ? WeightErrorType.wipeFailed.localizedMessage(l10n)
+                : l10n.dataWipedSuccess,
+          ),
+          backgroundColor: isError
+              ? theme.colorScheme.error
+              : theme.colorScheme.tertiary,
         ),
       );
     } catch (e) {
