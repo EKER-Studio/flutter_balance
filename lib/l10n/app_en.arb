@@ -69,6 +69,7 @@
   "addFirstMeasurement": "Add first measurement",
   "lowest": "Lowest",
   "highest": "Highest",
+  "weightRangeSemanticsPrefix": "Weight range: ",
   "latestMeasurement": "Latest measurement",
   "addWeight": "Add measurement",
   "measurementDate": "Measurement date",
@@ -88,8 +89,10 @@
   "lastUpdatedDate": "Last updated: {date}",
   "setWeightGoal": "Set weight goal",
   "weightTrend": "Weight trend",
+  "weightTrendChartSemantics": "{count, plural, one{{count} measurement} other{{count} measurements}}",
   "weightGoal": "Weight Goal",
   "goalAchieved": "Goal achieved!",
+  "goalProgress": "Goal progress",
   "toTarget": "to target",
   "chartEmpty": "Not enough data to display chart.",
   "week": "Week",
@@ -160,6 +163,8 @@
   "nextMonth": "Next month",
   "monthlyCompliance": "Consistency",
   "averageWeight": "Average Weight",
+  "allEntriesLabel": "All entries",
+  "weightRangeCardTitle": "Weight range and average",
   "bmiChartTitle": "BMI History",
   "bmiChartNoHeight": "Set your height in Settings to see the BMI chart.",
   "totalProgress": "Total Progress",
@@ -384,6 +389,9 @@
   },
   "@streakDays": {
     "description": "Label describing the current consecutive-days logging streak."
+  },
+  "@weightTrendChartSemantics": {
+    "description": "Accessibility label describing the number of measurements plotted on the weight trend chart."
   },
   "@trendPercentChange": {
     "description": "Label showing the weight trend as a percentage change over the selected period."

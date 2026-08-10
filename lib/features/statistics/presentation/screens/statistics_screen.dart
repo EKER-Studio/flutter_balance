@@ -291,7 +291,7 @@ class StatisticsScreen extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      'Postęp celu',
+                      l10n.goalProgress,
                       style: Theme.of(context).textTheme.labelMedium?.copyWith(
                         color: cs.onSurfaceVariant,
                       ),
@@ -454,7 +454,7 @@ class StatisticsScreen extends StatelessWidget {
     return Semantics(
       container: true,
       label:
-          'Zakres wagi: ${l10n.highest} ${maxDisplay.toStringAsFixed(1)} $unitLabel, ${l10n.lowest} ${minDisplay.toStringAsFixed(1)} $unitLabel, ${l10n.averageWeight} ${avgDisplay.toStringAsFixed(1)} $unitLabel',
+          '${l10n.weightRangeSemanticsPrefix}${l10n.highest} ${maxDisplay.toStringAsFixed(1)} $unitLabel, ${l10n.lowest} ${minDisplay.toStringAsFixed(1)} $unitLabel, ${l10n.averageWeight} ${avgDisplay.toStringAsFixed(1)} $unitLabel',
       child: Card(
         elevation: 0,
         color: cs.surfaceContainerLow,
@@ -469,7 +469,7 @@ class StatisticsScreen extends StatelessWidget {
                   Icon(Icons.analytics_outlined, size: 22, color: cs.primary),
                   const SizedBox(width: 8),
                   Text(
-                    'Zakres i średnia wagi',
+                    l10n.weightRangeCardTitle,
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
                       color: cs.onSurface,
                       fontWeight: FontWeight.w600,
@@ -508,7 +508,7 @@ class StatisticsScreen extends StatelessWidget {
                 iconColor: cs.secondary,
                 label: l10n.averageWeight,
                 value: '${avgDisplay.toStringAsFixed(1)} $unitLabel',
-                date: 'Wszystkie wpisy',
+                date: l10n.allEntriesLabel,
               ),
             ],
           ),
