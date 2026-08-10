@@ -248,11 +248,7 @@ void main() {
       act: (bloc) => bloc.add(const ToggleNotifications(true)),
       expect: () => [
         isA<AppSettingsState>()
-            .having(
-              (s) => s.notificationsEnabled,
-              'notificationsEnabled',
-              true,
-            )
+            .having((s) => s.notificationsEnabled, 'notificationsEnabled', true)
             .having(
               (s) => s.notificationInexactScheduling,
               'notificationInexactScheduling',
@@ -265,8 +261,9 @@ void main() {
         ),
       ],
       verify: (_) {
-        verify(() => mockNotificationService.scheduleDailyReminder(any()))
-            .called(1);
+        verify(
+          () => mockNotificationService.scheduleDailyReminder(any()),
+        ).called(1);
       },
     );
 
@@ -316,9 +313,7 @@ void main() {
       'clears the inexact scheduling flag on ToggleNotifications(false)',
       build: () =>
           AppSettingsBloc(notificationService: mockNotificationService),
-      seed: () => const AppSettingsState(
-        notificationInexactScheduling: true,
-      ),
+      seed: () => const AppSettingsState(notificationInexactScheduling: true),
       act: (bloc) => bloc.add(const ToggleNotifications(false)),
       expect: () => [
         isA<AppSettingsState>().having(

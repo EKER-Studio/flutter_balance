@@ -175,7 +175,8 @@ class StatisticsScreen extends StatelessWidget {
     final paceSign = (paceDisplay != null && paceDisplay > 0) ? '+' : '';
     final paceBadgeText = paceDisplay != null
         ? l10n.weeklyPaceBadge(
-            '$paceSign${paceDisplay.toStringAsFixed(1)} $unitLabel')
+            '$paceSign${paceDisplay.toStringAsFixed(1)} $unitLabel',
+          )
         : null;
 
     double? goalProgressPct;

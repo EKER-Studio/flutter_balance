@@ -39,19 +39,23 @@ void main() {
       expect(result, isA<bool>());
     });
 
-    test('canScheduleExactNotifications returns true when plugin is unavailable',
-        () async {
-      final result = await NotificationService.instance
-          .canScheduleExactNotifications();
-      expect(result, isTrue);
-    });
+    test(
+      'canScheduleExactNotifications returns true when plugin is unavailable',
+      () async {
+        final result = await NotificationService.instance
+            .canScheduleExactNotifications();
+        expect(result, isTrue);
+      },
+    );
 
-    test('requestExactAlarmsPermission returns false when plugin is unavailable',
-        () async {
-      final result = await NotificationService.instance
-          .requestExactAlarmsPermission();
-      expect(result, isFalse);
-    });
+    test(
+      'requestExactAlarmsPermission returns false when plugin is unavailable',
+      () async {
+        final result = await NotificationService.instance
+            .requestExactAlarmsPermission();
+        expect(result, isFalse);
+      },
+    );
 
     test('cancelDailyReminder does not crash', () async {
       await expectLater(

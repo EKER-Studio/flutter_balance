@@ -243,10 +243,7 @@ void main() {
       await tester.tap(find.byType(Switch).first);
       await tester.pumpAndSettle();
 
-      expect(
-        find.textContaining('exact alarm scheduling'),
-        findsOneWidget,
-      );
+      expect(find.textContaining('exact alarm scheduling'), findsOneWidget);
     },
   );
 
