@@ -8,7 +8,7 @@ import 'package:balance/l10n/app_localizations.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_bloc.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_event.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_state.dart';
-import 'package:balance/presentation/screens/onboarding/widgets/step_health_sync.dart';
+import 'package:balance/features/onboarding/presentation/widgets/steps/step_health_sync.dart';
 
 class MockHydratedStorage extends Mock implements HydratedStorage {}
 

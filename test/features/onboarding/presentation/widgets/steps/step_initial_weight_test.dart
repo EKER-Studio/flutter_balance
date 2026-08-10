@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:balance/core/models/measurement_unit.dart';
 import 'package:balance/l10n/app_localizations.dart';
-import 'package:balance/presentation/screens/onboarding/widgets/step_initial_weight.dart';
+import 'package:balance/features/onboarding/presentation/widgets/steps/step_initial_weight.dart';
 
 void main() {
   Widget buildTestWidget({

@@ -21,7 +21,7 @@ import 'package:balance/presentation/screens/app_initialization_error_screen.dar
 import 'package:balance/presentation/screens/app_splash_screen.dart';
 import 'package:balance/presentation/screens/biometric_shield_screen.dart';
 import 'package:balance/features/navigation/presentation/screens/main_navigation_screen.dart';
-import 'package:balance/presentation/screens/onboarding/onboarding_wizard_screen.dart';
+import 'package:balance/features/onboarding/presentation/screens/onboarding_wizard_screen.dart';
 import 'package:balance/presentation/theme/app_theme.dart';
 
 /// Root widget of the Balance application.

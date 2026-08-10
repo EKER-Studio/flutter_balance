@@ -3,8 +3,8 @@ import 'package:balance/core/models/measurement_unit.dart';
 import 'package:balance/features/weight/domain/entities/weight_entry.dart';
 import 'package:balance/features/weight/presentation/bloc/weight_bloc.dart';
 import 'package:balance/features/weight/presentation/bloc/weight_event.dart';
-import 'package:balance/presentation/bloc/onboarding/onboarding_event.dart';
-import 'package:balance/presentation/bloc/onboarding/onboarding_state.dart';
+import 'package:balance/features/onboarding/presentation/bloc/onboarding_event.dart';
+import 'package:balance/features/onboarding/presentation/bloc/onboarding_state.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_bloc.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_event.dart';
 

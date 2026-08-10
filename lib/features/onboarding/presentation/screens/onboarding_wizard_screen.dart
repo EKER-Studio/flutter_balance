@@ -7,18 +7,18 @@ import 'package:balance/features/weight/domain/entities/weight_entry.dart';
 import 'package:balance/features/weight/presentation/bloc/weight_bloc.dart';
 import 'package:balance/features/weight/presentation/bloc/weight_event.dart';
 import 'package:balance/l10n/app_localizations.dart';
-import 'package:balance/presentation/bloc/onboarding/onboarding_bloc.dart';
-import 'package:balance/presentation/bloc/onboarding/onboarding_event.dart';
-import 'package:balance/presentation/bloc/onboarding/onboarding_state.dart';
+import 'package:balance/features/onboarding/presentation/bloc/onboarding_bloc.dart';
+import 'package:balance/features/onboarding/presentation/bloc/onboarding_event.dart';
+import 'package:balance/features/onboarding/presentation/bloc/onboarding_state.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_bloc.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_event.dart';
-import 'package:balance/presentation/screens/onboarding/widgets/step_biometric_lock.dart';
-import 'package:balance/presentation/screens/onboarding/widgets/step_health_sync.dart';
-import 'package:balance/presentation/screens/onboarding/widgets/step_initial_weight.dart';
-import 'package:balance/presentation/screens/onboarding/widgets/step_reminder_notification.dart';
-import 'package:balance/presentation/screens/onboarding/widgets/step_target_weight.dart';
-import 'package:balance/presentation/screens/onboarding/widgets/step_units_height.dart';
-import 'package:balance/presentation/screens/onboarding/widgets/step_welcome.dart';
+import 'package:balance/features/onboarding/presentation/widgets/steps/step_biometric_lock.dart';
+import 'package:balance/features/onboarding/presentation/widgets/steps/step_health_sync.dart';
+import 'package:balance/features/onboarding/presentation/widgets/steps/step_initial_weight.dart';
+import 'package:balance/features/onboarding/presentation/widgets/steps/step_reminder_notification.dart';
+import 'package:balance/features/onboarding/presentation/widgets/steps/step_target_weight.dart';
+import 'package:balance/features/onboarding/presentation/widgets/steps/step_units_height.dart';
+import 'package:balance/features/onboarding/presentation/widgets/steps/step_welcome.dart';
 
 /// Container screen for the initial onboarding wizard.
 ///
