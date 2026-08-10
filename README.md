@@ -127,6 +127,16 @@ Generate code for Isar schema models:
 dart run build_runner build
 ```
 
+Regenerate the app icon (light, dark, monochrome, and adaptive variants) and the native splash screen after updating the source images in `assets/icon/`:
+
+```bash
+# Generate App Icons
+dart run flutter_launcher_icons
+
+# Generate Native Splash Screen
+dart run flutter_native_splash:create
+```
+
 ## Testing
 
 Run full verification suite (over 500+ tests):

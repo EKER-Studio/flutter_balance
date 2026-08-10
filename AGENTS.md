@@ -68,6 +68,8 @@ For every public class/method, add a doc comment following the language's standa
 - Install dependencies: `flutter pub get`
 - Run build runner: `dart run build_runner build`
 - Watch build runner: `dart run build_runner watch`
+- Generate app icons: `dart run flutter_launcher_icons`
+- Generate native splash screen: `dart run flutter_native_splash:create`
 - Code analysis: `flutter analyze`
 - Run tests: `flutter test`
 
