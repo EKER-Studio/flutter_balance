@@ -85,6 +85,7 @@
   "bmiSubtitle": "Based on your height and latest weight",
   "bmiLegendTitle": "BMI Categories",
   "today": "Today",
+  "sinceEntryDate": "since {date}",
   "lastUpdatedToday": "Last updated: Today",
   "lastUpdatedDate": "Last updated: {date}",
   "setWeightGoal": "Set weight goal",

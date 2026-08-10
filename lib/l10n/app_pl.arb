@@ -85,6 +85,7 @@
   "bmiSubtitle": "Na podstawie Twojego wzrostu i ostatniej wagi",
   "bmiLegendTitle": "Kategorie BMI",
   "today": "Dzisiaj",
+  "sinceEntryDate": "od {date}",
   "lastUpdatedToday": "Ostatnia aktualizacja: Dzisiaj",
   "lastUpdatedDate": "Ostatnia aktualizacja: {date}",
   "setWeightGoal": "Ustaw cel wagi",

@@ -267,7 +267,9 @@ class StatisticsScreen extends StatelessWidget {
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
-                      'od ${_formatEntryDate(context, firstEntry.dateTime, l10n)}',
+                      l10n.sinceEntryDate(
+                        _formatEntryDate(context, firstEntry.dateTime, l10n),
+                      ),
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                         color: cs.onSurfaceVariant,
                       ),
@@ -678,13 +680,8 @@ class StatisticsScreen extends StatelessWidget {
     return DateFormat.yMMMd(locale).format(date);
   }
 
-  /// Shows the [AddWeightSheet] modal bottom sheet.
+  /// Shows the [AddWeightSheet] dialog.
   void _showAddWeightSheet(BuildContext context) {
-    showModalBottomSheet<void>(
-      context: context,
-      isScrollControlled: true,
-      useSafeArea: true,
-      builder: (_) => const AddWeightSheet(),
-    );
+    showDialog<void>(context: context, builder: (_) => const AddWeightSheet());
   }
 }
