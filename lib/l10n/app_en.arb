@@ -412,5 +412,29 @@
   },
   "@errorSendingTestNotification": {
     "description": "Error message shown when sending a test push notification fails."
+  },
+  "goalProgressSemantics": "Goal: {target}. {detail}. Double tap to edit target weight.",
+  "@goalProgressSemantics": {
+    "description": "Accessibility label for the goal progress section on the health summary card.",
+    "placeholders": {
+      "target": {
+        "type": "String"
+      },
+      "detail": {
+        "type": "String"
+      }
+    }
+  },
+  "bmiCategorySemantics": "BMI {value}, {category}. Double tap for BMI legend.",
+  "@bmiCategorySemantics": {
+    "description": "Accessibility label for the BMI badge on the health summary card.",
+    "placeholders": {
+      "value": {
+        "type": "String"
+      },
+      "category": {
+        "type": "String"
+      }
+    }
   }
 }

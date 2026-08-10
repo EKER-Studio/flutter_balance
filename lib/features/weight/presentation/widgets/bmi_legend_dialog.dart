@@ -17,7 +17,7 @@ class BmiLegendDialog extends StatelessWidget {
     return AlertDialog(
       title: Row(
         children: [
-          Icon(Icons.info_outline, color: cs.primary),
+          ExcludeSemantics(child: Icon(Icons.info_outline, color: cs.primary)),
           const SizedBox(width: 8),
           Expanded(child: Text(l10n.bmiLegendTitle)),
         ],
@@ -80,13 +80,15 @@ class BmiLegendDialog extends StatelessWidget {
 
     return Row(
       children: [
-        Container(
-          width: 16,
-          height: 16,
-          decoration: BoxDecoration(
-            color: bgColor,
-            border: Border.all(color: textColor, width: 2),
-            borderRadius: BorderRadius.circular(4),
+        ExcludeSemantics(
+          child: Container(
+            width: 16,
+            height: 16,
+            decoration: BoxDecoration(
+              color: bgColor,
+              border: Border.all(color: textColor, width: 2),
+              borderRadius: BorderRadius.circular(4),
+            ),
           ),
         ),
         const SizedBox(width: 12),

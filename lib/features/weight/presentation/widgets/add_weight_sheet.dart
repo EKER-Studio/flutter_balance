@@ -145,10 +145,12 @@ class _AddWeightSheetState extends State<AddWeightSheet> {
                 Center(
                   child: Column(
                     children: [
-                      Icon(
-                        Icons.monitor_weight_outlined,
-                        size: 40,
-                        color: Theme.of(context).colorScheme.primary,
+                      ExcludeSemantics(
+                        child: Icon(
+                          Icons.monitor_weight_outlined,
+                          size: 40,
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
                       ),
                       const SizedBox(height: 12),
                       Text(

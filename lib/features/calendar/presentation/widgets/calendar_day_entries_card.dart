@@ -59,7 +59,13 @@ class CalendarDayEntriesCard extends StatelessWidget {
             ),
             child: Row(
               children: [
-                Icon(Icons.stars, color: cs.onTertiaryContainer, size: 22),
+                ExcludeSemantics(
+                  child: Icon(
+                    Icons.stars,
+                    color: cs.onTertiaryContainer,
+                    size: 22,
+                  ),
+                ),
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
@@ -101,95 +107,101 @@ class CalendarDayEntriesCard extends StatelessWidget {
             final category = bmi.isFinite ? BmiCategory.fromBmi(bmi) : null;
             final categoryText = category?.localizedName(l10n) ?? '';
 
-            return Card(
-              elevation: 0,
-              margin: EdgeInsets.zero,
-              color: cs.surfaceContainerLow,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(28),
-              ),
-              child: InkWell(
-                borderRadius: BorderRadius.circular(28),
-                onTap: () {
-                  // Reserved: tap-to-edit entry handling.
-                },
-                child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Row(
-                    children: [
-                      CircleAvatar(
-                        radius: 24,
-                        backgroundColor: meetsGoal
-                            ? cs.tertiaryContainer
-                            : cs.secondaryContainer,
-                        child: Icon(
-                          meetsGoal ? Icons.star : Icons.monitor_weight,
-                          size: 24,
-                          color: meetsGoal
-                              ? cs.onTertiaryContainer
-                              : cs.onSecondaryContainer,
+            return MergeSemantics(
+              child: Card(
+                elevation: 0,
+                margin: EdgeInsets.zero,
+                color: cs.surfaceContainerLow,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(28),
+                ),
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(28),
+                  onTap: () {
+                    // Reserved: tap-to-edit entry handling.
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Row(
+                      children: [
+                        CircleAvatar(
+                          radius: 24,
+                          backgroundColor: meetsGoal
+                              ? cs.tertiaryContainer
+                              : cs.secondaryContainer,
+                          child: Icon(
+                            meetsGoal ? Icons.star : Icons.monitor_weight,
+                            size: 24,
+                            color: meetsGoal
+                                ? cs.onTertiaryContainer
+                                : cs.onSecondaryContainer,
+                          ),
                         ),
-                      ),
-                      const SizedBox(width: 16),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                '${displayWeight.toStringAsFixed(1)} $unitLabel',
+                                style: Theme.of(context).textTheme.titleLarge
+                                    ?.copyWith(
+                                      fontWeight: FontWeight.bold,
+                                      color: cs.onSurface,
+                                    ),
+                              ),
+                              Row(
+                                children: [
+                                  Icon(
+                                    Icons.schedule,
+                                    size: 16,
+                                    color: cs.onSurfaceVariant,
+                                  ),
+                                  const SizedBox(width: 4),
+                                  Text(
+                                    entry.note != null && entry.note!.isNotEmpty
+                                        ? '$timeStr • ${entry.note}'
+                                        : timeStr,
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .bodyMedium
+                                        ?.copyWith(color: cs.onSurfaceVariant),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.end,
                           children: [
                             Text(
-                              '${displayWeight.toStringAsFixed(1)} $unitLabel',
-                              style: Theme.of(context).textTheme.titleLarge
+                              bmi.isFinite
+                                  ? 'BMI ${bmi.toStringAsFixed(1)}'
+                                  : '',
+                              style: Theme.of(context).textTheme.titleMedium
                                   ?.copyWith(
                                     fontWeight: FontWeight.bold,
-                                    color: cs.onSurface,
+                                    color: cs.primary,
                                   ),
                             ),
-                            Row(
-                              children: [
-                                Icon(
-                                  Icons.schedule,
-                                  size: 16,
-                                  color: cs.onSurfaceVariant,
-                                ),
-                                const SizedBox(width: 4),
-                                Text(
-                                  entry.note != null && entry.note!.isNotEmpty
-                                      ? '$timeStr • ${entry.note}'
-                                      : timeStr,
-                                  style: Theme.of(context).textTheme.bodyMedium
-                                      ?.copyWith(color: cs.onSurfaceVariant),
-                                ),
-                              ],
-                            ),
+                            if (categoryText.isNotEmpty)
+                              Text(
+                                categoryText,
+                                style: Theme.of(context).textTheme.labelMedium
+                                    ?.copyWith(color: cs.onSurfaceVariant),
+                              ),
                           ],
                         ),
-                      ),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: [
-                          Text(
-                            bmi.isFinite ? 'BMI ${bmi.toStringAsFixed(1)}' : '',
-                            style: Theme.of(context).textTheme.titleMedium
-                                ?.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                  color: cs.primary,
-                                ),
-                          ),
-                          if (categoryText.isNotEmpty)
-                            Text(
-                              categoryText,
-                              style: Theme.of(context).textTheme.labelMedium
-                                  ?.copyWith(color: cs.onSurfaceVariant),
-                            ),
-                        ],
-                      ),
-                      const SizedBox(width: 8),
-                      IconButton(
-                        icon: const Icon(Icons.delete_outline, size: 20),
-                        tooltip: l10n.deleteMeasurementTooltip,
-                        color: cs.onSurfaceVariant,
-                        onPressed: () => _confirmDelete(context, entry.id),
-                      ),
-                    ],
+                        const SizedBox(width: 8),
+                        IconButton(
+                          icon: const Icon(Icons.delete_outline, size: 20),
+                          tooltip: l10n.deleteMeasurementTooltip,
+                          color: cs.onSurfaceVariant,
+                          onPressed: () => _confirmDelete(context, entry.id),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),

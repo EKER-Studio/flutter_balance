@@ -349,5 +349,7 @@
         "type": "int"
       }
     }
-  }
+  },
+  "goalProgressSemantics": "Cel: {target}. {detail}. Stuknij dwukrotnie, aby edytować wagę docelową.",
+  "bmiCategorySemantics": "BMI {value}, {category}. Stuknij dwukrotnie, aby zobaczyć legendę BMI."
 }

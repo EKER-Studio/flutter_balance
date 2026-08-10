@@ -68,14 +68,16 @@ class StateMessageCard extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Container(
-                width: 96,
-                height: 96,
-                decoration: BoxDecoration(
-                  color: iconContainerColor,
-                  shape: BoxShape.circle,
+              ExcludeSemantics(
+                child: Container(
+                  width: 96,
+                  height: 96,
+                  decoration: BoxDecoration(
+                    color: iconContainerColor,
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(icon, size: 48, color: iconColor),
                 ),
-                child: Icon(icon, size: 48, color: iconColor),
               ),
               const SizedBox(height: 24),
               Text(

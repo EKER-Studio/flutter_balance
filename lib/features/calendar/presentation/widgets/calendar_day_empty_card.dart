@@ -23,13 +23,15 @@ class CalendarDayEmptyCard extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
         child: Column(
           children: [
-            CircleAvatar(
-              radius: 40,
-              backgroundColor: cs.secondaryContainer,
-              child: Icon(
-                Icons.event_busy,
-                size: 40,
-                color: cs.onSecondaryContainer,
+            ExcludeSemantics(
+              child: CircleAvatar(
+                radius: 40,
+                backgroundColor: cs.secondaryContainer,
+                child: Icon(
+                  Icons.event_busy,
+                  size: 40,
+                  color: cs.onSecondaryContainer,
+                ),
               ),
             ),
             const SizedBox(height: 16),

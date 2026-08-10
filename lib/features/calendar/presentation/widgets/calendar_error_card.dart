@@ -26,13 +26,15 @@ class CalendarErrorCard extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            CircleAvatar(
-              radius: 40,
-              backgroundColor: cs.onErrorContainer.withValues(alpha: 0.15),
-              child: Icon(
-                Icons.error_outline,
-                size: 40,
-                color: cs.onErrorContainer,
+            ExcludeSemantics(
+              child: CircleAvatar(
+                radius: 40,
+                backgroundColor: cs.onErrorContainer.withValues(alpha: 0.15),
+                child: Icon(
+                  Icons.error_outline,
+                  size: 40,
+                  color: cs.onErrorContainer,
+                ),
               ),
             ),
             const SizedBox(height: 16),

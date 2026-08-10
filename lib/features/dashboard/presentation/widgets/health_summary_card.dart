@@ -208,56 +208,63 @@ class HealthSummaryCard extends StatelessWidget {
         ? category.chipContentColor(isDark: isDark)
         : colorScheme.primary;
 
-    return Ink(
-      decoration: BoxDecoration(
-        color: bgColor,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: borderColor),
-      ),
-      child: InkWell(
-        onTap: () {
-          showDialog(
-            context: context,
-            builder: (context) => const BmiLegendDialog(),
-          );
-        },
-        borderRadius: BorderRadius.circular(20),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              if (category != null)
-                Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(
-                      category == BmiCategory.normal
-                          ? Icons.check_circle
-                          : Icons.info,
-                      size: 14,
-                      color: contentColor,
-                    ),
-                    const SizedBox(width: 4),
-                    Text(
-                      category.localizedName(l10n),
-                      style: textTheme.labelMedium?.copyWith(
+    final categoryLabel = category?.localizedName(l10n) ?? '';
+
+    return Semantics(
+      button: true,
+      label: l10n.bmiCategorySemantics(bmi.toStringAsFixed(1), categoryLabel),
+      excludeSemantics: true,
+      child: Ink(
+        decoration: BoxDecoration(
+          color: bgColor,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: borderColor),
+        ),
+        child: InkWell(
+          onTap: () {
+            showDialog(
+              context: context,
+              builder: (context) => const BmiLegendDialog(),
+            );
+          },
+          borderRadius: BorderRadius.circular(20),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (category != null)
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        category == BmiCategory.normal
+                            ? Icons.check_circle
+                            : Icons.info,
+                        size: 14,
                         color: contentColor,
-                        fontWeight: FontWeight.w600,
                       ),
-                    ),
-                  ],
+                      const SizedBox(width: 4),
+                      Text(
+                        category.localizedName(l10n),
+                        style: textTheme.labelMedium?.copyWith(
+                          color: contentColor,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
+                  ),
+                const SizedBox(height: 4),
+                Text(
+                  l10n.bmiValueShortLabel(bmi.toStringAsFixed(1)),
+                  style: textTheme.titleMedium?.copyWith(
+                    color: contentColor,
+                    fontWeight: FontWeight.w700,
+                  ),
                 ),
-              const SizedBox(height: 4),
-              Text(
-                l10n.bmiValueShortLabel(bmi.toStringAsFixed(1)),
-                style: textTheme.titleMedium?.copyWith(
-                  color: contentColor,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
@@ -297,58 +304,64 @@ class HealthSummaryCard extends StatelessWidget {
     // Floor progress at 5% so the bar stays visible.
     progress = progress.clamp(0.05, 1.0);
 
-    return InkWell(
-      onTap: () => _openTargetWeightDialog(context, targetWeightKg, unit),
-      borderRadius: BorderRadius.circular(12),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 4),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  l10n.goalWeightLabel(
-                    '${displayTarget.toStringAsFixed(1)} $unitLabel',
+    final goalTargetStr = '${displayTarget.toStringAsFixed(1)} $unitLabel';
+    final goalDetailStr = isAchieved
+        ? l10n.goalAchieved
+        : l10n.remainingWeightLabel(
+            '${displayDifference.toStringAsFixed(1)} $unitLabel',
+          );
+
+    return Semantics(
+      button: true,
+      label: l10n.goalProgressSemantics(goalTargetStr, goalDetailStr),
+      excludeSemantics: true,
+      child: InkWell(
+        onTap: () => _openTargetWeightDialog(context, targetWeightKg, unit),
+        borderRadius: BorderRadius.circular(12),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 4),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    l10n.goalWeightLabel(goalTargetStr),
+                    style: textTheme.labelMedium?.copyWith(
+                      color: colorScheme.onSurfaceVariant,
+                      fontWeight: FontWeight.w500,
+                    ),
                   ),
-                  style: textTheme.labelMedium?.copyWith(
-                    color: colorScheme.onSurfaceVariant,
-                    fontWeight: FontWeight.w500,
+                  Text(
+                    goalDetailStr,
+                    style: textTheme.labelMedium?.copyWith(
+                      color: colorScheme.onSurfaceVariant,
+                      fontWeight: FontWeight.w500,
+                    ),
                   ),
-                ),
-                Text(
-                  isAchieved
-                      ? l10n.goalAchieved
-                      : l10n.remainingWeightLabel(
-                          '${displayDifference.toStringAsFixed(1)} $unitLabel',
-                        ),
-                  style: textTheme.labelMedium?.copyWith(
-                    color: colorScheme.onSurfaceVariant,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 8),
-            Container(
-              height: 8,
-              decoration: BoxDecoration(
-                color: colorScheme.surfaceContainerHighest,
-                borderRadius: BorderRadius.circular(4),
+                ],
               ),
-              child: FractionallySizedBox(
-                alignment: Alignment.centerLeft,
-                widthFactor: progress,
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: colorScheme.primary,
-                    borderRadius: BorderRadius.circular(4),
+              const SizedBox(height: 8),
+              Container(
+                height: 8,
+                decoration: BoxDecoration(
+                  color: colorScheme.surfaceContainerHighest,
+                  borderRadius: BorderRadius.circular(4),
+                ),
+                child: FractionallySizedBox(
+                  alignment: Alignment.centerLeft,
+                  widthFactor: progress,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: colorScheme.primary,
+                      borderRadius: BorderRadius.circular(4),
+                    ),
                   ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

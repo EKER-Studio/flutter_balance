@@ -98,38 +98,53 @@ class BmiChartCard extends StatelessWidget {
     final categoryColor = category.chipBackgroundColor();
     final categoryTextColor = category.chipContentColor(isDark: isDark);
 
-    return InkWell(
-      onTap: () => _showLegendDialog(context),
-      borderRadius: BorderRadius.circular(12),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 4.0),
-        child: Row(
-          children: [
-            Icon(Icons.monitor_weight_outlined, size: 22, color: cs.secondary),
-            const SizedBox(width: 8),
-            Text(
-              l10n.bmi,
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                color: cs.onSurface,
-                fontWeight: FontWeight.w600,
+    return Semantics(
+      button: true,
+      label: l10n.bmiCategorySemantics(
+        currentBmi.toStringAsFixed(1),
+        categoryLabel,
+      ),
+      excludeSemantics: true,
+      child: InkWell(
+        onTap: () => _showLegendDialog(context),
+        borderRadius: BorderRadius.circular(12),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 4.0),
+          child: Row(
+            children: [
+              Icon(
+                Icons.monitor_weight_outlined,
+                size: 22,
+                color: cs.secondary,
               ),
-            ),
-            const Spacer(),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-              decoration: BoxDecoration(
-                color: categoryColor,
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: Text(
-                categoryLabel,
-                style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                  color: categoryTextColor,
-                  fontWeight: FontWeight.bold,
+              const SizedBox(width: 8),
+              Text(
+                l10n.bmi,
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                  color: cs.onSurface,
+                  fontWeight: FontWeight.w600,
                 ),
               ),
-            ),
-          ],
+              const Spacer(),
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 6,
+                ),
+                decoration: BoxDecoration(
+                  color: categoryColor,
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Text(
+                  categoryLabel,
+                  style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                    color: categoryTextColor,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
