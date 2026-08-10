@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:isolate';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -25,6 +26,51 @@ import 'package:balance/features/weight/domain/weight_error_type.dart';
 /// );
 /// final stream = repository.watchAllEntries();
 /// ```
+
+typedef _DecryptionPayload = (
+  int id,
+  DateTime dateTime,
+  String encryptedWeight,
+  String? encryptedNote,
+);
+
+List<WeightEntry> _decryptPayloads((List<_DecryptionPayload>, Uint8List) args) {
+  final payloads = args.$1;
+  final key = args.$2;
+
+  return payloads.map((p) {
+    double weight = 0.0;
+    String? note;
+
+    try {
+      final decryptedStr = FieldCipher.decrypt(p.$3, key);
+      weight = double.tryParse(decryptedStr) ?? 0.0;
+    } catch (e) {
+      if (kDebugMode) {
+        debugPrint(
+          '[IsarWeightRepository] Decryption failed for weight (id: ${p.$1}, dateTime: ${p.$2}): ${e.runtimeType}',
+        );
+      }
+      weight = 0.0;
+    }
+
+    if (p.$4 != null && p.$4!.isNotEmpty) {
+      try {
+        note = FieldCipher.decrypt(p.$4!, key);
+      } catch (e) {
+        if (kDebugMode) {
+          debugPrint(
+            '[IsarWeightRepository] Decryption failed for note (id: ${p.$1}, dateTime: ${p.$2}): ${e.runtimeType}',
+          );
+        }
+        note = '[Decryption Error]';
+      }
+    }
+
+    return WeightEntry(id: p.$1, weightKg: weight, dateTime: p.$2, note: note);
+  }).toList();
+}
+
 class IsarWeightRepository implements WeightRepository {
   /// Default cap on entries loaded/watched at once, newest-first.
   ///
@@ -97,10 +143,10 @@ class IsarWeightRepository implements WeightRepository {
     String? stored;
     try {
       stored = await secureStorage.read(key: 'isar_encryption_key');
-    } catch (e, stack) {
+    } catch (e) {
       if (kDebugMode) {
         debugPrint(
-          '[IsarWeightRepository] Error reading key from secureStorage: $e\n$stack',
+          '[IsarWeightRepository] Error reading key from secureStorage: ${e.runtimeType}',
         );
       }
     }
@@ -114,48 +160,6 @@ class IsarWeightRepository implements WeightRepository {
     throw WeightRepositoryException(
       type: isWrite ? WeightErrorType.writeFailed : WeightErrorType.readFailed,
       message: 'Missing or inaccessible encryption key',
-    );
-  }
-
-  /// Converts a stored [WeightEntryModel] into its domain [WeightEntry],
-  /// decrypting the weight and note fields.
-  ///
-  /// Undecryptable values degrade to `0.0 kg` and a `[Decryption Error]` note
-  /// respectively.
-  WeightEntry _modelToEntity(WeightEntryModel model, Uint8List key) {
-    double weight = 0.0;
-    String? note;
-
-    try {
-      final decryptedStr = FieldCipher.decrypt(model.encryptedWeight, key);
-      weight = double.tryParse(decryptedStr) ?? 0.0;
-    } catch (e, stack) {
-      if (kDebugMode) {
-        debugPrint(
-          '[IsarWeightRepository] Decryption failed for weight (id: ${model.id}): $e\n$stack',
-        );
-      }
-      weight = 0.0;
-    }
-
-    if (model.encryptedNote != null && model.encryptedNote!.isNotEmpty) {
-      try {
-        note = FieldCipher.decrypt(model.encryptedNote!, key);
-      } catch (e, stack) {
-        if (kDebugMode) {
-          debugPrint(
-            '[IsarWeightRepository] Decryption failed for note (id: ${model.id}): $e\n$stack',
-          );
-        }
-        note = '[Decryption Error]';
-      }
-    }
-
-    return WeightEntry(
-      id: model.id,
-      weightKg: weight,
-      dateTime: model.dateTime,
-      note: note,
     );
   }
 
@@ -234,19 +238,25 @@ class IsarWeightRepository implements WeightRepository {
         .asyncMap((models) async {
           try {
             final key = await _getOrLoadKey(isWrite: false);
-            return models.map((m) => _modelToEntity(m, key)).toList();
+            if (models.isEmpty) return [];
+            final payloads = models
+                .map(
+                  (m) => (m.id, m.dateTime, m.encryptedWeight, m.encryptedNote),
+                )
+                .toList();
+            return await compute(_decryptPayloads, (payloads, key));
           } on WeightRepositoryException {
             rethrow;
-          } catch (e, stack) {
+          } catch (e) {
             if (kDebugMode) {
               debugPrint(
                 '[IsarWeightRepository] watchAllEntries decryption error: '
-                '$e\n$stack',
+                '${e.runtimeType}',
               );
             }
             throw WeightRepositoryException(
               type: WeightErrorType.readFailed,
-              message: 'Failed to decrypt weight entries: $e',
+              message: 'Failed to decrypt weight entries: ${e.runtimeType}',
               sourceError: e,
             );
           }
@@ -266,13 +276,17 @@ class IsarWeightRepository implements WeightRepository {
           .sortByDateTimeDesc()
           .limit(maxEntriesLoaded)
           .findAll();
-      return models.map((m) => _modelToEntity(m, key)).toList();
+      if (models.isEmpty) return [];
+      final payloads = models
+          .map((m) => (m.id, m.dateTime, m.encryptedWeight, m.encryptedNote))
+          .toList();
+      return await compute(_decryptPayloads, (payloads, key));
     } on WeightRepositoryException {
       rethrow;
-    } on IsarError catch (e, stack) {
+    } on IsarError catch (e) {
       if (kDebugMode) {
         debugPrint(
-          '[IsarWeightRepository] getAllEntries IsarError: $e\n$stack',
+          '[IsarWeightRepository] getAllEntries IsarError: ${e.runtimeType}',
         );
       }
       throw WeightRepositoryException(
@@ -280,15 +294,15 @@ class IsarWeightRepository implements WeightRepository {
         message: 'Database read failure: ${e.message}',
         sourceError: e,
       );
-    } catch (e, stack) {
+    } catch (e) {
       if (kDebugMode) {
         debugPrint(
-          '[IsarWeightRepository] getAllEntries unexpected error: $e\n$stack',
+          '[IsarWeightRepository] getAllEntries unexpected error: ${e.runtimeType}',
         );
       }
       throw WeightRepositoryException(
         type: WeightErrorType.readFailed,
-        message: 'Unexpected error while reading entries: $e',
+        message: 'Unexpected error while reading entries: ${e.runtimeType}',
         sourceError: e,
       );
     }
@@ -310,19 +324,21 @@ class IsarWeightRepository implements WeightRepository {
       });
     } on WeightRepositoryException {
       rethrow;
-    } on IsarError catch (e, stack) {
+    } on IsarError catch (e) {
       if (kDebugMode) {
-        debugPrint('[IsarWeightRepository] addEntry IsarError: $e\n$stack');
+        debugPrint(
+          '[IsarWeightRepository] addEntry IsarError: ${e.runtimeType}',
+        );
       }
       throw WeightRepositoryException(
         type: WeightErrorType.writeFailed,
         message: 'Database write failure: ${e.message}',
         sourceError: e,
       );
-    } catch (e, stack) {
+    } catch (e) {
       if (kDebugMode) {
         debugPrint(
-          '[IsarWeightRepository] addEntry unexpected error: $e\n$stack',
+          '[IsarWeightRepository] addEntry unexpected error: ${e.runtimeType}',
         );
       }
       throw WeightRepositoryException(
@@ -343,19 +359,21 @@ class IsarWeightRepository implements WeightRepository {
       await liveIsar.writeTxn(() async {
         await liveIsar.weightEntryModels.delete(id);
       });
-    } on IsarError catch (e, stack) {
+    } on IsarError catch (e) {
       if (kDebugMode) {
-        debugPrint('[IsarWeightRepository] deleteEntry IsarError: $e\n$stack');
+        debugPrint(
+          '[IsarWeightRepository] deleteEntry IsarError: ${e.runtimeType}',
+        );
       }
       throw WeightRepositoryException(
         type: WeightErrorType.deleteEntryFailed,
         message: 'Database delete failure: ${e.message}',
         sourceError: e,
       );
-    } catch (e, stack) {
+    } catch (e) {
       if (kDebugMode) {
         debugPrint(
-          '[IsarWeightRepository] deleteEntry unexpected error: $e\n$stack',
+          '[IsarWeightRepository] deleteEntry unexpected error: ${e.runtimeType}',
         );
       }
       throw WeightRepositoryException(
@@ -382,10 +400,10 @@ class IsarWeightRepository implements WeightRepository {
       return models.length;
     } on WeightRepositoryException {
       rethrow;
-    } on IsarError catch (e, stack) {
+    } on IsarError catch (e) {
       if (kDebugMode) {
         debugPrint(
-          '[IsarWeightRepository] bulkImportEntries IsarError: $e\n$stack',
+          '[IsarWeightRepository] bulkImportEntries IsarError: ${e.runtimeType}',
         );
       }
       throw WeightRepositoryException(
@@ -393,10 +411,10 @@ class IsarWeightRepository implements WeightRepository {
         message: 'Database bulk import failure: ${e.message}',
         sourceError: e,
       );
-    } catch (e, stack) {
+    } catch (e) {
       if (kDebugMode) {
         debugPrint(
-          '[IsarWeightRepository] bulkImportEntries unexpected error: $e\n$stack',
+          '[IsarWeightRepository] bulkImportEntries unexpected error: ${e.runtimeType}',
         );
       }
       throw WeightRepositoryException(
@@ -417,19 +435,21 @@ class IsarWeightRepository implements WeightRepository {
       await liveIsar.writeTxn(() async {
         await liveIsar.clear();
       });
-    } on IsarError catch (e, stack) {
+    } on IsarError catch (e) {
       if (kDebugMode) {
-        debugPrint('[IsarWeightRepository] clearAllData IsarError: $e\n$stack');
+        debugPrint(
+          '[IsarWeightRepository] clearAllData IsarError: ${e.runtimeType}',
+        );
       }
       throw WeightRepositoryException(
         type: WeightErrorType.wipeFailed,
         message: 'Database wipe failure: ${e.message}',
         sourceError: e,
       );
-    } catch (e, stack) {
+    } catch (e) {
       if (kDebugMode) {
         debugPrint(
-          '[IsarWeightRepository] clearAllData unexpected error: $e\n$stack',
+          '[IsarWeightRepository] clearAllData unexpected error: ${e.runtimeType}',
         );
       }
       throw WeightRepositoryException(

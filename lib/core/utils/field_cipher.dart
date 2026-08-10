@@ -91,7 +91,9 @@ class FieldCipher {
     try {
       return encrypter.decrypt(encrypted, iv: iv);
     } catch (e) {
-      throw FormatException('Decryption or integrity verification failed: $e');
+      throw FormatException(
+        'Decryption or integrity verification failed: ${e.runtimeType}',
+      );
     }
   }
 
