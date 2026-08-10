@@ -188,9 +188,18 @@ class AppSettingsBloc extends HydratedBloc<AppSettingsEvent, AppSettingsState> {
       return;
     }
 
-    // TEMPORARY DIAGNOSTIC (debug commit): the isHealthApiAvailable gate is
-    // bypassed so every toggle tap forces the native Health Connect permission
-    // UI; the availability check must be restored once the prompt is diagnosed.
+    final apiAvailable = await _healthService.isHealthApiAvailable();
+    if (!apiAvailable) {
+      emit(
+        state.copyWith(
+          isHealthApiAvailable: false,
+          healthPermissionDenied: true,
+        ),
+      );
+      emit(state.copyWith(healthPermissionDenied: false));
+      return;
+    }
+
     final granted = await _healthService.requestPermissions();
     emit(
       state.copyWith(

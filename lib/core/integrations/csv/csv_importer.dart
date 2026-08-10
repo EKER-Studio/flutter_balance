@@ -59,7 +59,7 @@ class CsvImporter {
 
     if (columnIndex['data'] == null || columnIndex['waga'] == null) {
       throw const FormatException(
-        'CSV missing required columns: "data" and "waga"',
+        'CSV missing required columns: "Date" and "Weight"',
       );
     }
 

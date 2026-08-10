@@ -463,7 +463,7 @@ void main() {
               ),
         ],
         verify: (_) {
-          verifyNever(() => mockHealthService.isHealthApiAvailable());
+          verify(() => mockHealthService.isHealthApiAvailable()).called(1);
           verify(() => mockHealthService.requestPermissions()).called(1);
           final writes = verify(
             () => storage.write(
@@ -518,20 +518,16 @@ void main() {
               ),
         ],
         verify: (_) {
+          verify(() => mockHealthService.isHealthApiAvailable()).called(1);
           verify(() => mockHealthService.requestPermissions()).called(1);
         },
       );
 
-      // TEMPORARY DIAGNOSTIC: reflects the debug bypass of the availability
-      // gate in AppSettingsBloc; restore together with the gate.
       blocTest<AppSettingsBloc, AppSettingsState>(
-        'requests permissions even when the platform lacks the health API',
+        'does not request permissions and emits denied when the platform lacks the health API',
         setUp: () {
           when(
             () => mockHealthService.isHealthApiAvailable(),
-          ).thenAnswer((_) async => false);
-          when(
-            () => mockHealthService.requestPermissions(),
           ).thenAnswer((_) async => false);
         },
         build: () => AppSettingsBloc(
@@ -542,14 +538,9 @@ void main() {
         expect: () => [
           isA<AppSettingsState>()
               .having(
-                (s) => s.isHealthSyncEnabled,
-                'isHealthSyncEnabled',
-                false,
-              )
-              .having(
                 (s) => s.isHealthApiAvailable,
                 'isHealthApiAvailable',
-                true,
+                false,
               )
               .having(
                 (s) => s.healthPermissionDenied,
@@ -558,14 +549,9 @@ void main() {
               ),
           isA<AppSettingsState>()
               .having(
-                (s) => s.isHealthSyncEnabled,
-                'isHealthSyncEnabled',
-                false,
-              )
-              .having(
                 (s) => s.isHealthApiAvailable,
                 'isHealthApiAvailable',
-                true,
+                false,
               )
               .having(
                 (s) => s.healthPermissionDenied,
@@ -574,7 +560,8 @@ void main() {
               ),
         ],
         verify: (_) {
-          verify(() => mockHealthService.requestPermissions()).called(1);
+          verify(() => mockHealthService.isHealthApiAvailable()).called(1);
+          verifyNever(() => mockHealthService.requestPermissions());
         },
       );
 

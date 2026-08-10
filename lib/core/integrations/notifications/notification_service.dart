@@ -138,9 +138,9 @@ class NotificationService {
       await androidPlugin?.requestNotificationsPermission();
 
       _initialized = true;
-    } catch (e) {
+    } catch (e, stack) {
       if (kDebugMode) {
-        debugPrint('NotificationService.initialize error: $e');
+        debugPrint('NotificationService.initialize error: $e\n$stack');
       }
     }
   }
@@ -182,9 +182,9 @@ class NotificationService {
         );
       }
       return granted;
-    } catch (e) {
+    } catch (e, stack) {
       if (kDebugMode) {
-        debugPrint('NotificationService.requestPermissions error: $e');
+        debugPrint('NotificationService.requestPermissions error: $e\n$stack');
       }
       return false;
     }
@@ -202,10 +202,10 @@ class NotificationService {
             AndroidFlutterLocalNotificationsPlugin
           >();
       return await androidPlugin?.canScheduleExactNotifications() ?? true;
-    } catch (e) {
+    } catch (e, stack) {
       if (kDebugMode) {
         debugPrint(
-          'NotificationService.canScheduleExactNotifications error: $e',
+          'NotificationService.canScheduleExactNotifications error: $e\n$stack',
         );
       }
       return true;
@@ -224,10 +224,10 @@ class NotificationService {
             AndroidFlutterLocalNotificationsPlugin
           >();
       return await androidPlugin?.requestExactAlarmsPermission() ?? true;
-    } catch (e) {
+    } catch (e, stack) {
       if (kDebugMode) {
         debugPrint(
-          'NotificationService.requestExactAlarmsPermission error: $e',
+          'NotificationService.requestExactAlarmsPermission error: $e\n$stack',
         );
       }
       return false;
@@ -247,7 +247,7 @@ class NotificationService {
   /// scheduling failed entirely.
   /// Catches and logs non-fatal notification scheduling errors.
   Future<bool> scheduleDailyReminder(TimeOfDay time) async {
-    if (!_initialized) return true;
+    if (!_initialized) return false;
     try {
       await _plugin.cancel(id: _dailyReminderId);
 
@@ -308,9 +308,9 @@ class NotificationService {
         );
       }
       return exactScheduling;
-    } catch (e) {
+    } catch (e, stack) {
       if (kDebugMode) {
-        debugPrint('NotificationService.scheduleDailyReminder error: $e');
+        debugPrint('NotificationService.scheduleDailyReminder error: $e\n$stack');
       }
       return false;
     }
@@ -324,9 +324,9 @@ class NotificationService {
     if (!_initialized) return;
     try {
       await _plugin.cancel(id: _dailyReminderId);
-    } catch (e) {
+    } catch (e, stack) {
       if (kDebugMode) {
-        debugPrint('NotificationService.cancelDailyReminder error: $e');
+        debugPrint('NotificationService.cancelDailyReminder error: $e\n$stack');
       }
     }
   }
