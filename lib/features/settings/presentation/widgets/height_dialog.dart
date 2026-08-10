@@ -105,11 +105,11 @@ class HeightDialogState extends State<HeightDialog> {
             const SizedBox(height: 8),
             Text(
               isError
-                   ? _errorText!
-                   : l10n.heightRangeHint(
-                       AppSettingsState.minHeightCm.toStringAsFixed(0),
-                       AppSettingsState.maxHeightCm.toStringAsFixed(0),
-                     ),
+                  ? _errorText!
+                  : l10n.heightRangeHint(
+                      AppSettingsState.minHeightCm.toStringAsFixed(0),
+                      AppSettingsState.maxHeightCm.toStringAsFixed(0),
+                    ),
               style: TextStyle(
                 color: isError
                     ? Theme.of(context).colorScheme.error
