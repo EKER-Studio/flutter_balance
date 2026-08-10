@@ -670,7 +670,7 @@ class StatisticsScreen extends StatelessWidget {
     if (date.year == now.year &&
         date.month == now.month &&
         date.day == now.day) {
-      return l10n.lastUpdatedToday.replaceFirst('Ostatnia aktualizacja: ', '');
+      return l10n.today;
     }
     final locale = Localizations.localeOf(context).toString();
     return DateFormat.yMMMd(locale).format(date);
