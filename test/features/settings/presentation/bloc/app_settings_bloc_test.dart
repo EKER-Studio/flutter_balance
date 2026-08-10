@@ -177,9 +177,10 @@ void main() {
       verify: (_) {
         verify(() => mockNotificationService.requestPermissions()).called(1);
         verify(
-          () => mockNotificationService.scheduleDailyReminder(
-            const (hour: 8, minute: 0),
-          ),
+          () => mockNotificationService.scheduleDailyReminder(const (
+            hour: 8,
+            minute: 0,
+          )),
         ).called(1);
       },
     );
@@ -278,9 +279,8 @@ void main() {
       build: () =>
           AppSettingsBloc(notificationService: mockNotificationService),
       seed: () => const AppSettingsState(notificationsEnabled: true),
-      act: (bloc) => bloc.add(
-        const UpdateNotificationTime((hour: 9, minute: 30)),
-      ),
+      act: (bloc) =>
+          bloc.add(const UpdateNotificationTime((hour: 9, minute: 30))),
       expect: () => [
         isA<AppSettingsState>().having(
           (s) => s.notificationInexactScheduling,
@@ -332,9 +332,8 @@ void main() {
       build: () =>
           AppSettingsBloc(notificationService: mockNotificationService),
       seed: () => const AppSettingsState(notificationPermissionDenied: true),
-      act: (bloc) => bloc.add(
-        const UpdateNotificationTime((hour: 12, minute: 30)),
-      ),
+      act: (bloc) =>
+          bloc.add(const UpdateNotificationTime((hour: 12, minute: 30))),
       expect: () => [
         isA<AppSettingsState>().having(
           (s) => s.notificationPermissionDenied,
@@ -351,9 +350,8 @@ void main() {
       'emits new time but does not schedule if notifications are disabled',
       build: () =>
           AppSettingsBloc(notificationService: mockNotificationService),
-      act: (bloc) => bloc.add(
-        const UpdateNotificationTime((hour: 9, minute: 30)),
-      ),
+      act: (bloc) =>
+          bloc.add(const UpdateNotificationTime((hour: 9, minute: 30))),
       expect: () => [
         isA<AppSettingsState>().having(
           (s) => s.notificationTime,
@@ -371,23 +369,22 @@ void main() {
       build: () =>
           AppSettingsBloc(notificationService: mockNotificationService),
       seed: () => const AppSettingsState(notificationsEnabled: true),
-      act: (bloc) => bloc.add(
-        const UpdateNotificationTime((hour: 9, minute: 30)),
-      ),
+      act: (bloc) =>
+          bloc.add(const UpdateNotificationTime((hour: 9, minute: 30))),
       expect: () => [
         isA<AppSettingsState>()
             .having((s) => s.notificationsEnabled, 'notificationsEnabled', true)
-            .having(
-              (s) => s.notificationTime,
-              'notificationTime',
-              const (hour: 9, minute: 30),
-            ),
+            .having((s) => s.notificationTime, 'notificationTime', const (
+              hour: 9,
+              minute: 30,
+            )),
       ],
       verify: (_) {
         verify(
-          () => mockNotificationService.scheduleDailyReminder(
-            const (hour: 9, minute: 30),
-          ),
+          () => mockNotificationService.scheduleDailyReminder(const (
+            hour: 9,
+            minute: 30,
+          )),
         ).called(1);
       },
     );
@@ -421,9 +418,8 @@ void main() {
       build: () =>
           AppSettingsBloc(notificationService: mockNotificationService),
       seed: () => const AppSettingsState(notificationsEnabled: true),
-      act: (bloc) => bloc.add(
-        const UpdateNotificationTime((hour: 12, minute: 30)),
-      ),
+      act: (bloc) =>
+          bloc.add(const UpdateNotificationTime((hour: 12, minute: 30))),
       expect: () => [
         isA<AppSettingsState>().having(
           (s) => s.notificationTime,
@@ -433,9 +429,10 @@ void main() {
       ],
       verify: (_) {
         verify(
-          () => mockNotificationService.scheduleDailyReminder(
-            const (hour: 12, minute: 30),
-          ),
+          () => mockNotificationService.scheduleDailyReminder(const (
+            hour: 12,
+            minute: 30,
+          )),
         ).called(1);
       },
     );
@@ -809,11 +806,10 @@ void main() {
               'notificationsEnabled',
               false,
             )
-            .having(
-              (s) => s.notificationTime,
-              'notificationTime',
-              const (hour: 10, minute: 0),
-            )
+            .having((s) => s.notificationTime, 'notificationTime', const (
+              hour: 10,
+              minute: 0,
+            ))
             .having(
               (s) => s.isOnboardingCompleted,
               'isOnboardingCompleted',

@@ -26,7 +26,8 @@ class IntegrationsSection extends StatelessWidget {
   /// @param l10n Localized strings for this section.
   /// @param onHealthSyncChanged Callback invoked when the health sync switch is toggled.
   /// @param onInstallHealthConnect Callback invoked when the tile asks to install Health Connect.
-  const IntegrationsSection({super.key, 
+  const IntegrationsSection({
+    super.key,
     required this.state,
     required this.l10n,
     required this.onHealthSyncChanged,

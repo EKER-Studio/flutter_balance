@@ -17,7 +17,8 @@ class DataSection extends StatelessWidget {
   final VoidCallback onWipeTap;
 
   /// Creates a [DataSection] with the given dependencies.
-  const DataSection({super.key, 
+  const DataSection({
+    super.key,
     required this.l10n,
     required this.onImportTap,
     required this.onExportTap,

@@ -19,7 +19,8 @@ class ProfileSection extends StatelessWidget {
   final VoidCallback onTargetWeightTap;
 
   /// Creates a [ProfileSection] with the given dependencies.
-  const ProfileSection({super.key, 
+  const ProfileSection({
+    super.key,
     required this.state,
     required this.l10n,
     required this.onHeightTap,

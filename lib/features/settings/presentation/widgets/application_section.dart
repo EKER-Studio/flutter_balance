@@ -28,7 +28,8 @@ class ApplicationSection extends StatelessWidget {
   final VoidCallback onNotificationTimeTap;
 
   /// Creates an [ApplicationSection] with the given dependencies.
-  const ApplicationSection({super.key, 
+  const ApplicationSection({
+    super.key,
     required this.state,
     required this.l10n,
     required this.onThemeTap,

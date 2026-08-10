@@ -26,7 +26,8 @@ class CustomSettingsTile extends StatefulWidget {
   final String? sectionLabel;
 
   /// Creates a [CustomSettingsTile] with the given properties.
-  const CustomSettingsTile({super.key, 
+  const CustomSettingsTile({
+    super.key,
     required this.icon,
     required this.title,
     this.subtitle,

@@ -24,7 +24,8 @@ class SecuritySection extends StatelessWidget {
   final String biometricsNotAvailableLabel;
 
   /// Creates a [SecuritySection] with the given dependencies.
-  const SecuritySection({super.key, 
+  const SecuritySection({
+    super.key,
     required this.state,
     required this.l10n,
     required this.isBiometricAvailable,

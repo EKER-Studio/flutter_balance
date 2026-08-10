@@ -21,7 +21,8 @@ class CustomSettingsToggle extends StatefulWidget {
   final String? sectionLabel;
 
   /// Creates a [CustomSettingsToggle] with the given properties.
-  const CustomSettingsToggle({super.key, 
+  const CustomSettingsToggle({
+    super.key,
     required this.icon,
     required this.title,
     this.subtitle,

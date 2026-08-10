@@ -12,7 +12,11 @@ class HelpSection extends StatefulWidget {
   final VoidCallback onCrashLogTap;
 
   /// Creates a [HelpSection] with the given dependencies.
-  const HelpSection({super.key, required this.l10n, required this.onCrashLogTap});
+  const HelpSection({
+    super.key,
+    required this.l10n,
+    required this.onCrashLogTap,
+  });
 
   @override
   State<HelpSection> createState() => HelpSectionState();
