@@ -1497,6 +1497,45 @@ class _ApplicationSection extends StatelessWidget {
               sectionLabel: l10n.applicationSection,
               onTap: onNotificationTimeTap,
             ),
+          if (state.notificationsEnabled && state.notificationInexactScheduling)
+            _InexactReminderHint(l10n: l10n),
+        ],
+      ),
+    );
+  }
+}
+
+/// Inline hint shown when the daily reminder falls back to inexact Android
+/// alarm scheduling because the exact alarm permission was revoked.
+class _InexactReminderHint extends StatelessWidget {
+  /// Localized strings for the hint.
+  final AppLocalizations l10n;
+
+  /// Creates an [_InexactReminderHint] with the given [l10n].
+  const _InexactReminderHint({required this.l10n});
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 2, 16, 14),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(
+            Icons.info_outline,
+            size: 18,
+            color: colorScheme.onSurfaceVariant,
+          ),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              l10n.notificationInexactHint,
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                color: colorScheme.onSurfaceVariant,
+              ),
+            ),
+          ),
         ],
       ),
     );

@@ -49,7 +49,7 @@ void main() {
     ).thenAnswer((_) async => true);
     when(
       () => mockNotificationService.scheduleDailyReminder(any()),
-    ).thenAnswer((_) async {});
+    ).thenAnswer((_) async => true);
     when(
       () => mockNotificationService.cancelDailyReminder(),
     ).thenAnswer((_) async {});
@@ -226,6 +226,104 @@ void main() {
         isA<AppSettingsState>().having(
           (s) => s.notificationPermissionDenied,
           'notificationPermissionDenied',
+          false,
+        ),
+      ],
+      verify: (_) {
+        verify(() => mockNotificationService.cancelDailyReminder()).called(1);
+      },
+    );
+
+    blocTest<AppSettingsBloc, AppSettingsState>(
+      'emits inexact scheduling flag on ToggleNotifications(true) when exact '
+      'alarm permission is missing',
+      setUp: () {
+        when(
+          () => mockNotificationService.scheduleDailyReminder(any()),
+        ).thenAnswer((_) async => false);
+      },
+      build: () =>
+          AppSettingsBloc(notificationService: mockNotificationService),
+      seed: () => const AppSettingsState(notificationInexactScheduling: true),
+      act: (bloc) => bloc.add(const ToggleNotifications(true)),
+      expect: () => [
+        isA<AppSettingsState>()
+            .having(
+              (s) => s.notificationsEnabled,
+              'notificationsEnabled',
+              true,
+            )
+            .having(
+              (s) => s.notificationInexactScheduling,
+              'notificationInexactScheduling',
+              false,
+            ),
+        isA<AppSettingsState>().having(
+          (s) => s.notificationInexactScheduling,
+          'notificationInexactScheduling',
+          true,
+        ),
+      ],
+      verify: (_) {
+        verify(() => mockNotificationService.scheduleDailyReminder(any()))
+            .called(1);
+      },
+    );
+
+    blocTest<AppSettingsBloc, AppSettingsState>(
+      'emits inexact scheduling flag on UpdateNotificationTime reschedule when '
+      'exact alarm permission is missing',
+      setUp: () {
+        when(
+          () => mockNotificationService.scheduleDailyReminder(any()),
+        ).thenAnswer((_) async => false);
+      },
+      build: () =>
+          AppSettingsBloc(notificationService: mockNotificationService),
+      seed: () => const AppSettingsState(notificationsEnabled: true),
+      act: (bloc) => bloc.add(
+        const UpdateNotificationTime(TimeOfDay(hour: 9, minute: 30)),
+      ),
+      expect: () => [
+        isA<AppSettingsState>().having(
+          (s) => s.notificationInexactScheduling,
+          'notificationInexactScheduling',
+          false,
+        ),
+        isA<AppSettingsState>().having(
+          (s) => s.notificationInexactScheduling,
+          'notificationInexactScheduling',
+          true,
+        ),
+      ],
+    );
+
+    blocTest<AppSettingsBloc, AppSettingsState>(
+      'sets inexact scheduling flag on UpdateNotificationInexactScheduling',
+      build: () =>
+          AppSettingsBloc(notificationService: mockNotificationService),
+      act: (bloc) => bloc.add(const UpdateNotificationInexactScheduling(true)),
+      expect: () => [
+        isA<AppSettingsState>().having(
+          (s) => s.notificationInexactScheduling,
+          'notificationInexactScheduling',
+          true,
+        ),
+      ],
+    );
+
+    blocTest<AppSettingsBloc, AppSettingsState>(
+      'clears the inexact scheduling flag on ToggleNotifications(false)',
+      build: () =>
+          AppSettingsBloc(notificationService: mockNotificationService),
+      seed: () => const AppSettingsState(
+        notificationInexactScheduling: true,
+      ),
+      act: (bloc) => bloc.add(const ToggleNotifications(false)),
+      expect: () => [
+        isA<AppSettingsState>().having(
+          (s) => s.notificationInexactScheduling,
+          'notificationInexactScheduling',
           false,
         ),
       ],

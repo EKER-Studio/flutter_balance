@@ -77,7 +77,7 @@ void main() {
         ).thenAnswer((_) async => true);
         when(
           () => mockNotificationService.scheduleDailyReminder(any()),
-        ).thenAnswer((_) async {});
+        ).thenAnswer((_) async => true);
 
         settingsBloc = AppSettingsBloc(
           notificationService: mockNotificationService,

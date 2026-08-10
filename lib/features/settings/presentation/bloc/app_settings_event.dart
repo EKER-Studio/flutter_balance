@@ -52,6 +52,17 @@ final class UpdateNotificationTime extends AppSettingsEvent {
   const UpdateNotificationTime(this.notificationTime);
 }
 
+/// An event that sets whether the daily reminder falls back to inexact
+/// Android alarm scheduling because the `SCHEDULE_EXACT_ALARM` permission was
+/// revoked.
+final class UpdateNotificationInexactScheduling extends AppSettingsEvent {
+  /// Whether inexact alarm scheduling fallback is active.
+  final bool inexact;
+
+  /// Creates [UpdateNotificationInexactScheduling] with the given [inexact].
+  const UpdateNotificationInexactScheduling(this.inexact);
+}
+
 /// An event that updates the user's target weight in kg.
 final class TargetWeightChanged extends AppSettingsEvent {
   /// The new target weight in kg (null to clear).

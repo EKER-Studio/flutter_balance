@@ -229,6 +229,50 @@ class NotificationService {
     }
   }
 
+  /// Returns whether exact alarm scheduling is currently permitted.
+  ///
+  /// Reflects the `SCHEDULE_EXACT_ALARM` permission on Android 12+, which the
+  /// user can revoke at any time in system settings; always `true` on other
+  /// platforms or when the platform check itself fails.
+  Future<bool> canScheduleExactNotifications() async {
+    try {
+      final androidPlugin = _plugin
+          .resolvePlatformSpecificImplementation<
+            AndroidFlutterLocalNotificationsPlugin
+          >();
+      return await androidPlugin?.canScheduleExactNotifications() ?? true;
+    } catch (e) {
+      if (kDebugMode) {
+        debugPrint(
+          'NotificationService.canScheduleExactNotifications error: $e',
+        );
+      }
+      return true;
+    }
+  }
+
+  /// Requests the exact alarm permission and returns whether it is granted.
+  ///
+  /// On Android 14+ a revoked `SCHEDULE_EXACT_ALARM` permission triggers the
+  /// system permission prompt; on older versions the permission is granted by
+  /// default and this is a no-op returning `true`.
+  Future<bool> requestExactAlarmsPermission() async {
+    try {
+      final androidPlugin = _plugin
+          .resolvePlatformSpecificImplementation<
+            AndroidFlutterLocalNotificationsPlugin
+          >();
+      return await androidPlugin?.requestExactAlarmsPermission() ?? true;
+    } catch (e) {
+      if (kDebugMode) {
+        debugPrint(
+          'NotificationService.requestExactAlarmsPermission error: $e',
+        );
+      }
+      return false;
+    }
+  }
+
   /// Schedules (or replaces) a repeating daily reminder at [time].
   ///
   /// Takes the mandatory [time] specifying when the daily reminder should fire.
@@ -236,13 +280,29 @@ class NotificationService {
   /// using the localized texts configured via [setLocalizedTexts].
   /// Any previously scheduled reminder is cancelled first.
   /// Uses high notification importance and priority for prominent delivery.
+  /// Returns `true` when the reminder is scheduled with exact timing, and
+  /// `false` when exact alarm permission is missing (Android 12+ revocation)
+  /// so the reminder fell back to the less precise inexact scheduling, or
+  /// scheduling failed entirely.
   /// Catches and logs non-fatal notification scheduling errors.
-  Future<void> scheduleDailyReminder(TimeOfDay time) async {
-    if (!_initialized) return;
+  Future<bool> scheduleDailyReminder(TimeOfDay time) async {
+    if (!_initialized) return true;
     try {
       await _plugin.cancel(id: _dailyReminderId);
 
-      final scheduleMode = AndroidScheduleMode.exactAllowWhileIdle;
+      var scheduleMode = AndroidScheduleMode.exactAllowWhileIdle;
+      var exactScheduling = await canScheduleExactNotifications();
+      if (!exactScheduling) {
+        // The SCHEDULE_EXACT_ALARM permission was revoked on Android 12+:
+        // prompt the user to re-grant it once, then fall back to inexact
+        // scheduling so the reminder still fires (possibly a few minutes late)
+        // instead of being lost entirely.
+        await requestExactAlarmsPermission();
+        exactScheduling = await canScheduleExactNotifications();
+        if (!exactScheduling) {
+          scheduleMode = AndroidScheduleMode.inexactAllowWhileIdle;
+        }
+      }
 
       final now = tz.TZDateTime.now(tz.local);
       var scheduledDate = tz.TZDateTime(
@@ -284,10 +344,12 @@ class NotificationService {
         '[NotificationService] scheduled daily reminder for $scheduledDate '
         '(main isolate: ${Isolate.current.debugName == 'main'})',
       );
+      return exactScheduling;
     } catch (e) {
       if (kDebugMode) {
         debugPrint('NotificationService.scheduleDailyReminder error: $e');
       }
+      return false;
     }
   }
 

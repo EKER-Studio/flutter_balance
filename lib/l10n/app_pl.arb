@@ -112,6 +112,7 @@
   "reminderTime": "Godzina przypomnienia",
   "notificationsDisabledOs": "Powiadomienia są wyłączone w ustawieniach systemu.",
   "notificationPermissionDenied": "Wymagane są uprawnienia do wysyłania powiadomień.",
+  "notificationInexactHint": "Przypomnienia mogą być opóźnione o kilka minut. Zezwól na dokładne planowanie alarmów w ustawieniach systemu, aby były wysyłane precyzyjnie.",
   "healthSync": "Synchronizacja zdrowia",
   "healthSyncDesc": "Synchronizuj dane wagi z Apple Health / Health Connect",
   "healthSyncUnavailable": "Niedostępne na tym urządzeniu",

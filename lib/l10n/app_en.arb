@@ -114,6 +114,7 @@
   "reminderTime": "Reminder Time",
   "notificationsDisabledOs": "Notifications are disabled at the system level.",
   "notificationPermissionDenied": "Notification permission is required to enable reminders.",
+  "notificationInexactHint": "Reminders may be delayed by a few minutes. Allow exact alarm scheduling in system settings for precise delivery.",
   "healthSync": "Health Sync",
   "healthSyncDesc": "Sync weight data with Apple Health / Health Connect",
   "healthSyncUnavailable": "Unavailable on this device",

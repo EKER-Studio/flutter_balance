@@ -196,7 +196,7 @@ void main() {
       ).thenAnswer((_) async => false);
       when(
         () => mockNotificationService.scheduleDailyReminder(any()),
-      ).thenAnswer((_) async {});
+      ).thenAnswer((_) async => true);
 
       settingsBloc = AppSettingsBloc(
         notificationService: mockNotificationService,
@@ -212,6 +212,39 @@ void main() {
 
       expect(
         find.text('Notification permission is required to enable reminders.'),
+        findsOneWidget,
+      );
+    },
+  );
+
+  testWidgets(
+    'shows inexact reminder hint when exact alarm permission is missing',
+    (tester) async {
+      final mockNotificationService = MockNotificationService();
+      registerFallbackValue(const TimeOfDay(hour: 8, minute: 0));
+      when(
+        () => mockNotificationService.requestPermissions(),
+      ).thenAnswer((_) async => true);
+      when(
+        () => mockNotificationService.scheduleDailyReminder(any()),
+      ).thenAnswer((_) async => false);
+
+      settingsBloc = AppSettingsBloc(
+        notificationService: mockNotificationService,
+      );
+
+      await tester.pumpWidget(createTestWidget());
+      await tester.pump();
+
+      expect(find.textContaining('exact alarm scheduling'), findsNothing);
+
+      await tester.ensureVisible(find.byType(Switch).first);
+      await tester.pumpAndSettle();
+      await tester.tap(find.byType(Switch).first);
+      await tester.pumpAndSettle();
+
+      expect(
+        find.textContaining('exact alarm scheduling'),
         findsOneWidget,
       );
     },
