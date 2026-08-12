@@ -63,14 +63,12 @@
   "notificationReminderBody": "Don't forget to log your weight today.",
   "notificationChannelName": "Daily Weight Reminders",
   "notificationChannelDescription": "Reminds you to record your daily weight measurement.",
-  "emptyState": "No entries yet. Add your first measurement below!",
   "welcomeTitle": "Welcome to Balance!",
   "welcomeSubtitle": "Add your first measurement to start tracking your progress towards better health.",
   "addFirstMeasurement": "Add first measurement",
   "lowest": "Lowest",
   "highest": "Highest",
   "weightRangeSemanticsPrefix": "Weight range: ",
-  "latestMeasurement": "Latest measurement",
   "addWeight": "Add measurement",
   "measurementDate": "Measurement date",
   "measurementTime": "Measurement time",
@@ -82,16 +80,11 @@
   "heightRangeHint": "{min} – {max} cm",
   "appLoadingSemantics": "The app is loading",
   "bmi": "BMI",
-  "bmiSubtitle": "Based on your height and latest weight",
   "bmiLegendTitle": "BMI Categories",
   "today": "Today",
   "sinceEntryDate": "since {date}",
-  "lastUpdatedToday": "Last updated: Today",
-  "lastUpdatedDate": "Last updated: {date}",
-  "setWeightGoal": "Set weight goal",
   "weightTrend": "Weight trend",
   "weightTrendChartSemantics": "{count, plural, one{{count} measurement} other{{count} measurements}}",
-  "weightGoal": "Weight Goal",
   "goalAchieved": "Goal achieved!",
   "goalProgress": "Goal progress",
   "toTarget": "to target",
@@ -108,12 +101,10 @@
   "biometricAuthReason": "Authenticate to access Balance",
   "appLocked": "App Locked",
   "unlock": "Unlock",
-  "undo": "Undo",
   "ok": "OK",
   "dailyReminder": "Daily Reminder",
   "dailyReminderDesc": "Remind me to record weight daily",
   "reminderTime": "Reminder Time",
-  "notificationsDisabledOs": "Notifications are disabled at the system level.",
   "notificationPermissionDenied": "Notification permission is required to enable reminders.",
   "notificationInexactHint": "Reminders may be delayed by a few minutes. Allow exact alarm scheduling in system settings for precise delivery.",
   "healthSync": "Health Sync",
@@ -153,34 +144,22 @@
   "tabCalendar": "Calendar",
   "tabStats": "Statistics",
   "tabSettings": "Settings",
-  "noEntriesToday": "No weight measurements recorded today.",
-  "addMeasurementForDate": "Add measurement for {date}",
-  "missingData": "Missing data",
   "singleEntry": "1 measurement",
   "multipleEntries": "{count} measurements",
   "loggingStreak": "Logging Streak",
   "streakDays": "{count, plural, =0{0 days} one{{count} day} other{{count} days}}",
-  "trendPercentChange": "Trend: {value}",
   "weeklyPaceBadge": "⚡ {value}/week",
-  "totalProgressUnitSuffix": "{unit} total",
   "previousMonth": "Previous month",
   "nextMonth": "Next month",
   "monthlyCompliance": "Consistency",
   "averageWeight": "Average Weight",
   "allEntriesLabel": "All entries",
   "weightRangeCardTitle": "Weight range and average",
-  "bmiChartTitle": "BMI History",
   "bmiChartNoHeight": "Set your height in Settings to see the BMI chart.",
   "totalProgress": "Total Progress",
   "noEntriesForDate": "No measurements recorded for this day",
   "noEntriesForDateSubtitle": "No data added for the selected date yet. Regular measurements help track progress better.",
-  "futureDateTitle": "Future date",
-  "futureDateSubtitle": "You cannot add weight measurements for future dates. Check previous days or return to today.",
-  "goToToday": "Go to today",
   "goalAchievedOnDayBanner": "Weight goal was achieved on this day! 🏆",
-  "dailySummaryTitle": "Daily Summary",
-  "rangeMinMax": "Range (Min / Max)",
-  "goalChipLabel": "Goal",
   "deleteMeasurementTooltip": "Delete measurement",
   "addAnotherMeasurement": "Add another measurement",
   "entriesFromDate": "Entries from {date}",
@@ -194,12 +173,9 @@
   "lastMeasurementLabel": "Last measurement",
   "goalWeightLabel": "Goal: {weight}",
   "remainingWeightLabel": "Remaining: {weight}",
-  "currentBmiTitle": "Current BMI",
   "dailyTipTitle": "Tip",
   "dailyTipText": "Weigh yourself at the same time every day, preferably in the morning, for the most reliable results.",
-  "addWeightSemanticsLabel": "Add a new weight measurement",
   "todayTabHomeSemanticsLabel": "Today tab, home page",
-  "weightSummarySemanticsLabel": "Today health summary. Last weight is {weight}, BMI status is {status}. Remaining to goal: {remaining}.",
   "bmiValueShortLabel": "{value} BMI",
   "weekdayShortMonday": "Mon",
   "weekdayShortTuesday": "Tue",
@@ -208,35 +184,26 @@
   "weekdayShortFriday": "Fri",
   "weekdayShortSaturday": "Sat",
   "weekdayShortSunday": "Sun",
-  "tapToViewDetailsHint": "Tap to view details",
-  "bmiCategoryLabel": "BMI Category: {category}",
-  "bmiValueLabel": "BMI Value: {value} kg/m²",
+  "bmiValueLabel": "BMI {bmi}",
   "heightNotSetLabel": "height not set",
   "doubleTapToOpenCalendarHint": "Double tap to open calendar",
   "doubleTapToChangeTimeHint": "Double tap to change time",
   "noDataToAnalyze": "No data to analyze",
   "noDataToAnalyzeSubtitle": "Your statistics will appear here after a few days of regular measurements. Add entries to start tracking your progress.",
-  "totalLostHeader": "TOTAL PROGRESS",
   "greatJob": "Great job!",
-  "periodProgress": "Period change",
-  "dailyReminderStepTitle": "Daily Reminder",
   "dailyReminderStepOptionalTitle": "Daily Reminder (Optional)",
   "dailyReminderStepSubtitle": "Set a daily reminder to log your weight and stay on track.",
   "healthSyncStepOptionalTitle": "Health Sync (Optional)",
-  "healthSyncStepSubtitle": "Automatically import and export your weight measurements with Apple Health / Google Health Connect.",
   "healthSyncDescriptionIOS": "Automatically import and export your measurements from Apple Health.",
   "healthSyncDescriptionAndroid": "Automatically import and export your measurements from Google Health Connect.",
   "healthSyncTileSubtitleIOS": "Sync weight data with Apple Health",
   "healthSyncTileSubtitleAndroid": "Sync weight data with Health Connect",
-  "healthSyncConnectButton": "Connect Health",
-  "healthSyncConnected": "Health sync connected!",
   "biometricStepTitle": "Biometric Lock",
   "biometricStepOptionalTitle": "Biometric Lock (Optional)",
   "biometricStepSubtitle": "Protect your personal weight measurements using Face ID or fingerprint authentication.",
   "skip": "Skip",
   "next": "Next",
   "previousStepTooltip": "Previous Step",
-  "completeSetup": "Complete Setup",
   "metricUnitOption": "Metric (kg / cm)",
   "imperialUnitOption": "Imperial (lbs / ft-in)",
   "onboardingWelcomeTitle": "Welcome to Balance",
@@ -265,9 +232,6 @@
   "initErrorRetryLabel": "Retry starting the application",
   "initErrorRetryHint": "Double tap to attempt re-initializing database and services",
   "retryStartup": "Retry Startup",
-  "heightNotSetLabel": "height not set",
-  "doubleTapToOpenCalendarHint": "Double tap to open calendar",
-  "doubleTapToChangeTimeHint": "Double tap to change time",
   "@stepOf": {
     "description": "Onboarding step indicator showing the current step and the total number of steps.",
     "placeholders": {
@@ -319,20 +283,6 @@
       }
     }
   },
-  "@weightSummarySemanticsLabel": {
-    "description": "Accessibility label summarizing the health status on the Today screen.",
-    "placeholders": {
-      "weight": {
-        "type": "String"
-      },
-      "status": {
-        "type": "String"
-      },
-      "remaining": {
-        "type": "String"
-      }
-    }
-  },
   "@bmiValueShortLabel": {
     "description": "Short accessibility label pairing a BMI value with the BMI unit.",
     "placeholders": {
@@ -341,25 +291,13 @@
       }
     }
   },
-  "@bmiCategoryLabel": {
-    "description": "Accessibility label stating the BMI category.",
-    "placeholders": {
-      "category": {
-        "type": "String"
-      }
-    }
-  },
   "@bmiValueLabel": {
-    "description": "Accessibility label stating the BMI value in kg/m2.",
     "placeholders": {
-      "value": {
+      "bmi": {
         "type": "String"
       }
     }
   },
-  "instantTestNotification": "Instant Test Notification",
-  "testNotificationSent": "Test notification sent!",
-  "errorSendingTestNotification": "Error sending test notification: {error}",
   "@exportError": {
     "description": "Error message shown when exporting weight entries to a CSV file fails."
   },
@@ -380,9 +318,6 @@
   "@importError": {
     "description": "Error message shown when importing weight entries from a CSV file fails."
   },
-  "@lastUpdatedDate": {
-    "description": "Label indicating the date on which the weight goal progress was last updated."
-  },
   "@reminderTimeSet": {
     "description": "Confirmation message shown after the daily weight reminder time has been set."
   },
@@ -392,17 +327,11 @@
   "@chartSemanticsTitle": {
     "description": "Accessibility label for the weight history chart, describing the displayed period and the latest recorded weight."
   },
-  "@addMeasurementForDate": {
-    "description": "Button label for adding a weight measurement for a specific date."
-  },
   "@streakDays": {
     "description": "Label describing the current consecutive-days logging streak."
   },
   "@weightTrendChartSemantics": {
     "description": "Accessibility label describing the number of measurements plotted on the weight trend chart."
-  },
-  "@trendPercentChange": {
-    "description": "Label showing the weight trend as a percentage change over the selected period."
   },
   "@weeklyPaceBadge": {
     "description": "Badge showing the weekly weight pace change per week.",
@@ -411,12 +340,6 @@
         "type": "String"
       }
     }
-  },
-  "@totalProgressUnitSuffix": {
-    "description": "Suffix appended to the total weight change, including the measurement unit."
-  },
-  "@errorSendingTestNotification": {
-    "description": "Error message shown when sending a test push notification fails."
   },
   "goalProgressSemantics": "Goal: {target}. {detail}. Double tap to edit target weight.",
   "@goalProgressSemantics": {
@@ -438,14 +361,6 @@
         "type": "String"
       },
       "category": {
-        "type": "String"
-      }
-    }
-  },
-  "bmiValueLabel": "BMI {bmi}",
-  "@bmiValueLabel": {
-    "placeholders": {
-      "bmi": {
         "type": "String"
       }
     }

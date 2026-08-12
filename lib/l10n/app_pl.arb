@@ -63,14 +63,12 @@
   "notificationReminderBody": "Pamiętaj o dodaniu dzisiejszego pomiaru wagi.",
   "notificationChannelName": "Codzienne przypomnienia o ważeniu",
   "notificationChannelDescription": "Przypomina o codziennym zanotowaniu wagi.",
-  "emptyState": "Brak wpisów. Dodaj swój pierwszy pomiar poniżej!",
   "welcomeTitle": "Witaj w Waga i BMI!",
   "welcomeSubtitle": "Dodaj swój pierwszy pomiar, aby zacząć śledzenie swoich postępów w stronę lepszego zdrowia.",
   "addFirstMeasurement": "Dodaj pierwszy pomiar",
   "lowest": "Najniższa",
   "highest": "Najwyższa",
   "weightRangeSemanticsPrefix": "Zakres wagi: ",
-  "latestMeasurement": "Ostatni pomiar",
   "addWeight": "Dodaj pomiar",
   "measurementDate": "Data pomiaru",
   "measurementTime": "Godzina pomiaru",
@@ -82,16 +80,11 @@
   "heightRangeHint": "{min} – {max} cm",
   "appLoadingSemantics": "Aplikacja się ładuje",
   "bmi": "BMI",
-  "bmiSubtitle": "Na podstawie Twojego wzrostu i ostatniej wagi",
   "bmiLegendTitle": "Kategorie BMI",
   "today": "Dzisiaj",
   "sinceEntryDate": "od {date}",
-  "lastUpdatedToday": "Ostatnia aktualizacja: Dzisiaj",
-  "lastUpdatedDate": "Ostatnia aktualizacja: {date}",
-  "setWeightGoal": "Ustaw cel wagi",
   "weightTrend": "Trend wagi",
   "weightTrendChartSemantics": "{count, plural, one{{count} pomiar} few{{count} pomiary} many{{count} pomiarów} other{{count} pomiarów}}",
-  "weightGoal": "Cel wagowy",
   "goalAchieved": "Cel osiągnięty!",
   "goalProgress": "Postęp celu",
   "toTarget": "do celu",
@@ -111,7 +104,6 @@
   "dailyReminder": "Codzienne przypomnienie",
   "dailyReminderDesc": "Przypominaj codziennie o ważeniu",
   "reminderTime": "Godzina przypomnienia",
-  "notificationsDisabledOs": "Powiadomienia są wyłączone w ustawieniach systemu.",
   "notificationPermissionDenied": "Wymagane są uprawnienia do wysyłania powiadomień.",
   "notificationInexactHint": "Przypomnienia mogą być opóźnione o kilka minut. Zezwól na dokładne planowanie alarmów w ustawieniach systemu, aby były wysyłane precyzyjnie.",
   "healthSync": "Synchronizacja zdrowia",
@@ -151,34 +143,22 @@
   "tabCalendar": "Kalendarz",
   "tabStats": "Statystyki",
   "tabSettings": "Ustawienia",
-  "noEntriesToday": "Brak zarejestrowanych pomiarów dzisiaj.",
-  "addMeasurementForDate": "Dodaj pomiar dla {date}",
-  "missingData": "Brak danych",
   "singleEntry": "1 pomiar",
   "multipleEntries": "{count} pomiary",
   "loggingStreak": "Seria ważenia",
   "streakDays": "{count, plural, =0{0 dni} one{{count} dzień} few{{count} dni} many{{count} dni} other{{count} dni}}",
-  "trendPercentChange": "Trend: {value}",
   "weeklyPaceBadge": "⚡ {value}/tydzień",
-  "totalProgressUnitSuffix": "{unit} łącznie",
   "previousMonth": "Poprzedni miesiąc",
   "nextMonth": "Następny miesiąc",
   "monthlyCompliance": "Regularność",
   "averageWeight": "Średnia waga",
   "allEntriesLabel": "Wszystkie wpisy",
   "weightRangeCardTitle": "Zakres i średnia wagi",
-  "bmiChartTitle": "Historia BMI",
   "bmiChartNoHeight": "Ustaw wzrost w zakładce Ustawienia, aby zobaczyć wykres BMI.",
   "totalProgress": "Całkowita zmiana",
   "noEntriesForDate": "Brak pomiarów w tym dniu",
   "noEntriesForDateSubtitle": "Nie dodano jeszcze żadnych danych dla wybranej daty. Regularne pomiary pomagają lepiej śledzić postępy.",
-  "futureDateTitle": "Przyszła data",
-  "futureDateSubtitle": "Nie możesz dodać pomiaru wagi dla przyszłej daty. Sprawdź poprzednie dni lub wróć do dzisiejszego.",
-  "goToToday": "Przejdź do dzisiaj",
   "goalAchievedOnDayBanner": "Cel wagi został osiągnięty w tym dniu! 🏆",
-  "dailySummaryTitle": "Podsumowanie dnia",
-  "rangeMinMax": "Zakres (Min / Max)",
-  "goalChipLabel": "Cel",
   "deleteMeasurementTooltip": "Usuń pomiar",
   "addAnotherMeasurement": "Dodaj kolejny pomiar",
   "entriesFromDate": "Zapisy z {date}",
@@ -192,12 +172,9 @@
   "lastMeasurementLabel": "Ostatni pomiar",
   "goalWeightLabel": "Cel: {weight}",
   "remainingWeightLabel": "Zostało: {weight}",
-  "currentBmiTitle": "Bieżące BMI",
   "dailyTipTitle": "Wskazówka",
   "dailyTipText": "Waż się o tej samej porze każdego dnia, najlepiej rano, aby uzyskać najbardziej wiarygodne wyniki.",
-  "addWeightSemanticsLabel": "Dodaj nowy pomiar wagi",
   "todayTabHomeSemanticsLabel": "Karta Dzisiaj, strona główna",
-  "weightSummarySemanticsLabel": "Podsumowanie dzisiejszego stanu zdrowia. Ostatnia waga to {weight}, status BMI {status}. Do celu brakuje {remaining}.",
   "bmiValueShortLabel": "{value} BMI",
   "weekdayShortMonday": "Pon",
   "weekdayShortTuesday": "Wto",
@@ -206,29 +183,21 @@
   "weekdayShortFriday": "Pią",
   "weekdayShortSaturday": "Sob",
   "weekdayShortSunday": "Nie",
-  "tapToViewDetailsHint": "Dotknij, aby zobaczyć szczegóły",
-  "bmiCategoryLabel": "Kategoria BMI: {category}",
-  "bmiValueLabel": "Wskaźnik BMI: {value} kg/m²",
-  "dailyReminderStepTitle": "Codzienne przypomnienie",
+  "bmiValueLabel": "BMI {bmi}",
   "dailyReminderStepOptionalTitle": "Codzienne przypomnienie (Opcjonalnie)",
   "dailyReminderStepSubtitle": "Ustaw codzienne przypomnienie, aby pamiętać o ważeniu.",
   "healthSyncStepOptionalTitle": "Synchronizacja ze Zdrowiem (Opcjonalnie)",
-  "healthSyncStepSubtitle": "Automatycznie importuj i eksportuj swoje pomiary masy ciała z Apple Health / Google Health Connect.",
   "healthSyncDescriptionIOS": "Automatycznie importuj i eksportuj swoje pomiary z Apple Health.",
   "healthSyncDescriptionAndroid": "Automatycznie importuj i eksportuj swoje pomiary z Google Health Connect.",
   "healthSyncTileSubtitleIOS": "Synchronizuj dane wagi z Apple Health",
   "healthSyncTileSubtitleAndroid": "Synchronizuj dane wagi z Health Connect",
-  "healthSyncConnectButton": "Połącz ze Zdrowiem",
-  "healthSyncConnected": "Synchronizacja ze Zdrowiem włączona!",
   "biometricStepTitle": "Blokada biometryczna",
   "biometricStepOptionalTitle": "Blokada biometryczna (Opcjonalnie)",
   "biometricStepSubtitle": "Chroń swoje dane dotyczące wagi za pomocą Face ID lub odcisku palca.",
-  "undo": "Cofnij",
   "ok": "OK",
   "skip": "Pomiń",
   "next": "Dalej",
   "previousStepTooltip": "Poprzedni krok",
-  "completeSetup": "Zakończ konfigurację",
   "metricUnitOption": "Metryczny (kg / cm)",
   "imperialUnitOption": "Imperialny (lbs / ft-in)",
   "onboardingWelcomeTitle": "Witaj w Balance",
@@ -262,9 +231,7 @@
   "doubleTapToChangeTimeHint": "Dotknij dwukrotnie, aby zmienić godzinę",
   "noDataToAnalyze": "Brak danych do analizy",
   "noDataToAnalyzeSubtitle": "Twoje statystyki pojawią się tutaj po kilku dniach regularnych pomiarów. Dodaj wpisy, aby zacząć śledzić swój postęp.",
-  "totalLostHeader": "ŁĄCZNIE STRACONE",
   "greatJob": "Świetna robota!",
-  "periodProgress": "Zmiana w okresie",
   "@stepOf": {
     "placeholders": {
       "current": {
@@ -310,29 +277,9 @@
       }
     }
   },
-  "@weightSummarySemanticsLabel": {
-    "placeholders": {
-      "weight": {
-        "type": "String"
-      },
-      "status": {
-        "type": "String"
-      },
-      "remaining": {
-        "type": "String"
-      }
-    }
-  },
   "@bmiValueShortLabel": {
     "placeholders": {
       "value": {
-        "type": "String"
-      }
-    }
-  },
-  "@bmiCategoryLabel": {
-    "placeholders": {
-      "category": {
         "type": "String"
       }
     }
@@ -344,9 +291,6 @@
       }
     }
   },
-  "instantTestNotification": "Test Powiadomienia",
-  "testNotificationSent": "Wysłano testowe powiadomienie!",
-  "errorSendingTestNotification": "Błąd wysyłania testowego powiadomienia: {error}",
   "@csvImportSuccess": {
     "description": "Potwierdzenie po imporcie historii wagi z pliku CSV podczas onboardingu.",
     "placeholders": {
@@ -356,6 +300,5 @@
     }
   },
   "goalProgressSemantics": "Cel: {target}. {detail}. Stuknij dwukrotnie, aby edytować wagę docelową.",
-  "bmiCategorySemantics": "BMI {value}, {category}. Stuknij dwukrotnie, aby zobaczyć legendę BMI.",
-  "bmiValueLabel": "BMI {bmi}"
+  "bmiCategorySemantics": "BMI {value}, {category}. Stuknij dwukrotnie, aby zobaczyć legendę BMI."
 }
