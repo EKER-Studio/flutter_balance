@@ -31,9 +31,11 @@ void main() {
 
       await tester.pumpAndSettle();
 
-      expect(find.text('Initial Weight'), findsOneWidget);
+      expect(find.text('Your Starting Point'), findsOneWidget);
       expect(
-        find.text('Log your starting weight measurement to begin tracking.'),
+        find.text(
+          'Log your current weight. This is your first step towards reaching your goal.',
+        ),
         findsOneWidget,
       );
       expect(find.byType(TextField), findsOneWidget);

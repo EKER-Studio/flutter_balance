@@ -65,16 +65,16 @@ void main() {
       await tester.pumpWidget(buildSubject(service: FakeCsvImportService()));
       await tester.pumpAndSettle();
 
-      expect(find.text('Import existing history? (Optional)'), findsOneWidget);
+      expect(find.text('Your Past History (Optional)'), findsOneWidget);
       expect(
         find.text(
-          'You can import past measurements from a CSV file, or skip this '
-          'step for now.',
+          'Coming from another app? Import your CSV file to continue '
+          'without losing data.',
         ),
         findsOneWidget,
       );
       expect(find.text('Import CSV file'), findsOneWidget);
-      expect(find.text('Select a file from your device'), findsOneWidget);
+      expect(find.text('Add history from your old app'), findsOneWidget);
       expect(find.byKey(const Key('csv_import_tile')), findsOneWidget);
       expect(find.text('Required column format:'), findsOneWidget);
       expect(

@@ -52,10 +52,7 @@ void main() {
         findsOneWidget,
       );
       expect(find.text('Biometric Protection'), findsOneWidget);
-      expect(
-        find.text('Additional app security'),
-        findsOneWidget,
-      );
+      expect(find.text('Additional app security'), findsOneWidget);
       expect(find.byKey(const Key('biometric_step_switch')), findsOneWidget);
       expect(
         find.byKey(const Key('biometric_step_next_button')),

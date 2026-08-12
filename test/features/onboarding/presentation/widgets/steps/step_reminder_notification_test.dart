@@ -48,11 +48,16 @@ void main() {
 
       expect(find.text('Weight Notifications (Optional)'), findsWidgets);
       expect(
-        find.text('Build a healthy habit and let us remind you to log your weight every day.'),
+        find.text(
+          'Build a healthy habit and let us remind you to log your weight every day.',
+        ),
         findsOneWidget,
       );
       expect(find.text('Daily Reminder'), findsOneWidget);
-      expect(find.text('Regular alert in your notification center'), findsOneWidget);
+      expect(
+        find.text('Regular alert in your notification center'),
+        findsOneWidget,
+      );
       expect(find.byKey(const Key('notification_step_switch')), findsOneWidget);
       expect(
         find.byKey(const Key('notification_step_next_button')),

@@ -84,10 +84,7 @@ void main() {
         findsOneWidget,
       );
       expect(find.text('Health Sync'), findsOneWidget);
-      expect(
-        find.text('Secure weight data exchange'),
-        findsOneWidget,
-      );
+      expect(find.text('Secure weight data exchange'), findsOneWidget);
       expect(switchFinder, findsOneWidget);
       expect(nextButtonFinder, findsOneWidget);
       expect(tester.widget<SwitchListTile>(switchFinder).value, isFalse);

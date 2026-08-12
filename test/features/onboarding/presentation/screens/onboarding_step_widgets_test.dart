@@ -32,7 +32,7 @@ void main() {
       // Flush the delayed initial-focus request scheduled in initState.
       await tester.pump(const Duration(milliseconds: 300));
 
-      expect(find.text('Units & Height'), findsOneWidget);
+      expect(find.text('Your Basic Details'), findsOneWidget);
       expect(find.text('Metric (kg / cm)'), findsOneWidget);
       expect(find.text('Imperial (lbs / ft-in)'), findsOneWidget);
       expect(find.byKey(const Key('height_cm_input')), findsOneWidget);
@@ -124,7 +124,7 @@ void main() {
         ),
       );
 
-      expect(find.text('Target Weight (Optional)'), findsOneWidget);
+      expect(find.text('Your Dream Goal (Optional)'), findsOneWidget);
       expect(find.byKey(const Key('target_weight_input')), findsOneWidget);
       expect(find.text('Next'), findsOneWidget);
     });
@@ -305,7 +305,7 @@ void main() {
         ),
       );
 
-      expect(find.text('Initial Weight'), findsOneWidget);
+      expect(find.text('Your Starting Point'), findsOneWidget);
       expect(find.byKey(const Key('initial_weight_input')), findsOneWidget);
       expect(find.text('Next'), findsOneWidget);
     });

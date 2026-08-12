@@ -85,21 +85,21 @@ void main() {
     );
   }
 
-  /// Advances from step 1 (Welcome) to step 2 (Units & Height) to step 3
+  /// Advances from step 1 (Welcome) to step 2 (Your Basic Details) to step 3
   /// (CSV Import).
   Future<void> pumpToStep3(WidgetTester tester) async {
     // Advance from Step 1 (Welcome)
     await tester.tap(find.text('Get Started'));
     await tester.pumpAndSettle();
 
-    // Advance from Step 2 (Units & Height)
+    // Advance from Step 2 (Your Basic Details)
     await tester.enterText(find.byKey(const Key('height_cm_input')), '170');
     await tester.pumpAndSettle();
     await tester.tap(find.text('Next'));
     await tester.pumpAndSettle();
   }
 
-  /// Skips step 3 (CSV Import) and lands on step 4 (Initial Weight).
+  /// Skips step 3 (CSV Import) and lands on step 4 (Your Starting Point).
   Future<void> pumpToStep4(WidgetTester tester) async {
     await pumpToStep3(tester);
     await tester.tap(find.byKey(const Key('csv_import_next_button')));
@@ -133,16 +133,16 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('Step 1 of 7'), findsOneWidget);
-      expect(find.text('Units & Height'), findsOneWidget);
+      expect(find.text('Your Basic Details'), findsOneWidget);
 
-      // Advance from Step 2 (Units & Height)
+      // Advance from Step 2 (Your Basic Details)
       await tester.enterText(find.byKey(const Key('height_cm_input')), '170');
       await tester.pumpAndSettle();
       await tester.tap(find.text('Next'));
       await tester.pumpAndSettle();
 
       expect(find.text('Step 2 of 7'), findsOneWidget);
-      expect(find.text('Import existing history? (Optional)'), findsOneWidget);
+      expect(find.text('Your Past History (Optional)'), findsOneWidget);
       expect(find.byIcon(Icons.arrow_back), findsOneWidget);
 
       // Sync height to WeightBloc to prevent heightNotSet errors
@@ -156,9 +156,9 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('Step 3 of 7'), findsOneWidget);
-      expect(find.text('Initial Weight'), findsOneWidget);
+      expect(find.text('Your Starting Point'), findsOneWidget);
 
-      // Step 4 (Initial Weight) -> Next
+      // Step 4 (Your Starting Point) -> Next
       await tester.enterText(
         find.byKey(const Key('initial_weight_input')),
         '75.5',
@@ -177,7 +177,7 @@ void main() {
       ).called(1);
 
       expect(find.text('Step 4 of 7'), findsOneWidget);
-      expect(find.text('Target Weight (Optional)'), findsOneWidget);
+      expect(find.text('Your Dream Goal (Optional)'), findsOneWidget);
 
       // Step 5 (Target Weight) -> Next (Leave empty for optional target weight)
       await tester.tap(find.text('Next').first);
@@ -214,20 +214,20 @@ void main() {
       await tester.pumpWidget(buildSubject());
       await tester.pumpAndSettle();
 
-      // Advance to Step 4 (Initial Weight)
+      // Advance to Step 4 (Your Starting Point)
       await pumpToStep4(tester);
 
       expect(find.text('Step 3 of 7'), findsOneWidget);
-      expect(find.text('Initial Weight'), findsOneWidget);
+      expect(find.text('Your Starting Point'), findsOneWidget);
 
       // Back to Step 3 (CSV Import)
       await tester.tap(find.byIcon(Icons.arrow_back));
       await tester.pumpAndSettle();
 
       expect(find.text('Step 2 of 7'), findsOneWidget);
-      expect(find.text('Import existing history? (Optional)'), findsOneWidget);
+      expect(find.text('Your Past History (Optional)'), findsOneWidget);
 
-      // Back to Step 2 (Units & Height)
+      // Back to Step 2 (Your Basic Details)
       await tester.tap(find.byIcon(Icons.arrow_back));
       await tester.pumpAndSettle();
 
@@ -260,7 +260,7 @@ void main() {
         await tester.tap(find.byKey(const Key('csv_import_continue_button')));
         await tester.pumpAndSettle();
 
-        // Step 4 (Initial Weight) shows the latest entry pre-filled.
+        // Step 4 (Your Starting Point) shows the latest entry pre-filled.
         expect(find.text('Step 3 of 7'), findsOneWidget);
         final field = tester.widget<TextField>(
           find.byKey(const Key('initial_weight_input')),
@@ -299,7 +299,7 @@ void main() {
       await tester.tap(find.byKey(const Key('csv_import_next_button')));
       await tester.pumpAndSettle();
 
-      // Step 4 (Initial Weight) starts blank with Next disabled.
+      // Step 4 (Your Starting Point) starts blank with Next disabled.
       expect(find.text('Step 3 of 7'), findsOneWidget);
       final field = tester.widget<TextField>(
         find.byKey(const Key('initial_weight_input')),
@@ -373,7 +373,7 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('Step 1 of 6'), findsOneWidget);
-      expect(find.text('Units & Height'), findsOneWidget);
+      expect(find.text('Your Basic Details'), findsOneWidget);
 
       // Navigate to step 3 (CSV Import)
       await tester.enterText(find.byKey(const Key('height_cm_input')), '170');
@@ -382,14 +382,14 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('Step 2 of 6'), findsOneWidget);
-      expect(find.text('Import existing history? (Optional)'), findsOneWidget);
+      expect(find.text('Your Past History (Optional)'), findsOneWidget);
 
-      // Skip the optional CSV import and advance to step 4 (Initial Weight)
+      // Skip the optional CSV import and advance to step 4 (Your Starting Point)
       await tester.tap(find.byKey(const Key('csv_import_next_button')));
       await tester.pumpAndSettle();
 
       expect(find.text('Step 3 of 6'), findsOneWidget);
-      expect(find.text('Initial Weight'), findsOneWidget);
+      expect(find.text('Your Starting Point'), findsOneWidget);
 
       // Log the initial weight and advance to step 5 (Target Weight)
       await tester.enterText(
@@ -401,7 +401,7 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('Step 4 of 6'), findsOneWidget);
-      expect(find.text('Target Weight (Optional)'), findsOneWidget);
+      expect(find.text('Your Dream Goal (Optional)'), findsOneWidget);
 
       // Skip the optional target weight and advance to step 6 (Daily Reminder)
       await tester.tap(find.text('Next').first);
