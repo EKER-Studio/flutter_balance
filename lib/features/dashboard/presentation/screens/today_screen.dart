@@ -332,7 +332,7 @@ class _WeightTrendChartCard extends StatelessWidget {
     final textTheme = Theme.of(context).textTheme;
 
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: colorScheme.surfaceContainerLow,
         borderRadius: BorderRadius.circular(28),
@@ -342,6 +342,8 @@ class _WeightTrendChartCard extends StatelessWidget {
         children: [
           Row(
             children: [
+              Icon(Icons.timeline, size: 24, color: colorScheme.primary),
+              const SizedBox(width: 8),
               Expanded(
                 child: Text(
                   l10n.weightTrend,
@@ -696,7 +698,7 @@ class _DailyTipCard extends StatelessWidget {
       container: true,
       label: '${l10n.dailyTipTitle}: ${l10n.dailyTipText}',
       child: Container(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
           color: colorScheme.surfaceContainerLow,
           borderRadius: BorderRadius.circular(12),
@@ -706,7 +708,7 @@ class _DailyTipCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Icon(Icons.lightbulb_outline, color: colorScheme.primary, size: 24),
-            const SizedBox(width: 12),
+            const SizedBox(width: 8),
             Expanded(
               child: Text(
                 '${l10n.dailyTipTitle}: ${l10n.dailyTipText}',

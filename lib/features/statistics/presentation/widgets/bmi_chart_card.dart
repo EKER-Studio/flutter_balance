@@ -112,11 +112,7 @@ class BmiChartCard extends StatelessWidget {
           padding: const EdgeInsets.symmetric(vertical: 4.0),
           child: Row(
             children: [
-              Icon(
-                Icons.monitor_weight_outlined,
-                size: 22,
-                color: cs.primary,
-              ),
+              Icon(Icons.monitor_weight_outlined, size: 22, color: cs.primary),
               const SizedBox(width: 8),
               Text(
                 l10n.bmi,
