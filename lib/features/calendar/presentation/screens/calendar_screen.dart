@@ -165,6 +165,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                             Orientation.landscape;
                         final calendarCard = Card(
                           elevation: 0,
+                          margin: EdgeInsets.zero,
                           color: Theme.of(
                             context,
                           ).colorScheme.surfaceContainerLow,

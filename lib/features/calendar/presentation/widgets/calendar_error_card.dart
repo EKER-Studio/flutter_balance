@@ -19,6 +19,7 @@ class CalendarErrorCard extends StatelessWidget {
 
     return Card(
       elevation: 0,
+      margin: EdgeInsets.zero,
       color: cs.errorContainer,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
       child: Padding(

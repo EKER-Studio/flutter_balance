@@ -331,14 +331,14 @@ class _WeightTrendChartCard extends StatelessWidget {
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
 
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: colorScheme.surfaceContainerLow,
-        borderRadius: BorderRadius.circular(28),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
+    return Card(
+      elevation: 0,
+      color: colorScheme.surfaceContainerLow,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Row(
             children: [
@@ -377,6 +377,7 @@ class _WeightTrendChartCard extends StatelessWidget {
                   ),
           ),
         ],
+      ),
       ),
     );
   }
@@ -697,15 +698,17 @@ class _DailyTipCard extends StatelessWidget {
     return Semantics(
       container: true,
       label: '${l10n.dailyTipTitle}: ${l10n.dailyTipText}',
-      child: Container(
-        padding: const EdgeInsets.all(20),
-        decoration: BoxDecoration(
-          color: colorScheme.surfaceContainerLow,
+      child: Card(
+        elevation: 0,
+        color: colorScheme.surfaceContainerLow,
+        shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: colorScheme.surfaceContainerHigh),
+          side: BorderSide(color: colorScheme.surfaceContainerHigh),
         ),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Icon(Icons.lightbulb_outline, color: colorScheme.primary, size: 24),
             const SizedBox(width: 8),
@@ -718,6 +721,7 @@ class _DailyTipCard extends StatelessWidget {
               ),
             ),
           ],
+        ),
         ),
       ),
     );

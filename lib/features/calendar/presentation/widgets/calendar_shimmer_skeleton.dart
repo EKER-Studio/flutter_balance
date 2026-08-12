@@ -55,6 +55,7 @@ class _CalendarShimmerSkeletonState extends State<CalendarShimmerSkeleton>
                 // Top Calendar Card Skeleton
                 Card(
                   elevation: 0,
+                  margin: EdgeInsets.zero,
                   color: cs.surfaceContainerLow,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(28),
@@ -155,6 +156,7 @@ class _CalendarShimmerSkeletonState extends State<CalendarShimmerSkeleton>
                 // Lower Card Skeleton
                 Card(
                   elevation: 0,
+                  margin: EdgeInsets.zero,
                   color: cs.surfaceContainerLow,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(28),
