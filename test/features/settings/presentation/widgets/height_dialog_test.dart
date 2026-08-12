@@ -19,7 +19,7 @@ void main() {
 
       final textField = find.byType(TextField);
       expect(textField, findsOneWidget);
-      expect(tester.widget<TextField>(textField).controller?.text, '175');
+      expect(find.text('175'), findsOneWidget);
     });
 
     testWidgets('renders empty when initial value is null', (tester) async {
