@@ -217,9 +217,8 @@ class CalendarDayEntriesCard extends StatelessWidget {
         const SizedBox(height: 24),
         OutlinedButton.icon(
           onPressed: () {
-            showModalBottomSheet(
+            showDialog<void>(
               context: context,
-              isScrollControlled: true,
               builder: (dialogCtx) => BlocProvider.value(
                 value: context.read<WeightBloc>(),
                 child: AddWeightSheet(initialDate: selectedDate),

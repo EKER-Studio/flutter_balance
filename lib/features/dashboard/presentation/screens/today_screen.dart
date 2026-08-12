@@ -249,9 +249,8 @@ class TodayScreen extends StatelessWidget {
 
   /// Opens the [AddWeightSheet] dialog.
   void _showAddWeightSheet(BuildContext context) {
-    showModalBottomSheet(
+    showDialog<void>(
       context: context,
-      isScrollControlled: true,
       builder: (dialogCtx) => BlocProvider.value(
         value: context.read<WeightBloc>(),
         child: const AddWeightSheet(),

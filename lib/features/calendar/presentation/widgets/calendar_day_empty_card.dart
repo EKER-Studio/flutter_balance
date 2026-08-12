@@ -58,9 +58,8 @@ class CalendarDayEmptyCard extends StatelessWidget {
               width: double.infinity,
               child: FilledButton.icon(
                 onPressed: () {
-                  showModalBottomSheet(
+                  showDialog<void>(
                     context: context,
-                    isScrollControlled: true,
                     builder: (dialogCtx) => BlocProvider.value(
                       value: context.read<WeightBloc>(),
                       child: AddWeightSheet(initialDate: selectedDate),

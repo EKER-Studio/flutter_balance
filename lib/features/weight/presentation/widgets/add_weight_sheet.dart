@@ -129,184 +129,185 @@ class _AddWeightSheetState extends State<AddWeightSheet> {
 
     final timeStr = _selectedTime.format(context);
 
-    return SafeArea(
-      child: Padding(
-        padding: EdgeInsets.only(
-          bottom: MediaQuery.of(context).viewInsets.bottom,
-          left: 16,
-          right: 16,
-          top: 24,
-        ),
-        child: SingleChildScrollView(
-          child: Form(
-            key: _formKey,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Center(
-                  child: Column(
+    return Dialog(
+      backgroundColor: Theme.of(context).colorScheme.surfaceContainerHigh,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
+      insetPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 400),
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: SingleChildScrollView(
+            child: Form(
+              key: _formKey,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Center(
+                    child: Column(
+                      children: [
+                        ExcludeSemantics(
+                          child: Icon(
+                            Icons.monitor_weight_outlined,
+                            size: 40,
+                            color: Theme.of(context).colorScheme.primary,
+                          ),
+                        ),
+                        const SizedBox(height: 12),
+                        Text(
+                          l10n.addWeight,
+                          style: Theme.of(context).textTheme.headlineMedium
+                              ?.copyWith(
+                                fontWeight: FontWeight.bold,
+                                color: Theme.of(context).colorScheme.onSurface,
+                              ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  Row(
                     children: [
-                      ExcludeSemantics(
-                        child: Icon(
-                          Icons.monitor_weight_outlined,
-                          size: 40,
-                          color: Theme.of(context).colorScheme.primary,
+                      Expanded(
+                        child: Semantics(
+                          button: true,
+                          label: '${l10n.measurementDate}: $dateStr',
+                          hint: l10n.doubleTapToOpenCalendarHint,
+                          child: InkWell(
+                            onTap: () => _pickDate(context),
+                            borderRadius: BorderRadius.circular(8),
+                            child: InputDecorator(
+                              decoration: InputDecoration(
+                                labelText: l10n.measurementDate,
+                                border: const OutlineInputBorder(),
+                                suffixIcon: const Icon(
+                                  Icons.calendar_today_outlined,
+                                  size: 20,
+                                ),
+                              ),
+                              child: Text(
+                                dateStr,
+                                style: Theme.of(context).textTheme.bodyLarge,
+                              ),
+                            ),
+                          ),
                         ),
                       ),
-                      const SizedBox(height: 12),
-                      Text(
-                        l10n.addWeight,
-                        style: Theme.of(context).textTheme.headlineMedium
-                            ?.copyWith(
-                              fontWeight: FontWeight.bold,
-                              color: Theme.of(context).colorScheme.onSurface,
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Semantics(
+                          button: true,
+                          label: '${l10n.measurementTime}: $timeStr',
+                          hint: l10n.doubleTapToChangeTimeHint,
+                          child: InkWell(
+                            onTap: () => _pickTime(context),
+                            borderRadius: BorderRadius.circular(8),
+                            child: InputDecorator(
+                              decoration: InputDecoration(
+                                labelText: l10n.measurementTime,
+                                border: const OutlineInputBorder(),
+                                suffixIcon: const Icon(
+                                  Icons.access_time_outlined,
+                                  size: 20,
+                                ),
+                              ),
+                              child: Text(
+                                timeStr,
+                                style: Theme.of(context).textTheme.bodyLarge,
+                              ),
                             ),
+                          ),
+                        ),
                       ),
                     ],
                   ),
-                ),
-                const SizedBox(height: 20),
-                Row(
-                  children: [
-                    Expanded(
-                      child: Semantics(
-                        button: true,
-                        label: '${l10n.measurementDate}: $dateStr',
-                        hint: l10n.doubleTapToOpenCalendarHint,
-                        child: InkWell(
-                          onTap: () => _pickDate(context),
-                          borderRadius: BorderRadius.circular(8),
-                          child: InputDecorator(
-                            decoration: InputDecoration(
-                              labelText: l10n.measurementDate,
-                              border: const OutlineInputBorder(),
-                              suffixIcon: const Icon(
-                                Icons.calendar_today_outlined,
-                                size: 20,
-                              ),
-                            ),
-                            child: Text(
-                              dateStr,
-                              style: Theme.of(context).textTheme.bodyLarge,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Semantics(
-                        button: true,
-                        label: '${l10n.measurementTime}: $timeStr',
-                        hint: l10n.doubleTapToChangeTimeHint,
-                        child: InkWell(
-                          onTap: () => _pickTime(context),
-                          borderRadius: BorderRadius.circular(8),
-                          child: InputDecorator(
-                            decoration: InputDecoration(
-                              labelText: l10n.measurementTime,
-                              border: const OutlineInputBorder(),
-                              suffixIcon: const Icon(
-                                Icons.access_time_outlined,
-                                size: 20,
-                              ),
-                            ),
-                            child: Text(
-                              timeStr,
-                              style: Theme.of(context).textTheme.bodyLarge,
-                            ),
-                          ),
-                        ),
+                  if (_dateTimeError != null) ...[
+                    const SizedBox(height: 6),
+                    Text(
+                      _dateTimeError!,
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.error,
+                        fontSize: 12,
                       ),
                     ),
                   ],
-                ),
-                if (_dateTimeError != null) ...[
-                  const SizedBox(height: 6),
-                  Text(
-                    _dateTimeError!,
-                    style: TextStyle(
-                      color: Theme.of(context).colorScheme.error,
-                      fontSize: 12,
+                  const SizedBox(height: 16),
+                  TextFormField(
+                    controller: _weightController,
+                    autofocus: true,
+                    keyboardType: const TextInputType.numberWithOptions(
+                      decimal: true,
                     ),
+                    decoration: InputDecoration(
+                      labelText: unit == MeasurementUnit.imperial
+                          ? l10n.weightInLbLabel
+                          : l10n.weightInKgLabel,
+                      hintText: l10n.weightHint,
+                      border: const OutlineInputBorder(),
+                    ),
+                    validator: (value) {
+                      if (value == null || value.trim().isEmpty) {
+                        return l10n.weightCannotBeEmpty;
+                      }
+                      final normalized = value.trim().replaceAll(',', '.');
+                      final parsed = double.tryParse(normalized);
+                      if (parsed == null) {
+                        return l10n.enterValidNumber;
+                      }
+                      final weightKg = unit == MeasurementUnit.imperial
+                          ? lbsToKg(parsed)
+                          : parsed;
+                      if (weightKg < WeightEntry.minWeightKg ||
+                          weightKg > WeightEntry.maxWeightKg) {
+                        return l10n.weightRangeError;
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 16),
+                  TextFormField(
+                    controller: _noteController,
+                    decoration: InputDecoration(
+                      labelText: l10n.noteLabel,
+                      border: const OutlineInputBorder(),
+                    ),
+                    maxLines: 2,
+                  ),
+                  const SizedBox(height: 24),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      TextButton(
+                        onPressed: () => Navigator.of(context).pop(),
+                        style: TextButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 12,
+                          ),
+                          minimumSize: const Size(48, 48),
+                        ),
+                        child: Text(l10n.cancel),
+                      ),
+                      const SizedBox(width: 8),
+                      FilledButton(
+                        onPressed: _onSave,
+                        style: FilledButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 20,
+                            vertical: 12,
+                          ),
+                          minimumSize: const Size(48, 48),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                        ),
+                        child: Text(l10n.save),
+                      ),
+                    ],
                   ),
                 ],
-                const SizedBox(height: 16),
-                TextFormField(
-                  controller: _weightController,
-                  autofocus: true,
-                  keyboardType: const TextInputType.numberWithOptions(
-                    decimal: true,
-                  ),
-                  decoration: InputDecoration(
-                    labelText: unit == MeasurementUnit.imperial
-                        ? l10n.weightInLbLabel
-                        : l10n.weightInKgLabel,
-                    hintText: l10n.weightHint,
-                    border: const OutlineInputBorder(),
-                  ),
-                  validator: (value) {
-                    if (value == null || value.trim().isEmpty) {
-                      return l10n.weightCannotBeEmpty;
-                    }
-                    final normalized = value.trim().replaceAll(',', '.');
-                    final parsed = double.tryParse(normalized);
-                    if (parsed == null) {
-                      return l10n.enterValidNumber;
-                    }
-                    final weightKg = unit == MeasurementUnit.imperial
-                        ? lbsToKg(parsed)
-                        : parsed;
-                    if (weightKg < WeightEntry.minWeightKg ||
-                        weightKg > WeightEntry.maxWeightKg) {
-                      return l10n.weightRangeError;
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 16),
-                TextFormField(
-                  controller: _noteController,
-                  decoration: InputDecoration(
-                    labelText: l10n.noteLabel,
-                    border: const OutlineInputBorder(),
-                  ),
-                  maxLines: 2,
-                ),
-                const SizedBox(height: 24),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    TextButton(
-                      onPressed: () => Navigator.of(context).pop(),
-                      style: TextButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 12,
-                        ),
-                        minimumSize: const Size(48, 48),
-                      ),
-                      child: Text(l10n.cancel),
-                    ),
-                    const SizedBox(width: 8),
-                    FilledButton(
-                      onPressed: _onSave,
-                      style: FilledButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 20,
-                          vertical: 12,
-                        ),
-                        minimumSize: const Size(48, 48),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                      ),
-                      child: Text(l10n.save),
-                    ),
-                  ],
-                ),
-              ],
+              ),
             ),
           ),
         ),
