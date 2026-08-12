@@ -255,7 +255,7 @@ void main() {
         // Step 3 (CSV Import) -> pick file -> continue
         await tester.tap(find.byKey(const Key('csv_import_tile')));
         await tester.pumpAndSettle();
-        expect(find.text('Imported 2 measurements!'), findsOneWidget);
+        expect(find.text('Imported 2 entries'), findsOneWidget);
 
         await tester.tap(find.byKey(const Key('csv_import_continue_button')));
         await tester.pumpAndSettle();

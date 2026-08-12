@@ -134,7 +134,7 @@
   "csvFormatHintTitle": "Wymagany format kolumn:",
   "csvFormatHintExample": "ID, Date, Time (opt), Weight (kg), Note\n(lub: Data; Czas; Waga (kg))",
   "csvImportLoading": "Przetwarzanie pliku CSV...",
-  "csvImportSuccess": "Zaimportowano {count} pomiarów!",
+  "csvImportSuccess": "Zaimportowano {count} wpisów",
   "csvImportContinueButton": "Przejdź dalej",
   "csvImportError": "Nie udało się odczytać tego pliku. Upewnij się, że to poprawny plik CSV z kolumnami daty i wagi.",
   "chartSemanticsTitle": "Wykres liniowy historii wagi dla okresu {period}. Ostatni zarejestrowany wynik to {weight}.",
@@ -300,5 +300,6 @@
     }
   },
   "goalProgressSemantics": "Cel: {target}. {detail}. Stuknij dwukrotnie, aby edytować wagę docelową.",
-  "bmiCategorySemantics": "BMI {value}, {category}. Stuknij dwukrotnie, aby zobaczyć legendę BMI."
+  "bmiCategorySemantics": "BMI {value}, {category}. Stuknij dwukrotnie, aby zobaczyć legendę BMI.",
+  "csvImportSuccessSubtitle": "Dane będą dostępne od razu po zakończeniu procesu onboarding"
 }

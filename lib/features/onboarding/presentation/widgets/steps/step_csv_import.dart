@@ -256,31 +256,33 @@ class _StepCsvImportState extends State<StepCsvImport> {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Material(
-          color: theme.colorScheme.primaryContainer,
-          borderRadius: BorderRadius.circular(28.0),
+          color: theme.colorScheme.surfaceContainerLow,
+          borderRadius: BorderRadius.circular(16.0),
           clipBehavior: Clip.antiAlias,
           child: Container(
-            padding: const EdgeInsets.all(24.0),
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(28.0),
+              borderRadius: BorderRadius.circular(16.0),
+              border: Border.all(
+                color: theme.colorScheme.outlineVariant.withValues(alpha: 0.3),
+              ),
             ),
-            child: Column(
-              children: [
-                Icon(
-                  Icons.check_circle_outline,
-                  size: 48,
-                  color: theme.colorScheme.onPrimaryContainer,
+            child: ListTile(
+              leading: Icon(
+                Icons.file_upload_outlined,
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
+              title: Text(
+                l10n.csvImportSuccess(_entries.length),
+                style: theme.textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.w600,
                 ),
-                const SizedBox(height: 16.0),
-                Text(
-                  l10n.csvImportSuccess(_entries.length),
-                  textAlign: TextAlign.center,
-                  style: theme.textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.w600,
-                    color: theme.colorScheme.onPrimaryContainer,
-                  ),
+              ),
+              subtitle: Text(
+                l10n.csvImportSuccessSubtitle,
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
                 ),
-              ],
+              ),
             ),
           ),
         ),

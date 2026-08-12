@@ -139,8 +139,8 @@ void main() {
         await tester.tap(find.byKey(const Key('csv_import_tile')));
         await tester.pumpAndSettle();
 
-        expect(find.text('Imported 2 measurements!'), findsOneWidget);
-        expect(find.byIcon(Icons.check_circle_outline), findsOneWidget);
+        expect(find.text('Imported 2 entries'), findsOneWidget);
+        expect(find.byIcon(Icons.file_upload_outlined), findsOneWidget);
         expect(
           find.byKey(const Key('csv_import_continue_button')),
           findsOneWidget,
@@ -180,7 +180,7 @@ void main() {
       await tester.tap(find.byKey(const Key('csv_import_retry_button')));
       await tester.pumpAndSettle();
 
-      expect(find.text('Imported 2 measurements!'), findsOneWidget);
+      expect(find.text('Imported 2 entries'), findsOneWidget);
     });
 
     testWidgets('shows no-data message when the file has no valid entries', (
