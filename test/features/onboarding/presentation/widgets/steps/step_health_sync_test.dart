@@ -80,19 +80,13 @@ void main() {
       expect(find.text('Health Sync (Optional)'), findsWidgets);
       expect(
         find.text(
-          Platform.isIOS
-              ? 'Automatically import and export your measurements from Apple Health.'
-              : 'Automatically import and export your measurements from Google Health Connect.',
+          'Save new measurements and read history from other fitness apps to keep all your data in one place.',
         ),
         findsOneWidget,
       );
       expect(find.text('Health Sync'), findsOneWidget);
       expect(
-        find.text(
-          Platform.isIOS
-              ? 'Sync weight data with Apple Health'
-              : 'Sync weight data with Health Connect',
-        ),
+        find.text('Secure weight data exchange'),
         findsOneWidget,
       );
       expect(switchFinder, findsOneWidget);
