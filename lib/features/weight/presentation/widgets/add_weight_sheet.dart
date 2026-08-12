@@ -9,7 +9,7 @@ import 'package:balance/features/weight/presentation/bloc/weight_event.dart';
 import 'package:balance/l10n/app_localizations.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_bloc.dart';
 
-/// Modal dialog form for adding a new weight measurement with date, time, and note selection,
+/// A modal dialog form for adding a new weight measurement with date, time, and note selection,
 /// adhering to Material 3 dialog guidelines and accessibility (a11y) standards.
 ///
 /// Validates the weight against [WeightEntry.minWeightKg] and
@@ -20,17 +20,17 @@ import 'package:balance/features/settings/presentation/bloc/app_settings_bloc.da
 /// showDialog(context: context, builder: (_) => const AddWeightSheet());
 /// ```
 class AddWeightSheet extends StatefulWidget {
-  /// Optional initial date/time for the measurement.
+  /// The optional initial date/time for the measurement.
   final DateTime? initialDate;
 
-  /// Creates [AddWeightSheet] with optional [initialDate].
+  /// Creates an [AddWeightSheet] with an optional [initialDate].
   const AddWeightSheet({super.key, this.initialDate});
 
   @override
   State<AddWeightSheet> createState() => _AddWeightSheetState();
 }
 
-/// State owning the form controllers, selected date/time, and save flow.
+/// The state owning the form controllers, selected date/time, and save flow.
 class _AddWeightSheetState extends State<AddWeightSheet> {
   final _formKey = GlobalKey<FormState>();
   final _weightController = TextEditingController();

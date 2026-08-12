@@ -3,7 +3,7 @@ import 'package:balance/features/weight/domain/time_period.dart';
 
 export 'package:balance/features/weight/domain/time_period.dart';
 
-/// Base class for all weight events.
+/// A base class for all weight events.
 sealed class WeightEvent {
   const WeightEvent();
 }

@@ -1,11 +1,11 @@
-/// The app's theme mode preference.
+/// An enumeration of the app's theme mode preferences.
 enum AppThemeMode {
-  /// Follow the system's appearance.
+  /// Follows the system's appearance.
   system,
 
-  /// Force light theme.
+  /// Forces the light theme.
   light,
 
-  /// Force dark theme.
+  /// Forces the dark theme.
   dark,
 }

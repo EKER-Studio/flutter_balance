@@ -20,16 +20,17 @@ import 'package:balance/features/settings/presentation/bloc/app_settings_bloc.da
 import 'package:balance/presentation/widgets/app_top_bar.dart';
 import 'package:balance/presentation/core/clamped_layout.dart';
 
-/// Tab 2: Calendar Screen providing a monthly view with measurement status indicators.
+/// A screen providing a monthly view with measurement status indicators.
+///
+/// This serves as the second tab in the main navigation.
 class CalendarScreen extends StatefulWidget {
-  /// Creates [CalendarScreen].
   const CalendarScreen({super.key});
 
   @override
   State<CalendarScreen> createState() => _CalendarScreenState();
 }
 
-/// State tracking the focused month and selected day for the calendar grid.
+/// The state for [CalendarScreen], tracking the focused month and selected day.
 class _CalendarScreenState extends State<CalendarScreen> {
   late DateTime _focusedMonth;
   late DateTime _selectedDate;
@@ -76,7 +77,9 @@ class _CalendarScreenState extends State<CalendarScreen> {
     );
   }
 
-  /// Selects [date], moving the focused month if it falls outside it.
+  /// Selects the given [date].
+  ///
+  /// Moves the focused month if the selected date falls outside the current view.
   void _onDaySelected(DateTime date) {
     setState(() {
       _selectedDate = date;

@@ -3,24 +3,24 @@ import 'package:balance/l10n/app_localizations.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_state.dart';
 import 'custom_settings_toggle.dart';
 
-/// Security settings group with the biometric lock switch.
+/// A widget that represents the security settings group with the biometric lock switch.
 class SecuritySection extends StatelessWidget {
   /// The current app settings state driving the displayed values.
   final AppSettingsState state;
 
-  /// Localized strings for this section.
+  /// The localized strings for this section.
   final AppLocalizations l10n;
 
-  /// Future resolving to whether biometric hardware is available.
+  /// The future resolving to whether biometric hardware is available.
   final Future<bool> isBiometricAvailable;
 
-  /// Callback invoked when the biometric lock switch is toggled.
+  /// The callback invoked when the biometric lock switch is toggled.
   final ValueChanged<bool> onBiometricChanged;
 
-  /// Label shown when biometrics are available.
+  /// The label shown when biometrics are available.
   final String biometricsAvailableLabel;
 
-  /// Label shown when biometrics are not available.
+  /// The label shown when biometrics are not available.
   final String biometricsNotAvailableLabel;
 
   /// Creates a [SecuritySection] with the given dependencies.

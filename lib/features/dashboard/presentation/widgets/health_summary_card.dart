@@ -12,15 +12,15 @@ import 'package:balance/features/weight/presentation/utils/bmi_category_localize
 import 'package:balance/features/settings/presentation/widgets/target_weight_dialog.dart';
 import 'package:balance/features/weight/presentation/widgets/bmi_legend_dialog.dart';
 
-/// An integrated summary card displaying latest weight, BMI, and goal progress.
+/// An integrated summary card displaying the latest weight, BMI, and goal progress.
 class HealthSummaryCard extends StatelessWidget {
   /// The latest recorded weight in kilograms.
   final double latestWeightKg;
 
-  /// Optional date of the latest recorded weight measurement.
+  /// An optional date of the latest recorded weight measurement.
   final DateTime? lastUpdated;
 
-  /// Creates a [HealthSummaryCard] with [latestWeightKg] and optional [lastUpdated].
+  /// Creates a [HealthSummaryCard].
   const HealthSummaryCard({
     super.key,
     required this.latestWeightKg,
@@ -130,8 +130,9 @@ class HealthSummaryCard extends StatelessWidget {
     );
   }
 
-  /// Builds the latest-measurement column: label, big weight value, and a
-  /// localized relative timestamp.
+  /// Builds the latest-measurement column.
+  ///
+  /// Includes the label, a large weight value, and a localized relative timestamp.
   Widget _buildLatestMeasurementInfo(
     BuildContext context,
     double displayWeight,
@@ -185,8 +186,9 @@ class HealthSummaryCard extends StatelessWidget {
     );
   }
 
-  /// Builds the tappable BMI badge showing the current value and category
-  /// color; tapping opens the [BmiLegendDialog].
+  /// Builds the tappable BMI badge showing the current value and category color.
+  ///
+  /// Tapping the badge opens the [BmiLegendDialog].
   Widget _buildBmiBadge(
     BuildContext context,
     double bmi,
@@ -272,8 +274,9 @@ class HealthSummaryCard extends StatelessWidget {
     );
   }
 
-  /// Builds the goal progress section: remaining weight text and a progress
-  /// bar; tapping opens the [TargetWeightDialog].
+  /// Builds the goal progress section.
+  ///
+  /// Includes the remaining weight text and a progress bar. Tapping opens the [TargetWeightDialog].
   Widget _buildGoalProgress(
     BuildContext context,
     double targetWeightKg,
@@ -368,8 +371,7 @@ class HealthSummaryCard extends StatelessWidget {
     );
   }
 
-  /// Opens the [TargetWeightDialog] and dispatches the resulting target
-  /// weight change (or its removal) to [AppSettingsBloc].
+  /// Opens the [TargetWeightDialog] and dispatches the resulting target weight change to the [AppSettingsBloc].
   Future<void> _openTargetWeightDialog(
     BuildContext context,
     double? targetWeightKg,
@@ -399,8 +401,9 @@ class HealthSummaryCard extends StatelessWidget {
     }
   }
 
-  /// Formats [date] as a localized time ("today at 7:30 AM") or a date-time
-  /// pair for older measurements, returning an empty string when [date] is null.
+  /// Formats the [date] as a localized time or a date-time pair for older measurements.
+  ///
+  /// Returns an empty string when the [date] is null.
   String _formatTimestamp(
     BuildContext context,
     DateTime? date,

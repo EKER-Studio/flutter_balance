@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:balance/features/weight/domain/entities/weight_entry.dart';
 import 'package:balance/features/calendar/presentation/widgets/calendar_day_cell.dart';
 
-/// Callback signature when a calendar day is selected.
+/// The callback signature used when a calendar day is selected.
 typedef OnCalendarDaySelected =
     void Function(DateTime date, List<WeightEntry> entries);
 
-/// Reusable calendar grid displaying day cells for a focused month.
+/// A grid displaying day cells for a focused month.
 class CalendarGrid extends StatelessWidget {
   /// The month and year currently displayed by the grid.
   final DateTime focusedMonth;
@@ -14,16 +14,15 @@ class CalendarGrid extends StatelessWidget {
   /// The currently active selected date.
   final DateTime selectedDate;
 
-  /// All available weight entries to map into calendar dates.
+  /// All available [WeightEntry] records to map into calendar dates.
   final List<WeightEntry> entries;
 
-  /// Optional target weight in kg used to compute goal achievement markers.
+  /// An optional target weight in kilograms used to compute goal achievement markers.
   final double? targetWeight;
 
-  /// Callback triggered when a day cell is tapped.
+  /// The callback triggered when a day cell is tapped.
   final OnCalendarDaySelected onDaySelected;
 
-  /// Creates a [CalendarGrid] widget.
   const CalendarGrid({
     super.key,
     required this.focusedMonth,

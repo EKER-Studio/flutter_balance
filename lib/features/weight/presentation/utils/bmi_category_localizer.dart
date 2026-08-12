@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:balance/l10n/app_localizations.dart';
 import 'package:balance/features/settings/presentation/bloc/bmi_category.dart';
 
-/// Localized display helpers for [BmiCategory].
+/// A set of localized display helpers for [BmiCategory].
 extension BmiCategoryX on BmiCategory {
   /// Returns the user-facing label for this category using [l10n].
   String localizedName(AppLocalizations l10n) {

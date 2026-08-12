@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:balance/l10n/app_localizations.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_state.dart';
 
-/// Dialog for entering the user's height in centimeters.
+/// A widget that provides a dialog for entering the user's height in centimeters.
 class HeightDialog extends StatefulWidget {
   /// The currently stored height in cm, or `null` if not set yet.
   final double? currentValue;
@@ -35,6 +35,8 @@ class HeightDialogState extends State<HeightDialog> {
   }
 
   /// Validates the entered height and pops it as a result on success.
+  ///
+  /// If the input is invalid or out of bounds, it displays an error message instead of popping the dialog.
   void _handleSave() {
     FocusScope.of(context).unfocus();
     final text = _controller.text.trim().replaceAll(',', '.');

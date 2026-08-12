@@ -6,26 +6,29 @@ import 'package:balance/core/integrations/biometrics/biometric_service.dart';
 
 /// Lifecycle observer that enforces biometric lock and verifies database integrity when the app resumes.
 class BiometricLockObserver with WidgetsBindingObserver {
-  /// Callback returning whether biometric lock is enabled.
+  /// A callback returning whether biometric lock is enabled.
   final bool Function() isBiometricLockEnabled;
 
-  /// Optional callback returning whether the app is currently locked.
+  /// An optional callback returning whether the app is currently locked.
   final bool Function()? isAppLocked;
 
-  /// Callback emitted when the lock state changes (true = locked, false = unlocked).
+  /// A callback emitted when the lock state changes.
+  ///
+  /// Passes `true` if locked, and `false` if unlocked.
   final ValueChanged<bool> onLockStateChanged;
 
-  /// Optional stream emitting changes to the biometric lock enabled setting.
+  /// An optional stream emitting changes to the biometric lock enabled setting.
   final Stream<bool>? lockEnabledStream;
 
-  /// Resolves the localized reason shown in the biometric auth prompt.
+  /// A callback that resolves the localized reason shown in the biometric auth prompt.
   final String Function() localizedReason;
 
-  /// Optional callback invoked when the database had to be reopened after
-  /// app resumption, so consumers can re-subscribe to Isar streams.
+  /// An optional callback invoked when the database had to be reopened.
+  ///
+  /// This occurs after app resumption, so consumers can re-subscribe to Isar streams.
   final Future<void> Function()? onDatabaseReopened;
 
-  /// Callback to verify database integrity on resumption.
+  /// A callback to verify database integrity on resumption.
   final Future<({bool reopened})> Function() verifyDatabaseIntegrity;
 
   bool _isLockEnabled = false;
@@ -63,8 +66,9 @@ class BiometricLockObserver with WidgetsBindingObserver {
     }
   }
 
-  /// Re-checks the Isar instance after the app resumes and invokes
-  /// [onDatabaseReopened] when the database had to be re-opened.
+  /// Re-checks the Isar instance after the app resumes.
+  ///
+  /// Invokes [onDatabaseReopened] when the database had to be re-opened.
   Future<void> _verifyDatabaseIntegrity() async {
     try {
       final result = await verifyDatabaseIntegrity();
@@ -80,8 +84,9 @@ class BiometricLockObserver with WidgetsBindingObserver {
     }
   }
 
-  /// Locks the app when it is backgrounded and biometric lock is enabled,
-  /// unless an authentication dialog is active or the app is already locked.
+  /// Locks the app when it is backgrounded and biometric lock is enabled.
+  ///
+  /// Does not lock if an authentication dialog is active or the app is already locked.
   Future<void> _checkBiometricLock() async {
     if (!_isLockEnabled) return;
 

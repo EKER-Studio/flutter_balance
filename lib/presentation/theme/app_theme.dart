@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 
-/// Centralized Material 3 theme definitions for Balance (Serene Metric design system).
+/// A centralized configuration class for Material 3 theme definitions for Balance (Serene Metric design system).
 abstract final class AppTheme {
-  /// Primary brand color anchor: Vibrant Blue #006CFF.
+  /// The primary brand color anchor: Vibrant Blue #006CFF.
   static const Color primaryColor = Color(0xFF006CFF);
 
-  /// Light ColorScheme: hand-tuned Material 3 palette anchored at [primaryColor].
+  /// The light [ColorScheme], a hand-tuned Material 3 palette anchored at [primaryColor].
   static const ColorScheme lightColorScheme = ColorScheme(
     brightness: Brightness.light,
     primary: Color(0xFF005BDE),
@@ -54,7 +54,7 @@ abstract final class AppTheme {
     surfaceTint: Color(0xFF005BDE),
   );
 
-  /// Dark ColorScheme: hand-tuned counterpart of [lightColorScheme] with the
+  /// The dark [ColorScheme], a hand-tuned counterpart of [lightColorScheme] with the
   /// same tonal roles shifted to dark brightness for consistent contrast.
   static const ColorScheme darkColorScheme = ColorScheme(
     brightness: Brightness.dark,
@@ -104,7 +104,7 @@ abstract final class AppTheme {
     surfaceTint: Color(0xFFADC6FF),
   );
 
-  /// Custom typography based on the Material 3 type scale using Roboto.
+  /// The custom typography based on the Material 3 type scale using Roboto.
   static const TextTheme textTheme = TextTheme(
     displayLarge: TextStyle(
       fontFamily: 'Roboto',
@@ -168,7 +168,7 @@ abstract final class AppTheme {
     ),
   );
 
-  /// Light theme ThemeData.
+  /// The light theme [ThemeData].
   static ThemeData get lightTheme => ThemeData(
     useMaterial3: true,
     colorScheme: lightColorScheme,
@@ -260,7 +260,7 @@ abstract final class AppTheme {
     ),
   );
 
-  /// Dark theme ThemeData.
+  /// The dark theme [ThemeData].
   static ThemeData get darkTheme => ThemeData(
     useMaterial3: true,
     colorScheme: darkColorScheme,

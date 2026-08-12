@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-/// Reusable weekday header row for calendar layouts.
+/// A row displaying weekday headers for calendar layouts.
 class CalendarWeekdayHeader extends StatelessWidget {
-  /// Creates a [CalendarWeekdayHeader] widget.
   const CalendarWeekdayHeader({super.key});
 
   @override

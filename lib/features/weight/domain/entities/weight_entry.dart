@@ -1,24 +1,26 @@
-/// Domain entity representing an individual body weight measurement.
+/// A domain entity representing an individual body weight measurement.
 ///
 /// Encapsulates core domain data for weight tracking, including weight in kilograms,
 /// measurement timestamp, and an optional user note.
 class WeightEntry {
-  /// Minimum valid body weight in kilograms, inclusive.
+  /// The minimum valid body weight in kilograms, inclusive.
   static const double minWeightKg = 20;
 
-  /// Maximum valid body weight in kilograms, inclusive.
+  /// The maximum valid body weight in kilograms, inclusive.
   static const double maxWeightKg = 300;
 
-  /// Unique database primary key identifier, defaulting to 0 for unpersisted entries.
+  /// The unique database primary key identifier.
+  ///
+  /// Defaults to 0 for unpersisted entries.
   final int id;
 
-  /// Recorded body weight value in kilograms.
+  /// The recorded body weight value in kilograms.
   final double weightKg;
 
-  /// Date and time when the weight measurement was recorded.
+  /// The date and time when the weight measurement was recorded.
   final DateTime dateTime;
 
-  /// Optional user-provided text note accompanying the weight record.
+  /// An optional user-provided text note accompanying the weight record.
   final String? note;
 
   /// Creates an immutable [WeightEntry] domain entity instance.

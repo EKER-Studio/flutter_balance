@@ -7,24 +7,24 @@ import 'custom_settings_tile.dart';
 import 'custom_settings_toggle.dart';
 import 'inexact_reminder_hint.dart';
 
-/// Application settings group with unit, theme, and reminder controls.
+/// A widget that represents the application settings group with unit, theme, and reminder controls.
 class ApplicationSection extends StatelessWidget {
   /// The current app settings state driving the displayed values.
   final AppSettingsState state;
 
-  /// Localized strings for this section.
+  /// The localized strings for this section.
   final AppLocalizations l10n;
 
-  /// Callback invoked when the theme tile is tapped.
+  /// The callback invoked when the theme tile is tapped.
   final VoidCallback onThemeTap;
 
-  /// Callback invoked when the measurement unit tile is tapped.
+  /// The callback invoked when the measurement unit tile is tapped.
   final VoidCallback onUnitTap;
 
-  /// Callback invoked when the notifications switch is toggled.
+  /// The callback invoked when the notifications switch is toggled.
   final ValueChanged<bool> onNotificationsChanged;
 
-  /// Callback invoked when the reminder time tile is tapped.
+  /// The callback invoked when the reminder time tile is tapped.
   final VoidCallback onNotificationTimeTap;
 
   /// Creates an [ApplicationSection] with the given dependencies.

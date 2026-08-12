@@ -83,7 +83,7 @@ List<_EncryptionPayload> _encryptPayloads((List<WeightEntry>, Uint8List) args) {
   }).toList();
 }
 
-/// Isar-backed implementation of [WeightRepository] using Field-Level AES-256 Encryption.
+/// An Isar-backed implementation of [WeightRepository] using field-level AES-256 encryption.
 ///
 /// Weight and note values are encrypted with [FieldCipher] before persistence
 /// and decrypted on read. The watch stream is resilient: transient failures
@@ -99,43 +99,43 @@ List<_EncryptionPayload> _encryptPayloads((List<WeightEntry>, Uint8List) args) {
 /// final stream = repository.watchAllEntries();
 /// ```
 class IsarWeightRepository implements WeightRepository {
-  /// Default cap on entries loaded/watched at once, newest-first.
+  /// The default cap on entries loaded or watched at once, newest-first.
   ///
   /// Covers roughly 14 years of daily weigh-ins plus multiple measurements
   /// per day, so the cap is practically unreachable for realistic users.
   static const int defaultMaxEntriesLoaded = 5000;
 
-  /// Maximum number of entries loaded/watched at once, newest-first.
+  /// The maximum number of entries loaded or watched at once, newest-first.
   ///
   /// Bounds memory/UI cost for very long-running users. Entries beyond this
   /// cap are not visible to [WeightBloc] (streaks, statistics, calendar).
   /// Configurable for tests; add pagination rather than raising this further.
   final int maxEntriesLoaded;
 
-  /// Optional stream fired after each successful biometric authentication.
+  /// An optional stream fired after each successful biometric authentication.
   ///
   /// The [watchAllEntries] retry loop wakes up on this signal and re-subscribes
   /// immediately, instead of waiting out the full backoff, once the user has
   /// authenticated again and the device keystore is accessible.
   final Stream<void>? unlockSignal;
 
-  /// Base delay (milliseconds) before the first [watchAllEntries] retry.
+  /// The base delay in milliseconds before the first [watchAllEntries] retry.
   static const int _retryBaseDelayMs = 250;
 
-  /// Cap (milliseconds) on the exponential retry backoff.
+  /// The cap in milliseconds on the exponential retry backoff.
   static const int _retryMaxDelayMs = 32000;
 
-  /// The Isar database instance.
+  /// The [Isar] database instance.
   final Isar isar;
 
-  /// Secure storage instance for retrieving the encryption key.
+  /// The secure storage instance for retrieving the encryption key.
   final FlutterSecureStorage secureStorage;
 
-  /// Cached AES-256 encryption key, dropped on stream failures so it is
+  /// A cached AES-256 encryption key, dropped on stream failures so it is
   /// re-read from secure storage once the device is unlocked again.
   Uint8List? _encryptionKey;
 
-  /// Creates a repository backed by [isar] and managed secure storage.
+  /// Creates an [IsarWeightRepository] backed by [isar] and managed secure storage.
   ///
   /// Takes an optional [secureStorage] handler.
   /// Takes an optional [encryptionKey] for testing override.
@@ -149,7 +149,7 @@ class IsarWeightRepository implements WeightRepository {
     this.unlockSignal,
   });
 
-  /// Resolves the live Isar instance for this repository.
+  /// Resolves the live [Isar] instance for this repository.
   ///
   /// Prefers the currently registered open instance with the same name so
   /// operations keep working after [DatabaseModule] recovers the database
@@ -335,8 +335,9 @@ class IsarWeightRepository implements WeightRepository {
     }
   }
 
-  /// Encrypts and persists [entry] within a single Isar write transaction,
-  /// assigning an auto-increment [WeightEntry.id] when it is unset.
+  /// Encrypts and persists [entry] within a single Isar write transaction.
+  ///
+  /// Assigns an auto-increment [WeightEntry.id] when it is unset.
   ///
   /// Throws [WeightRepositoryException] with [WeightErrorType.writeFailed] when
   /// the encryption key is missing, the write transaction fails, or an

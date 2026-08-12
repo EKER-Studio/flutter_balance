@@ -9,7 +9,7 @@ import 'package:balance/features/weight/presentation/bloc/weight_event.dart';
 import 'package:balance/features/weight/presentation/bloc/weight_state.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_bloc.dart';
 
-/// BLoC managing weight entries and user height.
+/// A BLoC managing weight entries and user height.
 ///
 /// Subscribes to the reactive [WeightRepository.watchAllEntries] stream,
 /// aggregates measurements per calendar day for chart display, and maps
@@ -28,11 +28,11 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
   /// The [WeightRepository] backing data operations.
   final WeightRepository repository;
 
-  /// Optional settings BLoC used to gate health synchronization; when null,
+  /// An optional settings BLoC used to gate health synchronization; when null,
   /// all health-sync behavior is dormant.
   final AppSettingsBloc? _settingsBloc;
 
-  /// Backend used for every HealthKit / Health Connect interaction.
+  /// The backend used for every HealthKit / Health Connect interaction.
   final HealthService _healthService;
 
   List<WeightEntry>? _memoEntries;
@@ -428,7 +428,7 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
     }
   }
 
-  /// Returns true when [target] already exists in [entries]: an entry
+  /// Returns true if [target] already exists in [entries]: an entry
   /// with the same timestamp truncated to the minute (UTC-normalized) and a
   /// weight value within 0.01kg tolerance.
   static bool _isDuplicate(WeightEntry target, List<WeightEntry> entries) {

@@ -2,18 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:balance/l10n/app_localizations.dart';
 
-/// Reusable month navigation header for calendar views.
+/// A header providing month navigation for calendar views.
 class CalendarMonthHeader extends StatelessWidget {
   /// The currently displayed month and year.
   final DateTime focusedMonth;
 
-  /// Callback invoked when navigating to the previous month.
+  /// The callback invoked when navigating to the previous month.
   final VoidCallback onPreviousMonth;
 
-  /// Callback invoked when navigating to the next month.
+  /// The callback invoked when navigating to the next month.
   final VoidCallback onNextMonth;
 
-  /// Creates a [CalendarMonthHeader] widget.
   const CalendarMonthHeader({
     super.key,
     required this.focusedMonth,

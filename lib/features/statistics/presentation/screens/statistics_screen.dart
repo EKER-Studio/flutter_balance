@@ -17,9 +17,9 @@ import 'package:balance/presentation/core/clamped_layout.dart';
 import 'package:balance/presentation/widgets/app_top_bar.dart';
 import 'package:balance/presentation/widgets/state_message_card.dart';
 
-/// Tab 3: Consolidated Statistics Screen combining all health metrics into data-dense composite cards.
+/// A consolidated statistics screen combining all health metrics into data-dense composite cards.
 class StatisticsScreen extends StatelessWidget {
-  /// Creates [StatisticsScreen].
+  /// Creates a [StatisticsScreen].
   const StatisticsScreen({super.key});
 
   @override
@@ -143,8 +143,9 @@ class StatisticsScreen extends StatelessWidget {
     );
   }
 
-  /// Builds the hero progress and goal composite card with the total change,
-  /// weekly pace, and goal progress.
+  /// Builds the hero progress and goal composite card.
+  ///
+  /// Shows the total change, weekly pace, and goal progress.
   Widget _buildHeroProgressAndGoalCard(
     BuildContext context, {
     required List<WeightEntry> entries,
@@ -339,8 +340,9 @@ class StatisticsScreen extends StatelessWidget {
     );
   }
 
-  /// Builds the habits and activity composite card showing the logging streak
-  /// and compliance.
+  /// Builds the habits and activity composite card.
+  ///
+  /// Shows the logging streak and compliance.
   Widget _buildHabitsAndActivityCard(
     BuildContext context, {
     required int streak,
@@ -393,8 +395,9 @@ class StatisticsScreen extends StatelessWidget {
     );
   }
 
-  /// Builds a single metric column (icon, label, and value) inside the
-  /// habits and activity card.
+  /// Builds a single metric column inside the habits and activity card.
+  ///
+  /// The column contains an icon, label, and value.
   Widget _buildHabitMetricItem(
     BuildContext context, {
     required IconData icon,
@@ -437,8 +440,9 @@ class StatisticsScreen extends StatelessWidget {
     );
   }
 
-  /// Builds the combined weight range composite card with the highest, lowest,
-  /// and average weights.
+  /// Builds the combined weight range composite card.
+  ///
+  /// Shows the highest, lowest, and average weights.
   Widget _buildCombinedWeightRangeCard(
     BuildContext context, {
     required List<WeightEntry> entries,
@@ -533,8 +537,9 @@ class StatisticsScreen extends StatelessWidget {
     );
   }
 
-  /// Builds one detail row (icon, label, date, and formatted value) inside
-  /// the combined weight range card.
+  /// Builds one detail row inside the combined weight range card.
+  ///
+  /// The row contains an icon, label, date, and formatted value.
   Widget _buildWeightDetailRow(
     BuildContext context, {
     required IconData icon,
@@ -580,7 +585,7 @@ class StatisticsScreen extends StatelessWidget {
     );
   }
 
-  /// Calculates weekly weight change pace over the last 30 days.
+  /// Calculates the weekly weight change pace over the last 30 days.
   double? _calculateWeeklyPace(List<WeightEntry> entries) {
     if (entries.length < 2) return null;
 
@@ -605,7 +610,7 @@ class StatisticsScreen extends StatelessWidget {
     return diffKg / weeks;
   }
 
-  /// Calculates percentage progress toward goal.
+  /// Calculates the percentage progress toward the goal.
   double _calculateGoalProgressPct({
     required double startKg,
     required double currentKg,
@@ -623,7 +628,7 @@ class StatisticsScreen extends StatelessWidget {
     return pct.clamp(0.0, 100.0);
   }
 
-  /// Calculates current daily streak.
+  /// Calculates the current daily streak.
   int _calculateStreak(List<WeightEntry> entries, DateTime now) {
     if (entries.isEmpty) return 0;
 
@@ -655,7 +660,9 @@ class StatisticsScreen extends StatelessWidget {
     return streak;
   }
 
-  /// Calculates all-time compliance percentage (unique logged days / total days since first entry).
+  /// Calculates the all-time compliance percentage.
+  ///
+  /// Evaluates unique logged days over the total days since the first entry.
   int _calculateTotalCompliance(List<WeightEntry> entries, DateTime now) {
     if (entries.isEmpty) return 0;
 
@@ -676,7 +683,9 @@ class StatisticsScreen extends StatelessWidget {
     return ((loggedDays / totalDays) * 100).round().clamp(0, 100);
   }
 
-  /// Formats a measurement entry date (e.g. "15 Sty 2023" or "Dzisiaj").
+  /// Formats a measurement entry [date].
+  ///
+  /// Returns strings like "15 Sty 2023" or "Dzisiaj".
   String _formatEntryDate(
     BuildContext context,
     DateTime date,

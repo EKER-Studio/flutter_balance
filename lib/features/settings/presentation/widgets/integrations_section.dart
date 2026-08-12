@@ -4,15 +4,15 @@ import 'package:balance/features/settings/presentation/bloc/app_settings_state.d
 import 'custom_settings_tile.dart';
 import 'custom_settings_toggle.dart';
 
-/// Integrations settings group with the health sync switch.
+/// A widget that displays the integrations settings group with the health sync switch.
 class IntegrationsSection extends StatelessWidget {
-  /// The current app settings state driving the displayed values.
+  /// The current app settings [state] driving the displayed values.
   final AppSettingsState state;
 
-  /// Localized strings for this section.
+  /// Localized strings for the [IntegrationsSection] widget.
   final AppLocalizations l10n;
 
-  /// Callback invoked when the health sync switch is toggled.
+  /// Callback invoked when the health sync switch is toggled, allowing the app to sync with health services.
   final ValueChanged<bool> onHealthSyncChanged;
 
   /// Callback invoked when the tile asks to install Health Connect.
@@ -21,11 +21,6 @@ class IntegrationsSection extends StatelessWidget {
   final VoidCallback onInstallHealthConnect;
 
   /// Creates an [IntegrationsSection] with the given dependencies.
-  ///
-  /// @param state The current app settings state driving the displayed values.
-  /// @param l10n Localized strings for this section.
-  /// @param onHealthSyncChanged Callback invoked when the health sync switch is toggled.
-  /// @param onInstallHealthConnect Callback invoked when the tile asks to install Health Connect.
   const IntegrationsSection({
     super.key,
     required this.state,

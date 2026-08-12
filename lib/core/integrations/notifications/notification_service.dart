@@ -7,7 +7,7 @@ import 'package:flutter_timezone/flutter_timezone.dart';
 import 'package:timezone/data/latest.dart' as tz_data;
 import 'package:timezone/timezone.dart' as tz;
 
-/// Singleton service for managing local scheduled notifications.
+/// A singleton service for managing local scheduled notifications.
 ///
 /// Must be initialized via [initialize] during app startup before invoking scheduling APIs.
 ///
@@ -18,36 +18,36 @@ import 'package:timezone/timezone.dart' as tz;
 /// );
 /// ```
 class NotificationService {
-  /// Private constructor to enforce singleton pattern.
+  /// A private constructor to enforce the singleton pattern.
   NotificationService._();
 
   /// The single shared instance of [NotificationService].
   static final NotificationService instance = NotificationService._();
 
-  /// Unique identifier for the daily weight reminder notification.
+  /// The unique identifier for the daily weight reminder notification.
   static const int _dailyReminderId = 0;
 
-  /// Android notification channel ID for daily weight reminders.
+  /// The Android notification channel ID for daily weight reminders.
   static const String _channelId = 'daily_weight_reminders_v2';
 
-  /// Underlying plugin instance for local notifications.
+  /// The underlying plugin instance for local notifications.
   final FlutterLocalNotificationsPlugin _plugin =
       FlutterLocalNotificationsPlugin();
 
   /// Whether the notification service has been initialized.
   bool _initialized = false;
 
-  /// Display name for the Android notification channel.
+  /// The display name for the Android notification channel.
   String _channelName = 'Daily Weight Reminders';
 
-  /// Description for the Android notification channel.
+  /// The description for the Android notification channel.
   String _channelDescription =
       'Reminds you to record your daily weight measurement.';
 
-  /// Title text for the daily weight reminder notification.
+  /// The title text for the daily weight reminder notification.
   String _title = 'Time to weigh in!';
 
-  /// Body text for the daily weight reminder notification.
+  /// The body text for the daily weight reminder notification.
   String _body = "Don't forget to log your weight today.";
 
   /// Updates the localized texts used for scheduled reminder notifications.

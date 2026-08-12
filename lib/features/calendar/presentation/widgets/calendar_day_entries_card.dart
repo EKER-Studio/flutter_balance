@@ -13,18 +13,17 @@ import 'package:balance/features/settings/presentation/bloc/app_settings_state.d
 import 'package:balance/features/settings/presentation/bloc/bmi_category.dart';
 import 'package:balance/features/weight/presentation/utils/bmi_category_localizer.dart';
 
-/// Reusable Material 3 day details card displaying weight entries, notes, and stats.
+/// A card displaying weight entries, notes, and stats for a selected day.
 class CalendarDayEntriesCard extends StatelessWidget {
   /// The selected date.
   final DateTime selectedDate;
 
-  /// List of weight entries recorded on this day.
+  /// The list of [WeightEntry] records for this day.
   final List<WeightEntry> entries;
 
-  /// User's target weight in kg (if set).
+  /// The user's target weight in kilograms, if set.
   final double? targetWeight;
 
-  /// Creates a [CalendarDayEntriesCard].
   const CalendarDayEntriesCard({
     super.key,
     required this.selectedDate,
@@ -239,7 +238,7 @@ class CalendarDayEntriesCard extends StatelessWidget {
     );
   }
 
-  /// Prompts for confirmation before deleting [entryId].
+  /// Prompts the user for confirmation before deleting the entry with [entryId].
   Future<void> _confirmDelete(BuildContext context, int entryId) async {
     final l10n = AppLocalizations.of(context);
     final confirmed = await showDialog<bool>(

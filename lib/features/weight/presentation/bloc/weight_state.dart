@@ -2,12 +2,12 @@ import 'package:balance/features/weight/domain/entities/weight_entry.dart';
 import 'package:balance/features/weight/domain/weight_error_type.dart';
 import 'package:balance/features/weight/presentation/bloc/weight_event.dart';
 
-/// Possible states of [WeightBloc].
+/// The possible states of [WeightBloc].
 sealed class WeightState {
-  /// User's height in cm, persisted via HydratedBloc.
+  /// The user's height in cm, persisted via HydratedBloc.
   final double? heightCm;
 
-  /// Currently selected time period for the chart.
+  /// The currently selected time period for the chart.
   final TimePeriod timePeriod;
 
   /// Creates a [WeightState] with the given parameters.
@@ -17,19 +17,19 @@ sealed class WeightState {
   const WeightState({this.heightCm, this.timePeriod = TimePeriod.week});
 }
 
-/// Initial state before any subscription or interaction.
+/// The initial state before any subscription or interaction.
 final class WeightInitial extends WeightState {
   /// Creates [WeightInitial] with an optional persisted [heightCm].
   const WeightInitial({super.heightCm, super.timePeriod});
 }
 
-/// Transitional state while subscribing to the reactive stream.
+/// A transitional state while subscribing to the reactive stream.
 final class WeightLoading extends WeightState {
   /// Creates [WeightLoading] with an optional [heightCm].
   const WeightLoading({super.heightCm, super.timePeriod});
 }
 
-/// Steady state with a list of entries and optional height.
+/// A steady state with a list of entries and optional height.
 ///
 /// Also emitted after a [SyncHealthEntries] pull merges remote records into
 /// the local database, exposing the refreshed dataset to the UI.
@@ -52,7 +52,7 @@ final class WeightLoaded extends WeightState {
   });
 }
 
-/// Error state with a typed [errorType] and last known [entries].
+/// An error state with a typed [errorType] and last known [entries].
 final class WeightError extends WeightState {
   /// The reason for the error.
   final WeightErrorType errorType;

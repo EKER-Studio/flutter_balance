@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-/// Full-screen centered message with icon, title, subtitle, and optional CTA button.
+/// A full-screen centered message widget with icon, title, subtitle, and optional CTA button.
 ///
 /// Used for empty states, welcome screens, and error states with consistent layout.
 ///
@@ -16,7 +16,7 @@ import 'package:flutter/material.dart';
 /// )
 /// ```
 class StateMessageCard extends StatelessWidget {
-  /// Creates [StateMessageCard].
+  /// Creates a [StateMessageCard].
   ///
   /// [icon] and [iconContainerColor] control the icon circle appearance.
   /// [buttonLabel] and [onButtonPressed] must both be non-null for the button to appear.
@@ -47,13 +47,13 @@ class StateMessageCard extends StatelessWidget {
   /// The supporting message text below the title.
   final String subtitle;
 
-  /// Optional label for the call-to-action button.
+  /// An optional label for the call-to-action button.
   final String? buttonLabel;
 
-  /// Optional callback invoked when the button is pressed.
+  /// An optional callback invoked when the button is pressed.
   final VoidCallback? onButtonPressed;
 
-  /// Optional icon for the call-to-action button.
+  /// An optional icon for the call-to-action button.
   final IconData? buttonIcon;
 
   @override

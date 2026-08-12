@@ -1,4 +1,4 @@
-/// Domain enumeration representing categorized failure modes in weight management workflows.
+/// A domain enumeration representing categorized failure modes in weight management workflows.
 ///
 /// Emitted by weight domain logic and state management (e.g. BLoC) instead of raw exception
 /// messages to decouple presentation layers from error strings and enable type-safe localization.
@@ -25,7 +25,7 @@ enum WeightErrorType {
   wipeFailed,
 }
 
-/// Domain exception thrown by [WeightRepository] implementations when a database
+/// A domain exception thrown by [WeightRepository] implementations when a database
 /// operation fails.
 ///
 /// Carries a [WeightErrorType] so the presentation layer can map it to a
@@ -34,7 +34,7 @@ class WeightRepositoryException implements Exception {
   /// Categorizes the failed operation.
   final WeightErrorType type;
 
-  /// Human-readable description of what went wrong.
+  /// A human-readable description of what went wrong.
   final String message;
 
   /// The originating infrastructure exception, if available.
@@ -51,5 +51,5 @@ class WeightRepositoryException implements Exception {
   String toString() => 'WeightRepositoryException($type): $message';
 }
 
-/// Alias for [WeightRepositoryException] representing generic database persistence failures.
+/// An alias for [WeightRepositoryException] representing generic database persistence failures.
 typedef WeightDatabaseFailure = WeightRepositoryException;

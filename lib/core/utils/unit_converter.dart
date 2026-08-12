@@ -46,7 +46,7 @@ String unitLabelFor(MeasurementUnit unit) {
   return unit == MeasurementUnit.imperial ? 'lb' : 'kg';
 }
 
-/// Label for BMI values, which are always expressed in kg/m².
+/// The label for BMI values, which are always expressed in kg/m².
 const String bmiUnitLabel = 'kg/m²';
 
 /// Formats a height stored in centimeters for user display according to [unit].

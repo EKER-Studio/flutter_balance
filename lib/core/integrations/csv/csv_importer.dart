@@ -13,7 +13,7 @@ import 'package:balance/features/weight/domain/entities/weight_entry.dart';
 ///
 /// Supports both comma and semicolon delimiters (auto-detected).
 class CsvImporter {
-  /// Attempted date formats in order of precedence.
+  /// The attempted date formats in order of precedence.
   static final List<DateFormat> _dateFormats = [
     DateFormat('yyyy-MM-dd HH:mm'),
     DateFormat('yyyy-MM-dd'),
@@ -21,8 +21,9 @@ class CsvImporter {
     DateFormat('dd/MM/yyyy'),
   ];
 
-  /// Asynchronously parses [csvContent] on a background isolate to prevent UI thread jank.
+  /// Parses [csvContent] asynchronously on a background isolate.
   ///
+  /// This prevents UI thread jank.
   /// Passes the raw [csvContent] string across the isolate boundary and returns
   /// the parsed [WeightEntry] entities and count of skipped invalid rows.
   /// Throws a FormatException if the CSV has no valid header row or is corrupted.
@@ -37,7 +38,7 @@ class CsvImporter {
     return Isolate.run(() => _parseSync(csvContent));
   }
 
-  /// Internal synchronous parsing logic executed within the background isolate.
+  /// Parses [csvContent] synchronously within the background isolate.
   static ({List<WeightEntry> entries, int skippedRows}) _parseSync(
     String csvContent,
   ) {

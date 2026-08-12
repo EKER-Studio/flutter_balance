@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 
-/// Reusable Material 3 shimmer loading skeleton widget for the calendar layout.
+/// A widget displaying a shimmer loading skeleton for the calendar layout.
 class CalendarShimmerSkeleton extends StatefulWidget {
-  /// Creates a [CalendarShimmerSkeleton] widget.
   const CalendarShimmerSkeleton({super.key});
 
   @override

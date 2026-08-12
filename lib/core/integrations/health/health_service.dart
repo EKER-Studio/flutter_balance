@@ -6,18 +6,18 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:balance/features/weight/domain/entities/weight_entry.dart';
 
-/// Abstraction over platform-specific checks.
+/// An abstraction over platform-specific checks.
 ///
 /// Allows mocking platform behavior in tests without modifying global state.
 abstract class PlatformDetector {
-  /// True if running on Android.
+  /// Whether the app is running on Android.
   bool get isAndroid;
 
-  /// True if running on iOS.
+  /// Whether the app is running on iOS.
   bool get isIOS;
 }
 
-/// Default implementation using dart:io.
+/// A default implementation using `dart:io`.
 class NativePlatformDetector implements PlatformDetector {
   @override
   bool get isAndroid => Platform.isAndroid;
@@ -25,7 +25,7 @@ class NativePlatformDetector implements PlatformDetector {
   bool get isIOS => Platform.isIOS;
 }
 
-/// Abstraction over the native health data platform.
+/// An abstraction over the native health data platform.
 ///
 /// Exposes a platform-neutral API for querying and modifying body weight
 /// records backed by Apple HealthKit (iOS) or Google Health Connect (Android),
@@ -84,7 +84,7 @@ abstract class HealthService {
   });
 }
 
-/// Native implementation of [HealthService] backed by the `health` plugin.
+/// A native implementation of [HealthService] backed by the `health` plugin.
 ///
 /// All plugin calls are wrapped in try-catch blocks so missing Health Connect
 /// installations, revoked permissions, or platform errors degrade to `false`
@@ -103,49 +103,49 @@ class NativeHealthService implements HealthService {
   /// The single shared instance of [NativeHealthService].
   static final NativeHealthService instance = NativeHealthService();
 
-  /// Data type used for every weight interaction.
+  /// The data type used for every weight interaction.
   static const HealthDataType _weightType = HealthDataType.WEIGHT;
 
-  /// Unit used for every weight interaction.
+  /// The unit used for every weight interaction.
   static const HealthDataUnit _weightUnit = HealthDataUnit.KILOGRAM;
 
-  /// Data types corresponding 1-to-1 with [_readWriteAccess].
+  /// The data types corresponding 1-to-1 with [_readWriteAccess].
   static const List<HealthDataType> _weightTypesReadWrite = [
     HealthDataType.WEIGHT,
     HealthDataType.WEIGHT,
   ];
 
-  /// Read and write access requested for weight records.
+  /// The read and write access requested for weight records.
   static const List<HealthDataAccess> _readWriteAccess = [
     HealthDataAccess.READ,
     HealthDataAccess.WRITE,
   ];
 
-  /// Match tolerance in kilograms when locating an entry for deletion.
+  /// The match tolerance in kilograms when locating an entry for deletion.
   static const double _deleteWeightToleranceKg = 0.01;
 
-  /// Half-width of the lookup window around the deletion timestamp.
+  /// The half-width of the lookup window around the deletion timestamp.
   static const Duration _deleteLookupWindow = Duration(minutes: 1);
 
-  /// Lower bound for a plausible weight reading in kilograms.
+  /// The lower bound for a plausible weight reading in kilograms.
   static const double _minWeightKg = 20.0;
 
-  /// Upper bound for a plausible weight reading in kilograms.
+  /// The upper bound for a plausible weight reading in kilograms.
   static const double _maxWeightKg = 300.0;
 
-  /// Maximum time allowed for permission and settings calls before fallback.
+  /// The maximum time allowed for permission and settings calls before fallback.
   static const Duration _operationTimeout = Duration(seconds: 5);
 
-  /// Package name of the official Google Health Connect app.
+  /// The package name of the official Google Health Connect app.
   static const String _healthConnectPackageId =
       'com.google.android.apps.healthdata';
 
-  /// Play Store deep link for the Health Connect app.
+  /// The Play Store deep link for the Health Connect app.
   static final Uri _healthConnectMarketUri = Uri.parse(
     'market://details?id=$_healthConnectPackageId',
   );
 
-  /// Web fallback for devices without a `market://` handler.
+  /// The web fallback for devices without a `market://` handler.
   static final Uri _healthConnectPlayStoreUri = Uri.parse(
     'https://play.google.com/store/apps/details?id=$_healthConnectPackageId',
   );
@@ -153,7 +153,7 @@ class NativeHealthService implements HealthService {
   /// The underlying `health` plugin instance.
   final Health _health;
 
-  /// Platform detector for testing.
+  /// A platform detector for testing.
   final PlatformDetector _platformDetector;
 
   /// Whether [_health.configure] has completed successfully at least once.

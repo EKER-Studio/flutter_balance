@@ -1,7 +1,7 @@
 import 'package:balance/features/weight/domain/weight_error_type.dart';
 import 'package:balance/l10n/app_localizations.dart';
 
-/// Localized error message helpers for [WeightErrorType].
+/// A set of localized error message helpers for [WeightErrorType].
 extension WeightErrorTypeX on WeightErrorType {
   /// Returns a user-facing error message for this error type using [l10n].
   String localizedMessage(AppLocalizations l10n) {

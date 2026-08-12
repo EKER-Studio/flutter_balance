@@ -8,7 +8,7 @@ import 'package:local_auth_darwin/local_auth_darwin.dart';
 import 'package:local_auth_platform_interface/local_auth_platform_interface.dart';
 import 'package:balance/l10n/app_localizations.dart';
 
-/// Outcome of a biometric authentication attempt.
+/// The outcome of a biometric authentication attempt.
 enum BiometricAuthResult {
   /// Authentication succeeded.
   success,
@@ -35,8 +35,9 @@ enum BiometricAuthResult {
   error,
 }
 
-/// Singleton service for checking device credential availability and
-/// authenticating the user via Face ID, Touch ID, fingerprint, or the OS
+/// A singleton service for checking device credential availability.
+///
+/// Authenticates the user via Face ID, Touch ID, fingerprint, or the OS
 /// lock screen (PIN/pattern/password) as fallback.
 ///
 /// ```dart
@@ -55,7 +56,7 @@ class BiometricService {
 
   final LocalAuthentication _authentication = LocalAuthentication();
 
-  /// Broadcast stream emitting an event after every successful authentication.
+  /// A broadcast stream emitting an event after every successful authentication.
   ///
   /// Listeners such as the encrypted weight stream recovery use it to retry
   /// work that failed while the device keystore was locked.
@@ -179,8 +180,9 @@ class BiometricService {
       DateTime.now().difference(_lastAuthCompletionTime!) <
           const Duration(seconds: 1);
 
-  /// Prompts the user for device credential authentication: biometrics with
-  /// automatic fallback to the OS PIN/pattern/password prompt.
+  /// Prompts the user for device credential authentication.
+  ///
+  /// Uses biometrics with automatic fallback to the OS PIN/pattern/password prompt.
   ///
   /// Takes a mandatory [localizedReason] string explaining the authentication request.
   /// Optional [authMessages] can be provided to customize dialog strings per locale.
@@ -213,8 +215,9 @@ class BiometricService {
     }
   }
 
-  /// Runs the platform authentication flow and maps every outcome (including
-  /// platform exceptions) to a [BiometricAuthResult].
+  /// Runs the platform authentication flow and maps every outcome.
+  ///
+  /// Maps every outcome (including platform exceptions) to a [BiometricAuthResult].
   ///
   /// Authentication is not restricted to biometrics: with `biometricOnly:
   /// false`, the OS falls back to the system PIN/pattern/password prompt when

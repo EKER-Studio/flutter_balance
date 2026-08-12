@@ -4,7 +4,7 @@ import 'package:balance/core/integrations/notifications/notification_service.dar
 import 'package:balance/features/settings/presentation/bloc/app_settings_event.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_state.dart';
 
-/// BLoC managing persistent app settings.
+/// A BLoC responsible for managing persistent app settings.
 ///
 /// All settings are persisted across app restarts via `HydratedBloc`.
 class AppSettingsBloc extends HydratedBloc<AppSettingsEvent, AppSettingsState> {
@@ -13,8 +13,8 @@ class AppSettingsBloc extends HydratedBloc<AppSettingsEvent, AppSettingsState> {
 
   /// Creates an [AppSettingsBloc] initialized with default settings.
   ///
-  /// @param notificationService Optional notification service, defaults to the shared instance.
-  /// @param healthService Optional health service, defaults to the shared instance.
+  /// Uses the provided [notificationService] or the shared instance if omitted.
+  /// Uses the provided [healthService] or the shared instance if omitted.
   AppSettingsBloc({
     NotificationService? notificationService,
     HealthService? healthService,
@@ -40,12 +40,12 @@ class AppSettingsBloc extends HydratedBloc<AppSettingsEvent, AppSettingsState> {
     on<ResetAppSettings>(_onResetAppSettings);
   }
 
-  /// Updates the theme mode to [UpdateTheme.themeMode].
+  /// Updates the theme mode to the [UpdateTheme.themeMode] value.
   void _onUpdateTheme(UpdateTheme event, Emitter<AppSettingsState> emit) {
     emit(state.copyWith(themeMode: event.themeMode));
   }
 
-  /// Updates the measurement unit to [UpdateMeasurementUnit.measurementUnit].
+  /// Updates the measurement unit to the [UpdateMeasurementUnit.measurementUnit] value.
   void _onUpdateMeasurementUnit(
     UpdateMeasurementUnit event,
     Emitter<AppSettingsState> emit,
@@ -53,17 +53,17 @@ class AppSettingsBloc extends HydratedBloc<AppSettingsEvent, AppSettingsState> {
     emit(state.copyWith(measurementUnit: event.measurementUnit));
   }
 
-  /// Updates the user's height to [UpdateHeight.height] centimeters.
+  /// Updates the user's height to the [UpdateHeight.height] value in centimeters.
   void _onUpdateHeight(UpdateHeight event, Emitter<AppSettingsState> emit) {
     emit(state.copyWith(height: event.height));
   }
 
-  /// Enables or disables daily reminder notifications.
+  /// Toggles daily reminder notifications on or off.
   ///
-  /// When enabling, requests OS permissions first and only schedules the
-  /// reminder when granted; a denied request emits the transient
+  /// When enabling, it requests OS permissions first and only schedules the
+  /// reminder when granted. A denied request emits the transient
   /// [AppSettingsState.notificationPermissionDenied] flag instead. When
-  /// disabling, cancels the scheduled reminder.
+  /// disabling, it cancels the scheduled reminder.
   Future<void> _onToggleNotifications(
     ToggleNotifications event,
     Emitter<AppSettingsState> emit,
@@ -96,8 +96,9 @@ class AppSettingsBloc extends HydratedBloc<AppSettingsEvent, AppSettingsState> {
     }
   }
 
-  /// Updates the reminder time and re-schedules the daily notification when
-  /// notifications are currently enabled.
+  /// Updates the reminder time and re-schedules the daily notification.
+  ///
+  /// This only occurs when notifications are currently enabled.
   Future<void> _onUpdateNotificationTime(
     UpdateNotificationTime event,
     Emitter<AppSettingsState> emit,
@@ -119,8 +120,9 @@ class AppSettingsBloc extends HydratedBloc<AppSettingsEvent, AppSettingsState> {
     }
   }
 
-  /// Records whether the daily reminder falls back to inexact Android alarm
-  /// scheduling because the exact alarm permission was revoked.
+  /// Records whether the daily reminder falls back to inexact Android alarm scheduling.
+  ///
+  /// This occurs because the exact alarm permission was revoked.
   void _onUpdateNotificationInexactScheduling(
     UpdateNotificationInexactScheduling event,
     Emitter<AppSettingsState> emit,
@@ -128,7 +130,9 @@ class AppSettingsBloc extends HydratedBloc<AppSettingsEvent, AppSettingsState> {
     emit(state.copyWith(notificationInexactScheduling: event.inexact));
   }
 
-  /// Updates the target weight to [TargetWeightChanged.weight] (`null` clears it).
+  /// Updates the target weight to the [TargetWeightChanged.weight] value.
+  ///
+  /// Setting the weight to `null` clears the target weight.
   void _onTargetWeightChanged(
     TargetWeightChanged event,
     Emitter<AppSettingsState> emit,
@@ -136,7 +140,7 @@ class AppSettingsBloc extends HydratedBloc<AppSettingsEvent, AppSettingsState> {
     emit(state.copyWith(targetWeight: event.weight));
   }
 
-  /// Updates the biometric lock preference to [UpdateBiometricLock.enabled].
+  /// Updates the biometric lock preference to the [UpdateBiometricLock.enabled] state.
   void _onUpdateBiometricLock(
     UpdateBiometricLock event,
     Emitter<AppSettingsState> emit,
@@ -144,8 +148,9 @@ class AppSettingsBloc extends HydratedBloc<AppSettingsEvent, AppSettingsState> {
     emit(state.copyWith(isBiometricLockEnabled: event.enabled));
   }
 
-  /// Sets the app-wide locked state to [SetLocked.locked], driving the
-  /// biometric shield overlay.
+  /// Sets the app-wide locked state to the [SetLocked.locked] state.
+  ///
+  /// This drives the biometric shield overlay.
   void _onSetLocked(SetLocked event, Emitter<AppSettingsState> emit) {
     emit(state.copyWith(isLocked: event.locked));
   }
@@ -166,14 +171,14 @@ class AppSettingsBloc extends HydratedBloc<AppSettingsEvent, AppSettingsState> {
     emit(state.copyWith(isOnboardingCompleted: true));
   }
 
-  /// Enables or disables health sync (HealthKit / Health Connect).
+  /// Toggles health sync (HealthKit or Health Connect) on or off.
   ///
-  /// Side effects: when enabling, verifies the OS health API is available and
-  /// requests native permissions first; a granted request activates the sync
-  /// flag, a denied one emits the transient
+  /// Side effects: when enabling, it verifies the OS health API is available and
+  /// requests native permissions first. A granted request activates the sync
+  /// flag, and a denied one emits the transient
   /// [AppSettingsState.healthPermissionDenied] flag instead. When disabling,
-  /// deactivates the sync flag and clears the transient denied flag. Every
-  /// emitted state is persisted to disk via `HydratedBloc`.
+  /// it deactivates the sync flag and clears the transient denied flag. Every
+  /// emitted state is persisted to disk via [HydratedBloc].
   Future<void> _onToggleHealthSync(
     ToggleHealthSync event,
     Emitter<AppSettingsState> emit,
@@ -216,13 +221,13 @@ class AppSettingsBloc extends HydratedBloc<AppSettingsEvent, AppSettingsState> {
     }
   }
 
-  /// Re-evaluates health API availability and permission grants.
+  /// Re-evaluates the health API availability and permission grants.
   ///
-  /// Runs during app initialization. Side effects: checks native OS health
+  /// This runs during app initialization. Side effects: it checks native OS health
   /// permissions (no prompt is shown) and refreshes
-  /// [AppSettingsState.isHealthApiAvailable]; when the persisted sync flag is
-  /// set but the permissions were revoked in the OS settings, disables the
-  /// flag. The emitted state is persisted to disk via `HydratedBloc`, keeping
+  /// [AppSettingsState.isHealthApiAvailable]. When the persisted sync flag is
+  /// set but the permissions were revoked in the OS settings, it disables the
+  /// flag. The emitted state is persisted to disk via [HydratedBloc], keeping
   /// the stored sync flag in sync with the actual native permission state.
   Future<void> _onCheckHealthSyncStatus(
     CheckHealthSyncStatus event,
@@ -252,13 +257,13 @@ class AppSettingsBloc extends HydratedBloc<AppSettingsEvent, AppSettingsState> {
     emit(const AppSettingsState());
   }
 
-  /// Restores the persisted settings from the hydrated JSON map.
+  /// Restores the persisted settings from the hydrated [json] map.
   @override
   AppSettingsState? fromJson(Map<String, dynamic> json) {
     return AppSettingsState.fromJson(json);
   }
 
-  /// Serializes the current settings into a JSON map for hydration.
+  /// Serializes the current [state] into a JSON map for hydration.
   @override
   Map<String, dynamic> toJson(AppSettingsState state) {
     return state.toJson();

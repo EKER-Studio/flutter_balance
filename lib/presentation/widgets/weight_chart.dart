@@ -32,10 +32,10 @@ class WeightChart extends StatelessWidget {
   /// The currently selected time period for formatting the X-axis.
   final TimePeriod period;
 
-  /// Callback fired when the user selects a new time period.
+  /// A callback fired when the user selects a new time period.
   final ValueChanged<TimePeriod> onPeriodChanged;
 
-  /// Optional target weight to display as a horizontal reference line.
+  /// An optional target weight to display as a horizontal reference line.
   final double? targetWeight;
 
   /// Creates a [WeightChart] with [entries], [period], and [onPeriodChanged].
@@ -48,7 +48,7 @@ class WeightChart extends StatelessWidget {
     this.targetWeight,
   });
 
-  /// Optional fixed height for the chart canvas. Defaults to 280px.
+  /// An optional fixed height for the chart canvas. Defaults to 280px.
   final double chartHeight;
 
   @override
@@ -311,7 +311,7 @@ class WeightChart extends StatelessWidget {
     }
   }
 
-  /// Maps [sortedEntries] to FlSpot instances with minutes-since-first as X
+  /// Maps [sortedEntries] to [FlSpot] instances with minutes-since-first as X
   /// and the weight converted into [unit] as Y.
   List<FlSpot> _getSpots(
     List<WeightEntry> sortedEntries,

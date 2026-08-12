@@ -1,18 +1,18 @@
-/// BMI category classification.
+/// A category classification for a body mass index (BMI).
 enum BmiCategory {
-  /// BMI below 18.5.
+  /// A BMI below 18.5.
   underweight,
 
-  /// BMI between 18.5 and 24.9.
+  /// A BMI between 18.5 and 24.9.
   normal,
 
-  /// BMI between 25.0 and 29.9.
+  /// A BMI between 25.0 and 29.9.
   overweight,
 
-  /// BMI 30.0 or above.
+  /// A BMI 30.0 or above.
   obese;
 
-  /// Maps a numeric BMI value to its corresponding [BmiCategory].
+  /// Maps a numeric [bmi] value to its corresponding [BmiCategory].
   static BmiCategory fromBmi(double bmi) {
     if (bmi < 18.5) {
       return BmiCategory.underweight;

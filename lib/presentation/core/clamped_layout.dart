@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-/// A layout that constrains its [child] to a maximum width of 600px and
+/// A stateless widget that constrains its [child] to a maximum width of 600px and
 /// centers it.
 class ClampedLayout extends StatelessWidget {
   /// The widget to constrain and center.

@@ -4,15 +4,15 @@ import 'package:balance/core/utils/unit_converter.dart';
 import 'package:balance/features/weight/domain/entities/weight_entry.dart';
 import 'package:balance/l10n/app_localizations.dart';
 
-/// Dialog for setting or updating the target weight.
+/// A widget that provides a dialog for setting or updating the target weight.
 class TargetWeightDialog extends StatefulWidget {
-  /// The current target weight value in the current measurement unit.
+  /// The current target weight [currentValue] in the current measurement unit.
   final double? currentValue;
 
-  /// The active measurement unit (metric or imperial).
+  /// The active measurement [unit] (metric or imperial).
   final MeasurementUnit unit;
 
-  /// Creates a [TargetWeightDialog] with [currentValue] and [unit].
+  /// Creates a [TargetWeightDialog] with the given [currentValue] and [unit].
   const TargetWeightDialog({
     super.key,
     required this.currentValue,
@@ -41,6 +41,8 @@ class _TargetWeightDialogState extends State<TargetWeightDialog> {
     super.dispose();
   }
 
+  /// Validates the input and pops the dialog.
+  ///
   /// Pops the entered weight on success, `null` when cleared, or sets an
   /// error message for invalid input.
   void _handleSave() {

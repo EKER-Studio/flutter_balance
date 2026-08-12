@@ -28,8 +28,10 @@ class DatabaseModule {
   /// quarantined on first launch instead (see [_quarantineLegacyDatabase]).
   static const String dbName = 'balance_v1';
 
-  /// Names of databases from previous app versions, kept only so any existing
-  /// files can be quarantined instead of being left as silently-orphaned files.
+  /// The names of databases from previous app versions.
+  ///
+  /// These are kept only so any existing files can be quarantined instead of
+  /// being left as silently-orphaned files.
   static const List<String> _legacyDbNames = [];
 
   static const String _encryptionKeyKey = 'isar_encryption_key';
@@ -144,8 +146,9 @@ class DatabaseModule {
     }
   }
 
-  /// Opens the Isar instance for [directoryPath] with automatic compaction
-  /// and the encrypted schema registered.
+  /// Opens the Isar instance for [directoryPath] with automatic compaction.
+  ///
+  /// Also registers the encrypted schema.
   static Future<Isar> _openIsar(String directoryPath) {
     return Isar.open(
       [WeightEntryModelSchema],
@@ -158,8 +161,10 @@ class DatabaseModule {
     );
   }
 
-  /// Moves database files from previous app versions (if present) to
-  /// `.legacy.bak` files so they are never opened under the current schema.
+  /// Moves database files from previous app versions to backup files.
+  ///
+  /// Legacy files (if present) are moved to `.legacy.bak` files so they are
+  /// never opened under the current schema.
   ///
   /// This is a safety guard, not a data migration: values inside the legacy
   /// files are NOT copied into the new `balance_v1` database. It prevents the
@@ -210,8 +215,9 @@ class DatabaseModule {
     }
   }
 
-  /// Backs up corrupted or incompatible database files to a timestamped backup file
-  /// and removes the old database file to allow clean recovery.
+  /// Backs up corrupted or incompatible database files to a timestamped backup file.
+  ///
+  /// Removes the old database file to allow clean recovery.
   @visibleForTesting
   static Future<void> backupCorruptedDatabase(String directoryPath) async {
     final dbFile = File('$directoryPath/$dbName.isar');

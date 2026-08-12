@@ -4,7 +4,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:balance/core/integrations/csv/csv_importer.dart';
 import 'package:balance/features/weight/domain/entities/weight_entry.dart';
 
-/// Outcome of picking and parsing a CSV file.
+/// The outcome of picking and parsing a CSV file.
 typedef CsvImportResult = ({List<WeightEntry> entries, int skippedRows});
 
 /// A service that picks a CSV file from the system file picker and parses its

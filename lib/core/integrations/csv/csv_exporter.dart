@@ -4,7 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:balance/features/weight/domain/entities/weight_entry.dart';
 
-/// Utility class for exporting weight measurements as formatted CSV files.
+/// A utility class for exporting weight measurements as formatted CSV files.
 class CsvExporter {
   /// Generates a CSV-formatted string from [entries].
   ///

@@ -8,7 +8,7 @@ import 'package:balance/features/settings/presentation/bloc/app_settings_bloc.da
 import 'package:balance/features/settings/presentation/bloc/app_settings_event.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_state.dart';
 
-/// Full-screen overlay shown when the app is locked due to a failed
+/// A full-screen overlay shown when the app is locked due to a failed
 /// biometric authentication attempt.
 class BiometricShieldScreen extends StatefulWidget {
   /// Creates a [BiometricShieldScreen].
@@ -18,7 +18,7 @@ class BiometricShieldScreen extends StatefulWidget {
   State<BiometricShieldScreen> createState() => _BiometricShieldScreenState();
 }
 
-/// Locked state behind the biometric shield, showing the unlock prompt.
+/// The locked state behind the biometric shield, showing the unlock prompt.
 class _BiometricShieldScreenState extends State<BiometricShieldScreen> {
   bool _isUnlocking = false;
 

@@ -4,7 +4,7 @@ import 'package:balance/features/settings/presentation/bloc/app_theme_mode.dart'
 import 'package:balance/features/settings/presentation/bloc/bmi_category.dart';
 import 'package:balance/core/models/measurement_unit.dart';
 
-/// Persistent app settings state.
+/// A persistent app settings state.
 ///
 /// All fields are persisted across app restarts via `HydratedBloc`.
 final class AppSettingsState extends Equatable {
@@ -23,7 +23,9 @@ final class AppSettingsState extends Equatable {
   /// The weight measurement unit system.
   final MeasurementUnit measurementUnit;
 
-  /// The user's height in centimeters. `null` means the user has not set a height yet.
+  /// The user's height in centimeters.
+  ///
+  /// A value of `null` means the user has not set a height yet.
   final double? height;
 
   /// Whether daily notification reminders are enabled.
@@ -32,7 +34,9 @@ final class AppSettingsState extends Equatable {
   /// The time of day for the daily reminder (default: 08:00).
   final ({int hour, int minute}) notificationTime;
 
-  /// The user's target weight in kg (null means no target set).
+  /// The user's target weight in kg.
+  ///
+  /// A value of `null` means no target is set.
   final double? targetWeight;
 
   /// Whether biometric lock is enabled for app unlock.
@@ -77,7 +81,7 @@ final class AppSettingsState extends Equatable {
   /// never persisted, and reset by any subsequent health-related event.
   final bool healthPermissionDenied;
 
-  /// Creates [AppSettingsState] with the given parameters.
+  /// Creates an [AppSettingsState] with the given parameters.
   const AppSettingsState({
     this.themeMode = AppThemeMode.system,
     this.measurementUnit = MeasurementUnit.metric,
@@ -162,7 +166,7 @@ final class AppSettingsState extends Equatable {
     healthPermissionDenied,
   ];
 
-  /// Deserializes [AppSettingsState] from a JSON map.
+  /// Deserializes an [AppSettingsState] from a JSON map.
   factory AppSettingsState.fromJson(Map<String, dynamic> json) {
     final heightValue = json['heightCm'] ?? json['height'];
     final biometricLockEnabled =
@@ -208,7 +212,7 @@ final class AppSettingsState extends Equatable {
     );
   }
 
-  /// Serializes [AppSettingsState] into a JSON map.
+  /// Serializes an [AppSettingsState] into a JSON map.
   Map<String, dynamic> toJson() {
     return {
       'themeMode': themeMode.name,
@@ -228,7 +232,7 @@ final class AppSettingsState extends Equatable {
   }
 }
 
-/// Helper methods for BMI-related app settings behavior.
+/// An extension containing helper methods for BMI-related app settings behavior.
 extension AppSettingsX on AppSettingsState {
   /// Calculates the user's BMI from the current configured height and a weight.
   ///

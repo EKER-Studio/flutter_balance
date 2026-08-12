@@ -4,12 +4,11 @@ import 'package:balance/features/weight/presentation/bloc/weight_bloc.dart';
 import 'package:balance/features/weight/presentation/bloc/weight_event.dart';
 import 'package:balance/l10n/app_localizations.dart';
 
-/// Reusable Material 3 error card displayed when a local database read error occurs.
+/// A card displaying an error state when a local database read fails.
 class CalendarErrorCard extends StatelessWidget {
-  /// The error message returned by [WeightBloc].
+  /// The error message returned by the [WeightBloc].
   final String errorMessage;
 
-  /// Creates a [CalendarErrorCard] widget with [errorMessage].
   const CalendarErrorCard({super.key, required this.errorMessage});
 
   @override

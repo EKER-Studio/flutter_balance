@@ -1,4 +1,4 @@
-/// Domain enum and constants for time-based filtering of weight history.
+/// A domain enum and constants for time-based filtering of weight history.
 library;
 
 /// The selected time period for the chart filter.
@@ -16,7 +16,7 @@ enum TimePeriod {
   all,
 }
 
-/// Extension providing domain-level lookback durations for [TimePeriod].
+/// An extension providing domain-level lookback durations for [TimePeriod].
 extension TimePeriodX on TimePeriod {
   /// How far back this period looks from now.
   Duration get lookbackDuration => switch (this) {
@@ -27,5 +27,5 @@ extension TimePeriodX on TimePeriod {
   };
 }
 
-/// Number of days used as the lookback window for monthly compliance.
+/// The number of days used as the lookback window for monthly compliance.
 const int monthlyComplianceDays = 30;

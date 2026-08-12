@@ -21,12 +21,12 @@ import 'package:balance/presentation/core/clamped_layout.dart';
 import 'package:balance/presentation/widgets/app_top_bar.dart';
 import 'package:balance/presentation/widgets/state_message_card.dart';
 
-/// Tab 1: Today Screen displaying daily summary, BMI, goal progress, and weight trend.
+/// A screen displaying the daily summary, BMI, goal progress, and weight trend.
 class TodayScreen extends StatelessWidget {
-  /// Optional callback to navigate to Settings when profile icon is pressed.
+  /// An optional callback to navigate to settings when the profile icon is pressed.
   final VoidCallback? onNavigateToSettings;
 
-  /// Creates a [TodayScreen] with an optional navigation callback.
+  /// Creates a [TodayScreen].
   const TodayScreen({super.key, this.onNavigateToSettings});
 
   @override
@@ -66,8 +66,9 @@ class TodayScreen extends StatelessWidget {
     );
   }
 
-  /// Builds the screen body for the current [state]: shimmer skeleton while
-  /// loading, error/welcome [StateMessageCard]s, or the responsive card stack.
+  /// Builds the screen body based on the current [WeightState].
+  ///
+  /// Returns a shimmer skeleton while loading, error or welcome [StateMessageCard]s, or the responsive card stack.
   Widget _buildBody(
     BuildContext context,
     WeightState state,
@@ -198,7 +199,7 @@ class TodayScreen extends StatelessWidget {
     );
   }
 
-  /// Extracts the full entry list from the current [WeightState].
+  /// Extracts the full [WeightEntry] list from the given [state].
   static List<WeightEntry> _entriesFromState(WeightState state) {
     return switch (state) {
       WeightLoaded(:final entries) => entries,
@@ -207,7 +208,7 @@ class TodayScreen extends StatelessWidget {
     };
   }
 
-  /// Extracts the period-filtered entry list from the current [WeightState].
+  /// Extracts the period-filtered [WeightEntry] list from the given [state].
   static List<WeightEntry> _filteredEntriesFromState(WeightState state) {
     return switch (state) {
       WeightLoaded(:final filteredEntries) => filteredEntries,
@@ -216,8 +217,7 @@ class TodayScreen extends StatelessWidget {
     };
   }
 
-  /// Dispatches [RefreshWeightData] and waits up to two seconds for the
-  /// refresh to settle.
+  /// Dispatches [RefreshWeightData] and waits up to two seconds for the refresh to settle.
   Future<void> _refreshWeightData(BuildContext context) async {
     final bloc = context.read<WeightBloc>();
     bloc.add(const RefreshWeightData());
@@ -226,7 +226,7 @@ class TodayScreen extends StatelessWidget {
         .timeout(const Duration(seconds: 2), onTimeout: () => bloc.state);
   }
 
-  /// Shows a localized error SnackBar with a retry action.
+  /// Shows a localized error snackbar with a retry action.
   void _showErrorSnackBar(
     BuildContext context,
     WeightErrorType errorType,
@@ -247,7 +247,7 @@ class TodayScreen extends StatelessWidget {
     );
   }
 
-  /// Opens the [AddWeightSheet] dialog.
+  /// Opens the [AddWeightSheet] dialog to allow the user to add a new weight entry.
   void _showAddWeightSheet(BuildContext context) {
     showDialog<void>(
       context: context,
@@ -259,9 +259,9 @@ class TodayScreen extends StatelessWidget {
   }
 }
 
-/// Wraps [child] in a pull-to-refresh RefreshIndicator backed by [onRefresh].
+/// A widget that wraps its [child] in a pull-to-refresh indicator backed by [onRefresh].
 class _RefreshableTodayBody extends StatelessWidget {
-  /// Callback invoked when the user pulls to refresh.
+  /// A callback invoked when the user pulls to refresh.
   final Future<void> Function() onRefresh;
 
   /// The scrollable content subtree.
@@ -270,7 +270,7 @@ class _RefreshableTodayBody extends StatelessWidget {
   /// The title for the sliver app bar.
   final String title;
 
-  /// Creates a [_RefreshableTodayBody] with [onRefresh], [child], and [title].
+  /// Creates a [_RefreshableTodayBody].
   const _RefreshableTodayBody({
     required this.onRefresh,
     required this.child,
@@ -303,9 +303,9 @@ class _RefreshableTodayBody extends StatelessWidget {
   }
 }
 
-/// Card containing the weight trend line chart and its period filter pills.
+/// A card containing the weight trend line chart and its period filter pills.
 class _WeightTrendChartCard extends StatelessWidget {
-  /// Entries to plot, pre-filtered by [period].
+  /// The entries to plot, pre-filtered by [period].
   final List<WeightEntry> entries;
 
   /// The currently selected chart time period.
@@ -314,10 +314,10 @@ class _WeightTrendChartCard extends StatelessWidget {
   /// The measurement unit used to format the plotted values.
   final MeasurementUnit measurementUnit;
 
-  /// Callback invoked when a new chart period is selected.
+  /// A callback invoked when a new chart period is selected.
   final ValueChanged<TimePeriod> onPeriodChanged;
 
-  /// Creates a [_WeightTrendChartCard] with the given properties.
+  /// Creates a [_WeightTrendChartCard].
   const _WeightTrendChartCard({
     required this.entries,
     required this.period,
@@ -340,59 +340,59 @@ class _WeightTrendChartCard extends StatelessWidget {
         padding: const EdgeInsets.all(20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Row(
-            children: [
-              Icon(Icons.timeline, size: 24, color: colorScheme.primary),
-              const SizedBox(width: 8),
-              Expanded(
-                child: Text(
-                  l10n.weightTrend,
-                  style: textTheme.titleMedium?.copyWith(
-                    color: colorScheme.onSurface,
-                    fontWeight: FontWeight.w600,
+          children: [
+            Row(
+              children: [
+                Icon(Icons.timeline, size: 24, color: colorScheme.primary),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    l10n.weightTrend,
+                    style: textTheme.titleMedium?.copyWith(
+                      color: colorScheme.onSurface,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                 ),
-              ),
-              _ChartPeriodFilters(
-                period: period,
-                onPeriodChanged: onPeriodChanged,
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
-          SizedBox(
-            height: 240,
-            child: entries.isEmpty
-                ? Center(
-                    child: Text(
-                      l10n.chartEmpty,
-                      style: textTheme.bodyMedium?.copyWith(
-                        color: colorScheme.onSurfaceVariant,
+                _ChartPeriodFilters(
+                  period: period,
+                  onPeriodChanged: onPeriodChanged,
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            SizedBox(
+              height: 240,
+              child: entries.isEmpty
+                  ? Center(
+                      child: Text(
+                        l10n.chartEmpty,
+                        style: textTheme.bodyMedium?.copyWith(
+                          color: colorScheme.onSurfaceVariant,
+                        ),
                       ),
+                    )
+                  : _WeightLineChart(
+                      entries: entries,
+                      measurementUnit: measurementUnit,
                     ),
-                  )
-                : _WeightLineChart(
-                    entries: entries,
-                    measurementUnit: measurementUnit,
-                  ),
-          ),
-        ],
-      ),
+            ),
+          ],
+        ),
       ),
     );
   }
 }
 
-/// Row of selectable period pills (week, month, year) for the chart.
+/// A row of selectable period pills for the chart.
 class _ChartPeriodFilters extends StatelessWidget {
   /// The currently selected period.
   final TimePeriod period;
 
-  /// Callback invoked when a pill is selected.
+  /// A callback invoked when a pill is selected.
   final ValueChanged<TimePeriod> onPeriodChanged;
 
-  /// Creates a [_ChartPeriodFilters] with [period] and [onPeriodChanged].
+  /// Creates a [_ChartPeriodFilters].
   const _ChartPeriodFilters({
     required this.period,
     required this.onPeriodChanged,
@@ -428,7 +428,7 @@ class _ChartPeriodFilters extends StatelessWidget {
   }
 }
 
-/// Single pill-shaped period selector button.
+/// A single pill-shaped period selector button.
 class _PeriodPill extends StatelessWidget {
   /// The localized label of the period.
   final String label;
@@ -436,10 +436,10 @@ class _PeriodPill extends StatelessWidget {
   /// Whether this pill represents the active period.
   final bool selected;
 
-  /// Callback invoked when the pill is tapped.
+  /// A callback invoked when the pill is tapped.
   final VoidCallback onPressed;
 
-  /// Creates a [_PeriodPill] with [label], [selected], and [onPressed].
+  /// Creates a [_PeriodPill].
   const _PeriodPill({
     required this.label,
     required this.selected,
@@ -476,7 +476,7 @@ class _PeriodPill extends StatelessWidget {
   }
 }
 
-/// Curved line chart of daily-aggregated weight values with touch tooltips.
+/// A curved line chart of daily-aggregated weight values with touch tooltips.
 class _WeightLineChart extends StatelessWidget {
   /// The daily-aggregated entries to plot.
   final List<WeightEntry> entries;
@@ -484,7 +484,7 @@ class _WeightLineChart extends StatelessWidget {
   /// The measurement unit used to convert and format plotted values.
   final MeasurementUnit measurementUnit;
 
-  /// Creates a [_WeightLineChart] with [entries] and [measurementUnit].
+  /// Creates a [_WeightLineChart].
   const _WeightLineChart({
     required this.entries,
     required this.measurementUnit,
@@ -685,7 +685,7 @@ class _WeightLineChart extends StatelessWidget {
   }
 }
 
-/// Card with a rotating daily weight-logging tip.
+/// A card with a rotating daily weight-logging tip.
 class _DailyTipCard extends StatelessWidget {
   /// Creates a [_DailyTipCard].
   const _DailyTipCard();
@@ -711,32 +711,37 @@ class _DailyTipCard extends StatelessWidget {
           padding: const EdgeInsets.all(20),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Icon(Icons.lightbulb_outline, color: colorScheme.primary, size: 24),
-            const SizedBox(width: 8),
-            Expanded(
-              child: Text(
-                '${l10n.dailyTipTitle}: ${l10n.dailyTipText}',
-                style: textTheme.bodyMedium?.copyWith(
-                  color: colorScheme.onSurfaceVariant,
+            children: [
+              Icon(
+                Icons.lightbulb_outline,
+                color: colorScheme.primary,
+                size: 24,
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  '${l10n.dailyTipTitle}: ${l10n.dailyTipText}',
+                  style: textTheme.bodyMedium?.copyWith(
+                    color: colorScheme.onSurfaceVariant,
+                  ),
                 ),
               ),
-            ),
-          ],
-        ),
+            ],
+          ),
         ),
       ),
     );
   }
 }
 
-/// Inline banner shown above the card stack when the current state carries an
-/// error, offering a retry action.
+/// An inline banner shown above the card stack when the current state carries an error.
+///
+/// Offers a retry action.
 class _InlineErrorBanner extends StatelessWidget {
   /// The typed error to surface to the user.
   final WeightErrorType errorType;
 
-  /// Creates an [_InlineErrorBanner] for [errorType].
+  /// Creates an [_InlineErrorBanner].
   const _InlineErrorBanner({required this.errorType});
 
   @override

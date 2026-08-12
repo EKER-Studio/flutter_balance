@@ -3,33 +3,34 @@ import 'package:intl/intl.dart';
 import 'package:balance/features/weight/domain/entities/weight_entry.dart';
 import 'package:balance/l10n/app_localizations.dart';
 
-/// Reusable calendar day cell widget representing a single day in the monthly grid.
+/// A widget representing a single day cell in the monthly calendar grid.
 class CalendarDayCell extends StatelessWidget {
   /// The date represented by this cell.
   final DateTime date;
 
-  /// Day number (1-31).
+  /// The day of the month (1-31).
   final int dayNumber;
 
-  /// Entries recorded on this date.
+  /// The list of [WeightEntry] records for this date.
   final List<WeightEntry> entries;
 
-  /// Whether this day is today.
+  /// Whether this date corresponds to the current day.
   final bool isToday;
 
-  /// Whether this day is selected.
+  /// Whether this date is currently selected by the user.
   final bool isSelected;
 
-  /// Whether this day is in the future.
+  /// Whether this date is in the future.
   final bool isFuture;
 
   /// Whether the user reached their target weight goal on this day.
   final bool isGoalAchieved;
 
-  /// Callback when the cell is tapped. Null if the cell is disabled.
+  /// The callback invoked when the cell is tapped.
+  ///
+  /// Null if the cell is disabled.
   final VoidCallback? onTap;
 
-  /// Creates a [CalendarDayCell].
   const CalendarDayCell({
     super.key,
     required this.date,

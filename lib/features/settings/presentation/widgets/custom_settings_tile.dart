@@ -1,20 +1,22 @@
 import 'package:flutter/material.dart';
 
-/// A generic interactive settings list tile used across the app's configuration screens.
+/// A widget that represents a generic interactive settings list tile used across the app's configuration screens.
 class CustomSettingsTile extends StatefulWidget {
-  /// Leading icon rendered inside a circular container.
+  /// The leading icon rendered inside a circular container.
   final IconData icon;
 
-  /// Tile title text.
+  /// The tile title text.
   final String title;
 
-  /// Optional supporting text shown below the title.
+  /// The optional supporting text shown below the [title].
   final String? subtitle;
 
-  /// Optional trailing value text shown before the chevron.
+  /// The optional trailing value text shown before the chevron.
   final String? valueText;
 
-  /// Callback invoked when the tile is tapped; `null` disables the tap.
+  /// The callback invoked when the tile is tapped.
+  ///
+  /// Passing `null` disables the tap interaction.
   final VoidCallback? onTap;
 
   /// Whether the tile is rendered with error colors.
@@ -23,7 +25,7 @@ class CustomSettingsTile extends StatefulWidget {
   /// Whether a trailing chevron icon is shown.
   final bool showChevron;
 
-  /// Optional parent section label prepended to the accessibility label.
+  /// The optional parent section label prepended to the accessibility label.
   final String? sectionLabel;
 
   /// Creates a [CustomSettingsTile] with the given properties.

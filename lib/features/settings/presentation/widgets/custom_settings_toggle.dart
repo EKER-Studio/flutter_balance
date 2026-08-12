@@ -1,23 +1,25 @@
 import 'package:flutter/material.dart';
 
-/// Settings list tile with a trailing switch, used for boolean preferences.
+/// A widget that represents a settings list tile with a trailing switch, used for boolean preferences.
 class CustomSettingsToggle extends StatefulWidget {
-  /// Leading icon rendered inside a circular container.
+  /// The leading icon rendered inside a circular container.
   final IconData icon;
 
-  /// Tile title text.
+  /// The tile title text.
   final String title;
 
-  /// Optional supporting text below the title.
+  /// The optional supporting text below the [title].
   final String? subtitle;
 
   /// The current switch state.
   final bool value;
 
-  /// Callback invoked when the switch is toggled; `null` disables it.
+  /// The callback invoked when the switch is toggled.
+  ///
+  /// Passing `null` disables the switch.
   final ValueChanged<bool>? onChanged;
 
-  /// Optional parent section label prepended to the accessibility label.
+  /// The optional parent section label prepended to the accessibility label.
   final String? sectionLabel;
 
   /// Creates a [CustomSettingsToggle] with the given properties.

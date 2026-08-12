@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:balance/l10n/app_localizations.dart';
 
-/// alarm scheduling because the exact alarm permission was revoked.
+/// A widget that displays a hint about inexact alarm scheduling.
+///
+/// This hint is shown when the exact alarm permission was revoked.
 class InexactReminderHint extends StatelessWidget {
-  /// Localized strings for the hint.
+  /// The localized strings for the hint.
   final AppLocalizations l10n;
 
   /// Creates an [InexactReminderHint] with the given [l10n].

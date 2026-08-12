@@ -4,12 +4,11 @@ import 'package:balance/features/weight/presentation/bloc/weight_bloc.dart';
 import 'package:balance/features/weight/presentation/widgets/add_weight_sheet.dart';
 import 'package:balance/l10n/app_localizations.dart';
 
-/// Reusable Material 3 empty state card for a selected calendar day without measurements.
+/// A card displaying an empty state for a selected calendar day without measurements.
 class CalendarDayEmptyCard extends StatelessWidget {
   /// The selected date with zero measurements.
   final DateTime selectedDate;
 
-  /// Creates [CalendarDayEmptyCard].
   const CalendarDayEmptyCard({super.key, required this.selectedDate});
 
   @override

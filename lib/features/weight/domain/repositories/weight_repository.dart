@@ -1,6 +1,6 @@
 import 'package:balance/features/weight/domain/entities/weight_entry.dart';
 
-/// Domain repository contract for managing persistent weight entries.
+/// A domain repository contract for managing persistent weight entries.
 ///
 /// Serves as the Clean Architecture abstraction boundary between domain logic
 /// and concrete persistence data handlers (e.g. Isar database).
