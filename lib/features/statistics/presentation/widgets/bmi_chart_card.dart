@@ -62,7 +62,7 @@ class BmiChartCard extends StatelessWidget {
     if (heightCm == null || heightCm! <= 0 || entries.isEmpty) {
       return Row(
         children: [
-          Icon(Icons.monitor_weight_outlined, size: 22, color: cs.secondary),
+          Icon(Icons.monitor_weight_outlined, size: 22, color: cs.primary),
           const SizedBox(width: 8),
           Text(
             l10n.bmi,
@@ -115,7 +115,7 @@ class BmiChartCard extends StatelessWidget {
               Icon(
                 Icons.monitor_weight_outlined,
                 size: 22,
-                color: cs.secondary,
+                color: cs.primary,
               ),
               const SizedBox(width: 8),
               Text(
