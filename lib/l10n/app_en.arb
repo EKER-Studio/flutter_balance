@@ -142,6 +142,7 @@
   "csvImportTileTitle": "Import CSV file",
   "csvImportTileSubtitle": "Select a file from your device",
   "csvFormatHintTitle": "Required column format:",
+  "csvFormatHintExample": "ID, Date, Time (opt), Weight (kg), Note\n(or: Data; Czas; Waga (kg))",
   "csvImportLoading": "Processing CSV file...",
   "csvImportSuccess": "Imported {count} measurements!",
   "csvImportContinueButton": "Continue",

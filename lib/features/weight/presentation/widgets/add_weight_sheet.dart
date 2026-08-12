@@ -186,9 +186,13 @@ class _AddWeightSheetState extends State<AddWeightSheet> {
                                   size: 20,
                                 ),
                               ),
-                              child: Text(
-                                dateStr,
-                                style: Theme.of(context).textTheme.bodyLarge,
+                              child: FittedBox(
+                                fit: BoxFit.scaleDown,
+                                alignment: Alignment.centerLeft,
+                                child: Text(
+                                  dateStr,
+                                  style: Theme.of(context).textTheme.bodyLarge,
+                                ),
                               ),
                             ),
                           ),
@@ -212,9 +216,13 @@ class _AddWeightSheetState extends State<AddWeightSheet> {
                                   size: 20,
                                 ),
                               ),
-                              child: Text(
-                                timeStr,
-                                style: Theme.of(context).textTheme.bodyLarge,
+                              child: FittedBox(
+                                fit: BoxFit.scaleDown,
+                                alignment: Alignment.centerLeft,
+                                child: Text(
+                                  timeStr,
+                                  style: Theme.of(context).textTheme.bodyLarge,
+                                ),
                               ),
                             ),
                           ),
@@ -272,7 +280,8 @@ class _AddWeightSheetState extends State<AddWeightSheet> {
                       labelText: l10n.noteLabel,
                       border: const OutlineInputBorder(),
                     ),
-                    maxLines: 2,
+                    maxLines: 1,
+                    textInputAction: TextInputAction.done,
                   ),
                   const SizedBox(height: 24),
                   Row(

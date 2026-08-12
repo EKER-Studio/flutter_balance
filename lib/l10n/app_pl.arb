@@ -140,6 +140,7 @@
   "csvImportTileTitle": "Importuj plik CSV",
   "csvImportTileSubtitle": "Wybierz plik ze swojego urządzenia",
   "csvFormatHintTitle": "Wymagany format kolumn:",
+  "csvFormatHintExample": "ID, Date, Time (opt), Weight (kg), Note\n(lub: Data; Czas; Waga (kg))",
   "csvImportLoading": "Przetwarzanie pliku CSV...",
   "csvImportSuccess": "Zaimportowano {count} pomiarów!",
   "csvImportContinueButton": "Przejdź dalej",
