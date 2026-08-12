@@ -54,6 +54,35 @@ List<WeightEntry> _decryptPayloads((List<_DecryptionPayload>, Uint8List) args) {
   }).toList();
 }
 
+typedef _EncryptionPayload = (
+  int id,
+  DateTime dateTime,
+  String encryptedWeight,
+  String? encryptedNote,
+);
+
+List<_EncryptionPayload> _encryptPayloads((List<WeightEntry>, Uint8List) args) {
+  final entries = args.$1;
+  final key = args.$2;
+
+  return entries.map((entity) {
+    final encryptedWeight = FieldCipher.encrypt(
+      entity.weightKg.toString(),
+      key,
+    );
+    String? encryptedNote;
+    if (entity.note != null && entity.note!.isNotEmpty) {
+      encryptedNote = FieldCipher.encrypt(entity.note!, key);
+    }
+    return (
+      entity.id == 0 ? Isar.autoIncrement : entity.id,
+      entity.dateTime,
+      encryptedWeight,
+      encryptedNote,
+    );
+  }).toList();
+}
+
 /// Isar-backed implementation of [WeightRepository] using Field-Level AES-256 Encryption.
 ///
 /// Weight and note values are encrypted with [FieldCipher] before persistence
@@ -391,7 +420,14 @@ class IsarWeightRepository implements WeightRepository {
   Future<int> bulkImportEntries(List<WeightEntry> entries) async {
     try {
       final key = await _getOrLoadKey(isWrite: true);
-      final models = entries.map((e) => _entityToModel(e, key)).toList();
+      final payloads = await compute(_encryptPayloads, (entries, key));
+      final models = payloads.map((p) {
+        return WeightEntryModel()
+          ..id = p.$1
+          ..dateTime = p.$2
+          ..encryptedWeight = p.$3
+          ..encryptedNote = p.$4;
+      }).toList();
       await liveIsar.writeTxn(() async {
         await liveIsar.weightEntryModels.putAll(models);
       });
