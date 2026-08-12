@@ -37,7 +37,9 @@ for file in \
   app_icon.svg \
   app_icon_dark.svg \
   app_icon_foreground.svg \
-  app_icon_monochrome.svg
+  app_icon_monochrome.svg \
+  splash_light.svg \
+  splash_dark.svg
 do
   if [[ ! -f "$ICON_DIR/$file" ]]; then
     echo "❌ Brak pliku: $ICON_DIR/$file"
@@ -55,6 +57,8 @@ svg_to_png app_icon            app_icon
 svg_to_png app_icon_dark       app_icon_dark
 svg_to_png app_icon_foreground app_icon_foreground
 svg_to_png app_icon_monochrome app_icon_monochrome
+svg_to_png splash_light        splash_light
+svg_to_png splash_dark         splash_dark
 
 # Splash korzysta z istniejących, właściwych źródeł.
 cp "$ICON_DIR/app_icon_foreground.png" "$ICON_DIR/splash_dark.png"
