@@ -357,7 +357,7 @@ class StatisticsScreen extends StatelessWidget {
         color: cs.surfaceContainerLow,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
         child: Padding(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(20),
           child: Row(
             children: [
               Expanded(
@@ -370,6 +370,7 @@ class StatisticsScreen extends StatelessWidget {
                 ),
               ),
               Container(
+                margin: const EdgeInsets.symmetric(horizontal: 16),
                 height: 36,
                 width: 1,
                 color: cs.outlineVariant.withValues(alpha: 0.5),
@@ -378,7 +379,7 @@ class StatisticsScreen extends StatelessWidget {
                 child: _buildHabitMetricItem(
                   context,
                   icon: Icons.insights,
-                  iconColor: cs.secondary,
+                  iconColor: cs.primary,
                   label: l10n.monthlyCompliance,
                   value: '$compliancePct%',
                 ),
@@ -401,39 +402,36 @@ class StatisticsScreen extends StatelessWidget {
   }) {
     final cs = Theme.of(context).colorScheme;
 
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 8),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Icon(icon, size: 16, color: iconColor),
-              const SizedBox(width: 4),
-              Expanded(
-                child: Text(
-                  label,
-                  style: Theme.of(
-                    context,
-                  ).textTheme.labelSmall?.copyWith(color: cs.onSurfaceVariant),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Icon(icon, size: 24, color: iconColor),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Text(
+                label,
+                style: Theme.of(
+                  context,
+                ).textTheme.labelSmall?.copyWith(color: cs.onSurfaceVariant),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
               ),
-            ],
-          ),
-          const SizedBox(height: 6),
-          Text(
-            value,
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-              color: cs.onSurface,
-              fontWeight: FontWeight.bold,
             ),
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
+          ],
+        ),
+        const SizedBox(height: 6),
+        Text(
+          value,
+          style: Theme.of(context).textTheme.titleMedium?.copyWith(
+            color: cs.onSurface,
+            fontWeight: FontWeight.bold,
           ),
-        ],
-      ),
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+        ),
+      ],
     );
   }
 
@@ -481,7 +479,7 @@ class StatisticsScreen extends StatelessWidget {
             children: [
               Row(
                 children: [
-                  Icon(Icons.analytics_outlined, size: 22, color: cs.primary),
+                  Icon(Icons.analytics_outlined, size: 24, color: cs.primary),
                   const SizedBox(width: 8),
                   Text(
                     l10n.weightRangeCardTitle,
@@ -546,8 +544,8 @@ class StatisticsScreen extends StatelessWidget {
 
     return Row(
       children: [
-        Icon(icon, size: 20, color: iconColor),
-        const SizedBox(width: 10),
+        Icon(icon, size: 24, color: iconColor),
+        const SizedBox(width: 8),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
