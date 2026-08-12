@@ -46,11 +46,13 @@ void main() {
     ) async {
       await tester.pumpWidget(buildSubject(onNext: () {}));
 
-      expect(find.text('Daily Reminder (Optional)'), findsWidgets);
+      expect(find.text('Weight Notifications (Optional)'), findsWidgets);
       expect(
-        find.text('Set a daily reminder to log your weight and stay on track.'),
+        find.text('Build a healthy habit and let us remind you to log your weight every day.'),
         findsOneWidget,
       );
+      expect(find.text('Daily Reminder'), findsOneWidget);
+      expect(find.text('Regular alert in your notification center'), findsOneWidget);
       expect(find.byKey(const Key('notification_step_switch')), findsOneWidget);
       expect(
         find.byKey(const Key('notification_step_next_button')),

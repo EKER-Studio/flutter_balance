@@ -184,7 +184,7 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('Step 5 of 7'), findsOneWidget);
-      expect(find.text('Daily Reminder (Optional)'), findsOneWidget);
+      expect(find.text('Weight Notifications (Optional)'), findsOneWidget);
 
       // Step 6 (Daily Reminder) -> Next (Skip/Next reminder)
       await tester.tap(find.byKey(const Key('notification_step_next_button')));
@@ -408,7 +408,7 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('Step 5 of 6'), findsOneWidget);
-      expect(find.text('Daily Reminder (Optional)'), findsOneWidget);
+      expect(find.text('Weight Notifications (Optional)'), findsOneWidget);
 
       // Advance from step 6 (Daily Reminder) to step 7 (Health Sync)
       await tester.tap(find.byKey(const Key('notification_step_next_button')));
