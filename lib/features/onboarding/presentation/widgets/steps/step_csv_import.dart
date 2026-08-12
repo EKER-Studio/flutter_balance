@@ -208,7 +208,7 @@ class _StepCsvImportState extends State<StepCsvImport> {
                   borderRadius: BorderRadius.circular(8.0),
                 ),
                 child: Text(
-                  'ID, Date, Weight (kg), Note',
+                  'ID, Date, Time (opt), Weight (kg), Note\n(lub: Data; Czas; Waga (kg))',
                   style: theme.textTheme.bodySmall?.copyWith(
                     fontFamily: 'monospace',
                     color: theme.colorScheme.onSurfaceVariant,

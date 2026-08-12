@@ -53,7 +53,12 @@ class CsvImporter {
 
     // Detect delimiter from header row
     final header = lines[0].toLowerCase();
-    final delimiter = header.contains(';') ? ';' : ',';
+    String delimiter = ',';
+    if (header.contains('\t')) {
+      delimiter = '\t';
+    } else if (header.contains(';')) {
+      delimiter = ';';
+    }
 
     final headerFields = _parseCsvLine(header, delimiter);
     final columnIndex = _findColumnIndices(headerFields);
@@ -88,12 +93,28 @@ class CsvImporter {
         }
       }
 
-      // Fallback for ISO-8601 with time component (e.g. 2024-01-15 07:30)
+      // Fallback for ISO-8601 with time component (e.g. 2024-01-15 07:30 or Garmin 2026-05-30T00:00:00.000)
       date ??= DateTime.tryParse(dateString);
 
       if (date == null) {
         skippedRows++;
         continue;
+      }
+
+      // Parse time column if it exists (e.g. Garmin's "Czas")
+      final timeString = columnIndex['czas'] != null && fields.length > columnIndex['czas']!
+          ? fields[columnIndex['czas']!].trim()
+          : null;
+          
+      if (timeString != null && timeString.isNotEmpty) {
+        final timeParts = timeString.split(':');
+        if (timeParts.length >= 2) {
+          final hour = int.tryParse(timeParts[0]);
+          final minute = int.tryParse(timeParts[1]);
+          if (hour != null && minute != null) {
+            date = DateTime(date.year, date.month, date.day, hour, minute);
+          }
+        }
       }
 
       final normalizedWeight = weightString.replaceAll(',', '.');
@@ -132,6 +153,8 @@ class CsvImporter {
           normalized == 'date' ||
           normalized == 'data_date') {
         indices['data'] = i;
+      } else if (normalized == 'czas' || normalized == 'time') {
+        indices['czas'] = i;
       } else if (normalized == 'waga' ||
           normalized == 'waga (kg)' ||
           normalized == 'weight' ||
