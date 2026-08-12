@@ -12,7 +12,7 @@ import 'package:balance/features/calendar/presentation/screens/calendar_screen.d
 import 'package:balance/features/calendar/presentation/widgets/calendar_day_cell.dart';
 import 'package:balance/features/calendar/presentation/widgets/calendar_day_empty_card.dart';
 import 'package:balance/features/calendar/presentation/widgets/calendar_day_entries_card.dart';
-import 'package:balance/features/calendar/presentation/widgets/calendar_day_future_card.dart';
+
 import 'package:balance/features/calendar/presentation/widgets/calendar_error_card.dart';
 import 'package:balance/features/calendar/presentation/widgets/calendar_grid.dart';
 import 'package:balance/features/calendar/presentation/widgets/calendar_month_header.dart';
@@ -165,43 +165,6 @@ void main() {
         findsOneWidget,
       );
       expect(find.text('Add measurement'), findsOneWidget);
-    },
-  );
-
-  testWidgets(
-    'CalendarDayFutureCard renders future card in Polish and English',
-    (tester) async {
-      var todaySelected = false;
-
-      await tester.pumpWidget(
-        createTestWidget(
-          CalendarDayFutureCard(
-            selectedDate: DateTime(2030, 1, 1),
-            onSelectToday: () => todaySelected = true,
-          ),
-          locale: const Locale('pl'),
-        ),
-      );
-
-      expect(find.text('Przyszła data'), findsOneWidget);
-      expect(find.byIcon(Icons.schedule), findsOneWidget);
-      expect(find.text('Przejdź do dzisiaj'), findsOneWidget);
-
-      await tester.tap(find.text('Przejdź do dzisiaj'));
-      expect(todaySelected, isTrue);
-
-      await tester.pumpWidget(
-        createTestWidget(
-          CalendarDayFutureCard(
-            selectedDate: DateTime(2030, 1, 1),
-            onSelectToday: () {},
-          ),
-          locale: const Locale('en'),
-        ),
-      );
-
-      expect(find.text('Future date'), findsOneWidget);
-      expect(find.text('Go to today'), findsOneWidget);
     },
   );
 

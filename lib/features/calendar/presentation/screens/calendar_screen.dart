@@ -9,7 +9,7 @@ import 'package:balance/features/weight/presentation/bloc/weight_state.dart';
 import 'package:balance/features/weight/presentation/utils/weight_error_localizer.dart';
 import 'package:balance/features/calendar/presentation/widgets/calendar_day_empty_card.dart';
 import 'package:balance/features/calendar/presentation/widgets/calendar_day_entries_card.dart';
-import 'package:balance/features/calendar/presentation/widgets/calendar_day_future_card.dart';
+
 import 'package:balance/features/calendar/presentation/widgets/calendar_error_card.dart';
 import 'package:balance/features/calendar/presentation/widgets/calendar_grid.dart';
 import 'package:balance/features/calendar/presentation/widgets/calendar_month_header.dart';
@@ -109,10 +109,6 @@ class _CalendarScreenState extends State<CalendarScreen> {
     ).format(_selectedDate);
     final appSettingsState = context.watch<AppSettingsBloc>().state;
     final targetWeight = appSettingsState.targetWeight;
-
-    final now = DateTime.now();
-    final todayEnd = DateTime(now.year, now.month, now.day, 23, 59, 59);
-    final isSelectedDateFuture = _selectedDate.isAfter(todayEnd);
 
     return Scaffold(
       body: CustomScrollView(
@@ -299,13 +295,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
                             selectedDayHeader,
-                            if (isSelectedDateFuture)
-                              CalendarDayFutureCard(
-                                selectedDate: _selectedDate,
-                                onSelectToday: () =>
-                                    _onDaySelected(DateTime.now()),
-                              )
-                            else if (dayEntries.isEmpty)
+                            if (dayEntries.isEmpty)
                               CalendarDayEmptyCard(selectedDate: _selectedDate)
                             else
                               CalendarDayEntriesCard(

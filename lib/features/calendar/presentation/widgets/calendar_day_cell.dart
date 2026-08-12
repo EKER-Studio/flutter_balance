@@ -26,8 +26,8 @@ class CalendarDayCell extends StatelessWidget {
   /// Whether the user reached their target weight goal on this day.
   final bool isGoalAchieved;
 
-  /// Callback when this cell is tapped.
-  final VoidCallback onTap;
+  /// Callback when the cell is tapped. Null if the cell is disabled.
+  final VoidCallback? onTap;
 
   /// Creates a [CalendarDayCell].
   const CalendarDayCell({
@@ -39,7 +39,7 @@ class CalendarDayCell extends StatelessWidget {
     required this.isSelected,
     this.isFuture = false,
     this.isGoalAchieved = false,
-    required this.onTap,
+    this.onTap,
   });
 
   static String? _cachedLocale;

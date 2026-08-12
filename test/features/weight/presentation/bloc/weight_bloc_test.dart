@@ -286,11 +286,7 @@ void main() {
           const WeightLoaded(entries: [], filteredEntries: [], heightCm: 170),
       act: (bloc) => bloc.add(
         ImportWeightEntries([
-          WeightEntry(
-            id: 1,
-            weightKg: 80.0,
-            dateTime: DateTime(2026),
-          )
+          WeightEntry(id: 1, weightKg: 80.0, dateTime: DateTime(2026)),
         ]),
       ),
       expect: () => [

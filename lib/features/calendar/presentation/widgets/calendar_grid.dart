@@ -91,7 +91,7 @@ class CalendarGrid extends StatelessWidget {
           isSelected: isSelected,
           isFuture: isFuture,
           isGoalAchieved: isGoalAchieved,
-          onTap: () => onDaySelected(date, dayEntries),
+          onTap: isFuture ? null : () => onDaySelected(date, dayEntries),
         );
       },
     );
