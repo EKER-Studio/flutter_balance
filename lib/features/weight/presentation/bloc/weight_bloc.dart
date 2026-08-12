@@ -384,15 +384,34 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
         start: start,
         end: end,
       );
-      if (remoteEntries.isEmpty) return;
 
       final localEntries = await repository.getAllEntries();
-      final newEntries = remoteEntries
-          .where((remote) => !_isLocalDuplicate(remote, localEntries))
-          .toList();
-      if (newEntries.isEmpty) return;
 
-      await repository.bulkImportEntries(newEntries);
+      // 1. Pull remote records missing from local database
+      if (remoteEntries.isNotEmpty) {
+        final newLocalEntries = remoteEntries
+            .where((remote) => !_isDuplicate(remote, localEntries))
+            .toList();
+        if (newLocalEntries.isNotEmpty) {
+          await repository.bulkImportEntries(newLocalEntries);
+        }
+      }
+
+      // 2. Push local records missing from remote health platform
+      final missingRemoteEntries = localEntries
+          .where((local) => !_isDuplicate(local, remoteEntries))
+          .toList();
+
+      if (missingRemoteEntries.isNotEmpty) {
+        // Run in background to avoid blocking the bloc if there are many entries
+        unawaited(
+          Future.forEach(
+            missingRemoteEntries,
+            (entry) => _mirrorWriteToHealth(entry),
+          ),
+        );
+      }
+
       final entries = await repository.getAllEntries();
       emit(
         WeightLoaded(
@@ -409,17 +428,14 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
     }
   }
 
-  /// Returns true when [remote] already exists in [localEntries]: an entry
+  /// Returns true when [target] already exists in [entries]: an entry
   /// with the same timestamp truncated to seconds (UTC-normalized) and the
   /// exact same weight value.
-  static bool _isLocalDuplicate(
-    WeightEntry remote,
-    List<WeightEntry> localEntries,
-  ) {
-    final remoteInstant = _truncateToSecondUtc(remote.dateTime);
-    for (final local in localEntries) {
-      if (local.weightKg == remote.weightKg &&
-          _truncateToSecondUtc(local.dateTime) == remoteInstant) {
+  static bool _isDuplicate(WeightEntry target, List<WeightEntry> entries) {
+    final targetInstant = _truncateToSecondUtc(target.dateTime);
+    for (final e in entries) {
+      if (e.weightKg == target.weightKg &&
+          _truncateToSecondUtc(e.dateTime) == targetInstant) {
         return true;
       }
     }
@@ -535,6 +551,13 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
   ) async {
     try {
       await repository.bulkImportEntries(event.entries);
+
+      if (_isHealthSyncEnabled) {
+        unawaited(
+          Future.forEach(event.entries, (entry) => _mirrorWriteToHealth(entry)),
+        );
+      }
+
       final entries = await repository.getAllEntries();
       emit(
         WeightLoaded(
