@@ -81,8 +81,8 @@ flutter analyze
 # regardless of any `severity: error` setting on the rule). Do not rely on
 # its exit code. Instead, parse its own reported summary line, which is the
 # one part of its output we've verified to be stable and truthful.
-IMPORT_LINT_OUTPUT="$(dart run import_lint 2>&1)"
-import_lint_status=$?
+import_lint_status=0
+IMPORT_LINT_OUTPUT="$(dart run import_lint 2>&1)" || import_lint_status=$?
 echo "$IMPORT_LINT_OUTPUT"
 # Strip ANSI escape codes to ensure clean regex matching regardless of terminal environment
 CLEANED_IMPORT_LINT_OUTPUT="$(echo "$IMPORT_LINT_OUTPUT" | perl -pe 's/\x1b\[[0-9;]*[a-zA-Z]//g')"

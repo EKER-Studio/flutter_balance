@@ -9,9 +9,6 @@
 # packages, and plugins designed to encourage good coding practices.
 include: package:flutter_lints/flutter.yaml
 
-plugins:
-  import_lint: ^2.0.0
-
 analyzer:
   # Exclude generated Isar schema files from analysis. The isar_community
   # generator (v3.3.2) emits calls to @experimental index-manipulation APIs
