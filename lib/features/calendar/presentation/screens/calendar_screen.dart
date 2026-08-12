@@ -176,16 +176,24 @@ class _CalendarScreenState extends State<CalendarScreen> {
                             borderRadius: BorderRadius.circular(28),
                           ),
                           child: Padding(
-                            padding: const EdgeInsets.all(16),
+                            padding: const EdgeInsets.symmetric(vertical: 16),
                             child: Column(
                               children: [
-                                CalendarMonthHeader(
-                                  focusedMonth: _focusedMonth,
-                                  onPreviousMonth: _previousMonth,
-                                  onNextMonth: _nextMonth,
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 16,
+                                  ),
+                                  child: CalendarMonthHeader(
+                                    focusedMonth: _focusedMonth,
+                                    onPreviousMonth: _previousMonth,
+                                    onNextMonth: _nextMonth,
+                                  ),
                                 ),
                                 const SizedBox(height: 16),
-                                const CalendarWeekdayHeader(),
+                                const Padding(
+                                  padding: EdgeInsets.symmetric(horizontal: 16),
+                                  child: CalendarWeekdayHeader(),
+                                ),
                                 const SizedBox(height: 12),
                                 Builder(
                                   builder: (context) {
@@ -202,7 +210,6 @@ class _CalendarScreenState extends State<CalendarScreen> {
                                       height: gridHeight,
                                       child: PageView.builder(
                                         controller: _pageController,
-                                        clipBehavior: Clip.none,
                                         allowImplicitScrolling: true,
                                         onPageChanged: _onPageChanged,
                                         itemBuilder: (context, index) {
@@ -214,13 +221,18 @@ class _CalendarScreenState extends State<CalendarScreen> {
                                             1,
                                           );
 
-                                          return CalendarGrid(
-                                            focusedMonth: monthDate,
-                                            selectedDate: _selectedDate,
-                                            entries: entries,
-                                            targetWeight: targetWeight,
-                                            onDaySelected: (date, _) =>
-                                                _onDaySelected(date),
+                                          return Padding(
+                                            padding: const EdgeInsets.symmetric(
+                                              horizontal: 16,
+                                            ),
+                                            child: CalendarGrid(
+                                              focusedMonth: monthDate,
+                                              selectedDate: _selectedDate,
+                                              entries: entries,
+                                              targetWeight: targetWeight,
+                                              onDaySelected: (date, _) =>
+                                                  _onDaySelected(date),
+                                            ),
                                           );
                                         },
                                       ),

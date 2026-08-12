@@ -54,7 +54,7 @@ class CalendarDayEntriesCard extends StatelessWidget {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
             decoration: BoxDecoration(
-              color: cs.tertiaryContainer,
+              color: Colors.green.withValues(alpha: 0.15),
               borderRadius: BorderRadius.circular(16),
             ),
             child: Row(
@@ -62,7 +62,9 @@ class CalendarDayEntriesCard extends StatelessWidget {
                 ExcludeSemantics(
                   child: Icon(
                     Icons.stars,
-                    color: cs.onTertiaryContainer,
+                    color: Theme.of(context).brightness == Brightness.light
+                        ? Colors.green.shade800
+                        : Colors.green.shade300,
                     size: 22,
                   ),
                 ),
@@ -72,7 +74,9 @@ class CalendarDayEntriesCard extends StatelessWidget {
                     l10n.goalAchievedOnDayBanner,
                     style: Theme.of(context).textTheme.labelMedium?.copyWith(
                       fontWeight: FontWeight.bold,
-                      color: cs.onTertiaryContainer,
+                      color: Theme.of(context).brightness == Brightness.light
+                          ? Colors.green.shade800
+                          : Colors.green.shade300,
                     ),
                   ),
                 ),
@@ -127,13 +131,16 @@ class CalendarDayEntriesCard extends StatelessWidget {
                         CircleAvatar(
                           radius: 24,
                           backgroundColor: meetsGoal
-                              ? cs.tertiaryContainer
+                              ? Colors.green.withValues(alpha: 0.15)
                               : cs.secondaryContainer,
                           child: Icon(
                             meetsGoal ? Icons.star : Icons.monitor_weight,
                             size: 24,
                             color: meetsGoal
-                                ? cs.onTertiaryContainer
+                                ? (Theme.of(context).brightness ==
+                                          Brightness.light
+                                      ? Colors.green.shade800
+                                      : Colors.green.shade300)
                                 : cs.onSecondaryContainer,
                           ),
                         ),

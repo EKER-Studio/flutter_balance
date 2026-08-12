@@ -245,7 +245,9 @@ class StatisticsScreen extends StatelessWidget {
                         statusBadge,
                         style: Theme.of(context).textTheme.labelMedium
                             ?.copyWith(
-                              color: Theme.of(context).brightness == Brightness.light
+                              color:
+                                  Theme.of(context).brightness ==
+                                      Brightness.light
                                   ? Colors.green.shade800
                                   : Colors.green.shade300,
                               fontWeight: FontWeight.bold,

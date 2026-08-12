@@ -87,9 +87,18 @@ class CalendarDayCell extends StatelessWidget {
                 opacity: isFuture ? 0.40 : 1.0,
                 child: Badge(
                   isLabelVisible: isGoalAchieved,
-                  backgroundColor: cs.tertiary,
+                  backgroundColor:
+                      Theme.of(context).brightness == Brightness.light
+                      ? Colors.green.shade800
+                      : Colors.green.shade300,
                   padding: const EdgeInsets.all(3),
-                  label: Icon(Icons.star, size: 10, color: cs.onTertiary),
+                  label: Icon(
+                    Icons.star,
+                    size: 10,
+                    color: Theme.of(context).brightness == Brightness.light
+                        ? Colors.white
+                        : const Color(0xFF1B5E20),
+                  ),
                   child: Container(
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
