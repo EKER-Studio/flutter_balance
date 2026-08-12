@@ -60,6 +60,7 @@ class CalendarGrid extends StatelessWidget {
     return GridView.builder(
       physics: const NeverScrollableScrollPhysics(),
       shrinkWrap: true,
+      clipBehavior: Clip.none,
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 7,
         mainAxisSpacing: 8,

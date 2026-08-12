@@ -202,6 +202,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                                       height: gridHeight,
                                       child: PageView.builder(
                                         controller: _pageController,
+                                        clipBehavior: Clip.none,
                                         allowImplicitScrolling: true,
                                         onPageChanged: _onPageChanged,
                                         itemBuilder: (context, index) {
