@@ -577,7 +577,7 @@ class _WeightLineChart extends StatelessWidget {
               }).toList();
             },
             touchTooltipData: LineTouchTooltipData(
-              getTooltipColor: (spot) => colorScheme.inverseSurface,
+              getTooltipColor: (spot) => colorScheme.secondaryContainer,
               getTooltipItems: (spots) {
                 return spots.map((spot) {
                   final weight = measurementUnit == MeasurementUnit.imperial
@@ -586,7 +586,7 @@ class _WeightLineChart extends StatelessWidget {
                   return LineTooltipItem(
                     formatWeight(weight, measurementUnit),
                     TextStyle(
-                      color: colorScheme.onInverseSurface,
+                      color: colorScheme.onSecondaryContainer,
                       fontWeight: FontWeight.w700,
                     ),
                   );

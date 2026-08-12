@@ -235,7 +235,18 @@ class BmiChartCard extends StatelessWidget {
             clipData: const FlClipData.all(),
             minY: minY,
             maxY: maxY,
-            gridData: const FlGridData(show: false),
+            gridData: FlGridData(
+              show: true,
+              drawVerticalLine: false,
+              horizontalInterval: 2,
+              getDrawingHorizontalLine: (value) {
+                return FlLine(
+                  color: cs.surfaceContainerHighest,
+                  strokeWidth: 1,
+                  dashArray: [5, 5],
+                );
+              },
+            ),
             titlesData: FlTitlesData(
               show: true,
               rightTitles: const AxisTitles(

@@ -181,6 +181,7 @@ class StatisticsScreen extends StatelessWidget {
 
     double? goalProgressPct;
     String? statusBadge;
+    bool isSuccessBadge = true;
 
     if (targetWeight != null) {
       if (latestEntry.weightKg <= targetWeight) {
@@ -193,6 +194,7 @@ class StatisticsScreen extends StatelessWidget {
             : distKg;
         statusBadge =
             '${distDisplay.toStringAsFixed(1)} $unitLabel ${l10n.toTarget}';
+        isSuccessBadge = false;
         goalProgressPct = _calculateGoalProgressPct(
           startKg: firstEntry.weightKg,
           currentKg: latestEntry.weightKg,
@@ -238,7 +240,8 @@ class StatisticsScreen extends StatelessWidget {
                         vertical: 6,
                       ),
                       decoration: BoxDecoration(
-                        color: Colors.green.withValues(alpha: 0.15),
+                        color: (isSuccessBadge ? Colors.green : Colors.orange)
+                            .withValues(alpha: 0.15),
                         borderRadius: BorderRadius.circular(20),
                       ),
                       child: Text(
@@ -248,8 +251,12 @@ class StatisticsScreen extends StatelessWidget {
                               color:
                                   Theme.of(context).brightness ==
                                       Brightness.light
-                                  ? Colors.green.shade800
-                                  : Colors.green.shade300,
+                                  ? (isSuccessBadge
+                                        ? Colors.green.shade800
+                                        : Colors.orange.shade800)
+                                  : (isSuccessBadge
+                                        ? Colors.green.shade300
+                                        : Colors.orange.shade300),
                               fontWeight: FontWeight.bold,
                             ),
                       ),
