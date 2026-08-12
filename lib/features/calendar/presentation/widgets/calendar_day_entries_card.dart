@@ -158,14 +158,20 @@ class CalendarDayEntriesCard extends StatelessWidget {
                                     color: cs.onSurfaceVariant,
                                   ),
                                   const SizedBox(width: 4),
-                                  Text(
-                                    entry.note != null && entry.note!.isNotEmpty
-                                        ? '$timeStr • ${entry.note}'
-                                        : timeStr,
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .bodyMedium
-                                        ?.copyWith(color: cs.onSurfaceVariant),
+                                  Expanded(
+                                    child: Text(
+                                      entry.note != null &&
+                                              entry.note!.isNotEmpty
+                                          ? '$timeStr • ${entry.note}'
+                                          : timeStr,
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodyMedium
+                                          ?.copyWith(
+                                            color: cs.onSurfaceVariant,
+                                          ),
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
                                   ),
                                 ],
                               ),
