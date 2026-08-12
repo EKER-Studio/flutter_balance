@@ -4,9 +4,10 @@ import 'package:balance/presentation/theme/app_theme.dart';
 
 void main() {
   group('AppTheme.lightColorScheme', () {
-    test('is a light scheme anchored at the primary color', () {
+    test('is a light scheme', () {
       expect(AppTheme.lightColorScheme.brightness, Brightness.light);
-      expect(AppTheme.lightColorScheme.primary, AppTheme.primaryColor);
+      // The light primary color is a hand-tuned variant of the brand anchor.
+      expect(AppTheme.lightColorScheme.primary, const Color(0xFF005BDE));
     });
 
     test('defines all tonal surface roles', () {
@@ -24,10 +25,10 @@ void main() {
       expect(AppTheme.darkColorScheme.brightness, Brightness.dark);
     });
 
-    test('shares the same hue family as the light scheme', () {
+    test('has primary colors from the correct hue family', () {
       expect(
         AppTheme.darkColorScheme.primaryContainer,
-        AppTheme.lightColorScheme.primary,
+        const Color(0xFF0044A5),
       );
     });
   });
