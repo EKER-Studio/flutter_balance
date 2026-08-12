@@ -64,6 +64,7 @@ class HealthSummaryCard extends StatelessWidget {
           label: semanticsLabel,
           child: ExcludeSemantics(
             child: Card(
+              margin: EdgeInsets.zero,
               elevation: 0,
               clipBehavior: Clip.antiAlias,
               color: colorScheme.surfaceContainerLow,

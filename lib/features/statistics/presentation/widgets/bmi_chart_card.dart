@@ -34,6 +34,7 @@ class BmiChartCard extends StatelessWidget {
       container: true,
       label: l10n.bmi,
       child: Card(
+        margin: EdgeInsets.zero,
         elevation: 0,
         color: cs.surfaceContainerLow,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),

@@ -332,6 +332,7 @@ class _WeightTrendChartCard extends StatelessWidget {
     final textTheme = Theme.of(context).textTheme;
 
     return Card(
+      margin: EdgeInsets.zero,
       elevation: 0,
       color: colorScheme.surfaceContainerLow,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
@@ -699,6 +700,7 @@ class _DailyTipCard extends StatelessWidget {
       container: true,
       label: '${l10n.dailyTipTitle}: ${l10n.dailyTipText}',
       child: Card(
+        margin: EdgeInsets.zero,
         elevation: 0,
         color: colorScheme.surfaceContainerLow,
         shape: RoundedRectangleBorder(

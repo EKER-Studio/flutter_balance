@@ -212,6 +212,7 @@ class StatisticsScreen extends StatelessWidget {
       container: true,
       label: semanticLabel,
       child: Card(
+        margin: EdgeInsets.zero,
         elevation: 0,
         color: cs.surfaceContainerLow,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
@@ -353,6 +354,7 @@ class StatisticsScreen extends StatelessWidget {
       label:
           '${l10n.loggingStreak}: ${l10n.streakDays(streak)}, ${l10n.monthlyCompliance}: $compliancePct%',
       child: Card(
+        margin: EdgeInsets.zero,
         elevation: 0,
         color: cs.surfaceContainerLow,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
@@ -469,6 +471,7 @@ class StatisticsScreen extends StatelessWidget {
       label:
           '${l10n.weightRangeSemanticsPrefix}${l10n.highest} ${maxDisplay.toStringAsFixed(1)} $unitLabel, ${l10n.lowest} ${minDisplay.toStringAsFixed(1)} $unitLabel, ${l10n.averageWeight} ${avgDisplay.toStringAsFixed(1)} $unitLabel',
       child: Card(
+        margin: EdgeInsets.zero,
         elevation: 0,
         color: cs.surfaceContainerLow,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),

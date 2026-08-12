@@ -422,6 +422,7 @@ class _StatisticsShimmerSkeletonState extends State<StatisticsShimmerSkeleton>
     required Widget child,
   }) {
     return Card(
+      margin: EdgeInsets.zero,
       elevation: 0,
       color: Theme.of(context).colorScheme.surfaceContainerLow,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),

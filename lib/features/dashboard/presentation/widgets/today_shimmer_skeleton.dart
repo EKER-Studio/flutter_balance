@@ -53,6 +53,7 @@ class _TodayShimmerSkeletonState extends State<TodayShimmerSkeleton>
               children: [
                 // Health Summary Card Skeleton
                 Card(
+                  margin: EdgeInsets.zero,
                   elevation: 0,
                   color: cs.surfaceContainerLow,
                   shape: RoundedRectangleBorder(
@@ -114,6 +115,7 @@ class _TodayShimmerSkeletonState extends State<TodayShimmerSkeleton>
 
                 // Weight Trend Chart Card Skeleton
                 Card(
+                  margin: EdgeInsets.zero,
                   elevation: 0,
                   color: cs.surfaceContainerLow,
                   shape: RoundedRectangleBorder(
@@ -149,6 +151,7 @@ class _TodayShimmerSkeletonState extends State<TodayShimmerSkeleton>
 
                 // Latest Measurement Card Skeleton
                 Card(
+                  margin: EdgeInsets.zero,
                   elevation: 0,
                   color: cs.surfaceContainerLow,
                   shape: RoundedRectangleBorder(
