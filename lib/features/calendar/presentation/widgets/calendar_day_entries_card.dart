@@ -235,9 +235,8 @@ class CalendarDayEntriesCard extends StatelessWidget {
   /// Prompts for confirmation before deleting [entryId].
   Future<void> _confirmDelete(BuildContext context, int entryId) async {
     final l10n = AppLocalizations.of(context);
-    final confirmed = await showModalBottomSheet<bool>(
+    final confirmed = await showDialog<bool>(
       context: context,
-      isScrollControlled: true,
       builder: (dialogContext) => AlertDialog(
         title: Text(l10n.deleteEntryTitle),
         content: Text(l10n.deleteEntryMessage),

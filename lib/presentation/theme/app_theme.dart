@@ -207,8 +207,8 @@ abstract final class AppTheme {
     floatingActionButtonTheme: FloatingActionButtonThemeData(
       elevation: 2,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-      backgroundColor: lightColorScheme.primaryContainer,
-      foregroundColor: lightColorScheme.onPrimaryContainer,
+      backgroundColor: lightColorScheme.primary,
+      foregroundColor: lightColorScheme.onPrimary,
     ),
     inputDecorationTheme: InputDecorationTheme(
       filled: true,
@@ -299,8 +299,8 @@ abstract final class AppTheme {
     floatingActionButtonTheme: FloatingActionButtonThemeData(
       elevation: 2,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-      backgroundColor: darkColorScheme.primaryContainer,
-      foregroundColor: darkColorScheme.onPrimaryContainer,
+      backgroundColor: darkColorScheme.primary,
+      foregroundColor: darkColorScheme.onPrimary,
     ),
     inputDecorationTheme: InputDecorationTheme(
       filled: true,

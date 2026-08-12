@@ -255,14 +255,33 @@ class _StepCsvImportState extends State<StepCsvImport> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        const Spacer(),
-        Icon(Icons.check_circle, size: 64, color: Colors.green.shade600),
-        const SizedBox(height: 16.0),
-        Text(
-          l10n.csvImportSuccess(_entries.length),
-          textAlign: TextAlign.center,
-          style: theme.textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.w600,
+        Material(
+          color: theme.colorScheme.primaryContainer,
+          borderRadius: BorderRadius.circular(28.0),
+          clipBehavior: Clip.antiAlias,
+          child: Container(
+            padding: const EdgeInsets.all(24.0),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(28.0),
+            ),
+            child: Column(
+              children: [
+                Icon(
+                  Icons.check_circle_outline,
+                  size: 48,
+                  color: theme.colorScheme.onPrimaryContainer,
+                ),
+                const SizedBox(height: 16.0),
+                Text(
+                  l10n.csvImportSuccess(_entries.length),
+                  textAlign: TextAlign.center,
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.w600,
+                    color: theme.colorScheme.onPrimaryContainer,
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
         const Spacer(),

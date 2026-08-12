@@ -284,7 +284,15 @@ void main() {
       },
       seed: () =>
           const WeightLoaded(entries: [], filteredEntries: [], heightCm: 170),
-      act: (bloc) => bloc.add(const ImportWeightEntries([])),
+      act: (bloc) => bloc.add(
+        ImportWeightEntries([
+          WeightEntry(
+            id: 1,
+            weightKg: 80.0,
+            dateTime: DateTime(2026),
+          )
+        ]),
+      ),
       expect: () => [
         isA<WeightError>().having(
           (s) => s.errorType,

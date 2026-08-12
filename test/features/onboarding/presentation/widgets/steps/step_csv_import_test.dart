@@ -140,7 +140,7 @@ void main() {
         await tester.pumpAndSettle();
 
         expect(find.text('Imported 2 measurements!'), findsOneWidget);
-        expect(find.byIcon(Icons.check_circle), findsOneWidget);
+        expect(find.byIcon(Icons.check_circle_outline), findsOneWidget);
         expect(
           find.byKey(const Key('csv_import_continue_button')),
           findsOneWidget,

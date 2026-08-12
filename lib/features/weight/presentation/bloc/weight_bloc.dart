@@ -429,32 +429,25 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
   }
 
   /// Returns true when [target] already exists in [entries]: an entry
-  /// with the same timestamp truncated to seconds (UTC-normalized) and the
-  /// exact same weight value.
+  /// with the same timestamp truncated to the minute (UTC-normalized) and a
+  /// weight value within 0.01kg tolerance.
   static bool _isDuplicate(WeightEntry target, List<WeightEntry> entries) {
-    final targetInstant = _truncateToSecondUtc(target.dateTime);
+    final targetInstant = _truncateToMinuteUtc(target.dateTime);
     for (final e in entries) {
-      if (e.weightKg == target.weightKg &&
-          _truncateToSecondUtc(e.dateTime) == targetInstant) {
+      if ((e.weightKg - target.weightKg).abs() < 0.01 &&
+          _truncateToMinuteUtc(e.dateTime) == targetInstant) {
         return true;
       }
     }
     return false;
   }
 
-  /// Truncates [dateTime] to second precision in UTC so measurements recorded
-  /// milliseconds apart — possibly in different timezone representations — are
+  /// Truncates [dateTime] to minute precision in UTC so measurements recorded
+  /// seconds apart — possibly in different timezone representations — are
   /// still treated as the same measurement.
-  static DateTime _truncateToSecondUtc(DateTime dateTime) {
+  static DateTime _truncateToMinuteUtc(DateTime dateTime) {
     final utc = dateTime.toUtc();
-    return DateTime.utc(
-      utc.year,
-      utc.month,
-      utc.day,
-      utc.hour,
-      utc.minute,
-      utc.second,
-    );
+    return DateTime.utc(utc.year, utc.month, utc.day, utc.hour, utc.minute);
   }
 
   /// Re-emits the current entries filtered by the newly selected chart
@@ -550,12 +543,24 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
     Emitter<WeightState> emit,
   ) async {
     try {
-      await repository.bulkImportEntries(event.entries);
+      final localEntries = await repository.getAllEntries();
+      final newEntries = <WeightEntry>[];
 
-      if (_isHealthSyncEnabled) {
-        unawaited(
-          Future.forEach(event.entries, (entry) => _mirrorWriteToHealth(entry)),
-        );
+      for (final entry in event.entries) {
+        if (!_isDuplicate(entry, localEntries) &&
+            !_isDuplicate(entry, newEntries)) {
+          newEntries.add(entry);
+        }
+      }
+
+      if (newEntries.isNotEmpty) {
+        await repository.bulkImportEntries(newEntries);
+
+        if (_isHealthSyncEnabled) {
+          unawaited(
+            Future.forEach(newEntries, (entry) => _mirrorWriteToHealth(entry)),
+          );
+        }
       }
 
       final entries = await repository.getAllEntries();

@@ -450,9 +450,7 @@ class _PeriodPill extends StatelessWidget {
     return TextButton(
       onPressed: onPressed,
       style: TextButton.styleFrom(
-        backgroundColor: selected
-            ? colorScheme.primaryContainer
-            : Colors.transparent,
+        backgroundColor: selected ? colorScheme.primary : Colors.transparent,
         foregroundColor: selected
             ? colorScheme.onPrimary
             : colorScheme.onSurfaceVariant,
@@ -466,9 +464,7 @@ class _PeriodPill extends StatelessWidget {
         style: textTheme.labelMedium?.copyWith(
           fontWeight: FontWeight.w600,
           color: selected
-              ? (Theme.of(context).brightness == Brightness.light
-                    ? Colors.white
-                    : colorScheme.onPrimaryContainer)
+              ? colorScheme.onPrimary
               : colorScheme.onSurfaceVariant,
         ),
       ),
