@@ -217,9 +217,13 @@ class CalendarDayEntriesCard extends StatelessWidget {
         const SizedBox(height: 24),
         OutlinedButton.icon(
           onPressed: () {
-            showDialog(
+            showModalBottomSheet(
               context: context,
-              builder: (_) => AddWeightSheet(initialDate: selectedDate),
+              isScrollControlled: true,
+              builder: (dialogCtx) => BlocProvider.value(
+                value: context.read<WeightBloc>(),
+                child: AddWeightSheet(initialDate: selectedDate),
+              ),
             );
           },
           icon: const Icon(Icons.add),
@@ -232,8 +236,9 @@ class CalendarDayEntriesCard extends StatelessWidget {
   /// Prompts for confirmation before deleting [entryId].
   Future<void> _confirmDelete(BuildContext context, int entryId) async {
     final l10n = AppLocalizations.of(context);
-    final confirmed = await showDialog<bool>(
+    final confirmed = await showModalBottomSheet<bool>(
       context: context,
+      isScrollControlled: true,
       builder: (dialogContext) => AlertDialog(
         title: Text(l10n.deleteEntryTitle),
         content: Text(l10n.deleteEntryMessage),

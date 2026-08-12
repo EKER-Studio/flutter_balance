@@ -102,10 +102,11 @@ class CsvImporter {
       }
 
       // Parse time column if it exists (e.g. Garmin's "Czas")
-      final timeString = columnIndex['czas'] != null && fields.length > columnIndex['czas']!
+      final timeString =
+          columnIndex['czas'] != null && fields.length > columnIndex['czas']!
           ? fields[columnIndex['czas']!].trim()
           : null;
-          
+
       if (timeString != null && timeString.isNotEmpty) {
         final timeParts = timeString.split(':');
         if (timeParts.length >= 2) {

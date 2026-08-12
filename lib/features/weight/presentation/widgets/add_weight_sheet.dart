@@ -110,7 +110,8 @@ class _AddWeightSheetState extends State<AddWeightSheet> {
 
   /// Marks the combined date/time as invalid when it lies in the future.
   void _validateDateTime() {
-    if (_combinedDateTime.isAfter(DateTime.now())) {
+    final now = DateTime.now().add(const Duration(minutes: 1));
+    if (_combinedDateTime.isAfter(now)) {
       _dateTimeError = AppLocalizations.of(context).futureDateError;
     } else {
       _dateTimeError = null;

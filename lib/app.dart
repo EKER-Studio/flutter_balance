@@ -154,9 +154,7 @@ class _AppState extends State<App> {
               },
               child: !settingsState.isOnboardingCompleted
                   ? const OnboardingWizardScreen()
-                  : (settingsState.isLocked
-                        ? const BiometricShieldScreen()
-                        : const MainNavigationScreen()),
+                  : const MainNavigationScreen(),
             ),
           ),
         ),
@@ -182,6 +180,15 @@ class _AppState extends State<App> {
           debugShowCheckedModeBanner: false,
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
+          builder: (context, child) {
+            return Stack(
+              children: [
+                ?child,
+                if (settingsState.isLocked)
+                  const Positioned.fill(child: BiometricShieldScreen()),
+              ],
+            );
+          },
           home: widget.repositoryOverride != null
               ? _buildAppContent(widget.repositoryOverride!, settingsState)
               : FutureBuilder<WeightRepository>(

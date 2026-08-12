@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:balance/features/weight/presentation/bloc/weight_bloc.dart';
 import 'package:balance/features/weight/presentation/widgets/add_weight_sheet.dart';
 import 'package:balance/l10n/app_localizations.dart';
 
@@ -56,9 +58,13 @@ class CalendarDayEmptyCard extends StatelessWidget {
               width: double.infinity,
               child: FilledButton.icon(
                 onPressed: () {
-                  showDialog(
+                  showModalBottomSheet(
                     context: context,
-                    builder: (_) => AddWeightSheet(initialDate: selectedDate),
+                    isScrollControlled: true,
+                    builder: (dialogCtx) => BlocProvider.value(
+                      value: context.read<WeightBloc>(),
+                      child: AddWeightSheet(initialDate: selectedDate),
+                    ),
                   );
                 },
                 icon: const Icon(Icons.add),

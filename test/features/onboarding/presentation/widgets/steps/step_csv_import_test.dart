@@ -77,7 +77,12 @@ void main() {
       expect(find.text('Select a file from your device'), findsOneWidget);
       expect(find.byKey(const Key('csv_import_tile')), findsOneWidget);
       expect(find.text('Required column format:'), findsOneWidget);
-      expect(find.text('ID, Date, Weight (kg), Note'), findsOneWidget);
+      expect(
+        find.text(
+          'ID, Date, Time (opt), Weight (kg), Note\n(lub: Data; Czas; Waga (kg))',
+        ),
+        findsOneWidget,
+      );
       expect(find.byKey(const Key('csv_import_next_button')), findsOneWidget);
     });
 

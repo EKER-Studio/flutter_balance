@@ -21,7 +21,7 @@ void main() {
 
     setUpAll(() async {
       final dir = await getApplicationDocumentsDirectory();
-      
+
       isar = await Isar.open(
         [WeightEntryModelSchema],
         directory: dir.path,
@@ -29,11 +29,8 @@ void main() {
         inspector: false,
       );
 
-      repository = IsarWeightRepository(
-        isar: isar,
-        encryptionKey: testKey,
-      );
-      
+      repository = IsarWeightRepository(isar: isar, encryptionKey: testKey);
+
       // Clean start
       await repository.clearAllData();
     });
@@ -42,7 +39,9 @@ void main() {
       await isar.close(deleteFromDisk: true);
     });
 
-    testWidgets('Full-Cycle E2E Test: Encrypt, Write, Raw Verify, Read, Delete', (tester) async {
+    testWidgets('Full-Cycle E2E Test: Encrypt, Write, Raw Verify, Read, Delete', (
+      tester,
+    ) async {
       // Step A (Write): Add a WeightEntry
       final entry = WeightEntry(
         weightKg: 78.4,
@@ -54,28 +53,34 @@ void main() {
 
       // Step B (Raw Physical Verification): Query the raw Isar collection directly
       final rawModels = await isar.weightEntryModels.where().findAll();
-      
+
       expect(rawModels.length, 1);
       final rawModel = rawModels.first;
 
       // Verify that the stored fields are encrypted Base64 strings and DO NOT contain plain text
       expect(rawModel.encryptedWeight, isNot(contains('78.4')));
       expect(rawModel.encryptedNote, isNot(contains('E2E Test Note')));
-      
+
       // Ensure they are valid base64 strings containing the IV + MAC + Ciphertext
       expect(() => base64Decode(rawModel.encryptedWeight), returnsNormally);
       expect(() => base64Decode(rawModel.encryptedNote!), returnsNormally);
 
       // Verify that FieldCipher can decrypt the raw model using the test key
-      final decryptedRawWeight = FieldCipher.decrypt(rawModel.encryptedWeight, testKey);
-      final decryptedRawNote = FieldCipher.decrypt(rawModel.encryptedNote!, testKey);
-      
+      final decryptedRawWeight = FieldCipher.decrypt(
+        rawModel.encryptedWeight,
+        testKey,
+      );
+      final decryptedRawNote = FieldCipher.decrypt(
+        rawModel.encryptedNote!,
+        testKey,
+      );
+
       expect(decryptedRawWeight, '78.4');
       expect(decryptedRawNote, 'E2E Test Note');
 
       // Step C (Stream & Read): Fetch entries via repository stream / getAllEntries()
       final entries = await repository.getAllEntries();
-      
+
       expect(entries.length, 1);
       final fetchedEntry = entries.first;
 
@@ -86,7 +91,7 @@ void main() {
 
       // Step D (Cleanup): Delete the entry
       await repository.deleteEntry(fetchedEntry.id);
-      
+
       final finalModels = await repository.getAllEntries();
       expect(finalModels, isEmpty);
     });

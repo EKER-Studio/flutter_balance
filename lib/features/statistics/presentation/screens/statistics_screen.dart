@@ -682,6 +682,13 @@ class StatisticsScreen extends StatelessWidget {
 
   /// Shows the [AddWeightSheet] dialog.
   void _showAddWeightSheet(BuildContext context) {
-    showDialog<void>(context: context, builder: (_) => const AddWeightSheet());
+    showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      builder: (dialogCtx) => BlocProvider.value(
+        value: context.read<WeightBloc>(),
+        child: const AddWeightSheet(),
+      ),
+    );
   }
 }
