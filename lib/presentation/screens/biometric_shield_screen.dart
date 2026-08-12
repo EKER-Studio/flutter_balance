@@ -94,6 +94,11 @@ class _BiometricShieldScreenState extends State<BiometricShieldScreen> {
     final disable = await showDialog<bool>(
       context: context,
       builder: (dialogContext) => AlertDialog(
+        icon: Icon(
+          Icons.fingerprint,
+          size: 28,
+          color: Theme.of(context).colorScheme.primary,
+        ),
         title: Text(l10n.biometricLockoutTitle),
         content: Text(l10n.biometricLockoutBody),
         actions: [

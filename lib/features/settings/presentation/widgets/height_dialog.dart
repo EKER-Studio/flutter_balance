@@ -59,6 +59,11 @@ class HeightDialogState extends State<HeightDialog> {
     final isError = _errorText != null;
 
     return AlertDialog(
+      icon: Icon(
+        Icons.height,
+        size: 28,
+        color: Theme.of(context).colorScheme.primary,
+      ),
       title: Text(l10n.heightDialogTitle),
       content: SingleChildScrollView(
         child: Column(
@@ -126,7 +131,7 @@ class HeightDialogState extends State<HeightDialog> {
           onPressed: () => Navigator.of(context).pop(),
           child: Text(l10n.cancel),
         ),
-        TextButton(onPressed: _handleSave, child: Text(l10n.save)),
+        FilledButton(onPressed: _handleSave, child: Text(l10n.save)),
       ],
     );
   }

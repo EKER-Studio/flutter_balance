@@ -552,6 +552,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
+        icon: Icon(
+          Icons.delete_forever_outlined,
+          size: 28,
+          color: errorColor,
+        ),
         title: Text(l10n.wipeData),
         content: Text(l10n.wipeDataContent),
         actions: [
@@ -559,12 +564,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
             onPressed: () => Navigator.pop(ctx),
             child: Text(l10n.cancel),
           ),
-          TextButton(
+          FilledButton(
             onPressed: () async {
               Navigator.pop(ctx);
               await _wipeDatabase();
             },
-            style: TextButton.styleFrom(foregroundColor: errorColor),
+            style: FilledButton.styleFrom(
+              backgroundColor: errorColor,
+              foregroundColor: Theme.of(context).colorScheme.onError,
+            ),
             child: Text(l10n.wipeDataButton),
           ),
         ],
@@ -809,6 +817,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
+        icon: Icon(
+          Icons.monitor_heart_outlined,
+          size: 28,
+          color: Theme.of(context).colorScheme.primary,
+        ),
         title: Text(l10n.healthConnectRequiredTitle),
         content: Text(l10n.healthConnectRequiredSubtitle),
         actions: [

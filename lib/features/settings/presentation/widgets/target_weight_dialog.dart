@@ -81,6 +81,11 @@ class _TargetWeightDialogState extends State<TargetWeightDialog> {
     final isError = _errorText != null;
 
     return AlertDialog(
+      icon: Icon(
+        Icons.flag_outlined,
+        size: 28,
+        color: Theme.of(context).colorScheme.primary,
+      ),
       title: Text(l10n.targetWeightDialogTitle),
       content: SingleChildScrollView(
         child: Column(
@@ -159,7 +164,11 @@ class _TargetWeightDialogState extends State<TargetWeightDialog> {
               child: Text(l10n.cancel),
             ),
             const SizedBox(width: 8),
-            TextButton(onPressed: _handleSave, child: Text(l10n.save)),
+            FilledButton.icon(
+              onPressed: _handleSave,
+              icon: const Icon(Icons.check, size: 18),
+              label: Text(l10n.save),
+            ),
           ],
         ),
       ],

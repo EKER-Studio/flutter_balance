@@ -15,13 +15,8 @@ class BmiLegendDialog extends StatelessWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return AlertDialog(
-      title: Row(
-        children: [
-          ExcludeSemantics(child: Icon(Icons.info_outline, color: cs.primary)),
-          const SizedBox(width: 8),
-          Expanded(child: Text(l10n.bmiLegendTitle)),
-        ],
-      ),
+      icon: Icon(Icons.info_outline, color: cs.primary, size: 28),
+      title: Text(l10n.bmiLegendTitle),
       content: SingleChildScrollView(
         child: Column(
           mainAxisSize: MainAxisSize.min,
