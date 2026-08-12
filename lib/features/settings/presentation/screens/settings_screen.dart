@@ -574,7 +574,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             },
             style: FilledButton.styleFrom(
               backgroundColor: errorColor,
-              foregroundColor: Theme.of(context).colorScheme.onError,
+              foregroundColor: Theme.of(ctx).colorScheme.onError,
             ),
             child: Text(l10n.wipeDataButton),
           ),
