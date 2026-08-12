@@ -258,6 +258,13 @@ abstract final class AppTheme {
       ),
       backgroundColor: lightColorScheme.surfaceContainerLow,
     ),
+    snackBarTheme: SnackBarThemeData(
+      backgroundColor: lightColorScheme.secondaryContainer,
+      contentTextStyle: TextStyle(color: lightColorScheme.onSecondaryContainer),
+      actionTextColor: lightColorScheme.primary,
+      behavior: SnackBarBehavior.floating,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+    ),
   );
 
   /// The dark theme [ThemeData].
@@ -347,6 +354,13 @@ abstract final class AppTheme {
         borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
       ),
       backgroundColor: darkColorScheme.surfaceContainerLow,
+    ),
+    snackBarTheme: SnackBarThemeData(
+      backgroundColor: darkColorScheme.secondaryContainer,
+      contentTextStyle: TextStyle(color: darkColorScheme.onSecondaryContainer),
+      actionTextColor: darkColorScheme.primary,
+      behavior: SnackBarBehavior.floating,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
     ),
   );
 }
