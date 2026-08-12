@@ -166,7 +166,29 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      expect(find.text('-5.5 kg to target'), findsOneWidget);
+      expect(find.text('5.5 kg to target'), findsOneWidget);
+    });
+
+    testWidgets('shows goal achieved when target is >= initial weight', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        buildApp(
+          StepTargetWeight(
+            unit: MeasurementUnit.metric,
+            initialWeightKg: 75.5,
+            onNext: (_) {},
+          ),
+        ),
+      );
+
+      await tester.enterText(
+        find.byKey(const Key('target_weight_input')),
+        '80',
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.text('🏆 Goal achieved!'), findsOneWidget);
     });
 
     testWidgets('hides target delta when the input becomes invalid', (

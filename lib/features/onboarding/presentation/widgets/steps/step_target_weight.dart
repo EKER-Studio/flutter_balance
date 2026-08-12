@@ -81,19 +81,23 @@ class _StepTargetWeightState extends State<StepTargetWeight> {
 
   /// Formats the remaining delta (initial weight minus target) in the active
   /// unit, or returns `null` when no initial weight or valid target is set.
-  String? _buildDeltaText(String toTargetLabel) {
+  String? _buildDeltaText(AppLocalizations l10n) {
     final initialWeight = widget.initialWeightKg;
     if (initialWeight == null || initialWeight <= 0) return null;
 
     final targetKg = _parseTargetWeightKg();
     if (targetKg == null) return null;
 
-    final delta = targetKg - initialWeight;
+    if (initialWeight <= targetKg) {
+      return '🏆 ${l10n.goalAchieved}';
+    }
+
+    final distKg = initialWeight - targetKg;
     final formatted = widget.unit == MeasurementUnit.imperial
-        ? kgToLbs(delta).toStringAsFixed(1)
-        : delta.toStringAsFixed(1);
+        ? kgToLbs(distKg).toStringAsFixed(1)
+        : distKg.toStringAsFixed(1);
     final unitSuffix = widget.unit == MeasurementUnit.imperial ? 'lbs' : 'kg';
-    return '$formatted $unitSuffix $toTargetLabel';
+    return '$formatted $unitSuffix ${l10n.toTarget}';
   }
 
   /// Parses the target weight input into kilograms, or `null` when empty or
@@ -151,7 +155,7 @@ class _StepTargetWeightState extends State<StepTargetWeight> {
 
     final isError = _errorText != null;
     final isNextEnabled = !isError;
-    final deltaText = _buildDeltaText(l10n.toTarget);
+    final deltaText = _buildDeltaText(l10n);
 
     final errorOutline = OutlineInputBorder(
       borderRadius: BorderRadius.circular(8),
