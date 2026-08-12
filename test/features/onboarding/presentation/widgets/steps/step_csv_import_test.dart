@@ -176,7 +176,7 @@ void main() {
       );
       expect(find.byKey(const Key('csv_import_retry_button')), findsOneWidget);
 
-      // Retry now succeeds because the fake only throws on the first call.
+      // Subsequent retries succeed as the fake throws only once.
       await tester.tap(find.byKey(const Key('csv_import_retry_button')));
       await tester.pumpAndSettle();
 

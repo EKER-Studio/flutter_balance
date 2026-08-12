@@ -1,0 +1,484 @@
+--- lib/l10n/app_localizations.dart ---
+
+// ignore_for_file: type=lint
+  // Lookup logic when only language code is specified.
+--- lib/l10n/app_localizations_pl.dart ---
+// ignore: unused_import
+
+// ignore_for_file: type=lint
+--- lib/l10n/app_localizations_en.dart ---
+// ignore: unused_import
+
+// ignore_for_file: type=lint
+--- lib/core/database/database_module.dart ---
+
+    // Reuse open instance if present (e.g. during re-init or hot restart)
+
+    // Ensure 256-bit AES key is generated and persisted in secure storage.
+
+    // One-time migration guard: move any legacy database file out of the
+    // way so it can never be opened under the current schema.
+
+      // Re-attempt opening the freshly initialized database after recovery cleanup.
+        // rename() can fail across filesystems/volumes; fall back to copy+delete.
+--- lib/core/utils/field_cipher.dart ---
+
+    // Check if payload includes HMAC-SHA256 (length >= IV + MAC + block size)
+
+    // Fallback for legacy pre-HMAC payload: [16-byte IV] + [Ciphertext]
+--- lib/core/integrations/biometrics/biometric_service.dart ---
+        // Constructed explicitly because the `LocalAuthentication` wrapper of
+        // local_auth 3.x hardcodes `useErrorDialogs: false` and derives
+        // `stickyAuth` from `persistAcrossBackgrounding`, exposing neither.
+--- lib/core/integrations/biometrics/biometric_lock_observer.dart ---
+
+    // Do not re-trigger lock if an authentication dialog is currently open,
+    // just finished, or if the app is already locked behind BiometricShieldScreen.
+
+    // The app went to the background and should be locked.
+    // We do NOT call authenticate() here, because BiometricShieldScreen will
+    // automatically mount when isLocked becomes true, and it handles the auth prompt
+    // when the app resumes.
+--- lib/core/integrations/health/health_service.dart ---
+        // HealthKit is available on every iOS device.
+        // HealthKit intentionally does not disclose READ grants, so the WRITE
+        // grant is the only reliable signal that the app is authorized.
+        // On iOS the plugin reports that the prompt was shown, not the actual
+        // grant, so the result is verified through [hasPermissions].
+        // Required on iOS, where only manual or automatic recording methods
+        // are accepted for weight records.
+--- lib/core/integrations/csv/csv_importer.dart ---
+
+    // Detect delimiter from header row
+          // Try next pattern
+
+      // Fallback for ISO-8601 with time component (e.g. 2024-01-15 07:30 or Garmin 2026-05-30T00:00:00.000)
+
+      // Parse time column if it exists (e.g. Garmin's "Czas")
+          // Check for escaped quote
+--- lib/core/integrations/notifications/notification_service.dart ---
+
+      // Fetch the device's actual local timezone string (e.g. "Europe/Warsaw")
+
+      // Create the Android notification channel explicitly.
+
+      // Request permission on Android 13+.
+        // The SCHEDULE_EXACT_ALARM permission was revoked on Android 12+:
+        // prompt the user to re-grant it once, then fall back to inexact
+        // scheduling so the reminder still fires (possibly a few minutes late)
+        // instead of being lost entirely.
+--- lib/features/weight/data/repositories/isar_weight_repository.dart ---
+        // Drop the cached key so the next attempt re-reads it from secure
+        // storage, which becomes accessible again once the user unlocks the
+        // device and authenticates.
+
+  // Forward references allow the mutually recursive retry closures below.
+        // A clean completion is treated like a disruption: the underlying
+        // stream is expected to stay open while the database is alive.
+--- lib/features/weight/presentation/widgets/add_weight_sheet.dart ---
+
+    // Default to the current time unless a specific time was provided.
+--- lib/features/weight/presentation/bloc/weight_bloc.dart ---
+
+    // Group by date (year-month-day)
+      // The key is taken from grouped.keys, so the lookup always succeeds.
+    // Emit loading state while establishing the new subscription.
+
+    // Emit loading state if this is the first entry (e.g., from onboarding wizard).
+    // This prevents the TodayScreen from flashing the "empty" view while the DB
+    // persists the initial measurement before the reactive stream fires.
+
+      // 1. Pull remote records missing from local database
+
+      // 2. Push local records missing from remote health platform
+        // Run in background to avoid blocking the bloc if there are many entries
+    // Omit dynamic data collections (entries & filteredEntries) from JSON persistence
+    // to prevent redundant disk I/O. Only lightweight user preferences are serialized.
+--- lib/features/statistics/presentation/screens/statistics_screen.dart ---
+
+    // Weekly pace text
+--- lib/features/statistics/presentation/widgets/bmi_chart_card.dart ---
+
+    // Prepare data
+
+    // Padding for Y axis
+    // Use the locale dynamically
+--- lib/features/statistics/presentation/widgets/statistics_shimmer_skeleton.dart ---
+                // Habit Summary Cards Skeleton (2 cards side by side)
+
+                // Hero Trend Card Skeleton
+
+                // Key Metrics Bento Grid Skeleton (2x2)
+--- lib/features/settings/presentation/screens/settings_screen.dart ---
+          // Health sync was just activated: pull the weight history recorded
+          // in Apple Health / Health Connect (e.g. by a smart scale) into the
+          // local database. The transition only fires when the permission
+          // request succeeded, because [AppSettingsState.isHealthSyncEnabled]
+          // is set to true only after the OS permission is granted.
+            // Health permission denied: show a snackbar whose action redirects
+            // the user to the OS health permissions page, where the grant can be
+            // made from the system settings.
+              // Notification permission denied: show a snackbar whose action
+              // redirects the user to the OS app settings page.
+      // Guard: verify a device credential (biometric or OS PIN/pattern/
+      // password) is available before prompting.
+        // Biometrics became unavailable between the availability check and
+        // the authentication call (e.g. user deleted fingerprints mid-flow).
+        // User canceled or failed — do not enable the lock.
+--- lib/features/settings/presentation/bloc/app_settings_bloc.dart ---
+      // Reset the transient denied flag so a subsequent denial produces a
+      // distinct state; otherwise equatable de-duplication would swallow all
+      // later denial events and the UI Snackbar would never show again.
+--- lib/features/settings/presentation/bloc/app_settings_state.dart ---
+      // Transient flags: never restored from storage.
+      // Transient flags: never restored from storage.
+--- lib/features/calendar/presentation/screens/calendar_screen.dart ---
+      // Focus month if selected date is in a different month
+
+                  // Filter entries for the selected day
+                                    // 6 rows, 5 main-axis spacings of 8, plus a small buffer.
+--- lib/features/calendar/presentation/widgets/calendar_shimmer_skeleton.dart ---
+                // Top Calendar Card Skeleton
+                        // Month Header Skeleton
+                        // Weekday Headers Skeleton
+                        // Grid 7x5 Skeleton
+                // Day Title Skeleton
+                // Lower Card Skeleton
+--- lib/features/calendar/presentation/widgets/calendar_grid.dart ---
+
+    // DateTime.weekday: Mon=1, Sun=7. Calculate offset for Monday-first calendar.
+
+    // Group entries for this month by day
+--- lib/features/calendar/presentation/widgets/calendar_day_entries_card.dart ---
+
+    // Check if target weight was reached on this day
+        // Goal Achievement Banner
+
+        // List of Entries for this day
+                    // Reserved: tap-to-edit entry handling.
+--- lib/features/calendar/presentation/widgets/calendar_day_cell.dart ---
+                        // Indicator dots for entries
+--- lib/features/calendar/presentation/widgets/calendar_weekday_header.dart ---
+    // Standard 7 days starting from Monday (e.g. 2026-01-05 was Monday)
+--- lib/features/dashboard/presentation/widgets/today_shimmer_skeleton.dart ---
+                // Health Summary Card Skeleton
+
+                // Weight Trend Chart Card Skeleton
+
+                // Latest Measurement Card Skeleton
+--- lib/features/dashboard/presentation/widgets/health_summary_card.dart ---
+
+    // Progress maps the remaining difference onto a fixed 20kg / 40lb reference
+    // range: reaching the target yields 100%, exceeding the range floors at 0%.
+    // Floor progress at 5% so the bar stays visible.
+--- lib/features/onboarding/presentation/screens/onboarding_wizard_screen.dart ---
+
+          // UX MATH: Welcome screen is step 0. Actual steps start from index 1.
+--- lib/features/onboarding/presentation/widgets/steps/step_health_sync.dart ---
+        // Edge-triggered on the transient denial flag: the bloc resets the
+        // flag immediately after each denial, so only the transition is
+        // observable here.
+          // Clears the denial warning once sync actually becomes active.
+                  // Title
+                  // Subtitle
+                  // Permission denied warning
+--- lib/features/onboarding/presentation/widgets/steps/step_initial_weight.dart ---
+
+    // Request focus after the step's frame renders so the keyboard opens
+    // exactly when the step becomes visible, never while it is offstage.
+--- lib/features/onboarding/presentation/widgets/steps/step_units_height.dart ---
+    // Defer focus request past the current frame so setState completes first.
+--- lib/features/onboarding/presentation/widgets/steps/step_target_weight.dart ---
+
+    // Request focus after the step's frame renders so the keyboard opens
+    // exactly when the step becomes visible, never while it is offstage.
+--- lib/features/onboarding/presentation/widgets/steps/step_reminder_notification.dart ---
+              // Title
+              // Subtitle
+              // Notification toggle card
+              // Reminder Time row (visible/enabled only when notifications are ON)
+              // Permission denied warning
+              // Bottom buttons
+--- lib/main.dart ---
+
+  // Configure transparent system overlays to match splash & theme background seamlessly.
+
+    // Remove the splash manually when storage initialization fails.
+    // Crash logging must never throw.
+--- lib/app.dart ---
+        // Fast-path initialization for tests.
+
+      // 1. Initialize Isar
+
+      // 2. Notifications — evaluate exact alarm scheduling availability; the
+      // SCHEDULE_EXACT_ALARM permission can be revoked by the user on Android
+      // 12+ at any time, which would otherwise silently break daily reminders.
+
+      // 3. Health — the plugin requires configure() before any other API call.
+      // A failure (e.g. device_info channel error on devices without health
+      // platform support) must not block app startup; every HealthService call
+      // already degrades gracefully, so the plugin is simply left unconfigured.
+
+      // 4. Biometrics — canAuthenticate() also covers OS PIN/pattern/password
+      // fallback, not just enrolled biometric hardware (see
+      // BiometricService.authenticate, which already supports it).
+      // Drop the native splash screen regardless of outcome so Flutter can render
+      // the fake splash, the error screen, or the app.
+          // Pull in records recorded in Apple Health / Health Connect (e.g.
+          // by a smart scale) since the last session when the user already
+          // enabled health sync; the pull itself is gated inside the BLoC.
+--- lib/presentation/screens/app_splash_screen.dart ---
+    // Scaffold automatically uses Theme.of(context).colorScheme.surface as background.
+--- lib/presentation/widgets/weight_chart.dart ---
+
+    // Sort entries by date (repo returns descending, reverse for ascending chart)
+
+    // Proportional Y-axis padding: 5% of range, minimum unit-aware floor.
+--- test/core/utils/field_cipher_test.dart ---
+
+      // Flip a bit in the ciphertext section
+--- test/core/integrations/biometrics/biometric_lock_observer_test.dart ---
+
+      // Verify initialization does not throw
+
+      // Emit stream update
+
+      // Dispose cleanly
+
+        // Trigger resumed state
+--- test/core/integrations/health/health_service_test.dart ---
+
+// Register the PlatformDetector mock.
+
+    // Configuration must never throw in tests.
+
+    // Default to iOS for tests that don't specify otherwise
+        // Simulate iOS platform
+      // Simulate Android platform with Health Connect available
+        // Simulate Android platform with Health Connect unavailable
+      // Simulate Android platform with Health Connect check throwing
+--- test/core/integrations/csv/csv_exporter_test.dart ---
+
+      // Cleanup
+--- test/core/integrations/csv/csv_importer_test.dart ---
+      // ID is not stored in WeightEntry (it's auto-assigned)
+        // European CSV uses semicolons when comma is the decimal separator
+
+      // Export
+
+      // Import
+--- test/main_splash_test.dart ---
+
+        // preserve() holds the first frame on screen.
+
+        // remove() releases it so the first frame can render.
+--- test/features/weight/data/isar_weight_repository_test.dart ---
+      // Ignore initialization errors so tests can skip gracefully when native binaries are unavailable.
+
+        // Verify physical disk/Isar model contains unreadable Base64 ciphertext
+
+        // Verify read returns original plaintext values
+
+        // The persisted model must hold ciphertext that FieldCipher decrypts
+        // back to exactly the plaintext values handed to the repository.
+
+        // Reading via the repository must restore the original entries verbatim.
+
+        // Attempt reading with Key B
+
+      // Persist an entry while the key is still available, so the watch phase
+      // has encrypted data to decrypt once the keystore becomes accessible.
+
+      // First emission fails because the encryption key is inaccessible.
+
+      // The key becomes available again; the unlock signal must trigger an
+      // immediate re-subscribe instead of waiting out the backoff.
+
+      // Recovery happened well before the 30s backoff would have elapsed.
+--- test/features/weight/domain/entities/weight_entry_test.dart ---
+        // While not realistic for body weight, this is allowed by the entity
+
+        // Const values cannot be modified after creation.
+--- test/features/weight/presentation/bloc/weight_bloc_test.dart ---
+          // Loop prevention: the import path never mirrors back to Health.
+              // Duplicate of existing1: same second-precision timestamp and
+              // weight, only the millisecond component differs.
+              // Duplicate of existing2: exact timestamp and weight.
+              // Genuinely new measurement.
+--- test/features/statistics/presentation/screens/statistics_screen_test.dart ---
+      // Repository returns entries in descending order (newest first)
+      // Use filteredEntries: [] to avoid fl_chart rendering issues in test env
+
+      // Check lowest weight (74.0 kg)
+      // Check highest weight (80.0 kg)
+      // Check total progress banner (-6.0 kg)
+
+      // Switch to imperial units
+
+      // 70.0 kg is ~154.3 lb
+
+    // 5 entries over 5 days -> 100%
+
+      // Composite card titles & metrics
+--- test/features/statistics/presentation/widgets/bmi_chart_card_test.dart ---
+      // BMI = 73 / 1.75^2 = 23.8 -> Normal
+
+      // BMI = 49 / 1.75^2 = 16.0
+
+      // BMI = 85 / 1.75^2 = 27.8
+
+      // BMI = 102 / 1.75^2 = 33.3
+--- test/features/statistics/presentation/widgets/statistics_shimmer_skeleton_test.dart ---
+
+    // 2 habit summary cards + 1 hero trend card + 4 bento grid cards.
+--- test/features/settings/presentation/screens/settings_screen_test.dart ---
+
+      // Enter invalid height (e.g. 1 cm)
+
+      // Enter invalid target weight (e.g. 5 kg)
+
+          // The disabled switch is replaced by a tappable tile.
+--- test/features/settings/presentation/bloc/bmi_calculator_test.dart ---
+        // BMI = 70 / (1.75 * 1.75) = 70 / 3.0625 = 22.857...
+        // BMI = 80 / (1.80 * 1.80) = 80 / 3.24 = 24.691...
+        // BMI = 60 / (1.70 * 1.70) = 60 / 2.89 = 20.761...
+        // BMI = 90 / (1.75 * 1.75) = 90 / 3.0625 = 29.387...
+        // BMI = 50 / (1.75 * 1.75) = 50 / 3.0625 = 16.326...
+        // BMI = 100 / (2.00 * 2.00) = 100 / 4.0 = 25.0
+        // BMI = 1 / 3.0625 = 0.3265...
+        // BMI = 300 / 3.0625 = 97.959...
+        // With height = 0.001cm = 0.00001m, BMI = 70 / 1e-10 = 7e11.
+        // Very large but finite; mathematically valid.
+        // After fix: zero height returns BMI = 0.0, which is underweight
+        // Double the height should quarter the BMI
+        // 70kg at 175cm: 70 / 3.0625 = 22.857
+        // 100kg at 202.37cm: 100 / 4.0954 = 24.42
+        // 90 / 4 = 22.5
+      // If user sets target = 75kg, imperial should show 165.3 lbs
+--- test/features/settings/presentation/bloc/app_settings_bloc_test.dart ---
+          // The transient denied flag is immediately reset so a subsequent
+          // denial can be re-emitted instead of being swallowed by equatable.
+--- test/features/navigation/presentation/screens/main_navigation_screen_test.dart ---
+
+      // Default active tab is Today
+
+      // Tap Calendar tab
+
+      // Tap Statistics tab
+
+      // Tap Settings tab
+
+      // Tap Today tab back
+--- test/features/dashboard/presentation/widgets/today_shimmer_skeleton_test.dart ---
+
+    // Advance animation clock
+--- test/features/dashboard/presentation/widgets/health_summary_card_test.dart ---
+
+    // Tapping the remaining-weight text resolves to its InkWell row.
+--- test/features/onboarding/presentation/screens/onboarding_step_widgets_test.dart ---
+      // Flush the delayed initial-focus request scheduled in initState.
+      // Flush the delayed initial-focus request scheduled in initState.
+      // Flush the delayed initial-focus request scheduled in initState.
+      // Flush the delayed initial-focus request scheduled in initState.
+--- test/features/onboarding/presentation/screens/onboarding_wizard_screen_test.dart ---
+    // Step 1 (Welcome) -> Next
+
+    // Step 2 (Units & Height) -> Next
+
+      // Step indicator should NOT be visible on the Welcome screen.
+
+      // Step 1 (Welcome) -> Next
+
+      // Step 2 (Units & Height) -> Next
+
+      // Height is synced to the weight BLoC so AddWeight in step 4 does not
+      // get rejected with a heightNotSet error on a fresh install.
+
+      // Step 3 (CSV Import) -> Skip
+
+      // Step 4 (Initial Weight) -> Next
+
+      // Initial weight is logged before the wizard completes.
+
+      // Step 5 (Target Weight) -> Next (Leave empty for optional target weight)
+
+      // Step 6 (Daily Reminder) -> Next (Skip/Next reminder)
+
+      // Step 7 (Health Sync) -> Next (skip by not enabling the switch)
+
+      // Step 8 (Biometric Lock) -> Next (Skip/Next biometric lock)
+
+      // Advance to Step 4 (Initial Weight)
+
+      // Back to Step 3 (CSV Import)
+
+      // Back to Step 2 (Units & Height)
+
+        // Advance to Step 3 (CSV Import)
+
+        // Step 3 (CSV Import) -> pick file -> continue
+
+        // Step 4 (Initial Weight) shows the latest entry pre-filled.
+
+        // Confirm without editing logs the pre-filled weight.
+
+      // Advance to Step 3 (CSV Import)
+
+      // Step 3 (CSV Import) -> Skip
+
+      // Step 4 (Initial Weight) starts blank with Next disabled.
+
+      // Ensure the welcome text is visible on start
+
+        // Step 1 (Welcome) -> Next
+
+        // Should not navigate to step 3
+
+        // Should display the validation error text
+
+      // Navigate to step 3 (CSV Import)
+
+      // Skip the optional CSV import and advance to step 4 (Initial Weight)
+
+      // Log the initial weight and advance to step 5 (Target Weight)
+
+      // Skip the optional target weight and advance to step 6 (Daily Reminder)
+
+      // Advance from step 6 (Daily Reminder) to step 7 (Health Sync)
+
+      // Step 7 (Health Sync) is the final step without biometrics: pressing
+      // next without enabling the switch finishes the wizard.
+--- test/features/onboarding/presentation/widgets/steps/step_csv_import_test.dart ---
+
+      // Retry now succeeds because the fake only throws on the first call.
+--- test/features/onboarding/presentation/widgets/steps/step_initial_weight_test.dart ---
+
+      // 150 lbs is roughly 68.0388 kg
+
+      // Next is immediately enabled with the pre-filled value.
+      // 68 kg is roughly 149.9 lbs.
+--- test/features/onboarding/presentation/widgets/steps/step_health_sync_test.dart ---
+
+    // TEMPORARY DIAGNOSTIC: reflects the debug bypass of the availability
+    // gate in AppSettingsBloc; restore together with the gate.
+--- test/widget_test.dart ---
+      // Flush the delayed initial-focus request of the first step.
+
+      // 1. Arrange: Start with completed onboarding
+
+      // Ensure we are on the main screen
+
+      // 2. Act: Reset app settings (simulating "Wipe Data")
+      // Flush the delayed initial-focus request of the first step.
+
+      // 3. Assert: Verify we are back on the Onboarding Screen
+        // Flush the delayed initial-focus request of the first step.
+        // Flush the delayed initial-focus request of the first step.
+        // Flush the delayed initial-focus request of the first step.
+
+        // Background and resume the app; the lifecycle observer must pull
+        // again, importing the entry a second time.
+        // Counts the startup import and the resume import (mocktail counts
+        // only unverified calls, so no intermediate verify() may precede).
+--- test/presentation/theme/app_theme_test.dart ---
+      // The light primary color is a hand-tuned variant of the brand anchor.

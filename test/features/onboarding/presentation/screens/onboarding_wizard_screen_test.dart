@@ -88,11 +88,11 @@ void main() {
   /// Advances from step 1 (Welcome) to step 2 (Units & Height) to step 3
   /// (CSV Import).
   Future<void> pumpToStep3(WidgetTester tester) async {
-    // Step 1 (Welcome) -> Next
+    // Advance from Step 1 (Welcome)
     await tester.tap(find.text('Get Started'));
     await tester.pumpAndSettle();
 
-    // Step 2 (Units & Height) -> Next
+    // Advance from Step 2 (Units & Height)
     await tester.enterText(find.byKey(const Key('height_cm_input')), '170');
     await tester.pumpAndSettle();
     await tester.tap(find.text('Next'));
@@ -113,7 +113,7 @@ void main() {
       await tester.pumpWidget(buildSubject());
       await tester.pumpAndSettle();
 
-      // Step indicator should NOT be visible on the Welcome screen.
+      // Hide step indicator on the Welcome screen.
       expect(find.text('Step 1 of 8'), findsNothing);
       expect(find.text('Welcome to Balance'), findsOneWidget);
       expect(find.byIcon(Icons.arrow_back), findsNothing);
@@ -128,14 +128,14 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      // Step 1 (Welcome) -> Next
+      // Advance from Step 1 (Welcome)
       await tester.tap(find.text('Get Started'));
       await tester.pumpAndSettle();
 
       expect(find.text('Step 1 of 7'), findsOneWidget);
       expect(find.text('Units & Height'), findsOneWidget);
 
-      // Step 2 (Units & Height) -> Next
+      // Advance from Step 2 (Units & Height)
       await tester.enterText(find.byKey(const Key('height_cm_input')), '170');
       await tester.pumpAndSettle();
       await tester.tap(find.text('Next'));
@@ -145,8 +145,8 @@ void main() {
       expect(find.text('Import existing history? (Optional)'), findsOneWidget);
       expect(find.byIcon(Icons.arrow_back), findsOneWidget);
 
-      // Height is synced to the weight BLoC so AddWeight in step 4 does not
-      // get rejected with a heightNotSet error on a fresh install.
+      // Sync height to WeightBloc to prevent heightNotSet errors
+      // during initial weight entry.
       verify(
         () => weightBloc.add(any(that: isA<UpdateUserHeight>())),
       ).called(1);
@@ -167,7 +167,7 @@ void main() {
       await tester.tap(find.text('Next'));
       await tester.pumpAndSettle();
 
-      // Initial weight is logged before the wizard completes.
+      // Log initial weight before wizard completion.
       verify(
         () => weightBloc.add(
           any(
@@ -333,7 +333,7 @@ void main() {
         await tester.pumpWidget(buildSubject());
         await tester.pumpAndSettle();
 
-        // Step 1 (Welcome) -> Next
+        // Advance from Step 1 (Welcome)
         await tester.tap(find.text('Get Started'));
         await tester.pumpAndSettle();
 

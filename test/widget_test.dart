@@ -90,7 +90,7 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      // Ensure we are on the main screen
+      // Verify main screen navigation.
       expect(find.byType(NavigationBar), findsOneWidget);
 
       // 2. Act: Reset app settings (simulating "Wipe Data")

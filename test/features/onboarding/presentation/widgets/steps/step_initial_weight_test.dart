@@ -193,7 +193,7 @@ void main() {
       final field = tester.widget<TextField>(find.byType(TextField));
       expect(field.controller!.text, '86.0');
 
-      // Next is immediately enabled with the pre-filled value.
+      // Enable Next immediately with the pre-filled value.
       final button = tester.widget<FilledButton>(
         find.widgetWithText(FilledButton, 'Next'),
       );
