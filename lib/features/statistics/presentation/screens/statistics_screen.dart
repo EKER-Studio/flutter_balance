@@ -235,17 +235,19 @@ class StatisticsScreen extends StatelessWidget {
                     Container(
                       padding: const EdgeInsets.symmetric(
                         horizontal: 12,
-                        vertical: 4,
+                        vertical: 6,
                       ),
                       decoration: BoxDecoration(
-                        color: cs.primaryContainer,
+                        color: Colors.green.withValues(alpha: 0.15),
                         borderRadius: BorderRadius.circular(20),
                       ),
                       child: Text(
                         statusBadge,
                         style: Theme.of(context).textTheme.labelMedium
                             ?.copyWith(
-                              color: cs.onPrimaryContainer,
+                              color: Theme.of(context).brightness == Brightness.light
+                                  ? Colors.green.shade800
+                                  : Colors.green.shade300,
                               fontWeight: FontWeight.bold,
                             ),
                       ),

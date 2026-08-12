@@ -79,7 +79,7 @@ void main() {
       expect(find.text('Required column format:'), findsOneWidget);
       expect(
         find.text(
-          'ID, Date, Time (opt), Weight (kg), Note\n(lub: Data; Czas; Waga (kg))',
+          'ID, Date, Time (opt), Weight (kg), Note\n(or: Data; Czas; Waga (kg))',
         ),
         findsOneWidget,
       );
