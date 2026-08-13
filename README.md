@@ -142,7 +142,7 @@ dart run flutter_native_splash:create
 Run full verification suite (over 500+ tests):
 
 ```bash
-./before_push.sh
+./scripts/before_push.sh
 ```
 
 Or execute unit/widget tests directly:
