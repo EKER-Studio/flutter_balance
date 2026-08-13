@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:balance/l10n/app_localizations.dart';
-import 'package:balance/presentation/core/clamped_layout.dart';
+import 'package:balance/core/presentation/core/clamped_layout.dart';
 
 /// Welcome/landing step displayed as the very first screen of the onboarding
 /// wizard. Sets user expectations and resolves initial keyboard focus issues

@@ -5,7 +5,7 @@ import 'package:balance/l10n/app_localizations.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_bloc.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_event.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_state.dart';
-import 'package:balance/presentation/core/clamped_layout.dart';
+import 'package:balance/core/presentation/core/clamped_layout.dart';
 
 /// Optional onboarding step that lets new users connect Apple Health /
 /// Google Health Connect so weight measurements sync automatically.

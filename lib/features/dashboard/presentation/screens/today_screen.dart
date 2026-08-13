@@ -17,9 +17,9 @@ import 'package:balance/features/dashboard/presentation/widgets/today_shimmer_sk
 import 'package:balance/l10n/app_localizations.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_bloc.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_state.dart';
-import 'package:balance/presentation/core/clamped_layout.dart';
-import 'package:balance/presentation/widgets/app_top_bar.dart';
-import 'package:balance/presentation/widgets/state_message_card.dart';
+import 'package:balance/core/presentation/core/clamped_layout.dart';
+import 'package:balance/core/presentation/widgets/app_top_bar.dart';
+import 'package:balance/core/presentation/widgets/state_message_card.dart';
 
 /// A screen displaying the daily summary, BMI, goal progress, and weight trend.
 class TodayScreen extends StatelessWidget {

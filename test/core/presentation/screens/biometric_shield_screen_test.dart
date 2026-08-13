@@ -6,7 +6,7 @@ import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:balance/l10n/app_localizations.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_bloc.dart';
-import 'package:balance/presentation/screens/biometric_shield_screen.dart';
+import 'package:balance/core/presentation/screens/biometric_shield_screen.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class MockHydratedStorage extends Mock implements HydratedStorage {}

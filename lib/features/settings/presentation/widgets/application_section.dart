@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:balance/l10n/app_localizations.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_state.dart';
-import 'package:balance/presentation/utils/app_theme_mode_localizer.dart';
+import 'package:balance/core/presentation/utils/app_theme_mode_localizer.dart';
 import 'package:balance/features/weight/presentation/utils/measurement_unit_localizer.dart';
 import 'custom_settings_tile.dart';
 import 'custom_settings_toggle.dart';

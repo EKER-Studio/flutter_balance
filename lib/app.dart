@@ -17,12 +17,12 @@ import 'package:balance/features/settings/presentation/bloc/app_settings_bloc.da
 import 'package:balance/features/settings/presentation/bloc/app_settings_event.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_state.dart';
 import 'package:balance/features/settings/presentation/bloc/app_theme_mode.dart';
-import 'package:balance/presentation/screens/app_initialization_error_screen.dart';
-import 'package:balance/presentation/screens/app_splash_screen.dart';
-import 'package:balance/presentation/screens/biometric_shield_screen.dart';
+import 'package:balance/core/presentation/screens/app_initialization_error_screen.dart';
+import 'package:balance/core/presentation/screens/app_splash_screen.dart';
+import 'package:balance/core/presentation/screens/biometric_shield_screen.dart';
 import 'package:balance/features/navigation/presentation/screens/main_navigation_screen.dart';
 import 'package:balance/features/onboarding/presentation/screens/onboarding_wizard_screen.dart';
-import 'package:balance/presentation/theme/app_theme.dart';
+import 'package:balance/core/presentation/theme/app_theme.dart';
 
 /// Root widget of the Balance application.
 class App extends StatefulWidget {

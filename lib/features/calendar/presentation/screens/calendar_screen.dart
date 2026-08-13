@@ -17,8 +17,8 @@ import 'package:balance/features/calendar/presentation/widgets/calendar_shimmer_
 import 'package:balance/features/calendar/presentation/widgets/calendar_weekday_header.dart';
 import 'package:balance/l10n/app_localizations.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_bloc.dart';
-import 'package:balance/presentation/widgets/app_top_bar.dart';
-import 'package:balance/presentation/core/clamped_layout.dart';
+import 'package:balance/core/presentation/widgets/app_top_bar.dart';
+import 'package:balance/core/presentation/core/clamped_layout.dart';
 
 /// A screen providing a monthly view with measurement status indicators.
 ///

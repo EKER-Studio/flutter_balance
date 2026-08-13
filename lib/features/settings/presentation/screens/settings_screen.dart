@@ -20,10 +20,10 @@ import 'package:balance/features/settings/presentation/bloc/app_settings_bloc.da
 import 'package:balance/features/settings/presentation/bloc/app_settings_event.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_state.dart';
 import 'package:balance/features/settings/presentation/bloc/app_theme_mode.dart';
-import 'package:balance/presentation/utils/app_theme_mode_localizer.dart';
+import 'package:balance/core/presentation/utils/app_theme_mode_localizer.dart';
 import 'package:balance/core/models/measurement_unit.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:balance/presentation/widgets/app_top_bar.dart';
+import 'package:balance/core/presentation/widgets/app_top_bar.dart';
 import 'package:balance/features/settings/presentation/widgets/target_weight_dialog.dart';
 import 'dart:io';
 
