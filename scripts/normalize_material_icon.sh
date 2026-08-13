@@ -32,18 +32,18 @@ PADDING = 128
 SOURCE_SIZE = 960
 SCALE = (TARGET_SIZE - 2 * PADDING) / SOURCE_SIZE
 
+# ------------------------------------------------------------
+# Read source SVG
+# ------------------------------------------------------------
+
 tree = ET.parse(input_file)
 root = tree.getroot()
 
 # ------------------------------------------------------------
-# Walidacja Material Icons
+# Validate Material Icon viewBox
 #
-# Google Material Icons używają układu:
-#
-#   viewBox="0 -960 960 960"
-#
-# Nie wymagamy identycznego formatowania tekstowego,
-# tylko tych samych wartości numerycznych.
+# Expected:
+#   0 -960 960 960
 # ------------------------------------------------------------
 
 view_box_raw = root.get("viewBox", "")
@@ -52,7 +52,7 @@ view_box = view_box_raw.split()
 if len(view_box) != 4:
     raise SystemExit(
         f"❌ Nieprawidłowy viewBox: {view_box_raw!r}\n"
-        '   Oczekiwano geometrii: 0 -960 960 960'
+        "   Oczekiwano: 0 -960 960 960"
     )
 
 try:
@@ -66,11 +66,11 @@ if (x, y, width, height) != (0, -960, 960, 960):
     raise SystemExit(
         "❌ To nie wygląda na surową ikonę Material Icons.\n"
         f"   viewBox: {view_box_raw!r}\n"
-        "   Oczekiwano geometrii: 0 -960 960 960"
+        "   Oczekiwano: 0 -960 960 960"
     )
 
 # ------------------------------------------------------------
-# Sprawdzenie zawartości
+# Validate content
 # ------------------------------------------------------------
 
 children = list(root)
@@ -79,13 +79,12 @@ if not children:
     raise SystemExit("❌ SVG nie zawiera żadnych elementów.")
 
 # ------------------------------------------------------------
-# Nowy canvas 1024×1024
+# Create normalized SVG
 # ------------------------------------------------------------
 
 new_root = ET.Element(
-    "svg",
+    "{http://www.w3.org/2000/svg}svg",
     {
-        "xmlns": "http://www.w3.org/2000/svg",
         "width": str(TARGET_SIZE),
         "height": str(TARGET_SIZE),
         "viewBox": f"0 0 {TARGET_SIZE} {TARGET_SIZE}",
@@ -93,53 +92,92 @@ new_root = ET.Element(
 )
 
 # ------------------------------------------------------------
-# Material Icons:
+# Preserve visual properties from source SVG.
 #
+# In particular:
+#   fill
+#   stroke
+#   stroke-width
+#   opacity
+#   fill-rule
+#   clip-rule
+# etc.
+#
+# We intentionally do NOT modify them.
+# ------------------------------------------------------------
+
+PRESENTATION_ATTRIBUTES = {
+    "fill",
+    "fill-rule",
+    "clip-rule",
+    "stroke",
+    "stroke-width",
+    "stroke-linecap",
+    "stroke-linejoin",
+    "stroke-miterlimit",
+    "stroke-dasharray",
+    "stroke-dashoffset",
+    "stroke-opacity",
+    "fill-opacity",
+    "opacity",
+    "color",
+}
+
+for attribute in PRESENTATION_ATTRIBUTES:
+    value = root.get(attribute)
+    if value is not None:
+        new_root.set(attribute, value)
+
+# ------------------------------------------------------------
+# Geometry
+#
+# Original:
 #   960 × 960
 #
-# Docelowo:
-#
+# Target:
 #   768 × 768
 #
 # Padding:
+#   128px on every side
 #
-#   (1024 - 768) / 2 = 128px
+# Material coordinates:
+#   Y = -960 ... 0
 #
-# translate(0, 960) przenosi oryginalny układ
-# Y=-960..0 do standardowego układu SVG.
+# We map them directly into:
+#   Y = 128 ... 896
+#
+# Equivalent to:
+#   translate(128, 896) scale(0.8)
 # ------------------------------------------------------------
 
 group = ET.SubElement(
     new_root,
-    "g",
+    "{http://www.w3.org/2000/svg}g",
     {
         "transform": (
-            f"translate({PADDING}, {PADDING}) "
-            f"scale({SCALE:g}) "
-            f"translate(0, {SOURCE_SIZE:g})"
+            f"translate({PADDING}, {TARGET_SIZE - PADDING}) "
+            f"scale({SCALE:g})"
         )
     },
 )
 
 # ------------------------------------------------------------
-# Zachowujemy zawartość SVG 1:1.
+# Preserve source elements exactly.
 #
-# NIE zmieniamy:
-#   - fill
-#   - stroke
-#   - opacity
-#   - path
-#   - innych atrybutów
+# No changes to:
+#   path
+#   fill
+#   stroke
+#   opacity
+#   etc.
 # ------------------------------------------------------------
 
 for child in children:
     group.append(child)
 
 # ------------------------------------------------------------
-# Zapis
+# Write valid SVG
 # ------------------------------------------------------------
-
-ET.register_namespace("", "http://www.w3.org/2000/svg")
 
 ET.ElementTree(new_root).write(
     output_file,
