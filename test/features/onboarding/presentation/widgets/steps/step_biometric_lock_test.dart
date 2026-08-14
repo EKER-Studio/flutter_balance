@@ -28,8 +28,9 @@ class MutableLocalAuthPlatform extends LocalAuthPlatform {
   Future<bool> isDeviceSupported() async => deviceSupported;
 
   @override
-  Future<List<BiometricType>> getEnrolledBiometrics() async =>
-      const [BiometricType.fingerprint];
+  Future<List<BiometricType>> getEnrolledBiometrics() async => const [
+    BiometricType.fingerprint,
+  ];
 
   @override
   Future<bool> authenticate({
@@ -127,7 +128,10 @@ void main() {
         find.byKey(const Key('biometric_step_switch')),
       );
       expect(switchTile.onChanged, isNull);
-      expect(find.text('Biometrics not available on this device'), findsOneWidget);
+      expect(
+        find.text('Biometrics not available on this device'),
+        findsOneWidget,
+      );
     });
 
     testWidgets('enables the lock after a successful authentication', (
@@ -143,10 +147,7 @@ void main() {
 
       expect(settingsBloc.state.isBiometricLockEnabled, isTrue);
       expect(platform.authenticateCalls, 1);
-      expect(
-        find.byKey(const Key('biometric_step_switch')),
-        findsOneWidget,
-      );
+      expect(find.byKey(const Key('biometric_step_switch')), findsOneWidget);
     });
 
     testWidgets('shows a failure snackbar when authentication is canceled', (

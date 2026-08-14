@@ -49,9 +49,7 @@ void main() {
       expect(switchWidget.value, isTrue);
     });
 
-    testWidgets('toggling calls onChanged with the new value', (
-      tester,
-    ) async {
+    testWidgets('toggling calls onChanged with the new value', (tester) async {
       bool? received;
       await tester.pumpWidget(
         buildTestWidget(value: false, onChanged: (v) => received = v),
@@ -70,14 +68,12 @@ void main() {
       expect(switchWidget.onChanged, isNull);
     });
 
-    testWidgets('exposes toggled semantics matching the value', (
-      tester,
-    ) async {
+    testWidgets('exposes toggled semantics matching the value', (tester) async {
       await tester.pumpWidget(buildTestWidget(value: true));
 
-      final semantics = tester.getSemantics(
-        find.bySemanticsLabel('Daily Reminder').first,
-      ).getSemanticsData();
+      final semantics = tester
+          .getSemantics(find.bySemanticsLabel('Daily Reminder').first)
+          .getSemanticsData();
       expect(semantics.flagsCollection.isToggled, Tristate.isTrue);
     });
 
@@ -88,7 +84,10 @@ void main() {
         buildTestWidget(value: false, sectionLabel: 'Application'),
       );
 
-      expect(find.bySemanticsLabel('Application, Daily Reminder'), findsOneWidget);
+      expect(
+        find.bySemanticsLabel('Application, Daily Reminder'),
+        findsOneWidget,
+      );
     });
 
     testWidgets('shows a focus ring while focused and removes it on blur', (

@@ -472,140 +472,144 @@ void main() {
       );
     });
 
-    test('corrupt stored key string maps to unexpected-error exceptions',
-        () async {
-      if (isar == null) {
-        markTestSkipped(
-          'Isar native library not available in this environment',
-        );
-        return;
-      }
-      when(
-        () => mockSecureStorage.read(key: 'isar_encryption_key'),
-      ).thenAnswer((_) async => 'not-valid-base64!!');
-
-      final repo = IsarWeightRepository(
-        isar: isar!,
-        secureStorage: mockSecureStorage,
-      );
-
-      expect(
-        () => repo.getAllEntries(),
-        throwsA(
-          isA<WeightDatabaseFailure>().having(
-            (e) => e.type,
-            'type',
-            WeightErrorType.readFailed,
-          ),
-        ),
-      );
-      expect(
-        () => repo.addEntry(
-          WeightEntry(weightKg: 70.0, dateTime: DateTime(2025, 7, 1)),
-        ),
-        throwsA(
-          isA<WeightDatabaseFailure>().having(
-            (e) => e.type,
-            'type',
-            WeightErrorType.writeFailed,
-          ),
-        ),
-      );
-      expect(
-        () => repo.bulkImportEntries([
-          WeightEntry(weightKg: 70.0, dateTime: DateTime(2025, 7, 1)),
-        ]),
-        throwsA(
-          isA<WeightDatabaseFailure>().having(
-            (e) => e.type,
-            'type',
-            WeightErrorType.writeFailed,
-          ),
-        ),
-      );
-    });
-
-    test('operations on a closed database map IsarError to domain exceptions',
-        () async {
-      if (isar == null) {
-        markTestSkipped(
-          'Isar native library not available in this environment',
-        );
-        return;
-      }
-      final closedDir = Directory.systemTemp.createTempSync('isar_closed_');
-      addTearDown(() {
-        if (closedDir.existsSync()) {
-          closedDir.deleteSync(recursive: true);
+    test(
+      'corrupt stored key string maps to unexpected-error exceptions',
+      () async {
+        if (isar == null) {
+          markTestSkipped(
+            'Isar native library not available in this environment',
+          );
+          return;
         }
-      });
-      final closedIsar = await Isar.open(
-        [WeightEntryModelSchema],
-        directory: closedDir.path,
-        name: 'isar_repo_fail_test',
-        inspector: false,
-      );
-      await closedIsar.close();
-      final repo = IsarWeightRepository(
-        isar: closedIsar,
-        encryptionKey: testKeyA,
-      );
+        when(
+          () => mockSecureStorage.read(key: 'isar_encryption_key'),
+        ).thenAnswer((_) async => 'not-valid-base64!!');
 
-      expect(
-        () => repo.getAllEntries(),
-        throwsA(
-          isA<WeightDatabaseFailure>().having(
-            (e) => e.type,
-            'type',
-            WeightErrorType.readFailed,
+        final repo = IsarWeightRepository(
+          isar: isar!,
+          secureStorage: mockSecureStorage,
+        );
+
+        expect(
+          () => repo.getAllEntries(),
+          throwsA(
+            isA<WeightDatabaseFailure>().having(
+              (e) => e.type,
+              'type',
+              WeightErrorType.readFailed,
+            ),
           ),
-        ),
-      );
-      expect(
-        () => repo.addEntry(
-          WeightEntry(weightKg: 70.0, dateTime: DateTime(2025, 7, 1)),
-        ),
-        throwsA(
-          isA<WeightDatabaseFailure>().having(
-            (e) => e.type,
-            'type',
-            WeightErrorType.writeFailed,
+        );
+        expect(
+          () => repo.addEntry(
+            WeightEntry(weightKg: 70.0, dateTime: DateTime(2025, 7, 1)),
           ),
-        ),
-      );
-      expect(
-        () => repo.deleteEntry(1),
-        throwsA(
-          isA<WeightDatabaseFailure>().having(
-            (e) => e.type,
-            'type',
-            WeightErrorType.deleteEntryFailed,
+          throwsA(
+            isA<WeightDatabaseFailure>().having(
+              (e) => e.type,
+              'type',
+              WeightErrorType.writeFailed,
+            ),
           ),
-        ),
-      );
-      expect(
-        () => repo.bulkImportEntries([
-          WeightEntry(weightKg: 70.0, dateTime: DateTime(2025, 7, 1)),
-        ]),
-        throwsA(
-          isA<WeightDatabaseFailure>().having(
-            (e) => e.type,
-            'type',
-            WeightErrorType.writeFailed,
+        );
+        expect(
+          () => repo.bulkImportEntries([
+            WeightEntry(weightKg: 70.0, dateTime: DateTime(2025, 7, 1)),
+          ]),
+          throwsA(
+            isA<WeightDatabaseFailure>().having(
+              (e) => e.type,
+              'type',
+              WeightErrorType.writeFailed,
+            ),
           ),
-        ),
-      );
-      expect(
-        () => repo.clearAllData(),
-        throwsA(
-          isA<WeightDatabaseFailure>().having(
-            (e) => e.type,
-            'type',
-            WeightErrorType.wipeFailed,
+        );
+      },
+    );
+
+    test(
+      'operations on a closed database map IsarError to domain exceptions',
+      () async {
+        if (isar == null) {
+          markTestSkipped(
+            'Isar native library not available in this environment',
+          );
+          return;
+        }
+        final closedDir = Directory.systemTemp.createTempSync('isar_closed_');
+        addTearDown(() {
+          if (closedDir.existsSync()) {
+            closedDir.deleteSync(recursive: true);
+          }
+        });
+        final closedIsar = await Isar.open(
+          [WeightEntryModelSchema],
+          directory: closedDir.path,
+          name: 'isar_repo_fail_test',
+          inspector: false,
+        );
+        await closedIsar.close();
+        final repo = IsarWeightRepository(
+          isar: closedIsar,
+          encryptionKey: testKeyA,
+        );
+
+        expect(
+          () => repo.getAllEntries(),
+          throwsA(
+            isA<WeightDatabaseFailure>().having(
+              (e) => e.type,
+              'type',
+              WeightErrorType.readFailed,
+            ),
           ),
-        ),
-      );
-    });
+        );
+        expect(
+          () => repo.addEntry(
+            WeightEntry(weightKg: 70.0, dateTime: DateTime(2025, 7, 1)),
+          ),
+          throwsA(
+            isA<WeightDatabaseFailure>().having(
+              (e) => e.type,
+              'type',
+              WeightErrorType.writeFailed,
+            ),
+          ),
+        );
+        expect(
+          () => repo.deleteEntry(1),
+          throwsA(
+            isA<WeightDatabaseFailure>().having(
+              (e) => e.type,
+              'type',
+              WeightErrorType.deleteEntryFailed,
+            ),
+          ),
+        );
+        expect(
+          () => repo.bulkImportEntries([
+            WeightEntry(weightKg: 70.0, dateTime: DateTime(2025, 7, 1)),
+          ]),
+          throwsA(
+            isA<WeightDatabaseFailure>().having(
+              (e) => e.type,
+              'type',
+              WeightErrorType.writeFailed,
+            ),
+          ),
+        );
+        expect(
+          () => repo.clearAllData(),
+          throwsA(
+            isA<WeightDatabaseFailure>().having(
+              (e) => e.type,
+              'type',
+              WeightErrorType.wipeFailed,
+            ),
+          ),
+        );
+      },
+    );
 
     test('bulkImportEntries encrypts and restores notes', () async {
       if (isar == null) {
@@ -631,15 +635,16 @@ void main() {
       expect(stored.last.note, 'First note');
     });
 
-    test('watchAllEntries on a closed database throws synchronously',
-        () async {
+    test('watchAllEntries on a closed database throws synchronously', () async {
       if (isar == null) {
         markTestSkipped(
           'Isar native library not available in this environment',
         );
         return;
       }
-      final closedDir = Directory.systemTemp.createTempSync('isar_watch_closed_');
+      final closedDir = Directory.systemTemp.createTempSync(
+        'isar_watch_closed_',
+      );
       addTearDown(() {
         if (closedDir.existsSync()) {
           closedDir.deleteSync(recursive: true);
@@ -657,10 +662,7 @@ void main() {
         encryptionKey: testKeyA,
       );
 
-      expect(
-        () => repo.watchAllEntries(),
-        throwsA(isA<IsarError>()),
-      );
+      expect(() => repo.watchAllEntries(), throwsA(isA<IsarError>()));
     });
   });
 

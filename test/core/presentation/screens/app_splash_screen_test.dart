@@ -43,9 +43,7 @@ void main() {
     });
 
     testWidgets('localizes the loading label to Polish', (tester) async {
-      await tester.pumpWidget(
-        buildTestWidget(locale: const Locale('pl')),
-      );
+      await tester.pumpWidget(buildTestWidget(locale: const Locale('pl')));
       await tester.pump();
 
       final semantics = tester.getSemantics(

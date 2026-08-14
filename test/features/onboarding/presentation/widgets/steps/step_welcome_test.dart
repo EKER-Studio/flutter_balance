@@ -23,9 +23,7 @@ void main() {
       expect(find.text('Get Started'), findsOneWidget);
     });
 
-    testWidgets('calls onNext when the start button is tapped', (
-      tester,
-    ) async {
+    testWidgets('calls onNext when the start button is tapped', (tester) async {
       var tapped = false;
 
       await tester.pumpWidget(buildTestWidget(onNext: () => tapped = true));
@@ -46,9 +44,14 @@ void main() {
       await tester.tap(button);
       await tester.pumpAndSettle();
 
-      expect(tester.widget<FilledButton>(
-        find.widgetWithText(FilledButton, 'Get Started'),
-      ).onPressed, isNotNull);
+      expect(
+        tester
+            .widget<FilledButton>(
+              find.widgetWithText(FilledButton, 'Get Started'),
+            )
+            .onPressed,
+        isNotNull,
+      );
     });
   });
 }

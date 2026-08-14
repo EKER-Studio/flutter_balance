@@ -13,7 +13,8 @@ class FakeFilePickerPlatform extends FilePickerPlatform {
   final Future<FilePickerResult?> Function({
     required FileType type,
     List<String>? allowedExtensions,
-  }) onPickFiles;
+  })
+  onPickFiles;
 
   @override
   Future<FilePickerResult?> pickFiles({
@@ -55,9 +56,9 @@ void main() {
     tempDir.deleteSync(recursive: true);
   });
 
-  FilePickerResult pickResult(String path) => FilePickerResult(
-    [PlatformFile(name: 'weights.csv', size: 0, path: path)],
-  );
+  FilePickerResult pickResult(String path) => FilePickerResult([
+    PlatformFile(name: 'weights.csv', size: 0, path: path),
+  ]);
 
   File writeCsv(String content) {
     final file = File('${tempDir.path}/weights.csv');
@@ -73,8 +74,7 @@ void main() {
         '2,2024-01-16 07:30,75.0,23.0,\n',
       );
       filePicker = FakeFilePickerPlatform(
-        ({required type, allowedExtensions}) async =>
-            pickResult(file.path),
+        ({required type, allowedExtensions}) async => pickResult(file.path),
       );
       FilePickerPlatform.instance = filePicker;
 
@@ -91,13 +91,14 @@ void main() {
     test('requests a CSV-filtered file picker', () async {
       FileType? requestedType;
       List<String>? requestedExtensions;
-      filePicker = FakeFilePickerPlatform(
-        ({required type, allowedExtensions}) async {
-          requestedType = type;
-          requestedExtensions = allowedExtensions;
-          return null;
-        },
-      );
+      filePicker = FakeFilePickerPlatform(({
+        required type,
+        allowedExtensions,
+      }) async {
+        requestedType = type;
+        requestedExtensions = allowedExtensions;
+        return null;
+      });
       FilePickerPlatform.instance = filePicker;
 
       final result = await service.pickAndImport();
@@ -115,9 +116,8 @@ void main() {
 
     test('returns null when the picked file has no path', () async {
       filePicker = FakeFilePickerPlatform(
-        ({required type, allowedExtensions}) async => FilePickerResult(
-          [PlatformFile(name: 'weights.csv', size: 0)],
-        ),
+        ({required type, allowedExtensions}) async =>
+            FilePickerResult([PlatformFile(name: 'weights.csv', size: 0)]),
       );
       FilePickerPlatform.instance = filePicker;
 

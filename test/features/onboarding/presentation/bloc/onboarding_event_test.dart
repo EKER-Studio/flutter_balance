@@ -25,10 +25,9 @@ void main() {
         const OnboardingUnitSelected(MeasurementUnit.metric),
         isNot(const OnboardingUnitSelected(MeasurementUnit.imperial)),
       );
-      expect(
-        const OnboardingUnitSelected(MeasurementUnit.imperial).props,
-        [MeasurementUnit.imperial],
-      );
+      expect(const OnboardingUnitSelected(MeasurementUnit.imperial).props, [
+        MeasurementUnit.imperial,
+      ]);
     });
 
     test('OnboardingCsvImported compares by entries list', () {
@@ -43,10 +42,7 @@ void main() {
         OnboardingCsvImported(entries),
         isNot(OnboardingCsvImported(const [])),
       );
-      expect(
-        OnboardingCsvImported(entries).props,
-        [entries],
-      );
+      expect(OnboardingCsvImported(entries).props, [entries]);
     });
 
     test('OnboardingInitialWeightSet compares by weight and timestamp', () {
@@ -65,10 +61,10 @@ void main() {
         ),
         isNot(const OnboardingInitialWeightSet(weightKg: 75.5)),
       );
-      expect(
-        const OnboardingInitialWeightSet(weightKg: 75.5).props,
-        [75.5, null],
-      );
+      expect(const OnboardingInitialWeightSet(weightKg: 75.5).props, [
+        75.5,
+        null,
+      ]);
     });
 
     test('OnboardingTargetWeightSet compares by nullable weight', () {

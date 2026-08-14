@@ -42,7 +42,8 @@ class FakeFilePickerPlatform extends FilePickerPlatform {
   final Future<FilePickerResult?> Function({
     required FileType type,
     List<String>? allowedExtensions,
-  }) onPickFiles;
+  })
+  onPickFiles;
 
   @override
   Future<FilePickerResult?> pickFiles({
@@ -77,8 +78,9 @@ class MutableLocalAuthPlatform extends LocalAuthPlatform {
   Future<bool> isDeviceSupported() async => deviceSupported;
 
   @override
-  Future<List<BiometricType>> getEnrolledBiometrics() async =>
-      const [BiometricType.fingerprint];
+  Future<List<BiometricType>> getEnrolledBiometrics() async => const [
+    BiometricType.fingerprint,
+  ];
 
   @override
   Future<bool> authenticate({
@@ -866,10 +868,7 @@ void main() {
       await tester.tap(find.text('OK'));
       await tester.pumpAndSettle();
 
-      expect(
-        find.textContaining('Daily reminder set to'),
-        findsOneWidget,
-      );
+      expect(find.textContaining('Daily reminder set to'), findsOneWidget);
     });
 
     testWidgets('health install dialog can be canceled', (tester) async {
@@ -877,12 +876,12 @@ void main() {
       debugDefaultTargetPlatformOverride = TargetPlatform.android;
       try {
         settingsBloc = AppSettingsBloc(healthService: healthService);
-        when(() => healthService.isHealthApiAvailable()).thenAnswer(
-          (_) async => false,
-        );
-        when(() => healthService.hasPermissions()).thenAnswer(
-          (_) async => false,
-        );
+        when(
+          () => healthService.isHealthApiAvailable(),
+        ).thenAnswer((_) async => false);
+        when(
+          () => healthService.hasPermissions(),
+        ).thenAnswer((_) async => false);
         settingsBloc.add(const CheckHealthSyncStatus());
 
         await tester.pumpWidget(createTestWidget());
@@ -1050,9 +1049,7 @@ void main() {
       tester,
     ) async {
       useWideSurface(tester);
-      final csvFile = File(
-        '${tempDir.path}/import.csv',
-      )
+      final csvFile = File('${tempDir.path}/import.csv')
         ..writeAsStringSync(
           'Date,Weight (kg)\n2026-07-25 08:30,69.0\n2026-07-26 08:30,68.5\ngarbage',
         );

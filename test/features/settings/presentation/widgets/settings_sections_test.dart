@@ -46,9 +46,8 @@ void main() {
       await pumpWithL10n(
         tester,
         Builder(
-          builder: (context) => InexactReminderHint(
-            l10n: AppLocalizations.of(context),
-          ),
+          builder: (context) =>
+              InexactReminderHint(l10n: AppLocalizations.of(context)),
         ),
       );
 
@@ -253,10 +252,7 @@ void main() {
         tester,
         Builder(
           builder: (context) => ProfileSection(
-            state: const AppSettingsState(
-              height: 175,
-              targetWeight: 80,
-            ),
+            state: const AppSettingsState(height: 175, targetWeight: 80),
             l10n: AppLocalizations.of(context),
             onHeightTap: () {},
             onTargetWeightTap: () {},
