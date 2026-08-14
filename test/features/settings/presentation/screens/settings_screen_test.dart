@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -5,9 +7,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
+import 'package:local_auth_platform_interface/local_auth_platform_interface.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:file_picker/file_picker.dart';
+import 'package:file_picker/src/platform/file_picker_platform_interface.dart';
+import 'package:balance/core/integrations/biometrics/biometric_service.dart';
 import 'package:balance/core/integrations/health/health_service.dart';
 import 'package:balance/core/integrations/notifications/notification_service.dart';
+import 'package:balance/features/weight/domain/entities/weight_entry.dart';
 import 'package:balance/features/weight/presentation/bloc/weight_bloc.dart';
 import 'package:balance/features/weight/presentation/bloc/weight_event.dart';
 import 'package:balance/features/weight/domain/weight_error_type.dart';
@@ -16,6 +23,8 @@ import 'package:balance/features/settings/presentation/bloc/app_settings_bloc.da
 import 'package:balance/features/settings/presentation/bloc/app_settings_event.dart';
 import 'package:balance/features/weight/presentation/bloc/weight_state.dart';
 import 'package:balance/features/settings/presentation/screens/settings_screen.dart';
+import 'package:balance/features/settings/presentation/bloc/app_theme_mode.dart';
+import 'package:balance/core/models/measurement_unit.dart';
 
 class MockHydratedStorage extends Mock implements HydratedStorage {}
 
@@ -25,17 +34,87 @@ class MockNotificationService extends Mock implements NotificationService {}
 
 class MockHealthService extends Mock implements HealthService {}
 
+/// Test double for [FilePickerPlatform] with a configurable result, so the
+/// platform token verification in `FilePickerPlatform.instance =` passes.
+class FakeFilePickerPlatform extends FilePickerPlatform {
+  FakeFilePickerPlatform(this.onPickFiles);
+
+  final Future<FilePickerResult?> Function({
+    required FileType type,
+    List<String>? allowedExtensions,
+  }) onPickFiles;
+
+  @override
+  Future<FilePickerResult?> pickFiles({
+    String? dialogTitle,
+    String? initialDirectory,
+    FileType type = FileType.any,
+    List<String>? allowedExtensions,
+    Function(FilePickerStatus)? onFileLoading,
+    int compressionQuality = 0,
+    bool allowMultiple = false,
+    bool withData = false,
+    bool withReadStream = false,
+    bool lockParentWindow = false,
+    bool readSequential = false,
+    bool cancelUploadOnWindowBlur = true,
+  }) {
+    return onPickFiles(type: type, allowedExtensions: allowedExtensions);
+  }
+}
+
+/// Test double for [LocalAuthPlatform] with mutable support flags so tests can
+/// simulate the device capability changing between checks.
+class MutableLocalAuthPlatform extends LocalAuthPlatform {
+  bool deviceSupported = true;
+  bool supportsBiometrics = true;
+  Future<bool> Function()? authenticateHandler;
+
+  @override
+  Future<bool> deviceSupportsBiometrics() async => supportsBiometrics;
+
+  @override
+  Future<bool> isDeviceSupported() async => deviceSupported;
+
+  @override
+  Future<List<BiometricType>> getEnrolledBiometrics() async =>
+      const [BiometricType.fingerprint];
+
+  @override
+  Future<bool> authenticate({
+    required String localizedReason,
+    required Iterable<AuthMessages> authMessages,
+    AuthenticationOptions options = const AuthenticationOptions(),
+  }) async {
+    final handler = authenticateHandler;
+    return handler != null ? await handler() : true;
+  }
+}
+
 void main() {
   late MockHydratedStorage storage;
   late MockWeightBloc weightBloc;
   late MockHealthService healthService;
   late AppSettingsBloc settingsBloc;
+  late Directory tempDir;
 
   setUp(() {
     storage = MockHydratedStorage();
     HydratedBloc.storage = storage;
     when(() => storage.read(any())).thenReturn(null);
     when(() => storage.write(any(), any())).thenAnswer((_) async {});
+
+    tempDir = Directory.systemTemp.createTempSync('settings_screen_test_');
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+        .setMockMethodCallHandler(
+          const MethodChannel('plugins.flutter.io/path_provider'),
+          (call) async => tempDir.path,
+        );
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+        .setMockMethodCallHandler(
+          const MethodChannel('dev.fluttercommunity.plus/share'),
+          (call) async => 'dev.fluttercommunity.plus/share/success',
+        );
 
     weightBloc = MockWeightBloc();
     when(
@@ -51,6 +130,12 @@ void main() {
     ).thenAnswer((_) async => true);
 
     settingsBloc = AppSettingsBloc(healthService: healthService);
+  });
+
+  tearDown(() {
+    if (tempDir.existsSync()) {
+      tempDir.deleteSync(recursive: true);
+    }
   });
 
   Widget createTestWidget() {
@@ -70,6 +155,21 @@ void main() {
         home: const SettingsScreen(),
       ),
     );
+  }
+
+  /// Pumps frames until [finder] matches, guarding against microtask/frame
+  /// races between BLoC emits and the next rendered frame.
+  Future<void> pumpUntilFound(
+    WidgetTester tester,
+    Finder finder, {
+    int maxPumps = 24,
+  }) async {
+    for (var i = 0; i < maxPumps; i++) {
+      await tester.pump(const Duration(milliseconds: 50));
+      if (finder.evaluate().isNotEmpty) {
+        return;
+      }
+    }
   }
 
   testWidgets('renders all section headers', (tester) async {
@@ -491,7 +591,6 @@ void main() {
       (tester) async {
         debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
         try {
-          settingsBloc = AppSettingsBloc(healthService: healthService);
           when(
             () => healthService.isHealthApiAvailable(),
           ).thenAnswer((_) async => false);
@@ -499,6 +598,8 @@ void main() {
             () => healthService.hasPermissions(),
           ).thenAnswer((_) async => false);
 
+          // Constructed in the test body (see target weight test comment).
+          settingsBloc = AppSettingsBloc(healthService: healthService);
           settingsBloc.add(const CheckHealthSyncStatus());
           await tester.pumpWidget(createTestWidget());
           await tester.pumpAndSettle();
@@ -517,7 +618,6 @@ void main() {
       (tester) async {
         debugDefaultTargetPlatformOverride = TargetPlatform.android;
         try {
-          settingsBloc = AppSettingsBloc(healthService: healthService);
           when(
             () => healthService.isHealthApiAvailable(),
           ).thenAnswer((_) async => false);
@@ -525,6 +625,8 @@ void main() {
             () => healthService.hasPermissions(),
           ).thenAnswer((_) async => false);
 
+          // Constructed in the test body (see target weight test comment).
+          settingsBloc = AppSettingsBloc(healthService: healthService);
           settingsBloc.add(const CheckHealthSyncStatus());
           await tester.pumpWidget(createTestWidget());
           await tester.pumpAndSettle();
@@ -650,4 +752,569 @@ void main() {
       semanticsHandle.dispose();
     },
   );
+
+  group('SettingsScreen narrow layout', () {
+    void useNarrowSurface(WidgetTester tester) {
+      tester.view.physicalSize = const Size(400, 900);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+    }
+
+    testWidgets('height dialog closes without saving and ignores null result', (
+      tester,
+    ) async {
+      useNarrowSurface(tester);
+      settingsBloc.add(const UpdateHeight(170.0));
+      await tester.pumpWidget(createTestWidget());
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('170 cm'));
+      await tester.pumpAndSettle();
+      expect(find.text('Set Height'), findsOneWidget);
+
+      await tester.tapAt(const Offset(10, 10));
+      await tester.pumpAndSettle();
+      expect(find.text('Set Height'), findsNothing);
+      expect(settingsBloc.state.height, 170.0);
+    });
+
+    testWidgets('theme selection applies the chosen mode', (tester) async {
+      useNarrowSurface(tester);
+      await tester.pumpWidget(createTestWidget());
+      await tester.pump();
+
+      await tester.tap(find.text('System'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Light'));
+      await tester.pumpAndSettle();
+
+      expect(settingsBloc.state.themeMode, AppThemeMode.light);
+      expect(find.text('Dark'), findsNothing);
+    });
+
+    testWidgets('unit selection applies the chosen unit', (tester) async {
+      useNarrowSurface(tester);
+      await tester.pumpWidget(createTestWidget());
+      await tester.pump();
+
+      await tester.tap(find.text('Metric (kg, cm)'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Imperial (lb, ft/in)'));
+      await tester.pumpAndSettle();
+
+      expect(settingsBloc.state.measurementUnit, MeasurementUnit.imperial);
+      expect(find.text('Light'), findsNothing);
+    });
+
+    testWidgets('target weight can be saved and cleared', (tester) async {
+      useNarrowSurface(tester);
+      // The bloc must be constructed inside the test body: instances created
+      // in `setUp` emit on streams that widget listeners never receive under
+      // the test's fake-async zone.
+      settingsBloc = AppSettingsBloc(healthService: healthService);
+      await tester.pumpWidget(createTestWidget());
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('Not set'));
+      await tester.pumpAndSettle();
+      await tester.enterText(find.byType(TextField), '80');
+      await tester.tap(find.text('Save'));
+      await tester.pumpAndSettle();
+      await pumpUntilFound(tester, find.text('80.0 kg'));
+
+      expect(settingsBloc.state.targetWeight, 80.0);
+      expect(find.text('80.0 kg'), findsOneWidget);
+
+      await tester.tap(find.text('80.0 kg'));
+      await tester.pumpAndSettle();
+      await tester.enterText(find.byType(TextField), '');
+      await tester.tap(find.text('Save'));
+      await tester.pumpAndSettle();
+      await pumpUntilFound(tester, find.text('Not set'));
+
+      expect(settingsBloc.state.targetWeight, isNull);
+    });
+
+    testWidgets('notification toggle and time picker update the reminder', (
+      tester,
+    ) async {
+      useNarrowSurface(tester);
+      final mockNotificationService = MockNotificationService();
+      registerFallbackValue(const (hour: 8, minute: 0));
+      when(
+        () => mockNotificationService.requestPermissions(),
+      ).thenAnswer((_) async => true);
+      when(
+        () => mockNotificationService.scheduleDailyReminder(any()),
+      ).thenAnswer((_) async => true);
+      settingsBloc = AppSettingsBloc(
+        notificationService: mockNotificationService,
+      );
+      await tester.pumpWidget(createTestWidget());
+      await tester.pumpAndSettle();
+
+      await tester.ensureVisible(find.byType(Switch).first);
+      await tester.pumpAndSettle();
+      await tester.tap(find.byType(Switch).first);
+      await tester.pumpAndSettle();
+
+      await tester.ensureVisible(find.text('Reminder Time'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Reminder Time'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('OK'));
+      await tester.pumpAndSettle();
+
+      expect(
+        find.textContaining('Daily reminder set to'),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('health install dialog can be canceled', (tester) async {
+      useNarrowSurface(tester);
+      debugDefaultTargetPlatformOverride = TargetPlatform.android;
+      try {
+        settingsBloc = AppSettingsBloc(healthService: healthService);
+        when(() => healthService.isHealthApiAvailable()).thenAnswer(
+          (_) async => false,
+        );
+        when(() => healthService.hasPermissions()).thenAnswer(
+          (_) async => false,
+        );
+        settingsBloc.add(const CheckHealthSyncStatus());
+
+        await tester.pumpWidget(createTestWidget());
+        await tester.pumpAndSettle();
+
+        await tester.ensureVisible(find.text('Health Sync'));
+        await tester.pumpAndSettle();
+        await tester.tap(find.text('Health Sync'));
+        await tester.pumpAndSettle();
+        expect(find.text('Health Connect App Required'), findsOneWidget);
+
+        await tester.tap(find.text('Cancel'));
+        await tester.pumpAndSettle();
+        expect(find.text('Health Connect App Required'), findsNothing);
+      } finally {
+        debugDefaultTargetPlatformOverride = null;
+      }
+    });
+  });
+
+  group('SettingsScreen biometric flows', () {
+    late MutableLocalAuthPlatform platform;
+    Finder biometricSwitch() => find.descendant(
+      of: find.widgetWithText(ListTile, 'Biometric Protection'),
+      matching: find.byType(Switch),
+    );
+
+    setUp(() {
+      platform = MutableLocalAuthPlatform();
+      LocalAuthPlatform.instance = platform;
+      BiometricService.resetForTesting();
+      settingsBloc.add(const UpdateBiometricSupport(true));
+    });
+
+    testWidgets('shows unavailability snackbar when device has no biometrics', (
+      tester,
+    ) async {
+      platform.deviceSupported = false;
+      platform.supportsBiometrics = false;
+
+      await tester.pumpWidget(createTestWidget());
+      await tester.pumpAndSettle();
+
+      await tester.ensureVisible(biometricSwitch());
+      await tester.pumpAndSettle();
+      await tester.tap(biometricSwitch());
+      await tester.pumpAndSettle();
+
+      expect(
+        find.text('Biometrics not available on this device'),
+        findsWidgets,
+      );
+      expect(settingsBloc.state.isBiometricLockEnabled, isFalse);
+    });
+
+    testWidgets('enables the lock after successful authentication', (
+      tester,
+    ) async {
+      platform.authenticateHandler = () async => true;
+
+      await tester.pumpWidget(createTestWidget());
+      await tester.pumpAndSettle();
+
+      await tester.ensureVisible(biometricSwitch());
+      await tester.pumpAndSettle();
+      await tester.tap(biometricSwitch());
+      await tester.pumpAndSettle();
+
+      expect(settingsBloc.state.isBiometricLockEnabled, isTrue);
+    });
+
+    testWidgets('shows failure snackbar when authentication is canceled', (
+      tester,
+    ) async {
+      platform.authenticateHandler = () async => false;
+
+      await tester.pumpWidget(createTestWidget());
+      await tester.pumpAndSettle();
+
+      await tester.ensureVisible(biometricSwitch());
+      await tester.pumpAndSettle();
+      await tester.tap(biometricSwitch());
+      await tester.pumpAndSettle();
+
+      expect(
+        find.text('Biometric authentication failed or was canceled.'),
+        findsOneWidget,
+      );
+      expect(settingsBloc.state.isBiometricLockEnabled, isFalse);
+    });
+
+    testWidgets('shows unavailability snackbar on terminal auth failure', (
+      tester,
+    ) async {
+      platform.authenticateHandler = () async => throw LocalAuthException(
+        code: LocalAuthExceptionCode.noBiometricsEnrolled,
+        description: 'no enrolled biometrics',
+      );
+
+      await tester.pumpWidget(createTestWidget());
+      await tester.pumpAndSettle();
+
+      await tester.ensureVisible(biometricSwitch());
+      await tester.pumpAndSettle();
+      await tester.tap(biometricSwitch());
+      await tester.pumpAndSettle();
+
+      expect(
+        find.text('Biometrics not available on this device'),
+        findsWidgets,
+      );
+      expect(settingsBloc.state.isBiometricLockEnabled, isFalse);
+    });
+
+    testWidgets('disables the lock directly without authentication', (
+      tester,
+    ) async {
+      settingsBloc.add(const UpdateBiometricLock(true));
+
+      await tester.pumpWidget(createTestWidget());
+      await tester.pumpAndSettle();
+
+      await tester.ensureVisible(biometricSwitch());
+      await tester.pumpAndSettle();
+      await tester.tap(biometricSwitch());
+      await tester.pumpAndSettle();
+
+      expect(settingsBloc.state.isBiometricLockEnabled, isFalse);
+    });
+
+    testWidgets('wide layout biometric toggle works', (tester) async {
+      tester.view.physicalSize = const Size(1000, 800);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      platform.authenticateHandler = () async => true;
+
+      await tester.pumpWidget(createTestWidget());
+      await tester.pumpAndSettle();
+
+      await tester.ensureVisible(biometricSwitch());
+      await tester.pumpAndSettle();
+      await tester.tap(biometricSwitch());
+      await tester.pumpAndSettle();
+
+      expect(settingsBloc.state.isBiometricLockEnabled, isTrue);
+    });
+  });
+
+  group('SettingsScreen CSV flows', () {
+    void useWideSurface(WidgetTester tester) {
+      tester.view.physicalSize = const Size(1000, 800);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+    }
+
+    setUp(() {
+      LocalAuthPlatform.instance = MutableLocalAuthPlatform();
+      BiometricService.resetForTesting();
+      registerFallbackValue(const SyncHealthEntries());
+    });
+
+    testWidgets('imports a CSV file with valid and skipped rows', (
+      tester,
+    ) async {
+      useWideSurface(tester);
+      final csvFile = File(
+        '${tempDir.path}/import.csv',
+      )
+        ..writeAsStringSync(
+          'Date,Weight (kg)\n2026-07-25 08:30,69.0\n2026-07-26 08:30,68.5\ngarbage',
+        );
+      FilePickerPlatform.instance = FakeFilePickerPlatform(
+        ({required type, allowedExtensions}) async => FilePickerResult([
+          PlatformFile(path: csvFile.path, name: 'import.csv', size: 1),
+        ]),
+      );
+
+      await tester.pumpWidget(createTestWidget());
+      await tester.pumpAndSettle();
+
+      await tester.ensureVisible(find.text('Import data from CSV'));
+      await tester.pumpAndSettle();
+      await tester.runAsync(() async {
+        await tester.tap(find.text('Import data from CSV'));
+        await tester.pump();
+        await Future<void>.delayed(const Duration(milliseconds: 300));
+      });
+      await tester.pumpAndSettle();
+
+      expect(find.text('Imported 2 entries.'), findsOneWidget);
+      verify(() => weightBloc.add(any())).called(1);
+    });
+
+    testWidgets('shows no-data snackbar when the CSV has no valid entries', (
+      tester,
+    ) async {
+      useWideSurface(tester);
+      final csvFile = File('${tempDir.path}/empty.csv')
+        ..writeAsStringSync('Date,Weight (kg)\ngarbage');
+      FilePickerPlatform.instance = FakeFilePickerPlatform(
+        ({required type, allowedExtensions}) async => FilePickerResult([
+          PlatformFile(path: csvFile.path, name: 'empty.csv', size: 1),
+        ]),
+      );
+
+      await tester.pumpWidget(createTestWidget());
+      await tester.pumpAndSettle();
+
+      await tester.ensureVisible(find.text('Import data from CSV'));
+      await tester.pumpAndSettle();
+      await tester.runAsync(() async {
+        await tester.tap(find.text('Import data from CSV'));
+        await tester.pump();
+        await Future<void>.delayed(const Duration(milliseconds: 300));
+      });
+      await tester.pumpAndSettle();
+
+      expect(
+        find.text('No valid weight entries found in the imported file.'),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('shows error snackbar when the picked file cannot be read', (
+      tester,
+    ) async {
+      useWideSurface(tester);
+      FilePickerPlatform.instance = FakeFilePickerPlatform(
+        ({required type, allowedExtensions}) async => FilePickerResult([
+          PlatformFile(
+            path: '${tempDir.path}/missing.csv',
+            name: 'missing.csv',
+            size: 1,
+          ),
+        ]),
+      );
+
+      await tester.pumpWidget(createTestWidget());
+      await tester.pumpAndSettle();
+
+      await tester.ensureVisible(find.text('Import data from CSV'));
+      await tester.pumpAndSettle();
+      await tester.runAsync(() async {
+        await tester.tap(find.text('Import data from CSV'));
+        await tester.pump();
+        await Future<void>.delayed(const Duration(milliseconds: 300));
+      });
+      await tester.pumpAndSettle();
+
+      expect(find.textContaining('Import error:'), findsOneWidget);
+    });
+
+    testWidgets('exports entries and shows success snackbar', (tester) async {
+      useWideSurface(tester);
+      when(() => weightBloc.state).thenReturn(
+        WeightLoaded(
+          entries: [
+            WeightEntry(
+              id: 1,
+              weightKg: 70.5,
+              dateTime: DateTime(2026, 7, 24, 15, 0),
+            ),
+          ],
+          filteredEntries: [],
+        ),
+      );
+
+      await tester.pumpWidget(createTestWidget());
+      await tester.pumpAndSettle();
+
+      await tester.ensureVisible(find.text('Export data to CSV'));
+      await tester.pumpAndSettle();
+      await tester.runAsync(() async {
+        await tester.tap(find.text('Export data to CSV'));
+        await tester.pump();
+        await Future<void>.delayed(const Duration(milliseconds: 300));
+      });
+      await tester.pumpAndSettle();
+
+      expect(find.text('Export completed successfully.'), findsOneWidget);
+      expect(tempDir.listSync().isNotEmpty, isTrue);
+    });
+
+    testWidgets('shows error snackbar when sharing fails', (tester) async {
+      useWideSurface(tester);
+      when(() => weightBloc.state).thenReturn(
+        WeightLoaded(
+          entries: [
+            WeightEntry(
+              id: 1,
+              weightKg: 70.5,
+              dateTime: DateTime(2026, 7, 24, 15, 0),
+            ),
+          ],
+          filteredEntries: [],
+        ),
+      );
+      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+          .setMockMethodCallHandler(
+            const MethodChannel('dev.fluttercommunity.plus/share'),
+            (call) async => throw PlatformException(code: 'share_failed'),
+          );
+
+      await tester.pumpWidget(createTestWidget());
+      await tester.pumpAndSettle();
+
+      await tester.ensureVisible(find.text('Export data to CSV'));
+      await tester.pumpAndSettle();
+      await tester.runAsync(() async {
+        await tester.tap(find.text('Export data to CSV'));
+        await tester.pump();
+        await Future<void>.delayed(const Duration(milliseconds: 300));
+      });
+      await tester.pumpAndSettle();
+
+      expect(find.textContaining('Export error:'), findsOneWidget);
+    });
+
+    testWidgets('shows empty crash log snackbar when no log exists', (
+      tester,
+    ) async {
+      useWideSurface(tester);
+      await tester.pumpWidget(createTestWidget());
+      await tester.pumpAndSettle();
+
+      await tester.ensureVisible(find.text('Send crash log'));
+      await tester.pumpAndSettle();
+      await tester.runAsync(() async {
+        await tester.tap(find.text('Send crash log'));
+        await tester.pump();
+        await Future<void>.delayed(const Duration(milliseconds: 300));
+      });
+      await tester.pumpAndSettle();
+
+      expect(find.text('No crash log available.'), findsOneWidget);
+    });
+
+    testWidgets('shares the crash log file when present', (tester) async {
+      useWideSurface(tester);
+      File('${tempDir.path}/crash_log.txt')
+        ..createSync(recursive: true)
+        ..writeAsStringSync('stack trace line');
+
+      await tester.pumpWidget(createTestWidget());
+      await tester.pumpAndSettle();
+
+      await tester.ensureVisible(find.text('Send crash log'));
+      await tester.pumpAndSettle();
+      await tester.runAsync(() async {
+        await tester.tap(find.text('Send crash log'));
+        await tester.pump();
+        await Future<void>.delayed(const Duration(milliseconds: 300));
+      });
+      await tester.pumpAndSettle();
+
+      expect(find.text('No crash log available.'), findsNothing);
+    });
+
+    testWidgets('shows error snackbar when sharing the crash log fails', (
+      tester,
+    ) async {
+      useWideSurface(tester);
+      File('${tempDir.path}/crash_log.txt')
+        ..createSync(recursive: true)
+        ..writeAsStringSync('stack trace line');
+      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+          .setMockMethodCallHandler(
+            const MethodChannel('dev.fluttercommunity.plus/share'),
+            (call) async => throw PlatformException(code: 'share_failed'),
+          );
+
+      await tester.pumpWidget(createTestWidget());
+      await tester.pumpAndSettle();
+
+      await tester.ensureVisible(find.text('Send crash log'));
+      await tester.pumpAndSettle();
+      await tester.runAsync(() async {
+        await tester.tap(find.text('Send crash log'));
+        await tester.pump();
+        await Future<void>.delayed(const Duration(milliseconds: 300));
+      });
+      await tester.pumpAndSettle();
+
+      expect(find.textContaining('Error sharing crash log:'), findsOneWidget);
+    });
+  });
+
+  group('SettingsScreen wipe flows', () {
+    testWidgets('cancel button dismisses the confirmation dialog', (
+      tester,
+    ) async {
+      await tester.pumpWidget(createTestWidget());
+      await tester.pump();
+
+      await tester.ensureVisible(find.text('Wipe All Data'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Wipe All Data'));
+      await tester.pump();
+
+      await tester.tap(find.text('Cancel'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Wipe Data'), findsNothing);
+    });
+
+    testWidgets('shows error snackbar when the wipe stream fails', (
+      tester,
+    ) async {
+      when(() => weightBloc.stream).thenAnswer(
+        (_) => Stream.value(
+          const WeightError(
+            errorType: WeightErrorType.wipeFailed,
+            entries: [],
+            filteredEntries: [],
+          ),
+        ),
+      );
+
+      await tester.pumpWidget(createTestWidget());
+      await tester.pump();
+
+      await tester.ensureVisible(find.text('Wipe All Data'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Wipe All Data'));
+      await tester.pump();
+
+      await tester.tap(find.text('Wipe Data'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Failed to clear weight data.'), findsOneWidget);
+    });
+  });
 }
