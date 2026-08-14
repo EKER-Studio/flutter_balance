@@ -12,6 +12,7 @@ import 'package:balance/features/calendar/presentation/screens/calendar_screen.d
 import 'package:balance/features/calendar/presentation/widgets/calendar_day_cell.dart';
 import 'package:balance/features/calendar/presentation/widgets/calendar_day_empty_card.dart';
 import 'package:balance/features/calendar/presentation/widgets/calendar_day_entries_card.dart';
+import 'package:balance/features/weight/presentation/widgets/add_weight_sheet.dart';
 
 import 'package:balance/features/calendar/presentation/widgets/calendar_error_card.dart';
 import 'package:balance/features/calendar/presentation/widgets/calendar_grid.dart';
@@ -370,5 +371,180 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.byType(CalendarErrorCard), findsOneWidget);
+  });
+  testWidgets('CalendarDayEntriesCard shows goal banner and dark mode colors', (
+    tester,
+  ) async {
+    final entry = WeightEntry(
+      id: 1,
+      weightKg: 70.0,
+      dateTime: DateTime(2026, 7, 15, 8, 30),
+    );
+
+    await tester.pumpWidget(
+      createTestWidget(
+        CalendarDayEntriesCard(
+          selectedDate: DateTime(2026, 7, 15),
+          entries: [entry],
+          targetWeight: 72.5,
+        ),
+        themeMode: ThemeMode.dark,
+        locale: const Locale('en'),
+      ),
+    );
+
+    expect(
+      find.text('Weight goal was achieved on this day! 🏆'),
+      findsOneWidget,
+    );
+  });
+
+  testWidgets(
+    'CalendarDayEntriesCard shows BMI and category when height is set',
+    (tester) async {
+      final settingsBloc = AppSettingsBloc();
+      settingsBloc.emit(settingsBloc.state.copyWith(height: 180.0));
+
+      final entry = WeightEntry(
+        id: 1,
+        weightKg: 72.5,
+        dateTime: DateTime(2026, 7, 15, 8, 30),
+      );
+
+      await tester.pumpWidget(
+        createTestWidget(
+          CalendarDayEntriesCard(
+            selectedDate: DateTime(2026, 7, 15),
+            entries: [entry],
+          ),
+          settingsBloc: settingsBloc,
+          locale: const Locale('en'),
+        ),
+      );
+
+      expect(find.text('BMI 22.4'), findsOneWidget);
+      expect(find.text('Normal'), findsOneWidget);
+    },
+  );
+
+  testWidgets('CalendarDayEntriesCard add measurement opens the sheet dialog', (
+    tester,
+  ) async {
+    final entry = WeightEntry(
+      id: 1,
+      weightKg: 72.5,
+      dateTime: DateTime(2026, 7, 15, 8, 30),
+    );
+
+    await tester.pumpWidget(
+      MultiBlocProvider(
+        providers: [
+          BlocProvider(create: (_) => AppSettingsBloc()),
+          BlocProvider(create: (context) => WeightBloc(repository: repository)),
+        ],
+        child: MaterialApp(
+          locale: const Locale('en'),
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: Scaffold(
+            body: CalendarDayEntriesCard(
+              selectedDate: DateTime(2026, 7, 15),
+              entries: [entry],
+            ),
+          ),
+        ),
+      ),
+    );
+
+    await tester.tap(find.byIcon(Icons.add));
+    await tester.pumpAndSettle();
+
+    expect(find.byType(AddWeightSheet), findsOneWidget);
+
+    await tester.tapAt(const Offset(10, 10));
+    await tester.pumpAndSettle();
+  });
+
+  testWidgets(
+    'CalendarDayEntriesCard delete confirms before dispatching DeleteWeight',
+    (tester) async {
+      final entry = WeightEntry(
+        id: 1,
+        weightKg: 72.5,
+        dateTime: DateTime(2026, 7, 15, 8, 30),
+      );
+      final weightBloc = WeightBloc(repository: repository);
+      addTearDown(weightBloc.close);
+
+      await tester.pumpWidget(
+        MultiBlocProvider(
+          providers: [
+            BlocProvider(create: (_) => AppSettingsBloc()),
+            BlocProvider<WeightBloc>.value(value: weightBloc),
+          ],
+          child: MaterialApp(
+            locale: const Locale('en'),
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            home: Scaffold(
+              body: CalendarDayEntriesCard(
+                selectedDate: DateTime(2026, 7, 15),
+                entries: [entry],
+              ),
+            ),
+          ),
+        ),
+      );
+
+      await tester.tap(find.byIcon(Icons.delete_outline));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Delete entry'), findsWidgets);
+
+      await tester.tap(find.widgetWithText(FilledButton, 'Delete entry'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Delete entry'), findsNothing);
+    },
+  );
+
+  testWidgets('CalendarDayEntriesCard delete cancel dispatches nothing', (
+    tester,
+  ) async {
+    final entry = WeightEntry(
+      id: 1,
+      weightKg: 72.5,
+      dateTime: DateTime(2026, 7, 15, 8, 30),
+    );
+    final weightBloc = WeightBloc(repository: repository);
+    addTearDown(weightBloc.close);
+
+    await tester.pumpWidget(
+      MultiBlocProvider(
+        providers: [
+          BlocProvider(create: (_) => AppSettingsBloc()),
+          BlocProvider<WeightBloc>.value(value: weightBloc),
+        ],
+        child: MaterialApp(
+          locale: const Locale('en'),
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: Scaffold(
+            body: CalendarDayEntriesCard(
+              selectedDate: DateTime(2026, 7, 15),
+              entries: [entry],
+            ),
+          ),
+        ),
+      ),
+    );
+
+    await tester.tap(find.byIcon(Icons.delete_outline));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.widgetWithText(TextButton, 'Cancel'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Delete entry'), findsNothing);
   });
 }
