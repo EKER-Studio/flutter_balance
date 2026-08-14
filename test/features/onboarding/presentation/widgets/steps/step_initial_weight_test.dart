@@ -237,4 +237,120 @@ void main() {
       expect(field.controller!.text, isEmpty);
     });
   });
+  testWidgets('entering whitespace shows the required error', (tester) async {
+    await tester.pumpWidget(
+      buildTestWidget(unit: MeasurementUnit.metric, onNext: (_, _) {}),
+    );
+
+    await tester.pumpAndSettle();
+
+    await tester.enterText(find.byType(TextField), '   ');
+    await tester.pump();
+
+    expect(find.text('Initial weight is required'), findsOneWidget);
+  });
+
+  testWidgets('submitting via keyboard action triggers onNext', (tester) async {
+    double? resultWeight;
+    await tester.pumpWidget(
+      buildTestWidget(
+        unit: MeasurementUnit.metric,
+        onNext: (weight, _) {
+          resultWeight = weight;
+        },
+      ),
+    );
+
+    await tester.pumpAndSettle();
+
+    await tester.enterText(find.byType(TextField), '80');
+    await tester.pump();
+    await tester.testTextInput.receiveAction(TextInputAction.done);
+    await tester.pumpAndSettle();
+
+    expect(resultWeight, 80.0);
+  });
+
+  testWidgets('canceling the date picker keeps the selected timestamp', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      buildTestWidget(unit: MeasurementUnit.metric, onNext: (_, _) {}),
+    );
+
+    await tester.pumpAndSettle();
+    final labelBefore = tester
+        .widget<Text>(find.textContaining(', ').first)
+        .data;
+
+    await tester.tap(find.byType(OutlinedButton));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Cancel'));
+    await tester.pumpAndSettle();
+
+    final labelAfter = tester
+        .widget<Text>(find.textContaining(', ').first)
+        .data;
+    expect(labelAfter, labelBefore);
+  });
+
+  testWidgets('canceling the time picker keeps the selected timestamp', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      buildTestWidget(unit: MeasurementUnit.metric, onNext: (_, _) {}),
+    );
+
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byType(OutlinedButton));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('OK'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Cancel'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('OK'), findsNothing);
+    expect(find.text('Cancel'), findsNothing);
+  });
+
+  testWidgets('selecting a date and time updates the timestamp label', (
+    tester,
+  ) async {
+    DateTime? resultTime;
+    await tester.pumpWidget(
+      buildTestWidget(
+        unit: MeasurementUnit.metric,
+        onNext: (_, time) {
+          resultTime = time;
+        },
+      ),
+    );
+
+    await tester.pumpAndSettle();
+
+    final labelFinder = find.descendant(
+      of: find.byType(OutlinedButton),
+      matching: find.byType(Text),
+    );
+    final labelBefore = tester.widget<Text>(labelFinder).data;
+
+    await tester.tap(find.byType(OutlinedButton));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('1'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('OK'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('OK'));
+    await tester.pumpAndSettle();
+
+    final labelAfter = tester.widget<Text>(labelFinder).data;
+    expect(labelAfter, isNot(labelBefore));
+
+    await tester.enterText(find.byType(TextField), '70');
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Next'));
+    await tester.pumpAndSettle();
+    expect(resultTime, isNotNull);
+  });
 }

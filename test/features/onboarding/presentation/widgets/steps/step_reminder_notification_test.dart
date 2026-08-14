@@ -17,6 +17,7 @@ void main() {
   late AppSettingsBloc settingsBloc;
 
   setUp(() {
+    registerFallbackValue(const (hour: 8, minute: 0));
     storage = MockHydratedStorage();
     HydratedBloc.storage = storage;
     when(() => storage.read(any())).thenReturn(null);
@@ -38,6 +39,20 @@ void main() {
         home: Scaffold(body: StepReminderNotification(onNext: onNext)),
       ),
     );
+  }
+
+  Widget buildEnabledSubject() {
+    final mockNotificationService = MockNotificationService();
+    when(
+      () => mockNotificationService.requestPermissions(),
+    ).thenAnswer((_) async => true);
+    when(
+      () => mockNotificationService.scheduleDailyReminder(any()),
+    ).thenAnswer((_) async => true);
+    settingsBloc = AppSettingsBloc(
+      notificationService: mockNotificationService,
+    );
+    return buildSubject(onNext: () {});
   }
 
   group('StepReminderNotification Widget Tests', () {
@@ -77,20 +92,7 @@ void main() {
     testWidgets(
       'toggling the switch enables notifications via the bloc and shows time tile',
       (tester) async {
-        final mockNotificationService = MockNotificationService();
-        registerFallbackValue(const (hour: 8, minute: 0));
-        when(
-          () => mockNotificationService.requestPermissions(),
-        ).thenAnswer((_) async => true);
-        when(
-          () => mockNotificationService.scheduleDailyReminder(any()),
-        ).thenAnswer((_) async => true);
-
-        settingsBloc = AppSettingsBloc(
-          notificationService: mockNotificationService,
-        );
-
-        await tester.pumpWidget(buildSubject(onNext: () {}));
+        await tester.pumpWidget(buildEnabledSubject());
 
         expect(settingsBloc.state.notificationsEnabled, isFalse);
         expect(
@@ -108,5 +110,73 @@ void main() {
         );
       },
     );
+
+    testWidgets(
+      'toggling with denied permission shows the permission denied warning',
+      (tester) async {
+        final mockNotificationService = MockNotificationService();
+        when(
+          () => mockNotificationService.requestPermissions(),
+        ).thenAnswer((_) async => false);
+        when(
+          () => mockNotificationService.scheduleDailyReminder(any()),
+        ).thenAnswer((_) async => true);
+
+        settingsBloc = AppSettingsBloc(
+          notificationService: mockNotificationService,
+        );
+
+        await tester.pumpWidget(buildSubject(onNext: () {}));
+
+        expect(
+          find.text('Notification permission is required to enable reminders.'),
+          findsNothing,
+        );
+
+        await tester.tap(find.byKey(const Key('notification_step_switch')));
+        await tester.pumpAndSettle();
+
+        expect(
+          find.text('Notification permission is required to enable reminders.'),
+          findsOneWidget,
+        );
+      },
+    );
+
+    testWidgets(
+      'opening the time picker and confirming dispatches the new time',
+      (tester) async {
+        await tester.pumpWidget(buildEnabledSubject());
+        await tester.tap(find.byKey(const Key('notification_step_switch')));
+        await tester.pumpAndSettle();
+
+        await tester.tap(find.byKey(const Key('notification_step_time_tile')));
+        await tester.pumpAndSettle();
+
+        expect(find.byType(TimePickerDialog), findsOneWidget);
+        await tester.tap(find.text('OK'));
+        await tester.pumpAndSettle();
+
+        expect(find.textContaining('reminder set to'), findsOneWidget);
+        expect(settingsBloc.state.notificationTime, const (hour: 8, minute: 0));
+      },
+    );
+
+    testWidgets('canceling the time picker keeps the current time', (
+      tester,
+    ) async {
+      await tester.pumpWidget(buildEnabledSubject());
+      await tester.tap(find.byKey(const Key('notification_step_switch')));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.byKey(const Key('notification_step_time_tile')));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('Cancel'));
+      await tester.pumpAndSettle();
+
+      expect(find.textContaining('reminder set to'), findsNothing);
+      expect(settingsBloc.state.notificationTime, isNotNull);
+    });
   });
 }
