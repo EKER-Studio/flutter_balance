@@ -12,6 +12,39 @@ void main() {
     );
   }
 
+  /// Opens [HeightDialog] through a real [showDialog] route so that popping
+  /// resolves the future with the dialog result.
+  Future<void> openDialog(
+    WidgetTester tester,
+    double? initialValue, {
+    void Function(double?)? onResult,
+  }) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: Scaffold(
+          body: Builder(
+            builder: (context) => Center(
+              child: ElevatedButton(
+                onPressed: () async {
+                  final result = await showDialog<double>(
+                    context: context,
+                    builder: (_) => HeightDialog(currentValue: initialValue),
+                  );
+                  onResult?.call(result);
+                },
+                child: const Text('open dialog'),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+    await tester.tap(find.text('open dialog'));
+    await tester.pumpAndSettle();
+  }
+
   group('HeightDialog', () {
     testWidgets('renders with initial value', (tester) async {
       await tester.pumpWidget(buildTestWidget(175.0));
@@ -56,6 +89,68 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('Height must be between 50 and 250 cm'), findsNothing);
+    });
+
+    testWidgets('shows error when height exceeds the maximum', (tester) async {
+      await openDialog(tester, null);
+
+      await tester.enterText(find.byType(TextField), '260');
+      await tester.tap(find.text('Save'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Height must be between 50 and 250 cm'), findsOneWidget);
+    });
+
+    testWidgets('pops with the entered height on save', (tester) async {
+      double? result;
+      var resolved = false;
+      await openDialog(
+        tester,
+        null,
+        onResult: (r) {
+          result = r;
+          resolved = true;
+        },
+      );
+
+      await tester.enterText(find.byType(TextField), '170');
+      await tester.tap(find.text('Save'));
+      await tester.pumpAndSettle();
+
+      expect(resolved, isTrue);
+      expect(result, 170.0);
+    });
+
+    testWidgets('saves when the keyboard submit action is triggered', (
+      tester,
+    ) async {
+      double? result;
+      var resolved = false;
+      await openDialog(
+        tester,
+        null,
+        onResult: (r) {
+          result = r;
+          resolved = true;
+        },
+      );
+
+      await tester.enterText(find.byType(TextField), '175');
+      await tester.testTextInput.receiveAction(TextInputAction.done);
+      await tester.pumpAndSettle();
+
+      expect(resolved, isTrue);
+      expect(result, 175.0);
+    });
+
+    testWidgets('cancel closes the dialog without a result', (tester) async {
+      var resolved = false;
+      await openDialog(tester, null, onResult: (_) => resolved = true);
+
+      await tester.tap(find.text('Cancel'));
+      await tester.pumpAndSettle();
+
+      expect(resolved, isTrue);
     });
   });
 }

@@ -100,6 +100,10 @@ void main() {
   late AppSettingsBloc settingsBloc;
   late Directory tempDir;
 
+  setUpAll(() {
+    registerFallbackValue(const SubscribeToWeightChanges());
+  });
+
   setUp(() {
     storage = MockHydratedStorage();
     HydratedBloc.storage = storage;
@@ -699,6 +703,22 @@ void main() {
     expect(find.text('No weight entries to export.'), findsOneWidget);
   });
 
+  testWidgets('shows empty export snackbar for a non-loaded weight state', (
+    tester,
+  ) async {
+    when(() => weightBloc.state).thenReturn(const WeightInitial());
+
+    await tester.pumpWidget(createTestWidget());
+    await tester.pumpAndSettle();
+
+    await tester.ensureVisible(find.text('Export data to CSV'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Export data to CSV'));
+    await tester.pump();
+
+    expect(find.text('No weight entries to export.'), findsOneWidget);
+  });
+
   testWidgets('renders 2-column layout on wide screen (tablet / landscape)', (
     tester,
   ) async {
@@ -900,6 +920,164 @@ void main() {
         debugDefaultTargetPlatformOverride = null;
       }
     });
+
+    testWidgets('height dialog save persists to both blocs', (tester) async {
+      useNarrowSurface(tester);
+      settingsBloc.add(const UpdateHeight(170.0));
+      await tester.pumpWidget(createTestWidget());
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('170 cm'));
+      await tester.pumpAndSettle();
+      expect(find.text('Set Height'), findsOneWidget);
+
+      await tester.enterText(find.byType(TextField), '175');
+      await tester.tap(find.text('Save'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Set Height'), findsNothing);
+      expect(settingsBloc.state.height, 175.0);
+      verify(
+        () => weightBloc.add(any(that: isA<UpdateUserHeight>())),
+      ).called(1);
+    });
+
+    testWidgets('health sync switch enables sync in narrow layout', (
+      tester,
+    ) async {
+      useNarrowSurface(tester);
+      settingsBloc = AppSettingsBloc(healthService: healthService);
+      when(
+        () => healthService.requestPermissions(),
+      ).thenAnswer((_) async => true);
+      when(() => healthService.hasPermissions()).thenAnswer((_) async => true);
+      final syncSwitch = find.descendant(
+        of: find.widgetWithText(ListTile, 'Health Sync'),
+        matching: find.byType(Switch),
+      );
+
+      await tester.pumpWidget(createTestWidget());
+      await tester.pump();
+
+      await tester.ensureVisible(syncSwitch);
+      await tester.pumpAndSettle();
+      await tester.tap(syncSwitch);
+      await tester.pumpAndSettle();
+
+      verify(() => healthService.requestPermissions()).called(1);
+      expect(tester.widget<Switch>(syncSwitch).value, isTrue);
+    });
+
+    testWidgets('data section import export and wipe in narrow layout', (
+      tester,
+    ) async {
+      useNarrowSurface(tester);
+      final previousPicker = FilePickerPlatform.instance;
+      FilePickerPlatform.instance = FakeFilePickerPlatform(
+        ({required type, allowedExtensions}) async => null,
+      );
+      addTearDown(() => FilePickerPlatform.instance = previousPicker);
+
+      await tester.pumpWidget(createTestWidget());
+      await tester.pumpAndSettle();
+
+      await tester.ensureVisible(find.text('Import data from CSV'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Import data from CSV'));
+      await tester.pumpAndSettle();
+
+      await tester.ensureVisible(find.text('Export data to CSV'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Export data to CSV'));
+      await tester.pumpAndSettle();
+      expect(find.text('No weight entries to export.'), findsOneWidget);
+
+      await tester.ensureVisible(find.text('Wipe All Data'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Wipe All Data'));
+      await tester.pumpAndSettle();
+      expect(find.text('Wipe Data'), findsOneWidget);
+
+      await tester.tap(find.text('Cancel'));
+      await tester.pumpAndSettle();
+    });
+
+    testWidgets('crash log empty snackbar in narrow layout', (tester) async {
+      useNarrowSurface(tester);
+      await tester.pumpWidget(createTestWidget());
+      await tester.pumpAndSettle();
+
+      await tester.ensureVisible(find.text('Send crash log'));
+      await tester.pumpAndSettle();
+      await tester.runAsync(() async {
+        await tester.tap(find.text('Send crash log'));
+        await tester.pump();
+        await Future<void>.delayed(const Duration(milliseconds: 300));
+      });
+      await tester.pumpAndSettle();
+
+      expect(find.text('No crash log available.'), findsOneWidget);
+    });
+
+    testWidgets('narrow layout biometric toggle works', (tester) async {
+      useNarrowSurface(tester);
+      final platform = MutableLocalAuthPlatform()
+        ..authenticateHandler = () async => true;
+      LocalAuthPlatform.instance = platform;
+      BiometricService.resetForTesting();
+      settingsBloc.add(const UpdateBiometricSupport(true));
+
+      await tester.pumpWidget(createTestWidget());
+      await tester.pumpAndSettle();
+
+      final switchFinder = find.descendant(
+        of: find.widgetWithText(ListTile, 'Biometric Protection'),
+        matching: find.byType(Switch),
+      );
+
+      await tester.ensureVisible(switchFinder);
+      await tester.pumpAndSettle();
+      await tester.tap(switchFinder);
+      await tester.pumpAndSettle();
+
+      expect(settingsBloc.state.isBiometricLockEnabled, isTrue);
+    });
+
+    testWidgets('wide layout time picker updates the reminder', (tester) async {
+      tester.view.physicalSize = const Size(1000, 800);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+
+      final mockNotificationService = MockNotificationService();
+      registerFallbackValue(const (hour: 8, minute: 0));
+      when(
+        () => mockNotificationService.requestPermissions(),
+      ).thenAnswer((_) async => true);
+      when(
+        () => mockNotificationService.scheduleDailyReminder(any()),
+      ).thenAnswer((_) async => true);
+      settingsBloc = AppSettingsBloc(
+        notificationService: mockNotificationService,
+      );
+
+      await tester.pumpWidget(createTestWidget());
+      await tester.pumpAndSettle();
+
+      await tester.ensureVisible(find.byType(Switch).first);
+      await tester.pumpAndSettle();
+      await tester.tap(find.byType(Switch).first);
+      await tester.pumpAndSettle();
+
+      await tester.ensureVisible(find.text('Reminder Time'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Reminder Time'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('OK'));
+      await tester.pumpAndSettle();
+
+      expect(find.textContaining('Daily reminder set to'), findsOneWidget);
+    });
   });
 
   group('SettingsScreen biometric flows', () {
@@ -972,6 +1150,34 @@ void main() {
       );
       expect(settingsBloc.state.isBiometricLockEnabled, isFalse);
     });
+
+    testWidgets(
+      'shows unavailability snackbar when biometrics become unavailable '
+      'after the screen loaded',
+      (tester) async {
+        // Biometrics are available when the screen builds, so the switch is
+        // enabled...
+        await tester.pumpWidget(createTestWidget());
+        await tester.pumpAndSettle();
+
+        await tester.ensureVisible(biometricSwitch());
+        await tester.pumpAndSettle();
+
+        // ...but disappear before the toggle is flipped, so the handler must
+        // surface the unavailability snackbar instead of enabling the lock.
+        platform.deviceSupported = false;
+        platform.supportsBiometrics = false;
+
+        await tester.tap(biometricSwitch());
+        await tester.pumpAndSettle();
+
+        expect(
+          find.text('Biometrics not available on this device'),
+          findsWidgets,
+        );
+        expect(settingsBloc.state.isBiometricLockEnabled, isFalse);
+      },
+    );
 
     testWidgets('shows unavailability snackbar on terminal auth failure', (
       tester,
@@ -1312,6 +1518,30 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('Failed to clear weight data.'), findsOneWidget);
+    });
+
+    testWidgets('shows error snackbar when the wipe stream times out', (
+      tester,
+    ) async {
+      // A stream that never emits a matching outcome forces the 10s guard
+      // inside [_wipeDatabase] to expire, exercising the catch branch.
+      when(
+        () => weightBloc.stream,
+      ).thenAnswer((_) => Stream.fromIterable(const [WeightLoading()]));
+
+      await tester.pumpWidget(createTestWidget());
+      await tester.pump();
+
+      await tester.ensureVisible(find.text('Wipe All Data'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Wipe All Data'));
+      await tester.pump();
+
+      await tester.tap(find.text('Wipe Data'));
+      await tester.pump(const Duration(seconds: 11));
+      await tester.pumpAndSettle();
+
+      expect(find.textContaining('Error wiping data:'), findsOneWidget);
     });
   });
 }

@@ -995,5 +995,31 @@ void main() {
       expect(updated.isHealthApiAvailable, false);
       expect(updated.healthPermissionDenied, true);
     });
+
+    test('bloc fromJson override restores state from a json map', () {
+      final bloc = AppSettingsBloc(
+        notificationService: mockNotificationService,
+      );
+
+      final restored = bloc.fromJson(const {
+        'themeMode': 'dark',
+        'measurementUnit': 'metric',
+        'notificationsEnabled': false,
+      });
+
+      expect(restored, isA<AppSettingsState>());
+      expect(restored?.themeMode, AppThemeMode.dark);
+    });
+
+    test('bloc toJson override serializes the current state', () {
+      final bloc = AppSettingsBloc(
+        notificationService: mockNotificationService,
+      );
+
+      final json = bloc.toJson(bloc.state);
+
+      expect(json, isA<Map<String, dynamic>>());
+      expect(json['themeMode'], 'system');
+    });
   });
 }
