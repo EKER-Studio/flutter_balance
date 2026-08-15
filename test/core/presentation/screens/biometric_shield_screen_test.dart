@@ -156,5 +156,25 @@ void main() {
 
       expect(bloc.state.isLocked, true);
     });
+
+    testWidgets('failed authentication shows a retry snackbar', (tester) async {
+      setupMockChannel(
+        canCheckBiometrics: true,
+        isDeviceSupported: true,
+        authenticateResult: false,
+      );
+
+      await tester.pumpWidget(buildTestWidget());
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.byType(FilledButton));
+      await tester.pumpAndSettle();
+
+      expect(
+        find.text('Biometric authentication failed or was canceled.'),
+        findsOneWidget,
+      );
+      expect(bloc.state.isLocked, true);
+    });
   });
 }
