@@ -1,7 +1,10 @@
+import 'dart:ui' show Locale;
+
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:local_auth_platform_interface/local_auth_platform_interface.dart';
 import 'package:balance/core/integrations/biometrics/biometric_service.dart';
+import 'package:balance/l10n/app_localizations.dart';
 
 /// Test double for [LocalAuthPlatform] that inherits the platform token via
 /// `extends`, so [LocalAuthPlatform.instance] accepts it.
@@ -373,6 +376,111 @@ void main() {
       );
 
       expect(result, BiometricAuthResult.error);
+    });
+  });
+
+  group('BiometricService.isSupported', () {
+    test('returns true when the device supports biometrics', () async {
+      expect(await BiometricService.instance.isSupported(), isTrue);
+    });
+
+    test('returns false when the device lacks biometric support', () async {
+      platform = FakeLocalAuthPlatform(
+        supportsBiometrics: false,
+        deviceSupported: false,
+        enrolledBiometrics: const [],
+      );
+      LocalAuthPlatform.instance = platform;
+
+      expect(await BiometricService.instance.isSupported(), isFalse);
+    });
+
+    test('returns false for a device that cannot check biometrics', () async {
+      platform = FakeLocalAuthPlatform(
+        supportsBiometrics: false,
+        deviceSupported: true,
+        enrolledBiometrics: const [],
+      );
+      LocalAuthPlatform.instance = platform;
+
+      expect(await BiometricService.instance.isSupported(), isFalse);
+    });
+
+    test('returns false when the platform check throws', () async {
+      LocalAuthPlatform.instance = _ThrowingAvailabilityPlatform();
+
+      expect(await BiometricService.instance.isSupported(), isFalse);
+    });
+  });
+
+  group('BiometricService state getters', () {
+    test('isAuthenticating tracks the active authentication future', () async {
+      final service = BiometricService.instance;
+
+      expect(service.isAuthenticating, isFalse);
+
+      final future = service.authenticate(
+        localizedReason: 'Unlock to view your weight data',
+      );
+      expect(service.isAuthenticating, isTrue);
+
+      await future;
+      expect(service.isAuthenticating, isFalse);
+    });
+
+    test(
+      'wasAuthenticatingRecently is true right after authentication',
+      () async {
+        final service = BiometricService.instance;
+
+        await service.authenticate(
+          localizedReason: 'Unlock to view your weight data',
+        );
+
+        expect(service.wasAuthenticatingRecently, isTrue);
+      },
+    );
+
+    test(
+      'reuses the in-flight future for concurrent authentication calls',
+      () async {
+        final signals = <void>[];
+        final subscription = BiometricService.instance.authenticationSuccesses
+            .listen((_) {
+              signals.add(null);
+            });
+
+        final first = BiometricService.instance.authenticate(
+          localizedReason: 'Unlock to view your weight data',
+        );
+        final second = BiometricService.instance.authenticate(
+          localizedReason: 'Unlock to view your weight data',
+        );
+
+        expect(await first, BiometricAuthResult.success);
+        expect(await second, BiometricAuthResult.success);
+        await pumpEventQueue();
+        expect(signals, hasLength(1));
+        await subscription.cancel();
+      },
+    );
+  });
+
+  group('BiometricService lifecycle', () {
+    test('dispose closes the authentication success stream', () async {
+      final service = BiometricService.instance;
+
+      expect(service.dispose(), completes);
+    });
+  });
+
+  group('BiometricService.createAuthMessages', () {
+    test('builds one message set per platform', () async {
+      final l10n = await AppLocalizations.delegate.load(const Locale('en'));
+
+      final messages = BiometricService.createAuthMessages(l10n);
+
+      expect(messages, hasLength(2));
     });
   });
 
