@@ -295,6 +295,172 @@ void main() {
 
       expect(result, closeTo(75.5, 0.01));
     });
+
+    testWidgets('prefills input with initial target in metric', (tester) async {
+      await tester.pumpWidget(
+        buildApp(
+          StepTargetWeight(
+            unit: MeasurementUnit.metric,
+            initialTargetWeightKg: 70.0,
+            onNext: (_) {},
+          ),
+        ),
+      );
+
+      expect(find.text('70.0'), findsOneWidget);
+    });
+
+    testWidgets('prefills input with initial target converted to imperial', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        buildApp(
+          StepTargetWeight(
+            unit: MeasurementUnit.imperial,
+            initialTargetWeightKg: 70.0,
+            onNext: (_) {},
+          ),
+        ),
+      );
+
+      expect(find.text('154.3'), findsOneWidget);
+    });
+
+    testWidgets('shows target delta in imperial units', (tester) async {
+      await tester.pumpWidget(
+        buildApp(
+          StepTargetWeight(
+            unit: MeasurementUnit.imperial,
+            initialWeightKg: 75.5,
+            onNext: (_) {},
+          ),
+        ),
+      );
+
+      await tester.enterText(
+        find.byKey(const Key('target_weight_input')),
+        '154.3',
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.text('12.1 lbs to target'), findsOneWidget);
+    });
+
+    testWidgets('calls onNext with imperial input converted to kg', (
+      tester,
+    ) async {
+      double? result;
+
+      await tester.pumpWidget(
+        buildApp(
+          StepTargetWeight(
+            unit: MeasurementUnit.imperial,
+            onNext: (val) {
+              result = val;
+            },
+          ),
+        ),
+      );
+
+      await tester.enterText(
+        find.byKey(const Key('target_weight_input')),
+        '100',
+      );
+      await tester.tap(find.text('Next'));
+      await tester.pumpAndSettle();
+
+      expect(result, closeTo(45.36, 0.01));
+    });
+
+    testWidgets('clears inline error when input is emptied', (tester) async {
+      await tester.pumpWidget(
+        buildApp(
+          StepTargetWeight(unit: MeasurementUnit.metric, onNext: (_) {}),
+        ),
+      );
+
+      await tester.enterText(
+        find.byKey(const Key('target_weight_input')),
+        'abc',
+      );
+      await tester.pumpAndSettle();
+
+      expect(
+        find.text('Please enter a valid positive number.'),
+        findsOneWidget,
+      );
+      expect(
+        tester
+            .widget<FilledButton>(find.widgetWithText(FilledButton, 'Next'))
+            .onPressed,
+        isNull,
+      );
+
+      await tester.enterText(find.byKey(const Key('target_weight_input')), '');
+      await tester.pumpAndSettle();
+
+      expect(find.text('Please enter a valid positive number.'), findsNothing);
+      expect(
+        tester
+            .widget<FilledButton>(find.widgetWithText(FilledButton, 'Next'))
+            .onPressed,
+        isNotNull,
+      );
+    });
+
+    testWidgets('clears inline error when input becomes valid again', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        buildApp(
+          StepTargetWeight(unit: MeasurementUnit.metric, onNext: (_) {}),
+        ),
+      );
+
+      await tester.enterText(
+        find.byKey(const Key('target_weight_input')),
+        'abc',
+      );
+      await tester.pumpAndSettle();
+      expect(
+        find.text('Please enter a valid positive number.'),
+        findsOneWidget,
+      );
+
+      await tester.enterText(
+        find.byKey(const Key('target_weight_input')),
+        '70',
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.text('Please enter a valid positive number.'), findsNothing);
+    });
+
+    testWidgets('calls onNext when the text field is submitted', (
+      tester,
+    ) async {
+      double? result;
+
+      await tester.pumpWidget(
+        buildApp(
+          StepTargetWeight(
+            unit: MeasurementUnit.metric,
+            onNext: (val) {
+              result = val;
+            },
+          ),
+        ),
+      );
+
+      await tester.enterText(
+        find.byKey(const Key('target_weight_input')),
+        '75.5',
+      );
+      await tester.testTextInput.receiveAction(TextInputAction.done);
+      await tester.pumpAndSettle();
+
+      expect(result, closeTo(75.5, 0.01));
+    });
   });
 
   group('StepInitialWeight Widget Tests', () {
