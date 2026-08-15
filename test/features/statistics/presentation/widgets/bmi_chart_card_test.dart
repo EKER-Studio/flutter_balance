@@ -193,13 +193,27 @@ void main() {
         ),
       );
 
-      final chartRect = tester.getRect(find.byType(LineChart));
-      final gesture = await tester.startGesture(chartRect.center);
-      await tester.pump(const Duration(milliseconds: 300));
+      // The middle of the three evenly spaced spots sits at the horizontal
+      // centre of the chart leaf (the leaf is inset from the LineChart widget
+      // by the axis title margins). Holding past the long-press threshold
+      // resolves the gesture arena and triggers the built-in touch handler,
+      // which paints the tooltip on the canvas rather than as a widget, so its
+      // visibility is asserted through the chart's target data.
+      final leafFinder = find.descendant(
+        of: find.byType(LineChart),
+        matching: find.byWidgetPredicate(
+          (widget) => widget.runtimeType.toString() == 'LineChartLeaf',
+        ),
+      );
+      final leafRect = tester.getRect(leafFinder);
+      final gesture = await tester.startGesture(leafRect.center);
+      await tester.pump(const Duration(milliseconds: 700));
 
-      // The tooltip is painted on the chart canvas, so only the absence of
-      // errors is asserted here; the touch handlers still run the tooltip
-      // callbacks under coverage.
+      final chartRender = tester.renderObject(leafFinder) as dynamic;
+      expect(
+        (chartRender.targetData as dynamic).showingTooltipIndicators,
+        isNotEmpty,
+      );
       expect(tester.takeException(), isNull);
 
       await gesture.up();
