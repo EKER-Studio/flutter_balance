@@ -194,6 +194,116 @@ void main() {
       expect(find.byType(CalendarErrorCard), findsOneWidget);
     });
 
+    testWidgets('CalendarScreen renders when constructed non-const', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        MultiBlocProvider(
+          providers: [
+            BlocProvider.value(value: AppSettingsBloc()),
+            BlocProvider.value(
+              value: createBloc(
+                const WeightLoaded(
+                  entries: [],
+                  filteredEntries: [],
+                  timePeriod: TimePeriod.week,
+                  heightCm: null,
+                ),
+              ),
+            ),
+          ],
+          child: MaterialApp(
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            locale: const Locale('pl'),
+            home: CalendarScreen(key: const ValueKey('non_const_calendar')),
+          ),
+        ),
+      );
+
+      expect(find.text('Kalendarz'), findsOneWidget);
+    });
+
+    testWidgets('marks the entry day as goal achieved when the weight is at '
+        'or below the target', (tester) async {
+      final now = DateTime.now();
+      final entries = [WeightEntry(id: 1, weightKg: 60.0, dateTime: now)];
+      final settingsBloc = AppSettingsBloc();
+      settingsBloc.add(const TargetWeightChanged(65));
+
+      await tester.pumpWidget(
+        buildSubject(
+          WeightLoaded(
+            entries: entries,
+            filteredEntries: entries,
+            timePeriod: TimePeriod.week,
+            heightCm: null,
+          ),
+          settingsBloc: settingsBloc,
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.byIcon(Icons.star), findsWidgets);
+      expect(tester.takeException(), isNull);
+    });
+
+    testWidgets('shows indicator dots on a non-selected day with entries', (
+      tester,
+    ) async {
+      final now = DateTime.now();
+      final otherDay = now.day > 1
+          ? DateTime(now.year, now.month, now.day - 1)
+          : DateTime(now.year, now.month, now.day + 1);
+      final entries = [WeightEntry(id: 1, weightKg: 70.0, dateTime: otherDay)];
+
+      await tester.pumpWidget(
+        buildSubject(
+          WeightLoaded(
+            entries: entries,
+            filteredEntries: entries,
+            timePeriod: TimePeriod.week,
+            heightCm: null,
+          ),
+        ),
+      );
+
+      // The entry day (not selected) renders one 4x4 indicator dot.
+      final dot = find.byWidgetPredicate(
+        (widget) =>
+            widget is Container &&
+            widget.constraints?.minWidth == 4 &&
+            widget.constraints?.maxWidth == 4 &&
+            widget.constraints?.minHeight == 4 &&
+            widget.constraints?.maxHeight == 4,
+      );
+      expect(dot, findsWidgets);
+    });
+
+    testWidgets('tapping an entry card is a safe no-op', (tester) async {
+      final now = DateTime.now();
+      final entries = [WeightEntry(id: 1, weightKg: 70.5, dateTime: now)];
+
+      await tester.pumpWidget(
+        buildSubject(
+          WeightLoaded(
+            entries: entries,
+            filteredEntries: entries,
+            timePeriod: TimePeriod.week,
+            heightCm: null,
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      await tester.ensureVisible(find.text('70.5 kg'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('70.5 kg'));
+      await tester.pumpAndSettle();
+
+      expect(tester.takeException(), isNull);
+    });
+
     testWidgets(
       'CalendarScreen shows average for multiple entries on the selected day',
       (tester) async {
