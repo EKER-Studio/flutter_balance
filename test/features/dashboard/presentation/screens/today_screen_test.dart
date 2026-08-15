@@ -569,6 +569,25 @@ void main() {
     expect((dispatched as ChangeChartFilter).period, TimePeriod.year);
   });
 
+  /// Sweeps pointer gestures across the chart so the touch tooltip pipeline
+  /// (spot indicators, tooltip color and tooltip items) is exercised.
+  Future<void> sweepChart(WidgetTester tester) async {
+    final chartRect = tester.getRect(find.byType(LineChart));
+    for (var x = 0.0; x < chartRect.width; x += 24) {
+      for (final fraction in [0.3, 0.45, 0.5, 0.6, 0.7]) {
+        final gesture = await tester.startGesture(
+          Offset(
+            chartRect.left + x,
+            chartRect.top + chartRect.height * fraction,
+          ),
+        );
+        await tester.pump(const Duration(milliseconds: 150));
+        await gesture.up();
+        await tester.pumpAndSettle();
+      }
+    }
+  }
+
   testWidgets('shows a touch tooltip with the metric weight on the chart', (
     tester,
   ) async {
@@ -604,15 +623,7 @@ void main() {
     // Drag across the chart so the touch tooltip tracks the spots; the
     // tooltip is painted via TextPainter, so the gesture is exercised for
     // coverage rather than asserted visually.
-    final chartRect = tester.getRect(find.byType(LineChart));
-    final gesture = await tester.startGesture(
-      Offset(chartRect.left + 60, chartRect.center.dy),
-    );
-    await tester.pump(const Duration(milliseconds: 100));
-    await gesture.moveBy(const Offset(40, 0));
-    await tester.pump(const Duration(milliseconds: 100));
-    await gesture.up();
-    await tester.pumpAndSettle();
+    await sweepChart(tester);
   });
 
   testWidgets('shows a touch tooltip with imperial weight on the chart', (
@@ -652,15 +663,7 @@ void main() {
     await tester.pumpWidget(createTestWidget(const TodayScreen()));
     await tester.pumpAndSettle();
 
-    final chartRect = tester.getRect(find.byType(LineChart));
-    final gesture = await tester.startGesture(
-      Offset(chartRect.left + 60, chartRect.center.dy),
-    );
-    await tester.pump(const Duration(milliseconds: 100));
-    await gesture.moveBy(const Offset(40, 0));
-    await tester.pump(const Duration(milliseconds: 100));
-    await gesture.up();
-    await tester.pumpAndSettle();
+    await sweepChart(tester);
   });
 
   testWidgets('plots multiple entries with distinct dates', (tester) async {
@@ -708,5 +711,6 @@ void main() {
     await tester.tap(find.byType(LineChart));
     await tester.pump();
     await tester.pumpAndSettle();
+    await sweepChart(tester);
   });
 }
