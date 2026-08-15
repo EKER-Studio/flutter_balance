@@ -713,4 +713,51 @@ void main() {
     await tester.pumpAndSettle();
     await sweepChart(tester);
   });
+
+  testWidgets('renders the short weekday labels for all chart positions', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(800, 3000);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
+    // 2026-08-12 is a Wednesday; five consecutive days span Wed-Sun so the
+    // chart (bottom interval 1) renders every weekday label.
+    final entries = [
+      WeightEntry(id: 1, weightKg: 70.0, dateTime: DateTime(2026, 8, 12)),
+      WeightEntry(id: 2, weightKg: 70.5, dateTime: DateTime(2026, 8, 13)),
+      WeightEntry(id: 3, weightKg: 71.0, dateTime: DateTime(2026, 8, 14)),
+      WeightEntry(id: 4, weightKg: 71.5, dateTime: DateTime(2026, 8, 15)),
+      WeightEntry(id: 5, weightKg: 72.0, dateTime: DateTime(2026, 8, 16)),
+    ];
+
+    when(() => weightBloc.state).thenReturn(
+      WeightLoaded(
+        entries: entries,
+        filteredEntries: entries,
+        timePeriod: TimePeriod.month,
+        heightCm: 175.0,
+      ),
+    );
+    when(() => weightBloc.stream).thenAnswer(
+      (_) => Stream.value(
+        WeightLoaded(
+          entries: entries,
+          filteredEntries: entries,
+          timePeriod: TimePeriod.month,
+          heightCm: 175.0,
+        ),
+      ),
+    );
+
+    await tester.pumpWidget(createTestWidget(const TodayScreen()));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Wed', skipOffstage: false), findsWidgets);
+    expect(find.text('Thu', skipOffstage: false), findsWidgets);
+    expect(find.text('Fri', skipOffstage: false), findsWidgets);
+    expect(find.text('Sat', skipOffstage: false), findsWidgets);
+    expect(find.text('Sun', skipOffstage: false), findsWidgets);
+  });
 }
