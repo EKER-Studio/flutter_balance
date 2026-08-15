@@ -185,6 +185,44 @@ void main() {
       addTearDown(bloc.close);
     });
 
+    testWidgets('clears the denial warning once sync is later enabled', (
+      tester,
+    ) async {
+      healthService = MockHealthService();
+      when(
+        () => healthService.isHealthApiAvailable(),
+      ).thenAnswer((_) async => true);
+      when(
+        () => healthService.requestPermissions(),
+      ).thenAnswer((_) async => false);
+      final bloc = AppSettingsBloc(healthService: healthService);
+
+      await tester.pumpWidget(buildSubject(onNext: () {}, bloc: bloc));
+
+      // First toggle denies the permission request and shows the warning.
+      await tester.tap(switchFinder);
+      await tester.pumpAndSettle();
+      expect(
+        find.text('Health data permissions are required to sync weight.'),
+        findsOneWidget,
+      );
+
+      // Second toggle grants the permission and clears the warning.
+      when(
+        () => healthService.requestPermissions(),
+      ).thenAnswer((_) async => true);
+      await tester.tap(switchFinder);
+      await tester.pumpAndSettle();
+
+      expect(bloc.state.isHealthSyncEnabled, isTrue);
+      expect(
+        find.text('Health data permissions are required to sync weight.'),
+        findsNothing,
+      );
+
+      addTearDown(bloc.close);
+    });
+
     // TEMPORARY DIAGNOSTIC: reflects the debug bypass of the availability
     // gate in AppSettingsBloc; restore together with the gate.
     testWidgets(
