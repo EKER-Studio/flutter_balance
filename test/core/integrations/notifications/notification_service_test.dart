@@ -6,7 +6,10 @@ import 'package:balance/core/integrations/notifications/notification_service.dar
 import 'package:flutter_local_notifications/flutter_local_notifications.dart'
     show FlutterLocalNotificationsPlatform;
 import 'package:flutter_local_notifications/src/platform_flutter_local_notifications.dart'
-    show AndroidFlutterLocalNotificationsPlugin;
+    show
+        AndroidFlutterLocalNotificationsPlugin,
+        IOSFlutterLocalNotificationsPlugin,
+        MacOSFlutterLocalNotificationsPlugin;
 
 /// A mock handler for the flutter_local_notifications method channel that
 /// records which methods were invoked and returns configurable values.
@@ -29,6 +32,7 @@ class FakeNotificationsChannel {
       'cancel' => null,
       'zonedSchedule' => null,
       'requestNotificationsPermission' => requestNotificationsResult,
+      'requestPermissions' => true,
       'canScheduleExactNotifications' => canScheduleExact,
       'requestExactAlarmsPermission' => requestExactResult,
       _ => null,
@@ -340,6 +344,50 @@ void main() {
         NotificationService.instance.cancelDailyReminder(),
         completes,
       );
+    });
+  });
+
+  group('NotificationService per-platform permission requests', () {
+    late FakeNotificationsChannel fake;
+    late FlutterLocalNotificationsPlatform? originalPlatform;
+
+    setUp(() {
+      fake = FakeNotificationsChannel();
+      installMocks(fake);
+      try {
+        originalPlatform = FlutterLocalNotificationsPlatform.instance;
+      } catch (_) {
+        originalPlatform = null;
+      }
+    });
+
+    tearDown(() {
+      if (originalPlatform != null) {
+        FlutterLocalNotificationsPlatform.instance = originalPlatform!;
+      }
+      debugDefaultTargetPlatformOverride = null;
+    });
+
+    test('requestPermissions requests iOS permissions on iOS', () async {
+      debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
+      FlutterLocalNotificationsPlatform.instance =
+          IOSFlutterLocalNotificationsPlugin();
+
+      final granted = await NotificationService.instance.requestPermissions();
+
+      expect(granted, isTrue);
+      expect(fake.invokedMethods, contains('requestPermissions'));
+    });
+
+    test('requestPermissions requests macOS permissions on macOS', () async {
+      debugDefaultTargetPlatformOverride = TargetPlatform.macOS;
+      FlutterLocalNotificationsPlatform.instance =
+          MacOSFlutterLocalNotificationsPlugin();
+
+      final granted = await NotificationService.instance.requestPermissions();
+
+      expect(granted, isTrue);
+      expect(fake.invokedMethods, contains('requestPermissions'));
     });
   });
 }

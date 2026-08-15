@@ -1,3 +1,4 @@
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:health/health.dart';
 import 'package:mocktail/mocktail.dart';
@@ -47,7 +48,45 @@ class _TrackingPermissionHandler extends PermissionHandlerPlatform {
 // Register the PlatformDetector mock.
 class MockPlatformDetector extends Mock implements PlatformDetector {}
 
+/// Mocked `url_launcher` method channel recording every launch request.
+class FakeUrlLauncherChannel {
+  int launchCount = 0;
+  bool returnResult = false;
+  bool shouldThrow = false;
+  String? lastLaunchedUrl;
+
+  Future<Object?> handle(MethodCall call) async {
+    expect(call.method, 'launch');
+    launchCount++;
+    if (shouldThrow) {
+      throw PlatformException(code: 'launch_failed');
+    }
+    lastLaunchedUrl = call.arguments['url'] as String?;
+    return returnResult;
+  }
+}
+
+/// The method channel used by the default `url_launcher` platform instance.
+const MethodChannel _urlLauncherChannel = MethodChannel(
+  'plugins.flutter.io/url_launcher',
+);
+
+/// Installs a mock handler for the `url_launcher` method channel.
+void _installUrlLauncherMock(FakeUrlLauncherChannel fake) {
+  TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+      .setMockMethodCallHandler(_urlLauncherChannel, fake.handle);
+}
+
+/// Removes any mock handler previously installed for the `url_launcher`
+/// method channel.
+void _removeUrlLauncherMock() {
+  TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+      .setMockMethodCallHandler(_urlLauncherChannel, null);
+}
+
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+
   late MockHealthPlugin health;
   late NativeHealthService service;
   late MockPlatformDetector platformDetector;
@@ -81,6 +120,7 @@ void main() {
   tearDown(() {
     PermissionHandlerPlatform.instance = FakePermissionHandler(true);
     _TrackingPermissionHandler.callCount = 0;
+    _removeUrlLauncherMock();
   });
 
   HealthDataPoint point({
@@ -818,6 +858,87 @@ void main() {
       verify(
         () => health.deleteByUUID(uuid: 'target', type: HealthDataType.WEIGHT),
       ).called(1);
+    });
+  });
+
+  group('NativePlatformDetector', () {
+    test('NativePlatformDetector returns platform values', () {
+      final detector = NativePlatformDetector();
+      expect(detector.isAndroid, isA<bool>());
+      expect(detector.isIOS, isA<bool>());
+    });
+  });
+
+  group('NativeHealthService defaults and static instance', () {
+    test('NativeHealthService default constructor and static instance', () {
+      final service1 = NativeHealthService();
+      expect(service1, isNotNull);
+
+      final service2 = NativeHealthService.instance;
+      expect(service2, isNotNull);
+    });
+  });
+
+  group('NativeHealthService extra error and edge paths', () {
+    test(
+      'does not crash when configure throws during isHealthApiAvailable',
+      () async {
+        when(() => platformDetector.isAndroid).thenReturn(true);
+        when(() => platformDetector.isIOS).thenReturn(false);
+        when(() => health.configure()).thenThrow(Exception('Configure failed'));
+        when(
+          () => health.getHealthConnectSdkStatus(),
+        ).thenAnswer((_) async => HealthConnectSdkStatus.sdkAvailable);
+
+        final available = await service.isHealthApiAvailable();
+        expect(available, isTrue);
+      },
+    );
+
+    test(
+      'requestPermissions returns false when platform detector itself throws',
+      () async {
+        when(
+          () => health.requestAuthorization(
+            any(),
+            permissions: any(named: 'permissions'),
+          ),
+        ).thenAnswer((_) async => true);
+        when(
+          () => platformDetector.isIOS,
+        ).thenThrow(Exception('Platform detector crashed'));
+
+        final granted = await service.requestPermissions();
+        expect(granted, isFalse);
+      },
+    );
+
+    test(
+      'installHealthConnect launches Play Store when market launch fails',
+      () async {
+        when(() => platformDetector.isAndroid).thenReturn(true);
+        when(() => platformDetector.isIOS).thenReturn(false);
+
+        final fakeLauncher = FakeUrlLauncherChannel()..returnResult = false;
+        _installUrlLauncherMock(fakeLauncher);
+
+        await service.installHealthConnect();
+
+        // Should have attempted to launch market://, then fallback to play store url
+        expect(fakeLauncher.launchCount, 2);
+        expect(fakeLauncher.lastLaunchedUrl, contains('play.google.com'));
+      },
+    );
+
+    test('installHealthConnect catches errors gracefully', () async {
+      when(() => platformDetector.isAndroid).thenReturn(true);
+      when(() => platformDetector.isIOS).thenReturn(false);
+
+      final fakeLauncher = FakeUrlLauncherChannel()..shouldThrow = true;
+      _installUrlLauncherMock(fakeLauncher);
+
+      await expectLater(service.installHealthConnect(), completes);
+      expect(fakeLauncher.launchCount, greaterThanOrEqualTo(1));
     });
   });
 }

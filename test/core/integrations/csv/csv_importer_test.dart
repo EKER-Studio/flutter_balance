@@ -336,5 +336,49 @@ Data;Waga
       expect(importedEntries[1].dateTime, DateTime(2026, 8, 11, 7, 15));
       expect(importedEntries[1].note, 'Roundtrip test 2');
     });
+    test('parses a time column and combines it with the date', () async {
+      const csvContent = '''
+ID,Data,Czas,Waga,BMI,Notatka
+1,2024-01-15,07:30,75.2,23.1,
+2,2024-01-16,19:45,75.0,23.0,Evening
+''';
+
+      final result = await CsvImporter.parse(csvContent);
+
+      expect(result.entries.length, 2);
+      expect(result.skippedRows, 0);
+      expect(result.entries[0].dateTime, DateTime(2024, 1, 15, 7, 30));
+      expect(result.entries[1].dateTime, DateTime(2024, 1, 16, 19, 45));
+    });
+
+    test('keeps the parsed date when the time column is malformed', () async {
+      const csvContent = '''
+ID,Date,Time,Weight,Note
+1,2024-01-15,not-a-time,75.2,Keeps date
+2,2024-01-16,9,75.0,Single part
+''';
+
+      final result = await CsvImporter.parse(csvContent);
+
+      expect(result.entries.length, 2);
+      expect(result.skippedRows, 0);
+      expect(result.entries[0].dateTime, DateTime(2024, 1, 15));
+      expect(result.entries[1].dateTime, DateTime(2024, 1, 16));
+    });
+
+    test('skips data rows with fewer than two fields', () async {
+      const csvContent = '''
+ID,Data,Waga (kg),BMI,Notatka
+2024-01-15
+garbage
+2,2024-01-16,75.0,23.0,Valid
+''';
+
+      final result = await CsvImporter.parse(csvContent);
+
+      expect(result.entries.length, 1);
+      expect(result.skippedRows, 2);
+      expect(result.entries[0].weightKg, 75.0);
+    });
   });
 }

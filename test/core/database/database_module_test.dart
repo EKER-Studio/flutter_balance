@@ -1,11 +1,34 @@
+import 'dart:convert';
 import 'dart:io';
 
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:isar_community/isar.dart';
+import 'package:path_provider_platform_interface/path_provider_platform_interface.dart';
 import 'package:balance/core/database/database_module.dart';
 import 'package:balance/features/weight/data/models/weight_entry_model.dart';
 
+/// A test double that points [getApplicationDocumentsDirectory] at a
+/// temporary directory so [DatabaseModule.initialize] runs fully on disk.
+class FakePathProviderPlatform extends PathProviderPlatform {
+  FakePathProviderPlatform(this.fileSystemPath);
+
+  /// The path returned as the application documents directory.
+  final String fileSystemPath;
+
+  @override
+  Future<String?> getApplicationDocumentsPath() async => fileSystemPath;
+
+  @override
+  Future<String?> getApplicationSupportPath() async => fileSystemPath;
+
+  @override
+  Future<String?> getTemporaryPath() async => fileSystemPath;
+}
+
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+
   group('DatabaseModule', () {
     test('dbName is versioned correctly', () {
       expect(DatabaseModule.dbName, 'balance_v1');
@@ -162,5 +185,229 @@ void main() {
         await reopenedIsar.close();
       },
     );
+  });
+
+  group('DatabaseModule getEncryptionKey', () {
+    const secureStorageChannel = MethodChannel(
+      'plugins.it_nomads.com/flutter_secure_storage',
+    );
+    final messenger =
+        TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger;
+
+    tearDown(() {
+      messenger.setMockMethodCallHandler(secureStorageChannel, null);
+    });
+
+    test('returns the previously stored key from secure storage', () async {
+      final storedKey = List<int>.generate(32, (i) => i);
+      final log = <MethodCall>[];
+      messenger.setMockMethodCallHandler(secureStorageChannel, (
+        MethodCall call,
+      ) async {
+        log.add(call);
+        if (call.method == 'read') return base64Encode(storedKey);
+        return null;
+      });
+
+      final key = await DatabaseModule.getEncryptionKey();
+
+      expect(key, Uint8List.fromList(storedKey));
+      final readCall = log.firstWhere((c) => c.method == 'read');
+      expect(readCall.arguments['key'], 'isar_encryption_key');
+    });
+
+    test('generates a fresh 256-bit key and persists it', () async {
+      final log = <MethodCall>[];
+      messenger.setMockMethodCallHandler(secureStorageChannel, (
+        MethodCall call,
+      ) async {
+        log.add(call);
+        return null;
+      });
+
+      final key = await DatabaseModule.getEncryptionKey();
+
+      expect(key.length, 32);
+      final writeCall = log.firstWhere((c) => c.method == 'write');
+      expect(writeCall.arguments['key'], 'isar_encryption_key');
+      expect(base64Decode(writeCall.arguments['value'] as String), key);
+    });
+  });
+
+  group('DatabaseModule initialize', () {
+    late Directory tempDir;
+    late PathProviderPlatform originalPathProvider;
+    final openedInstances = <Isar>[];
+    const secureStorageChannel = MethodChannel(
+      'plugins.it_nomads.com/flutter_secure_storage',
+    );
+
+    setUp(() async {
+      tempDir = Directory.systemTemp.createTempSync('isar_init_');
+      originalPathProvider = PathProviderPlatform.instance;
+      PathProviderPlatform.instance = FakePathProviderPlatform(tempDir.path);
+      final leftover = Isar.getInstance(DatabaseModule.dbName);
+      if (leftover != null && leftover.isOpen) {
+        await leftover.close();
+      }
+      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+          .setMockMethodCallHandler(secureStorageChannel, (call) async => null);
+    });
+
+    tearDown(() async {
+      for (final instance in openedInstances) {
+        if (instance.isOpen) {
+          await instance.close();
+        }
+      }
+      openedInstances.clear();
+      PathProviderPlatform.instance = originalPathProvider;
+      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+          .setMockMethodCallHandler(secureStorageChannel, null);
+      if (tempDir.existsSync()) {
+        tempDir.deleteSync(recursive: true);
+      }
+    });
+
+    test('returns the existing open instance instead of reopening', () async {
+      final existing = await Isar.open(
+        [WeightEntryModelSchema],
+        directory: tempDir.path,
+        name: DatabaseModule.dbName,
+      );
+      openedInstances.add(existing);
+
+      final result = await DatabaseModule.initialize();
+
+      expect(identical(result, existing), isTrue);
+    });
+
+    test('opens a fresh instance and persists an encryption key', () async {
+      final isar = await DatabaseModule.initialize();
+      openedInstances.add(isar);
+
+      expect(isar.isOpen, isTrue);
+      expect(identical(Isar.getInstance(DatabaseModule.dbName), isar), isTrue);
+      final dbFile = File('${tempDir.path}/${DatabaseModule.dbName}.isar');
+      expect(dbFile.existsSync(), isTrue);
+    });
+
+    test('rethrows when the database cannot be recovered', () async {
+      final dbFile = File('${tempDir.path}/${DatabaseModule.dbName}.isar');
+      dbFile.writeAsBytesSync(List.filled(4096, 7));
+      final chmodDir = await Process.run('chmod', ['0555', tempDir.path]);
+      final chmodFile = await Process.run('chmod', ['0444', dbFile.path]);
+      if (chmodDir.exitCode != 0 || chmodFile.exitCode != 0) {
+        markTestSkipped('chmod not supported in this environment');
+        await Process.run('chmod', ['0755', tempDir.path]);
+        return;
+      }
+      try {
+        await expectLater(DatabaseModule.initialize(), throwsA(isA<Object>()));
+      } finally {
+        await Process.run('chmod', ['0755', tempDir.path]);
+        await Process.run('chmod', ['0644', dbFile.path]);
+      }
+    });
+  });
+
+  group('DatabaseModule quarantineLegacyDatabaseForTesting', () {
+    test('is a no-op when no legacy database names are registered', () async {
+      final tempDir = Directory.systemTemp.createTempSync('isar_legacy_');
+      addTearDown(() {
+        if (tempDir.existsSync()) {
+          tempDir.deleteSync(recursive: true);
+        }
+      });
+
+      await DatabaseModule.quarantineLegacyDatabaseForTesting(tempDir.path);
+
+      expect(tempDir.listSync(), isEmpty);
+    });
+  });
+
+  group('DatabaseModule ensureInstanceIntegrity', () {
+    late Directory tempDir;
+    late PathProviderPlatform originalPathProvider;
+    final openedInstances = <Isar>[];
+    const secureStorageChannel = MethodChannel(
+      'plugins.it_nomads.com/flutter_secure_storage',
+    );
+
+    setUp(() async {
+      tempDir = Directory.systemTemp.createTempSync('isar_integrity_');
+      originalPathProvider = PathProviderPlatform.instance;
+      final leftover = Isar.getInstance(DatabaseModule.dbName);
+      if (leftover != null && leftover.isOpen) {
+        await leftover.close();
+      }
+      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+          .setMockMethodCallHandler(secureStorageChannel, (call) async => null);
+    });
+
+    tearDown(() async {
+      for (final instance in openedInstances) {
+        if (instance.isOpen) {
+          await instance.close();
+        }
+      }
+      openedInstances.clear();
+      PathProviderPlatform.instance = originalPathProvider;
+      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+          .setMockMethodCallHandler(secureStorageChannel, null);
+      if (tempDir.existsSync()) {
+        tempDir.deleteSync(recursive: true);
+      }
+    });
+
+    test('returns the live instance with reopened=false', () async {
+      final existing = await Isar.open(
+        [WeightEntryModelSchema],
+        directory: tempDir.path,
+        name: DatabaseModule.dbName,
+      );
+      openedInstances.add(existing);
+
+      final result = await DatabaseModule.ensureInstanceIntegrity();
+
+      expect(result.reopened, isFalse);
+      expect(identical(result.instance, existing), isTrue);
+    });
+
+    test(
+      're-initializes with reopened=true when no instance is open',
+      () async {
+        PathProviderPlatform.instance = FakePathProviderPlatform(tempDir.path);
+        final instanceToClose = Isar.getInstance(DatabaseModule.dbName);
+        if (instanceToClose != null && instanceToClose.isOpen) {
+          await instanceToClose.close();
+        }
+
+        final result = await DatabaseModule.ensureInstanceIntegrity();
+        openedInstances.add(result.instance);
+
+        expect(result.reopened, isTrue);
+        expect(result.instance.isOpen, isTrue);
+        expect(
+          identical(Isar.getInstance(DatabaseModule.dbName), result.instance),
+          isTrue,
+        );
+      },
+    );
+
+    test('rethrows when the recovery initialization itself fails', () async {
+      PathProviderPlatform.instance = FakePathProviderPlatform(
+        '${tempDir.path}/does_not_exist',
+      );
+      final instanceToClose = Isar.getInstance(DatabaseModule.dbName);
+      if (instanceToClose != null && instanceToClose.isOpen) {
+        await instanceToClose.close();
+      }
+
+      await expectLater(
+        DatabaseModule.ensureInstanceIntegrity(),
+        throwsA(isA<Object>()),
+      );
+    });
   });
 }
