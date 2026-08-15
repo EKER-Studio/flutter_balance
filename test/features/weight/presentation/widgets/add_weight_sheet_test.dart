@@ -155,4 +155,143 @@ void main() {
     expect(find.text('Date and time cannot be in the future'), findsOneWidget);
     verifyNever(() => weightBloc.add(any()));
   });
+
+  testWidgets('cancel dismisses the sheet without dispatching', (tester) async {
+    await tester.pumpWidget(createTestWidget(const AddWeightSheet()));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Cancel'));
+    await tester.pumpAndSettle();
+
+    expect(find.byType(AddWeightSheet), findsNothing);
+    verifyNever(() => weightBloc.add(any()));
+  });
+
+  testWidgets('choosing a date through the picker updates the field', (
+    tester,
+  ) async {
+    await tester.pumpWidget(createTestWidget(const AddWeightSheet()));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byIcon(Icons.calendar_today_outlined));
+    await tester.pumpAndSettle();
+
+    expect(find.byType(DatePickerDialog), findsOneWidget);
+    await tester.tap(find.text('OK'));
+    await tester.pumpAndSettle();
+
+    expect(find.byType(DatePickerDialog), findsNothing);
+  });
+
+  testWidgets('dismissing the date picker leaves the field unchanged', (
+    tester,
+  ) async {
+    await tester.pumpWidget(createTestWidget(const AddWeightSheet()));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byIcon(Icons.calendar_today_outlined));
+    await tester.pumpAndSettle();
+
+    await tester.tap(
+      find.descendant(
+        of: find.byType(DatePickerDialog),
+        matching: find.text('Cancel'),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.byType(DatePickerDialog), findsNothing);
+  });
+
+  testWidgets('choosing a time through the picker updates the field', (
+    tester,
+  ) async {
+    await tester.pumpWidget(createTestWidget(const AddWeightSheet()));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byIcon(Icons.access_time_outlined));
+    await tester.pumpAndSettle();
+
+    expect(find.byType(TimePickerDialog), findsOneWidget);
+    await tester.tap(find.text('OK'));
+    await tester.pumpAndSettle();
+
+    expect(find.byType(TimePickerDialog), findsNothing);
+  });
+
+  testWidgets('shows validation errors for empty and non-numeric weights', (
+    tester,
+  ) async {
+    await tester.pumpWidget(createTestWidget(const AddWeightSheet()));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Save'));
+    await tester.pumpAndSettle();
+    expect(find.text('Weight cannot be empty'), findsOneWidget);
+
+    final weightField = find.byType(TextFormField).at(0);
+    await tester.enterText(weightField, 'abc');
+    await tester.tap(find.text('Save'));
+    await tester.pumpAndSettle();
+    expect(find.text('Enter a valid number'), findsOneWidget);
+
+    await tester.enterText(weightField, '301');
+    await tester.tap(find.text('Save'));
+    await tester.pumpAndSettle();
+    expect(find.text('Weight must be between 20 and 300 kg'), findsOneWidget);
+    verifyNever(() => weightBloc.add(any()));
+  });
+
+  testWidgets('dispatches AddWeight with a note when one is entered', (
+    tester,
+  ) async {
+    await tester.pumpWidget(createTestWidget(const AddWeightSheet()));
+    await tester.pumpAndSettle();
+
+    final weightField = find.byType(TextFormField).at(0);
+    await tester.enterText(weightField, '72.5');
+    final noteField = find.byType(TextFormField).at(1);
+    await tester.enterText(noteField, 'morning');
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Save'));
+    await tester.pumpAndSettle();
+
+    verify(
+      () => weightBloc.add(
+        any(that: isA<AddWeight>().having((e) => e.note, 'note', 'morning')),
+      ),
+    ).called(1);
+  });
+
+  testWidgets('uses the imperial unit for validation and conversion', (
+    tester,
+  ) async {
+    when(() => storage.read(any())).thenReturn({'measurementUnit': 'imperial'});
+    settingsBloc = AppSettingsBloc();
+
+    await tester.pumpWidget(createTestWidget(const AddWeightSheet()));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Weight in lb'), findsOneWidget);
+
+    final weightField = find.byType(TextFormField).at(0);
+    await tester.enterText(weightField, '160');
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Save'));
+    await tester.pumpAndSettle();
+
+    verify(
+      () => weightBloc.add(
+        any(
+          that: isA<AddWeight>().having(
+            (e) => e.weightKg,
+            'weightKg',
+            closeTo(72.57, 0.01),
+          ),
+        ),
+      ),
+    ).called(1);
+  });
 }
