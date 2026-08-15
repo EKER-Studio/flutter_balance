@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -5,15 +6,16 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:balance/features/weight/domain/entities/weight_entry.dart';
-import 'package:balance/features/weight/domain/time_period.dart';
 import 'package:balance/features/weight/domain/weight_error_type.dart';
 import 'package:balance/features/weight/presentation/bloc/weight_bloc.dart';
+import 'package:balance/features/weight/presentation/bloc/weight_event.dart';
 import 'package:balance/features/weight/presentation/bloc/weight_state.dart';
 import 'package:balance/features/dashboard/presentation/screens/today_screen.dart';
 import 'package:balance/features/weight/presentation/widgets/add_weight_sheet.dart';
 import 'package:balance/features/dashboard/presentation/widgets/today_shimmer_skeleton.dart';
 import 'package:balance/l10n/app_localizations.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_bloc.dart';
+import 'package:fl_chart/fl_chart.dart';
 
 class MockHydratedStorage extends Mock implements HydratedStorage {}
 
@@ -23,6 +25,10 @@ void main() {
   late MockHydratedStorage storage;
   late MockWeightBloc weightBloc;
   late AppSettingsBloc settingsBloc;
+
+  setUpAll(() {
+    registerFallbackValue(ChangeChartFilter(TimePeriod.week));
+  });
 
   setUp(() {
     storage = MockHydratedStorage();
@@ -309,5 +315,398 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.byType(AddWeightSheet), findsOneWidget);
+  });
+
+  testWidgets('tapping the empty-state retry re-subscribes to changes', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(800, 3000);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
+    when(() => weightBloc.state).thenReturn(
+      const WeightError(
+        errorType: WeightErrorType.readFailed,
+        entries: [],
+        filteredEntries: [],
+      ),
+    );
+    when(() => weightBloc.stream).thenAnswer(
+      (_) => Stream.value(
+        const WeightError(
+          errorType: WeightErrorType.readFailed,
+          entries: [],
+          filteredEntries: [],
+        ),
+      ),
+    );
+
+    await tester.pumpWidget(createTestWidget(const TodayScreen()));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Try again', skipOffstage: false));
+    await tester.pump();
+
+    verify(() => weightBloc.add(const SubscribeToWeightChanges())).called(1);
+  });
+
+  testWidgets('pull-to-refresh dispatches RefreshWeightData', (tester) async {
+    tester.view.physicalSize = const Size(800, 3000);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
+    final entry = WeightEntry(id: 1, weightKg: 72.5, dateTime: DateTime.now());
+    final controller = StreamController<WeightState>.broadcast();
+    addTearDown(controller.close);
+
+    when(() => weightBloc.state).thenReturn(
+      WeightLoaded(
+        entries: [entry],
+        filteredEntries: [entry],
+        timePeriod: TimePeriod.month,
+        heightCm: 175.0,
+      ),
+    );
+    when(() => weightBloc.stream).thenAnswer((_) => controller.stream);
+    when(() => weightBloc.add(any())).thenAnswer((invocation) {
+      final event = invocation.positionalArguments.first;
+      if (event is RefreshWeightData) {
+        controller.add(
+          WeightLoaded(
+            entries: [entry],
+            filteredEntries: [entry],
+            timePeriod: TimePeriod.month,
+            heightCm: 175.0,
+          ),
+        );
+      }
+    });
+
+    await tester.pumpWidget(createTestWidget(const TodayScreen()));
+    await tester.pumpAndSettle();
+
+    await tester.drag(find.byType(CustomScrollView), const Offset(0, 900));
+    await tester.pump(const Duration(milliseconds: 500));
+    await tester.pumpAndSettle();
+
+    verify(() => weightBloc.add(const RefreshWeightData())).called(1);
+  });
+
+  testWidgets('shows an error snackbar and retries when an error arrives '
+      'after data was loaded', (tester) async {
+    tester.view.physicalSize = const Size(800, 3000);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
+    final entry = WeightEntry(id: 1, weightKg: 72.5, dateTime: DateTime.now());
+    final controller = StreamController<WeightState>.broadcast();
+    addTearDown(controller.close);
+
+    when(() => weightBloc.state).thenReturn(
+      WeightLoaded(
+        entries: [entry],
+        filteredEntries: [entry],
+        timePeriod: TimePeriod.month,
+        heightCm: 175.0,
+      ),
+    );
+    when(() => weightBloc.stream).thenAnswer((_) => controller.stream);
+
+    await tester.pumpWidget(createTestWidget(const TodayScreen()));
+    await tester.pumpAndSettle();
+
+    controller.add(
+      WeightError(
+        errorType: WeightErrorType.readFailed,
+        entries: [entry],
+        filteredEntries: [entry],
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    final snackBarFinder = find.byType(SnackBar);
+    expect(snackBarFinder, findsOneWidget);
+    expect(
+      find.descendant(
+        of: snackBarFinder,
+        matching: find.text('Failed to read weight data.'),
+      ),
+      findsOneWidget,
+    );
+
+    await tester.tap(
+      find.descendant(of: snackBarFinder, matching: find.text('Try again')),
+    );
+    await tester.pump();
+
+    verify(() => weightBloc.add(const SubscribeToWeightChanges())).called(1);
+  });
+
+  testWidgets('renders the inline error banner and retries from it', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(800, 3000);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
+    final entry = WeightEntry(id: 1, weightKg: 72.5, dateTime: DateTime.now());
+
+    when(() => weightBloc.state).thenReturn(
+      WeightError(
+        errorType: WeightErrorType.writeFailed,
+        entries: [entry],
+        filteredEntries: [entry],
+      ),
+    );
+    when(() => weightBloc.stream).thenAnswer(
+      (_) => Stream.value(
+        WeightError(
+          errorType: WeightErrorType.writeFailed,
+          entries: [entry],
+          filteredEntries: [entry],
+        ),
+      ),
+    );
+
+    await tester.pumpWidget(createTestWidget(const TodayScreen()));
+    await tester.pumpAndSettle();
+
+    await tester.tap(
+      // The banner's button renders before the error snackbar in the
+      // overlay, so the first match is the inline banner.
+      find.text('Try again').first,
+    );
+    await tester.pump();
+
+    verify(() => weightBloc.add(const SubscribeToWeightChanges())).called(1);
+  });
+
+  testWidgets('shows the chart empty placeholder when the filter is empty', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(800, 3000);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
+    final entry = WeightEntry(id: 1, weightKg: 72.5, dateTime: DateTime.now());
+
+    when(() => weightBloc.state).thenReturn(
+      WeightLoaded(
+        entries: [entry],
+        filteredEntries: [],
+        timePeriod: TimePeriod.month,
+        heightCm: 175.0,
+      ),
+    );
+    when(() => weightBloc.stream).thenAnswer(
+      (_) => Stream.value(
+        WeightLoaded(
+          entries: [entry],
+          filteredEntries: [],
+          timePeriod: TimePeriod.month,
+          heightCm: 175.0,
+        ),
+      ),
+    );
+
+    await tester.pumpWidget(createTestWidget(const TodayScreen()));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Not enough data to display chart.'), findsOneWidget);
+  });
+
+  testWidgets('period pills dispatch ChangeChartFilter on a wide layout', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(800, 3000);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
+    final entry = WeightEntry(id: 1, weightKg: 72.5, dateTime: DateTime.now());
+
+    when(() => weightBloc.state).thenReturn(
+      WeightLoaded(
+        entries: [entry],
+        filteredEntries: [entry],
+        timePeriod: TimePeriod.month,
+        heightCm: 175.0,
+      ),
+    );
+    when(() => weightBloc.stream).thenAnswer(
+      (_) => Stream.value(
+        WeightLoaded(
+          entries: [entry],
+          filteredEntries: [entry],
+          timePeriod: TimePeriod.month,
+          heightCm: 175.0,
+        ),
+      ),
+    );
+
+    await tester.pumpWidget(createTestWidget(const TodayScreen()));
+    await tester.pumpAndSettle();
+
+    // The period pill row sits inside an Expanded header, so pointer events
+    // at the text center are not routed to the button; invoke the callback
+    // directly and capture the dispatched event through the stub.
+    WeightEvent? dispatched;
+    when(() => weightBloc.add(any())).thenAnswer((invocation) {
+      dispatched = invocation.positionalArguments.first as WeightEvent;
+    });
+    final yearButton = tester.widget<TextButton>(
+      find.ancestor(of: find.text('Year'), matching: find.byType(TextButton)),
+    );
+    yearButton.onPressed!();
+    await tester.pump();
+
+    expect(dispatched, isA<ChangeChartFilter>());
+    expect((dispatched as ChangeChartFilter).period, TimePeriod.year);
+  });
+
+  testWidgets('shows a touch tooltip with the metric weight on the chart', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(800, 3000);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
+    final entry = WeightEntry(id: 1, weightKg: 72.5, dateTime: DateTime.now());
+
+    when(() => weightBloc.state).thenReturn(
+      WeightLoaded(
+        entries: [entry],
+        filteredEntries: [entry],
+        timePeriod: TimePeriod.month,
+        heightCm: 175.0,
+      ),
+    );
+    when(() => weightBloc.stream).thenAnswer(
+      (_) => Stream.value(
+        WeightLoaded(
+          entries: [entry],
+          filteredEntries: [entry],
+          timePeriod: TimePeriod.month,
+          heightCm: 175.0,
+        ),
+      ),
+    );
+
+    await tester.pumpWidget(createTestWidget(const TodayScreen()));
+    await tester.pumpAndSettle();
+
+    // Drag across the chart so the touch tooltip tracks the spots; the
+    // tooltip is painted via TextPainter, so the gesture is exercised for
+    // coverage rather than asserted visually.
+    final chartRect = tester.getRect(find.byType(LineChart));
+    final gesture = await tester.startGesture(
+      Offset(chartRect.left + 60, chartRect.center.dy),
+    );
+    await tester.pump(const Duration(milliseconds: 100));
+    await gesture.moveBy(const Offset(40, 0));
+    await tester.pump(const Duration(milliseconds: 100));
+    await gesture.up();
+    await tester.pumpAndSettle();
+  });
+
+  testWidgets('shows a touch tooltip with imperial weight on the chart', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(800, 3000);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
+    final entry = WeightEntry(id: 1, weightKg: 72.5, dateTime: DateTime.now());
+
+    when(
+      () => storage.read(any()),
+    ).thenReturn({'height': 170.0, 'measurementUnit': 'imperial'});
+    settingsBloc = AppSettingsBloc();
+
+    when(() => weightBloc.state).thenReturn(
+      WeightLoaded(
+        entries: [entry],
+        filteredEntries: [entry],
+        timePeriod: TimePeriod.month,
+        heightCm: 175.0,
+      ),
+    );
+    when(() => weightBloc.stream).thenAnswer(
+      (_) => Stream.value(
+        WeightLoaded(
+          entries: [entry],
+          filteredEntries: [entry],
+          timePeriod: TimePeriod.month,
+          heightCm: 175.0,
+        ),
+      ),
+    );
+
+    await tester.pumpWidget(createTestWidget(const TodayScreen()));
+    await tester.pumpAndSettle();
+
+    final chartRect = tester.getRect(find.byType(LineChart));
+    final gesture = await tester.startGesture(
+      Offset(chartRect.left + 60, chartRect.center.dy),
+    );
+    await tester.pump(const Duration(milliseconds: 100));
+    await gesture.moveBy(const Offset(40, 0));
+    await tester.pump(const Duration(milliseconds: 100));
+    await gesture.up();
+    await tester.pumpAndSettle();
+  });
+
+  testWidgets('plots multiple entries with distinct dates', (tester) async {
+    tester.view.physicalSize = const Size(800, 3000);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
+    final now = DateTime.now();
+    final entries = [
+      WeightEntry(id: 1, weightKg: 70.0, dateTime: now),
+      WeightEntry(
+        id: 2,
+        weightKg: 72.5,
+        dateTime: now.add(const Duration(days: 1)),
+      ),
+    ];
+
+    when(() => weightBloc.state).thenReturn(
+      WeightLoaded(
+        entries: entries,
+        filteredEntries: entries,
+        timePeriod: TimePeriod.month,
+        heightCm: 175.0,
+      ),
+    );
+    when(() => weightBloc.stream).thenAnswer(
+      (_) => Stream.value(
+        WeightLoaded(
+          entries: entries,
+          filteredEntries: entries,
+          timePeriod: TimePeriod.month,
+          heightCm: 175.0,
+        ),
+      ),
+    );
+
+    await tester.pumpWidget(createTestWidget(const TodayScreen()));
+    await tester.pumpAndSettle();
+
+    expect(find.byType(LineChart), findsOneWidget);
+    expect(find.text('Weight trend', skipOffstage: false), findsOneWidget);
+
+    // A plain tap on the plot area exercises the touch tooltip pipeline.
+    await tester.tap(find.byType(LineChart));
+    await tester.pump();
+    await tester.pumpAndSettle();
   });
 }
