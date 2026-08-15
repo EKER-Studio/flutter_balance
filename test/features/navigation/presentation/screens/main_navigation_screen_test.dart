@@ -54,7 +54,38 @@ void main() {
     );
   }
 
+  /// Renders the navigation shell with a non-const [MainNavigationScreen] so
+  /// the runtime constructor executes (const canonicalization skips it).
+  Widget buildNonConstSubject() {
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(create: (_) => AppSettingsBloc()),
+        BlocProvider(
+          create: (_) =>
+              WeightBloc(repository: repository)
+                ..add(const SubscribeToWeightChanges()),
+        ),
+      ],
+      child: MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: MainNavigationScreen(key: const ValueKey('non_const_nav')),
+      ),
+    );
+  }
+
   group('MainNavigationScreen Tests', () {
+    testWidgets('renders the shell when constructed non-const', (
+      tester,
+    ) async {
+      await tester.pumpWidget(buildNonConstSubject());
+      await tester.pumpAndSettle();
+
+      expect(find.byType(NavigationBar), findsOneWidget);
+      expect(find.text('Today'), findsWidgets);
+      expect(tester.takeException(), isNull);
+    });
+
     testWidgets('renders all 4 bottom navigation tabs', (tester) async {
       await tester.pumpWidget(buildSubject());
       await tester.pumpAndSettle();
