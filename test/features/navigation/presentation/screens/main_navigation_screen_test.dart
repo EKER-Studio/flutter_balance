@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
@@ -93,6 +94,21 @@ void main() {
       await tester.tap(find.widgetWithText(NavigationDestination, 'Today'));
       await tester.pumpAndSettle();
       expect(find.byType(TodayScreen), findsOneWidget);
+    });
+
+    testWidgets('renders the focus overlay when a destination is focused via '
+        'keyboard traversal', (tester) async {
+      await tester.pumpWidget(buildSubject());
+      await tester.pumpAndSettle();
+
+      // Move keyboard focus into the navigation bar.
+      for (var i = 0; i < 10; i++) {
+        await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+        await tester.pump();
+      }
+      await tester.pumpAndSettle();
+
+      expect(tester.takeException(), isNull);
     });
   });
 }
