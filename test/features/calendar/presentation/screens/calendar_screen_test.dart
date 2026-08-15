@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
@@ -10,6 +11,8 @@ import 'package:balance/features/weight/presentation/bloc/weight_bloc.dart';
 import 'package:balance/features/weight/presentation/bloc/weight_state.dart';
 import 'package:balance/features/calendar/presentation/screens/calendar_screen.dart';
 import 'package:balance/features/calendar/presentation/widgets/calendar_error_card.dart';
+import 'package:balance/features/calendar/presentation/widgets/calendar_grid.dart';
+import 'package:balance/features/calendar/presentation/widgets/calendar_day_cell.dart';
 import 'package:balance/features/weight/domain/weight_error_type.dart';
 import 'package:balance/features/weight/presentation/widgets/add_weight_sheet.dart';
 import 'package:balance/l10n/app_localizations.dart';
@@ -240,6 +243,58 @@ void main() {
         );
 
         expect(find.text('2 pomiary • Średnia waga: 165.3 lb'), findsOneWidget);
+      },
+    );
+
+    testWidgets(
+      'CalendarScreen focuses the month of a day selected during a page transition',
+      (tester) async {
+        final now = DateTime.now();
+        final previousMonth = DateTime(now.year, now.month - 1, 1);
+
+        await tester.pumpWidget(
+          buildSubject(
+            const WeightLoaded(
+              entries: [],
+              filteredEntries: [],
+              timePeriod: TimePeriod.week,
+              heightCm: null,
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        // Start navigating to the previous month. The incoming page is only
+        // built into the tree after the animation starts, so advance in small
+        // steps until both pages exist but before onPageChanged (~100 ms)
+        // updates the focused month.
+        await tester.tap(find.byIcon(Icons.chevron_left));
+        var advance = 0;
+        while (find.byType(CalendarGrid).evaluate().length < 2 &&
+            advance < 10) {
+          await tester.pump(const Duration(milliseconds: 20));
+          advance++;
+        }
+        expect(find.byType(CalendarGrid), findsNWidgets(2));
+
+        // Select day 1 of the incoming previous month page mid-transition.
+        // Coordinate-based gestures do not reach page children while the
+        // page animation is in flight, so invoke the cell callback directly.
+        final dayOneCell = find.ancestor(
+          of: find.descendant(
+            of: find.byType(CalendarGrid).first,
+            matching: find.text('1'),
+          ),
+          matching: find.byType(CalendarDayCell),
+        );
+        tester.widget<CalendarDayCell>(dayOneCell.first).onTap!();
+        await tester.pumpAndSettle();
+
+        // The selected day now lies in the previous month: the details card
+        // shows it and the month header points at the previous month.
+        final expectedCardDate = DateFormat.MMMMd('pl').format(previousMonth);
+        expect(find.textContaining(expectedCardDate), findsOneWidget);
+        expect(find.textContaining(_monthName(previousMonth)), findsWidgets);
       },
     );
   });
