@@ -135,4 +135,85 @@ void main() {
     expect(find.byType(WeightChart), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
+
+  testWidgets('WeightChart renders a dashed target line in metric units', (
+    tester,
+  ) async {
+    final entries = [
+      WeightEntry(id: 1, weightKg: 74, dateTime: DateTime(2026, 1, 10)),
+      WeightEntry(id: 2, weightKg: 72, dateTime: DateTime(2026, 1, 9)),
+    ];
+
+    await tester.pumpWidget(
+      buildSubject(entries: entries, period: TimePeriod.week, targetWeight: 70),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.byType(WeightChart), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('WeightChart converts the target weight to imperial units', (
+    tester,
+  ) async {
+    final entries = [
+      WeightEntry(id: 1, weightKg: 74, dateTime: DateTime(2026, 1, 10)),
+      WeightEntry(id: 2, weightKg: 72, dateTime: DateTime(2026, 1, 9)),
+    ];
+
+    await tester.pumpWidget(
+      buildSubject(entries: entries, period: TimePeriod.week, targetWeight: 70),
+    );
+
+    final settingsBloc = BlocProvider.of<AppSettingsBloc>(
+      tester.element(find.byType(WeightChart)),
+    );
+    settingsBloc.add(const UpdateMeasurementUnit(MeasurementUnit.imperial));
+    await tester.pumpAndSettle();
+
+    expect(find.byType(WeightChart), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('WeightChart formats month axis labels with MMMd', (
+    tester,
+  ) async {
+    final entries = [
+      WeightEntry(id: 1, weightKg: 74, dateTime: DateTime(2026, 1, 10)),
+      WeightEntry(id: 2, weightKg: 72, dateTime: DateTime(2026, 1, 9)),
+    ];
+
+    await tester.pumpWidget(
+      buildSubject(entries: entries, period: TimePeriod.month),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.byType(WeightChart), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('WeightChart ignores deselection of the active chip', (
+    tester,
+  ) async {
+    final entries = [
+      WeightEntry(id: 1, weightKg: 74, dateTime: DateTime(2026, 1, 10)),
+    ];
+
+    TimePeriod? changedTo = TimePeriod.all;
+
+    await tester.pumpWidget(
+      buildSubject(
+        entries: entries,
+        period: TimePeriod.week,
+        onPeriodChanged: (period) => changedTo = period,
+      ),
+    );
+
+    // Tapping the already-active chip deselects it, which must not fire
+    // the change callback.
+    await tester.tap(find.text('Tydzień'));
+    await tester.pumpAndSettle();
+
+    expect(changedTo, TimePeriod.all);
+  });
 }
