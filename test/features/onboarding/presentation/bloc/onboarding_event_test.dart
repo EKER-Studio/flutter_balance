@@ -111,6 +111,13 @@ void main() {
       expect(const OnboardingCompleted(), const OnboardingCompleted());
     });
 
+    test('parameterless events expose empty props', () {
+      expect(const OnboardingStarted().props, const <Object?>[]);
+      expect(const OnboardingStepAdvanced().props, const <Object?>[]);
+      expect(const OnboardingStepRewound().props, const <Object?>[]);
+      expect(const OnboardingCompleted().props, const <Object?>[]);
+    });
+
     test('events with identical fields hash equally', () {
       expect(
         const OnboardingUnitSelected(MeasurementUnit.metric).hashCode,
