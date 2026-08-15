@@ -9,9 +9,13 @@ import 'package:balance/features/weight/domain/repositories/weight_repository.da
 import 'package:balance/features/weight/presentation/bloc/weight_bloc.dart';
 import 'package:balance/features/weight/presentation/bloc/weight_state.dart';
 import 'package:balance/features/calendar/presentation/screens/calendar_screen.dart';
+import 'package:balance/features/calendar/presentation/widgets/calendar_error_card.dart';
+import 'package:balance/features/weight/domain/weight_error_type.dart';
 import 'package:balance/features/weight/presentation/widgets/add_weight_sheet.dart';
 import 'package:balance/l10n/app_localizations.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_bloc.dart';
+import 'package:balance/features/settings/presentation/bloc/app_settings_event.dart';
+import 'package:balance/core/models/measurement_unit.dart';
 
 class MockWeightRepository extends Mock implements WeightRepository {}
 
@@ -35,10 +39,10 @@ void main() {
     return bloc;
   }
 
-  Widget buildSubject(WeightState state) {
+  Widget buildSubject(WeightState state, {AppSettingsBloc? settingsBloc}) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider.value(value: AppSettingsBloc()),
+        BlocProvider.value(value: settingsBloc ?? AppSettingsBloc()),
         BlocProvider.value(value: createBloc(state)),
       ],
       child: const MaterialApp(
@@ -168,6 +172,74 @@ void main() {
         await tester.pumpAndSettle();
 
         expect(find.byType(AddWeightSheet), findsOneWidget);
+      },
+    );
+
+    testWidgets('CalendarScreen renders error card for WeightError state', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        buildSubject(
+          const WeightError(
+            errorType: WeightErrorType.readFailed,
+            entries: [],
+            filteredEntries: [],
+          ),
+        ),
+      );
+
+      expect(find.byType(CalendarErrorCard), findsOneWidget);
+    });
+
+    testWidgets(
+      'CalendarScreen shows average for multiple entries on the selected day',
+      (tester) async {
+        final now = DateTime.now();
+        final entries = [
+          WeightEntry(id: 1, weightKg: 70.0, dateTime: now),
+          WeightEntry(id: 2, weightKg: 80.0, dateTime: now),
+        ];
+
+        await tester.pumpWidget(
+          buildSubject(
+            WeightLoaded(
+              entries: entries,
+              filteredEntries: entries,
+              timePeriod: TimePeriod.week,
+              heightCm: null,
+            ),
+          ),
+        );
+
+        expect(find.text('2 pomiary • Średnia waga: 75.0 kg'), findsOneWidget);
+      },
+    );
+
+    testWidgets(
+      'CalendarScreen shows imperial average for multiple entries on the selected day',
+      (tester) async {
+        final now = DateTime.now();
+        final entries = [
+          WeightEntry(id: 1, weightKg: 70.0, dateTime: now),
+          WeightEntry(id: 2, weightKg: 80.0, dateTime: now),
+        ];
+
+        final settingsBloc = AppSettingsBloc();
+        settingsBloc.add(const UpdateMeasurementUnit(MeasurementUnit.imperial));
+
+        await tester.pumpWidget(
+          buildSubject(
+            WeightLoaded(
+              entries: entries,
+              filteredEntries: entries,
+              timePeriod: TimePeriod.week,
+              heightCm: null,
+            ),
+            settingsBloc: settingsBloc,
+          ),
+        );
+
+        expect(find.text('2 pomiary • Średnia waga: 165.3 lb'), findsOneWidget);
       },
     );
   });
