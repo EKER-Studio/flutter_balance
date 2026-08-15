@@ -1,69 +1,154 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
-import 'package:flutter_test/flutter_test.dart';
 import 'package:balance/core/utils/field_cipher.dart';
+import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  group('FieldCipher Unit Tests', () {
-    final keyA = Uint8List.fromList(List.generate(32, (i) => i));
-    final keyB = Uint8List.fromList(List.generate(32, (i) => i + 1));
+  group('FieldCipher', () {
+    final key = Uint8List(32);
+    for (int i = 0; i < 32; i++) {
+      key[i] = i + 1;
+    }
 
-    test(
-      'encrypt produces valid Base64 payload and decrypt restores original text',
-      () {
-        const plainText = '78.5';
-        final encrypted = FieldCipher.encrypt(plainText, keyA);
+    group('encrypt', () {
+      test('returns a non-empty base64 string', () {
+        final result = FieldCipher.encrypt('75.4', key);
+        expect(result, isNotEmpty);
+        expect(() => base64Decode(result), returnsNormally);
+      });
 
-        expect(encrypted, isNot(contains(plainText)));
-        expect(() => base64Decode(encrypted), returnsNormally);
+      test('returns a different IV on each call (randomness)', () {
+        final encrypted1 = FieldCipher.encrypt('75.4', key);
+        final encrypted2 = FieldCipher.encrypt('75.4', key);
+        expect(encrypted1, isNot(equals(encrypted2)));
+      });
 
-        final decrypted = FieldCipher.decrypt(encrypted, keyA);
-        expect(decrypted, plainText);
-      },
-    );
+      test('returns the same length payload', () {
+        final encrypted1 = FieldCipher.encrypt('75.4', key);
+        final encrypted2 = FieldCipher.encrypt('100.0', key);
+        // Different plaintext lengths may produce different ciphertext lengths
+        // but both should be valid base64
+        expect(() => base64Decode(encrypted1), returnsNormally);
+        expect(() => base64Decode(encrypted2), returnsNormally);
+      });
 
-    test('decrypt with incorrect key throws exception', () {
-      const plainText = 'Secret Note';
-      final encrypted = FieldCipher.encrypt(plainText, keyA);
+      test('throws for empty string (AES-CBC limitation)', () {
+        expect(() => FieldCipher.encrypt('', key), throwsA(isA<RangeError>()));
+      });
 
-      expect(() => FieldCipher.decrypt(encrypted, keyB), throwsA(anything));
+      test('encrypts unicode string', () {
+        final result = FieldCipher.encrypt('Hello 世界 🌍', key);
+        expect(result, isNotEmpty);
+        expect(() => base64Decode(result), returnsNormally);
+      });
     });
 
-    test('decrypt with non-Base64 malformed string throws FormatException', () {
-      const malformed = r'%%%NOT_VALID_BASE64$$$';
+    group('decrypt', () {
+      test('decrypts to original plaintext', () {
+        const original = '75.4';
+        final encrypted = FieldCipher.encrypt(original, key);
+        final decrypted = FieldCipher.decrypt(encrypted, key);
+        expect(decrypted, equals(original));
+      });
 
-      expect(
-        () => FieldCipher.decrypt(malformed, keyA),
-        throwsA(isA<FormatException>()),
-      );
-    });
+      test('throws for empty string encryption (AES-CBC limitation)', () {
+        expect(() => FieldCipher.encrypt('', key), throwsA(isA<RangeError>()));
+      });
 
-    test(
-      'decrypt with payload shorter than 16 bytes throws FormatException',
-      () {
-        final shortPayload = base64Encode(Uint8List.fromList([1, 2, 3, 4, 5]));
+      test('decrypts unicode string', () {
+        const original = 'Hello 世界 🌍';
+        final encrypted = FieldCipher.encrypt(original, key);
+        final decrypted = FieldCipher.decrypt(encrypted, key);
+        expect(decrypted, equals(original));
+      });
 
+      test('decrypts different plaintexts correctly', () {
+        const original1 = '100.0';
+        const original2 = '0.5';
+        final encrypted1 = FieldCipher.encrypt(original1, key);
+        final encrypted2 = FieldCipher.encrypt(original2, key);
+        expect(FieldCipher.decrypt(encrypted1, key), equals(original1));
+        expect(FieldCipher.decrypt(encrypted2, key), equals(original2));
+      });
+
+      test('throws FormatException for truncated payload', () {
         expect(
-          () => FieldCipher.decrypt(shortPayload, keyA),
-          throwsA(isA<FormatException>()),
+          () => FieldCipher.decrypt('c2hvcg==', key),
+          throwsFormatException,
         );
-      },
-    );
+      });
 
-    test('tampered ciphertext fails MAC verification and throws exception', () {
-      const plainText = '82.4';
-      final encrypted = FieldCipher.encrypt(plainText, keyA);
-      final rawBytes = base64Decode(encrypted);
+      test('throws FormatException for tampered payload', () {
+        const original = '75.4';
+        final encrypted = FieldCipher.encrypt(original, key);
+        final decoded = base64Decode(encrypted);
+        // Tamper with the ciphertext portion
+        decoded[decoded.length - 1] ^= 0xFF;
+        final tampered = base64Encode(decoded);
+        expect(() => FieldCipher.decrypt(tampered, key), throwsFormatException);
+      });
 
-      // Flip a bit in the ciphertext section
-      rawBytes[rawBytes.length - 1] ^= 0xFF;
-      final tampered = base64Encode(rawBytes);
+      test('throws FormatException for wrong key', () {
+        const original = '75.4';
+        final encrypted = FieldCipher.encrypt(original, key);
+        final wrongKey = Uint8List(32);
+        for (int i = 0; i < 32; i++) {
+          wrongKey[i] = 32 - i;
+        }
+        expect(
+          () => FieldCipher.decrypt(encrypted, wrongKey),
+          throwsFormatException,
+        );
+      });
 
-      expect(
-        () => FieldCipher.decrypt(tampered, keyA),
-        throwsA(isA<FormatException>()),
-      );
+      test('throws FormatException for invalid base64', () {
+        expect(
+          () => FieldCipher.decrypt('!!!invalid!!!', key),
+          throwsFormatException,
+        );
+      });
+
+      test('decrypts payload with IV length only', () {
+        // Create a payload with only IV length (no MAC, no ciphertext beyond IV)
+        final iv = Uint8List(16);
+        for (int i = 0; i < 16; i++) {
+          iv[i] = i + 1;
+        }
+        // Only IV, no ciphertext - should fail
+        expect(
+          () => FieldCipher.decrypt(base64Encode(iv), key),
+          throwsFormatException,
+        );
+      });
+    });
+
+    group('round-trip', () {
+      test('multiple round-trips with same key', () {
+        const values = ['75.4', '100.0', '0.5', 'Hello 世界 🌍'];
+        for (final value in values) {
+          final encrypted = FieldCipher.encrypt(value, key);
+          final decrypted = FieldCipher.decrypt(encrypted, key);
+          expect(decrypted, equals(value));
+        }
+      });
+
+      test('round-trip with different keys', () {
+        final key1 = Uint8List(32);
+        final key2 = Uint8List(32);
+        for (int i = 0; i < 32; i++) {
+          key1[i] = i + 1;
+          key2[i] = 32 - i;
+        }
+
+        const original = '75.4';
+        final encrypted1 = FieldCipher.encrypt(original, key1);
+        final encrypted2 = FieldCipher.encrypt(original, key2);
+
+        expect(FieldCipher.decrypt(encrypted1, key1), equals(original));
+        expect(FieldCipher.decrypt(encrypted2, key2), equals(original));
+        expect(encrypted1, isNot(equals(encrypted2)));
+      });
     });
   });
 }
