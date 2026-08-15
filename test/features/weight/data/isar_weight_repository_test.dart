@@ -15,6 +15,8 @@ import 'package:balance/features/weight/domain/weight_error_type.dart';
 
 class MockFlutterSecureStorage extends Mock implements FlutterSecureStorage {}
 
+class MockIsar extends Mock implements Isar {}
+
 /// Polls [predicate] until it returns true or [timeout] elapses.
 Future<void> waitUntil(
   bool Function() predicate, {
@@ -598,6 +600,97 @@ void main() {
             ),
           ),
         );
+        expect(
+          () => repo.clearAllData(),
+          throwsA(
+            isA<WeightDatabaseFailure>().having(
+              (e) => e.type,
+              'type',
+              WeightErrorType.wipeFailed,
+            ),
+          ),
+        );
+      },
+    );
+
+    test(
+      'watchAllEntries decryption failures surface as read-failed exceptions',
+      () async {
+        if (isar == null) {
+          markTestSkipped(
+            'Isar native library not available in this environment',
+          );
+          return;
+        }
+        when(
+          () => mockSecureStorage.read(key: 'isar_encryption_key'),
+        ).thenAnswer((_) async => 'not-valid-base64!!');
+
+        final repo = IsarWeightRepository(
+          isar: isar!,
+          secureStorage: mockSecureStorage,
+        );
+
+        final errors = <Object>[];
+        final subscription = repo.watchAllEntries().listen(
+          (_) {},
+          onError: (Object error, StackTrace stackTrace) => errors.add(error),
+        );
+        addTearDown(subscription.cancel);
+
+        await waitUntil(() => errors.isNotEmpty);
+        expect(
+          errors.first,
+          isA<WeightDatabaseFailure>().having(
+            (e) => e.type,
+            'type',
+            WeightErrorType.readFailed,
+          ),
+        );
+      },
+    );
+
+    test(
+      'deleteEntry unexpected errors surface as delete-failed exceptions',
+      () async {
+        final mockIsar = MockIsar();
+        when(() => mockIsar.name).thenReturn('mock_isar_delete');
+        when(() => mockIsar.writeTxn<void>(any())).thenAnswer(
+          (_) async => throw StateError('unexpected delete failure'),
+        );
+
+        final repo = IsarWeightRepository(
+          isar: mockIsar,
+          encryptionKey: testKeyA,
+        );
+
+        expect(
+          () => repo.deleteEntry(1),
+          throwsA(
+            isA<WeightDatabaseFailure>().having(
+              (e) => e.type,
+              'type',
+              WeightErrorType.deleteEntryFailed,
+            ),
+          ),
+        );
+      },
+    );
+
+    test(
+      'clearAllData unexpected errors surface as wipe-failed exceptions',
+      () async {
+        final mockIsar = MockIsar();
+        when(() => mockIsar.name).thenReturn('mock_isar_clear');
+        when(
+          () => mockIsar.writeTxn<void>(any()),
+        ).thenAnswer((_) async => throw StateError('unexpected wipe failure'));
+
+        final repo = IsarWeightRepository(
+          isar: mockIsar,
+          encryptionKey: testKeyA,
+        );
+
         expect(
           () => repo.clearAllData(),
           throwsA(

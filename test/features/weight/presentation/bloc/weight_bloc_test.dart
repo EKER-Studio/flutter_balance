@@ -45,6 +45,7 @@ void main() {
     when(() => repository.getAllEntries()).thenAnswer((_) async => []);
     when(() => repository.addEntry(any())).thenAnswer((_) async {});
     when(() => repository.deleteEntry(any())).thenAnswer((_) async {});
+    when(() => repository.clearAllData()).thenAnswer((_) async {});
     when(() => repository.bulkImportEntries(any())).thenAnswer((_) async => 1);
     when(
       () => healthService.writeWeight(
@@ -89,6 +90,101 @@ void main() {
         isA<WeightLoading>(),
         isA<WeightLoaded>().having((s) => s.entries, 'entries', isEmpty),
       ],
+    );
+
+    blocTest<WeightBloc, WeightState>(
+      'emits [WeightLoading, WeightError] with the domain error type when '
+      'the stream emits a WeightRepositoryException',
+      build: () {
+        when(() => repository.watchAllEntries()).thenAnswer(
+          (_) => Stream.error(
+            WeightRepositoryException(
+              type: WeightErrorType.readFailed,
+              message: 'stream failure',
+            ),
+          ),
+        );
+        return WeightBloc(repository: repository);
+      },
+      act: (bloc) => bloc.add(SubscribeToWeightChanges()),
+      expect: () => [
+        isA<WeightLoading>(),
+        isA<WeightError>().having(
+          (s) => s.errorType,
+          'errorType',
+          WeightErrorType.readFailed,
+        ),
+      ],
+    );
+
+    blocTest<WeightBloc, WeightState>(
+      'emits empty WeightLoaded after ClearAllWeightData succeeds',
+      build: () => WeightBloc(repository: repository),
+      seed: () => WeightLoaded(
+        entries: [
+          WeightEntry(id: 1, weightKg: 70, dateTime: DateTime(2025, 1, 1)),
+        ],
+        filteredEntries: [
+          WeightEntry(id: 1, weightKg: 70, dateTime: DateTime(2025, 1, 1)),
+        ],
+        heightCm: 170,
+      ),
+      act: (bloc) => bloc.add(const ClearAllWeightData()),
+      expect: () => [
+        isA<WeightLoaded>()
+            .having((s) => s.entries, 'entries', isEmpty)
+            .having((s) => s.heightCm, 'heightCm', 170),
+      ],
+    );
+
+    blocTest<WeightBloc, WeightState>(
+      'imports new entries and emits WeightLoaded on successful import',
+      build: () => WeightBloc(
+        repository: repository,
+        appSettingsBloc: buildSettingsBloc(isHealthSyncEnabled: false),
+        healthService: healthService,
+      ),
+      seed: () =>
+          const WeightLoaded(entries: [], filteredEntries: [], heightCm: 170),
+      act: (bloc) => bloc.add(
+        ImportWeightEntries([
+          WeightEntry(id: 0, weightKg: 80.0, dateTime: DateTime(2026, 1, 1)),
+        ]),
+      ),
+      expect: () => [
+        isA<WeightLoaded>().having((s) => s.heightCm, 'heightCm', 170),
+      ],
+      verify: (_) {
+        verify(() => repository.bulkImportEntries(any())).called(1);
+      },
+    );
+
+    blocTest<WeightBloc, WeightState>(
+      'mirrors imported entries to the health service when sync is enabled',
+      build: () => WeightBloc(
+        repository: repository,
+        appSettingsBloc: buildSettingsBloc(),
+        healthService: healthService,
+      ),
+      seed: () =>
+          const WeightLoaded(entries: [], filteredEntries: [], heightCm: 170),
+      act: (bloc) async {
+        bloc.add(
+          ImportWeightEntries([
+            WeightEntry(id: 0, weightKg: 80.0, dateTime: DateTime(2026, 1, 1)),
+          ]),
+        );
+        await Future<void>.delayed(Duration.zero);
+        await Future<void>.delayed(Duration.zero);
+      },
+      verify: (_) {
+        verify(
+          () => healthService.writeWeight(
+            weightKg: any(named: 'weightKg'),
+            timestamp: any(named: 'timestamp'),
+          ),
+        ).called(1);
+      },
     );
 
     blocTest<WeightBloc, WeightState>(
@@ -432,6 +528,18 @@ void main() {
       expect(state.timePeriod, TimePeriod.year);
     });
 
+    test(
+      'fromJson falls back to the week period for an unknown timePeriod value',
+      () {
+        final bloc = WeightBloc(repository: repository);
+        final state = bloc.fromJson({'heightCm': 170, 'timePeriod': 'bogus'});
+
+        expect(state, isA<WeightInitial>());
+        expect(state!.heightCm, 170.0);
+        expect(state.timePeriod, TimePeriod.week);
+      },
+    );
+
     test('close cancels stream subscription cleanly', () async {
       final bloc = WeightBloc(repository: repository);
       await bloc.close();
@@ -720,6 +828,49 @@ void main() {
           expect(imported.length, 1);
           expect(imported.single.weightKg, 73);
           expect(imported.single.dateTime, DateTime(2026, 1, 2, 8));
+        },
+      );
+
+      blocTest<WeightBloc, WeightState>(
+        'mirrors local entries missing from the health platform when '
+        'SyncHealthEntries finds no remote counterpart',
+        build: () {
+          when(() => repository.getAllEntries()).thenAnswer(
+            (_) async => [
+              WeightEntry(
+                id: 1,
+                weightKg: 74,
+                dateTime: DateTime(2026, 2, 1, 8),
+              ),
+            ],
+          );
+          when(
+            () => healthService.fetchWeightHistory(
+              start: any(named: 'start'),
+              end: any(named: 'end'),
+            ),
+          ).thenAnswer((_) async => const []);
+          return WeightBloc(
+            repository: repository,
+            appSettingsBloc: buildSettingsBloc(),
+            healthService: healthService,
+          );
+        },
+        seed: () =>
+            const WeightLoaded(entries: [], filteredEntries: [], heightCm: 170),
+        act: (bloc) async {
+          bloc.add(const SyncHealthEntries());
+          await Future<void>.delayed(Duration.zero);
+          await Future<void>.delayed(Duration.zero);
+        },
+        verify: (_) {
+          verify(
+            () => healthService.writeWeight(
+              weightKg: any(named: 'weightKg'),
+              timestamp: any(named: 'timestamp'),
+            ),
+          ).called(1);
+          verifyNever(() => repository.bulkImportEntries(any()));
         },
       );
 
