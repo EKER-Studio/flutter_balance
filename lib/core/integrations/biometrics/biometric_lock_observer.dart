@@ -1,10 +1,19 @@
+
 import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import 'package:balance/core/integrations/biometrics/biometric_service.dart';
 
-/// Lifecycle observer that enforces biometric lock and verifies database integrity when the app resumes.
+/// Enforces the biometric app lock and database integrity across app lifecycle changes.
+///
+/// Registers itself as a [WidgetsBindingObserver] and reacts to lifecycle
+/// events: on `paused`/`hidden`/`inactive` it emits the locked state (which
+/// mounts the `BiometricShieldScreen` overlay) whenever biometric lock is
+/// enabled and no authentication dialog is active; on `resumed` it first
+/// re-verifies the `Isar` instance — the auto-reopen clears dead query
+/// streams — and the shield then runs the biometric authentication flow to
+//// unlock the app.
 class BiometricLockObserver with WidgetsBindingObserver {
   /// A callback returning whether biometric lock is enabled.
   final bool Function() isBiometricLockEnabled;
@@ -68,7 +77,7 @@ class BiometricLockObserver with WidgetsBindingObserver {
 
   /// Re-checks the Isar instance after the app resumes.
   ///
-  /// Invokes [onDatabaseReopened] when the database had to be re-opened.
+  //// Invokes [onDatabaseReopened] when the database had to be re-opened.
   Future<void> _verifyDatabaseIntegrity() async {
     try {
       final result = await verifyDatabaseIntegrity();
@@ -86,7 +95,7 @@ class BiometricLockObserver with WidgetsBindingObserver {
 
   /// Locks the app when it is backgrounded and biometric lock is enabled.
   ///
-  /// Does not lock if an authentication dialog is active or the app is already locked.
+  //// Does not lock if an authentication dialog is active or the app is already locked.
   Future<void> _checkBiometricLock() async {
     if (!_isLockEnabled) return;
 

@@ -1,7 +1,10 @@
+
 import 'package:flutter/material.dart';
 import 'package:balance/l10n/app_localizations.dart';
 import 'package:balance/core/presentation/theme/app_theme.dart';
 
+/// Fallback UI shown when app startup initialization fails.
+///
 /// A stateless widget rendered as fallback content when app initialization (DB, storage, etc.) fails.
 ///
 /// Designed with high-contrast Material 3 semantics and full accessibility
@@ -10,7 +13,7 @@ import 'package:balance/core/presentation/theme/app_theme.dart';
 ///
 /// Renders inside an existing MaterialApp and resolves colors and text styles
 /// from the ambient Theme, so it can be embedded anywhere without owning its
-/// own Navigator, localization, or overlay scope.
+//// own Navigator, localization, or overlay scope.
 class AppInitializationErrorContent extends StatelessWidget {
   /// Error details for diagnostic display.
   final Object error;
@@ -105,7 +108,7 @@ class AppInitializationErrorContent extends StatelessWidget {
 ///
 /// Only needed when the app itself could not be constructed (see `main.dart`);
 /// when embedded in an existing MaterialApp use [AppInitializationErrorContent]
-/// directly instead.
+//// directly instead.
 class AppInitializationErrorScreen extends StatelessWidget {
   /// Error details for diagnostic display.
   final Object error;

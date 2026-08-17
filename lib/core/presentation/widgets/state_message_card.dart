@@ -1,20 +1,9 @@
+
 import 'package:flutter/material.dart';
 
-/// A full-screen centered message widget with icon, title, subtitle, and optional CTA button.
+/// Centered message states with icon, title, subtitle, and optional CTA button.
 ///
-/// Used for empty states, welcome screens, and error states with consistent layout.
-///
-/// ```dart
-/// StateMessageCard(
-///   icon: Icons.error_outline,
-///   iconColor: colorScheme.error,
-///   iconContainerColor: colorScheme.errorContainer,
-///   title: 'Something went wrong',
-///   subtitle: 'Pull to retry or use the button below.',
-///   buttonLabel: 'Retry',
-///   onButtonPressed: onRetry,
-/// )
-/// ```
+//// Used for empty states, welcome screens, and error states with consistent layout.
 class StateMessageCard extends StatelessWidget {
   /// Creates a [StateMessageCard].
   ///

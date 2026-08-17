@@ -1,3 +1,4 @@
+
 import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
@@ -8,6 +9,8 @@ import 'package:isar_community/isar.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:balance/features/weight/data/models/weight_entry_model.dart';
 
+/// Database initialization, encryption key management, and crash-recovery handling.
+///
 /// A module that initializes and provides the app database instance.
 ///
 /// ## Schema Versioning & Recovery
@@ -16,7 +19,7 @@ import 'package:balance/features/weight/data/models/weight_entry_model.dart';
 /// 1. Increment database version name suffix (e.g. `balance_v2`).
 /// 2. If initialization fails due to schema corruption or file lock issues,
 ///    [initialize] captures the failure, creates a timestamped backup of the
-///    corrupted database, cleans up stale locks, and safely re-opens a fresh instance.
+////    corrupted database, cleans up stale locks, and safely re-opens a fresh instance.
 class DatabaseModule {
   /// The versioned database name.
   ///
@@ -62,10 +65,6 @@ class DatabaseModule {
   /// - Automatic compactOnLaunch when file exceeds threshold
   /// - Instance reuse check for hot reload / re-init safety
   /// - Graceful fallback & automatic DB backup/reset on schema corruption
-  ///
-  /// ```dart
-  /// final isar = await DatabaseModule.initialize();
-  /// ```
   static Future<Isar> initialize() async {
     final dir = await getApplicationDocumentsDirectory();
 
@@ -169,8 +168,9 @@ class DatabaseModule {
   /// This is a safety guard, not a data migration: values inside the legacy
   /// files are NOT copied into the new `balance_v1` database. It prevents the
   /// silent-corruption failure mode where Isar reopens an old file under a new
-  /// schema and historical entries decrypt to `0.0 kg` (see [dbName] doc
-  /// comment). Runs at most once — if a legacy file is already gone (already
+  /// schema and historical entries decrypt to `0.0 kg` (see
+  /// [DatabaseModule.dbName] doc comment). Runs at most once — if a legacy
+  /// file is already gone (already
   /// quarantined, or a fresh install), it is a no-op.
   @visibleForTesting
   static Future<void> quarantineLegacyDatabaseForTesting(

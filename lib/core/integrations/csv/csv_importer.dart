@@ -1,17 +1,37 @@
+
 import 'dart:isolate';
 import 'package:intl/intl.dart';
 import 'package:balance/features/weight/domain/entities/weight_entry.dart';
 
+/// Parsing weight-history CSV content into [WeightEntry] entities on a
+/// background isolate.
+///
 /// A parser that converts CSV file content into a list of [WeightEntry].
 ///
-/// Expected CSV format (matches [CsvExporter] output):
-/// ```dart
-/// ID,Data,Weight (kg),BMI,Note
-/// 1,2024-01-15 07:30,75.2,23.1,Morning measurement
-/// 2,2024-01-16 07:30,75.0,23.0,
-/// ```
+/// ## CSV contract
+/// The parser mirrors the `CsvExporter` output but is lenient about headers,
+/// delimiters, and extra columns:
+/// - Delimiter: comma by default; a tab or semicolon is auto-detected from
+///   the header line.
+/// - Header row: column names are matched case-insensitively. A date column
+///   (`data`, `date`, `data_date`) and a weight column (`waga`, `waga (kg)`,
+///   `weight`, `weight (kg)`, `weight_kg`, `waga_kg`) are required; a time
+///   column (`czas`, `time`) and a note column (`notatka`, `komentarz`,
+///   `note`, `komentarz_note`) are optional.
+/// - Weight values are parsed as kilograms; a decimal comma is accepted.
+/// - Dates accept `yyyy-MM-dd HH:mm`, `yyyy-MM-dd`, `dd.MM.yyyy`,
+///   `dd/MM/yyyy`, or any ISO-8601 value supported by [DateTime.tryParse].
+/// - Fields may be double-quoted per RFC 4180, with `""` as an escaped quote.
+/// - Rows that cannot be parsed or fall outside the valid weight range
+///   ([WeightEntry.minWeightKg] – [WeightEntry.maxWeightKg]) are skipped and
+///   counted in the result.
 ///
-/// Supports both comma and semicolon delimiters (auto-detected).
+/// Example of supported content:
+/// ```
+/// ID,Data,Weight (kg),Note
+/// 1,2024-01-15 07:30,75.2,Morning measurement
+/// 2,2024-01-16 07:30,75.0,
+//// ```
 class CsvImporter {
   /// The attempted date formats in order of precedence.
   static final List<DateFormat> _dateFormats = [
@@ -23,15 +43,12 @@ class CsvImporter {
 
   /// Parses [csvContent] asynchronously on a background isolate.
   ///
-  /// This prevents UI thread jank.
-  /// Passes the raw [csvContent] string across the isolate boundary and returns
-  /// the parsed [WeightEntry] entities and count of skipped invalid rows.
-  /// Throws a FormatException if the CSV has no valid header row or is corrupted.
+  /// Runs synchronously inside [Isolate.run] so large files never block the
+  /// UI thread. Returns the parsed [WeightEntry] entities together with the
+  /// count of skipped invalid rows.
   ///
-  /// ```dart
-  /// final result = await CsvImporter.parse(fileContent);
-  /// // result.entries: valid weight entries, result.skippedRows: invalid rows
-  /// ```
+  /// Throws a [FormatException] when the content is empty or the header row
+  /// is missing the required date and weight columns.
   static Future<({List<WeightEntry> entries, int skippedRows})> parse(
     String csvContent,
   ) async {
@@ -174,7 +191,11 @@ class CsvImporter {
     return indices;
   }
 
-  /// Parses a single CSV line respecting quoted fields.
+  /// Splits a single CSV line into fields, honoring RFC 4180 double-quoting.
+  ///
+  /// A field may be wrapped in `"` quotes, and `""` inside a quoted span is
+  /// unescaped to a single literal quote. The [delimiter] only separates
+  /// fields outside quoted spans.
   static List<String> _parseCsvLine(String line, String delimiter) {
     final fields = <String>[];
     final current = StringBuffer();

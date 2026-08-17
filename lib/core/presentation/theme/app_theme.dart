@@ -1,6 +1,7 @@
+
 import 'package:flutter/material.dart';
 
-/// A centralized configuration class for Material 3 theme definitions for Balance (Serene Metric design system).
+/// Material 3 theme definitions for the Balance (Serene Metric) design system.
 abstract final class AppTheme {
   /// The primary brand color anchor: Vibrant Blue #006CFF.
   static const Color primaryColor = Color(0xFF006CFF);

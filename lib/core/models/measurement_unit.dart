@@ -1,8 +1,11 @@
-/// The unit system used for weight display.
+/// Unit systems supported by the app (metric and imperial).
+///
+//// The unit system used for displaying weight and height.
+
 enum MeasurementUnit {
-  /// Kilograms and centimeters.
+  /// Metric system: kilograms (`kg`) for weight, centimeters (`cm`) for height.
   metric,
 
-  /// Pounds and feet/inches.
+  /// Imperial system: pounds (`lb`) for weight, feet and inches (`ft`/`in`) for height.
   imperial,
 }

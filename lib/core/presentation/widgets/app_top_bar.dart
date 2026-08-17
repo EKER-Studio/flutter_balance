@@ -1,9 +1,12 @@
+
 import 'package:flutter/material.dart';
 
+/// A top app bar for main navigation screens.
+///
 /// A reusable Material 3 top app bar for main navigation screens.
 ///
 /// Displays a unified 64dp toolbar with the primary weight scale branding icon,
-/// localized screen title, and optional action buttons.
+//// localized screen title, and optional action buttons.
 class AppTopBar extends StatelessWidget {
   /// The title text to display in the app bar.
   final String title;

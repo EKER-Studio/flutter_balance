@@ -1,3 +1,4 @@
+
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
@@ -6,9 +7,11 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:balance/features/weight/domain/entities/weight_entry.dart';
 
+/// Weight record integration with Apple HealthKit and Android Health Connect.
+///
 /// An abstraction over platform-specific checks.
 ///
-/// Allows mocking platform behavior in tests without modifying global state.
+//// Allows mocking platform behavior in tests without modifying global state.
 abstract class PlatformDetector {
   /// Whether the app is running on Android.
   bool get isAndroid;
@@ -17,7 +20,7 @@ abstract class PlatformDetector {
   bool get isIOS;
 }
 
-/// A default implementation using `dart:io`.
+//// A default implementation using `dart:io`.
 class NativePlatformDetector implements PlatformDetector {
   @override
   bool get isAndroid => Platform.isAndroid;
@@ -29,24 +32,24 @@ class NativePlatformDetector implements PlatformDetector {
 ///
 /// Exposes a platform-neutral API for querying and modifying body weight
 /// records backed by Apple HealthKit (iOS) or Google Health Connect (Android),
-/// hiding the underlying plugin details from the rest of the app.
+//// hiding the underlying plugin details from the rest of the app.
 abstract class HealthService {
-  /// Checks if HealthKit (iOS) or Health Connect (Android) is available on the device.
+  //// Checks if HealthKit (iOS) or Health Connect (Android) is available on the device.
   Future<bool> isHealthApiAvailable();
 
-  /// Checks if read/write permissions for WEIGHT are already granted.
+  //// Checks if read/write permissions for WEIGHT are already granted.
   Future<bool> hasPermissions();
 
-  /// Requests native OS permissions for WEIGHT (Read & Write).
+  //// Requests native OS permissions for WEIGHT (Read & Write).
   Future<bool> requestPermissions();
 
-  /// Opens native app system settings so the user can manage permissions manually.
+  //// Opens native app system settings so the user can manage permissions manually.
   Future<bool> openSystemSettings();
 
   /// Opens the Google Play Store listing for Health Connect on Android.
   ///
   /// Intended for devices where [isHealthApiAvailable] reports `false`; a
-  /// no-op on other platforms.
+  //// no-op on other platforms.
   Future<void> installHealthConnect();
 
   /// Fetches weight entries within a date range.
@@ -56,7 +59,7 @@ abstract class HealthService {
   ///
   /// @param start Inclusive start of the query window.
   /// @param end Inclusive end of the query window.
-  /// Returns an empty list on failure.
+  //// Returns an empty list on failure.
   Future<List<WeightEntry>> fetchWeightHistory({
     required DateTime start,
     required DateTime end,
@@ -65,7 +68,7 @@ abstract class HealthService {
   /// Writes a weight entry to HealthKit / Health Connect.
   ///
   /// @param weightKg Weight value in kilograms.
-  /// @param timestamp Instant the measurement was recorded.
+  //// @param timestamp Instant the measurement was recorded.
   Future<bool> writeWeight({
     required double weightKg,
     required DateTime timestamp,
@@ -77,7 +80,7 @@ abstract class HealthService {
   /// [timestamp] on a best-effort basis.
   ///
   /// @param weightKg Weight value in kilograms of the entry to delete.
-  /// @param timestamp Instant the entry to delete was recorded.
+  //// @param timestamp Instant the entry to delete was recorded.
   Future<bool> deleteWeight({
     required double weightKg,
     required DateTime timestamp,
@@ -91,6 +94,21 @@ abstract class HealthService {
 /// or an empty result instead of throwing unhandled exceptions. Permission
 /// and settings calls are additionally bounded by a five-second timeout
 /// ([_operationTimeout]) whose expiry is treated as a failure.
+///
+/// ## Platform integration
+/// On iOS the plugin talks to HealthKit; on Android it talks to Health Connect
+/// (which must be installed separately, see [installHealthConnect]). The
+/// exchanged data model is [WeightEntry], always expressed in kilograms and
+/// mapped 1-to-1 onto the `WEIGHT` health data type requested with both read
+/// and write access ([_readWriteAccess]).
+///
+/// ## Permission flow
+/// Reading and writing weight data requires the user to grant health
+/// permissions through the native OS authorization prompt
+/// ([requestPermissions]); [hasPermissions] reports the current grant state
+/// (on iOS only the WRITE grant is disclosed by HealthKit), and
+/// [openSystemSettings] lets the user adjust the grant later from the system
+//// settings app.
 class NativeHealthService implements HealthService {
   /// Creates a service wrapping [health], which defaults to a fresh plugin instance.
   ///
@@ -167,7 +185,7 @@ class NativeHealthService implements HealthService {
   ///
   /// A configuration failure never throws: it is logged in debug builds and
   /// the plugin is simply left unconfigured, letting every public method
-  /// degrade gracefully through its own error handling.
+  //// degrade gracefully through its own error handling.
   Future<void> _ensureConfigured() async {
     if (!_isConfigured) {
       try {

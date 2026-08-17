@@ -1,27 +1,29 @@
+
 import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:crypto/crypto.dart';
 import 'package:encrypt/encrypt.dart' as enc;
 
+/// AES-256 field-level encryption with HMAC-SHA256 integrity verification.
+///
 /// A utility for field-level AES-256 CBC encryption, decryption, and integrity verification.
 ///
 /// Implements Encrypt-then-MAC using HMAC-SHA256 over `IV || Ciphertext` to guarantee
-/// confidentiality, authenticity, and integrity against data corruption or bit-flipping.
-///
-/// ```dart
-/// final cipherText = FieldCipher.encrypt('75.4', keyBytes);
-/// final plainText = FieldCipher.decrypt(cipherText, keyBytes);
-/// ```
+//// confidentiality, authenticity, and integrity against data corruption or bit-flipping.
 class FieldCipher {
   static const int _ivLength = 16;
   static const int _macLength = 32;
 
-  /// Encrypts the plaintext string using AES-256 CBC with a prepended 16-byte IV and 32-byte HMAC-SHA256.
+  /// Encrypts the plaintext string using AES-256 CBC with a fresh random
+  /// 16-byte IV and a 32-byte HMAC-SHA256 trailer.
   ///
   /// Payload format: `Base64(IV [16 B] + HMAC [32 B] + Ciphertext [N B])`.
-  /// [plainText] Content string to encrypt.
-  /// [keyBytes] 32-byte AES secret key.
+  /// The ciphertext is PKCS#7-padded AES-256-CBC; the HMAC covers `IV ||
+  /// Ciphertext`, so any tampering is detected by [decrypt].
+  ///
+  /// @param plainText Content string to encrypt.
+  /// @param keyBytes 32-byte AES secret key.
   static String encrypt(String plainText, Uint8List keyBytes) {
     final encKey = enc.Key(keyBytes);
     final iv = enc.IV.fromSecureRandom(_ivLength);
@@ -47,10 +49,16 @@ class FieldCipher {
     return base64Encode(combined);
   }
 
-  /// Decrypts a Base64 payload, verifying HMAC-SHA256 integrity before decryption.
+  /// Decrypts a Base64 payload, verifying the HMAC-SHA256 trailer first.
   ///
-  /// [base64String] Base64 encoded payload.
-  /// [keyBytes] 32-byte AES secret key.
+  /// The HMAC over `IV || Ciphertext` is recomputed and compared in constant
+  /// time before any decryption happens. Payloads too short to carry a trailer
+  /// (pre-HMAC `IV || Ciphertext` format written by older app versions) are
+  /// decrypted through a legacy fallback path whose decryption failures still
+  /// surface as a [FormatException].
+  ///
+  /// @param base64String Base64 encoded payload.
+  /// @param keyBytes 32-byte AES secret key.
   /// Throws a FormatException if payload is truncated, corrupted, or integrity check fails.
   static String decrypt(String base64String, Uint8List keyBytes) {
     final combined = base64Decode(base64String);
