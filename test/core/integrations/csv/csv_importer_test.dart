@@ -380,5 +380,108 @@ garbage
       expect(result.skippedRows, 2);
       expect(result.entries[0].weightKg, 75.0);
     });
+
+    test(
+      'parses Garmin Connect Polish hierarchical CSV export with metadata line',
+      () async {
+        const csvContent = '''
+weight
+Czas,Ciężar,Zmiana,BMI,Tkanka tłuszczowa,Masa mięśni szkieletowych,Masa kostna,Woda w organizmie
+Cze 15, 2026,,,,,,,
+9:26 AM,88.6 kg,0.6 kg,28.3,--,--,--,--
+Cze 14, 2026,,,,,,,
+8:34 AM,88.0 kg,0.5 kg,28.1,--,--,--,--
+''';
+
+        final result = await CsvImporter.parse(csvContent);
+        final entries = result.entries;
+
+        expect(entries.length, 2);
+        expect(result.skippedRows, 0);
+
+        expect(entries[0].dateTime, DateTime(2026, 6, 15, 9, 26));
+        expect(entries[0].weightKg, 88.6);
+
+        expect(entries[1].dateTime, DateTime(2026, 6, 14, 8, 34));
+        expect(entries[1].weightKg, 88.0);
+      },
+    );
+
+    test(
+      'parses Zepp Life / Garmin export with 24-hour and PM times and Polish months',
+      () async {
+        const csvContent = '''
+Czas,Waga,Notatka
+15 Paź 2026 14:30,78,5 kg,Popołudniowy
+16 Lis 2026 1:48 PM,79.1 kg,Po treningu
+''';
+
+        final result = await CsvImporter.parse(csvContent);
+        final entries = result.entries;
+
+        expect(entries.length, 2);
+        expect(result.skippedRows, 0);
+
+        expect(entries[0].dateTime, DateTime(2026, 10, 15, 14, 30));
+        expect(entries[0].weightKg, 78.5);
+        expect(entries[0].note, 'Popołudniowy');
+
+        expect(entries[1].dateTime, DateTime(2026, 11, 16, 13, 48));
+        expect(entries[1].weightKg, 79.1);
+        expect(entries[1].note, 'Po treningu');
+      },
+    );
+
+    test('parses CSV with body mass header and lbs/g sanitization', () async {
+      const csvContent = '''
+Timestamp,Body Mass,Memo
+2026-05-10 08:00,82.4 kg,Morning
+2026-05-11 08:00,82.1,No unit
+''';
+
+      final result = await CsvImporter.parse(csvContent);
+      final entries = result.entries;
+
+      expect(entries.length, 2);
+      expect(result.skippedRows, 0);
+      expect(entries[0].dateTime, DateTime(2026, 5, 10, 8, 0));
+      expect(entries[0].weightKg, 82.4);
+      expect(entries[0].note, 'Morning');
+      expect(entries[1].dateTime, DateTime(2026, 5, 11, 8, 0));
+      expect(entries[1].weightKg, 82.1);
+      expect(entries[1].note, 'No unit');
+    });
+
+    test(
+      'parses multiple measurements per hierarchical date group with corrupted rows',
+      () async {
+        const csvContent = '''
+Activities export
+Data,Ciężar
+Cze 15, 2026,
+12:00 AM,85.0 kg
+12:00 PM,85.5 kg
+bad-time,86.0 kg
+9:30 PM,invalid-weight
+Cze 16, 2026,
+07:15,84.8
+''';
+
+        final result = await CsvImporter.parse(csvContent);
+        final entries = result.entries;
+
+        expect(entries.length, 3);
+        expect(result.skippedRows, 2);
+
+        expect(entries[0].dateTime, DateTime(2026, 6, 15, 0, 0));
+        expect(entries[0].weightKg, 85.0);
+
+        expect(entries[1].dateTime, DateTime(2026, 6, 15, 12, 0));
+        expect(entries[1].weightKg, 85.5);
+
+        expect(entries[2].dateTime, DateTime(2026, 6, 16, 7, 15));
+        expect(entries[2].weightKg, 84.8);
+      },
+    );
   });
 }
