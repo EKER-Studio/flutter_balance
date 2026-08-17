@@ -1,4 +1,4 @@
-// lib/features/weight/presentation/widgets/bmi_chart_card.dart
+// lib/features/statistics/presentation/widgets/bmi_chart_card.dart
 
 import 'dart:math' as math;
 import 'package:fl_chart/fl_chart.dart';
@@ -18,7 +18,6 @@ class BmiChartCard extends StatelessWidget {
   final TimePeriod period;
   final ValueChanged<TimePeriod> onPeriodChanged;
 
-  /// Creates a [BmiChartCard].
   const BmiChartCard({
     super.key,
     required this.entries,
@@ -32,53 +31,133 @@ class BmiChartCard extends StatelessWidget {
     final cs = Theme.of(context).colorScheme;
     final l10n = AppLocalizations.of(context);
     final textTheme = Theme.of(context).textTheme;
+    final hasChartData =
+        heightCm != null && heightCm! > 0 && entries.length >= 2;
 
-    return Card(
-      margin: EdgeInsets.zero,
-      elevation: 0,
-      color: cs.surfaceContainerLow,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            // 1. Unified Header Row (Title + Category Badge)
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Row(
+    return Semantics(
+      container: true,
+      label: l10n.bmi,
+      child: Card(
+        margin: EdgeInsets.zero,
+        elevation: 0,
+        color: cs.surfaceContainerLow,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              _buildHeader(context, cs, l10n, textTheme),
+              if (hasChartData) ...[
+                const SizedBox(height: 12),
+                _BmiPeriodFilters(
+                  period: period,
+                  onPeriodChanged: onPeriodChanged,
+                ),
+              ],
+              const SizedBox(height: 16),
+              _buildChartContent(context, cs, l10n),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildHeader(
+    BuildContext context,
+    ColorScheme cs,
+    AppLocalizations l10n,
+    TextTheme textTheme,
+  ) {
+    if (heightCm == null || heightCm! <= 0 || entries.isEmpty) {
+      return Row(
+        children: [
+          Icon(Icons.monitor_weight_outlined, size: 20, color: cs.primary),
+          const SizedBox(width: 8),
+          Text(
+            l10n.bmi,
+            style: textTheme.titleMedium?.copyWith(
+              color: cs.onSurface,
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const Spacer(),
+          IconButton(
+            icon: Icon(
+              Icons.help_outline,
+              size: 20,
+              color: cs.onSurfaceVariant,
+            ),
+            onPressed: () => _showLegendDialog(context),
+            tooltip: l10n.bmiLegendTitle,
+          ),
+        ],
+      );
+    }
+
+    final sorted = [...entries]
+      ..sort((a, b) => b.dateTime.compareTo(a.dateTime));
+    final hMeters = heightCm! / 100.0;
+    final bmi = sorted.first.weightKg / (hMeters * hMeters);
+    final category = BmiCategory.fromBmi(bmi);
+    final categoryLabel = category.localizedName(l10n);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    return Semantics(
+      button: true,
+      label: l10n.bmiCategorySemantics(bmi.toStringAsFixed(1), categoryLabel),
+      excludeSemantics: true,
+      child: InkWell(
+        onTap: () => _showLegendDialog(context),
+        borderRadius: BorderRadius.circular(12),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 4.0),
+          child: Row(
+            children: [
+              Icon(Icons.monitor_weight_outlined, size: 20, color: cs.primary),
+              const SizedBox(width: 8),
+              Text(
+                l10n.bmi,
+                style: textTheme.titleMedium?.copyWith(
+                  color: cs.onSurface,
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const Spacer(),
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 4,
+                ),
+                decoration: BoxDecoration(
+                  color: category.chipBackgroundColor(),
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Icon(
-                      Icons.monitor_weight_outlined,
-                      size: 20,
-                      color: cs.primary,
+                      Icons.info_outline_rounded,
+                      size: 15,
+                      color: category.chipContentColor(isDark: isDark),
                     ),
-                    const SizedBox(width: 8),
+                    const SizedBox(width: 4),
                     Text(
-                      l10n.bmi,
-                      style: textTheme.titleMedium?.copyWith(
-                        color: cs.onSurface,
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
+                      categoryLabel,
+                      style: TextStyle(
+                        color: category.chipContentColor(isDark: isDark),
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
                       ),
                     ),
                   ],
                 ),
-                _BmiHeaderBadge(entries: entries, heightCm: heightCm),
-              ],
-            ),
-            const SizedBox(height: 12),
-
-            // 2. Centered Period Selector Tabs
-            _BmiPeriodFilters(period: period, onPeriodChanged: onPeriodChanged),
-            const SizedBox(height: 16),
-
-            // 3. Line Chart
-            SizedBox(height: 190, child: _buildChartContent(context, cs, l10n)),
-          ],
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -90,24 +169,34 @@ class BmiChartCard extends StatelessWidget {
     AppLocalizations l10n,
   ) {
     if (heightCm == null || heightCm! <= 0) {
-      return Center(
-        child: Text(
-          l10n.bmiChartNoHeight,
-          textAlign: TextAlign.center,
-          style: Theme.of(
-            context,
-          ).textTheme.bodyMedium?.copyWith(color: cs.onSurfaceVariant),
+      return SizedBox(
+        height: 200,
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Text(
+              l10n.bmiChartNoHeight,
+              textAlign: TextAlign.center,
+              style: Theme.of(
+                context,
+              ).textTheme.bodyMedium?.copyWith(color: cs.onSurfaceVariant),
+            ),
+          ),
         ),
       );
     }
 
-    if (entries.isEmpty) {
-      return Center(
-        child: Text(
-          l10n.chartEmpty,
-          style: Theme.of(
-            context,
-          ).textTheme.bodyMedium?.copyWith(color: cs.onSurfaceVariant),
+    if (entries.isEmpty || entries.length < 2) {
+      return SizedBox(
+        height: 200,
+        child: Center(
+          child: Text(
+            l10n.chartEmpty,
+            textAlign: TextAlign.center,
+            style: Theme.of(
+              context,
+            ).textTheme.bodyMedium?.copyWith(color: cs.onSurfaceVariant),
+          ),
         ),
       );
     }
@@ -134,101 +223,108 @@ class BmiChartCard extends StatelessWidget {
     final minY = (minBmi - padding).floorToDouble().clamp(10.0, 100.0);
     final maxY = (maxBmi + padding).ceilToDouble();
 
-    return LineChart(
-      LineChartData(
-        minX: 0,
-        maxX: math.max(0, sortedEntries.length - 1).toDouble(),
-        minY: minY,
-        maxY: maxY,
-        gridData: FlGridData(
-          show: true,
-          drawVerticalLine: false,
-          horizontalInterval: 2,
-          getDrawingHorizontalLine: (value) => FlLine(
-            color: cs.surfaceContainerHighest,
-            strokeWidth: 1,
-            dashArray: [5, 5],
-          ),
-        ),
-        titlesData: FlTitlesData(
-          rightTitles: const AxisTitles(
-            sideTitles: SideTitles(showTitles: false),
-          ),
-          topTitles: const AxisTitles(
-            sideTitles: SideTitles(showTitles: false),
-          ),
-          bottomTitles: AxisTitles(
-            sideTitles: SideTitles(
-              showTitles: true,
-              reservedSize: 30,
-              interval: _bottomInterval(sortedEntries.length, period),
-              getTitlesWidget: (value, meta) =>
-                  _buildBottomTitle(context, value, sortedEntries, period),
+    return SizedBox(
+      height: 190,
+      child: LineChart(
+        LineChartData(
+          minX: 0,
+          maxX: math.max(0, sortedEntries.length - 1).toDouble(),
+          minY: minY,
+          maxY: maxY,
+          gridData: FlGridData(
+            show: true,
+            drawVerticalLine: false,
+            horizontalInterval: 2,
+            getDrawingHorizontalLine: (value) => FlLine(
+              color: cs.surfaceContainerHighest,
+              strokeWidth: 1,
+              dashArray: [5, 5],
             ),
           ),
-          leftTitles: AxisTitles(
-            sideTitles: SideTitles(
-              showTitles: true,
-              reservedSize: 35,
-              interval: 2,
-              getTitlesWidget: (value, meta) => Text(
-                value.toStringAsFixed(0),
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: cs.onSurfaceVariant,
-                  fontSize: 11,
-                ),
+          titlesData: FlTitlesData(
+            rightTitles: const AxisTitles(
+              sideTitles: SideTitles(showTitles: false),
+            ),
+            topTitles: const AxisTitles(
+              sideTitles: SideTitles(showTitles: false),
+            ),
+            bottomTitles: AxisTitles(
+              sideTitles: SideTitles(
+                showTitles: true,
+                reservedSize: 30,
+                interval: _bottomInterval(sortedEntries.length, period),
+                getTitlesWidget: (value, meta) =>
+                    _buildBottomTitle(context, value, sortedEntries, period),
               ),
             ),
-          ),
-        ),
-        borderData: FlBorderData(show: false),
-        lineTouchData: LineTouchData(
-          touchTooltipData: LineTouchTooltipData(
-            getTooltipColor: (_) => cs.secondaryContainer,
-            getTooltipItems: (touchedSpots) => touchedSpots.map((spot) {
-              return LineTooltipItem(
-                'BMI ${spot.y.toStringAsFixed(1)}',
-                TextStyle(
-                  color: cs.onSecondaryContainer,
-                  fontWeight: FontWeight.bold,
-                ),
-              );
-            }).toList(),
-          ),
-        ),
-        lineBarsData: [
-          LineChartBarData(
-            spots: spots,
-            isCurved: true,
-            curveSmoothness: 0.4,
-            color: cs.primary,
-            barWidth: 3,
-            isStrokeCapRound: true,
-            dotData: FlDotData(
-              show: period == TimePeriod.week,
-              getDotPainter: (spot, percent, barData, index) =>
-                  FlDotCirclePainter(
-                    radius: 4,
-                    color: cs.primary,
-                    strokeWidth: 2,
-                    strokeColor: cs.surface,
+            leftTitles: AxisTitles(
+              sideTitles: SideTitles(
+                showTitles: true,
+                reservedSize: 35,
+                interval: 2,
+                getTitlesWidget: (value, meta) => Text(
+                  value.toStringAsFixed(0),
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: cs.onSurfaceVariant,
+                    fontSize: 11,
                   ),
-            ),
-            belowBarData: BarAreaData(
-              show: true,
-              gradient: LinearGradient(
-                colors: [
-                  cs.primary.withValues(alpha: 0.2),
-                  cs.primary.withValues(alpha: 0.0),
-                ],
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
+                ),
               ),
             ),
           ),
-        ],
+          borderData: FlBorderData(show: false),
+          lineTouchData: LineTouchData(
+            touchTooltipData: LineTouchTooltipData(
+              getTooltipColor: (_) => cs.secondaryContainer,
+              getTooltipItems: (touchedSpots) => touchedSpots.map((spot) {
+                return LineTooltipItem(
+                  'BMI ${spot.y.toStringAsFixed(1)}',
+                  TextStyle(
+                    color: cs.onSecondaryContainer,
+                    fontWeight: FontWeight.bold,
+                  ),
+                );
+              }).toList(),
+            ),
+          ),
+          lineBarsData: [
+            LineChartBarData(
+              spots: spots,
+              isCurved: true,
+              curveSmoothness: 0.4,
+              color: cs.primary,
+              barWidth: 3,
+              isStrokeCapRound: true,
+              dotData: FlDotData(
+                show: period == TimePeriod.week,
+                getDotPainter: (spot, percent, barData, index) =>
+                    FlDotCirclePainter(
+                      radius: 4,
+                      color: cs.primary,
+                      strokeWidth: 2,
+                      strokeColor: cs.surface,
+                    ),
+              ),
+              belowBarData: BarAreaData(
+                show: true,
+                gradient: LinearGradient(
+                  colors: [
+                    cs.primary.withValues(alpha: 0.2),
+                    cs.primary.withValues(alpha: 0.0),
+                  ],
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
+  }
+
+  void _showLegendDialog(BuildContext context) {
+    showDialog<void>(context: context, builder: (_) => const BmiLegendDialog());
   }
 
   static double _bottomInterval(int length, TimePeriod period) {
@@ -310,74 +406,6 @@ class BmiChartCard extends StatelessWidget {
   }
 }
 
-/// Category badge / Help button pinned to the top-right
-class _BmiHeaderBadge extends StatelessWidget {
-  final List<WeightEntry> entries;
-  final double? heightCm;
-
-  const _BmiHeaderBadge({required this.entries, required this.heightCm});
-
-  @override
-  Widget build(BuildContext context) {
-    final cs = Theme.of(context).colorScheme;
-    final l10n = AppLocalizations.of(context);
-
-    if (heightCm == null || heightCm! <= 0 || entries.isEmpty) {
-      return IconButton(
-        icon: Icon(
-          Icons.help_outline_rounded,
-          size: 20,
-          color: cs.onSurfaceVariant,
-        ),
-        onPressed: () => _showLegend(context),
-      );
-    }
-
-    final sorted = [...entries]
-      ..sort((a, b) => b.dateTime.compareTo(a.dateTime));
-    final hMeters = heightCm! / 100.0;
-    final bmi = sorted.first.weightKg / (hMeters * hMeters);
-    final category = BmiCategory.fromBmi(bmi);
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-
-    return InkWell(
-      onTap: () => _showLegend(context),
-      borderRadius: BorderRadius.circular(20),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-        decoration: BoxDecoration(
-          color: category.chipBackgroundColor(),
-          borderRadius: BorderRadius.circular(20),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              Icons.info_outline_rounded,
-              size: 15,
-              color: category.chipContentColor(isDark: isDark),
-            ),
-            const SizedBox(width: 4),
-            Text(
-              category.localizedName(l10n),
-              style: TextStyle(
-                color: category.chipContentColor(isDark: isDark),
-                fontSize: 13,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  void _showLegend(BuildContext context) {
-    showDialog<void>(context: context, builder: (_) => const BmiLegendDialog());
-  }
-}
-
-/// Centered period selector tabs
 class _BmiPeriodFilters extends StatelessWidget {
   final TimePeriod period;
   final ValueChanged<TimePeriod> onPeriodChanged;

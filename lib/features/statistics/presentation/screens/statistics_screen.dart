@@ -30,7 +30,9 @@ class StatisticsScreen extends StatelessWidget {
 
     return Scaffold(
       body: RefreshIndicator(
-        onRefresh: () => _refreshWeightData(context),
+        onRefresh: () async {
+          context.read<WeightBloc>().add(const SubscribeToWeightChanges());
+        },
         child: CustomScrollView(
           physics: const AlwaysScrollableScrollPhysics(),
           slivers: [
@@ -164,15 +166,6 @@ class StatisticsScreen extends StatelessWidget {
       WeightError(:final filteredEntries) => filteredEntries,
       _ => <WeightEntry>[],
     };
-  }
-
-  /// Refreshes weight data and awaits state resolution.
-  Future<void> _refreshWeightData(BuildContext context) async {
-    final bloc = context.read<WeightBloc>();
-    bloc.add(const RefreshWeightData());
-    await bloc.stream
-        .firstWhere((state) => state is WeightLoaded || state is WeightError)
-        .timeout(const Duration(seconds: 2), onTimeout: () => bloc.state);
   }
 
   /// Builds the hero progress and goal composite card.
