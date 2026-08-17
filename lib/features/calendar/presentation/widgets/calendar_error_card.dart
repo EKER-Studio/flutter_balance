@@ -1,12 +1,16 @@
+/// Error state shown when the local weight database cannot be read.
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:balance/features/weight/presentation/bloc/weight_bloc.dart';
 import 'package:balance/features/weight/presentation/bloc/weight_event.dart';
 import 'package:balance/l10n/app_localizations.dart';
 
-/// A card displaying an error state when a local database read fails.
+/// Error state for failed local database reads, with a retry action that
+//// dispatches [RefreshWeightData].
 class CalendarErrorCard extends StatelessWidget {
-  /// The error message returned by the [WeightBloc].
+  /// The error message returned by the [WeightBloc]; a default message is
+  /// shown when empty.
   final String errorMessage;
 
   const CalendarErrorCard({super.key, required this.errorMessage});

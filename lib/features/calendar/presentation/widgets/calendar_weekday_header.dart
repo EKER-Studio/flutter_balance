@@ -1,7 +1,10 @@
+/// Abbreviated weekday labels spanning the calendar grid's first row.
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-/// A row displaying weekday headers for calendar layouts.
+/// Renders seven abbreviated weekday labels starting Monday, localized and
+//// capitalized for the current locale.
 class CalendarWeekdayHeader extends StatelessWidget {
   const CalendarWeekdayHeader({super.key});
 
@@ -14,6 +17,7 @@ class CalendarWeekdayHeader extends StatelessWidget {
     final weekDays = List.generate(7, (i) => mondayBase.add(Duration(days: i)));
 
     String capitalize3(String s) {
+      // Capitalizes the first letter of a three-character abbreviation.
       if (s.length < 3) return s.toUpperCase();
       final sub = s.substring(0, 3);
       return sub[0].toUpperCase() + sub.substring(1);

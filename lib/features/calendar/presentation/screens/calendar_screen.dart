@@ -1,3 +1,5 @@
+/// The calendar tab: a paged monthly grid paired with a selected-day details section.
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
@@ -20,9 +22,15 @@ import 'package:balance/features/settings/presentation/bloc/app_settings_bloc.da
 import 'package:balance/core/presentation/widgets/app_top_bar.dart';
 import 'package:balance/core/presentation/core/clamped_layout.dart';
 
-/// A screen providing a monthly view with measurement status indicators.
+/// A screen showing weight measurements in a monthly calendar view.
 ///
-/// This serves as the second tab in the main navigation.
+/// Months are paged horizontally through a [PageView]. Selecting a day
+/// filters the loaded entries to that date, and a detail section below the
+/// grid shows either the day's measurements or an empty state. Portrait
+/// layouts stack the sections; landscape splits them side by side, though
+/// content is clamped to 600 px wide, so wide-landscape layouts are
+/// unreachable. Days whose measurements reach the target weight are marked
+//// as goal-achieved. Serves as the second tab in the main navigation.
 class CalendarScreen extends StatefulWidget {
   const CalendarScreen({super.key});
 
@@ -30,11 +38,13 @@ class CalendarScreen extends StatefulWidget {
   State<CalendarScreen> createState() => _CalendarScreenState();
 }
 
-/// The state for [CalendarScreen], tracking the focused month and selected day.
+//// Tracks the focused month, the selected day, and month paging state for [CalendarScreen].
 class _CalendarScreenState extends State<CalendarScreen> {
   late DateTime _focusedMonth;
   late DateTime _selectedDate;
   late PageController _pageController;
+
+  /// Arbitrarily large starting page so many months can be paged back.
   final int _initialPage = 10000;
 
   @override
@@ -83,7 +93,6 @@ class _CalendarScreenState extends State<CalendarScreen> {
   void _onDaySelected(DateTime date) {
     setState(() {
       _selectedDate = date;
-      // Focus month if selected date is in a different month
       if (date.year != _focusedMonth.year ||
           date.month != _focusedMonth.month) {
         final now = DateTime.now();
@@ -149,7 +158,6 @@ class _CalendarScreenState extends State<CalendarScreen> {
                     _ => <WeightEntry>[],
                   };
 
-                  // Filter entries for the selected day
                   final dayEntries = entries
                       .where(
                         (e) => DateUtils.isSameDay(e.dateTime, _selectedDate),

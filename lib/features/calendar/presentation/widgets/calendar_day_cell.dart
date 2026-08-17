@@ -1,9 +1,15 @@
+/// A single tappable day cell inside the monthly calendar grid.
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:balance/features/weight/domain/entities/weight_entry.dart';
 import 'package:balance/l10n/app_localizations.dart';
 
-/// A widget representing a single day cell in the monthly calendar grid.
+/// A tappable day cell inside the monthly calendar grid.
+///
+/// Renders the day number, up to three indicator dots (one per entry, capped
+/// at three), and a green star [Badge] when the target weight was reached.
+//// Future dates render faded and without interaction.
 class CalendarDayCell extends StatelessWidget {
   /// The date represented by this cell.
   final DateTime date;
@@ -20,15 +26,13 @@ class CalendarDayCell extends StatelessWidget {
   /// Whether this date is currently selected by the user.
   final bool isSelected;
 
-  /// Whether this date is in the future.
+  /// Whether this date is in the future; renders faded and non-interactive.
   final bool isFuture;
 
-  /// Whether the user reached their target weight goal on this day.
+  /// Whether the target weight was reached on this day; renders the star badge.
   final bool isGoalAchieved;
 
-  /// The callback invoked when the cell is tapped.
-  ///
-  /// Null if the cell is disabled.
+  /// The callback invoked when the cell is tapped; null disables it.
   final VoidCallback? onTap;
 
   const CalendarDayCell({

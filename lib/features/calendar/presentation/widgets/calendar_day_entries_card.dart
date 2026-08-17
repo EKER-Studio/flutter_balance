@@ -1,3 +1,5 @@
+/// The selected day's weight entries with per-entry stats and actions.
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
@@ -13,7 +15,8 @@ import 'package:balance/features/settings/presentation/bloc/app_settings_state.d
 import 'package:balance/features/settings/presentation/bloc/bmi_category.dart';
 import 'package:balance/features/weight/presentation/utils/bmi_category_localizer.dart';
 
-/// A card displaying weight entries, notes, and stats for a selected day.
+/// Lists the weight entries for the selected day with per-entry BMI stats, a
+//// goal-achieved banner, delete affordances, and an add-measurement action.
 class CalendarDayEntriesCard extends StatelessWidget {
   /// The selected date.
   final DateTime selectedDate;
@@ -41,14 +44,13 @@ class CalendarDayEntriesCard extends StatelessWidget {
     final isImperial = unit == MeasurementUnit.imperial;
     final unitLabel = unitLabelFor(unit);
 
-    // Check if target weight was reached on this day
+    /// Whether at least one entry on this day reaches the target weight.
     final isGoalAchievedOnDay =
         targetWeight != null && entries.any((e) => e.weightKg <= targetWeight!);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        // Goal Achievement Banner
         if (isGoalAchievedOnDay) ...[
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
@@ -85,7 +87,6 @@ class CalendarDayEntriesCard extends StatelessWidget {
           const SizedBox(height: 20),
         ],
 
-        // List of Entries for this day
         ListView.separated(
           padding: EdgeInsets.zero,
           physics: const NeverScrollableScrollPhysics(),
@@ -238,7 +239,7 @@ class CalendarDayEntriesCard extends StatelessWidget {
     );
   }
 
-  /// Prompts the user for confirmation before deleting the entry with [entryId].
+  //// Prompts the user for confirmation before deleting the entry with [entryId].
   Future<void> _confirmDelete(BuildContext context, int entryId) async {
     final l10n = AppLocalizations.of(context);
     final confirmed = await showDialog<bool>(

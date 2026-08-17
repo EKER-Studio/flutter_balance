@@ -1,8 +1,11 @@
+/// Month title and previous/next navigation controls for the calendar.
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:balance/l10n/app_localizations.dart';
 
-/// A header providing month navigation for calendar views.
+/// Displays the focused month and year with previous/next navigation
+//// controls wired to [onPreviousMonth] and [onNextMonth].
 class CalendarMonthHeader extends StatelessWidget {
   /// The currently displayed month and year.
   final DateTime focusedMonth;

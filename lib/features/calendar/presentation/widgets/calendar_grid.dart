@@ -1,12 +1,18 @@
+/// The month grid of day cells shown in the calendar screen.
+
 import 'package:flutter/material.dart';
 import 'package:balance/features/weight/domain/entities/weight_entry.dart';
 import 'package:balance/features/calendar/presentation/widgets/calendar_day_cell.dart';
 
-/// The callback signature used when a calendar day is selected.
+//// The callback signature used when a calendar day is selected.
 typedef OnCalendarDaySelected =
     void Function(DateTime date, List<WeightEntry> entries);
 
-/// A grid displaying day cells for a focused month.
+/// A fixed 7-column grid of [CalendarDayCell]s for a focused month.
+///
+/// Leading slots before the month's first weekday (Monday-first offset) are
+/// left empty, yielding at most 6 rows x 7 columns of square cells. Days
+//// after today render faded and are not selectable.
 class CalendarGrid extends StatelessWidget {
   /// The month and year currently displayed by the grid.
   final DateTime focusedMonth;
@@ -68,6 +74,7 @@ class CalendarGrid extends StatelessWidget {
       ),
       itemCount: totalCells,
       itemBuilder: (context, index) {
+        // Leave the slots before the month's first weekday empty.
         if (index < startingOffset) {
           return const SizedBox.shrink();
         }
