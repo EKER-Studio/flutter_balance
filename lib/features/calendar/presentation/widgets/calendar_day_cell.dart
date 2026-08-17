@@ -1,4 +1,4 @@
-/// A single tappable day cell inside the monthly calendar grid.
+// A single tappable day cell inside the monthly calendar grid.
 
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -9,7 +9,7 @@ import 'package:balance/l10n/app_localizations.dart';
 ///
 /// Renders the day number, up to three indicator dots (one per entry, capped
 /// at three), and a green star [Badge] when the target weight was reached.
-///// Future dates render faded and without interaction.
+/// Future dates render faded and without interaction.
 class CalendarDayCell extends StatelessWidget {
   /// The date represented by this cell.
   final DateTime date;

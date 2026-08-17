@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:balance/l10n/app_localizations.dart';
 import 'custom_settings_tile.dart';
 
-///// A widget that displays the data settings group with CSV import, export, and wipe controls.
+/// A widget that displays the data settings group with CSV import, export, and wipe controls.
 class DataSection extends StatelessWidget {
   /// Localized strings for the [DataSection] widget.
   final AppLocalizations l10n;

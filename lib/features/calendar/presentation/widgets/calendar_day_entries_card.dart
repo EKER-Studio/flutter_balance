@@ -1,4 +1,4 @@
-/// The selected day's weight entries with per-entry stats and actions.
+// The selected day's weight entries with per-entry stats and actions.
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -16,7 +16,7 @@ import 'package:balance/features/settings/presentation/bloc/bmi_category.dart';
 import 'package:balance/features/weight/presentation/utils/bmi_category_localizer.dart';
 
 /// Lists the weight entries for the selected day with per-entry BMI stats, a
-///// goal-achieved banner, delete affordances, and an add-measurement action.
+/// goal-achieved banner, delete affordances, and an add-measurement action.
 class CalendarDayEntriesCard extends StatelessWidget {
   /// The selected date.
   final DateTime selectedDate;
@@ -239,7 +239,7 @@ class CalendarDayEntriesCard extends StatelessWidget {
     );
   }
 
-  ///// Prompts the user for confirmation before deleting the entry with [entryId].
+  /// Prompts the user for confirmation before deleting the entry with [entryId].
   Future<void> _confirmDelete(BuildContext context, int entryId) async {
     final l10n = AppLocalizations.of(context);
     final confirmed = await showDialog<bool>(

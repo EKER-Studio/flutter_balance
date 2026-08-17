@@ -31,9 +31,7 @@ final class OnboardingUnitSelected extends OnboardingEvent {
   /// The newly selected unit system.
   final MeasurementUnit unit;
 
-  /// Creates [OnboardingUnitSelected].
-  ///
-  /// @param unit The newly selected unit system.
+  /// Creates [OnboardingUnitSelected] with the given [unit].
   const OnboardingUnitSelected(this.unit);
 
   @override
@@ -45,9 +43,7 @@ final class OnboardingCsvImported extends OnboardingEvent {
   /// Parsed entries to keep as draft data for the wizard.
   final List<WeightEntry> entries;
 
-  /// Creates [OnboardingCsvImported].
-  ///
-  /// @param entries Parsed entries to keep as draft data for the wizard.
+  /// Creates [OnboardingCsvImported] with the parsed [entries].
   const OnboardingCsvImported(this.entries);
 
   @override
@@ -63,10 +59,7 @@ final class OnboardingInitialWeightSet extends OnboardingEvent {
   /// Timestamp of the measurement, or `null` to default to now.
   final DateTime? timestamp;
 
-  /// Creates [OnboardingInitialWeightSet].
-  ///
-  /// @param weightKg Initial weight in kilograms.
-  /// @param timestamp Timestamp of the measurement, or `null` to default to now.
+  /// Creates [OnboardingInitialWeightSet] with [weightKg] and optional [timestamp].
   const OnboardingInitialWeightSet({required this.weightKg, this.timestamp});
 
   @override
@@ -79,9 +72,7 @@ final class OnboardingTargetWeightSet extends OnboardingEvent {
   /// Target weight in kilograms, or `null` when no target was set.
   final double? weightKg;
 
-  /// Creates [OnboardingTargetWeightSet].
-  ///
-  /// @param weightKg Target weight in kilograms, or `null` when no target was set.
+  /// Creates [OnboardingTargetWeightSet] with [weightKg], or `null` when no target is set.
   const OnboardingTargetWeightSet(this.weightKg);
 
   @override
@@ -94,9 +85,7 @@ final class OnboardingHealthSyncToggled extends OnboardingEvent {
   /// Whether health sync was requested.
   final bool enabled;
 
-  /// Creates [OnboardingHealthSyncToggled].
-  ///
-  /// @param enabled Whether health sync was requested.
+  /// Creates [OnboardingHealthSyncToggled] with whether health sync was [enabled].
   const OnboardingHealthSyncToggled(this.enabled);
 
   @override
@@ -109,9 +98,7 @@ final class OnboardingBiometricsToggled extends OnboardingEvent {
   /// Whether the biometric lock was enabled.
   final bool enabled;
 
-  /// Creates [OnboardingBiometricsToggled].
-  ///
-  /// @param enabled Whether the biometric lock was enabled.
+  /// Creates [OnboardingBiometricsToggled] with whether biometric lock was [enabled].
   const OnboardingBiometricsToggled(this.enabled);
 
   @override

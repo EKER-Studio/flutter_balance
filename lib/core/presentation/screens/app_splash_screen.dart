@@ -8,7 +8,7 @@ import 'package:balance/l10n/app_localizations.dart';
 /// It is displayed immediately after the Dart VM starts, while the application
 /// finishes asynchronous initializations (like database setup).
 /// Being a Flutter widget, it correctly responds to the app's internal theme
-///// preferences (dark/light) regardless of the host OS theme.
+/// preferences (dark/light) regardless of the host OS theme.
 class AppSplashScreen extends StatelessWidget {
   /// Creates an [AppSplashScreen] displayed while the app initializes.
   const AppSplashScreen({super.key});

@@ -13,14 +13,12 @@ import 'package:balance/core/presentation/core/clamped_layout.dart';
 /// The step is skippable by design: the user simply presses the next action
 /// without enabling the sync switch. Enabling the switch triggers the native
 /// permission request through [AppSettingsBloc]; the wizard advances via the
-///// next action once the choice is made.
+/// next action once the choice is made.
 class StepHealthSync extends StatefulWidget {
   /// Callback invoked when the user proceeds to the next step.
   final VoidCallback onNext;
 
-  /// Creates a [StepHealthSync] widget.
-  ///
-  /// @param onNext Callback invoked when the user proceeds to the next step.
+  /// Creates a [StepHealthSync] widget with the given [onNext] callback.
   const StepHealthSync({super.key, required this.onNext});
 
   @override

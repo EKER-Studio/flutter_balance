@@ -175,7 +175,7 @@ class NativeHealthService implements HealthService {
   ///
   /// A configuration failure never throws: it is logged in debug builds and
   /// the plugin is simply left unconfigured, letting every public method
-  ///// degrade gracefully through its own error handling.
+  /// degrade gracefully through its own error handling.
   Future<void> _ensureConfigured() async {
     if (!_isConfigured) {
       try {

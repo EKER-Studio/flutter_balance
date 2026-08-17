@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 /// A shimmer loading skeleton for the statistics screen.
 ///
-///// Mirrors the statistics layout: habit summary cards, hero trend card with chart, and key metrics bento grid.
+/// Mirrors the statistics layout: habit summary cards, hero trend card with chart, and key metrics bento grid.
 class StatisticsShimmerSkeleton extends StatefulWidget {
   /// Creates a [StatisticsShimmerSkeleton].
   const StatisticsShimmerSkeleton({super.key});

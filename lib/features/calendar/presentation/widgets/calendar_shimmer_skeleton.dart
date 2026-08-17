@@ -1,9 +1,9 @@
-/// Shimmer placeholder mirroring the calendar layout while data loads.
+// Shimmer placeholder mirroring the calendar layout while data loads.
 
 import 'package:flutter/material.dart';
 
 /// Loading placeholder that mirrors the calendar layout with a repeating
-///// shimmer animation while weight data is being fetched.
+/// shimmer animation while weight data is being fetched.
 class CalendarShimmerSkeleton extends StatefulWidget {
   const CalendarShimmerSkeleton({super.key});
 
@@ -12,7 +12,7 @@ class CalendarShimmerSkeleton extends StatefulWidget {
       _CalendarShimmerSkeletonState();
 }
 
-///// Drives the shimmer opacity tween and disposes the [AnimationController].
+/// Drives the shimmer opacity tween and disposes the [AnimationController].
 class _CalendarShimmerSkeletonState extends State<CalendarShimmerSkeleton>
     with SingleTickerProviderStateMixin {
   late final AnimationController _controller;

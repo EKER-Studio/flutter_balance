@@ -21,7 +21,7 @@ import 'package:balance/features/settings/presentation/bloc/app_settings_state.d
 /// the shield; retryable failures keep it mounted and surface a snack bar,
 /// while terminal failures (no enrolled credentials, unsupported device,
 /// permanent lockout, or missing passcode) offer a lock-recovery dialog that
-///// lets the user disable the biometric lock entirely.
+/// lets the user disable the biometric lock entirely.
 class BiometricShieldScreen extends StatefulWidget {
   /// Creates a [BiometricShieldScreen].
   const BiometricShieldScreen({super.key});
@@ -30,7 +30,7 @@ class BiometricShieldScreen extends StatefulWidget {
   State<BiometricShieldScreen> createState() => _BiometricShieldScreenState();
 }
 
-///// The locked state behind the biometric shield, showing the unlock prompt.
+/// The locked state behind the biometric shield, showing the unlock prompt.
 class _BiometricShieldScreenState extends State<BiometricShieldScreen> {
   bool _isUnlocking = false;
 
@@ -46,7 +46,7 @@ class _BiometricShieldScreenState extends State<BiometricShieldScreen> {
   }
 
   /// Runs the biometric authentication prompt, unlocks the app on success,
-  ///// and routes terminal failures to the lock recovery dialog.
+  /// and routes terminal failures to the lock recovery dialog.
   Future<void> _handleUnlock(BuildContext context, AppSettingsBloc bloc) async {
     if (_isUnlocking) return;
     _isUnlocking = true;
@@ -96,7 +96,7 @@ class _BiometricShieldScreenState extends State<BiometricShieldScreen> {
   ///
   /// When authentication is impossible (no enrolled credentials, biometrics
   /// unsupported, permanent lockout), the user may turn the biometric lock off
-  ///// entirely instead of being stuck behind the shield forever.
+  /// entirely instead of being stuck behind the shield forever.
   Future<void> _offerLockRecovery(
     BuildContext context,
     AppSettingsBloc bloc,

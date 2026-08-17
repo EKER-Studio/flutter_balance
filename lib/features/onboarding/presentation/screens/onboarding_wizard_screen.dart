@@ -28,7 +28,7 @@ import 'package:balance/features/onboarding/presentation/widgets/steps/step_welc
 /// [AppSettingsBloc] state and wired to the [WeightBloc]/[AppSettingsBloc]
 /// targets it hands persistent outcomes off to. Also handles keyboard
 /// avoidance, screen orientation safety, and hardware back button behavior
-///// via PopScope.
+/// via PopScope.
 class OnboardingWizardScreen extends StatelessWidget {
   /// Optional callback invoked upon completing all onboarding steps.
   final VoidCallback? onWizardCompleted;
@@ -86,7 +86,7 @@ class OnboardingWizardScreen extends StatelessWidget {
 /// and the system back gesture (PopScope) rewind one step; on Welcome, where
 /// there is nothing to rewind, back pops the screen instead. Per-step
 /// validation is owned by each step widget: its Next action only fires with
-///// valid input, so the wizard never advances through an invalid value.
+/// valid input, so the wizard never advances through an invalid value.
 class _OnboardingWizardContent extends StatefulWidget {
   final VoidCallback? onWizardCompleted;
   final CsvImportService? csvImportService;

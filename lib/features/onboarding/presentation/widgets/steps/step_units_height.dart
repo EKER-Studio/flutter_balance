@@ -16,7 +16,7 @@ import 'package:flutter/material.dart';
 /// feet with 0-11.99 inches in imperial mode; an invalid value shows an
 /// inline range error and blocks advancing. Toggling the unit converts the
 /// current height into the new system, and the active field requests focus
-///// whenever the step becomes the current page.
+/// whenever the step becomes the current page.
 class StepUnitsHeight extends StatefulWidget {
   /// Initial measurement unit system preference.
   final MeasurementUnit initialUnit;

@@ -1,4 +1,4 @@
-/// Empty state shown when the selected calendar day has no measurements.
+// Empty state shown when the selected calendar day has no measurements.
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -7,7 +7,7 @@ import 'package:balance/features/weight/presentation/widgets/add_weight_sheet.da
 import 'package:balance/l10n/app_localizations.dart';
 
 /// Empty state for a selected day without measurements, offering a shortcut
-///// to add the first entry for that date via [AddWeightSheet].
+/// to add the first entry for that date via [AddWeightSheet].
 class CalendarDayEmptyCard extends StatelessWidget {
   /// The selected date with zero measurements.
   final DateTime selectedDate;

@@ -8,7 +8,7 @@ import 'package:balance/features/settings/presentation/bloc/app_settings_state.d
 
 /// A BLoC responsible for managing persistent app settings.
 ///
-///// All settings are persisted across app restarts via `HydratedBloc`.
+/// All settings are persisted across app restarts via `HydratedBloc`.
 class AppSettingsBloc extends HydratedBloc<AppSettingsEvent, AppSettingsState> {
   final NotificationService _notificationService;
   final HealthService _healthService;
@@ -65,7 +65,7 @@ class AppSettingsBloc extends HydratedBloc<AppSettingsEvent, AppSettingsState> {
   /// When enabling, it requests OS permissions first and only schedules the
   /// reminder when granted. A denied request emits the transient
   /// [AppSettingsState.notificationPermissionDenied] flag instead. When
-  ///// disabling, it cancels the scheduled reminder.
+  /// disabling, it cancels the scheduled reminder.
   Future<void> _onToggleNotifications(
     ToggleNotifications event,
     Emitter<AppSettingsState> emit,
@@ -100,7 +100,7 @@ class AppSettingsBloc extends HydratedBloc<AppSettingsEvent, AppSettingsState> {
 
   /// Updates the reminder time and re-schedules the daily notification.
   ///
-  ///// This only occurs when notifications are currently enabled.
+  /// This only occurs when notifications are currently enabled.
   Future<void> _onUpdateNotificationTime(
     UpdateNotificationTime event,
     Emitter<AppSettingsState> emit,
@@ -180,7 +180,7 @@ class AppSettingsBloc extends HydratedBloc<AppSettingsEvent, AppSettingsState> {
   /// flag, and a denied one emits the transient
   /// [AppSettingsState.healthPermissionDenied] flag instead. When disabling,
   /// it deactivates the sync flag and clears the transient denied flag. Every
-  ///// emitted state is persisted to disk via [HydratedBloc].
+  /// emitted state is persisted to disk via [HydratedBloc].
   Future<void> _onToggleHealthSync(
     ToggleHealthSync event,
     Emitter<AppSettingsState> emit,
@@ -230,7 +230,7 @@ class AppSettingsBloc extends HydratedBloc<AppSettingsEvent, AppSettingsState> {
   /// [AppSettingsState.isHealthApiAvailable]. When the persisted sync flag is
   /// set but the permissions were revoked in the OS settings, it disables the
   /// flag. The emitted state is persisted to disk via [HydratedBloc], keeping
-  ///// the stored sync flag in sync with the actual native permission state.
+  /// the stored sync flag in sync with the actual native permission state.
   Future<void> _onCheckHealthSyncStatus(
     CheckHealthSyncStatus event,
     Emitter<AppSettingsState> emit,

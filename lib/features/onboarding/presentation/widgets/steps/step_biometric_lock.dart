@@ -14,7 +14,7 @@ import 'package:balance/core/presentation/core/clamped_layout.dart';
 /// and persists the choice to [AppSettingsBloc] only on success; disabling
 /// persists immediately. The step is skippable — [onNext] advances regardless
 /// of the switch state — and when no credential is available the switch is
-///// disabled and a notice is shown instead.
+/// disabled and a notice is shown instead.
 class StepBiometricLock extends StatefulWidget {
   /// Callback invoked when proceeding to the next step (or skipping).
   final VoidCallback onNext;
@@ -39,7 +39,7 @@ class _StepBiometricLockState extends State<StepBiometricLock> {
   }
 
   /// Resolves device credential availability (biometric or OS PIN/pattern/
-  ///// password fallback) for the switch state.
+  /// password fallback) for the switch state.
   Future<void> _checkBiometrics() async {
     final available = await BiometricService.instance.canAuthenticate();
     if (mounted) {
@@ -49,7 +49,7 @@ class _StepBiometricLockState extends State<StepBiometricLock> {
     }
   }
 
-  ///// Toggles the biometric lock, authenticating the user before enabling it.
+  /// Toggles the biometric lock, authenticating the user before enabling it.
   Future<void> _handleToggle(BuildContext context, bool enabled) async {
     final l10n = AppLocalizations.of(context);
     final bloc = context.read<AppSettingsBloc>();

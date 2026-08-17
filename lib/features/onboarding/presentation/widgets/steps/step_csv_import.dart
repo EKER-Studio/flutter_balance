@@ -4,7 +4,7 @@ import 'package:balance/features/weight/domain/entities/weight_entry.dart';
 import 'package:balance/l10n/app_localizations.dart';
 import 'package:balance/core/presentation/core/clamped_layout.dart';
 
-///// Internal state of the CSV import step.
+/// Internal state of the CSV import step.
 enum _CsvImportStatus {
   /// Standard view with the description and the file picker button.
   idle,
@@ -23,7 +23,7 @@ enum _CsvImportStatus {
 /// from an external CSV file.
 ///
 /// The widget is decoupled from database persistence: parsed entries are held
-///// in memory and handed to the parent wizard via [onFileImported].
+/// in memory and handed to the parent wizard via [onFileImported].
 class StepCsvImport extends StatefulWidget {
   /// Service used to pick and parse the CSV file; defaults to a real
   /// [CsvImportService] and can be replaced with a fake in tests.
@@ -65,7 +65,7 @@ class _StepCsvImportState extends State<StepCsvImport> {
   }
 
   /// Opens the file picker and parses the selected file, updating the step
-  ///// state on every outcome (cancel keeps the idle view).
+  /// state on every outcome (cancel keeps the idle view).
   Future<void> _handlePickFile() async {
     setState(() {
       _status = _CsvImportStatus.loading;

@@ -38,17 +38,7 @@ final class OnboardingState extends Equatable {
   /// Whether the user enabled the biometric lock during onboarding.
   final bool isBiometricEnabled;
 
-  /// Creates an [OnboardingState] with the given parameters.
-  ///
-  /// @param currentStepIndex Index of the currently displayed step (0-based), defaults to 0.
-  /// @param totalSteps Total step count, defaults to 6; differs on devices without biometric credential support.
-  /// @param selectedUnit Measurement unit system selected during onboarding.
-  /// @param importedCsvEntries History parsed from the CSV import step, not yet persisted.
-  /// @param draftInitialWeight Initial weight in kg confirmed on the initial-weight step.
-  /// @param draftInitialTimestamp Timestamp of the confirmed [draftInitialWeight].
-  /// @param draftTargetWeight Target weight in kg confirmed on the target-weight step (`null` when skipped).
-  /// @param isHealthSyncRequested Whether the user connected health sync during onboarding.
-  /// @param isBiometricEnabled Whether the user enabled the biometric lock during onboarding.
+  /// Creates an [OnboardingState]; all parameters are optional with sensible defaults.
   const OnboardingState({
     this.currentStepIndex = 0,
     this.totalSteps = 6,
@@ -77,11 +67,8 @@ final class OnboardingState extends Equatable {
   /// Creates a copy of this state with the given fields replaced.
   ///
   /// Nullable draft fields use a sentinel default so `null` can be written
-  /// back explicitly.
-  ///
-  /// @param draftInitialWeight Replaces [draftInitialWeight]; pass `null` to clear it.
-  /// @param draftInitialTimestamp Replaces [draftInitialTimestamp]; pass `null` to clear it.
-  /// @param draftTargetWeight Replaces [draftTargetWeight]; pass `null` to clear it.
+  /// back explicitly. Pass `null` for [draftInitialWeight], [draftInitialTimestamp],
+  /// or [draftTargetWeight] to clear those fields.
   OnboardingState copyWith({
     int? currentStepIndex,
     int? totalSteps,

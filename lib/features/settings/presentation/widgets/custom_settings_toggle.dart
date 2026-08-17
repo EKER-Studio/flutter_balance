@@ -2,7 +2,7 @@
 
 import 'package:flutter/material.dart';
 
-///// A widget that represents a settings list tile with a trailing switch, used for boolean preferences.
+/// A widget that represents a settings list tile with a trailing switch, used for boolean preferences.
 class CustomSettingsToggle extends StatefulWidget {
   /// The leading icon rendered inside a circular container.
   final IconData icon;

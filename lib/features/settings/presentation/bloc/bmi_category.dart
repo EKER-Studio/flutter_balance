@@ -1,12 +1,9 @@
-// WHO body mass index categories used to classify weight data.
-
 /// A body-mass-index weight category per the WHO classification.
 ///
 /// The categories use the standard WHO cut-off points of 18.5, 25.0 and
 /// 30.0 kg/m²; each boundary is lower-inclusive, so 18.5 falls in [normal]
 /// and 30.0 falls in [obese]. The localized display name is exposed by the
-//// `localizedName` extension from `bmi_category_localizer.dart`.
-
+/// `localizedName` extension from `bmi_category_localizer.dart`.
 enum BmiCategory {
   /// BMI below 18.5 kg/m².
   underweight,

@@ -15,7 +15,7 @@ import 'package:balance/features/settings/presentation/bloc/app_settings_event.d
 /// (step index, selected unit, imported CSV entries, draft weights, integration
 /// toggles). Persistent outcomes are handed off to [WeightBloc] and
 /// [AppSettingsBloc] when a step is confirmed or [OnboardingCompleted] is
-///// dispatched.
+/// dispatched.
 class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
   /// Target for the persistent settings dispatched on completion.
   final AppSettingsBloc appSettingsBloc;
@@ -29,12 +29,12 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
 
   /// Creates an [OnboardingBloc] seeded with the wizard's starting values.
   ///
-  /// @param appSettingsBloc Receives the persistent settings dispatched on completion.
-  /// @param weightBloc Receives the weight entries dispatched on completion.
-  /// @param totalSteps Total step count for the current build; the biometric
-  ///   step is omitted on devices without credential support.
-  /// @param initialUnit Unit preference already persisted in [AppSettingsBloc].
-  /// @param initialTargetWeight Target weight already persisted, or `null`.
+  /// [appSettingsBloc] receives the persistent settings dispatched on completion.
+  /// [weightBloc] receives the weight entries dispatched during the wizard.
+  /// [totalSteps] is the step count for the current build; the biometric step
+  /// is omitted on devices without credential support.
+  /// [initialUnit] is the unit preference already persisted in [AppSettingsBloc].
+  /// [initialTargetWeight] is the target weight already persisted, or `null`.
   OnboardingBloc({
     required this.appSettingsBloc,
     required this.weightBloc,
