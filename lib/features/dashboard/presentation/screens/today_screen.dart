@@ -370,11 +370,12 @@ class _WeightTrendChartCard extends StatelessWidget {
                     ),
                   ),
                 ),
-                _ChartPeriodFilters(
-                  period: period,
-                  onPeriodChanged: onPeriodChanged,
-                ),
               ],
+            ),
+            const SizedBox(height: 12),
+            _ChartPeriodFilters(
+              period: period,
+              onPeriodChanged: onPeriodChanged,
             ),
             const SizedBox(height: 16),
             SizedBox(
@@ -419,18 +420,24 @@ class _ChartPeriodFilters extends StatelessWidget {
     final l10n = AppLocalizations.of(context);
     final periods = [TimePeriod.week, TimePeriod.month, TimePeriod.year];
 
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: periods.map((candidate) {
-        return Padding(
-          padding: const EdgeInsets.only(left: 4),
-          child: _PeriodPill(
-            label: _periodLabel(candidate, l10n),
-            selected: period == candidate,
-            onPressed: () => onPeriodChanged(candidate),
-          ),
-        );
-      }).toList(),
+    return SizedBox(
+      width: double.infinity,
+      child: Row(
+        children: periods.asMap().entries.map((entry) {
+          final index = entry.key;
+          final candidate = entry.value;
+          return Expanded(
+            child: Padding(
+              padding: EdgeInsets.only(left: index == 0 ? 0.0 : 8.0),
+              child: _PeriodPill(
+                label: _periodLabel(candidate, l10n),
+                selected: period == candidate,
+                onPressed: () => onPeriodChanged(candidate),
+              ),
+            ),
+          );
+        }).toList(),
+      ),
     );
   }
 
@@ -481,6 +488,8 @@ class _PeriodPill extends StatelessWidget {
       ),
       child: Text(
         label,
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
         style: textTheme.labelMedium?.copyWith(
           fontWeight: FontWeight.w600,
           color: selected

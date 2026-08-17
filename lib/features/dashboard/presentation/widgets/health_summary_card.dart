@@ -94,7 +94,7 @@ class HealthSummaryCard extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                         Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
                             Expanded(
                               child: _buildLatestMeasurementInfo(
@@ -106,15 +106,19 @@ class HealthSummaryCard extends StatelessWidget {
                                 textTheme,
                               ),
                             ),
-                            if (bmi.isFinite)
-                              _buildBmiBadge(
-                                context,
-                                bmi,
-                                category,
-                                l10n,
-                                colorScheme,
-                                textTheme,
+                            if (bmi.isFinite) ...[
+                              const SizedBox(width: 12),
+                              Flexible(
+                                child: _buildBmiBadge(
+                                  context,
+                                  bmi,
+                                  category,
+                                  l10n,
+                                  colorScheme,
+                                  textTheme,
+                                ),
                               ),
+                            ],
                           ],
                         ),
                         if (targetWeight != null) ...[
@@ -164,28 +168,32 @@ class HealthSummaryCard extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 4),
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.baseline,
-          textBaseline: TextBaseline.alphabetic,
-          children: [
-            Text(
-              displayWeight.toStringAsFixed(1),
-              style: textTheme.displayLarge?.copyWith(
-                fontWeight: FontWeight.w700,
-                color: colorScheme.primary,
-                letterSpacing: -1,
-                height: 1.1,
+        FittedBox(
+          fit: BoxFit.scaleDown,
+          alignment: Alignment.centerLeft,
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.baseline,
+            textBaseline: TextBaseline.alphabetic,
+            children: [
+              Text(
+                displayWeight.toStringAsFixed(1),
+                style: textTheme.displayLarge?.copyWith(
+                  fontWeight: FontWeight.w700,
+                  color: colorScheme.primary,
+                  letterSpacing: -1,
+                  height: 1.1,
+                ),
               ),
-            ),
-            const SizedBox(width: 4),
-            Text(
-              unitLabel,
-              style: textTheme.titleLarge?.copyWith(
-                color: colorScheme.onSurfaceVariant,
-                fontWeight: FontWeight.w500,
+              const SizedBox(width: 4),
+              Text(
+                unitLabel,
+                style: textTheme.titleLarge?.copyWith(
+                  color: colorScheme.onSurfaceVariant,
+                  fontWeight: FontWeight.w500,
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
         const SizedBox(height: 4),
         Text(
@@ -261,11 +269,15 @@ class HealthSummaryCard extends StatelessWidget {
                         color: contentColor,
                       ),
                       const SizedBox(width: 4),
-                      Text(
-                        category.localizedName(l10n),
-                        style: textTheme.labelMedium?.copyWith(
-                          color: contentColor,
-                          fontWeight: FontWeight.w600,
+                      Flexible(
+                        child: Text(
+                          category.localizedName(l10n),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: textTheme.labelMedium?.copyWith(
+                            color: contentColor,
+                            fontWeight: FontWeight.w600,
+                          ),
                         ),
                       ),
                     ],
@@ -273,6 +285,8 @@ class HealthSummaryCard extends StatelessWidget {
                 const SizedBox(height: 4),
                 Text(
                   l10n.bmiValueShortLabel(bmi.toStringAsFixed(1)),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                   style: textTheme.titleMedium?.copyWith(
                     color: contentColor,
                     fontWeight: FontWeight.w700,
