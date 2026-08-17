@@ -218,6 +218,8 @@ class BmiChartCard extends StatelessWidget {
       spots.add(FlSpot(i.toDouble(), bmi));
     }
 
+    final colorScheme = Theme.of(context).colorScheme;
+
     final range = maxBmi - minBmi;
     final padding = (range * 0.1).clamp(0.5, double.infinity);
     final minY = (minBmi - padding).floorToDouble().clamp(10.0, 100.0);
@@ -274,6 +276,22 @@ class BmiChartCard extends StatelessWidget {
           ),
           borderData: FlBorderData(show: false),
           lineTouchData: LineTouchData(
+            getTouchedSpotIndicator: (barData, spotIndexes) {
+              return spotIndexes.map((index) {
+                return TouchedSpotIndicatorData(
+                  const FlLine(strokeWidth: 0),
+                  FlDotData(
+                    getDotPainter: (spot, percent, barData, index) =>
+                        FlDotCirclePainter(
+                          radius: 6,
+                          color: cs.primary,
+                          strokeWidth: 2,
+                          strokeColor: cs.surface,
+                        ),
+                  ),
+                );
+              }).toList();
+            },
             touchTooltipData: LineTouchTooltipData(
               getTooltipColor: (_) => cs.secondaryContainer,
               getTooltipItems: (touchedSpots) => touchedSpots.map((spot) {
@@ -309,8 +327,8 @@ class BmiChartCard extends StatelessWidget {
                 show: true,
                 gradient: LinearGradient(
                   colors: [
-                    cs.primary.withValues(alpha: 0.2),
-                    cs.primary.withValues(alpha: 0.0),
+                    colorScheme.primary.withValues(alpha: 0.2),
+                    colorScheme.primary.withValues(alpha: 0.0),
                   ],
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,

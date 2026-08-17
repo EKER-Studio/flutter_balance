@@ -616,6 +616,7 @@ class _WeightLineChart extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
+
     final sortedEntries = [...entries]
       ..sort((a, b) => a.dateTime.compareTo(b.dateTime));
     final displayWeights = sortedEntries
@@ -742,7 +743,7 @@ class _WeightLineChart extends StatelessWidget {
                 show: sortedEntries.length == 1,
                 getDotPainter: (spot, percent, barData, index) {
                   return FlDotCirclePainter(
-                    radius: 5,
+                    radius: 4,
                     color: colorScheme.primary,
                     strokeWidth: 2,
                     strokeColor: colorScheme.surface,
@@ -751,7 +752,14 @@ class _WeightLineChart extends StatelessWidget {
               ),
               belowBarData: BarAreaData(
                 show: true,
-                color: colorScheme.primary.withValues(alpha: 0.1),
+                gradient: LinearGradient(
+                  colors: [
+                    colorScheme.primary.withValues(alpha: 0.2),
+                    colorScheme.primary.withValues(alpha: 0.0),
+                  ],
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                ),
               ),
             ),
           ],

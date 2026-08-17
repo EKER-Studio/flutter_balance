@@ -42,6 +42,8 @@ class WeightChart extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     final l10n = AppLocalizations.of(context);
     if (entries.isEmpty) {
       return SizedBox(
@@ -212,12 +214,8 @@ class WeightChart extends StatelessWidget {
                         show: true,
                         gradient: LinearGradient(
                           colors: [
-                            Theme.of(
-                              context,
-                            ).colorScheme.primary.withValues(alpha: 0.3),
-                            Theme.of(
-                              context,
-                            ).colorScheme.primary.withValues(alpha: 0.0),
+                            colorScheme.primary.withValues(alpha: 0.2),
+                            colorScheme.primary.withValues(alpha: 0.0),
                           ],
                           begin: Alignment.topCenter,
                           end: Alignment.bottomCenter,
@@ -226,6 +224,25 @@ class WeightChart extends StatelessWidget {
                     ),
                   ],
                   lineTouchData: LineTouchData(
+                    getTouchedSpotIndicator: (barData, spotIndexes) {
+                      return spotIndexes.map((index) {
+                        return TouchedSpotIndicatorData(
+                          const FlLine(strokeWidth: 0), // brak pionowej kreski
+                          FlDotData(
+                            getDotPainter: (spot, percent, barData, index) {
+                              return FlDotCirclePainter(
+                                radius: 6,
+                                color: Theme.of(context).colorScheme.primary,
+                                strokeWidth: 2,
+                                strokeColor: Theme.of(
+                                  context,
+                                ).colorScheme.surface,
+                              );
+                            },
+                          ),
+                        );
+                      }).toList();
+                    },
                     touchTooltipData: LineTouchTooltipData(
                       getTooltipColor: (touchedSpot) =>
                           Theme.of(context).colorScheme.secondaryContainer,
