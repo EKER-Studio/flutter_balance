@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
@@ -1251,14 +1252,16 @@ void main() {
       registerFallbackValue(const SyncHealthEntries());
     });
 
-    testWidgets('imports a CSV file with valid and skipped rows', (
+    testWidgets('triggers CSV analysis and completes import flow via dialog', (
       tester,
     ) async {
       useWideSurface(tester);
+
+      final stateController = StreamController<WeightState>.broadcast();
+      when(() => weightBloc.stream).thenAnswer((_) => stateController.stream);
+
       final csvFile = File('${tempDir.path}/import.csv')
-        ..writeAsStringSync(
-          'Date,Weight (kg)\n2026-07-25 08:30,69.0\n2026-07-26 08:30,68.5\ngarbage',
-        );
+        ..writeAsStringSync('Date,Weight (kg)\n2026-07-25 08:30,69.0\n');
       FilePickerPlatform.instance = FakeFilePickerPlatform(
         ({required type, allowedExtensions}) async => FilePickerResult([
           PlatformFile(path: csvFile.path, name: 'import.csv', size: 1),
@@ -1270,6 +1273,8 @@ void main() {
 
       await tester.ensureVisible(find.text('Import data from CSV'));
       await tester.pumpAndSettle();
+
+      // 1. User taps Import, triggers FilePicker
       await tester.runAsync(() async {
         await tester.tap(find.text('Import data from CSV'));
         await tester.pump();
@@ -1277,67 +1282,103 @@ void main() {
       });
       await tester.pumpAndSettle();
 
-      expect(find.text('Imported 2 entries.'), findsOneWidget);
-      verify(() => weightBloc.add(any())).called(1);
+      // Verify BLoC received AnalyzeCsvFile event
+      final captured = verify(() => weightBloc.add(captureAny())).captured;
+      expect(captured.last, isA<AnalyzeCsvFile>());
+
+      // 2. BLoC emits CsvAnalysisReady -> UI should show the preview dialog
+      stateController.add(
+        CsvAnalysisReady(
+          entries: [],
+          filteredEntries: [],
+          analysis: (
+            validEntries: [
+              WeightEntry(weightKg: 69.0, dateTime: DateTime(2026, 7, 25)),
+            ],
+            skippedRowCount: 0,
+            earliestDate: DateTime(2026, 7, 25),
+            latestDate: DateTime(2026, 7, 25),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.text('Import Preview'), findsOneWidget);
+      expect(find.text('Confirm import'), findsOneWidget);
+
+      // 3. User taps confirm on dialog -> UI adds ConfirmCsvImport event
+      await tester.tap(find.text('Confirm import'));
+      await tester.pumpAndSettle();
+
+      final captured2 = verify(() => weightBloc.add(captureAny())).captured;
+      expect(captured2.last, isA<ConfirmCsvImport>());
+
+      // 4. BLoC emits WeightImportSuccess -> UI shows success snackbar
+      stateController.add(
+        const WeightImportSuccess(
+          entries: [],
+          filteredEntries: [],
+          importedCount: 1,
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.text('Imported 1 new entry'), findsOneWidget);
+
+      await stateController.close();
     });
 
-    testWidgets('shows no-data snackbar when the CSV has no valid entries', (
+    testWidgets('shows no-data snackbar when BLoC emits noEntries error', (
       tester,
     ) async {
       useWideSurface(tester);
-      final csvFile = File('${tempDir.path}/empty.csv')
-        ..writeAsStringSync('Date,Weight (kg)\ngarbage');
-      FilePickerPlatform.instance = FakeFilePickerPlatform(
-        ({required type, allowedExtensions}) async => FilePickerResult([
-          PlatformFile(path: csvFile.path, name: 'empty.csv', size: 1),
-        ]),
-      );
+      final stateController = StreamController<WeightState>.broadcast();
+      when(() => weightBloc.stream).thenAnswer((_) => stateController.stream);
 
       await tester.pumpWidget(createTestWidget());
       await tester.pumpAndSettle();
 
-      await tester.ensureVisible(find.text('Import data from CSV'));
-      await tester.pumpAndSettle();
-      await tester.runAsync(() async {
-        await tester.tap(find.text('Import data from CSV'));
-        await tester.pump();
-        await Future<void>.delayed(const Duration(milliseconds: 300));
-      });
+      // Simulate BLoC emitting the error state directly
+      stateController.add(
+        const CsvAnalysisError(
+          entries: [],
+          filteredEntries: [],
+          errorType: CsvErrorType.noEntries,
+        ),
+      );
       await tester.pumpAndSettle();
 
       expect(
-        find.text('No valid weight entries found in the imported file.'),
+        find.text('No valid measurements found in this file'),
         findsOneWidget,
       );
+
+      await stateController.close();
     });
 
-    testWidgets('shows error snackbar when the picked file cannot be read', (
+    testWidgets('shows error snackbar when BLoC emits invalidFormat error', (
       tester,
     ) async {
       useWideSurface(tester);
-      FilePickerPlatform.instance = FakeFilePickerPlatform(
-        ({required type, allowedExtensions}) async => FilePickerResult([
-          PlatformFile(
-            path: '${tempDir.path}/missing.csv',
-            name: 'missing.csv',
-            size: 1,
-          ),
-        ]),
-      );
+      final stateController = StreamController<WeightState>.broadcast();
+      when(() => weightBloc.stream).thenAnswer((_) => stateController.stream);
 
       await tester.pumpWidget(createTestWidget());
       await tester.pumpAndSettle();
 
-      await tester.ensureVisible(find.text('Import data from CSV'));
-      await tester.pumpAndSettle();
-      await tester.runAsync(() async {
-        await tester.tap(find.text('Import data from CSV'));
-        await tester.pump();
-        await Future<void>.delayed(const Duration(milliseconds: 300));
-      });
+      // Simulate BLoC emitting the error state directly
+      stateController.add(
+        const CsvAnalysisError(
+          entries: [],
+          filteredEntries: [],
+          errorType: CsvErrorType.invalidFormat,
+        ),
+      );
       await tester.pumpAndSettle();
 
-      expect(find.textContaining('Import error:'), findsOneWidget);
+      expect(find.text('No date and weight columns found'), findsOneWidget);
+
+      await stateController.close();
     });
 
     testWidgets('exports entries and shows success snackbar', (tester) async {

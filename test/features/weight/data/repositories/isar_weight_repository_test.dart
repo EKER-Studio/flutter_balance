@@ -322,6 +322,54 @@ void main() {
       expect(stored[2].weightKg, 60.0);
     });
 
+    test(
+      'bulkImportEntries is idempotent, prevents duplicates, and backfills notes',
+      () async {
+        if (isar == null) {
+          markTestSkipped(
+            'Isar native library not available in this environment',
+          );
+          return;
+        }
+
+        final initialEntries = [
+          WeightEntry(weightKg: 85.0, dateTime: DateTime(2025, 4, 1, 12, 0)),
+          WeightEntry(
+            weightKg: 85.5,
+            dateTime: DateTime(2025, 4, 2, 12, 0),
+          ), // no note
+        ];
+
+        final count1 = await repository!.bulkImportEntries(initialEntries);
+        expect(count1, 2);
+
+        // Re-import exactly the same entries (should insert 0)
+        final count2 = await repository!.bulkImportEntries(initialEntries);
+        expect(count2, 0);
+
+        // Import with note backfill
+        // 85.5 kg matches exactly (with note added).
+        // 86.0 kg is new (time differs).
+        final newBatch = [
+          WeightEntry(
+            weightKg: 85.5,
+            dateTime: DateTime(2025, 4, 2, 12, 0),
+            note: 'Backfilled Note',
+          ),
+          WeightEntry(weightKg: 86.0, dateTime: DateTime(2025, 4, 3, 12, 0)),
+        ];
+
+        final count3 = await repository!.bulkImportEntries(newBatch);
+        expect(count3, 1); // Only the 86.0 entry is new!
+
+        final stored = await repository!.getAllEntries();
+        expect(stored.length, 3); // 85.0, 85.5 (updated), 86.0
+
+        final backfilledEntry = stored.firstWhere((e) => e.weightKg == 85.5);
+        expect(backfilledEntry.note, 'Backfilled Note');
+      },
+    );
+
     test('clearAllData removes all entries', () async {
       if (isar == null) {
         markTestSkipped(

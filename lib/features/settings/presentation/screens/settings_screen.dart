@@ -501,7 +501,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         context,
         analysis: state.analysis,
       );
-      if (confirmed && mounted) {
+      if (confirmed && context.mounted) {
         context.read<WeightBloc>().add(
           ConfirmCsvImport(validEntries: state.analysis.validEntries),
         );
@@ -701,8 +701,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
       );
     }
   }
-
-
 
   /// Exports the current weight entries via [CsvExporter] and shares the file.
   ///
