@@ -1,4 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:balance/core/models/measurement_unit.dart';
 import 'package:balance/features/weight/domain/entities/weight_entry.dart';
 import 'package:balance/features/weight/presentation/bloc/weight_bloc.dart';
@@ -52,16 +53,16 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
            draftTargetWeight: initialTargetWeight,
          ),
        ) {
-    on<OnboardingStarted>(_onStarted);
-    on<OnboardingStepAdvanced>(_onStepAdvanced);
-    on<OnboardingStepRewound>(_onStepRewound);
+    on<OnboardingStarted>(_onStarted, transformer: restartable());
+    on<OnboardingStepAdvanced>(_onStepAdvanced, transformer: droppable());
+    on<OnboardingStepRewound>(_onStepRewound, transformer: droppable());
     on<OnboardingUnitSelected>(_onUnitSelected);
-    on<OnboardingCsvImported>(_onCsvImported);
+    on<OnboardingCsvImported>(_onCsvImported, transformer: droppable());
     on<OnboardingInitialWeightSet>(_onInitialWeightSet);
     on<OnboardingTargetWeightSet>(_onTargetWeightSet);
     on<OnboardingHealthSyncToggled>(_onHealthSyncToggled);
     on<OnboardingBiometricsToggled>(_onBiometricsToggled);
-    on<OnboardingCompleted>(_onCompleted);
+    on<OnboardingCompleted>(_onCompleted, transformer: droppable());
   }
 
   /// Resets the wizard to a pristine state seeded from the constructor values.

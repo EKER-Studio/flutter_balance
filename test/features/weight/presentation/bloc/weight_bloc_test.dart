@@ -1057,4 +1057,68 @@ void main() {
       );
     });
   });
+
+  group('concurrency semantics', () {
+    blocTest<WeightBloc, WeightState>(
+      'AddWeight drops concurrent events (droppable)',
+      build: () {
+        when(() => repository.addEntry(any())).thenAnswer((_) async {
+          await Future<void>.delayed(const Duration(milliseconds: 50));
+        });
+        return WeightBloc(repository: repository);
+      },
+      seed: () =>
+          const WeightLoaded(entries: [], filteredEntries: [], heightCm: 170),
+      act: (bloc) {
+        bloc.add(const AddWeight(weightKg: 70));
+        bloc.add(const AddWeight(weightKg: 71)); // Should be dropped
+      },
+      verify: (_) {
+        verify(
+          () => repository.addEntry(
+            any(
+              that: isA<WeightEntry>().having(
+                (e) => e.weightKg,
+                'weightKg',
+                70,
+              ),
+            ),
+          ),
+        ).called(1);
+        verifyNever(
+          () => repository.addEntry(
+            any(
+              that: isA<WeightEntry>().having(
+                (e) => e.weightKg,
+                'weightKg',
+                71,
+              ),
+            ),
+          ),
+        );
+      },
+    );
+
+    blocTest<WeightBloc, WeightState>(
+      'DeleteWeight processes sequentially (sequential)',
+      build: () {
+        when(() => repository.deleteEntry(any())).thenAnswer((_) async {
+          await Future<void>.delayed(const Duration(milliseconds: 50));
+        });
+        return WeightBloc(repository: repository);
+      },
+      seed: () =>
+          const WeightLoaded(entries: [], filteredEntries: [], heightCm: 170),
+      act: (bloc) {
+        bloc.add(const DeleteWeight(1));
+        bloc.add(const DeleteWeight(2));
+      },
+      verify: (_) {
+        verifyInOrder([
+          () => repository.deleteEntry(1),
+          () => repository.deleteEntry(2),
+        ]);
+      },
+    );
+  });
 }

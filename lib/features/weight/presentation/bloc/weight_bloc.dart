@@ -53,14 +53,17 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
   }) : _settingsBloc = appSettingsBloc,
        _healthService = healthService ?? NativeHealthService.instance,
        super(const WeightInitial()) {
-    on<SubscribeToWeightChanges>(_onSubscribeToWeightChanges);
+    on<SubscribeToWeightChanges>(
+      _onSubscribeToWeightChanges,
+      transformer: restartable(),
+    );
     on<UpdateUserHeight>(_onUpdateUserHeight);
-    on<AddWeight>(_onAddWeight);
-    on<DeleteWeight>(_onDeleteWeight);
-    on<ChangeChartFilter>(_onChangeChartFilter);
-    on<RefreshWeightData>(_onRefreshWeightData);
-    on<ClearAllWeightData>(_onClearAllWeightData);
-    on<ImportWeightEntries>(_onImportWeightEntries);
+    on<AddWeight>(_onAddWeight, transformer: droppable());
+    on<DeleteWeight>(_onDeleteWeight, transformer: sequential());
+    on<ChangeChartFilter>(_onChangeChartFilter, transformer: restartable());
+    on<RefreshWeightData>(_onRefreshWeightData, transformer: droppable());
+    on<ClearAllWeightData>(_onClearAllWeightData, transformer: droppable());
+    on<ImportWeightEntries>(_onImportWeightEntries, transformer: droppable());
     on<SyncHealthEntries>(_onSyncHealthEntries, transformer: droppable());
   }
 

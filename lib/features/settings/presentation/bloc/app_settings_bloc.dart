@@ -1,6 +1,7 @@
 // BLoC that manages persistent application settings via HydratedBloc.
 
 import 'package:hydrated_bloc/hydrated_bloc.dart';
+import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:balance/core/integrations/health/health_service.dart';
 import 'package:balance/core/integrations/notifications/notification_service.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_event.dart';
@@ -28,18 +29,24 @@ class AppSettingsBloc extends HydratedBloc<AppSettingsEvent, AppSettingsState> {
     on<UpdateMeasurementUnit>(_onUpdateMeasurementUnit);
     on<UpdateHeight>(_onUpdateHeight);
     on<ToggleNotifications>(_onToggleNotifications);
-    on<UpdateNotificationTime>(_onUpdateNotificationTime);
+    on<UpdateNotificationTime>(
+      _onUpdateNotificationTime,
+      transformer: restartable(),
+    );
     on<UpdateNotificationInexactScheduling>(
       _onUpdateNotificationInexactScheduling,
     );
-    on<TargetWeightChanged>(_onTargetWeightChanged);
+    on<TargetWeightChanged>(_onTargetWeightChanged, transformer: restartable());
     on<UpdateBiometricLock>(_onUpdateBiometricLock);
     on<UpdateBiometricSupport>(_onUpdateBiometricSupport);
     on<SetLocked>(_onSetLocked);
-    on<CompleteOnboarding>(_onCompleteOnboarding);
-    on<ToggleHealthSync>(_onToggleHealthSync);
-    on<CheckHealthSyncStatus>(_onCheckHealthSyncStatus);
-    on<ResetAppSettings>(_onResetAppSettings);
+    on<CompleteOnboarding>(_onCompleteOnboarding, transformer: droppable());
+    on<ToggleHealthSync>(_onToggleHealthSync, transformer: droppable());
+    on<CheckHealthSyncStatus>(
+      _onCheckHealthSyncStatus,
+      transformer: droppable(),
+    );
+    on<ResetAppSettings>(_onResetAppSettings, transformer: droppable());
     on<UpdateLastHealthSyncTimestamp>(_onUpdateLastHealthSyncTimestamp);
   }
 

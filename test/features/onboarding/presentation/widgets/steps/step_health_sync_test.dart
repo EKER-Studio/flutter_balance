@@ -101,7 +101,8 @@ void main() {
       );
 
       await tester.tap(nextButtonFinder);
-      await tester.pumpAndSettle();
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 500));
 
       expect(nextCount, equals(1));
     });
@@ -150,12 +151,13 @@ void main() {
       await tester.pumpWidget(buildSubject(onNext: () {}, bloc: bloc));
 
       await tester.tap(switchFinder);
-      await tester.pumpAndSettle();
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 500));
 
       expect(bloc.state.isHealthSyncEnabled, isTrue);
       expect(tester.widget<SwitchListTile>(switchFinder).value, isTrue);
 
-      addTearDown(bloc.close);
+      // addTearDown(bloc.close);
     });
 
     testWidgets('shows inline warning when permission request is denied', (
@@ -173,7 +175,8 @@ void main() {
       await tester.pumpWidget(buildSubject(onNext: () {}, bloc: bloc));
 
       await tester.tap(switchFinder);
-      await tester.pumpAndSettle();
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 500));
 
       expect(
         find.text('Health data permissions are required to sync weight.'),
@@ -182,7 +185,7 @@ void main() {
       expect(bloc.state.isHealthSyncEnabled, isFalse);
       expect(tester.widget<SwitchListTile>(switchFinder).value, isFalse);
 
-      addTearDown(bloc.close);
+      // addTearDown(bloc.close);
     });
 
     testWidgets('clears the denial warning once sync is later enabled', (
@@ -201,7 +204,8 @@ void main() {
 
       // First toggle denies the permission request and shows the warning.
       await tester.tap(switchFinder);
-      await tester.pumpAndSettle();
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 500));
       expect(
         find.text('Health data permissions are required to sync weight.'),
         findsOneWidget,
@@ -212,7 +216,8 @@ void main() {
         () => healthService.requestPermissions(),
       ).thenAnswer((_) async => true);
       await tester.tap(switchFinder);
-      await tester.pumpAndSettle();
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 500));
 
       expect(bloc.state.isHealthSyncEnabled, isTrue);
       expect(
@@ -220,7 +225,7 @@ void main() {
         findsNothing,
       );
 
-      addTearDown(bloc.close);
+      // addTearDown(bloc.close);
     });
 
     // TEMPORARY DIAGNOSTIC: reflects the debug bypass of the availability
@@ -241,14 +246,15 @@ void main() {
         await tester.pumpWidget(buildSubject(onNext: () {}, bloc: bloc));
 
         await tester.tap(switchFinder);
-        await tester.pumpAndSettle();
+        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 500));
 
         expect(
           find.text('Health data permissions are required to sync weight.'),
           findsOneWidget,
         );
 
-        addTearDown(bloc.close);
+        // addTearDown(bloc.close);
       },
     );
   });
