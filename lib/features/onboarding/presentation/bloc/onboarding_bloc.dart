@@ -29,12 +29,13 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
 
   /// Creates an [OnboardingBloc] seeded with the wizard's starting values.
   ///
-  /// [appSettingsBloc] receives the persistent settings dispatched on completion.
-  /// [weightBloc] receives the weight entries dispatched during the wizard.
-  /// [totalSteps] is the step count for the current build; the biometric step
-  /// is omitted on devices without credential support.
-  /// [initialUnit] is the unit preference already persisted in [AppSettingsBloc].
-  /// [initialTargetWeight] is the target weight already persisted, or `null`.
+  /// [appSettingsBloc] receives the persistent settings dispatched on
+  /// completion. [weightBloc] receives the weight entries dispatched during
+  /// the wizard. [totalSteps] is the step count for the current build; the
+  /// biometric step is omitted on devices without credential support.
+  /// [initialUnit] is the unit preference already persisted in
+  /// [AppSettingsBloc]. [initialTargetWeight] is the target weight already
+  /// persisted, or `null`.
   OnboardingBloc({
     required this.appSettingsBloc,
     required this.weightBloc,
