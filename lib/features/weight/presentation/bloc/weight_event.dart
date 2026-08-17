@@ -1,3 +1,4 @@
+import 'package:balance/core/integrations/csv/csv_importer.dart';
 import 'package:balance/features/weight/domain/entities/weight_entry.dart';
 import 'package:balance/features/weight/domain/time_period.dart';
 
@@ -93,4 +94,30 @@ final class SyncHealthEntries extends WeightEvent {
 
   /// Creates [SyncHealthEntries] with the given [startDate].
   const SyncHealthEntries({this.startDate});
+}
+
+/// Triggers a dry-run analysis of the CSV file at [filePath] without writing
+/// to the database.
+///
+/// On success, the BLoC emits [CsvAnalysisReady] carrying the
+/// [CsvImportAnalysis] summary for the preview dialog.
+/// On failure it emits [CsvAnalysisError] with a typed [CsvErrorType].
+final class AnalyzeCsvFile extends WeightEvent {
+  /// Absolute path to the CSV file selected by the file picker.
+  final String filePath;
+
+  /// Creates [AnalyzeCsvFile] with the given [filePath].
+  const AnalyzeCsvFile({required this.filePath});
+}
+
+/// Confirms the import of [validEntries] previously returned by [AnalyzeCsvFile].
+///
+/// Writes the entries to the database via an idempotent bulk transaction and
+/// emits [WeightImportSuccess] with the count of newly inserted records.
+final class ConfirmCsvImport extends WeightEvent {
+  /// Entries to persist, sourced directly from [CsvImportAnalysis.validEntries].
+  final List<WeightEntry> validEntries;
+
+  /// Creates [ConfirmCsvImport] with the given [validEntries].
+  const ConfirmCsvImport({required this.validEntries});
 }

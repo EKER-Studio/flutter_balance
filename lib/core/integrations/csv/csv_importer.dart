@@ -1,7 +1,17 @@
 import 'dart:isolate';
 import 'dart:math' as math;
+import 'package:csv/csv.dart';
 import 'package:intl/intl.dart';
 import 'package:balance/features/weight/domain/entities/weight_entry.dart';
+
+/// Result record returned by [CsvImporter.parse], carrying parsed entries and
+/// audit statistics for the preview dialog and import confirmation flow.
+typedef CsvImportAnalysis = ({
+  List<WeightEntry> validEntries,
+  int skippedRowCount,
+  DateTime? earliestDate,
+  DateTime? latestDate,
+});
 
 /// Parses weight-history CSV content into [WeightEntry] entities on a background isolate.
 ///
@@ -9,6 +19,7 @@ import 'package:balance/features/weight/domain/entities/weight_entry.dart';
 /// The parser mirrors the `CsvExporter` output and supports third-party exports
 /// such as Garmin Connect and Zepp Life (including hierarchical date groups):
 /// - Delimiter: auto-detected comma, semicolon, or tab.
+/// - RFC 4180 quoted multi-line fields are supported via [CsvToListConverter].
 /// - Header row: matched case-insensitively with support for English and Polish
 ///   aliases. Pre-header metadata lines (e.g. `weight`) are skipped.
 /// - Date / Time column aliases: `data`, `date`, `data_date`, `czas`, `time`,
@@ -22,6 +33,8 @@ import 'package:balance/features/weight/domain/entities/weight_entry.dart';
 /// - Dates: supports hierarchical date group rows (e.g. `Cze 15, 2026`), 12-hour
 ///   AM/PM time formats (`9:26 AM`), 24-hour formats (`14:30`), Polish month
 ///   abbreviations, European formats (`dd.MM.yyyy`, `dd/MM/yyyy`), and ISO-8601.
+/// - Anomaly filtering: rejects future timestamps (> now + 24 h), historic
+///   outliers (< 2000-01-01), and notes longer than 500 characters are truncated.
 class CsvImporter {
   /// The attempted standard date formats in order of precedence.
   static final List<DateFormat> _dateFormats = [
@@ -107,54 +120,69 @@ class CsvImporter {
   /// Parses [csvContent] asynchronously on a background isolate.
   ///
   /// Runs synchronously inside [Isolate.run] so large files never block the
-  /// UI thread. Returns the parsed [WeightEntry] entities together with the
-  /// count of skipped invalid rows.
+  /// UI thread. Returns a [CsvImportAnalysis] record carrying parsed
+  /// [WeightEntry] entities, a skipped-row count, and the detected date range.
   ///
   /// Throws a [FormatException] when the content is empty or no valid header
   /// containing both date and weight columns is found.
-  static Future<({List<WeightEntry> entries, int skippedRows})> parse(
-    String csvContent,
-  ) async {
+  static Future<CsvImportAnalysis> parse(String csvContent) async {
     return Isolate.run(() => _parseSync(csvContent));
   }
 
   /// Parses [csvContent] synchronously within the background isolate.
-  static ({List<WeightEntry> entries, int skippedRows}) _parseSync(
-    String csvContent,
-  ) {
-    final lines = csvContent
-        .split('\n')
-        .map((e) => e.trim())
-        .where((e) => e.isNotEmpty)
-        .toList();
+  static CsvImportAnalysis _parseSync(String csvContent) {
+    // Strip UTF-8 BOM if present.
+    if (csvContent.startsWith('\uFEFF')) {
+      csvContent = csvContent.substring(1);
+    }
 
-    if (lines.isEmpty) {
+    // Normalize line endings for consistent CsvToListConverter behavior.
+    final normalized = csvContent
+        .replaceAll('\r\n', '\n')
+        .replaceAll('\r', '\n');
+
+    if (normalized.trim().isEmpty) {
       throw const FormatException('CSV content is empty');
     }
 
-    // Step 1: Scan lines for a valid header row containing both Date and Weight columns
-    int headerIndex = -1;
+    // Step 1 — Detect delimiter and locate the header row.
+    // Try each candidate delimiter with CsvToListConverter (RFC 4180-compliant)
+    // so the header row is found correctly even when fields are quoted.
+    int headerIdx = -1;
     String delimiter = ',';
     Map<String, int?> columnIndex = {};
     int headerColumnCount = 0;
+    List<List<String>> rows = [];
 
-    for (int i = 0; i < lines.length; i++) {
-      final line = lines[i];
-      for (final delim in [',', ';', '\t']) {
-        final fields = _parseCsvLine(line, delim);
+    for (final delim in [',', ';', '\t']) {
+      final parsed = Csv(
+        fieldDelimiter: delim,
+        lineDelimiter: '\n',
+        dynamicTyping: false,
+      ).decode(normalized);
+
+      // Discard entirely-blank rows produced by trailing newlines.
+      final nonEmpty = parsed
+          .map((r) => r.map((e) => e.toString()).toList())
+          .where((r) => r.any((f) => f.trim().isNotEmpty))
+          .toList();
+
+      for (int i = 0; i < nonEmpty.length; i++) {
+        final fields = nonEmpty[i].map((f) => f.trim()).toList();
         final cols = _findColumnIndices(fields);
         if (cols['data'] != null && cols['waga'] != null) {
-          headerIndex = i;
+          headerIdx = i;
           delimiter = delim;
           columnIndex = cols;
           headerColumnCount = fields.length;
+          rows = nonEmpty;
           break;
         }
       }
-      if (headerIndex != -1) break;
+      if (headerIdx != -1) break;
     }
 
-    if (headerIndex == -1) {
+    if (headerIdx == -1) {
       throw const FormatException(
         'CSV missing required columns: "Date" and "Weight"',
       );
@@ -168,33 +196,73 @@ class CsvImporter {
     final entries = <WeightEntry>[];
     int skippedRows = 0;
     DateTime? currentDateContext;
+    DateTime? earliestDate;
+    DateTime? latestDate;
 
-    // Step 2: Iterate through rows below the header
-    for (int i = headerIndex + 1; i < lines.length; i++) {
-      final line = lines[i];
-      var fields = _parseCsvLine(line, delimiter);
+    final futureLimit = DateTime.now().add(const Duration(hours: 24));
+    final historicLimit = DateTime.utc(2000);
+
+    // Step 2 — Iterate through data rows below the header.
+    for (int i = headerIdx + 1; i < rows.length; i++) {
+      var fields = rows[i].map((f) => f.trim()).toList();
 
       if (fields.length < 2) {
         skippedRows++;
         continue;
       }
 
-      // Check for hierarchical date header row (e.g. "Cze 15, 2026,,,,,,,")
-      final lineWithoutTrailingDelims = line
-          .replaceAll(RegExp(r'[,;\t]+$'), '')
-          .trim();
-      final dateFromTrimmedLine = _parseDate(lineWithoutTrailingDelims);
-      if (dateFromTrimmedLine != null) {
-        currentDateContext = dateFromTrimmedLine;
+      // Check for hierarchical date group rows (Garmin Connect format).
+      // "Cze 15, 2026,,,,,,," is split by CsvToListConverter into
+      // ['Cze 15', ' 2026', '', ...] when comma is the delimiter. Reconstruct
+      // by joining the first n non-empty fields with ", ".
+      bool isDateGroupRow = false;
+      if (delimiter == ',') {
+        for (int n = 2; n <= math.min(fields.length, 4); n++) {
+          final candidate = fields
+              .sublist(0, n)
+              .where((f) => f.isNotEmpty)
+              .join(', ');
+          final parsed = _parseDate(candidate);
+          if (parsed != null &&
+              fields.sublist(n).every(_isPlaceholderOrEmpty)) {
+            currentDateContext = parsed;
+            isDateGroupRow = true;
+            break;
+          }
+        }
+      }
+      if (isDateGroupRow) continue;
+
+      final maxRequiredCol = math.max(dataCol, wagaCol);
+      if (fields.length <= maxRequiredCol) {
+        skippedRows++;
         continue;
       }
 
-      // Repair unquoted decimal comma in comma-delimited rows (e.g. "...,78,5 kg,...")
+      final dateOrTimeRaw = fields[dataCol];
+      final weightRawBeforeRepair = wagaCol < fields.length
+          ? fields[wagaCol]
+          : '';
+
+      // Check if this row is a standard date group row (date in dataCol,
+      // placeholder/empty in the weight column).
+      final isPlaceholderWeight = _isPlaceholderOrEmpty(weightRawBeforeRepair);
+      final parsedDirectDate = _parseDate(dateOrTimeRaw);
+
+      if (parsedDirectDate != null && isPlaceholderWeight) {
+        currentDateContext = parsedDirectDate;
+        continue;
+      }
+
+      // Repair unquoted decimal comma in comma-delimited rows.
+      // E.g. "...,78,5 kg,..." → merge into "78.5".
       if (delimiter == ',' &&
           wagaCol < fields.length - 1 &&
           fields.length > headerColumnCount) {
-        final wagaPart1 = fields[wagaCol].trim();
-        final wagaPart2 = fields[wagaCol + 1].trim();
+        final wagaPart1 = fields[wagaCol];
+        final wagaPart2 = wagaCol + 1 < fields.length
+            ? fields[wagaCol + 1]
+            : '';
         if (RegExp(r'^\d+$').hasMatch(wagaPart1) &&
             RegExp(
               r'^\d+(\s*(kg|lbs|g))?$',
@@ -211,58 +279,39 @@ class CsvImporter {
         }
       }
 
-      final maxRequiredCol = math.max(dataCol, wagaCol);
-      if (fields.length <= maxRequiredCol) {
-        skippedRows++;
-        continue;
-      }
-
-      final dateOrTimeRaw = fields[dataCol].trim();
-      final weightRaw = fields[wagaCol].trim();
-
-      // Check if this is a date group row where fields were split but weight is placeholder/empty
-      final isPlaceholderWeight = _isPlaceholderOrEmpty(weightRaw);
-      final parsedDirectDate = _parseDate(dateOrTimeRaw);
-
-      if (parsedDirectDate != null && isPlaceholderWeight) {
-        currentDateContext = parsedDirectDate;
-        continue;
-      }
-
-      // Parse sanitized weight value
+      // Parse and validate weight.
+      final weightRaw = wagaCol < fields.length ? fields[wagaCol] : '';
       final weight = _cleanAndParseWeight(weightRaw);
       if (weight == null) {
         skippedRows++;
         continue;
       }
 
+      // Resolve entry timestamp.
       DateTime? entryDateTime;
 
-      // Case A: Separate time column present (dataCol != czasCol)
+      // Case A: Separate time column present (e.g. ID,Date,Time,Weight,...).
       if (czasCol != null && czasCol != dataCol && fields.length > czasCol) {
-        final timeRaw = fields[czasCol].trim();
+        final timeRaw = fields[czasCol];
         var datePart = parsedDirectDate ?? _parseDate(dateOrTimeRaw);
         if (datePart == null && currentDateContext != null) {
           datePart = currentDateContext;
         }
-
         if (datePart != null) {
           final timePart = _parseTime(timeRaw);
-          if (timePart != null) {
-            entryDateTime = DateTime(
-              datePart.year,
-              datePart.month,
-              datePart.day,
-              timePart.hour,
-              timePart.minute,
-            );
-          } else {
-            entryDateTime = datePart;
-          }
+          entryDateTime = timePart != null
+              ? DateTime(
+                  datePart.year,
+                  datePart.month,
+                  datePart.day,
+                  timePart.hour,
+                  timePart.minute,
+                )
+              : datePart;
         }
       }
 
-      // Case B: Combined date/time in dataCol or time string in hierarchical format
+      // Case B: Combined date/time in dataCol, or hierarchical time string.
       if (entryDateTime == null) {
         if (parsedDirectDate != null) {
           entryDateTime = parsedDirectDate;
@@ -286,9 +335,23 @@ class CsvImporter {
         continue;
       }
 
-      final note = (noteCol != null && fields.length > noteCol)
-          ? fields[noteCol].trim()
+      // Anomaly filters — reject physiologically implausible timestamps.
+      if (entryDateTime.isAfter(futureLimit)) {
+        skippedRows++;
+        continue;
+      }
+      if (entryDateTime.toUtc().isBefore(historicLimit)) {
+        skippedRows++;
+        continue;
+      }
+
+      // Extract and sanitize note; truncate to 500 characters.
+      final rawNote = (noteCol != null && noteCol < fields.length)
+          ? fields[noteCol]
           : null;
+      final note = rawNote != null && rawNote.length > 500
+          ? rawNote.substring(0, 500)
+          : rawNote;
 
       entries.add(
         WeightEntry(
@@ -296,12 +359,25 @@ class CsvImporter {
           weightKg: weight,
           note: (note != null && note.isNotEmpty)
               ? note
-              : (noteCol != null && fields.length > noteCol ? '' : null),
+              : (noteCol != null && noteCol < fields.length ? '' : null),
         ),
       );
+
+      // Track date range across valid entries.
+      if (earliestDate == null || entryDateTime.isBefore(earliestDate)) {
+        earliestDate = entryDateTime;
+      }
+      if (latestDate == null || entryDateTime.isAfter(latestDate)) {
+        latestDate = entryDateTime;
+      }
     }
 
-    return (entries: entries, skippedRows: skippedRows);
+    return (
+      validEntries: entries,
+      skippedRowCount: skippedRows,
+      earliestDate: earliestDate,
+      latestDate: latestDate,
+    );
   }
 
   /// Tests whether [raw] represents an empty value or placeholder symbol.
@@ -481,40 +557,5 @@ class CsvImporter {
       indices['data'] = indices['czas'];
     }
     return indices;
-  }
-
-  /// Splits a single CSV line into fields, honoring RFC 4180 double-quoting.
-  static List<String> _parseCsvLine(String line, String delimiter) {
-    final fields = <String>[];
-    final current = StringBuffer();
-    bool inQuotes = false;
-
-    for (int i = 0; i < line.length; i++) {
-      final char = line[i];
-
-      if (inQuotes) {
-        if (char == '"') {
-          if (i + 1 < line.length && line[i + 1] == '"') {
-            current.write('"');
-            i++;
-          } else {
-            inQuotes = false;
-          }
-        } else {
-          current.write(char);
-        }
-      } else {
-        if (char == '"') {
-          inQuotes = true;
-        } else if (char == delimiter) {
-          fields.add(current.toString());
-          current.clear();
-        } else {
-          current.write(char);
-        }
-      }
-    }
-    fields.add(current.toString());
-    return fields;
   }
 }

@@ -81,7 +81,7 @@ class _StepCsvImportState extends State<StepCsvImport> {
         return;
       }
 
-      if (result.entries.isEmpty) {
+      if (result.validEntries.isEmpty) {
         setState(() {
           _status = _CsvImportStatus.error;
           _isEmptyFileError = true;
@@ -91,7 +91,7 @@ class _StepCsvImportState extends State<StepCsvImport> {
 
       setState(() {
         _status = _CsvImportStatus.success;
-        _entries = result.entries;
+        _entries = result.validEntries;
       });
     } catch (_) {
       if (!mounted) return;

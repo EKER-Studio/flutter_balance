@@ -412,27 +412,119 @@ class IsarWeightRepository implements WeightRepository {
     }
   }
 
-  /// Encrypts and persists all [entries] within a single Isar write transaction.
+  /// Idempotently imports [entries] in a single all-or-nothing transaction.
   ///
-  /// Returns the number of models written. Throws [WeightRepositoryException]
-  /// with [WeightErrorType.writeFailed] when the encryption key is missing,
-  /// the bulk transaction fails, or an unexpected error occurs.
+  /// **Deduplication:** A candidate entry is considered a duplicate when an
+  /// existing record's UTC timestamp is within ±60 seconds AND its weight
+  /// is within ±0.05 kg of the candidate. Only newly inserted records count
+  /// toward the returned value.
+  ///
+  /// **Note backfill:** When a duplicate match is found and the existing record
+  /// has no note but the candidate has one, the existing record is updated with
+  /// the new note inside the same transaction.
+  ///
+  /// **Scope:** Only existing records within the import batch's date window
+  /// (±60 s) are loaded, avoiding a full-table scan for large histories.
+  ///
+  /// Throws [WeightRepositoryException] with [WeightErrorType.writeFailed] on
+  /// any encryption, query, or write-transaction failure. All mutations roll
+  /// back atomically on error.
   @override
   Future<int> bulkImportEntries(List<WeightEntry> entries) async {
+    if (entries.isEmpty) return 0;
+
     try {
       final key = await _getOrLoadKey(isWrite: true);
-      final payloads = await compute(_encryptPayloads, (entries, key));
-      final models = payloads.map((p) {
-        return WeightEntryModel()
-          ..id = p.$1
-          ..dateTime = p.$2
-          ..encryptedWeight = p.$3
-          ..encryptedNote = p.$4;
-      }).toList();
-      await liveIsar.writeTxn(() async {
-        await liveIsar.weightEntryModels.putAll(models);
-      });
-      return models.length;
+
+      // Step 1 — Determine the date window covered by the import batch.
+      var minDate = entries.first.dateTime;
+      var maxDate = entries.first.dateTime;
+      for (final e in entries) {
+        if (e.dateTime.isBefore(minDate)) minDate = e.dateTime;
+        if (e.dateTime.isAfter(maxDate)) maxDate = e.dateTime;
+      }
+      final windowStart = minDate.subtract(const Duration(seconds: 60));
+      final windowEnd = maxDate.add(const Duration(seconds: 60));
+
+      // Step 2 — Load existing models in the window (single indexed query).
+      final existingModels = await liveIsar.weightEntryModels
+          .filter()
+          .dateTimeBetween(windowStart, windowEnd)
+          .findAll();
+
+      // Step 3 — Decrypt existing entries in a compute isolate.
+      List<WeightEntry> localEntries = [];
+      if (existingModels.isNotEmpty) {
+        final payloads = existingModels
+            .map((m) => (m.id, m.dateTime, m.encryptedWeight, m.encryptedNote))
+            .toList();
+        localEntries = await compute(_decryptPayloads, (payloads, key));
+      }
+
+      // Step 4 — In-memory deduplication and note-backfill classification.
+      final entriesToInsert = <WeightEntry>[];
+      final modelsToUpdate = <WeightEntryModel>[];
+
+      for (final candidate in entries) {
+        final cUtc = candidate.dateTime.toUtc();
+        bool isDuplicate = false;
+
+        for (int li = 0; li < localEntries.length; li++) {
+          final local = localEntries[li];
+          final lUtc = local.dateTime.toUtc();
+
+          if ((candidate.weightKg - local.weightKg).abs() <= 0.05 &&
+              cUtc.difference(lUtc).inSeconds.abs() <= 60) {
+            isDuplicate = true;
+
+            // Note backfill: existing entry has no note, candidate has one.
+            final localNote = local.note;
+            final candidateNote = candidate.note;
+            if ((localNote == null || localNote.isEmpty) &&
+                candidateNote != null &&
+                candidateNote.isNotEmpty) {
+              final updatedModel = existingModels[li]
+                ..encryptedNote = FieldCipher.encrypt(candidateNote, key);
+              modelsToUpdate.add(updatedModel);
+            }
+            break;
+          }
+        }
+
+        if (!isDuplicate) {
+          entriesToInsert.add(candidate);
+        }
+      }
+
+      // Step 5 — Encrypt new entries in a compute isolate.
+      List<WeightEntryModel> modelsToInsert = [];
+      if (entriesToInsert.isNotEmpty) {
+        final payloads = await compute(_encryptPayloads, (
+          entriesToInsert,
+          key,
+        ));
+        modelsToInsert = payloads.map((p) {
+          return WeightEntryModel()
+            ..id = p.$1
+            ..dateTime = p.$2
+            ..encryptedWeight = p.$3
+            ..encryptedNote = p.$4;
+        }).toList();
+      }
+
+      // Step 6 — Single atomic writeTxn: inserts + note-updates.
+      if (modelsToInsert.isNotEmpty || modelsToUpdate.isNotEmpty) {
+        await liveIsar.writeTxn(() async {
+          if (modelsToInsert.isNotEmpty) {
+            await liveIsar.weightEntryModels.putAll(modelsToInsert);
+          }
+          if (modelsToUpdate.isNotEmpty) {
+            await liveIsar.weightEntryModels.putAll(modelsToUpdate);
+          }
+        });
+      }
+
+      return modelsToInsert.length;
     } on WeightRepositoryException {
       rethrow;
     } on IsarError catch (e) {

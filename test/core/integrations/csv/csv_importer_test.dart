@@ -14,10 +14,10 @@ ID,Data,Waga (kg),BMI,Notatka
 ''';
 
       final result = await CsvImporter.parse(csvContent);
-      final entries = result.entries;
+      final entries = result.validEntries;
 
       expect(entries.length, 3);
-      expect(result.skippedRows, 0);
+      expect(result.skippedRowCount, 0);
       expect(entries[0].weightKg, 75.2);
       expect(entries[0].dateTime, DateTime(2024, 1, 15));
       expect(entries[0].note, '');
@@ -41,10 +41,10 @@ ID;Date;Weight;BMI;Note
 ''';
 
         final result = await CsvImporter.parse(csvContent);
-        final entries = result.entries;
+        final entries = result.validEntries;
 
         expect(entries.length, 2);
-        expect(result.skippedRows, 0);
+        expect(result.skippedRowCount, 0);
         expect(entries[0].weightKg, 80.5);
         expect(entries[0].dateTime, DateTime(2024, 2, 1));
 
@@ -62,10 +62,10 @@ ID,Data,Waga (kg),BMI
 ''';
 
       final result = await CsvImporter.parse(csvContent);
-      final entries = result.entries;
+      final entries = result.validEntries;
 
       expect(entries.length, 2);
-      expect(result.skippedRows, 0);
+      expect(result.skippedRowCount, 0);
       expect(entries[0].weightKg, 70.0);
       expect(entries[0].note, null);
       expect(entries[1].weightKg, 70.5);
@@ -84,10 +84,10 @@ ID,Data,Waga (kg),BMI,Notatka
 ''';
 
       final result = await CsvImporter.parse(csvContent);
-      final entries = result.entries;
+      final entries = result.validEntries;
 
       expect(entries.length, 2);
-      expect(result.skippedRows, 4);
+      expect(result.skippedRowCount, 4);
       expect(entries[0].dateTime, DateTime(2024, 1, 15));
       expect(entries[0].weightKg, 75.2);
       expect(entries[1].dateTime, DateTime(2024, 1, 18));
@@ -129,10 +129,10 @@ ID,Data,Waga (kg),BMI,Notatka
 ''';
 
       final result = await CsvImporter.parse(csvContent);
-      final entries = result.entries;
+      final entries = result.validEntries;
 
       expect(entries.length, 2);
-      expect(result.skippedRows, 0);
+      expect(result.skippedRowCount, 0);
       expect(entries[0].note, 'Notatka z przecinkiem');
       expect(entries[1].note, 'Waga "poranna" 7:00');
     });
@@ -142,10 +142,10 @@ ID,Data,Waga (kg),BMI,Notatka
           'ID,Data,Waga (kg),BMI,Notatka\r\n1,2024-01-15,75.2,23.1,\r\n2,2024-01-16,75.0,23.0,Test\r\n';
 
       final result = await CsvImporter.parse(csvContent);
-      final entries = result.entries;
+      final entries = result.validEntries;
 
       expect(entries.length, 2);
-      expect(result.skippedRows, 0);
+      expect(result.skippedRowCount, 0);
       expect(entries[0].weightKg, 75.2);
       expect(entries[1].weightKg, 75.0);
       expect(entries[1].note, 'Test');
@@ -159,10 +159,10 @@ ID,Data,Waga (kg),BMI,Notatka
 ''';
 
       final result = await CsvImporter.parse(csvContent);
-      final entries = result.entries;
+      final entries = result.validEntries;
 
       expect(entries.length, 2);
-      expect(result.skippedRows, 0);
+      expect(result.skippedRowCount, 0);
       expect(entries[0].weightKg, 75.2);
       expect(entries[0].note, 'Trimmed note');
       expect(entries[1].weightKg, 75.0);
@@ -177,10 +177,10 @@ ID,Data,Waga (kg),BMI,Notatka
 ''';
 
       final result = await CsvImporter.parse(csvContent);
-      final entries = result.entries;
+      final entries = result.validEntries;
 
       expect(entries.length, 2);
-      expect(result.skippedRows, 0);
+      expect(result.skippedRowCount, 0);
       expect(entries[0].dateTime.hour, 7);
       expect(entries[0].dateTime.minute, 30);
       expect(entries[1].dateTime.hour, 19);
@@ -191,10 +191,10 @@ ID,Data,Waga (kg),BMI,Notatka
       const csvContent = 'ID,Data,Waga (kg),BMI,Notatka';
 
       final result = await CsvImporter.parse(csvContent);
-      final entries = result.entries;
+      final entries = result.validEntries;
 
       expect(entries, isEmpty);
-      expect(result.skippedRows, 0);
+      expect(result.skippedRowCount, 0);
     });
 
     test('parses CSV with weight at boundary values', () async {
@@ -205,10 +205,10 @@ ID,Data,Waga (kg),BMI,Notatka
 ''';
 
       final result = await CsvImporter.parse(csvContent);
-      final entries = result.entries;
+      final entries = result.validEntries;
 
       expect(entries.length, 2);
-      expect(result.skippedRows, 0);
+      expect(result.skippedRowCount, 0);
       expect(entries[0].weightKg, 20);
       expect(entries[1].weightKg, 300);
     });
@@ -222,10 +222,10 @@ ID,Data,Waga (kg),BMI,Notatka
 ''';
 
       final result = await CsvImporter.parse(csvContent);
-      final entries = result.entries;
+      final entries = result.validEntries;
 
       expect(entries.length, 1);
-      expect(result.skippedRows, 2);
+      expect(result.skippedRowCount, 2);
       expect(entries[0].weightKg, 75);
     });
 
@@ -237,10 +237,10 @@ ID,Data,Waga (kg),BMI,Notatka
 ''';
 
       final result = await CsvImporter.parse(csvContent);
-      final entries = result.entries;
+      final entries = result.validEntries;
 
       expect(entries.length, 2);
-      expect(result.skippedRows, 0);
+      expect(result.skippedRowCount, 0);
       // ID is not stored in WeightEntry (it's auto-assigned)
       expect(entries[0].weightKg, 75.2);
       expect(entries[1].weightKg, 75.0);
@@ -254,10 +254,10 @@ Data,Waga
 ''';
 
       final result = await CsvImporter.parse(csvContent);
-      final entries = result.entries;
+      final entries = result.validEntries;
 
       expect(entries.length, 2);
-      expect(result.skippedRows, 0);
+      expect(result.skippedRowCount, 0);
       expect(entries[0].dateTime, DateTime(2024, 1, 15));
       expect(entries[0].weightKg, 75.2);
       expect(entries[1].dateTime, DateTime(2024, 2, 3));
@@ -272,10 +272,10 @@ Date,Weight
 ''';
 
       final result = await CsvImporter.parse(csvContent);
-      final entries = result.entries;
+      final entries = result.validEntries;
 
       expect(entries.length, 2);
-      expect(result.skippedRows, 0);
+      expect(result.skippedRowCount, 0);
       expect(entries[0].dateTime, DateTime(2024, 1, 15));
       expect(entries[0].weightKg, 75.2);
       expect(entries[1].dateTime, DateTime(2024, 2, 3));
@@ -293,10 +293,10 @@ Data;Waga
 ''';
 
         final result = await CsvImporter.parse(csvContent);
-        final entries = result.entries;
+        final entries = result.validEntries;
 
         expect(entries.length, 2);
-        expect(result.skippedRows, 0);
+        expect(result.skippedRowCount, 0);
         expect(entries[0].weightKg, 75.2);
         expect(entries[1].weightKg, 80.0);
       },
@@ -323,10 +323,10 @@ Data;Waga
 
       // Import
       final result = await CsvImporter.parse(csvContent);
-      final importedEntries = result.entries;
+      final importedEntries = result.validEntries;
 
       expect(importedEntries.length, 2);
-      expect(result.skippedRows, 0);
+      expect(result.skippedRowCount, 0);
 
       expect(importedEntries[0].weightKg, 72.4);
       expect(importedEntries[0].dateTime, DateTime(2026, 8, 10, 12, 34));
@@ -345,10 +345,10 @@ ID,Data,Czas,Waga,BMI,Notatka
 
       final result = await CsvImporter.parse(csvContent);
 
-      expect(result.entries.length, 2);
-      expect(result.skippedRows, 0);
-      expect(result.entries[0].dateTime, DateTime(2024, 1, 15, 7, 30));
-      expect(result.entries[1].dateTime, DateTime(2024, 1, 16, 19, 45));
+      expect(result.validEntries.length, 2);
+      expect(result.skippedRowCount, 0);
+      expect(result.validEntries[0].dateTime, DateTime(2024, 1, 15, 7, 30));
+      expect(result.validEntries[1].dateTime, DateTime(2024, 1, 16, 19, 45));
     });
 
     test('keeps the parsed date when the time column is malformed', () async {
@@ -360,10 +360,10 @@ ID,Date,Time,Weight,Note
 
       final result = await CsvImporter.parse(csvContent);
 
-      expect(result.entries.length, 2);
-      expect(result.skippedRows, 0);
-      expect(result.entries[0].dateTime, DateTime(2024, 1, 15));
-      expect(result.entries[1].dateTime, DateTime(2024, 1, 16));
+      expect(result.validEntries.length, 2);
+      expect(result.skippedRowCount, 0);
+      expect(result.validEntries[0].dateTime, DateTime(2024, 1, 15));
+      expect(result.validEntries[1].dateTime, DateTime(2024, 1, 16));
     });
 
     test('skips data rows with fewer than two fields', () async {
@@ -376,9 +376,9 @@ garbage
 
       final result = await CsvImporter.parse(csvContent);
 
-      expect(result.entries.length, 1);
-      expect(result.skippedRows, 2);
-      expect(result.entries[0].weightKg, 75.0);
+      expect(result.validEntries.length, 1);
+      expect(result.skippedRowCount, 2);
+      expect(result.validEntries[0].weightKg, 75.0);
     });
 
     test(
@@ -394,10 +394,10 @@ Cze 14, 2026,,,,,,,
 ''';
 
         final result = await CsvImporter.parse(csvContent);
-        final entries = result.entries;
+        final entries = result.validEntries;
 
         expect(entries.length, 2);
-        expect(result.skippedRows, 0);
+        expect(result.skippedRowCount, 0);
 
         expect(entries[0].dateTime, DateTime(2026, 6, 15, 9, 26));
         expect(entries[0].weightKg, 88.6);
@@ -412,21 +412,21 @@ Cze 14, 2026,,,,,,,
       () async {
         const csvContent = '''
 Czas,Waga,Notatka
-15 Paź 2026 14:30,78,5 kg,Popołudniowy
-16 Lis 2026 1:48 PM,79.1 kg,Po treningu
+15 Paź 2025 14:30,78,5 kg,Popołudniowy
+16 Lis 2025 1:48 PM,79.1 kg,Po treningu
 ''';
 
         final result = await CsvImporter.parse(csvContent);
-        final entries = result.entries;
+        final entries = result.validEntries;
 
         expect(entries.length, 2);
-        expect(result.skippedRows, 0);
+        expect(result.skippedRowCount, 0);
 
-        expect(entries[0].dateTime, DateTime(2026, 10, 15, 14, 30));
+        expect(entries[0].dateTime, DateTime(2025, 10, 15, 14, 30));
         expect(entries[0].weightKg, 78.5);
         expect(entries[0].note, 'Popołudniowy');
 
-        expect(entries[1].dateTime, DateTime(2026, 11, 16, 13, 48));
+        expect(entries[1].dateTime, DateTime(2025, 11, 16, 13, 48));
         expect(entries[1].weightKg, 79.1);
         expect(entries[1].note, 'Po treningu');
       },
@@ -440,10 +440,10 @@ Timestamp,Body Mass,Memo
 ''';
 
       final result = await CsvImporter.parse(csvContent);
-      final entries = result.entries;
+      final entries = result.validEntries;
 
       expect(entries.length, 2);
-      expect(result.skippedRows, 0);
+      expect(result.skippedRowCount, 0);
       expect(entries[0].dateTime, DateTime(2026, 5, 10, 8, 0));
       expect(entries[0].weightKg, 82.4);
       expect(entries[0].note, 'Morning');
@@ -468,10 +468,10 @@ Cze 16, 2026,
 ''';
 
         final result = await CsvImporter.parse(csvContent);
-        final entries = result.entries;
+        final entries = result.validEntries;
 
         expect(entries.length, 3);
-        expect(result.skippedRows, 2);
+        expect(result.skippedRowCount, 2);
 
         expect(entries[0].dateTime, DateTime(2026, 6, 15, 0, 0));
         expect(entries[0].weightKg, 85.0);

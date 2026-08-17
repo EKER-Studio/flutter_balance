@@ -11,7 +11,7 @@ import 'package:share_plus/share_plus.dart';
 import 'package:balance/core/integrations/biometrics/biometric_service.dart';
 import 'package:balance/core/integrations/health/health_service.dart';
 import 'package:balance/core/integrations/csv/csv_exporter.dart';
-import 'package:balance/core/integrations/csv/csv_importer.dart';
+
 import 'package:balance/features/weight/domain/entities/weight_entry.dart';
 import 'package:balance/features/weight/domain/weight_error_type.dart';
 import 'package:balance/features/weight/presentation/bloc/weight_bloc.dart';
@@ -28,6 +28,7 @@ import 'package:balance/core/models/measurement_unit.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:balance/core/presentation/widgets/app_top_bar.dart';
 import 'package:balance/features/settings/presentation/widgets/target_weight_dialog.dart';
+import 'package:balance/features/settings/presentation/widgets/csv_import_preview_dialog.dart';
 import 'dart:io';
 
 import 'package:balance/features/settings/presentation/widgets/height_dialog.dart';
@@ -127,308 +128,319 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   ),
                 );
             },
-            child: BlocBuilder<AppSettingsBloc, AppSettingsState>(
-              builder: (context, state) {
-                final l10n = AppLocalizations.of(context);
-                return LayoutBuilder(
-                  builder: (context, constraints) {
-                    final isWide = constraints.maxWidth >= 600;
-                    final maxContentWidth = isWide ? 900.0 : 600.0;
-                    final horizontalPadding = isWide ? 24.0 : 16.0;
+            child: BlocListener<WeightBloc, WeightState>(
+              listener: _onWeightStateChange,
+              child: BlocBuilder<AppSettingsBloc, AppSettingsState>(
+                builder: (context, state) {
+                  final l10n = AppLocalizations.of(context);
+                  return LayoutBuilder(
+                    builder: (context, constraints) {
+                      final isWide = constraints.maxWidth >= 600;
+                      final maxContentWidth = isWide ? 900.0 : 600.0;
+                      final horizontalPadding = isWide ? 24.0 : 16.0;
 
-                    return CustomScrollView(
-                      slivers: [
-                        AppTopBar(title: l10n.settingsTitle),
-                        SliverSafeArea(
-                          top: false,
-                          sliver: SliverToBoxAdapter(
-                            child: Padding(
-                              padding: EdgeInsets.symmetric(
-                                horizontal: horizontalPadding,
-                              ),
-                              child: Align(
-                                alignment: Alignment.topCenter,
-                                child: ConstrainedBox(
-                                  constraints: BoxConstraints(
-                                    maxWidth: maxContentWidth,
-                                  ),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      const SizedBox(height: 12),
-                                      Text(
-                                        l10n.settingsSubtitle,
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .bodyMedium
-                                            ?.copyWith(
-                                              color: Theme.of(
-                                                context,
-                                              ).colorScheme.onSurfaceVariant,
-                                            ),
-                                      ),
-                                      const SizedBox(height: 16),
-                                      if (isWide)
-                                        Row(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Expanded(
-                                              child: Column(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                children: [
-                                                  SectionHeader(
-                                                    label: l10n.profileSection,
-                                                  ),
-                                                  const SizedBox(height: 8),
-                                                  ProfileSection(
-                                                    state: state,
-                                                    l10n: l10n,
-                                                    onHeightTap: () =>
-                                                        _showHeightDialog(
-                                                          context,
-                                                        ),
-                                                    onTargetWeightTap: () =>
-                                                        _showTargetWeightDialog(
-                                                          context,
-                                                        ),
-                                                  ),
-                                                  const SizedBox(height: 24),
-                                                  SectionHeader(
-                                                    label:
-                                                        l10n.applicationSection,
-                                                  ),
-                                                  const SizedBox(height: 8),
-                                                  ApplicationSection(
-                                                    state: state,
-                                                    l10n: l10n,
-                                                    onThemeTap: () =>
-                                                        _showThemeSelection(
-                                                          context,
-                                                        ),
-                                                    onUnitTap: () =>
-                                                        _showUnitSelection(
-                                                          context,
-                                                        ),
-                                                    onNotificationsChanged: (v) =>
-                                                        _handleNotificationToggle(
-                                                          context,
-                                                          v,
-                                                        ),
-                                                    onNotificationTimeTap: () =>
-                                                        _selectNotificationTime(
-                                                          context,
-                                                          state
-                                                              .notificationTime,
-                                                        ),
-                                                  ),
-                                                  const SizedBox(height: 24),
-                                                  SectionHeader(
-                                                    label: l10n
-                                                        .integrationsSection,
-                                                  ),
-                                                  const SizedBox(height: 8),
-                                                  IntegrationsSection(
-                                                    state: state,
-                                                    l10n: l10n,
-                                                    onHealthSyncChanged: (v) =>
-                                                        _handleHealthSyncToggle(
-                                                          context,
-                                                          v,
-                                                        ),
-                                                    onInstallHealthConnect: () =>
-                                                        _showHealthConnectInstallDialog(
-                                                          context,
-                                                        ),
-                                                  ),
-                                                ],
+                      return CustomScrollView(
+                        slivers: [
+                          AppTopBar(title: l10n.settingsTitle),
+                          SliverSafeArea(
+                            top: false,
+                            sliver: SliverToBoxAdapter(
+                              child: Padding(
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: horizontalPadding,
+                                ),
+                                child: Align(
+                                  alignment: Alignment.topCenter,
+                                  child: ConstrainedBox(
+                                    constraints: BoxConstraints(
+                                      maxWidth: maxContentWidth,
+                                    ),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        const SizedBox(height: 12),
+                                        Text(
+                                          l10n.settingsSubtitle,
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .bodyMedium
+                                              ?.copyWith(
+                                                color: Theme.of(
+                                                  context,
+                                                ).colorScheme.onSurfaceVariant,
                                               ),
-                                            ),
-                                            const SizedBox(width: 24),
-                                            Expanded(
-                                              child: Column(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                children: [
-                                                  if (state
-                                                      .isBiometricSupported) ...[
+                                        ),
+                                        const SizedBox(height: 16),
+                                        if (isWide)
+                                          Row(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Expanded(
+                                                child: Column(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  children: [
                                                     SectionHeader(
                                                       label:
-                                                          l10n.securitySection,
+                                                          l10n.profileSection,
                                                     ),
                                                     const SizedBox(height: 8),
-                                                    SecuritySection(
+                                                    ProfileSection(
                                                       state: state,
                                                       l10n: l10n,
-                                                      isBiometricAvailable:
-                                                          _isBiometricAvailable,
-                                                      onBiometricChanged: (v) =>
-                                                          _handleBiometricToggle(
+                                                      onHeightTap: () =>
+                                                          _showHeightDialog(
+                                                            context,
+                                                          ),
+                                                      onTargetWeightTap: () =>
+                                                          _showTargetWeightDialog(
+                                                            context,
+                                                          ),
+                                                    ),
+                                                    const SizedBox(height: 24),
+                                                    SectionHeader(
+                                                      label: l10n
+                                                          .applicationSection,
+                                                    ),
+                                                    const SizedBox(height: 8),
+                                                    ApplicationSection(
+                                                      state: state,
+                                                      l10n: l10n,
+                                                      onThemeTap: () =>
+                                                          _showThemeSelection(
+                                                            context,
+                                                          ),
+                                                      onUnitTap: () =>
+                                                          _showUnitSelection(
+                                                            context,
+                                                          ),
+                                                      onNotificationsChanged: (v) =>
+                                                          _handleNotificationToggle(
                                                             context,
                                                             v,
                                                           ),
-                                                      biometricsAvailableLabel:
-                                                          l10n.biometricDesc,
-                                                      biometricsNotAvailableLabel:
-                                                          l10n.biometricsNotAvailable,
+                                                      onNotificationTimeTap: () =>
+                                                          _selectNotificationTime(
+                                                            context,
+                                                            state
+                                                                .notificationTime,
+                                                          ),
                                                     ),
                                                     const SizedBox(height: 24),
+                                                    SectionHeader(
+                                                      label: l10n
+                                                          .integrationsSection,
+                                                    ),
+                                                    const SizedBox(height: 8),
+                                                    IntegrationsSection(
+                                                      state: state,
+                                                      l10n: l10n,
+                                                      onHealthSyncChanged: (v) =>
+                                                          _handleHealthSyncToggle(
+                                                            context,
+                                                            v,
+                                                          ),
+                                                      onInstallHealthConnect: () =>
+                                                          _showHealthConnectInstallDialog(
+                                                            context,
+                                                          ),
+                                                    ),
                                                   ],
-                                                  SectionHeader(
-                                                    label: l10n.dataSection,
-                                                  ),
-                                                  const SizedBox(height: 8),
-                                                  DataSection(
-                                                    l10n: l10n,
-                                                    onImportTap: () =>
-                                                        _importCsv(context),
-                                                    onExportTap: () =>
-                                                        _exportCsv(context),
-                                                    onWipeTap: () =>
-                                                        _showWipeConfirmation(
-                                                          context,
-                                                        ),
-                                                  ),
-                                                  const SizedBox(height: 24),
-                                                  SectionHeader(
-                                                    label: l10n.helpSection,
-                                                  ),
-                                                  const SizedBox(height: 8),
-                                                  HelpSection(
-                                                    l10n: l10n,
-                                                    onCrashLogTap: () =>
-                                                        _sendCrashLog(context),
-                                                  ),
-                                                ],
+                                                ),
                                               ),
-                                            ),
-                                          ],
-                                        )
-                                      else
-                                        Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            SectionHeader(
-                                              label: l10n.profileSection,
-                                            ),
-                                            const SizedBox(height: 8),
-                                            ProfileSection(
-                                              state: state,
-                                              l10n: l10n,
-                                              onHeightTap: () =>
-                                                  _showHeightDialog(context),
-                                              onTargetWeightTap: () =>
-                                                  _showTargetWeightDialog(
-                                                    context,
-                                                  ),
-                                            ),
-                                            const SizedBox(height: 16),
-                                            SectionHeader(
-                                              label: l10n.applicationSection,
-                                            ),
-                                            const SizedBox(height: 8),
-                                            ApplicationSection(
-                                              state: state,
-                                              l10n: l10n,
-                                              onThemeTap: () =>
-                                                  _showThemeSelection(context),
-                                              onUnitTap: () =>
-                                                  _showUnitSelection(context),
-                                              onNotificationsChanged: (v) =>
-                                                  _handleNotificationToggle(
-                                                    context,
-                                                    v,
-                                                  ),
-                                              onNotificationTimeTap: () =>
-                                                  _selectNotificationTime(
-                                                    context,
-                                                    state.notificationTime,
-                                                  ),
-                                            ),
-                                            const SizedBox(height: 16),
-                                            SectionHeader(
-                                              label: l10n.integrationsSection,
-                                            ),
-                                            const SizedBox(height: 8),
-                                            IntegrationsSection(
-                                              state: state,
-                                              l10n: l10n,
-                                              onHealthSyncChanged: (v) =>
-                                                  _handleHealthSyncToggle(
-                                                    context,
-                                                    v,
-                                                  ),
-                                              onInstallHealthConnect: () =>
-                                                  _showHealthConnectInstallDialog(
-                                                    context,
-                                                  ),
-                                            ),
-                                            const SizedBox(height: 16),
-                                            if (state.isBiometricSupported) ...[
+                                              const SizedBox(width: 24),
+                                              Expanded(
+                                                child: Column(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  children: [
+                                                    if (state
+                                                        .isBiometricSupported) ...[
+                                                      SectionHeader(
+                                                        label: l10n
+                                                            .securitySection,
+                                                      ),
+                                                      const SizedBox(height: 8),
+                                                      SecuritySection(
+                                                        state: state,
+                                                        l10n: l10n,
+                                                        isBiometricAvailable:
+                                                            _isBiometricAvailable,
+                                                        onBiometricChanged: (v) =>
+                                                            _handleBiometricToggle(
+                                                              context,
+                                                              v,
+                                                            ),
+                                                        biometricsAvailableLabel:
+                                                            l10n.biometricDesc,
+                                                        biometricsNotAvailableLabel:
+                                                            l10n.biometricsNotAvailable,
+                                                      ),
+                                                      const SizedBox(
+                                                        height: 24,
+                                                      ),
+                                                    ],
+                                                    SectionHeader(
+                                                      label: l10n.dataSection,
+                                                    ),
+                                                    const SizedBox(height: 8),
+                                                    DataSection(
+                                                      l10n: l10n,
+                                                      onImportTap: () =>
+                                                          _handleImportCsv(),
+                                                      onExportTap: () =>
+                                                          _exportCsv(context),
+                                                      onWipeTap: () =>
+                                                          _showWipeConfirmation(
+                                                            context,
+                                                          ),
+                                                    ),
+                                                    const SizedBox(height: 24),
+                                                    SectionHeader(
+                                                      label: l10n.helpSection,
+                                                    ),
+                                                    const SizedBox(height: 8),
+                                                    HelpSection(
+                                                      l10n: l10n,
+                                                      onCrashLogTap: () =>
+                                                          _sendCrashLog(
+                                                            context,
+                                                          ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            ],
+                                          )
+                                        else
+                                          Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
                                               SectionHeader(
-                                                label: l10n.securitySection,
+                                                label: l10n.profileSection,
                                               ),
                                               const SizedBox(height: 8),
-                                              SecuritySection(
+                                              ProfileSection(
                                                 state: state,
                                                 l10n: l10n,
-                                                isBiometricAvailable:
-                                                    _isBiometricAvailable,
-                                                onBiometricChanged: (v) =>
-                                                    _handleBiometricToggle(
+                                                onHeightTap: () =>
+                                                    _showHeightDialog(context),
+                                                onTargetWeightTap: () =>
+                                                    _showTargetWeightDialog(
+                                                      context,
+                                                    ),
+                                              ),
+                                              const SizedBox(height: 16),
+                                              SectionHeader(
+                                                label: l10n.applicationSection,
+                                              ),
+                                              const SizedBox(height: 8),
+                                              ApplicationSection(
+                                                state: state,
+                                                l10n: l10n,
+                                                onThemeTap: () =>
+                                                    _showThemeSelection(
+                                                      context,
+                                                    ),
+                                                onUnitTap: () =>
+                                                    _showUnitSelection(context),
+                                                onNotificationsChanged: (v) =>
+                                                    _handleNotificationToggle(
                                                       context,
                                                       v,
                                                     ),
-                                                biometricsAvailableLabel:
-                                                    l10n.biometricDesc,
-                                                biometricsNotAvailableLabel:
-                                                    l10n.biometricsNotAvailable,
+                                                onNotificationTimeTap: () =>
+                                                    _selectNotificationTime(
+                                                      context,
+                                                      state.notificationTime,
+                                                    ),
                                               ),
                                               const SizedBox(height: 16),
+                                              SectionHeader(
+                                                label: l10n.integrationsSection,
+                                              ),
+                                              const SizedBox(height: 8),
+                                              IntegrationsSection(
+                                                state: state,
+                                                l10n: l10n,
+                                                onHealthSyncChanged: (v) =>
+                                                    _handleHealthSyncToggle(
+                                                      context,
+                                                      v,
+                                                    ),
+                                                onInstallHealthConnect: () =>
+                                                    _showHealthConnectInstallDialog(
+                                                      context,
+                                                    ),
+                                              ),
+                                              const SizedBox(height: 16),
+                                              if (state
+                                                  .isBiometricSupported) ...[
+                                                SectionHeader(
+                                                  label: l10n.securitySection,
+                                                ),
+                                                const SizedBox(height: 8),
+                                                SecuritySection(
+                                                  state: state,
+                                                  l10n: l10n,
+                                                  isBiometricAvailable:
+                                                      _isBiometricAvailable,
+                                                  onBiometricChanged: (v) =>
+                                                      _handleBiometricToggle(
+                                                        context,
+                                                        v,
+                                                      ),
+                                                  biometricsAvailableLabel:
+                                                      l10n.biometricDesc,
+                                                  biometricsNotAvailableLabel:
+                                                      l10n.biometricsNotAvailable,
+                                                ),
+                                                const SizedBox(height: 16),
+                                              ],
+                                              SectionHeader(
+                                                label: l10n.dataSection,
+                                              ),
+                                              const SizedBox(height: 8),
+                                              DataSection(
+                                                l10n: l10n,
+                                                onImportTap: () =>
+                                                    _handleImportCsv(),
+                                                onExportTap: () =>
+                                                    _exportCsv(context),
+                                                onWipeTap: () =>
+                                                    _showWipeConfirmation(
+                                                      context,
+                                                    ),
+                                              ),
+                                              const SizedBox(height: 16),
+                                              SectionHeader(
+                                                label: l10n.helpSection,
+                                              ),
+                                              const SizedBox(height: 8),
+                                              HelpSection(
+                                                l10n: l10n,
+                                                onCrashLogTap: () =>
+                                                    _sendCrashLog(context),
+                                              ),
                                             ],
-                                            SectionHeader(
-                                              label: l10n.dataSection,
-                                            ),
-                                            const SizedBox(height: 8),
-                                            DataSection(
-                                              l10n: l10n,
-                                              onImportTap: () =>
-                                                  _importCsv(context),
-                                              onExportTap: () =>
-                                                  _exportCsv(context),
-                                              onWipeTap: () =>
-                                                  _showWipeConfirmation(
-                                                    context,
-                                                  ),
-                                            ),
-                                            const SizedBox(height: 16),
-                                            SectionHeader(
-                                              label: l10n.helpSection,
-                                            ),
-                                            const SizedBox(height: 8),
-                                            HelpSection(
-                                              l10n: l10n,
-                                              onCrashLogTap: () =>
-                                                  _sendCrashLog(context),
-                                            ),
-                                          ],
-                                        ),
-                                      const SizedBox(height: 32),
-                                    ],
+                                          ),
+                                        const SizedBox(height: 32),
+                                      ],
+                                    ),
                                   ),
                                 ),
                               ),
                             ),
                           ),
-                        ),
-                      ],
-                    );
-                  },
-                );
-              },
+                        ],
+                      );
+                    },
+                  );
+                },
+              ),
             ),
           ),
         ),
@@ -453,6 +465,55 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
     context.read<AppSettingsBloc>().add(UpdateHeight(result));
     context.read<WeightBloc>().add(UpdateUserHeight(result));
+  }
+
+  /// Shows the system file picker to select a CSV file.
+  Future<void> _handleImportCsv() async {
+    final result = await FilePicker.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: ['csv'],
+    );
+    if (result == null || result.files.single.path == null) return;
+    if (!mounted) return;
+
+    context.read<WeightBloc>().add(
+      AnalyzeCsvFile(filePath: result.files.single.path!),
+    );
+  }
+
+  void _onWeightStateChange(BuildContext context, WeightState state) async {
+    if (state is CsvAnalysisError) {
+      final l10n = AppLocalizations.of(context);
+      String errorMessage;
+      switch (state.errorType) {
+        case CsvErrorType.fileTooLarge:
+          errorMessage = l10n.csvImportFileTooLarge;
+        case CsvErrorType.invalidFormat:
+          errorMessage = l10n.csvImportInvalidFormat;
+        case CsvErrorType.noEntries:
+          errorMessage = l10n.csvImportNoEntries;
+      }
+      ScaffoldMessenger.of(context)
+        ..hideCurrentSnackBar()
+        ..showSnackBar(SnackBar(content: Text(errorMessage)));
+    } else if (state is CsvAnalysisReady) {
+      final confirmed = await CsvImportPreviewDialog.show(
+        context,
+        analysis: state.analysis,
+      );
+      if (confirmed && mounted) {
+        context.read<WeightBloc>().add(
+          ConfirmCsvImport(validEntries: state.analysis.validEntries),
+        );
+      }
+    } else if (state is WeightImportSuccess) {
+      final l10n = AppLocalizations.of(context);
+      ScaffoldMessenger.of(context)
+        ..hideCurrentSnackBar()
+        ..showSnackBar(
+          SnackBar(content: Text(l10n.csvImportComplete(state.importedCount))),
+        );
+    }
   }
 
   /// Shows the [TargetWeightDialog] and applies the returned value.
@@ -641,69 +702,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     }
   }
 
-  /// Picks a CSV file, parses it via [CsvImporter], and bulk-imports the resulting entries into [WeightBloc].
-  ///
-  /// It uses a file picker to select the file, reads its contents, and provides visual feedback via snackbars upon success or failure.
-  Future<void> _importCsv(BuildContext context) async {
-    try {
-      final result = await FilePicker.pickFiles(
-        type: FileType.custom,
-        allowedExtensions: ['csv'],
-      );
 
-      if (result == null || result.files.single.path == null) return;
-
-      final filePath = result.files.single.path!;
-      final fileContent = await File(filePath).readAsString();
-
-      final csvResult = await CsvImporter.parse(fileContent);
-      final entries = csvResult.entries;
-      final skippedRows = csvResult.skippedRows;
-
-      if (entries.isEmpty) {
-        if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(AppLocalizations.of(context).importNoDataFound),
-            ),
-          );
-        }
-        return;
-      }
-
-      if (context.mounted) {
-        context.read<WeightBloc>().add(ImportWeightEntries(entries));
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              AppLocalizations.of(context).importSuccess(entries.length),
-            ),
-            backgroundColor: Theme.of(context).colorScheme.tertiary,
-          ),
-        );
-
-        if (skippedRows > 0) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                AppLocalizations.of(context).skippedRows(skippedRows),
-              ),
-            ),
-          );
-        }
-      }
-    } catch (e) {
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              AppLocalizations.of(context).importError(e.toString()),
-            ),
-          ),
-        );
-      }
-    }
-  }
 
   /// Exports the current weight entries via [CsvExporter] and shares the file.
   ///

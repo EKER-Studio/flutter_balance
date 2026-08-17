@@ -116,7 +116,12 @@ void main() {
       expect(find.byType(CircularProgressIndicator), findsOneWidget);
       expect(find.text('Processing CSV file...'), findsOneWidget);
 
-      completer.complete((entries: sampleEntries, skippedRows: 0));
+      completer.complete((
+        validEntries: sampleEntries,
+        skippedRowCount: 0,
+        earliestDate: null,
+        latestDate: null,
+      ));
       await tester.pumpAndSettle();
       expect(find.byType(CircularProgressIndicator), findsNothing);
     });
@@ -126,7 +131,14 @@ void main() {
       (tester) async {
         List<WeightEntry>? imported;
         final service = FakeCsvImportService(
-          results: [(entries: sampleEntries, skippedRows: 2)],
+          results: [
+            (
+              validEntries: sampleEntries,
+              skippedRowCount: 2,
+              earliestDate: null,
+              latestDate: null,
+            ),
+          ],
         );
         await tester.pumpWidget(
           buildSubject(
@@ -157,7 +169,14 @@ void main() {
       tester,
     ) async {
       final service = FakeCsvImportService(
-        results: [(entries: sampleEntries, skippedRows: 0)],
+        results: [
+          (
+            validEntries: sampleEntries,
+            skippedRowCount: 0,
+            earliestDate: null,
+            latestDate: null,
+          ),
+        ],
         error: FormatException('missing columns'),
         throwOnCall: 1,
       );
@@ -187,7 +206,14 @@ void main() {
       tester,
     ) async {
       final service = FakeCsvImportService(
-        results: [(entries: <WeightEntry>[], skippedRows: 5)],
+        results: [
+          (
+            validEntries: <WeightEntry>[],
+            skippedRowCount: 5,
+            earliestDate: null,
+            latestDate: null,
+          ),
+        ],
       );
       await tester.pumpWidget(buildSubject(service: service));
       await tester.pumpAndSettle();

@@ -81,11 +81,11 @@ void main() {
       final result = await service.pickAndImport();
 
       expect(result, isNotNull);
-      expect(result!.entries, hasLength(2));
-      expect(result.entries.first.weightKg, 75.2);
-      expect(result.entries.first.dateTime, DateTime(2024, 1, 15, 7, 30));
-      expect(result.entries.first.note, 'Morning');
-      expect(result.skippedRows, 0);
+      expect(result!.validEntries, hasLength(2));
+      expect(result.validEntries.first.weightKg, 75.2);
+      expect(result.validEntries.first.dateTime, DateTime(2024, 1, 15, 7, 30));
+      expect(result.validEntries.first.note, 'Morning');
+      expect(result.skippedRowCount, 0);
     });
 
     test('requests a CSV-filtered file picker', () async {
@@ -136,6 +136,27 @@ void main() {
       expect(() => service.pickAndImport(), throwsFormatException);
     });
 
+    test('throws FileTooLargeException for files exceeding 5 MB', () async {
+      // 5 MB + 1 byte to exceed the limit.
+      final bigContent = List.filled(5 * 1024 * 1024 + 1, 'x').join();
+      final file = writeCsv(bigContent);
+      filePicker = FakeFilePickerPlatform(
+        ({required type, allowedExtensions}) async => pickResult(file.path),
+      );
+      FilePickerPlatform.instance = filePicker;
+
+      expect(
+        () => service.pickAndImport(),
+        throwsA(
+          isA<FileTooLargeException>().having(
+            (e) => e.message,
+            'message',
+            contains('5 MB'),
+          ),
+        ),
+      );
+    });
+
     test('skips invalid rows and returns valid entries', () async {
       final file = writeCsv(
         'ID,Data,Weight (kg),BMI,Note\n'
@@ -150,9 +171,9 @@ void main() {
 
       final result = await service.pickAndImport();
 
-      expect(result!.entries, hasLength(1));
-      expect(result.entries.single.weightKg, 74.8);
-      expect(result.skippedRows, 2);
+      expect(result!.validEntries, hasLength(1));
+      expect(result.validEntries.single.weightKg, 74.8);
+      expect(result.skippedRowCount, 2);
     });
   });
 }

@@ -256,11 +256,13 @@ void main() {
       'it on Next',
       (tester) async {
         final service = FakeCsvImportService((
-          entries: [
+          validEntries: [
             WeightEntry(weightKg: 75.2, dateTime: DateTime(2024, 1, 15)),
             WeightEntry(weightKg: 86.0, dateTime: DateTime(2024, 1, 16)),
           ],
-          skippedRows: 0,
+          skippedRowCount: 0,
+          earliestDate: null,
+          latestDate: null,
         ));
 
         await tester.pumpWidget(buildSubject(csvImportService: service));

@@ -1,8 +1,11 @@
 import 'dart:async';
+import 'dart:convert';
+import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
-import 'package:balance/core/integrations/health/health_service.dart';
+import 'package:balance/core/integrations/csv/csv_import_service.dart';
+import 'package:balance/core/integrations/csv/csv_importer.dart';
 import 'package:balance/features/weight/domain/entities/weight_entry.dart';
 import 'package:balance/features/weight/domain/repositories/weight_repository.dart';
 import 'package:balance/features/weight/domain/weight_error_type.dart';
@@ -10,6 +13,7 @@ import 'package:balance/features/weight/presentation/bloc/weight_event.dart';
 import 'package:balance/features/weight/presentation/bloc/weight_state.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_bloc.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_event.dart';
+import 'package:balance/core/integrations/health/health_service.dart';
 
 /// A BLoC managing weight entries and user height.
 ///
@@ -65,6 +69,8 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
     on<ClearAllWeightData>(_onClearAllWeightData, transformer: droppable());
     on<ImportWeightEntries>(_onImportWeightEntries, transformer: droppable());
     on<SyncHealthEntries>(_onSyncHealthEntries, transformer: droppable());
+    on<AnalyzeCsvFile>(_onAnalyzeCsvFile, transformer: droppable());
+    on<ConfirmCsvImport>(_onConfirmCsvImport, transformer: droppable());
   }
 
   /// Whether health synchronization is currently enabled in app settings.
@@ -77,6 +83,10 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
     return switch (state) {
       WeightLoaded(:final entries) => entries,
       WeightError(:final entries) => entries,
+      CsvAnalysisInProgress(:final entries) => entries,
+      CsvAnalysisReady(:final entries) => entries,
+      WeightImportSuccess(:final entries) => entries,
+      CsvAnalysisError(:final entries) => entries,
       _ => <WeightEntry>[],
     };
   }
@@ -432,22 +442,6 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
     }
   }
 
-  static bool _isDuplicate(WeightEntry target, List<WeightEntry> entries) {
-    final targetInstant = _truncateToMinuteUtc(target.dateTime);
-    for (final e in entries) {
-      if ((e.weightKg - target.weightKg).abs() < 0.01 &&
-          _truncateToMinuteUtc(e.dateTime) == targetInstant) {
-        return true;
-      }
-    }
-    return false;
-  }
-
-  static DateTime _truncateToMinuteUtc(DateTime dateTime) {
-    final utc = dateTime.toUtc();
-    return DateTime.utc(utc.year, utc.month, utc.day, utc.hour, utc.minute);
-  }
-
   void _onChangeChartFilter(
     ChangeChartFilter event,
     Emitter<WeightState> emit,
@@ -532,31 +526,24 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
     }
   }
 
-  /// Bulk imports [ImportWeightEntries.entries] into the repository, then
-  /// re-reads the full dataset and emits an updated [WeightLoaded] state.
+  /// Bulk imports [ImportWeightEntries.entries] into the repository using the
+  /// idempotent [WeightRepository.bulkImportEntries], then re-reads the full
+  /// dataset and emits an updated [WeightLoaded] state.
+  ///
+  /// Deduplication is delegated entirely to [WeightRepository.bulkImportEntries]
+  /// (±60 s / ±0.05 kg tolerance). The BLoC-level duplicate check is removed
+  /// because it was less accurate and caused false skips on re-import.
   Future<void> _onImportWeightEntries(
     ImportWeightEntries event,
     Emitter<WeightState> emit,
   ) async {
     try {
-      final localEntries = await repository.getAllEntries();
-      final newEntries = <WeightEntry>[];
+      final inserted = await repository.bulkImportEntries(event.entries);
 
-      for (final entry in event.entries) {
-        if (!_isDuplicate(entry, localEntries) &&
-            !_isDuplicate(entry, newEntries)) {
-          newEntries.add(entry);
-        }
-      }
-
-      if (newEntries.isNotEmpty) {
-        await repository.bulkImportEntries(newEntries);
-
-        if (_isHealthSyncEnabled) {
-          unawaited(
-            Future.forEach(newEntries, (entry) => _mirrorWriteToHealth(entry)),
-          );
-        }
+      if (inserted > 0 && _isHealthSyncEnabled) {
+        unawaited(
+          Future.forEach(event.entries, (entry) => _mirrorWriteToHealth(entry)),
+        );
       }
 
       final entries = await repository.getAllEntries();
@@ -573,6 +560,139 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
         debugPrint('[WeightBloc] Failed to import entries: $e\n$stack');
       }
       final currentEntries = _entriesFromState(state);
+      emit(
+        WeightError(
+          errorType: WeightErrorType.writeFailed,
+          heightCm: state.heightCm,
+          timePeriod: state.timePeriod,
+          entries: currentEntries,
+          filteredEntries: _filterEntries(currentEntries, state.timePeriod),
+        ),
+      );
+    }
+  }
+
+  /// Reads and parses a CSV file on a background isolate without writing to the
+  /// database (dry-run analysis).
+  ///
+  /// Emits [CsvAnalysisInProgress] while parsing, then [CsvAnalysisReady] on
+  /// success, or [CsvAnalysisError] on failure.
+  Future<void> _onAnalyzeCsvFile(
+    AnalyzeCsvFile event,
+    Emitter<WeightState> emit,
+  ) async {
+    final currentEntries = _entriesFromState(state);
+    emit(
+      CsvAnalysisInProgress(
+        heightCm: state.heightCm,
+        timePeriod: state.timePeriod,
+        entries: currentEntries,
+        filteredEntries: _filterEntries(currentEntries, state.timePeriod),
+      ),
+    );
+
+    try {
+      final file = File(event.filePath);
+      if (file.lengthSync() > CsvImportService.maxFileSizeBytes) {
+        emit(
+          CsvAnalysisError(
+            errorType: CsvErrorType.fileTooLarge,
+            heightCm: state.heightCm,
+            timePeriod: state.timePeriod,
+            entries: currentEntries,
+            filteredEntries: _filterEntries(currentEntries, state.timePeriod),
+          ),
+        );
+        return;
+      }
+
+      final bytes = await file.readAsBytes();
+      var content = utf8.decode(bytes, allowMalformed: true);
+      if (content.startsWith('\uFEFF')) content = content.substring(1);
+
+      final analysis = await CsvImporter.parse(content);
+
+      if (analysis.validEntries.isEmpty) {
+        emit(
+          CsvAnalysisError(
+            errorType: CsvErrorType.noEntries,
+            heightCm: state.heightCm,
+            timePeriod: state.timePeriod,
+            entries: currentEntries,
+            filteredEntries: _filterEntries(currentEntries, state.timePeriod),
+          ),
+        );
+        return;
+      }
+
+      emit(
+        CsvAnalysisReady(
+          heightCm: state.heightCm,
+          timePeriod: state.timePeriod,
+          entries: currentEntries,
+          filteredEntries: _filterEntries(currentEntries, state.timePeriod),
+          analysis: analysis,
+        ),
+      );
+    } on FormatException {
+      emit(
+        CsvAnalysisError(
+          errorType: CsvErrorType.invalidFormat,
+          heightCm: state.heightCm,
+          timePeriod: state.timePeriod,
+          entries: currentEntries,
+          filteredEntries: _filterEntries(currentEntries, state.timePeriod),
+        ),
+      );
+    } catch (e, stack) {
+      if (kDebugMode) {
+        debugPrint('[WeightBloc] AnalyzeCsvFile error: $e\n$stack');
+      }
+      emit(
+        CsvAnalysisError(
+          errorType: CsvErrorType.invalidFormat,
+          heightCm: state.heightCm,
+          timePeriod: state.timePeriod,
+          entries: currentEntries,
+          filteredEntries: _filterEntries(currentEntries, state.timePeriod),
+        ),
+      );
+    }
+  }
+
+  /// Persists the [ConfirmCsvImport.validEntries] via the idempotent repository
+  /// bulk import and emits [WeightImportSuccess] with the inserted-entry count.
+  Future<void> _onConfirmCsvImport(
+    ConfirmCsvImport event,
+    Emitter<WeightState> emit,
+  ) async {
+    final currentEntries = _entriesFromState(state);
+    try {
+      final count = await repository.bulkImportEntries(event.validEntries);
+
+      if (_isHealthSyncEnabled && event.validEntries.isNotEmpty) {
+        unawaited(
+          Future.forEach(
+            event.validEntries,
+            (entry) => _mirrorWriteToHealth(entry),
+          ),
+        );
+      }
+
+      final updatedEntries = await repository.getAllEntries();
+      emit(
+        WeightImportSuccess(
+          importedCount: count,
+          heightCm: state.heightCm,
+          timePeriod: state.timePeriod,
+          entries: updatedEntries,
+          filteredEntries: _filterEntries(updatedEntries, state.timePeriod),
+        ),
+      );
+    } catch (e, stack) {
+      if (kDebugMode) {
+        debugPrint('[WeightBloc] ConfirmCsvImport error: $e\n$stack');
+      }
       emit(
         WeightError(
           errorType: WeightErrorType.writeFailed,
