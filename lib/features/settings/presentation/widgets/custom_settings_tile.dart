@@ -1,6 +1,10 @@
+// Generic tappable settings list tile with icon, title, optional subtitle,
+// trailing value, error styling and keyboard focus ring.
+
+
 import 'package:flutter/material.dart';
 
-/// A widget that represents a generic interactive settings list tile used across the app's configuration screens.
+//// A widget that represents a generic interactive settings list tile used across the app's configuration screens.
 class CustomSettingsTile extends StatefulWidget {
   /// The leading icon rendered inside a circular container.
   final IconData icon;

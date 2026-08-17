@@ -1,7 +1,11 @@
+/// Domain entity for body weight measurements, including valid value bounds.
+
 /// A domain entity representing an individual body weight measurement.
 ///
 /// Encapsulates core domain data for weight tracking, including weight in kilograms,
 /// measurement timestamp, and an optional user note.
+//// Values are expected to lie within [minWeightKg] and [maxWeightKg] (inclusive).
+
 class WeightEntry {
   /// The minimum valid body weight in kilograms, inclusive.
   static const double minWeightKg = 20;

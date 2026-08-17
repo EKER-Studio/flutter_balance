@@ -1,3 +1,6 @@
+/// Root scaffold hosting the app's four-tab navigation shell.
+
+
 import 'package:flutter/material.dart';
 import 'package:balance/features/calendar/presentation/screens/calendar_screen.dart';
 import 'package:balance/features/statistics/presentation/screens/statistics_screen.dart';
@@ -6,6 +9,13 @@ import 'package:balance/l10n/app_localizations.dart';
 import 'package:balance/features/settings/presentation/screens/settings_screen.dart';
 
 /// Main container screen featuring a 4-tab Material 3 Bottom Navigation Bar.
+///
+/// The destinations are ordered Today, Calendar, Statistics, and Settings and
+/// match the screen list order, so the selected index directly selects the
+/// visible child of the [IndexedStack] — swapping tabs without losing per-tab
+/// state. Tab switching, focus traversal, and keyboard handling are delegated
+/// to the [NavigationBar]'s built-in semantics via `onDestinationSelected`;
+//// `home`-style navigation from the Today screen jumps to the Settings tab.
 class MainNavigationScreen extends StatefulWidget {
   /// Creates [MainNavigationScreen].
   const MainNavigationScreen({super.key});
@@ -14,7 +24,7 @@ class MainNavigationScreen extends StatefulWidget {
   State<MainNavigationScreen> createState() => _MainNavigationScreenState();
 }
 
-/// State holding the active tab index and rendering the selected screen.
+//// State holding the active tab index and rendering the selected screen.
 class _MainNavigationScreenState extends State<MainNavigationScreen> {
   int _currentIndex = 0;
 
@@ -88,6 +98,8 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
             selectedIndex: _currentIndex,
             onDestinationSelected: _onTabSelected,
             destinations: [
+              // Today is the landing tab; wrap it with a custom semantics
+              // label so assistive tech reads it as the home destination.
               Semantics(
                 selected: _currentIndex == 0,
                 label: l10n.todayTabHomeSemanticsLabel,

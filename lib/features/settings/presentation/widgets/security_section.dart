@@ -1,9 +1,12 @@
+// Security settings group with the biometric lock switch.
+
+
 import 'package:flutter/material.dart';
 import 'package:balance/l10n/app_localizations.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_state.dart';
 import 'custom_settings_toggle.dart';
 
-/// A widget that represents the security settings group with the biometric lock switch.
+//// A widget that represents the security settings group with the biometric lock switch.
 class SecuritySection extends StatelessWidget {
   /// The current app settings state driving the displayed values.
   final AppSettingsState state;

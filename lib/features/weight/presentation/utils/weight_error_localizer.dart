@@ -1,3 +1,4 @@
+
 import 'package:balance/features/weight/domain/weight_error_type.dart';
 import 'package:balance/l10n/app_localizations.dart';
 

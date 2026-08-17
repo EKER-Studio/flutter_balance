@@ -1,3 +1,4 @@
+
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -13,7 +14,7 @@ import 'package:balance/core/presentation/core/clamped_layout.dart';
 /// The step is skippable by design: the user simply presses the next action
 /// without enabling the sync switch. Enabling the switch triggers the native
 /// permission request through [AppSettingsBloc]; the wizard advances via the
-/// next action once the choice is made.
+//// next action once the choice is made.
 class StepHealthSync extends StatefulWidget {
   /// Callback invoked when the user proceeds to the next step.
   final VoidCallback onNext;
@@ -76,7 +77,6 @@ class _StepHealthSyncState extends State<StepHealthSync> {
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  // Title
                   Text(
                     l10n.healthSyncStepOptionalTitle,
                     style: theme.textTheme.headlineSmall?.copyWith(
@@ -84,7 +84,6 @@ class _StepHealthSyncState extends State<StepHealthSync> {
                     ),
                   ),
                   const SizedBox(height: 8.0),
-                  // Subtitle
                   Text(
                     Platform.isIOS
                         ? l10n.healthSyncDescriptionIOS
@@ -133,7 +132,6 @@ class _StepHealthSyncState extends State<StepHealthSync> {
                       ),
                     ),
                   ),
-                  // Permission denied warning
                   if (_permissionDenied) ...[
                     const SizedBox(height: 12.0),
                     Container(

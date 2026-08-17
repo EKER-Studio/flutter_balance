@@ -1,10 +1,20 @@
+
 import 'package:flutter/material.dart';
 import 'package:balance/core/models/measurement_unit.dart';
 import 'package:balance/core/utils/unit_converter.dart';
 import 'package:balance/l10n/app_localizations.dart';
 import 'package:balance/core/presentation/core/clamped_layout.dart';
 
-/// Form widget for Step 3 of the onboarding wizard: setting an optional target weight.
+/// Form widget for Step 4 of the onboarding wizard: setting an optional
+/// target weight with a live view of the remaining delta to reach it.
+///
+/// Skipping is allowed: an empty field passes `null` through [onNext], which
+/// the wizard screen forwards to `AppSettingsBloc` as a cleared target
+/// weight. Valid input is non-empty and within 0-500 of the active unit (kg
+/// or lbs, converted internally); invalid values disable the Next button and
+/// show an inline error. When a valid target and the previous step's initial
+/// weight are present, a delta line shows how far the target is, or a goal
+//// achieved notice when it is already met.
 class StepTargetWeight extends StatefulWidget {
   /// The user's active measurement unit system.
   final MeasurementUnit unit;

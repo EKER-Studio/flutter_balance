@@ -1,10 +1,13 @@
+// Profile settings group with height and target weight tiles.
+
+
 import 'package:flutter/material.dart';
 import 'package:balance/l10n/app_localizations.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_state.dart';
 import 'package:balance/core/utils/unit_converter.dart';
 import 'custom_settings_tile.dart';
 
-/// A widget that displays the profile settings group with height and target weight tiles.
+//// A widget that displays the profile settings group with height and target weight tiles.
 class ProfileSection extends StatelessWidget {
   /// The current app settings [state] driving the displayed values.
   final AppSettingsState state;

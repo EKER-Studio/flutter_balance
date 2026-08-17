@@ -1,6 +1,9 @@
+// Section header label rendered above each settings group.
+
+
 import 'package:flutter/material.dart';
 
-/// A widget that renders a section header label above each settings group.
+//// A widget that renders a section header label above each settings group.
 class SectionHeader extends StatelessWidget {
   /// The section title [label] displayed in the header.
   final String label;
@@ -21,6 +24,3 @@ class SectionHeader extends StatelessWidget {
     );
   }
 }
-
-/// A widget that provides a tappable settings list tile with icon, title, optional supporting text and
-/// trailing value, error styling, and keyboard focus ring for accessibility.

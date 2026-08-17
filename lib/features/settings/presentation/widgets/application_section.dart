@@ -1,3 +1,7 @@
+// Application settings group: measurement unit, theme and daily reminder
+// controls.
+
+
 import 'package:flutter/material.dart';
 import 'package:balance/l10n/app_localizations.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_state.dart';
@@ -7,7 +11,7 @@ import 'custom_settings_tile.dart';
 import 'custom_settings_toggle.dart';
 import 'inexact_reminder_hint.dart';
 
-/// A widget that represents the application settings group with unit, theme, and reminder controls.
+//// A widget that represents the application settings group with unit, theme, and reminder controls.
 class ApplicationSection extends StatelessWidget {
   /// The current app settings state driving the displayed values.
   final AppSettingsState state;
@@ -92,5 +96,3 @@ class ApplicationSection extends StatelessWidget {
     );
   }
 }
-
-/// Inline hint shown when the daily reminder falls back to inexact Android

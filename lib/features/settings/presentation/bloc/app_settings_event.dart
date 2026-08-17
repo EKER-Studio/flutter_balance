@@ -1,3 +1,6 @@
+// Events dispatched to the AppSettingsBloc to modify persistent settings.
+
+
 import 'package:balance/features/settings/presentation/bloc/app_theme_mode.dart';
 import 'package:balance/core/models/measurement_unit.dart';
 
@@ -34,6 +37,9 @@ final class UpdateHeight extends AppSettingsEvent {
 }
 
 /// An event that toggles the daily notification reminder on or off.
+///
+/// Enabling requests OS notification permission and only schedules the
+/// reminder when granted; disabling cancels the scheduled reminder.
 final class ToggleNotifications extends AppSettingsEvent {
   /// Whether notifications should be enabled.
   final bool enabled;
@@ -43,6 +49,8 @@ final class ToggleNotifications extends AppSettingsEvent {
 }
 
 /// An event that updates the time of day for the daily notification reminder.
+///
+/// The daily reminder is re-scheduled only while notifications are enabled.
 final class UpdateNotificationTime extends AppSettingsEvent {
   /// The new notification time.
   final ({int hour, int minute}) notificationTime;

@@ -1,3 +1,4 @@
+
 import 'package:equatable/equatable.dart';
 import 'package:balance/core/models/measurement_unit.dart';
 import 'package:balance/features/weight/domain/entities/weight_entry.dart';
@@ -6,7 +7,7 @@ import 'package:balance/features/weight/domain/entities/weight_entry.dart';
 ///
 /// Holds only temporary wizard data (current step, draft weights, imported
 /// CSV entries, toggled integration flags). Persistent settings continue to
-/// live in [AppSettingsState]; nothing here is stored across restarts.
+/// live in `AppSettingsState`; nothing here is stored across restarts.
 final class OnboardingState extends Equatable {
   static const Object _sentinel = Object();
 

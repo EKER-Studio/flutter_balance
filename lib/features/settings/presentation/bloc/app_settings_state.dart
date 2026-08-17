@@ -1,3 +1,6 @@
+// Immutable application settings state persisted across restarts.
+
+
 import 'package:equatable/equatable.dart';
 
 import 'package:balance/features/settings/presentation/bloc/app_theme_mode.dart';
@@ -17,35 +20,39 @@ final class AppSettingsState extends Equatable {
   /// Maximum valid height in centimeters, inclusive.
   static const double maxHeightCm = 250.0;
 
-  /// The selected theme mode.
+  /// The selected theme mode (default: [AppThemeMode.system]).
   final AppThemeMode themeMode;
 
-  /// The weight measurement unit system.
+  /// The weight measurement unit system (default: [MeasurementUnit.metric]).
   final MeasurementUnit measurementUnit;
 
   /// The user's height in centimeters.
   ///
-  /// A value of `null` means the user has not set a height yet.
+  /// A value of `null` means the user has not set a height yet. When set, the
+  /// UI restricts the value to the inclusive [minHeightCm]–[maxHeightCm] range.
   final double? height;
 
-  /// Whether daily notification reminders are enabled.
+  /// Whether daily notification reminders are enabled (default: off).
   final bool notificationsEnabled;
 
   /// The time of day for the daily reminder (default: 08:00).
   final ({int hour, int minute}) notificationTime;
 
-  /// The user's target weight in kg.
+  /// The user's target weight in kg (`null` means no target is set).
   ///
-  /// A value of `null` means no target is set.
+  /// Set from the profile screen and used for progress calculations.
   final double? targetWeight;
 
-  /// Whether biometric lock is enabled for app unlock.
+  /// Whether biometric lock is enabled for app unlock (default: off).
   final bool isBiometricLockEnabled;
 
   /// Whether the app is currently locked behind the biometric shield.
+  ///
+  /// When biometric lock is enabled, the app starts in the locked state.
   final bool isLocked;
 
-  /// Whether the user has completed the initial onboarding wizard.
+  /// Whether the user has completed the initial onboarding wizard (default:
+  /// false).
   final bool isOnboardingCompleted;
 
   /// Whether the last notification permission request was denied.
@@ -66,7 +73,9 @@ final class AppSettingsState extends Equatable {
   /// Not persisted; evaluated freshly on each app launch.
   final bool isBiometricSupported;
 
-  /// Whether health sync (HealthKit / Health Connect) is activated by the user.
+  /// Whether health sync (HealthKit / Health Connect) is activated by the user
+  /// (default: off).
+  ///
   /// Persisted across app restarts; see [isHealthApiAvailable] for platform
   /// support and [healthPermissionDenied] for authorization failures.
   final bool isHealthSyncEnabled;
@@ -167,6 +176,9 @@ final class AppSettingsState extends Equatable {
   ];
 
   /// Deserializes an [AppSettingsState] from a JSON map.
+  ///
+  /// Reads the legacy `height` key as a fallback for `heightCm`; unknown enum
+  /// names and transient flags fall back to their defaults.
   factory AppSettingsState.fromJson(Map<String, dynamic> json) {
     final heightValue = json['heightCm'] ?? json['height'];
     final biometricLockEnabled =
@@ -212,7 +224,7 @@ final class AppSettingsState extends Equatable {
     );
   }
 
-  /// Serializes an [AppSettingsState] into a JSON map.
+  //// Serializes an [AppSettingsState] into a JSON map.
   Map<String, dynamic> toJson() {
     return {
       'themeMode': themeMode.name,

@@ -1,3 +1,6 @@
+// Dialog for setting, updating or removing the target weight.
+
+
 import 'package:flutter/material.dart';
 import 'package:balance/core/models/measurement_unit.dart';
 import 'package:balance/core/utils/unit_converter.dart';
@@ -5,6 +8,13 @@ import 'package:balance/features/weight/domain/entities/weight_entry.dart';
 import 'package:balance/l10n/app_localizations.dart';
 
 /// A widget that provides a dialog for setting or updating the target weight.
+///
+/// Pops the entered weight as a `double` (in the active measurement unit) on
+/// save, the string `'clear'` when the field is emptied or the remove action
+/// is used, and `null` when canceled. Input is trimmed, `,` is accepted as a
+/// decimal separator, and the converted value in kg must lie within the
+/// inclusive [WeightEntry.minWeightKg]–[WeightEntry.maxWeightKg] range;
+//// invalid input shows an inline error instead.
 class TargetWeightDialog extends StatefulWidget {
   /// The current target weight [currentValue] in the current measurement unit.
   final double? currentValue;
@@ -41,10 +51,11 @@ class _TargetWeightDialogState extends State<TargetWeightDialog> {
     super.dispose();
   }
 
-  /// Validates the input and pops the dialog.
+  /// Validates the input and pops the dialog with the result.
   ///
-  /// Pops the entered weight on success, `null` when cleared, or sets an
-  /// error message for invalid input.
+  /// Pops the entered weight (a `double`, in the active unit) on success, the
+  /// string `'clear'` when the field is empty, or shows an inline error for
+  /// invalid or out-of-range values.
   void _handleSave() {
     FocusScope.of(context).unfocus();
     final text = _controller.text.trim().replaceAll(',', '.');

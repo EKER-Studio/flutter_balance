@@ -1,3 +1,7 @@
+// Main settings screen composing profile, application, integrations, security,
+// data and help sections.
+
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:path_provider/path_provider.dart';
@@ -38,7 +42,7 @@ import 'package:balance/features/settings/presentation/widgets/help_section.dart
 
 /// A widget that provides a screen for managing profile, application, security, and data settings.
 ///
-/// It provides controls for adjusting the user's height and target weight, as well as changing the theme, measurement unit, daily reminder, biometric lock, and managing CSV import/export/wipe functionality. On wide layouts, the sections are arranged in a two-column grid.
+//// It provides controls for adjusting the user's height and target weight, as well as changing the theme, measurement unit, daily reminder, biometric lock, and managing CSV import/export/wipe functionality. On wide layouts, the sections are arranged in a two-column grid.
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
 
@@ -46,8 +50,10 @@ class SettingsScreen extends StatefulWidget {
   State<SettingsScreen> createState() => _SettingsScreenState();
 }
 
-/// The state for [SettingsScreen] that manages dialogs and CSV import/export/wipe flows.
+//// The state for [SettingsScreen] that manages dialogs and CSV import/export/wipe flows.
 class _SettingsScreenState extends State<SettingsScreen> {
+  /// Resolves once to whether device biometrics are available on this device;
+  /// drives the security section's toggle.
   late final Future<bool> _isBiometricAvailable;
 
   @override
@@ -431,9 +437,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
-  /// Shows the height dialog and persists the entered value to both the [AppSettingsBloc] and [WeightBloc].
+  /// Shows the [HeightDialog] and persists the returned height (in cm).
   ///
-  /// This ensures that BMI calculations and user profile data remain synchronized.
+  /// On confirm, the value is written to both the [AppSettingsBloc] and the
+  /// [WeightBloc] so that BMI calculations and user profile data remain
+  /// synchronized.
   void _showHeightDialog(BuildContext dialogContext) async {
     final currentHeight = dialogContext.read<AppSettingsBloc>().state.height;
 
@@ -448,9 +456,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
     context.read<WeightBloc>().add(UpdateUserHeight(result));
   }
 
-  /// Shows the target weight dialog and persists the result on confirm.
+  /// Shows the [TargetWeightDialog] and applies the returned value.
   ///
-  /// The value is updated in the [AppSettingsBloc] so that progress calculations reflect the new target.
+  /// The dialog is pre-filled with the current target and the active
+  /// measurement unit. A `'clear'` result removes the target weight, while a
+  /// `double` result sets it; both are dispatched to the [AppSettingsBloc] so
+  /// that progress calculations reflect the change.
   void _showTargetWeightDialog(BuildContext dialogContext) async {
     final currentTarget = dialogContext
         .read<AppSettingsBloc>()
@@ -585,7 +596,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   /// Clears all weight entries and resets every app setting.
   ///
-  /// The outcome snackbar is shown only once the wipe has actually completed, because BLoC events are processed asynchronously and a failing clear surfaces as a [WeightError] state instead of a thrown exception.
+  //// The outcome snackbar is shown only once the wipe has actually completed, because BLoC events are processed asynchronously and a failing clear surfaces as a [WeightError] state instead of a thrown exception.
   Future<void> _wipeDatabase() async {
     final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
@@ -633,7 +644,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   /// Picks a CSV file, parses it via [CsvImporter], and bulk-imports the resulting entries into [WeightBloc].
   ///
-  /// It uses a file picker to select the file, reads its contents, and provides visual feedback via snackbars upon success or failure.
+  //// It uses a file picker to select the file, reads its contents, and provides visual feedback via snackbars upon success or failure.
   Future<void> _importCsv(BuildContext context) async {
     try {
       final result = await FilePicker.pickFiles(
@@ -697,7 +708,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   /// Exports the current weight entries via [CsvExporter] and shares the file.
   ///
-  /// Generates a CSV file containing all records and invokes the native share sheet so the user can save or distribute the data.
+  //// Generates a CSV file containing all records and invokes the native share sheet so the user can save or distribute the data.
   Future<void> _exportCsv(BuildContext context) async {
     final l10n = AppLocalizations.of(context);
     try {
@@ -749,7 +760,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   /// Shares the on-device crash log via the system share sheet.
   ///
-  /// Reads the log file from the application documents directory and invokes the share sheet, or informs the user if no crash log has been recorded yet.
+  //// Reads the log file from the application documents directory and invokes the share sheet, or informs the user if no crash log has been recorded yet.
   Future<void> _sendCrashLog(BuildContext context) async {
     final l10n = AppLocalizations.of(context);
     try {
@@ -845,7 +856,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   /// Toggles the biometric lock, authenticating the user before enabling it.
   ///
-  /// Checks for hardware availability and prompts the user for authentication. The lock is only enabled if the authentication is successful.
+  //// Checks for hardware availability and prompts the user for authentication. The lock is only enabled if the authentication is successful.
   Future<void> _handleBiometricToggle(
     BuildContext context,
     bool enabled,
@@ -896,7 +907,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   /// Shows the time picker and persists the chosen reminder time.
   ///
-  /// The new schedule is confirmed with a `SnackBar` and updated in the [AppSettingsBloc].
+  //// The new schedule is confirmed with a `SnackBar` and updated in the [AppSettingsBloc].
   Future<void> _selectNotificationTime(
     BuildContext context,
     ({int hour, int minute}) initialTimeRecord,

@@ -1,3 +1,4 @@
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:balance/core/models/measurement_unit.dart';
 import 'package:balance/features/weight/domain/entities/weight_entry.dart';
@@ -15,7 +16,7 @@ import 'package:balance/features/settings/presentation/bloc/app_settings_event.d
 /// (step index, selected unit, imported CSV entries, draft weights, integration
 /// toggles). Persistent outcomes are handed off to [WeightBloc] and
 /// [AppSettingsBloc] when a step is confirmed or [OnboardingCompleted] is
-/// dispatched.
+//// dispatched.
 class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
   /// Target for the persistent settings dispatched on completion.
   final AppSettingsBloc appSettingsBloc;
@@ -156,15 +157,17 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
     emit(state.copyWith(isBiometricEnabled: event.enabled));
   }
 
-  /// Performs the final persistence of the wizard's draft data.
+  /// Performs the final persistence of the wizard's draft data and marks
+  /// onboarding as completed.
   ///
   /// Bulk-imports any imported CSV history beyond the initial-weight entry
   /// (that entry is excluded by identity — it was already persisted via
   /// [OnboardingInitialWeightSet]) into [WeightBloc], then flushes the final
-  /// persistent flags to [AppSettingsBloc]: [CompleteOnboarding] always,
-  /// [ToggleHealthSync] and [UpdateBiometricLock] only when the user requested
-  /// the integration but it is not yet persisted (idempotent — the integration
-  /// steps persist their own toggles on interaction).
+  /// persistent flags to [AppSettingsBloc]: [CompleteOnboarding] always —
+  /// setting `isOnboardingCompleted` so the wizard is never shown again —
+  /// plus [ToggleHealthSync] and [UpdateBiometricLock] only when the user
+  /// requested the integration but it is not yet persisted (idempotent — the
+  /// integration steps persist their own toggles on interaction).
   void _onCompleted(OnboardingCompleted event, Emitter<OnboardingState> emit) {
     final latest = state.latestImportedEntry;
     final remainingImported = latest == null

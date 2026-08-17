@@ -1,3 +1,4 @@
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:balance/core/models/measurement_unit.dart';
@@ -28,7 +29,7 @@ import 'package:balance/features/onboarding/presentation/widgets/steps/step_welc
 /// [AppSettingsBloc] state and wired to the [WeightBloc]/[AppSettingsBloc]
 /// targets it hands persistent outcomes off to. Also handles keyboard
 /// avoidance, screen orientation safety, and hardware back button behavior
-/// via PopScope.
+//// via PopScope.
 class OnboardingWizardScreen extends StatelessWidget {
   /// Optional callback invoked upon completing all onboarding steps.
   final VoidCallback? onWizardCompleted;
@@ -77,9 +78,16 @@ class OnboardingWizardScreen extends StatelessWidget {
 /// Reminder (optional), and Health Sync (optional) at indices 1-6. When the
 /// device supports credentials, a Biometric Lock step (optional) is appended
 /// at index 7, so the wizard runs 7 or 8 pages in total. The Welcome page
-/// counts as step 0, so the step indicator shows 1..6 or 1..7. Completing the
-/// final step dispatches [OnboardingCompleted] and invokes
-/// [OnboardingWizardScreen.onWizardCompleted].
+/// counts as step 0, so the step indicator shows 1..6 or 1..7.
+///
+/// Navigation rules: the Next action dismisses the keyboard and either
+/// advances one step (via [OnboardingStepAdvanced]) or, on the final step,
+/// dispatches [OnboardingCompleted] and invokes
+/// [OnboardingWizardScreen.onWizardCompleted]. Both the app bar back arrow
+/// and the system back gesture (PopScope) rewind one step; on Welcome, where
+/// there is nothing to rewind, back pops the screen instead. Per-step
+/// validation is owned by each step widget: its Next action only fires with
+//// valid input, so the wizard never advances through an invalid value.
 class _OnboardingWizardContent extends StatefulWidget {
   final VoidCallback? onWizardCompleted;
   final CsvImportService? csvImportService;
@@ -220,6 +228,11 @@ class _OnboardingWizardContentState extends State<_OnboardingWizardContent> {
     );
   }
 
+  /// Builds the progress app bar shown on every step except Welcome.
+  ///
+  /// Renders a "step X of Y" title (via [displayStep]/[displayTotalSteps]),
+  /// a linear [progress] indicator, and a back arrow that unfocuses the
+  /// keyboard and rewinds one step via [OnboardingStepRewound].
   PreferredSizeWidget _buildAppBar(
     BuildContext context, {
     required bool isWelcomeStep,

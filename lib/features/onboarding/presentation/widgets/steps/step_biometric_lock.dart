@@ -1,3 +1,4 @@
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:balance/core/integrations/biometrics/biometric_service.dart';
@@ -7,7 +8,14 @@ import 'package:balance/features/settings/presentation/bloc/app_settings_event.d
 import 'package:balance/features/settings/presentation/bloc/app_settings_state.dart';
 import 'package:balance/core/presentation/core/clamped_layout.dart';
 
-/// Form widget for Step 5 of the onboarding wizard: setting optional biometric lock.
+/// Form widget for the optional biometric lock step of the onboarding wizard
+/// (shown as step 7 when the device supports credentials).
+///
+/// Enabling the switch authenticates the user via [BiometricService] first
+/// and persists the choice to [AppSettingsBloc] only on success; disabling
+/// persists immediately. The step is skippable — [onNext] advances regardless
+/// of the switch state — and when no credential is available the switch is
+//// disabled and a notice is shown instead.
 class StepBiometricLock extends StatefulWidget {
   /// Callback invoked when proceeding to the next step (or skipping).
   final VoidCallback onNext;
@@ -20,6 +28,9 @@ class StepBiometricLock extends StatefulWidget {
 }
 
 class _StepBiometricLockState extends State<StepBiometricLock> {
+  /// Whether the device exposes credentials (biometric or OS fallback);
+  /// defaults to `true` so the switch stays enabled until the async check
+  /// completes.
   bool _isAvailable = true;
 
   @override
@@ -29,7 +40,7 @@ class _StepBiometricLockState extends State<StepBiometricLock> {
   }
 
   /// Resolves device credential availability (biometric or OS PIN/pattern/
-  /// password fallback) for the switch state.
+  //// password fallback) for the switch state.
   Future<void> _checkBiometrics() async {
     final available = await BiometricService.instance.canAuthenticate();
     if (mounted) {
@@ -39,7 +50,7 @@ class _StepBiometricLockState extends State<StepBiometricLock> {
     }
   }
 
-  /// Toggles the biometric lock, authenticating the user before enabling it.
+  //// Toggles the biometric lock, authenticating the user before enabling it.
   Future<void> _handleToggle(BuildContext context, bool enabled) async {
     final l10n = AppLocalizations.of(context);
     final bloc = context.read<AppSettingsBloc>();

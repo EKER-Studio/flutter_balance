@@ -75,9 +75,7 @@ void main() {
   }
 
   group('MainNavigationScreen Tests', () {
-    testWidgets('renders the shell when constructed non-const', (
-      tester,
-    ) async {
+    testWidgets('renders the shell when constructed non-const', (tester) async {
       await tester.pumpWidget(buildNonConstSubject());
       await tester.pumpAndSettle();
 

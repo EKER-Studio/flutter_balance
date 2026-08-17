@@ -234,25 +234,22 @@ void main() {
       expect(find.text('Step 1 of 7'), findsOneWidget);
     });
 
-    testWidgets(
-      'rewinds one step when the system back gesture is invoked on a '
-      'non-welcome step',
-      (tester) async {
-        await tester.pumpWidget(buildSubject());
-        await tester.pumpAndSettle();
+    testWidgets('rewinds one step when the system back gesture is invoked on a '
+        'non-welcome step', (tester) async {
+      await tester.pumpWidget(buildSubject());
+      await tester.pumpAndSettle();
 
-        await pumpToStep4(tester);
-        expect(find.text('Your Starting Point'), findsOneWidget);
+      await pumpToStep4(tester);
+      expect(find.text('Your Starting Point'), findsOneWidget);
 
-        // Simulate the platform back button; PopScope blocks the pop and the
-        // wizard rewinds to the previous step instead.
-        await tester.binding.handlePopRoute();
-        await tester.pumpAndSettle();
+      // Simulate the platform back button; PopScope blocks the pop and the
+      // wizard rewinds to the previous step instead.
+      await tester.binding.handlePopRoute();
+      await tester.pumpAndSettle();
 
-        expect(find.text('Your Past History (Optional)'), findsOneWidget);
-        expect(find.text('Your Starting Point'), findsNothing);
-      },
-    );
+      expect(find.text('Your Past History (Optional)'), findsOneWidget);
+      expect(find.text('Your Starting Point'), findsNothing);
+    });
 
     testWidgets(
       'pre-fills initial weight with the latest imported CSV entry and logs '

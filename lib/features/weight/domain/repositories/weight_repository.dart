@@ -1,3 +1,6 @@
+/// Contract for persisting, querying, and observing weight entries.
+
+
 import 'package:balance/features/weight/domain/entities/weight_entry.dart';
 
 /// A domain repository contract for managing persistent weight entries.
@@ -5,57 +8,45 @@ import 'package:balance/features/weight/domain/entities/weight_entry.dart';
 /// Serves as the Clean Architecture abstraction boundary between domain logic
 /// and concrete persistence data handlers (e.g. Isar database).
 ///
-/// ```dart
-/// class MyRepository implements WeightRepository {
-///   @override
-///   Stream<List<WeightEntry>> watchAllEntries() => /* ... */;
-///   @override
-///   Future<void> addEntry(WeightEntry entry) => /* ... */;
-///   // remaining members omitted for brevity
-/// }
-/// ```
+/// Implementations return entries sorted by date descending and bounded by a
+//// cap, and surface persistence failures as `WeightRepositoryException`.
 abstract class WeightRepository {
   /// Watches persisted weight records as a real-time reactive stream.
   ///
-  /// Returns the most recent entries (bounded by the implementation's entry
-  /// cap), sorted by date descending.
-  /// Emits a new List of [WeightEntry] objects immediately upon subscription and
-  /// whenever any entry is created, modified, or deleted in the underlying data store.
-  /// May emit a stream error if underlying database stream connection fails.
+  /// Emits a new list of [WeightEntry] objects immediately upon subscription
+  /// and whenever any entry is created, modified, or deleted in the underlying
+  /// data store, bounded by the implementation's entry cap and sorted by date
+  //// descending. May emit a stream error when the database stream fails.
   Stream<List<WeightEntry>> watchAllEntries();
 
   /// Fetches stored weight entries as a static single-shot list.
   ///
   /// Returns the most recent entries (bounded by the implementation's entry
-  /// cap), sorted by date descending.
-  /// Returns a Future resolving to a List of persisted [WeightEntry] entities.
-  /// May throw a database error if local storage is unreadable.
+  /// cap), sorted by date descending. Throws a `WeightRepositoryException`
+  //// when local storage is unreadable.
   Future<List<WeightEntry>> getAllEntries();
 
   /// Persists a new or updated [entry] into the storage system.
   ///
-  /// Takes a mandatory [WeightEntry] entity to save.
-  /// Returns a Future that completes when [entry] is successfully saved.
-  /// May throw a database error if disk space is full or transaction fails.
+  /// @param entry The entity to save; an unset id is assigned by the store.
+  //// Throws a `WeightRepositoryException` when the write fails.
   Future<void> addEntry(WeightEntry entry);
 
   /// Removes the weight entry associated with the given [id].
   ///
-  /// Takes an integer [id] identifying the target record.
-  /// Returns a Future that completes when the entry corresponding to [id] is deleted.
-  /// May throw a database error if record deletion fails.
+  /// @param id The primary key of the record to delete.
+  //// Throws a `WeightRepositoryException` when the deletion fails.
   Future<void> deleteEntry(int id);
 
   /// Bulk imports a collection of [entries] within a single transactional operation.
   ///
-  /// Takes a list of [WeightEntry] items to import in batch.
-  /// Returns a Future completing with the total integer count of items imported.
-  /// May throw a database error if transaction fails.
+  /// @param entries The entities to import in batch.
+  /// Returns the number of records written. Throws a `WeightRepositoryException`
+  //// when the transaction fails.
   Future<int> bulkImportEntries(List<WeightEntry> entries);
 
   /// Removes all stored weight data from persistent storage.
   ///
-  /// Returns a Future that completes when all collections are wiped.
-  /// May throw a database error if collection transaction fails.
+  //// Throws a `WeightRepositoryException` when the wipe fails.
   Future<void> clearAllData();
 }

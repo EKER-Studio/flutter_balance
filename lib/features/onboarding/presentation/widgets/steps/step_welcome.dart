@@ -1,10 +1,11 @@
+
 import 'package:flutter/material.dart';
 import 'package:balance/l10n/app_localizations.dart';
 import 'package:balance/core/presentation/core/clamped_layout.dart';
 
 /// Welcome/landing step displayed as the very first screen of the onboarding
 /// wizard. Sets user expectations and resolves initial keyboard focus issues
-/// by deferring input fields until after an explicit user gesture.
+//// by deferring input fields until after an explicit user gesture.
 class StepWelcome extends StatelessWidget {
   /// Callback invoked when the user proceeds to the next step.
   final VoidCallback onNext;

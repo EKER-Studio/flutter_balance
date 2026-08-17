@@ -1,3 +1,4 @@
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:balance/l10n/app_localizations.dart';
@@ -6,7 +7,15 @@ import 'package:balance/features/settings/presentation/bloc/app_settings_event.d
 import 'package:balance/features/settings/presentation/bloc/app_settings_state.dart';
 import 'package:balance/core/presentation/core/clamped_layout.dart';
 
-/// Form widget for Step 4 of the onboarding wizard: setting up daily reminder notifications.
+/// Form widget for Step 5 of the onboarding wizard: scheduling an optional
+/// daily reminder notification.
+///
+/// Persists both choices directly into [AppSettingsBloc] while the user
+/// interacts: the daily-enable switch via [ToggleNotifications] and the
+/// reminder time via [UpdateNotificationTime]. The step is skippable —
+/// [onNext] advances regardless of the switch state — so the wizard screen
+/// needs no further persistence on the way out. A permission-denied notice is
+//// shown when the OS rejected the notification request.
 class StepReminderNotification extends StatefulWidget {
   /// Callback invoked when proceeding to the next step.
   final VoidCallback onNext;
@@ -20,7 +29,7 @@ class StepReminderNotification extends StatefulWidget {
 }
 
 class _StepReminderNotificationState extends State<StepReminderNotification> {
-  /// Opens the time picker and dispatches the selected time to [AppSettingsBloc].
+  //// Opens the time picker and dispatches the selected time to [AppSettingsBloc].
   Future<void> _handleTimePicker(BuildContext context) async {
     final l10n = AppLocalizations.of(context);
     final recordTime = context.read<AppSettingsBloc>().state.notificationTime;
@@ -54,7 +63,7 @@ class _StepReminderNotificationState extends State<StepReminderNotification> {
     }
   }
 
-  /// Toggles the notification permission and dispatches the event to [AppSettingsBloc].
+  //// Toggles the notification permission and dispatches the event to [AppSettingsBloc].
   Future<void> _handleToggle(BuildContext context, bool enabled) async {
     context.read<AppSettingsBloc>().add(ToggleNotifications(enabled));
   }
@@ -75,7 +84,6 @@ class _StepReminderNotificationState extends State<StepReminderNotification> {
           return Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              // Title
               Text(
                 l10n.dailyReminderStepOptionalTitle,
                 style: theme.textTheme.headlineSmall?.copyWith(
@@ -83,7 +91,6 @@ class _StepReminderNotificationState extends State<StepReminderNotification> {
                 ),
               ),
               const SizedBox(height: 8.0),
-              // Subtitle
               Text(
                 l10n.dailyReminderStepSubtitle,
                 style: theme.textTheme.bodyMedium?.copyWith(
@@ -91,7 +98,6 @@ class _StepReminderNotificationState extends State<StepReminderNotification> {
                 ),
               ),
               const SizedBox(height: 24.0),
-              // Notification toggle card
               Material(
                 color: theme.colorScheme.surfaceContainerLow,
                 borderRadius: BorderRadius.circular(16.0),
@@ -129,7 +135,7 @@ class _StepReminderNotificationState extends State<StepReminderNotification> {
                   ),
                 ),
               ),
-              // Reminder Time row (visible/enabled only when notifications are ON)
+              // Reminder time row, shown only while notifications are ON.
               if (enabled) ...[
                 const SizedBox(height: 16.0),
                 Material(
@@ -165,7 +171,7 @@ class _StepReminderNotificationState extends State<StepReminderNotification> {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 mainAxisSize: MainAxisSize
-                                    .min, // Fix: Prevents layout crash inside Row
+                                    .min, // Keeps the Row from full height sizing.
                                 children: [
                                   Text(
                                     l10n.reminderTime,
@@ -196,7 +202,6 @@ class _StepReminderNotificationState extends State<StepReminderNotification> {
                   ),
                 ),
               ],
-              // Permission denied warning
               if (permissionDenied) ...[
                 const SizedBox(height: 12.0),
                 Container(
@@ -226,7 +231,6 @@ class _StepReminderNotificationState extends State<StepReminderNotification> {
                 ),
               ],
               const Spacer(),
-              // Bottom buttons
               ConstrainedBox(
                 constraints: const BoxConstraints(minHeight: 48.0),
                 child: FilledButton(

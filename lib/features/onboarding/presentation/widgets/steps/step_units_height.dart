@@ -1,3 +1,4 @@
+
 import 'package:balance/core/models/measurement_unit.dart';
 import 'package:balance/core/utils/unit_converter.dart';
 import 'package:balance/l10n/app_localizations.dart';
@@ -5,7 +6,18 @@ import 'package:balance/features/settings/presentation/bloc/app_settings_state.d
 import 'package:balance/core/presentation/core/clamped_layout.dart';
 import 'package:flutter/material.dart';
 
-/// Form widget for Step 1 of the onboarding wizard: selecting unit system and height.
+/// Form widget for Step 1 of the onboarding wizard: choosing a unit system
+/// and entering the user's height.
+///
+/// Persists the choice by advancing via [onNext] with the selected
+/// [MeasurementUnit] and a validated height in cm; the wizard screen writes
+/// both into [AppSettingsBloc] and syncs the height into `WeightBloc` before
+/// the initial-weight step runs. Validation accepts metric heights between
+/// [AppSettingsState.minHeightCm] and [AppSettingsState.maxHeightCm], or 1-8
+/// feet with 0-11.99 inches in imperial mode; an invalid value shows an
+/// inline range error and blocks advancing. Toggling the unit converts the
+/// current height into the new system, and the active field requests focus
+//// whenever the step becomes the current page.
 class StepUnitsHeight extends StatefulWidget {
   /// Initial measurement unit system preference.
   final MeasurementUnit initialUnit;

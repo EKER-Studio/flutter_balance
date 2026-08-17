@@ -1,3 +1,4 @@
+
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -7,7 +8,7 @@ import 'package:balance/features/weight/presentation/utils/bmi_category_localize
 import 'package:balance/features/weight/presentation/widgets/bmi_legend_dialog.dart';
 import 'package:balance/l10n/app_localizations.dart';
 
-/// A composite card that displays a BMI chart over time with colored zones and a summary header.
+//// A composite card that displays a BMI chart over time with colored zones and a summary header.
 class BmiChartCard extends StatelessWidget {
   /// All recorded [WeightEntry] instances used to compute and plot the BMI history.
   final List<WeightEntry> entries;

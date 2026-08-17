@@ -1,7 +1,6 @@
 /// A domain enum and constants for time-based filtering of weight history.
-library;
 
-/// The selected time period for the chart filter.
+//// The selected time period for the chart filter.
 enum TimePeriod {
   /// Last 7 days.
   week,
@@ -18,7 +17,9 @@ enum TimePeriod {
 
 /// An extension providing domain-level lookback durations for [TimePeriod].
 extension TimePeriodX on TimePeriod {
-  /// How far back this period looks from now.
+  /// How far back this period looks from the current instant.
+  ///
+  /// [TimePeriod.all] looks back infinitely, mapping to [Duration.zero].
   Duration get lookbackDuration => switch (this) {
     TimePeriod.week => const Duration(days: 7),
     TimePeriod.month => const Duration(days: 30),

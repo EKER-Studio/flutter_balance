@@ -1,3 +1,4 @@
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:balance/core/models/measurement_unit.dart';
@@ -5,7 +6,16 @@ import 'package:balance/core/utils/unit_converter.dart';
 import 'package:balance/l10n/app_localizations.dart';
 import 'package:balance/core/presentation/core/clamped_layout.dart';
 
-/// Form widget for Step 3 of the onboarding wizard: logging initial weight.
+/// Form widget for Step 3 of the onboarding wizard: logging the initial
+/// weight and its measurement timestamp.
+///
+/// On success, [onNext] receives the weight in kg (converted from lbs when
+/// the unit is imperial) and the selected timestamp; the wizard screen
+/// dispatches `OnboardingInitialWeightSet`, which persists the entry into
+/// `WeightBloc` right away. Input is validated on every keystroke: non-empty
+/// and within 0-500 of the active unit (kg or lbs); otherwise the Next
+/// button is disabled and an inline error is shown. The date/time button
+//// opens the platform pickers to override the default "now" timestamp.
 class StepInitialWeight extends StatefulWidget {
   /// The user's active measurement unit system.
   final MeasurementUnit unit;
@@ -70,7 +80,8 @@ class _StepInitialWeightState extends State<StepInitialWeight> {
     super.dispose();
   }
 
-  /// Shows the date and time pickers and updates the selected timestamp.
+  /// Shows the date and time pickers (dates from 2000 up to today) and
+  //// replaces the selected timestamp with the user's choice.
   Future<void> _pickDateTime() async {
     final now = DateTime.now();
     final pickedDate = await showDatePicker(

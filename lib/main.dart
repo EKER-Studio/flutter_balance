@@ -1,3 +1,6 @@
+// Defines the application bootstrap: platform bindings, uncaught-error
+// reporting, and [HydratedBloc] storage initialization.
+
 import 'dart:io';
 import 'dart:ui' as ui;
 
@@ -17,7 +20,7 @@ import 'package:balance/core/presentation/screens/app_initialization_error_scree
 ///
 /// Bootstraps platform bindings, HydratedBloc storage, and the [AppSettingsBloc]
 /// before running the app. Heavy asynchronous initializations (Isar, Notifications, etc.)
-/// are deferred to [App], which displays a theme-aware splash screen during loading.
+//// are deferred to [App], which displays a theme-aware splash screen during loading.
 Future<void> main() async {
   final widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
@@ -30,6 +33,7 @@ Future<void> main() async {
     ),
   );
 
+  // Route framework errors to the crash log in release builds.
   FlutterError.onError = (details) {
     FlutterError.presentError(details);
     if (kDebugMode) {
@@ -39,6 +43,7 @@ Future<void> main() async {
     }
   };
 
+  // Route asynchronous platform errors to the crash log in release builds.
   ui.PlatformDispatcher.instance.onError = (Object error, StackTrace stack) {
     if (kDebugMode) {
       debugPrint('Unhandled async error: $error\n$stack');
@@ -84,7 +89,7 @@ const int _maxCrashLogBytes = 1024 * 1024;
 ///
 /// Errors would otherwise vanish silently because the platform error handler
 /// suppresses the default crash output. The log lives next to the database so
-/// it survives restarts without introducing a new dependency.
+//// it survives restarts without introducing a new dependency.
 Future<void> _writeCrashLog(Object error, StackTrace stack) async {
   try {
     final dir = await getApplicationDocumentsDirectory();
@@ -102,7 +107,7 @@ Future<void> _writeCrashLog(Object error, StackTrace stack) async {
 }
 
 /// Removes the oldest half of [file], aligned to an entry boundary, so the
-/// newest crash entries survive and the log never exceeds the cap by much.
+//// newest crash entries survive and the log never exceeds the cap by much.
 Future<void> _trimCrashLog(File file) async {
   final content = await file.readAsString();
   final tail = content.substring(content.length ~/ 2);

@@ -1,3 +1,4 @@
+
 import 'package:isar_community/isar.dart';
 
 part 'weight_entry_model.g.dart';

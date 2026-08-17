@@ -1,3 +1,4 @@
+
 import 'package:equatable/equatable.dart';
 import 'package:balance/core/models/measurement_unit.dart';
 import 'package:balance/features/weight/domain/entities/weight_entry.dart';
@@ -118,7 +119,14 @@ final class OnboardingBiometricsToggled extends OnboardingEvent {
   List<Object?> get props => [enabled];
 }
 
-/// An event that performs the final persistence of the wizard's draft data.
+/// An event that performs the final persistence of the wizard's draft data
+/// and marks onboarding as completed.
+///
+/// Dispatched when the user finishes the last wizard step: the bloc flushes
+/// the remaining draft data (imported history, health sync and biometric
+/// flags) and dispatches `CompleteOnboarding`, which sets
+/// `isOnboardingCompleted` in the persisted app settings so the wizard is not
+/// shown again.
 final class OnboardingCompleted extends OnboardingEvent {
   const OnboardingCompleted();
 }

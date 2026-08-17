@@ -1,8 +1,17 @@
+// Dialog for entering the user's height in centimeters.
+
+
 import 'package:flutter/material.dart';
 import 'package:balance/l10n/app_localizations.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_state.dart';
 
 /// A widget that provides a dialog for entering the user's height in centimeters.
+///
+/// Pops the entered height as a `double` (in cm) on save, or `null` when
+/// canceled. Input is trimmed, `,` is accepted as a decimal separator, and the
+/// value must lie within the inclusive [AppSettingsState.minHeightCm]–
+/// [AppSettingsState.maxHeightCm] range; invalid input shows an inline error
+//// instead.
 class HeightDialog extends StatefulWidget {
   /// The currently stored height in cm, or `null` if not set yet.
   final double? currentValue;
@@ -34,9 +43,10 @@ class HeightDialogState extends State<HeightDialog> {
     super.dispose();
   }
 
-  /// Validates the entered height and pops it as a result on success.
+  /// Validates the entered height and pops it as a `double` on success.
   ///
-  /// If the input is invalid or out of bounds, it displays an error message instead of popping the dialog.
+  /// Empty, non-numeric, or out-of-range input shows an inline error instead
+  /// of popping the dialog.
   void _handleSave() {
     FocusScope.of(context).unfocus();
     final text = _controller.text.trim().replaceAll(',', '.');
