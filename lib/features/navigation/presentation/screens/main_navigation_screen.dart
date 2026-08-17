@@ -1,6 +1,10 @@
 // Root scaffold hosting the app's four-tab navigation shell.
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:balance/features/settings/presentation/bloc/app_settings_bloc.dart';
+import 'package:balance/features/weight/presentation/bloc/weight_bloc.dart';
+import 'package:balance/features/weight/presentation/bloc/weight_event.dart';
 import 'package:balance/features/calendar/presentation/screens/calendar_screen.dart';
 import 'package:balance/features/statistics/presentation/screens/statistics_screen.dart';
 import 'package:balance/features/dashboard/presentation/screens/today_screen.dart';
@@ -24,7 +28,8 @@ class MainNavigationScreen extends StatefulWidget {
 }
 
 /// State holding the active tab index and rendering the selected screen.
-class _MainNavigationScreenState extends State<MainNavigationScreen> {
+class _MainNavigationScreenState extends State<MainNavigationScreen>
+    with WidgetsBindingObserver {
   int _currentIndex = 0;
 
   /// Switches the active tab to [index].
@@ -32,6 +37,16 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
     setState(() {
       _currentIndex = index;
     });
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed && mounted) {
+      final settings = context.read<AppSettingsBloc>().state;
+      if (settings.isHealthSyncEnabled) {
+        context.read<WeightBloc>().add(const SyncHealthEntries());
+      }
+    }
   }
 
   @override

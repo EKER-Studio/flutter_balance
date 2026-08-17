@@ -171,7 +171,7 @@ void main() {
     void stubRepositoryForSync() {
       when(() => repository.getAllEntries()).thenAnswer((_) async => []);
       when(
-        () => repository.bulkImportEntries(any()),
+        () => repository.syncRemoteEntries(any()),
       ).thenAnswer((_) async => 1);
     }
 
@@ -201,7 +201,7 @@ void main() {
 
         final imported =
             verify(
-                  () => repository.bulkImportEntries(captureAny()),
+                  () => repository.syncRemoteEntries(captureAny()),
                 ).captured.single
                 as List<WeightEntry>;
         expect(imported.single.weightKg, 76.5);
@@ -232,7 +232,7 @@ void main() {
         // Flush the delayed initial-focus request of the first step.
         await tester.pump(const Duration(milliseconds: 300));
 
-        verifyNever(() => repository.bulkImportEntries(any()));
+        verifyNever(() => repository.syncRemoteEntries(any()));
 
         settingsBloc.close();
       },
@@ -280,7 +280,7 @@ void main() {
         ).called(2);
         // Counts the startup import and the resume import (mocktail counts
         // only unverified calls, so no intermediate verify() may precede).
-        verify(() => repository.bulkImportEntries(any())).called(2);
+        verify(() => repository.syncRemoteEntries(any())).called(2);
 
         settingsBloc.close();
       },

@@ -8,6 +8,7 @@ import 'package:balance/core/utils/unit_converter.dart';
 import 'package:balance/features/weight/domain/entities/weight_entry.dart';
 import 'package:balance/features/weight/presentation/bloc/weight_bloc.dart';
 import 'package:balance/features/weight/presentation/bloc/weight_state.dart';
+import 'package:balance/features/weight/presentation/bloc/weight_event.dart';
 import 'package:balance/features/weight/presentation/utils/weight_error_localizer.dart';
 import 'package:balance/features/calendar/presentation/widgets/calendar_day_empty_card.dart';
 import 'package:balance/features/calendar/presentation/widgets/calendar_day_entries_card.dart';
@@ -50,6 +51,12 @@ class _CalendarScreenState extends State<CalendarScreen> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted &&
+          context.read<AppSettingsBloc>().state.isHealthSyncEnabled) {
+        context.read<WeightBloc>().add(const SyncHealthEntries());
+      }
+    });
     final now = DateTime.now();
     _focusedMonth = DateTime(now.year, now.month, 1);
     _selectedDate = now;
@@ -123,229 +130,246 @@ class _CalendarScreenState extends State<CalendarScreen> {
     final targetWeight = appSettingsState.targetWeight;
 
     return Scaffold(
-      body: CustomScrollView(
-        slivers: [
-          AppTopBar(title: l10n.tabCalendar),
-          SliverSafeArea(
-            top: false,
-            sliver: SliverToBoxAdapter(
-              child: BlocBuilder<WeightBloc, WeightState>(
-                builder: (context, state) {
-                  if (state is WeightInitial || state is WeightLoading) {
-                    return const ClampedLayout(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 12,
-                      ),
-                      child: CalendarShimmerSkeleton(),
-                    );
-                  }
+      body: RefreshIndicator(
+        onRefresh: () async {
+          if (context.read<AppSettingsBloc>().state.isHealthSyncEnabled) {
+            context.read<WeightBloc>().add(const SyncHealthEntries());
+            await Future.delayed(const Duration(seconds: 1));
+          }
+        },
+        child: CustomScrollView(
+          slivers: [
+            AppTopBar(title: l10n.tabCalendar),
+            SliverSafeArea(
+              top: false,
+              sliver: SliverToBoxAdapter(
+                child: BlocBuilder<WeightBloc, WeightState>(
+                  builder: (context, state) {
+                    if (state is WeightInitial || state is WeightLoading) {
+                      return const ClampedLayout(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 12,
+                        ),
+                        child: CalendarShimmerSkeleton(),
+                      );
+                    }
 
-                  if (state is WeightError) {
+                    if (state is WeightError) {
+                      return ClampedLayout(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 12,
+                        ),
+                        child: CalendarErrorCard(
+                          errorMessage: state.errorType.localizedMessage(l10n),
+                        ),
+                      );
+                    }
+
+                    final entries = switch (state) {
+                      WeightLoaded(:final entries) => entries,
+                      _ => <WeightEntry>[],
+                    };
+
+                    final dayEntries = entries
+                        .where(
+                          (e) => DateUtils.isSameDay(e.dateTime, _selectedDate),
+                        )
+                        .toList();
+
                     return ClampedLayout(
                       padding: const EdgeInsets.symmetric(
                         horizontal: 16,
                         vertical: 12,
                       ),
-                      child: CalendarErrorCard(
-                        errorMessage: state.errorType.localizedMessage(l10n),
-                      ),
-                    );
-                  }
+                      child: LayoutBuilder(
+                        builder: (context, constraints) {
+                          final isLandscape =
+                              MediaQuery.of(context).orientation ==
+                              Orientation.landscape;
+                          final calendarCard = Card(
+                            elevation: 0,
+                            margin: EdgeInsets.zero,
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.surfaceContainerLow,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(28),
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 16),
+                              child: Column(
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 16,
+                                    ),
+                                    child: CalendarMonthHeader(
+                                      focusedMonth: _focusedMonth,
+                                      onPreviousMonth: _previousMonth,
+                                      onNextMonth: _nextMonth,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 16),
+                                  const Padding(
+                                    padding: EdgeInsets.symmetric(
+                                      horizontal: 16,
+                                    ),
+                                    child: CalendarWeekdayHeader(),
+                                  ),
+                                  const SizedBox(height: 12),
+                                  Builder(
+                                    builder: (context) {
+                                      final availableWidth =
+                                          isLandscape &&
+                                              constraints.maxWidth >= 720
+                                          ? (constraints.maxWidth - 116) / 2
+                                          : constraints.maxWidth - 64;
+                                      final cellWidth =
+                                          (availableWidth - 24) / 7;
+                                      // 6 rows, 5 main-axis spacings of 8, plus a small buffer.
+                                      final gridHeight =
+                                          (6 * cellWidth) + 40 + 2;
 
-                  final entries = switch (state) {
-                    WeightLoaded(:final entries) => entries,
-                    _ => <WeightEntry>[],
-                  };
+                                      return SizedBox(
+                                        height: gridHeight,
+                                        child: PageView.builder(
+                                          controller: _pageController,
+                                          allowImplicitScrolling: true,
+                                          onPageChanged: _onPageChanged,
+                                          itemBuilder: (context, index) {
+                                            final offset = index - _initialPage;
+                                            final now = DateTime.now();
+                                            final monthDate = DateTime(
+                                              now.year,
+                                              now.month + offset,
+                                              1,
+                                            );
 
-                  final dayEntries = entries
-                      .where(
-                        (e) => DateUtils.isSameDay(e.dateTime, _selectedDate),
-                      )
-                      .toList();
+                                            return Padding(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                    horizontal: 16,
+                                                  ),
+                                              child: CalendarGrid(
+                                                focusedMonth: monthDate,
+                                                selectedDate: _selectedDate,
+                                                entries: entries,
+                                                targetWeight: targetWeight,
+                                                onDaySelected: (date, _) =>
+                                                    _onDaySelected(date),
+                                              ),
+                                            );
+                                          },
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
 
-                  return ClampedLayout(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 12,
-                    ),
-                    child: LayoutBuilder(
-                      builder: (context, constraints) {
-                        final isLandscape =
-                            MediaQuery.of(context).orientation ==
-                            Orientation.landscape;
-                        final calendarCard = Card(
-                          elevation: 0,
-                          margin: EdgeInsets.zero,
-                          color: Theme.of(
-                            context,
-                          ).colorScheme.surfaceContainerLow,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(28),
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 16),
+                          final isImperial =
+                              appSettingsState.measurementUnit ==
+                              MeasurementUnit.imperial;
+                          final unitLabel = unitLabelFor(
+                            appSettingsState.measurementUnit,
+                          );
+                          double averageKg = 0;
+                          if (dayEntries.isNotEmpty) {
+                            averageKg =
+                                dayEntries.fold<double>(
+                                  0,
+                                  (sum, e) => sum + e.weightKg,
+                                ) /
+                                dayEntries.length;
+                          }
+                          final displayAverage = isImperial
+                              ? kgToLbs(averageKg)
+                              : averageKg;
+
+                          final selectedDayHeader = Padding(
+                            padding: const EdgeInsets.only(bottom: 16),
                             child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 16,
-                                  ),
-                                  child: CalendarMonthHeader(
-                                    focusedMonth: _focusedMonth,
-                                    onPreviousMonth: _previousMonth,
-                                    onNextMonth: _nextMonth,
-                                  ),
-                                ),
-                                const SizedBox(height: 16),
-                                const Padding(
-                                  padding: EdgeInsets.symmetric(horizontal: 16),
-                                  child: CalendarWeekdayHeader(),
-                                ),
-                                const SizedBox(height: 12),
-                                Builder(
-                                  builder: (context) {
-                                    final availableWidth =
-                                        isLandscape &&
-                                            constraints.maxWidth >= 720
-                                        ? (constraints.maxWidth - 116) / 2
-                                        : constraints.maxWidth - 64;
-                                    final cellWidth = (availableWidth - 24) / 7;
-                                    // 6 rows, 5 main-axis spacings of 8, plus a small buffer.
-                                    final gridHeight = (6 * cellWidth) + 40 + 2;
-
-                                    return SizedBox(
-                                      height: gridHeight,
-                                      child: PageView.builder(
-                                        controller: _pageController,
-                                        allowImplicitScrolling: true,
-                                        onPageChanged: _onPageChanged,
-                                        itemBuilder: (context, index) {
-                                          final offset = index - _initialPage;
-                                          final now = DateTime.now();
-                                          final monthDate = DateTime(
-                                            now.year,
-                                            now.month + offset,
-                                            1,
-                                          );
-
-                                          return Padding(
-                                            padding: const EdgeInsets.symmetric(
-                                              horizontal: 16,
-                                            ),
-                                            child: CalendarGrid(
-                                              focusedMonth: monthDate,
-                                              selectedDate: _selectedDate,
-                                              entries: entries,
-                                              targetWeight: targetWeight,
-                                              onDaySelected: (date, _) =>
-                                                  _onDaySelected(date),
-                                            ),
-                                          );
-                                        },
+                                Text(
+                                  l10n.entriesFromDate(formattedSelectedDate),
+                                  style: Theme.of(context).textTheme.titleMedium
+                                      ?.copyWith(
+                                        fontWeight: FontWeight.bold,
+                                        color: Theme.of(
+                                          context,
+                                        ).colorScheme.onSurfaceVariant,
                                       ),
-                                    );
-                                  },
                                 ),
+                                if (dayEntries.length > 1) ...[
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    '${l10n.multipleEntries(dayEntries.length)} • ${l10n.averageWeight}: ${displayAverage.toStringAsFixed(1)} $unitLabel',
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .bodyMedium
+                                        ?.copyWith(
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .onSurfaceVariant
+                                              .withValues(alpha: 0.8),
+                                        ),
+                                  ),
+                                ],
                               ],
                             ),
-                          ),
-                        );
+                          );
 
-                        final isImperial =
-                            appSettingsState.measurementUnit ==
-                            MeasurementUnit.imperial;
-                        final unitLabel = unitLabelFor(
-                          appSettingsState.measurementUnit,
-                        );
-                        double averageKg = 0;
-                        if (dayEntries.isNotEmpty) {
-                          averageKg =
-                              dayEntries.fold<double>(
-                                0,
-                                (sum, e) => sum + e.weightKg,
-                              ) /
-                              dayEntries.length;
-                        }
-                        final displayAverage = isImperial
-                            ? kgToLbs(averageKg)
-                            : averageKg;
-
-                        final selectedDayHeader = Padding(
-                          padding: const EdgeInsets.only(bottom: 16),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                          final detailSection = Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
                             children: [
-                              Text(
-                                l10n.entriesFromDate(formattedSelectedDate),
-                                style: Theme.of(context).textTheme.titleMedium
-                                    ?.copyWith(
-                                      fontWeight: FontWeight.bold,
-                                      color: Theme.of(
-                                        context,
-                                      ).colorScheme.onSurfaceVariant,
-                                    ),
-                              ),
-                              if (dayEntries.length > 1) ...[
-                                const SizedBox(height: 4),
-                                Text(
-                                  '${l10n.multipleEntries(dayEntries.length)} • ${l10n.averageWeight}: ${displayAverage.toStringAsFixed(1)} $unitLabel',
-                                  style: Theme.of(context).textTheme.bodyMedium
-                                      ?.copyWith(
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .onSurfaceVariant
-                                            .withValues(alpha: 0.8),
-                                      ),
+                              selectedDayHeader,
+                              if (dayEntries.isEmpty)
+                                CalendarDayEmptyCard(
+                                  selectedDate: _selectedDate,
+                                )
+                              else
+                                CalendarDayEntriesCard(
+                                  selectedDate: _selectedDate,
+                                  entries: dayEntries,
+                                  targetWeight: targetWeight,
                                 ),
-                              ],
-                            ],
-                          ),
-                        );
-
-                        final detailSection = Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            selectedDayHeader,
-                            if (dayEntries.isEmpty)
-                              CalendarDayEmptyCard(selectedDate: _selectedDate)
-                            else
-                              CalendarDayEntriesCard(
-                                selectedDate: _selectedDate,
-                                entries: dayEntries,
-                                targetWeight: targetWeight,
-                              ),
-                          ],
-                        );
-
-                        if (isLandscape && constraints.maxWidth >= 720) {
-                          return Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Expanded(flex: 5, child: calendarCard),
-                              const SizedBox(width: 20),
-                              Expanded(flex: 5, child: detailSection),
                             ],
                           );
-                        }
 
-                        return Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            calendarCard,
-                            const SizedBox(height: 24),
-                            detailSection,
-                            const SizedBox(height: 80),
-                          ],
-                        );
-                      },
-                    ),
-                  );
-                },
+                          if (isLandscape && constraints.maxWidth >= 720) {
+                            return Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Expanded(flex: 5, child: calendarCard),
+                                const SizedBox(width: 20),
+                                Expanded(flex: 5, child: detailSection),
+                              ],
+                            );
+                          }
+
+                          return Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              calendarCard,
+                              const SizedBox(height: 24),
+                              detailSection,
+                              const SizedBox(height: 80),
+                            ],
+                          );
+                        },
+                      ),
+                    );
+                  },
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
