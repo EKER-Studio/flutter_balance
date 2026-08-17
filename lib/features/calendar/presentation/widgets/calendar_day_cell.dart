@@ -1,164 +1,145 @@
-// A single tappable day cell inside the monthly calendar grid.
+// The individual day cell widget displayed in the calendar grid.
 
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:balance/features/weight/domain/entities/weight_entry.dart';
-import 'package:balance/l10n/app_localizations.dart';
 
-/// A tappable day cell inside the monthly calendar grid.
+/// A single day cell within the calendar grid.
 ///
-/// Renders the day number, up to three indicator dots (one per entry, capped
-/// at three), and a green star [Badge] when the target weight was reached.
-/// Future dates render faded and without interaction.
+/// Renders the day number centered, an indicator row for recorded weight entries,
+/// and an overlaid achievement badge when the day's goal has been reached.
 class CalendarDayCell extends StatelessWidget {
-  /// The date represented by this cell.
+  /// The full calendar date represented by this cell.
   final DateTime date;
 
-  /// The day of the month (1-31).
+  /// The day-of-month integer to display.
   final int dayNumber;
 
-  /// The list of [WeightEntry] records for this date.
+  /// All weight entries recorded on this day.
   final List<WeightEntry> entries;
 
-  /// Whether this date corresponds to the current day.
+  /// Whether this cell represents the current calendar day.
   final bool isToday;
 
-  /// Whether this date is currently selected by the user.
+  /// Whether this cell is currently selected.
   final bool isSelected;
 
-  /// Whether this date is in the future; renders faded and non-interactive.
+  /// Whether this cell falls after today and is non-interactive.
   final bool isFuture;
 
-  /// Whether the target weight was reached on this day; renders the star badge.
+  /// Whether any entry on this day reached or beat the target weight.
   final bool isGoalAchieved;
 
-  /// The callback invoked when the cell is tapped; null disables it.
+  /// Callback invoked when the user taps on this day cell.
   final VoidCallback? onTap;
 
   const CalendarDayCell({
     super.key,
     required this.date,
     required this.dayNumber,
-    required this.entries,
-    required this.isToday,
-    required this.isSelected,
+    this.entries = const [],
+    this.isToday = false,
+    this.isSelected = false,
     this.isFuture = false,
     this.isGoalAchieved = false,
     this.onTap,
   });
 
-  static String? _cachedLocale;
-  static DateFormat? _cachedFormatter;
-
   @override
   Widget build(BuildContext context) {
-    final cs = Theme.of(context).colorScheme;
-    final l10n = AppLocalizations.of(context);
-    final locale = Localizations.localeOf(context).toString();
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
 
-    if (_cachedLocale != locale || _cachedFormatter == null) {
-      _cachedLocale = locale;
-      _cachedFormatter = DateFormat.yMMMMd(locale);
+    Color textColor;
+    if (isFuture) {
+      textColor = colorScheme.onSurface.withValues(alpha: 0.25);
+    } else if (isSelected) {
+      textColor = colorScheme.onPrimary;
+    } else if (isToday) {
+      textColor = colorScheme.primary;
+    } else {
+      textColor = colorScheme.onSurface;
     }
-    final dateLabel = _cachedFormatter!.format(date);
 
-    final hasEntries = entries.isNotEmpty;
-    final entriesCountLabel = !hasEntries
-        ? l10n.noEntriesLabel
-        : (entries.length == 1
-              ? l10n.singleEntry
-              : l10n.multipleEntries(entries.length));
+    BoxDecoration? cellDecoration;
+    if (isSelected) {
+      cellDecoration = BoxDecoration(
+        color: colorScheme.primary,
+        shape: BoxShape.circle,
+      );
+    } else if (isToday) {
+      cellDecoration = BoxDecoration(
+        shape: BoxShape.circle,
+        border: Border.all(
+          color: colorScheme.primary.withValues(alpha: 0.5),
+          width: 1.5,
+        ),
+      );
+    }
 
-    final futureSuffix = isFuture ? ', ${l10n.futureDateSuffix}' : '';
-    final goalSuffix = isGoalAchieved ? ', ${l10n.goalAchieved}' : '';
-
-    final semanticsLabel =
-        '$dateLabel, $entriesCountLabel$goalSuffix$futureSuffix${isSelected ? ', ${l10n.selectedSuffix}' : ''}';
-
-    return Semantics(
-      button: true,
-      selected: isSelected,
-      label: semanticsLabel,
-      excludeSemantics: true,
-      child: Padding(
-        padding: const EdgeInsets.all(4),
-        child: Material(
-          color: Colors.transparent,
-          child: InkWell(
-            onTap: onTap,
-            borderRadius: BorderRadius.circular(20),
-            child: SizedBox.expand(
-              child: Opacity(
-                opacity: isFuture ? 0.40 : 1.0,
-                child: Badge(
-                  isLabelVisible: isGoalAchieved,
-                  backgroundColor:
-                      Theme.of(context).brightness == Brightness.light
-                      ? Colors.green.shade800
-                      : Colors.green.shade300,
-                  padding: const EdgeInsets.all(3),
-                  label: Icon(
-                    Icons.star,
-                    size: 10,
-                    color: Theme.of(context).brightness == Brightness.light
-                        ? Colors.white
-                        : const Color(0xFF1B5E20),
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        customBorder: const CircleBorder(),
+        child: Stack(
+          clipBehavior: Clip.none,
+          alignment: Alignment.center,
+          children: [
+            if (cellDecoration != null)
+              Container(width: 36, height: 36, decoration: cellDecoration),
+            Column(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  '$dayNumber',
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: textColor,
+                    fontWeight: (isSelected || isToday)
+                        ? FontWeight.bold
+                        : FontWeight.normal,
                   ),
-                  child: Container(
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: isSelected ? cs.primary : Colors.transparent,
-                      border: isToday && !isSelected
-                          ? Border.all(color: cs.primary, width: 1.0)
-                          : null,
-                    ),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          '$dayNumber',
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: isToday || isSelected
-                                ? FontWeight.bold
-                                : FontWeight.normal,
-                            color: isSelected
-                                ? cs.onPrimary
-                                : (isToday ? cs.primary : cs.onSurface),
-                          ),
-                        ),
-                        if (hasEntries) ...[
-                          const SizedBox(height: 2),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: List.generate(
-                              entries.length > 3 ? 3 : entries.length,
-                              (index) => Container(
-                                width: 4,
-                                height: 4,
-                                margin: const EdgeInsets.symmetric(
-                                  horizontal: 1.5,
-                                ),
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  color: isSelected ? cs.onPrimary : cs.primary,
-                                ),
+                ),
+                const SizedBox(height: 2),
+                SizedBox(
+                  height: 4,
+                  child: entries.isNotEmpty
+                      ? Row(
+                          mainAxisSize: MainAxisSize.min,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: List.generate(
+                            entries.length.clamp(1, 3),
+                            (index) => Container(
+                              width: 4,
+                              height: 4,
+                              margin: const EdgeInsets.symmetric(horizontal: 1),
+                              decoration: BoxDecoration(
+                                color: isSelected
+                                    ? colorScheme.onPrimary
+                                    : colorScheme.primary,
+                                shape: BoxShape.circle,
                               ),
                             ),
                           ),
-                        ] else ...[
-                          const SizedBox(
-                            height: 6,
-                          ), // Match the space if no entries to keep text centered
-                        ],
-                      ],
-                    ),
+                        )
+                      : const SizedBox.shrink(),
+                ),
+              ],
+            ),
+            if (isGoalAchieved && !isFuture)
+              Positioned(
+                top: 2,
+                right: 2,
+                child: Container(
+                  padding: const EdgeInsets.all(1.5),
+                  decoration: const BoxDecoration(
+                    color: Color(0xFF4CAF50),
+                    shape: BoxShape.circle,
                   ),
+                  child: const Icon(Icons.star, size: 11, color: Colors.white),
                 ),
               ),
-            ),
-          ),
+          ],
         ),
       ),
     );
