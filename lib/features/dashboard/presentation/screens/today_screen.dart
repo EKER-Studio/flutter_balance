@@ -739,10 +739,10 @@ class _WeightLineChart extends StatelessWidget {
               barWidth: 3,
               isStrokeCapRound: true,
               dotData: FlDotData(
-                show: period == TimePeriod.week,
+                show: sortedEntries.length == 1,
                 getDotPainter: (spot, percent, barData, index) {
                   return FlDotCirclePainter(
-                    radius: 4,
+                    radius: 5,
                     color: colorScheme.primary,
                     strokeWidth: 2,
                     strokeColor: colorScheme.surface,

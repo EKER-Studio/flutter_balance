@@ -296,10 +296,10 @@ class BmiChartCard extends StatelessWidget {
               barWidth: 3,
               isStrokeCapRound: true,
               dotData: FlDotData(
-                show: period == TimePeriod.week,
+                show: sortedEntries.length == 1,
                 getDotPainter: (spot, percent, barData, index) =>
                     FlDotCirclePainter(
-                      radius: 4,
+                      radius: 5,
                       color: cs.primary,
                       strokeWidth: 2,
                       strokeColor: cs.surface,
