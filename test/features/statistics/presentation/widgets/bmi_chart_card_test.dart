@@ -4,6 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:balance/features/weight/domain/entities/weight_entry.dart';
 import 'package:balance/features/statistics/presentation/widgets/bmi_chart_card.dart';
 import 'package:balance/l10n/app_localizations.dart';
+import 'package:balance/features/weight/domain/time_period.dart';
 
 void main() {
   final now = DateTime(2026, 8, 1);
@@ -25,7 +26,12 @@ void main() {
       supportedLocales: AppLocalizations.supportedLocales,
       themeMode: themeMode,
       home: Scaffold(
-        body: BmiChartCard(entries: entries, heightCm: heightCm),
+        body: BmiChartCard(
+          entries: entries,
+          heightCm: 180.0,
+          period: TimePeriod.week,
+          onPeriodChanged: (_) {},
+        ),
       ),
     );
   }

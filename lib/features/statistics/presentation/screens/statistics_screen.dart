@@ -30,9 +30,7 @@ class StatisticsScreen extends StatelessWidget {
 
     return Scaffold(
       body: RefreshIndicator(
-        onRefresh: () async {
-          context.read<WeightBloc>().add(const SubscribeToWeightChanges());
-        },
+        onRefresh: () => _refreshWeightData(context),
         child: CustomScrollView(
           physics: const AlwaysScrollableScrollPhysics(),
           slivers: [
@@ -53,11 +51,10 @@ class StatisticsScreen extends StatelessWidget {
                       );
                     }
 
-                    final entries = switch (weightState) {
-                      WeightLoaded(:final entries) => entries,
-                      WeightError(:final entries) => entries,
-                      _ => <WeightEntry>[],
-                    };
+                    final entries = _entriesFromState(weightState);
+                    final filteredEntries = _filteredEntriesFromState(
+                      weightState,
+                    );
 
                     if (entries.isEmpty) {
                       return ClampedLayout(
@@ -126,10 +123,16 @@ class StatisticsScreen extends StatelessWidget {
                               ),
                               const SizedBox(height: 16),
                               BmiChartCard(
-                                entries: entries,
+                                entries: filteredEntries,
                                 heightCm: heightCm,
+                                period: weightState.timePeriod,
+                                onPeriodChanged: (period) {
+                                  context.read<WeightBloc>().add(
+                                    ChangeChartFilter(period),
+                                  );
+                                },
                               ),
-                              const SizedBox(height: 32),
+                              const SizedBox(height: 100),
                             ],
                           ),
                         );
@@ -145,9 +148,34 @@ class StatisticsScreen extends StatelessWidget {
     );
   }
 
+  /// Extracts all entries from [state].
+  static List<WeightEntry> _entriesFromState(WeightState state) {
+    return switch (state) {
+      WeightLoaded(:final entries) => entries,
+      WeightError(:final entries) => entries,
+      _ => <WeightEntry>[],
+    };
+  }
+
+  /// Extracts period-filtered entries from [state].
+  static List<WeightEntry> _filteredEntriesFromState(WeightState state) {
+    return switch (state) {
+      WeightLoaded(:final filteredEntries) => filteredEntries,
+      WeightError(:final filteredEntries) => filteredEntries,
+      _ => <WeightEntry>[],
+    };
+  }
+
+  /// Refreshes weight data and awaits state resolution.
+  Future<void> _refreshWeightData(BuildContext context) async {
+    final bloc = context.read<WeightBloc>();
+    bloc.add(const RefreshWeightData());
+    await bloc.stream
+        .firstWhere((state) => state is WeightLoaded || state is WeightError)
+        .timeout(const Duration(seconds: 2), onTimeout: () => bloc.state);
+  }
+
   /// Builds the hero progress and goal composite card.
-  ///
-  /// Shows the total change, weekly pace, and goal progress.
   Widget _buildHeroProgressAndGoalCard(
     BuildContext context, {
     required List<WeightEntry> entries,
@@ -211,6 +239,13 @@ class StatisticsScreen extends StatelessWidget {
     final semanticLabel =
         '${l10n.totalProgress}: $formattedValue${statusBadge != null ? ", $statusBadge" : ""}';
 
+    final badgeBg = isSuccessBadge
+        ? const Color(0xFF14291E)
+        : const Color(0xFF2A200B);
+    final badgeFg = isSuccessBadge
+        ? const Color(0xFF7CE38B)
+        : const Color(0xFFFFD56B);
+
     return Semantics(
       container: true,
       label: semanticLabel,
@@ -244,23 +279,14 @@ class StatisticsScreen extends StatelessWidget {
                         vertical: 6,
                       ),
                       decoration: BoxDecoration(
-                        color: (isSuccessBadge ? Colors.green : Colors.orange)
-                            .withValues(alpha: 0.15),
+                        color: badgeBg,
                         borderRadius: BorderRadius.circular(20),
                       ),
                       child: Text(
                         statusBadge,
                         style: Theme.of(context).textTheme.labelMedium
                             ?.copyWith(
-                              color:
-                                  Theme.of(context).brightness ==
-                                      Brightness.light
-                                  ? (isSuccessBadge
-                                        ? Colors.green.shade800
-                                        : Colors.orange.shade800)
-                                  : (isSuccessBadge
-                                        ? Colors.green.shade300
-                                        : Colors.orange.shade300),
+                              color: badgeFg,
                               fontWeight: FontWeight.bold,
                             ),
                       ),
@@ -343,8 +369,6 @@ class StatisticsScreen extends StatelessWidget {
   }
 
   /// Builds the habits and activity composite card.
-  ///
-  /// Shows the logging streak and compliance.
   Widget _buildHabitsAndActivityCard(
     BuildContext context, {
     required int streak,
@@ -397,9 +421,7 @@ class StatisticsScreen extends StatelessWidget {
     );
   }
 
-  /// Builds a single metric column inside the habits and activity card.
-  ///
-  /// The column contains an icon, label, and value.
+  /// Builds a single metric item for habits.
   Widget _buildHabitMetricItem(
     BuildContext context, {
     required IconData icon,
@@ -443,8 +465,6 @@ class StatisticsScreen extends StatelessWidget {
   }
 
   /// Builds the combined weight range composite card.
-  ///
-  /// Shows the highest, lowest, and average weights.
   Widget _buildCombinedWeightRangeCard(
     BuildContext context, {
     required List<WeightEntry> entries,
@@ -540,8 +560,6 @@ class StatisticsScreen extends StatelessWidget {
   }
 
   /// Builds one detail row inside the combined weight range card.
-  ///
-  /// The row contains an icon, label, date, and formatted value.
   Widget _buildWeightDetailRow(
     BuildContext context, {
     required IconData icon,
@@ -663,8 +681,6 @@ class StatisticsScreen extends StatelessWidget {
   }
 
   /// Calculates the all-time compliance percentage.
-  ///
-  /// Evaluates unique logged days over the total days since the first entry.
   int _calculateTotalCompliance(List<WeightEntry> entries, DateTime now) {
     if (entries.isEmpty) return 0;
 
@@ -686,8 +702,6 @@ class StatisticsScreen extends StatelessWidget {
   }
 
   /// Formats a measurement entry [date].
-  ///
-  /// Returns strings like "15 Sty 2023" or "Dzisiaj".
   String _formatEntryDate(
     BuildContext context,
     DateTime date,
