@@ -40,6 +40,7 @@ class AppSettingsBloc extends HydratedBloc<AppSettingsEvent, AppSettingsState> {
     on<ToggleHealthSync>(_onToggleHealthSync);
     on<CheckHealthSyncStatus>(_onCheckHealthSyncStatus);
     on<ResetAppSettings>(_onResetAppSettings);
+    on<UpdateLastHealthSyncTimestamp>(_onUpdateLastHealthSyncTimestamp);
   }
 
   /// Updates the theme mode to the [UpdateTheme.themeMode] value.
@@ -252,6 +253,13 @@ class AppSettingsBloc extends HydratedBloc<AppSettingsEvent, AppSettingsState> {
   }
 
   /// Resets every setting back to the default [AppSettingsState].
+  void _onUpdateLastHealthSyncTimestamp(
+    UpdateLastHealthSyncTimestamp event,
+    Emitter<AppSettingsState> emit,
+  ) {
+    emit(state.copyWith(lastHealthSyncTimestamp: event.timestamp));
+  }
+
   void _onResetAppSettings(
     ResetAppSettings event,
     Emitter<AppSettingsState> emit,

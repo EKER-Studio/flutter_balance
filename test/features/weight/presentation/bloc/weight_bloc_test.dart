@@ -47,6 +47,7 @@ void main() {
     when(() => repository.deleteEntry(any())).thenAnswer((_) async {});
     when(() => repository.clearAllData()).thenAnswer((_) async {});
     when(() => repository.bulkImportEntries(any())).thenAnswer((_) async => 1);
+    when(() => repository.syncRemoteEntries(any())).thenAnswer((_) async => 1);
     when(
       () => healthService.writeWeight(
         weightKg: any(named: 'weightKg'),
@@ -734,7 +735,7 @@ void main() {
         verify: (_) {
           final imported =
               verify(
-                    () => repository.bulkImportEntries(captureAny()),
+                    () => repository.syncRemoteEntries(captureAny()),
                   ).captured.single
                   as List<WeightEntry>;
           expect(imported.length, 2);
@@ -816,18 +817,14 @@ void main() {
         seed: () =>
             const WeightLoaded(entries: [], filteredEntries: [], heightCm: 170),
         act: (bloc) => bloc.add(const SyncHealthEntries()),
-        expect: () => [
-          isA<WeightLoaded>().having((s) => s.entries.length, 'entries', 3),
-        ],
+        expect: () => <WeightState>[],
         verify: (_) {
           final imported =
               verify(
-                    () => repository.bulkImportEntries(captureAny()),
+                    () => repository.syncRemoteEntries(captureAny()),
                   ).captured.single
                   as List<WeightEntry>;
-          expect(imported.length, 1);
-          expect(imported.single.weightKg, 73);
-          expect(imported.single.dateTime, DateTime(2026, 1, 2, 8));
+          expect(imported.length, 3);
         },
       );
 
@@ -870,7 +867,7 @@ void main() {
               timestamp: any(named: 'timestamp'),
             ),
           ).called(1);
-          verifyNever(() => repository.bulkImportEntries(any()));
+          verifyNever(() => repository.syncRemoteEntries(any()));
         },
       );
 
@@ -915,13 +912,12 @@ void main() {
         act: (bloc) => bloc.add(const SyncHealthEntries()),
         expect: () => [],
         verify: (_) {
-          verifyNever(() => repository.bulkImportEntries(any()));
+          verifyNever(() => repository.syncRemoteEntries(any()));
         },
       );
 
       blocTest<WeightBloc, WeightState>(
-        'SyncHealthEntries uses a deep past default window when no startDate '
-        'is provided',
+        'SyncHealthEntries uses a 30-day default window when lastHealthSyncTimestamp is null',
         build: () {
           when(
             () => healthService.fetchWeightHistory(
@@ -939,9 +935,92 @@ void main() {
             const WeightLoaded(entries: [], filteredEntries: [], heightCm: 170),
         act: (bloc) => bloc.add(const SyncHealthEntries()),
         verify: (_) {
+          final captured =
+              verify(
+                    () => healthService.fetchWeightHistory(
+                      start: captureAny(named: 'start'),
+                      end: any(named: 'end'),
+                    ),
+                  ).captured.single
+                  as DateTime;
+
+          final diff = DateTime.now().difference(captured).inDays;
+          expect(diff, closeTo(30, 1));
+        },
+      );
+
+      blocTest<WeightBloc, WeightState>(
+        'SyncHealthEntries uses a 1-day lookback window from lastSync when available',
+        build: () {
+          final settingsBloc = MockAppSettingsBloc();
+          final lastSync = DateTime.now().subtract(const Duration(days: 10));
+          when(() => settingsBloc.state).thenReturn(
+            AppSettingsState(
+              isHealthSyncEnabled: true,
+              lastHealthSyncTimestamp: lastSync,
+            ),
+          );
+          when(
+            () => healthService.fetchWeightHistory(
+              start: any(named: 'start'),
+              end: any(named: 'end'),
+            ),
+          ).thenAnswer((_) async => const []);
+          return WeightBloc(
+            repository: repository,
+            appSettingsBloc: settingsBloc,
+            healthService: healthService,
+          );
+        },
+        seed: () =>
+            const WeightLoaded(entries: [], filteredEntries: [], heightCm: 170),
+        act: (bloc) => bloc.add(const SyncHealthEntries()),
+        verify: (_) {
+          final captured =
+              verify(
+                    () => healthService.fetchWeightHistory(
+                      start: captureAny(named: 'start'),
+                      end: any(named: 'end'),
+                    ),
+                  ).captured.single
+                  as DateTime;
+
+          final expected = DateTime.now().subtract(
+            const Duration(days: 11),
+          ); // lastSync - 1 day
+          expect(captured.difference(expected).inSeconds.abs(), lessThan(5));
+        },
+      );
+
+      blocTest<WeightBloc, WeightState>(
+        'SyncHealthEntries drops concurrent events (droppable concurrency)',
+        build: () {
+          when(
+            () => healthService.fetchWeightHistory(
+              start: any(named: 'start'),
+              end: any(named: 'end'),
+            ),
+          ).thenAnswer((_) async {
+            await Future.delayed(const Duration(milliseconds: 50));
+            return const [];
+          });
+          return WeightBloc(
+            repository: repository,
+            appSettingsBloc: buildSettingsBloc(),
+            healthService: healthService,
+          );
+        },
+        seed: () =>
+            const WeightLoaded(entries: [], filteredEntries: [], heightCm: 170),
+        act: (bloc) {
+          bloc.add(const SyncHealthEntries());
+          bloc.add(const SyncHealthEntries());
+        },
+        wait: const Duration(milliseconds: 100),
+        verify: (_) {
           verify(
             () => healthService.fetchWeightHistory(
-              start: DateTime(2000),
+              start: any(named: 'start'),
               end: any(named: 'end'),
             ),
           ).called(1);

@@ -136,3 +136,14 @@ final class CheckHealthSyncStatus extends AppSettingsEvent {
 final class ResetAppSettings extends AppSettingsEvent {
   const ResetAppSettings();
 }
+
+/// Records the timestamp of the last successful health sync.
+final class UpdateLastHealthSyncTimestamp extends AppSettingsEvent {
+  /// The UTC timestamp of the sync.
+  final DateTime timestamp;
+
+  /// Creates an [UpdateLastHealthSyncTimestamp] event.
+  const UpdateLastHealthSyncTimestamp(this.timestamp);
+
+  List<Object?> get props => [timestamp];
+}

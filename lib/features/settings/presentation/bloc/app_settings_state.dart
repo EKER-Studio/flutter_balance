@@ -89,6 +89,9 @@ final class AppSettingsState extends Equatable {
   /// never persisted, and reset by any subsequent health-related event.
   final bool healthPermissionDenied;
 
+  /// The UTC timestamp of the last successful health sync.
+  final DateTime? lastHealthSyncTimestamp;
+
   /// Creates an [AppSettingsState] with the given parameters.
   const AppSettingsState({
     this.themeMode = AppThemeMode.system,
@@ -106,6 +109,7 @@ final class AppSettingsState extends Equatable {
     this.isHealthSyncEnabled = false,
     this.isHealthApiAvailable = true,
     this.healthPermissionDenied = false,
+    this.lastHealthSyncTimestamp,
   });
 
   /// Creates a copy of this state with the given fields replaced.
@@ -128,6 +132,7 @@ final class AppSettingsState extends Equatable {
     bool? isHealthSyncEnabled,
     bool? isHealthApiAvailable,
     bool? healthPermissionDenied,
+    DateTime? lastHealthSyncTimestamp,
   }) {
     return AppSettingsState(
       themeMode: themeMode ?? this.themeMode,
@@ -152,6 +157,8 @@ final class AppSettingsState extends Equatable {
       isHealthApiAvailable: isHealthApiAvailable ?? this.isHealthApiAvailable,
       healthPermissionDenied:
           healthPermissionDenied ?? this.healthPermissionDenied,
+      lastHealthSyncTimestamp:
+          lastHealthSyncTimestamp ?? this.lastHealthSyncTimestamp,
     );
   }
 
@@ -172,6 +179,7 @@ final class AppSettingsState extends Equatable {
     isHealthSyncEnabled,
     isHealthApiAvailable,
     healthPermissionDenied,
+    lastHealthSyncTimestamp,
   ];
 
   /// Deserializes an [AppSettingsState] from a JSON map.
@@ -220,6 +228,9 @@ final class AppSettingsState extends Equatable {
       // Transient flags: never restored from storage.
       isHealthApiAvailable: true,
       healthPermissionDenied: false,
+      lastHealthSyncTimestamp: json['lastHealthSyncTimestamp'] != null
+          ? DateTime.tryParse(json['lastHealthSyncTimestamp'] as String)
+          : null,
     );
   }
 
@@ -239,6 +250,8 @@ final class AppSettingsState extends Equatable {
       'isLocked': isLocked,
       'isOnboardingCompleted': isOnboardingCompleted,
       'isHealthSyncEnabled': isHealthSyncEnabled,
+      if (lastHealthSyncTimestamp != null)
+        'lastHealthSyncTimestamp': lastHealthSyncTimestamp!.toIso8601String(),
     };
   }
 }
