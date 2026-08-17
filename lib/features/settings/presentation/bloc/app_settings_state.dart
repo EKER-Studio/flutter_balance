@@ -224,7 +224,7 @@ final class AppSettingsState extends Equatable {
     );
   }
 
-  //// Serializes an [AppSettingsState] into a JSON map.
+  ///// Serializes an [AppSettingsState] into a JSON map.
   Map<String, dynamic> toJson() {
     return {
       'themeMode': themeMode.name,

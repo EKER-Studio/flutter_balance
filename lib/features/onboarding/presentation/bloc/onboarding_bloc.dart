@@ -16,7 +16,7 @@ import 'package:balance/features/settings/presentation/bloc/app_settings_event.d
 /// (step index, selected unit, imported CSV entries, draft weights, integration
 /// toggles). Persistent outcomes are handed off to [WeightBloc] and
 /// [AppSettingsBloc] when a step is confirmed or [OnboardingCompleted] is
-//// dispatched.
+///// dispatched.
 class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
   /// Target for the persistent settings dispatched on completion.
   final AppSettingsBloc appSettingsBloc;

@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 
 /// Centered message states with icon, title, subtitle, and optional CTA button.
 ///
-//// Used for empty states, welcome screens, and error states with consistent layout.
+///// Used for empty states, welcome screens, and error states with consistent layout.
 class StateMessageCard extends StatelessWidget {
   /// Creates a [StateMessageCard].
   ///

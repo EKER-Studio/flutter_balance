@@ -20,7 +20,7 @@ import 'package:balance/core/presentation/core/clamped_layout.dart';
 import 'package:balance/core/presentation/widgets/app_top_bar.dart';
 import 'package:balance/core/presentation/widgets/state_message_card.dart';
 
-//// A consolidated statistics screen combining all health metrics into data-dense composite cards.
+///// A consolidated statistics screen combining all health metrics into data-dense composite cards.
 class StatisticsScreen extends StatelessWidget {
   /// Creates a [StatisticsScreen].
   const StatisticsScreen({super.key});

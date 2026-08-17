@@ -3,7 +3,7 @@
 
 import 'package:flutter/material.dart';
 
-//// A widget that renders a section header label above each settings group.
+///// A widget that renders a section header label above each settings group.
 class SectionHeader extends StatelessWidget {
   /// The section title [label] displayed in the header.
   final String label;

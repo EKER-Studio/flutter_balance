@@ -3,6 +3,7 @@
 /// Emitted by weight domain logic and state management (e.g. BLoC) instead of raw exception
 //// messages to decouple presentation layers from error strings and enable type-safe localization.
 
+
 enum WeightErrorType {
   /// Indicates an unrecoverable failure while listening to the real-time weight entries stream.
   streamError,
@@ -30,7 +31,7 @@ enum WeightErrorType {
 /// operation fails.
 ///
 /// Carries a [WeightErrorType] so the presentation layer can map it to a
-//// user-facing error state without depending on infrastructure exception types.
+///// user-facing error state without depending on infrastructure exception types.
 class WeightRepositoryException implements Exception {
   /// Categorizes the failed operation.
   final WeightErrorType type;
@@ -52,5 +53,5 @@ class WeightRepositoryException implements Exception {
   String toString() => 'WeightRepositoryException($type): $message';
 }
 
-//// An alias for [WeightRepositoryException] representing generic database persistence failures.
+///// An alias for [WeightRepositoryException] representing generic database persistence failures.
 typedef WeightDatabaseFailure = WeightRepositoryException;

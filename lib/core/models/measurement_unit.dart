@@ -2,6 +2,7 @@
 ///
 //// The unit system used for displaying weight and height.
 
+
 enum MeasurementUnit {
   /// Metric system: kilograms (`kg`) for weight, centimeters (`cm`) for height.
   metric,

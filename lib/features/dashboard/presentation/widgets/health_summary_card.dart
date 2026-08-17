@@ -25,7 +25,7 @@ import 'package:balance/features/weight/presentation/widgets/bmi_legend_dialog.d
 ///
 /// The whole card collapses into a single semantics node: the label joins the
 /// localized measurement, BMI category, and goal strings with `ExcludeSemantics`
-//// hiding the visual children from screen readers.
+///// hiding the visual children from screen readers.
 class HealthSummaryCard extends StatelessWidget {
   /// The latest recorded weight in kilograms.
   final double latestWeightKg;
@@ -386,7 +386,7 @@ class HealthSummaryCard extends StatelessWidget {
     );
   }
 
-  //// Opens the [TargetWeightDialog] and dispatches the resulting target weight change to the [AppSettingsBloc].
+  ///// Opens the [TargetWeightDialog] and dispatches the resulting target weight change to the [AppSettingsBloc].
   Future<void> _openTargetWeightDialog(
     BuildContext context,
     double? targetWeightKg,

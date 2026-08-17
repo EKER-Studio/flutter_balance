@@ -11,7 +11,7 @@ import 'custom_settings_tile.dart';
 import 'custom_settings_toggle.dart';
 import 'inexact_reminder_hint.dart';
 
-//// A widget that represents the application settings group with unit, theme, and reminder controls.
+///// A widget that represents the application settings group with unit, theme, and reminder controls.
 class ApplicationSection extends StatelessWidget {
   /// The current app settings state driving the displayed values.
   final AppSettingsState state;

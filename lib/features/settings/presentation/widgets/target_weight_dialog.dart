@@ -14,7 +14,7 @@ import 'package:balance/l10n/app_localizations.dart';
 /// is used, and `null` when canceled. Input is trimmed, `,` is accepted as a
 /// decimal separator, and the converted value in kg must lie within the
 /// inclusive [WeightEntry.minWeightKg]–[WeightEntry.maxWeightKg] range;
-//// invalid input shows an inline error instead.
+///// invalid input shows an inline error instead.
 class TargetWeightDialog extends StatefulWidget {
   /// The current target weight [currentValue] in the current measurement unit.
   final double? currentValue;

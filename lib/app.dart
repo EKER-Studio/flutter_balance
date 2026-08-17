@@ -1,6 +1,7 @@
 // Root widget of the Balance application plus the app-level DI, service
 // lifecycle, and localization wiring surrounding it.
 
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -27,7 +28,7 @@ import 'package:balance/features/navigation/presentation/screens/main_navigation
 import 'package:balance/features/onboarding/presentation/screens/onboarding_wizard_screen.dart';
 import 'package:balance/core/presentation/theme/app_theme.dart';
 
-//// Root widget of the Balance application.
+///// Root widget of the Balance application.
 class App extends StatefulWidget {
   /// Optional repository override for testing.
   final WeightRepository? repositoryOverride;
@@ -45,7 +46,7 @@ class App extends StatefulWidget {
   State<App> createState() => _AppState();
 }
 
-//// State for the root [App] widget; owns service initialization and DI wiring.
+///// State for the root [App] widget; owns service initialization and DI wiring.
 class _AppState extends State<App> {
   late AppLocalizations _l10n;
   late Future<WeightRepository> _initFuture;
@@ -60,7 +61,7 @@ class _AppState extends State<App> {
 
   /// Bootstraps the core services (database, notifications, health platform,
   /// biometrics) and returns the ready [WeightRepository] once all
-  //// initialization has finished.
+  ///// initialization has finished.
   Future<WeightRepository> _initializeApp() async {
     try {
       if (widget.repositoryOverride != null) {
@@ -228,7 +229,7 @@ class _AppState extends State<App> {
 ///
 /// Lives below the BlocProvider so the observer can resolve the weight BLoC
 /// dynamically through its own context instead of capturing a direct instance
-//// reference, which could go stale if the provider is ever recreated.
+///// reference, which could go stale if the provider is ever recreated.
 class _ObserverRegistrar extends StatefulWidget {
   /// Resolves the localized biometric authentication prompt reason.
   final String Function() localizedReason;
@@ -246,7 +247,7 @@ class _ObserverRegistrar extends StatefulWidget {
   State<_ObserverRegistrar> createState() => _ObserverRegistrarState();
 }
 
-//// State owning the [BiometricLockObserver] lifecycle and initial lock state.
+///// State owning the [BiometricLockObserver] lifecycle and initial lock state.
 class _ObserverRegistrarState extends State<_ObserverRegistrar> {
   BiometricLockObserver? _observer;
 
@@ -302,7 +303,7 @@ class _ObserverRegistrarState extends State<_ObserverRegistrar> {
 /// settings BLoCs dynamically through its own context instead of capturing
 /// direct instance references, which could go stale if the providers are ever
 /// recreated. Entries recorded in Apple Health / Health Connect while the app
-//// was backgrounded are thereby pulled in without any user action.
+///// was backgrounded are thereby pulled in without any user action.
 class _HealthSyncLifecycleObserver extends StatefulWidget {
   /// The subtree rendered below the app-level providers.
   final Widget child;
@@ -315,7 +316,7 @@ class _HealthSyncLifecycleObserver extends StatefulWidget {
       _HealthSyncLifecycleObserverState();
 }
 
-//// State owning the WidgetsBindingObserver registration for foreground sync.
+///// State owning the WidgetsBindingObserver registration for foreground sync.
 class _HealthSyncLifecycleObserverState
     extends State<_HealthSyncLifecycleObserver>
     with WidgetsBindingObserver {
@@ -348,7 +349,7 @@ class _HealthSyncLifecycleObserverState
 }
 
 /// A widget that synchronizes the active locale with services that live
-//// outside the widget tree.
+///// outside the widget tree.
 class _LocalizationSync extends StatefulWidget {
   /// Child rendered below the [AppLocalizations] scope.
   final Widget child;
@@ -364,7 +365,7 @@ class _LocalizationSync extends StatefulWidget {
   State<_LocalizationSync> createState() => _LocalizationSyncState();
 }
 
-//// State that forwards each locale change to [_LocalizationSync.onLocalized].
+///// State that forwards each locale change to [_LocalizationSync.onLocalized].
 class _LocalizationSyncState extends State<_LocalizationSync> {
   /// Forwards the resolved [AppLocalizations] to [_LocalizationSync.onLocalized]
   /// on the first build and whenever the locale changes.

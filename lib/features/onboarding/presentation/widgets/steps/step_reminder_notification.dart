@@ -15,7 +15,7 @@ import 'package:balance/core/presentation/core/clamped_layout.dart';
 /// reminder time via [UpdateNotificationTime]. The step is skippable —
 /// [onNext] advances regardless of the switch state — so the wizard screen
 /// needs no further persistence on the way out. A permission-denied notice is
-//// shown when the OS rejected the notification request.
+///// shown when the OS rejected the notification request.
 class StepReminderNotification extends StatefulWidget {
   /// Callback invoked when proceeding to the next step.
   final VoidCallback onNext;
@@ -29,7 +29,7 @@ class StepReminderNotification extends StatefulWidget {
 }
 
 class _StepReminderNotificationState extends State<StepReminderNotification> {
-  //// Opens the time picker and dispatches the selected time to [AppSettingsBloc].
+  ///// Opens the time picker and dispatches the selected time to [AppSettingsBloc].
   Future<void> _handleTimePicker(BuildContext context) async {
     final l10n = AppLocalizations.of(context);
     final recordTime = context.read<AppSettingsBloc>().state.notificationTime;
@@ -63,7 +63,7 @@ class _StepReminderNotificationState extends State<StepReminderNotification> {
     }
   }
 
-  //// Toggles the notification permission and dispatches the event to [AppSettingsBloc].
+  ///// Toggles the notification permission and dispatches the event to [AppSettingsBloc].
   Future<void> _handleToggle(BuildContext context, bool enabled) async {
     context.read<AppSettingsBloc>().add(ToggleNotifications(enabled));
   }

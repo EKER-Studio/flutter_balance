@@ -15,7 +15,7 @@ import 'package:balance/features/settings/presentation/screens/settings_screen.d
 /// visible child of the [IndexedStack] — swapping tabs without losing per-tab
 /// state. Tab switching, focus traversal, and keyboard handling are delegated
 /// to the [NavigationBar]'s built-in semantics via `onDestinationSelected`;
-//// `home`-style navigation from the Today screen jumps to the Settings tab.
+///// `home`-style navigation from the Today screen jumps to the Settings tab.
 class MainNavigationScreen extends StatefulWidget {
   /// Creates [MainNavigationScreen].
   const MainNavigationScreen({super.key});
@@ -24,7 +24,7 @@ class MainNavigationScreen extends StatefulWidget {
   State<MainNavigationScreen> createState() => _MainNavigationScreenState();
 }
 
-//// State holding the active tab index and rendering the selected screen.
+///// State holding the active tab index and rendering the selected screen.
 class _MainNavigationScreenState extends State<MainNavigationScreen> {
   int _currentIndex = 0;
 

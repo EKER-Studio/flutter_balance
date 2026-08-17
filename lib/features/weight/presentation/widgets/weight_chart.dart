@@ -25,7 +25,7 @@ import 'package:balance/core/models/measurement_unit.dart';
 ///   },
 ///   targetWeight: 72.5,
 /// )
-//// ```
+///// ```
 class WeightChart extends StatelessWidget {
   /// The list of weight entries to plot.
   final List<WeightEntry> entries;
@@ -313,7 +313,7 @@ class WeightChart extends StatelessWidget {
   }
 
   /// Maps [sortedEntries] to [FlSpot] instances with minutes-since-first as X
-  //// and the weight converted into [unit] as Y.
+  ///// and the weight converted into [unit] as Y.
   List<FlSpot> _getSpots(
     List<WeightEntry> sortedEntries,
     MeasurementUnit unit,

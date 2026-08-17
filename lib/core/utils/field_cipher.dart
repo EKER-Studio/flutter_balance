@@ -10,7 +10,7 @@ import 'package:encrypt/encrypt.dart' as enc;
 /// A utility for field-level AES-256 CBC encryption, decryption, and integrity verification.
 ///
 /// Implements Encrypt-then-MAC using HMAC-SHA256 over `IV || Ciphertext` to guarantee
-//// confidentiality, authenticity, and integrity against data corruption or bit-flipping.
+///// confidentiality, authenticity, and integrity against data corruption or bit-flipping.
 class FieldCipher {
   static const int _ivLength = 16;
   static const int _macLength = 32;

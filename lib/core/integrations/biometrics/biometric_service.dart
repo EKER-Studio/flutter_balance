@@ -11,7 +11,7 @@ import 'package:balance/l10n/app_localizations.dart';
 
 /// Device biometric capability checks and OS credential authentication flow.
 ///
-//// The outcome of a biometric authentication attempt.
+///// The outcome of a biometric authentication attempt.
 enum BiometricAuthResult {
   /// Authentication succeeded.
   success,
@@ -41,7 +41,7 @@ enum BiometricAuthResult {
 /// A singleton service for checking device credential availability.
 ///
 /// Authenticates the user via Face ID, Touch ID, fingerprint, or the OS
-//// lock screen (PIN/pattern/password) as fallback.
+///// lock screen (PIN/pattern/password) as fallback.
 class BiometricService {
   BiometricService._();
 
@@ -70,7 +70,7 @@ class BiometricService {
         StreamController<void>.broadcast();
   }
 
-  //// Closes the authentication success stream controller.
+  ///// Closes the authentication success stream controller.
   Future<void> dispose() async {
     if (!_authenticationSuccessController.isClosed) {
       await _authenticationSuccessController.close();
@@ -88,7 +88,7 @@ class BiometricService {
   ///
   /// Returns a Future resolving to `true` if the device supports biometric
   /// sensors and at least one credential is enrolled, `false` otherwise.
-  //// Catches hardware or platform exceptions safely and logs errors.
+  ///// Catches hardware or platform exceptions safely and logs errors.
   Future<bool> isAvailable() async {
     try {
       final canCheck = await _authentication.canCheckBiometrics;
@@ -113,7 +113,7 @@ class BiometricService {
   ///
   /// Returns a Future resolving to `true` if biometrics are both available and
   /// supported by OS hardware abstractions, `false` otherwise.
-  //// Catches platform exceptions safely and logs errors.
+  ///// Catches platform exceptions safely and logs errors.
   Future<bool> isSupported() async {
     try {
       final deviceSupported = await _authentication.isDeviceSupported();
@@ -139,7 +139,7 @@ class BiometricService {
   /// Returns a Future resolving to `true` if the device supports biometric
   /// checks OR can fail over to the OS lock screen credentials (PIN, pattern,
   /// or password), so devices with only a system PIN configured can still use
-  //// the app lock. Catches platform exceptions safely and logs errors.
+  ///// the app lock. Catches platform exceptions safely and logs errors.
   Future<bool> canAuthenticate() async {
     try {
       final deviceSupported = await _authentication.isDeviceSupported();
@@ -182,7 +182,7 @@ class BiometricService {
   /// Optional [authMessages] can be provided to customize dialog strings per locale.
   /// Concurrent calls while authentication is in progress await the same active
   /// operation rather than launching overlapping native dialogs.
-  //// Returns a Future resolving to a [BiometricAuthResult] describing the outcome.
+  ///// Returns a Future resolving to a [BiometricAuthResult] describing the outcome.
   Future<BiometricAuthResult> authenticate({
     required String localizedReason,
     Iterable<AuthMessages>? authMessages,
@@ -215,7 +215,7 @@ class BiometricService {
   ///
   /// Authentication is not restricted to biometrics: with `biometricOnly:
   /// false`, the OS falls back to the system PIN/pattern/password prompt when
-  //// biometrics are unavailable, disabled, or fail.
+  ///// biometrics are unavailable, disabled, or fail.
   Future<BiometricAuthResult> _performAuthentication({
     required String localizedReason,
     Iterable<AuthMessages>? authMessages,

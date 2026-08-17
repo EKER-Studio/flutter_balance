@@ -7,7 +7,7 @@ import 'package:balance/features/settings/presentation/bloc/app_settings_state.d
 import 'custom_settings_tile.dart';
 import 'custom_settings_toggle.dart';
 
-//// A widget that displays the integrations settings group with the health sync switch.
+///// A widget that displays the integrations settings group with the health sync switch.
 class IntegrationsSection extends StatelessWidget {
   /// The current app settings [state] driving the displayed values.
   final AppSettingsState state;

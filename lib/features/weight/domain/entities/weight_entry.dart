@@ -6,6 +6,7 @@
 /// measurement timestamp, and an optional user note.
 //// Values are expected to lie within [minWeightKg] and [maxWeightKg] (inclusive).
 
+
 class WeightEntry {
   /// The minimum valid body weight in kilograms, inclusive.
   static const double minWeightKg = 20;

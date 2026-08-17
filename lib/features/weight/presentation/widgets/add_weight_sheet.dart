@@ -19,7 +19,7 @@ import 'package:balance/features/settings/presentation/bloc/app_settings_bloc.da
 ///
 /// ```dart
 /// showDialog(context: context, builder: (_) => const AddWeightSheet());
-//// ```
+///// ```
 class AddWeightSheet extends StatefulWidget {
   /// The optional initial date/time for the measurement.
   final DateTime? initialDate;
@@ -31,7 +31,7 @@ class AddWeightSheet extends StatefulWidget {
   State<AddWeightSheet> createState() => _AddWeightSheetState();
 }
 
-//// The state owning the form controllers, selected date/time, and save flow.
+///// The state owning the form controllers, selected date/time, and save flow.
 class _AddWeightSheetState extends State<AddWeightSheet> {
   final _formKey = GlobalKey<FormState>();
   final _weightController = TextEditingController();
@@ -74,7 +74,7 @@ class _AddWeightSheetState extends State<AddWeightSheet> {
   );
 
   /// Shows the date picker and validates that the combined selection is not
-  //// in the future.
+  ///// in the future.
   Future<void> _pickDate(BuildContext context) async {
     final now = DateTime.now();
     final picked = await showDatePicker(
@@ -93,7 +93,7 @@ class _AddWeightSheetState extends State<AddWeightSheet> {
     }
   }
 
-  //// Shows the time picker and validates the combined selection.
+  ///// Shows the time picker and validates the combined selection.
   Future<void> _pickTime(BuildContext context) async {
     final picked = await showTimePicker(
       context: context,

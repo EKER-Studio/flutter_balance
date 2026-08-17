@@ -1,5 +1,6 @@
 /// Pure utility functions for converting and formatting metric and imperial units.
 
+
 import 'package:balance/core/models/measurement_unit.dart';
 
 /// Converts a body weight from kilograms to pounds (lbs).
@@ -25,7 +26,7 @@ double lbsToKg(double lbs) => lbs / 2.20462;
 /// the half-open range `[0, 12)` and negative inputs truncate toward zero.
 ///
 /// @param cm Height in centimeters.
-//// Returns the pair `[feet, remainingInches]`.
+///// Returns the pair `[feet, remainingInches]`.
 List<double> cmToFeetInches(double cm) {
   final totalInches = cm / 2.54;
   final feet = (totalInches / 12).truncateToDouble();

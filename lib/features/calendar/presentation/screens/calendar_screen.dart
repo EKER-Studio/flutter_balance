@@ -1,5 +1,6 @@
 /// The calendar tab: a paged monthly grid paired with a selected-day details section.
 
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
@@ -30,7 +31,7 @@ import 'package:balance/core/presentation/core/clamped_layout.dart';
 /// layouts stack the sections; landscape splits them side by side, though
 /// content is clamped to 600 px wide, so wide-landscape layouts are
 /// unreachable. Days whose measurements reach the target weight are marked
-//// as goal-achieved. Serves as the second tab in the main navigation.
+///// as goal-achieved. Serves as the second tab in the main navigation.
 class CalendarScreen extends StatefulWidget {
   const CalendarScreen({super.key});
 
@@ -38,7 +39,7 @@ class CalendarScreen extends StatefulWidget {
   State<CalendarScreen> createState() => _CalendarScreenState();
 }
 
-//// Tracks the focused month, the selected day, and month paging state for [CalendarScreen].
+///// Tracks the focused month, the selected day, and month paging state for [CalendarScreen].
 class _CalendarScreenState extends State<CalendarScreen> {
   late DateTime _focusedMonth;
   late DateTime _selectedDate;

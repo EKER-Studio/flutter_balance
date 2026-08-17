@@ -31,7 +31,7 @@ import 'package:balance/features/weight/domain/entities/weight_entry.dart';
 /// ID,Data,Weight (kg),Note
 /// 1,2024-01-15 07:30,75.2,Morning measurement
 /// 2,2024-01-16 07:30,75.0,
-//// ```
+///// ```
 class CsvImporter {
   /// The attempted date formats in order of precedence.
   static final List<DateFormat> _dateFormats = [

@@ -14,7 +14,7 @@ import 'package:balance/core/presentation/core/clamped_layout.dart';
 /// or lbs, converted internally); invalid values disable the Next button and
 /// show an inline error. When a valid target and the previous step's initial
 /// weight are present, a delta line shows how far the target is, or a goal
-//// achieved notice when it is already met.
+///// achieved notice when it is already met.
 class StepTargetWeight extends StatefulWidget {
   /// The user's active measurement unit system.
   final MeasurementUnit unit;

@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 /// A responsive layout helper that clamps content width to 600 px on large screens.
 ///
 /// A stateless widget that constrains its [child] to a maximum width of 600px and
-//// centers it.
+///// centers it.
 class ClampedLayout extends StatelessWidget {
   /// The widget to constrain and center.
   final Widget child;

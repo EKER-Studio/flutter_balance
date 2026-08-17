@@ -19,7 +19,7 @@ import 'package:balance/features/weight/data/models/weight_entry_model.dart';
 /// 1. Increment database version name suffix (e.g. `balance_v2`).
 /// 2. If initialization fails due to schema corruption or file lock issues,
 ///    [initialize] captures the failure, creates a timestamped backup of the
-////    corrupted database, cleans up stale locks, and safely re-opens a fresh instance.
+/////    corrupted database, cleans up stale locks, and safely re-opens a fresh instance.
 class DatabaseModule {
   /// The versioned database name.
   ///

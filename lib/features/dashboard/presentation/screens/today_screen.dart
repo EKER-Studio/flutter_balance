@@ -38,7 +38,7 @@ import 'package:balance/core/presentation/widgets/state_message_card.dart';
 /// A [LayoutBuilder] at 600px and wider arranges the cards side by side, but
 /// this wide branch is unreachable in practice because [ClampedLayout] already
 /// clamps the body to 600px minus its padding, so the stacked layout is always
-//// used.
+///// used.
 class TodayScreen extends StatelessWidget {
   /// An optional callback to navigate to settings when the profile icon is pressed.
   final VoidCallback? onNavigateToSettings;
@@ -234,7 +234,7 @@ class TodayScreen extends StatelessWidget {
     };
   }
 
-  //// Dispatches [RefreshWeightData] and waits up to two seconds for the refresh to settle.
+  ///// Dispatches [RefreshWeightData] and waits up to two seconds for the refresh to settle.
   Future<void> _refreshWeightData(BuildContext context) async {
     final bloc = context.read<WeightBloc>();
     bloc.add(const RefreshWeightData());
@@ -276,7 +276,7 @@ class TodayScreen extends StatelessWidget {
   }
 }
 
-//// A widget that wraps its [child] in a pull-to-refresh indicator backed by [onRefresh].
+///// A widget that wraps its [child] in a pull-to-refresh indicator backed by [onRefresh].
 class _RefreshableTodayBody extends StatelessWidget {
   /// A callback invoked when the user pulls to refresh.
   final Future<void> Function() onRefresh;
@@ -320,7 +320,7 @@ class _RefreshableTodayBody extends StatelessWidget {
   }
 }
 
-//// A card containing the weight trend line chart and its period filter pills.
+///// A card containing the weight trend line chart and its period filter pills.
 class _WeightTrendChartCard extends StatelessWidget {
   /// The entries to plot, pre-filtered by [period].
   final List<WeightEntry> entries;
@@ -401,7 +401,7 @@ class _WeightTrendChartCard extends StatelessWidget {
   }
 }
 
-//// A row of selectable period pills for the chart.
+///// A row of selectable period pills for the chart.
 class _ChartPeriodFilters extends StatelessWidget {
   /// The currently selected period.
   final TimePeriod period;
@@ -445,7 +445,7 @@ class _ChartPeriodFilters extends StatelessWidget {
   }
 }
 
-//// A single pill-shaped period selector button.
+///// A single pill-shaped period selector button.
 class _PeriodPill extends StatelessWidget {
   /// The localized label of the period.
   final String label;
@@ -497,7 +497,7 @@ class _PeriodPill extends StatelessWidget {
 ///
 /// The X axis is the entry index and the Y axis holds weights converted to
 /// [measurementUnit]; tooltips convert the plotted value back to kilograms for
-//// formatting.
+///// formatting.
 class _WeightLineChart extends StatelessWidget {
   /// The daily-aggregated entries to plot.
   final List<WeightEntry> entries;
@@ -718,7 +718,7 @@ class _WeightLineChart extends StatelessWidget {
   }
 }
 
-//// A card with a rotating daily weight-logging tip.
+///// A card with a rotating daily weight-logging tip.
 class _DailyTipCard extends StatelessWidget {
   /// Creates a [_DailyTipCard].
   const _DailyTipCard();
@@ -769,7 +769,7 @@ class _DailyTipCard extends StatelessWidget {
 
 /// An inline banner shown above the card stack when the current state carries an error.
 ///
-//// Offers a retry action.
+///// Offers a retry action.
 class _InlineErrorBanner extends StatelessWidget {
   /// The typed error to surface to the user.
   final WeightErrorType errorType;

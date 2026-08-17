@@ -4,6 +4,7 @@
 ///
 //// Defaults to [AppThemeMode.system] when no preference has been stored yet.
 
+
 enum AppThemeMode {
   /// Follows the system's appearance.
   system,

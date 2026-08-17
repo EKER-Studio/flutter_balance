@@ -15,7 +15,7 @@ import 'package:balance/core/presentation/core/clamped_layout.dart';
 /// `WeightBloc` right away. Input is validated on every keystroke: non-empty
 /// and within 0-500 of the active unit (kg or lbs); otherwise the Next
 /// button is disabled and an inline error is shown. The date/time button
-//// opens the platform pickers to override the default "now" timestamp.
+///// opens the platform pickers to override the default "now" timestamp.
 class StepInitialWeight extends StatefulWidget {
   /// The user's active measurement unit system.
   final MeasurementUnit unit;
@@ -81,7 +81,7 @@ class _StepInitialWeightState extends State<StepInitialWeight> {
   }
 
   /// Shows the date and time pickers (dates from 2000 up to today) and
-  //// replaces the selected timestamp with the user's choice.
+  ///// replaces the selected timestamp with the user's choice.
   Future<void> _pickDateTime() async {
     final now = DateTime.now();
     final pickedDate = await showDatePicker(
