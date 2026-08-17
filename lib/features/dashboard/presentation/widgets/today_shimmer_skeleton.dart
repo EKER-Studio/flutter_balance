@@ -1,6 +1,9 @@
+/// Animated placeholder skeletons shown while the Today screen loads.
+
+
 import 'package:flutter/material.dart';
 
-/// Reusable Material 3 shimmer loading skeleton widget for the Today screen layout.
+//// Reusable Material 3 shimmer loading skeleton widget for the Today screen layout.
 class TodayShimmerSkeleton extends StatefulWidget {
   /// Creates a [TodayShimmerSkeleton] widget.
   const TodayShimmerSkeleton({super.key});

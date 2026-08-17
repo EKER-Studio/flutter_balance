@@ -1,3 +1,6 @@
+/// The Today tab: daily weight summary, trend chart, tips, and quick add-weight flow.
+
+
 import 'dart:math' as math;
 
 import 'package:fl_chart/fl_chart.dart';
@@ -22,6 +25,20 @@ import 'package:balance/core/presentation/widgets/app_top_bar.dart';
 import 'package:balance/core/presentation/widgets/state_message_card.dart';
 
 /// A screen displaying the daily summary, BMI, goal progress, and weight trend.
+///
+/// The body reflects the current [WeightState]: a shimmer skeleton
+/// ([TodayShimmerSkeleton]) while loading, a welcome or error
+/// [StateMessageCard] when there are no entries (or a read failure), and
+/// otherwise a card stack made of the [HealthSummaryCard], the weight trend
+/// chart with period pills, and a daily tip card. The [WeightBloc] feeds all
+/// data: `entries` are assumed newest-first, `filteredEntries` (period-filtered
+/// per [TimePeriod]) drive the chart, and the error snackbar/retry actions
+/// dispatch [SubscribeToWeightChanges].
+///
+/// A [LayoutBuilder] at 600px and wider arranges the cards side by side, but
+/// this wide branch is unreachable in practice because [ClampedLayout] already
+/// clamps the body to 600px minus its padding, so the stacked layout is always
+//// used.
 class TodayScreen extends StatelessWidget {
   /// An optional callback to navigate to settings when the profile icon is pressed.
   final VoidCallback? onNavigateToSettings;
@@ -217,7 +234,7 @@ class TodayScreen extends StatelessWidget {
     };
   }
 
-  /// Dispatches [RefreshWeightData] and waits up to two seconds for the refresh to settle.
+  //// Dispatches [RefreshWeightData] and waits up to two seconds for the refresh to settle.
   Future<void> _refreshWeightData(BuildContext context) async {
     final bloc = context.read<WeightBloc>();
     bloc.add(const RefreshWeightData());
@@ -259,7 +276,7 @@ class TodayScreen extends StatelessWidget {
   }
 }
 
-/// A widget that wraps its [child] in a pull-to-refresh indicator backed by [onRefresh].
+//// A widget that wraps its [child] in a pull-to-refresh indicator backed by [onRefresh].
 class _RefreshableTodayBody extends StatelessWidget {
   /// A callback invoked when the user pulls to refresh.
   final Future<void> Function() onRefresh;
@@ -303,7 +320,7 @@ class _RefreshableTodayBody extends StatelessWidget {
   }
 }
 
-/// A card containing the weight trend line chart and its period filter pills.
+//// A card containing the weight trend line chart and its period filter pills.
 class _WeightTrendChartCard extends StatelessWidget {
   /// The entries to plot, pre-filtered by [period].
   final List<WeightEntry> entries;
@@ -384,7 +401,7 @@ class _WeightTrendChartCard extends StatelessWidget {
   }
 }
 
-/// A row of selectable period pills for the chart.
+//// A row of selectable period pills for the chart.
 class _ChartPeriodFilters extends StatelessWidget {
   /// The currently selected period.
   final TimePeriod period;
@@ -428,7 +445,7 @@ class _ChartPeriodFilters extends StatelessWidget {
   }
 }
 
-/// A single pill-shaped period selector button.
+//// A single pill-shaped period selector button.
 class _PeriodPill extends StatelessWidget {
   /// The localized label of the period.
   final String label;
@@ -477,6 +494,10 @@ class _PeriodPill extends StatelessWidget {
 }
 
 /// A curved line chart of daily-aggregated weight values with touch tooltips.
+///
+/// The X axis is the entry index and the Y axis holds weights converted to
+/// [measurementUnit]; tooltips convert the plotted value back to kilograms for
+//// formatting.
 class _WeightLineChart extends StatelessWidget {
   /// The daily-aggregated entries to plot.
   final List<WeightEntry> entries;
@@ -631,6 +652,10 @@ class _WeightLineChart extends StatelessWidget {
     );
   }
 
+  /// Builds the bottom axis label for the entry at [value].
+  ///
+  /// Renders the weekday for integer tick values inside the entry list;
+  /// fractional or out-of-range values render nothing.
   Widget _buildBottomTitle(
     BuildContext context,
     double value,
@@ -656,14 +681,22 @@ class _WeightLineChart extends StatelessWidget {
     );
   }
 
+  /// Converts a weight in kilograms to the display [unit].
   static double _displayWeight(double weightKg, MeasurementUnit unit) {
     return unit == MeasurementUnit.imperial ? kgToLbs(weightKg) : weightKg;
   }
 
+  /// Rounds [value] down to the nearest multiple of 0.5.
   static double _roundDownToHalf(double value) => (value * 2).floor() / 2;
 
+  /// Rounds [value] up to the nearest multiple of 0.5.
   static double _roundUpToHalf(double value) => (value * 2).ceil() / 2;
 
+  /// Chooses the bottom-axis tick interval so roughly four intervals span the
+  /// chart.
+  ///
+  /// Returns 1 for a single entry, otherwise the smallest whole-number
+  /// interval covering the entry range in at most four steps.
   static double _bottomInterval(int length) {
     if (length <= 1) {
       return 1;
@@ -685,7 +718,7 @@ class _WeightLineChart extends StatelessWidget {
   }
 }
 
-/// A card with a rotating daily weight-logging tip.
+//// A card with a rotating daily weight-logging tip.
 class _DailyTipCard extends StatelessWidget {
   /// Creates a [_DailyTipCard].
   const _DailyTipCard();
@@ -736,7 +769,7 @@ class _DailyTipCard extends StatelessWidget {
 
 /// An inline banner shown above the card stack when the current state carries an error.
 ///
-/// Offers a retry action.
+//// Offers a retry action.
 class _InlineErrorBanner extends StatelessWidget {
   /// The typed error to surface to the user.
   final WeightErrorType errorType;

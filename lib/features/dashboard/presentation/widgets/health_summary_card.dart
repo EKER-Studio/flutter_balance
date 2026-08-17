@@ -1,3 +1,6 @@
+/// The Today-screen summary card: latest measurement, BMI badge, and goal progress.
+
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
@@ -13,6 +16,16 @@ import 'package:balance/features/settings/presentation/widgets/target_weight_dia
 import 'package:balance/features/weight/presentation/widgets/bmi_legend_dialog.dart';
 
 /// An integrated summary card displaying the latest weight, BMI, and goal progress.
+///
+/// Sections: the latest measurement (converted value, unit label, relative
+/// timestamp), a tappable BMI badge that opens the [BmiLegendDialog], and —
+/// when a target weight is configured — a goal-progress row that opens the
+/// [TargetWeightDialog]. Height, target weight, and unit come from the
+/// [AppSettingsBloc]; the measurement itself is passed in.
+///
+/// The whole card collapses into a single semantics node: the label joins the
+/// localized measurement, BMI category, and goal strings with `ExcludeSemantics`
+//// hiding the visual children from screen readers.
 class HealthSummaryCard extends StatelessWidget {
   /// The latest recorded weight in kilograms.
   final double latestWeightKg;
@@ -276,7 +289,12 @@ class HealthSummaryCard extends StatelessWidget {
 
   /// Builds the goal progress section.
   ///
-  /// Includes the remaining weight text and a progress bar. Tapping opens the [TargetWeightDialog].
+  /// Shows the goal target, the remaining difference (or a "goal achieved"
+  /// message once `currentWeightKg` drops to `targetWeightKg` or below), and a
+  /// progress bar. Progress maps the remaining difference onto a fixed 20 kg /
+  /// 40 lb reference range: reaching the goal yields 100%, exceeding the range
+  /// floors at 0%, and the bar is always drawn at least 5% full. Tapping opens
+  /// the [TargetWeightDialog].
   Widget _buildGoalProgress(
     BuildContext context,
     double targetWeightKg,
@@ -298,14 +316,11 @@ class HealthSummaryCard extends StatelessWidget {
         ? kgToLbs(differenceKg.abs())
         : differenceKg.abs();
 
-    // Progress maps the remaining difference onto a fixed 20kg / 40lb reference
-    // range: reaching the target yields 100%, exceeding the range floors at 0%.
     final maxDifference = unit == MeasurementUnit.imperial ? 40.0 : 20.0;
     double progress = 1.0;
     if (!isAchieved) {
       progress = 1.0 - (displayDifference / maxDifference).clamp(0.0, 1.0);
     }
-    // Floor progress at 5% so the bar stays visible.
     progress = progress.clamp(0.05, 1.0);
 
     final goalTargetStr = '${displayTarget.toStringAsFixed(1)} $unitLabel';
@@ -371,7 +386,7 @@ class HealthSummaryCard extends StatelessWidget {
     );
   }
 
-  /// Opens the [TargetWeightDialog] and dispatches the resulting target weight change to the [AppSettingsBloc].
+  //// Opens the [TargetWeightDialog] and dispatches the resulting target weight change to the [AppSettingsBloc].
   Future<void> _openTargetWeightDialog(
     BuildContext context,
     double? targetWeightKg,
