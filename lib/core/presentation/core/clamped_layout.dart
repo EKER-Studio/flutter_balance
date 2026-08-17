@@ -11,14 +11,22 @@ class ClampedLayout extends StatelessWidget {
   /// Optional uniform padding applied inside the clamped area.
   final EdgeInsetsGeometry? padding;
 
-  /// Creates a [ClampedLayout] with the given [child] and optional [padding].
-  const ClampedLayout({super.key, required this.child, this.padding});
+  /// The maximum allowed width for the clamped content box.
+  final double maxWidth;
+
+  /// Creates a [ClampedLayout] with the given [child], optional [padding], and [maxWidth].
+  const ClampedLayout({
+    super.key,
+    required this.child,
+    this.padding,
+    this.maxWidth = 600,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Center(
       child: ConstrainedBox(
-        constraints: const BoxConstraints(maxWidth: 600),
+        constraints: BoxConstraints(maxWidth: maxWidth),
         child: padding != null
             ? Padding(padding: padding!, child: child)
             : child,

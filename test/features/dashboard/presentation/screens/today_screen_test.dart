@@ -760,4 +760,93 @@ void main() {
     expect(find.text('Sat', skipOffstage: false), findsWidgets);
     expect(find.text('Sun', skipOffstage: false), findsWidgets);
   });
+
+  testWidgets(
+    'renders split two-column layout in landscape orientation (800x400)',
+    (tester) async {
+      tester.view.physicalSize = const Size(800, 400);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+
+      final entry = WeightEntry(
+        id: 1,
+        weightKg: 72.5,
+        dateTime: DateTime.now(),
+      );
+
+      when(() => weightBloc.state).thenReturn(
+        WeightLoaded(
+          entries: [entry],
+          filteredEntries: [entry],
+          timePeriod: TimePeriod.month,
+          heightCm: 175.0,
+        ),
+      );
+      when(() => weightBloc.stream).thenAnswer(
+        (_) => Stream.value(
+          WeightLoaded(
+            entries: [entry],
+            filteredEntries: [entry],
+            timePeriod: TimePeriod.month,
+            heightCm: 170.0,
+          ),
+        ),
+      );
+
+      await tester.pumpWidget(createTestWidget(const TodayScreen()));
+      await tester.pumpAndSettle();
+
+      expect(find.text('25.1 BMI', skipOffstage: false), findsOneWidget);
+      expect(find.text('Weight trend', skipOffstage: false), findsOneWidget);
+      expect(
+        find.text('Last measurement', skipOffstage: false),
+        findsOneWidget,
+      );
+      expect(find.byType(LineChart), findsOneWidget);
+      expect(find.byType(FloatingActionButton), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    },
+  );
+
+  testWidgets(
+    'renders without RenderFlex overflow in compact landscape viewport (640x320)',
+    (tester) async {
+      tester.view.physicalSize = const Size(640, 320);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+
+      final entry = WeightEntry(
+        id: 1,
+        weightKg: 72.5,
+        dateTime: DateTime.now(),
+      );
+
+      when(() => weightBloc.state).thenReturn(
+        WeightLoaded(
+          entries: [entry],
+          filteredEntries: [entry],
+          timePeriod: TimePeriod.month,
+          heightCm: 175.0,
+        ),
+      );
+      when(() => weightBloc.stream).thenAnswer(
+        (_) => Stream.value(
+          WeightLoaded(
+            entries: [entry],
+            filteredEntries: [entry],
+            timePeriod: TimePeriod.month,
+            heightCm: 170.0,
+          ),
+        ),
+      );
+
+      await tester.pumpWidget(createTestWidget(const TodayScreen()));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Weight trend', skipOffstage: false), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    },
+  );
 }

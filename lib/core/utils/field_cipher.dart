@@ -70,11 +70,17 @@ class FieldCipher {
       final hmac = Hmac(sha256, keyBytes);
       final computedMac = hmac.convert(ivAndCiphertext).bytes;
 
-      if (_constantTimeEquals(macBytes, computedMac)) {
-        final iv = enc.IV(ivBytes);
-        final encrypted = enc.Encrypted(cipherBytes);
-        final encrypter = enc.Encrypter(enc.AES(encKey, mode: enc.AESMode.cbc));
+      if (!_constantTimeEquals(macBytes, computedMac)) {
+        throw const FormatException('HMAC integrity verification failed');
+      }
+
+      final iv = enc.IV(ivBytes);
+      final encrypted = enc.Encrypted(cipherBytes);
+      final encrypter = enc.Encrypter(enc.AES(encKey, mode: enc.AESMode.cbc));
+      try {
         return encrypter.decrypt(encrypted, iv: iv);
+      } catch (e) {
+        throw FormatException('Decryption failed: ${e.runtimeType}');
       }
     }
 

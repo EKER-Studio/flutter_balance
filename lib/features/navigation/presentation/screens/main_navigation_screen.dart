@@ -11,13 +11,13 @@ import 'package:balance/features/dashboard/presentation/screens/today_screen.dar
 import 'package:balance/l10n/app_localizations.dart';
 import 'package:balance/features/settings/presentation/screens/settings_screen.dart';
 
-/// Main container screen featuring a 4-tab Material 3 Bottom Navigation Bar.
+/// Main container screen featuring adaptive navigation (NavigationBar in portrait, NavigationRail in landscape).
 ///
 /// The destinations are ordered Today, Calendar, Statistics, and Settings and
 /// match the screen list order, so the selected index directly selects the
 /// visible child of the [IndexedStack] — swapping tabs without losing per-tab
 /// state. Tab switching, focus traversal, and keyboard handling are delegated
-/// to the [NavigationBar]'s built-in semantics via `onDestinationSelected`;
+/// to the navigation bar/rail semantics via `onDestinationSelected`;
 /// `home`-style navigation from the Today screen jumps to the Settings tab.
 class MainNavigationScreen extends StatefulWidget {
   /// Creates [MainNavigationScreen].
@@ -31,6 +31,18 @@ class MainNavigationScreen extends StatefulWidget {
 class _MainNavigationScreenState extends State<MainNavigationScreen>
     with WidgetsBindingObserver {
   int _currentIndex = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
 
   /// Switches the active tab to [index].
   void _onTabSelected(int index) {
@@ -62,8 +74,85 @@ class _MainNavigationScreenState extends State<MainNavigationScreen>
       const SettingsScreen(),
     ];
 
+    final isLandscape =
+        MediaQuery.orientationOf(context) == Orientation.landscape;
+
+    final body = IndexedStack(index: _currentIndex, children: screens);
+
+    if (isLandscape) {
+      return Scaffold(
+        body: SafeArea(
+          child: Row(
+            children: [
+              NavigationRailTheme(
+                data: NavigationRailThemeData(
+                  backgroundColor: colorScheme.surfaceContainer,
+                  indicatorColor: colorScheme.secondaryContainer,
+                  selectedIconTheme: IconThemeData(
+                    color: colorScheme.onSecondaryContainer,
+                  ),
+                  unselectedIconTheme: IconThemeData(
+                    color: colorScheme.onSurfaceVariant,
+                  ),
+                  selectedLabelTextStyle: textTheme.labelMedium?.copyWith(
+                    color: colorScheme.onSurface,
+                    fontWeight: FontWeight.w500,
+                  ),
+                  unselectedLabelTextStyle: textTheme.labelMedium?.copyWith(
+                    color: colorScheme.onSurfaceVariant,
+                  ),
+                ),
+                child: NavigationRail(
+                  selectedIndex: _currentIndex,
+                  onDestinationSelected: _onTabSelected,
+                  labelType: NavigationRailLabelType.all,
+                  backgroundColor: colorScheme.surfaceContainer,
+                  destinations: [
+                    NavigationRailDestination(
+                      icon: Semantics(
+                        selected: _currentIndex == 0,
+                        label: l10n.todayTabHomeSemanticsLabel,
+                        child: const Icon(Icons.today_outlined),
+                      ),
+                      selectedIcon: Semantics(
+                        selected: _currentIndex == 0,
+                        label: l10n.todayTabHomeSemanticsLabel,
+                        child: const Icon(Icons.today, fill: 1),
+                      ),
+                      label: Text(l10n.tabToday),
+                    ),
+                    NavigationRailDestination(
+                      icon: const Icon(Icons.calendar_month_outlined),
+                      selectedIcon: const Icon(Icons.calendar_month),
+                      label: Text(l10n.tabCalendar),
+                    ),
+                    NavigationRailDestination(
+                      icon: const Icon(Icons.insights_outlined),
+                      selectedIcon: const Icon(Icons.insights),
+                      label: Text(l10n.tabStats),
+                    ),
+                    NavigationRailDestination(
+                      icon: const Icon(Icons.settings_outlined),
+                      selectedIcon: const Icon(Icons.settings),
+                      label: Text(l10n.tabSettings),
+                    ),
+                  ],
+                ),
+              ),
+              VerticalDivider(
+                width: 1,
+                thickness: 1,
+                color: colorScheme.outlineVariant.withValues(alpha: 0.2),
+              ),
+              Expanded(child: body),
+            ],
+          ),
+        ),
+      );
+    }
+
     return Scaffold(
-      body: IndexedStack(index: _currentIndex, children: screens),
+      body: body,
       bottomNavigationBar: DecoratedBox(
         decoration: BoxDecoration(
           color: colorScheme.surfaceContainer,

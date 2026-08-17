@@ -74,59 +74,80 @@ void main() {
     );
   }
 
-  group('MainNavigationScreen Tests', () {
+  group('MainNavigationScreen Portrait Tests', () {
     testWidgets('renders the shell when constructed non-const', (tester) async {
+      tester.view.physicalSize = const Size(400, 800);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.reset);
+
       await tester.pumpWidget(buildNonConstSubject());
       await tester.pumpAndSettle();
 
       expect(find.byType(NavigationBar), findsOneWidget);
+      expect(find.byType(NavigationRail), findsNothing);
       expect(find.text('Today'), findsWidgets);
       expect(tester.takeException(), isNull);
     });
 
-    testWidgets('renders all 4 bottom navigation tabs', (tester) async {
+    testWidgets('renders all 4 bottom navigation tabs in portrait', (
+      tester,
+    ) async {
+      tester.view.physicalSize = const Size(400, 800);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.reset);
+
       await tester.pumpWidget(buildSubject());
       await tester.pumpAndSettle();
 
       expect(find.byType(NavigationBar), findsOneWidget);
+      expect(find.byType(NavigationRail), findsNothing);
       expect(find.text('Today'), findsWidgets);
       expect(find.text('Calendar'), findsOneWidget);
       expect(find.text('Statistics'), findsOneWidget);
       expect(find.text('Settings'), findsOneWidget);
     });
 
-    testWidgets('switches through all 4 tabs when destinations are selected', (
-      tester,
-    ) async {
-      await tester.pumpWidget(buildSubject());
-      await tester.pumpAndSettle();
+    testWidgets(
+      'switches through all 4 tabs in portrait when destinations are selected',
+      (tester) async {
+        tester.view.physicalSize = const Size(400, 800);
+        tester.view.devicePixelRatio = 1.0;
+        addTearDown(tester.view.reset);
 
-      // Default active tab is Today
-      expect(find.byType(TodayScreen), findsOneWidget);
+        await tester.pumpWidget(buildSubject());
+        await tester.pumpAndSettle();
 
-      // Tap Calendar tab
-      await tester.tap(find.text('Calendar'));
-      await tester.pumpAndSettle();
-      expect(find.byType(CalendarScreen), findsOneWidget);
+        // Default active tab is Today
+        expect(find.byType(TodayScreen), findsOneWidget);
 
-      // Tap Statistics tab
-      await tester.tap(find.text('Statistics'));
-      await tester.pumpAndSettle();
-      expect(find.byType(StatisticsScreen), findsOneWidget);
+        // Tap Calendar tab
+        await tester.tap(find.text('Calendar'));
+        await tester.pumpAndSettle();
+        expect(find.byType(CalendarScreen), findsOneWidget);
 
-      // Tap Settings tab
-      await tester.tap(find.text('Settings'));
-      await tester.pumpAndSettle();
-      expect(find.byType(SettingsScreen), findsOneWidget);
+        // Tap Statistics tab
+        await tester.tap(find.text('Statistics'));
+        await tester.pumpAndSettle();
+        expect(find.byType(StatisticsScreen), findsOneWidget);
 
-      // Tap Today tab back
-      await tester.tap(find.widgetWithText(NavigationDestination, 'Today'));
-      await tester.pumpAndSettle();
-      expect(find.byType(TodayScreen), findsOneWidget);
-    });
+        // Tap Settings tab
+        await tester.tap(find.text('Settings'));
+        await tester.pumpAndSettle();
+        expect(find.byType(SettingsScreen), findsOneWidget);
+
+        // Tap Today tab back
+        await tester.tap(find.widgetWithText(NavigationDestination, 'Today'));
+        await tester.pumpAndSettle();
+        expect(find.byType(TodayScreen), findsOneWidget);
+      },
+    );
 
     testWidgets('renders the focus overlay when a destination is focused via '
         'keyboard traversal', (tester) async {
+      tester.view.physicalSize = const Size(400, 800);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.reset);
+
       await tester.pumpWidget(buildSubject());
       await tester.pumpAndSettle();
 
@@ -139,5 +160,112 @@ void main() {
 
       expect(tester.takeException(), isNull);
     });
+  });
+
+  group('MainNavigationScreen Landscape Tests', () {
+    testWidgets('renders NavigationRail and VerticalDivider in landscape', (
+      tester,
+    ) async {
+      tester.view.physicalSize = const Size(800, 400);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.reset);
+
+      await tester.pumpWidget(buildSubject());
+      await tester.pumpAndSettle();
+
+      expect(find.byType(NavigationRail), findsOneWidget);
+      expect(find.byType(NavigationBar), findsNothing);
+      expect(find.byType(VerticalDivider), findsOneWidget);
+      expect(find.text('Today'), findsWidgets);
+      expect(find.text('Calendar'), findsOneWidget);
+      expect(find.text('Statistics'), findsOneWidget);
+      expect(find.text('Settings'), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    });
+
+    testWidgets(
+      'switches through all 4 tabs in landscape when rail destinations are selected',
+      (tester) async {
+        tester.view.physicalSize = const Size(800, 400);
+        tester.view.devicePixelRatio = 1.0;
+        addTearDown(tester.view.reset);
+
+        await tester.pumpWidget(buildSubject());
+        await tester.pumpAndSettle();
+
+        // Default active tab is Today
+        expect(find.byType(TodayScreen), findsOneWidget);
+
+        // Tap Calendar tab
+        await tester.tap(find.text('Calendar'));
+        await tester.pumpAndSettle();
+        expect(find.byType(CalendarScreen), findsOneWidget);
+
+        // Tap Statistics tab
+        await tester.tap(find.text('Statistics'));
+        await tester.pumpAndSettle();
+        expect(find.byType(StatisticsScreen), findsOneWidget);
+
+        // Tap Settings tab
+        await tester.tap(find.text('Settings'));
+        await tester.pumpAndSettle();
+        expect(find.byType(SettingsScreen), findsOneWidget);
+
+        // Tap Today tab back
+        await tester.tap(find.text('Today').first);
+        await tester.pumpAndSettle();
+        expect(find.byType(TodayScreen), findsOneWidget);
+      },
+    );
+
+    testWidgets('supports RTL layout in landscape without overflow', (
+      tester,
+    ) async {
+      tester.view.physicalSize = const Size(800, 400);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.reset);
+
+      await tester.pumpWidget(
+        MultiBlocProvider(
+          providers: [
+            BlocProvider(create: (_) => AppSettingsBloc()),
+            BlocProvider(
+              create: (_) =>
+                  WeightBloc(repository: repository)
+                    ..add(const SubscribeToWeightChanges()),
+            ),
+          ],
+          child: const MaterialApp(
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            home: Directionality(
+              textDirection: TextDirection.rtl,
+              child: MainNavigationScreen(),
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.byType(NavigationRail), findsOneWidget);
+      expect(find.byType(VerticalDivider), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    });
+
+    testWidgets(
+      'renders without RenderFlex overflow on small landscape viewports (640x320)',
+      (tester) async {
+        tester.view.physicalSize = const Size(640, 320);
+        tester.view.devicePixelRatio = 1.0;
+        addTearDown(tester.view.reset);
+
+        await tester.pumpWidget(buildSubject());
+        await tester.pumpAndSettle();
+
+        expect(find.byType(NavigationRail), findsOneWidget);
+        expect(find.byType(TodayScreen), findsOneWidget);
+        expect(tester.takeException(), isNull);
+      },
+    );
   });
 }

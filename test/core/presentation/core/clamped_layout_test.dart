@@ -113,4 +113,29 @@ void main() {
     );
     expect(box.width, 400);
   });
+
+  testWidgets('clamps width to custom maxWidth when specified', (tester) async {
+    tester.view.physicalSize = const Size(1400, 800);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.reset);
+
+    await tester.pumpWidget(
+      const MaterialApp(
+        home: Scaffold(
+          body: ClampedLayout(
+            maxWidth: 1000,
+            child: SizedBox(width: 1200, height: 40),
+          ),
+        ),
+      ),
+    );
+
+    final constrained = tester.widget<ConstrainedBox>(
+      find.descendant(
+        of: find.byType(ClampedLayout),
+        matching: find.byType(ConstrainedBox),
+      ),
+    );
+    expect(constrained.constraints.maxWidth, 1000);
+  });
 }

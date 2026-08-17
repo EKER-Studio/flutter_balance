@@ -34,10 +34,9 @@ import 'package:balance/core/presentation/widgets/state_message_card.dart';
 /// per [TimePeriod]) drive the chart, and the error snackbar/retry actions
 /// dispatch [SubscribeToWeightChanges].
 ///
-/// A [LayoutBuilder] at 600px and wider arranges the cards side by side, but
-/// this wide branch is unreachable in practice because [ClampedLayout] already
-/// clamps the body to 600px minus its padding, so the stacked layout is always
-/// used.
+/// A [LayoutBuilder] or [Orientation.landscape] arranges the cards side by side
+/// on wide viewports (approx. 40-45% for summary + tips, 55-60% for chart),
+/// while portrait viewports preserve the vertical stack.
 class TodayScreen extends StatelessWidget {
   /// An optional callback to navigate to settings when the profile icon is pressed.
   final VoidCallback? onNavigateToSettings;
@@ -127,12 +126,14 @@ class TodayScreen extends StatelessWidget {
 
     final filteredEntries = _filteredEntriesFromState(state);
     final latestEntry = entries.first;
+    final isLandscape =
+        MediaQuery.orientationOf(context) == Orientation.landscape;
 
     return BlocBuilder<AppSettingsBloc, AppSettingsState>(
       builder: (context, settings) {
         return LayoutBuilder(
           builder: (context, constraints) {
-            final isWide = constraints.maxWidth >= 600;
+            final isWide = constraints.maxWidth >= 600 || isLandscape;
 
             final Widget cardStack;
             if (isWide) {
@@ -155,22 +156,29 @@ class TodayScreen extends StatelessWidget {
                         ),
                         const SizedBox(height: 16),
                         const _DailyTipCard(),
-                        const SizedBox(height: 120),
+                        const SizedBox(height: 80),
                       ],
                     ),
                   ),
                   const SizedBox(width: 16),
                   Expanded(
                     flex: 6,
-                    child: _WeightTrendChartCard(
-                      entries: filteredEntries,
-                      period: state.timePeriod,
-                      measurementUnit: settings.measurementUnit,
-                      onPeriodChanged: (period) {
-                        context.read<WeightBloc>().add(
-                          ChangeChartFilter(period),
-                        );
-                      },
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        _WeightTrendChartCard(
+                          entries: filteredEntries,
+                          period: state.timePeriod,
+                          measurementUnit: settings.measurementUnit,
+                          onPeriodChanged: (period) {
+                            context.read<WeightBloc>().add(
+                              ChangeChartFilter(period),
+                            );
+                          },
+                        ),
+                        const SizedBox(height: 80),
+                      ],
                     ),
                   ),
                 ],
@@ -205,7 +213,7 @@ class TodayScreen extends StatelessWidget {
 
             return Center(
               child: ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 900),
+                constraints: BoxConstraints(maxWidth: isWide ? 1200 : 600),
                 child: cardStack,
               ),
             );
@@ -295,6 +303,9 @@ class _RefreshableTodayBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isLandscape =
+        MediaQuery.orientationOf(context) == Orientation.landscape;
+
     return RefreshIndicator(
       onRefresh: onRefresh,
       child: CustomScrollView(
@@ -305,6 +316,7 @@ class _RefreshableTodayBody extends StatelessWidget {
             top: false,
             sliver: SliverToBoxAdapter(
               child: ClampedLayout(
+                maxWidth: isLandscape ? 1200 : 600,
                 padding: const EdgeInsets.symmetric(
                   horizontal: 16,
                   vertical: 12,

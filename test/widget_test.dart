@@ -20,6 +20,7 @@ import 'package:balance/features/weight/domain/repositories/weight_repository.da
 import 'package:balance/features/settings/presentation/bloc/app_settings_bloc.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_event.dart';
 import 'package:balance/features/settings/presentation/bloc/app_theme_mode.dart';
+import 'package:balance/features/navigation/presentation/screens/main_navigation_screen.dart';
 
 /// A test double that points [getApplicationDocumentsDirectory] at a
 /// temporary directory so [DatabaseModule.initialize] runs fully on disk.
@@ -112,7 +113,7 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(find.byType(NavigationBar), findsOneWidget);
+    expect(find.byType(MainNavigationScreen), findsOneWidget);
     expect(find.text('Today'), findsWidgets);
 
     settingsBloc.close();
@@ -135,7 +136,7 @@ void main() {
       await tester.pumpAndSettle();
 
       // Verify main screen navigation.
-      expect(find.byType(NavigationBar), findsOneWidget);
+      expect(find.byType(MainNavigationScreen), findsOneWidget);
 
       // 2. Act: Reset app settings (simulating "Wipe Data")
       settingsBloc.add(const ResetAppSettings());
@@ -144,7 +145,7 @@ void main() {
       await tester.pump(const Duration(milliseconds: 300));
 
       // 3. Assert: Verify we are back on the Onboarding Screen
-      expect(find.byType(NavigationBar), findsNothing);
+      expect(find.byType(MainNavigationScreen), findsNothing);
       expect(find.text('Welcome to Balance'), findsOneWidget);
       expect(find.text('Units & Height'), findsOneWidget);
 
@@ -483,7 +484,7 @@ void main() {
         );
         await tester.pumpAndSettle();
         await tester.pump(const Duration(milliseconds: 300));
-        expect(find.byType(NavigationBar), findsOneWidget);
+        expect(find.byType(MainNavigationScreen), findsOneWidget);
 
         tester.binding.handleAppLifecycleStateChanged(
           AppLifecycleState.resumed,
