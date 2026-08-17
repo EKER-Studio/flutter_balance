@@ -60,9 +60,6 @@ svg_to_png app_icon_monochrome app_icon_monochrome
 svg_to_png splash_light        splash_light
 svg_to_png splash_dark         splash_dark
 
-# Splash korzysta z istniejących, właściwych źródeł.
-cp "$ICON_DIR/app_icon_foreground.png" "$ICON_DIR/splash_dark.png"
-
 # ------------------------------------------------------------
 # Flutter
 # ------------------------------------------------------------

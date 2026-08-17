@@ -78,27 +78,6 @@ dev_dependencies:
   flutter_launcher_icons: ^0.14.1
   permission_handler_platform_interface: ^4.4.0
 
-flutter_launcher_icons:
-  android: true
-  ios: true
-  remove_alpha_ios: true
-
-  # 1. Standard Icon (iOS Light Mode / Legacy iOS / Fallback)
-  image_path: "assets/icon/app_icon.png"
-
-  # 2. iOS 18+ Dark Mode
-  image_path_ios_dark: "assets/icon/app_icon_dark.png"
-
-  # 3. iOS 18+ Tinted Mode
-  image_path_ios_tinted: "assets/icon/app_icon_monochrome.png"
-  
-  # Android Adaptive Icons (API 26+)
-  adaptive_icon_background: "#FFFFFF"
-  adaptive_icon_foreground: "assets/icon/app_icon_foreground.png"
-
-  # Android 13+ Dynamic Themed Icons (Material You)
-  adaptive_icon_monochrome: "assets/icon/app_icon_monochrome.png"
-
 dependency_overrides:
   # Temporary compatibility shim pinned on 2026-08-01.
   # This override exists because isar_community_generator 3.3.2 currently limits analyzer to >=8.0.0 <11.0.0,
@@ -152,6 +131,27 @@ flutter:
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
 
+flutter_launcher_icons:
+  android: true
+  ios: true
+  remove_alpha_ios: true
+
+  # 1. Standard Icon (iOS Light Mode / Legacy iOS / Fallback)
+  image_path: "assets/icon/app_icon.png"
+
+  # 2. iOS 18+ Dark Mode
+  image_path_ios_dark: "assets/icon/app_icon_dark.png"
+
+  # 3. iOS 18+ Tinted Mode
+  image_path_ios_tinted: "assets/icon/app_icon_monochrome.png"
+  
+  # Android Adaptive Icons (API 26+)
+  adaptive_icon_background: "#FFFFFF"
+  adaptive_icon_foreground: "assets/icon/app_icon_foreground.png"
+
+  # Android 13+ Dynamic Themed Icons (Material You)
+  adaptive_icon_monochrome: "assets/icon/app_icon_monochrome.png"
+
 flutter_native_splash:
   color: "#FDF7FF"
   color_dark: "#141218"
@@ -160,10 +160,10 @@ flutter_native_splash:
   image_dark: "assets/icon/splash_dark.png"
 
   android_12:
-    image: "assets/icon/app_icon_foreground.png"
-    image_dark: "assets/icon/app_icon_foreground.png"
-    icon_background_color: "#FFFFFF"
-    icon_background_color_dark: "#111318"
+    image: "assets/icon/splash_light.png"
+    image_dark: "assets/icon/splash_dark.png"
+    icon_background_color: "#FDF7FF"
+    icon_background_color_dark: "#141218"
 
   android: true
   ios: true
