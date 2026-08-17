@@ -1,33 +1,55 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:mocktail/mocktail.dart';
+import 'package:bloc_test/bloc_test.dart';
 import 'package:balance/core/models/measurement_unit.dart';
 import 'package:balance/l10n/app_localizations.dart';
 import 'package:balance/features/settings/presentation/widgets/target_weight_dialog.dart';
+import 'package:balance/features/settings/presentation/bloc/app_settings_bloc.dart';
+import 'package:balance/features/settings/presentation/bloc/app_settings_event.dart';
+import 'package:balance/features/settings/presentation/bloc/app_settings_state.dart';
+
+class MockAppSettingsBloc extends MockBloc<AppSettingsEvent, AppSettingsState>
+    implements AppSettingsBloc {}
 
 void main() {
+  late MockAppSettingsBloc mockSettingsBloc;
+
+  setUp(() {
+    mockSettingsBloc = MockAppSettingsBloc();
+  });
+
   Future<dynamic> openDialog(
     WidgetTester tester, {
     double? currentValue,
     MeasurementUnit unit = MeasurementUnit.metric,
   }) async {
+    when(() => mockSettingsBloc.state).thenReturn(
+      AppSettingsState(targetWeight: currentValue, measurementUnit: unit),
+    );
+
     dynamic result;
     await tester.pumpWidget(
-      MaterialApp(
-        localizationsDelegates: AppLocalizations.localizationsDelegates,
-        home: Builder(
-          builder: (context) => Scaffold(
-            body: Center(
-              child: TextButton(
-                onPressed: () async {
-                  result = await showDialog<dynamic>(
-                    context: context,
-                    builder: (_) => TargetWeightDialog(
-                      currentValue: currentValue,
-                      unit: unit,
-                    ),
-                  );
-                },
-                child: const Text('open'),
+      BlocProvider<AppSettingsBloc>.value(
+        value: mockSettingsBloc,
+        child: MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          home: Builder(
+            builder: (context) => Scaffold(
+              body: Center(
+                child: TextButton(
+                  onPressed: () async {
+                    result = await showDialog<dynamic>(
+                      context: context,
+                      builder: (_) => BlocProvider.value(
+                        value: mockSettingsBloc as AppSettingsBloc,
+                        child: const TargetWeightDialog(),
+                      ),
+                    );
+                  },
+                  child: const Text('open'),
+                ),
               ),
             ),
           ),

@@ -94,31 +94,32 @@ class HealthSummaryCard extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                         Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
-                            Expanded(
-                              child: _buildLatestMeasurementInfo(
-                                context,
-                                displayWeight,
-                                unitLabel,
-                                l10n,
-                                colorScheme,
-                                textTheme,
-                              ),
-                            ),
-                            if (bmi.isFinite) ...[
-                              const SizedBox(width: 12),
-                              Flexible(
-                                child: _buildBmiBadge(
+                            Flexible(
+                              child: FittedBox(
+                                fit: BoxFit.scaleDown,
+                                alignment: Alignment.centerLeft,
+                                child: _buildLatestMeasurementInfo(
                                   context,
-                                  bmi,
-                                  category,
+                                  displayWeight,
+                                  unitLabel,
                                   l10n,
                                   colorScheme,
                                   textTheme,
                                 ),
                               ),
-                            ],
+                            ),
+                            if (bmi.isFinite)
+                              _buildBmiBadge(
+                                context,
+                                bmi,
+                                category,
+                                l10n,
+                                colorScheme,
+                                textTheme,
+                              ),
                           ],
                         ),
                         if (targetWeight != null) ...[
@@ -159,41 +160,42 @@ class HealthSummaryCard extends StatelessWidget {
   ) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
       children: [
         Text(
           l10n.lastMeasurementLabel,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
           style: textTheme.labelMedium?.copyWith(
             color: colorScheme.onSurfaceVariant,
+            letterSpacing: 0.5,
             fontWeight: FontWeight.w500,
           ),
         ),
         const SizedBox(height: 4),
-        FittedBox(
-          fit: BoxFit.scaleDown,
-          alignment: Alignment.centerLeft,
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.baseline,
-            textBaseline: TextBaseline.alphabetic,
-            children: [
-              Text(
-                displayWeight.toStringAsFixed(1),
-                style: textTheme.displayLarge?.copyWith(
-                  fontWeight: FontWeight.w700,
-                  color: colorScheme.primary,
-                  letterSpacing: -1,
-                  height: 1.1,
-                ),
+        Row(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.baseline,
+          textBaseline: TextBaseline.alphabetic,
+          children: [
+            Text(
+              displayWeight.toStringAsFixed(1),
+              style: textTheme.displayLarge?.copyWith(
+                fontWeight: FontWeight.w700,
+                color: colorScheme.primary,
+                letterSpacing: -1,
+                height: 1.1,
               ),
-              const SizedBox(width: 4),
-              Text(
-                unitLabel,
-                style: textTheme.titleLarge?.copyWith(
-                  color: colorScheme.onSurfaceVariant,
-                  fontWeight: FontWeight.w500,
-                ),
+            ),
+            const SizedBox(width: 4),
+            Text(
+              unitLabel,
+              style: textTheme.titleLarge?.copyWith(
+                color: colorScheme.onSurfaceVariant,
+                fontWeight: FontWeight.w500,
               ),
-            ],
-          ),
+            ),
+          ],
         ),
         const SizedBox(height: 4),
         Text(
@@ -240,7 +242,7 @@ class HealthSummaryCard extends StatelessWidget {
       child: Ink(
         decoration: BoxDecoration(
           color: bgColor,
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(12),
           border: Border.all(color: borderColor),
         ),
         child: InkWell(
@@ -250,11 +252,11 @@ class HealthSummaryCard extends StatelessWidget {
               builder: (context) => const BmiLegendDialog(),
             );
           },
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(12),
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
+              crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisSize: MainAxisSize.min,
               children: [
                 if (category != null)
@@ -405,16 +407,12 @@ class HealthSummaryCard extends StatelessWidget {
     double? targetWeightKg,
     MeasurementUnit unit,
   ) async {
-    final displayValue = targetWeightKg != null
-        ? (unit == MeasurementUnit.imperial
-              ? kgToLbs(targetWeightKg)
-              : targetWeightKg)
-        : null;
-
     final result = await showDialog<dynamic>(
       context: context,
-      builder: (ctx) =>
-          TargetWeightDialog(currentValue: displayValue, unit: unit),
+      builder: (ctx) => BlocProvider.value(
+        value: context.read<AppSettingsBloc>(),
+        child: const TargetWeightDialog(),
+      ),
     );
 
     if (result != null && context.mounted) {

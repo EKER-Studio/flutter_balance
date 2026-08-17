@@ -1,9 +1,12 @@
 // Dialog for setting, updating or removing the target weight.
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:balance/core/models/measurement_unit.dart';
 import 'package:balance/core/utils/unit_converter.dart';
 import 'package:balance/features/weight/domain/entities/weight_entry.dart';
+import 'package:balance/features/settings/presentation/bloc/app_settings_bloc.dart';
+import 'package:balance/features/settings/presentation/bloc/app_settings_state.dart';
 import 'package:balance/l10n/app_localizations.dart';
 
 /// A widget that provides a dialog for setting or updating the target weight.
@@ -15,18 +18,8 @@ import 'package:balance/l10n/app_localizations.dart';
 /// inclusive [WeightEntry.minWeightKg]–[WeightEntry.maxWeightKg] range;
 /// invalid input shows an inline error instead.
 class TargetWeightDialog extends StatefulWidget {
-  /// The current target weight [currentValue] in the current measurement unit.
-  final double? currentValue;
-
-  /// The active measurement [unit] (metric or imperial).
-  final MeasurementUnit unit;
-
-  /// Creates a [TargetWeightDialog] with the given [currentValue] and [unit].
-  const TargetWeightDialog({
-    super.key,
-    required this.currentValue,
-    required this.unit,
-  });
+  /// Creates a [TargetWeightDialog].
+  const TargetWeightDialog({super.key});
 
   @override
   State<TargetWeightDialog> createState() => _TargetWeightDialogState();
@@ -39,9 +32,14 @@ class _TargetWeightDialogState extends State<TargetWeightDialog> {
   @override
   void initState() {
     super.initState();
-    _controller = TextEditingController(
-      text: widget.currentValue?.toString() ?? '',
-    );
+    final state = context.read<AppSettingsBloc>().state;
+    final initialValue = state.targetWeight != null
+        ? (state.measurementUnit == MeasurementUnit.imperial
+              ? kgToLbs(state.targetWeight!)
+              : state.targetWeight!)
+        : null;
+
+    _controller = TextEditingController(text: initialValue?.toString() ?? '');
   }
 
   @override
@@ -72,7 +70,8 @@ class _TargetWeightDialogState extends State<TargetWeightDialog> {
       return;
     }
 
-    final weightKg = widget.unit == MeasurementUnit.imperial
+    final state = context.read<AppSettingsBloc>().state;
+    final weightKg = state.measurementUnit == MeasurementUnit.imperial
         ? lbsToKg(parsedWeight)
         : parsedWeight;
 
@@ -92,98 +91,100 @@ class _TargetWeightDialogState extends State<TargetWeightDialog> {
     final l10n = AppLocalizations.of(context);
     final isError = _errorText != null;
 
-    return AlertDialog(
-      icon: Icon(
-        Icons.flag_outlined,
-        size: 28,
-        color: Theme.of(context).colorScheme.primary,
-      ),
-      title: Text(l10n.targetWeightDialogTitle),
-      content: SingleChildScrollView(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            const SizedBox(height: 16),
-            TextField(
-              controller: _controller,
-              keyboardType: const TextInputType.numberWithOptions(
-                decimal: true,
-                signed: false,
-              ),
-              autofocus: true,
-              decoration: InputDecoration(
-                labelText: widget.unit == MeasurementUnit.imperial
-                    ? l10n.weightInLbLabel
-                    : l10n.weightInKgLabel,
-                hintText: l10n.weightHint,
-                enabledBorder: isError
-                    ? OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        borderSide: BorderSide(
-                          color: Theme.of(context).colorScheme.error,
-                          width: 2,
-                        ),
-                      )
-                    : null,
-                focusedBorder: isError
-                    ? OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        borderSide: BorderSide(
-                          color: Theme.of(context).colorScheme.error,
-                          width: 2,
-                        ),
-                      )
-                    : null,
-              ),
-              onChanged: (_) {
-                if (_errorText != null) {
-                  setState(() => _errorText = null);
-                }
-              },
-              onSubmitted: (_) => _handleSave(),
-            ),
-            const SizedBox(height: 8),
-            if (isError)
-              Text(
-                _errorText!,
-                style: TextStyle(
-                  color: Theme.of(context).colorScheme.error,
-                  fontSize: 12,
-                  fontWeight: FontWeight.w500,
+    return BlocBuilder<AppSettingsBloc, AppSettingsState>(
+      builder: (context, state) {
+        return AlertDialog(
+          icon: Icon(
+            Icons.flag_outlined,
+            size: 28,
+            color: Theme.of(context).colorScheme.primary,
+          ),
+          title: Text(l10n.targetWeightDialogTitle),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                const SizedBox(height: 16),
+                TextField(
+                  controller: _controller,
+                  keyboardType: const TextInputType.numberWithOptions(
+                    decimal: true,
+                    signed: false,
+                  ),
+                  autofocus: true,
+                  decoration: InputDecoration(
+                    labelText: state.measurementUnit == MeasurementUnit.imperial
+                        ? l10n.weightInLbLabel
+                        : l10n.weightInKgLabel,
+                    hintText: l10n.weightHint,
+                    enabledBorder: isError
+                        ? OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide: BorderSide(
+                              color: Theme.of(context).colorScheme.error,
+                              width: 2,
+                            ),
+                          )
+                        : null,
+                    focusedBorder: isError
+                        ? OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide: BorderSide(
+                              color: Theme.of(context).colorScheme.error,
+                              width: 2,
+                            ),
+                          )
+                        : null,
+                  ),
+                  onChanged: (_) {
+                    if (_errorText != null) {
+                      setState(() => _errorText = null);
+                    }
+                  },
+                  onSubmitted: (_) => _handleSave(),
                 ),
+                const SizedBox(height: 8),
+                if (isError)
+                  Text(
+                    _errorText!,
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.error,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+              ],
+            ),
+          ),
+          actionsAlignment: MainAxisAlignment.spaceBetween,
+          actions: [
+            if (state.targetWeight != null)
+              TextButton(
+                onPressed: () => Navigator.of(context).pop('clear'),
+                style: TextButton.styleFrom(
+                  foregroundColor: Theme.of(context).colorScheme.error,
+                ),
+                child: Text(l10n.removeTargetWeight),
               ),
-          ],
-        ),
-      ),
-      actionsAlignment: MainAxisAlignment.spaceBetween,
-      actions: [
-        if (widget.currentValue != null)
-          TextButton(
-            onPressed: () => Navigator.of(context).pop('clear'),
-            style: TextButton.styleFrom(
-              foregroundColor: Theme.of(context).colorScheme.error,
-            ),
-            child: Text(l10n.removeTargetWeight),
-          )
-        else
-          const SizedBox.shrink(),
-        Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: Text(l10n.cancel),
-            ),
-            const SizedBox(width: 8),
-            FilledButton.icon(
-              onPressed: _handleSave,
-              icon: const Icon(Icons.check, size: 18),
-              label: Text(l10n.save),
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  child: Text(l10n.cancel),
+                ),
+                const SizedBox(width: 8),
+                FilledButton.icon(
+                  onPressed: _handleSave,
+                  icon: const Icon(Icons.check, size: 18),
+                  label: Text(l10n.save),
+                ),
+              ],
             ),
           ],
-        ),
-      ],
+        );
+      },
     );
   }
 }

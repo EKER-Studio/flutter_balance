@@ -460,6 +460,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
     context.read<AppSettingsBloc>().add(UpdateHeight(result));
     context.read<WeightBloc>().add(UpdateUserHeight(result));
+
+    AppSnackBar.show(
+      context,
+      message: AppLocalizations.of(context).heightSetTo(
+        result.toString().replaceAll(RegExp(r'\.0$'), ''),
+      ),
+      type: SnackBarType.success,
+    );
   }
 
   /// Shows the system file picker to select a CSV file.
@@ -520,16 +528,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
   /// `double` result sets it; both are dispatched to the [AppSettingsBloc] so
   /// that progress calculations reflect the change.
   void _showTargetWeightDialog(BuildContext dialogContext) async {
-    final currentTarget = dialogContext
-        .read<AppSettingsBloc>()
-        .state
-        .targetWeight;
-    final unit = dialogContext.read<AppSettingsBloc>().state.measurementUnit;
-
     final result = await showDialog<dynamic>(
       context: dialogContext,
-      builder: (ctx) =>
-          TargetWeightDialog(currentValue: currentTarget, unit: unit),
+      builder: (ctx) => BlocProvider.value(
+        value: dialogContext.read<AppSettingsBloc>(),
+        child: const TargetWeightDialog(),
+      ),
     );
 
     if (!mounted) return;
@@ -539,6 +543,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
         context.read<AppSettingsBloc>().add(const TargetWeightChanged(null));
       } else if (result is double) {
         context.read<AppSettingsBloc>().add(TargetWeightChanged(result));
+        
+        final unitStr = context.read<AppSettingsBloc>().state.measurementUnit == MeasurementUnit.metric ? 'kg' : 'lbs';
+        AppSnackBar.show(
+          context,
+          message: AppLocalizations.of(context).targetWeightSetTo(
+            result.toString().replaceAll(RegExp(r'\.0$'), ''),
+            unitStr,
+          ),
+          type: SnackBarType.success,
+        );
       }
     }
   }
@@ -560,6 +574,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
               if (value == null) return;
               ctx.read<AppSettingsBloc>().add(UpdateTheme(value));
               Navigator.pop(ctx);
+
+              if (dialogContext.mounted) {
+                AppSnackBar.show(
+                  dialogContext,
+                  message: l10n.themeChangedTo(_themeLabel(value, l10n)),
+                  type: SnackBarType.success,
+                );
+              }
             },
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -594,6 +616,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
               if (value == null) return;
               ctx.read<AppSettingsBloc>().add(UpdateMeasurementUnit(value));
               Navigator.pop(ctx);
+
+              if (dialogContext.mounted) {
+                AppSnackBar.show(
+                  dialogContext,
+                  message: l10n.unitChangedTo(_unitLabel(value, l10n)),
+                  type: SnackBarType.success,
+                );
+              }
             },
             child: Column(
               mainAxisSize: MainAxisSize.min,

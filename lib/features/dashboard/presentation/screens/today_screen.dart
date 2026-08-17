@@ -370,24 +370,38 @@ class _WeightTrendChartCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Icon(Icons.timeline, size: 24, color: colorScheme.primary),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Text(
-                    l10n.weightTrend,
-                    style: textTheme.titleMedium?.copyWith(
-                      color: colorScheme.onSurface,
-                      fontWeight: FontWeight.w600,
+                Flexible(
+                  child: FittedBox(
+                    fit: BoxFit.scaleDown,
+                    alignment: Alignment.centerLeft,
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          Icons.show_chart_rounded,
+                          size: 20,
+                          color: colorScheme.primary,
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          l10n.weightTrend,
+                          style: textTheme.titleMedium?.copyWith(
+                            color: colorScheme.onSurface,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ),
+                _ChartPeriodFilters(
+                  period: period,
+                  onPeriodChanged: onPeriodChanged,
+                ),
               ],
-            ),
-            const SizedBox(height: 12),
-            _ChartPeriodFilters(
-              period: period,
-              onPeriodChanged: onPeriodChanged,
             ),
             const SizedBox(height: 16),
             SizedBox(
@@ -413,7 +427,7 @@ class _WeightTrendChartCard extends StatelessWidget {
   }
 }
 
-/// A row of selectable period pills for the chart.
+/// A compact SegmentedButton for selecting the chart period.
 class _ChartPeriodFilters extends StatelessWidget {
   /// The currently selected period.
   final TimePeriod period;
@@ -430,83 +444,26 @@ class _ChartPeriodFilters extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final periods = [TimePeriod.week, TimePeriod.month, TimePeriod.year];
+    // If the period is 'all', default to 'year' for the UI selection.
+    final selectedPeriod = period == TimePeriod.all ? TimePeriod.year : period;
 
-    return SizedBox(
-      width: double.infinity,
-      child: Row(
-        children: periods.asMap().entries.map((entry) {
-          final index = entry.key;
-          final candidate = entry.value;
-          return Expanded(
-            child: Padding(
-              padding: EdgeInsets.only(left: index == 0 ? 0.0 : 8.0),
-              child: _PeriodPill(
-                label: _periodLabel(candidate, l10n),
-                selected: period == candidate,
-                onPressed: () => onPeriodChanged(candidate),
-              ),
-            ),
-          );
-        }).toList(),
-      ),
-    );
-  }
-
-  String _periodLabel(TimePeriod period, AppLocalizations l10n) {
-    return switch (period) {
-      TimePeriod.week => l10n.week,
-      TimePeriod.month => l10n.month,
-      TimePeriod.year => l10n.year,
-      TimePeriod.all => l10n.all,
-    };
-  }
-}
-
-/// A single pill-shaped period selector button.
-class _PeriodPill extends StatelessWidget {
-  /// The localized label of the period.
-  final String label;
-
-  /// Whether this pill represents the active period.
-  final bool selected;
-
-  /// A callback invoked when the pill is tapped.
-  final VoidCallback onPressed;
-
-  /// Creates a [_PeriodPill].
-  const _PeriodPill({
-    required this.label,
-    required this.selected,
-    required this.onPressed,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-    final textTheme = Theme.of(context).textTheme;
-
-    return TextButton(
-      onPressed: onPressed,
-      style: TextButton.styleFrom(
-        backgroundColor: selected ? colorScheme.primary : Colors.transparent,
-        foregroundColor: selected
-            ? colorScheme.onPrimary
-            : colorScheme.onSurfaceVariant,
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        minimumSize: Size.zero,
-        tapTargetSize: MaterialTapTargetSize.padded,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-      ),
-      child: Text(
-        label,
-        maxLines: 1,
-        overflow: TextOverflow.ellipsis,
-        style: textTheme.labelMedium?.copyWith(
-          fontWeight: FontWeight.w600,
-          color: selected
-              ? colorScheme.onPrimary
-              : colorScheme.onSurfaceVariant,
+    return SegmentedButton<TimePeriod>(
+      segments: [
+        ButtonSegment(value: TimePeriod.week, label: Text(l10n.week)),
+        ButtonSegment(value: TimePeriod.month, label: Text(l10n.month)),
+        ButtonSegment(value: TimePeriod.year, label: Text(l10n.year)),
+      ],
+      selected: {selectedPeriod},
+      onSelectionChanged: (Set<TimePeriod> newSelection) {
+        onPeriodChanged(newSelection.first);
+      },
+      showSelectedIcon: false,
+      style: const ButtonStyle(
+        visualDensity: VisualDensity(horizontal: -4, vertical: -4),
+        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+        padding: WidgetStatePropertyAll(EdgeInsets.symmetric(horizontal: 2)),
+        textStyle: WidgetStatePropertyAll(
+          TextStyle(fontSize: 12, letterSpacing: -0.5),
         ),
       ),
     );

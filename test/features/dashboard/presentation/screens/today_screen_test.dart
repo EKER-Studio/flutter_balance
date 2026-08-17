@@ -849,4 +849,110 @@ void main() {
       expect(tester.takeException(), isNull);
     },
   );
+
+  testWidgets('Widget Layout Regression: strict spatial positioning', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(360, 640);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
+    final entry = WeightEntry(id: 1, weightKg: 72.5, dateTime: DateTime.now());
+    when(() => weightBloc.state).thenReturn(
+      WeightLoaded(
+        entries: [entry],
+        filteredEntries: [entry],
+        timePeriod: TimePeriod.month,
+        heightCm: 170.0,
+      ),
+    );
+    when(() => weightBloc.stream).thenAnswer(
+      (_) => Stream.value(
+        WeightLoaded(
+          entries: [entry],
+          filteredEntries: [entry],
+          timePeriod: TimePeriod.month,
+          heightCm: 170.0,
+        ),
+      ),
+    );
+
+    await tester.pumpWidget(
+      createTestWidget(
+        const MediaQuery(
+          data: MediaQueryData(textScaler: TextScaler.linear(1.2)),
+          child: TodayScreen(),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(tester.takeException(), isNull);
+
+    // 1. Verify Horizontal Alignment & Spacing for BMI Badge
+    final bmiTextFinder = find.text('25.1 BMI', skipOffstage: false);
+    final bmiBadgeFinder = find
+        .ancestor(of: bmiTextFinder, matching: find.byType(Ink))
+        .first;
+
+    final cardFinder = find
+        .ancestor(of: bmiBadgeFinder, matching: find.byType(Card))
+        .first;
+    final cardRect = tester.getRect(cardFinder);
+    final badgeRect = tester.getRect(bmiBadgeFinder);
+
+    // The padding inside the Card is 20, so the badge's right edge should be card's right edge - 20
+    expect(badgeRect.right, closeTo(cardRect.right - 20.0, 1.0));
+
+    // 2. Verify SegmentedButton and Title share the exact same Y coordinate (top position) within +- 2 px
+    final segmentedButtonFinder = find.byType(SegmentedButton<TimePeriod>);
+    final titleFinder = find.text('Weight trend', skipOffstage: false);
+
+    final segmentedRect = tester.getRect(segmentedButtonFinder);
+    final titleRect = tester.getRect(titleFinder);
+
+    expect(segmentedRect.center.dy, closeTo(titleRect.center.dy, 2.0));
+  });
+
+  testWidgets('Small-Screen Viewport Test: 320x568 with large text', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(320, 568);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
+    final entry = WeightEntry(id: 1, weightKg: 72.5, dateTime: DateTime.now());
+    when(() => weightBloc.state).thenReturn(
+      WeightLoaded(
+        entries: [entry],
+        filteredEntries: [entry],
+        timePeriod: TimePeriod.month,
+        heightCm: 170.0,
+      ),
+    );
+    when(() => weightBloc.stream).thenAnswer(
+      (_) => Stream.value(
+        WeightLoaded(
+          entries: [entry],
+          filteredEntries: [entry],
+          timePeriod: TimePeriod.month,
+          heightCm: 170.0,
+        ),
+      ),
+    );
+
+    await tester.pumpWidget(
+      createTestWidget(
+        const MediaQuery(
+          data: MediaQueryData(textScaler: TextScaler.linear(1.2)),
+          child: TodayScreen(),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(tester.takeException(), isNull);
+  });
 }

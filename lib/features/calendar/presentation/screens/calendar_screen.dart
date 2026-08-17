@@ -43,10 +43,6 @@ class CalendarScreen extends StatefulWidget {
 class _CalendarScreenState extends State<CalendarScreen> {
   late DateTime _focusedMonth;
   late DateTime _selectedDate;
-  late PageController _pageController;
-
-  /// Arbitrarily large starting page so many months can be paged back.
-  final int _initialPage = 10000;
 
   @override
   void initState() {
@@ -60,38 +56,25 @@ class _CalendarScreenState extends State<CalendarScreen> {
     final now = DateTime.now();
     _focusedMonth = DateTime(now.year, now.month, 1);
     _selectedDate = now;
-    _pageController = PageController(initialPage: _initialPage);
   }
 
   @override
   void dispose() {
-    _pageController.dispose();
     super.dispose();
-  }
-
-  /// Updates [_focusedMonth] to match the page now centered in the view.
-  void _onPageChanged(int index) {
-    final offset = index - _initialPage;
-    final now = DateTime.now();
-    setState(() {
-      _focusedMonth = DateTime(now.year, now.month + offset, 1);
-    });
   }
 
   /// Shifts the focused month one month back.
   void _previousMonth() {
-    _pageController.previousPage(
-      duration: const Duration(milliseconds: 200),
-      curve: Curves.easeInOut,
-    );
+    setState(() {
+      _focusedMonth = DateTime(_focusedMonth.year, _focusedMonth.month - 1, 1);
+    });
   }
 
   /// Shifts the focused month one month forward.
   void _nextMonth() {
-    _pageController.nextPage(
-      duration: const Duration(milliseconds: 200),
-      curve: Curves.easeInOut,
-    );
+    setState(() {
+      _focusedMonth = DateTime(_focusedMonth.year, _focusedMonth.month + 1, 1);
+    });
   }
 
   /// Selects the given [date].
@@ -102,19 +85,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
       _selectedDate = date;
       if (date.year != _focusedMonth.year ||
           date.month != _focusedMonth.month) {
-        final now = DateTime.now();
-        final monthsDiff =
-            (date.year - now.year) * 12 + (date.month - now.month);
-        final targetPage = _initialPage + monthsDiff;
-
         _focusedMonth = DateTime(date.year, date.month, 1);
-        if (_pageController.hasClients) {
-          _pageController.animateToPage(
-            targetPage,
-            duration: const Duration(milliseconds: 200),
-            curve: Curves.easeInOut,
-          );
-        }
       }
     });
   }
@@ -198,7 +169,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                               borderRadius: BorderRadius.circular(28),
                             ),
                             child: Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 16),
+                              padding: const EdgeInsets.fromLTRB(0, 16, 0, 20),
                               child: Column(
                                 children: [
                                   Padding(
@@ -219,52 +190,36 @@ class _CalendarScreenState extends State<CalendarScreen> {
                                     child: CalendarWeekdayHeader(),
                                   ),
                                   const SizedBox(height: 12),
-                                  Builder(
-                                    builder: (context) {
-                                      final availableWidth =
-                                          isLandscape &&
-                                              constraints.maxWidth >= 720
-                                          ? (constraints.maxWidth - 116) / 2
-                                          : constraints.maxWidth - 64;
-                                      final cellWidth =
-                                          (availableWidth - 24) / 7;
-                                      // 6 rows, 5 main-axis spacings of 8, plus a small buffer.
-                                      final gridHeight =
-                                          (6 * cellWidth) + 40 + 2;
-
-                                      return SizedBox(
-                                        height: gridHeight,
-                                        child: PageView.builder(
-                                          controller: _pageController,
-                                          allowImplicitScrolling: true,
-                                          onPageChanged: _onPageChanged,
-                                          itemBuilder: (context, index) {
-                                            final offset = index - _initialPage;
-                                            final now = DateTime.now();
-                                            final monthDate = DateTime(
-                                              now.year,
-                                              now.month + offset,
-                                              1,
-                                            );
-
-                                            return Padding(
-                                              padding:
-                                                  const EdgeInsets.symmetric(
-                                                    horizontal: 16,
-                                                  ),
-                                              child: CalendarGrid(
-                                                focusedMonth: monthDate,
-                                                selectedDate: _selectedDate,
-                                                entries: entries,
-                                                targetWeight: targetWeight,
-                                                onDaySelected: (date, _) =>
-                                                    _onDaySelected(date),
-                                              ),
-                                            );
-                                          },
-                                        ),
-                                      );
+                                  GestureDetector(
+                                    onHorizontalDragEnd: (details) {
+                                      if (details.primaryVelocity != null) {
+                                        if (details.primaryVelocity! > 0) {
+                                          _previousMonth();
+                                        } else if (details.primaryVelocity! <
+                                            0) {
+                                          _nextMonth();
+                                        }
+                                      }
                                     },
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 16,
+                                      ),
+                                      child: AnimatedSwitcher(
+                                        duration: const Duration(
+                                          milliseconds: 250,
+                                        ),
+                                        child: CalendarGrid(
+                                          key: ValueKey(_focusedMonth),
+                                          focusedMonth: _focusedMonth,
+                                          selectedDate: _selectedDate,
+                                          entries: entries,
+                                          targetWeight: targetWeight,
+                                          onDaySelected: (date, _) =>
+                                              _onDaySelected(date),
+                                        ),
+                                      ),
+                                    ),
                                   ),
                                 ],
                               ),

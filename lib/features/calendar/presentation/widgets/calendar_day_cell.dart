@@ -112,49 +112,46 @@ class CalendarDayCell extends StatelessWidget {
                           ? Border.all(color: cs.primary, width: 1.0)
                           : null,
                     ),
-                    child: Stack(
-                      clipBehavior: Clip.none,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisSize: MainAxisSize.min,
                       children: [
-                        Center(
-                          child: Text(
-                            '$dayNumber',
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: isToday || isSelected
-                                  ? FontWeight.bold
-                                  : FontWeight.normal,
-                              color: isSelected
-                                  ? cs.onPrimary
-                                  : (isToday ? cs.primary : cs.onSurface),
-                            ),
+                        Text(
+                          '$dayNumber',
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: isToday || isSelected
+                                ? FontWeight.bold
+                                : FontWeight.normal,
+                            color: isSelected
+                                ? cs.onPrimary
+                                : (isToday ? cs.primary : cs.onSurface),
                           ),
                         ),
-                        // Indicator dots for entries
-                        if (hasEntries)
-                          Positioned(
-                            bottom: 4,
-                            left: 0,
-                            right: 0,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: List.generate(
-                                entries.length > 3 ? 3 : entries.length,
-                                (index) => Container(
-                                  width: 4,
-                                  height: 4,
-                                  margin: const EdgeInsets.symmetric(
-                                    horizontal: 1.5,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    color: isSelected
-                                        ? cs.onPrimary
-                                        : cs.primary,
-                                  ),
+                        if (hasEntries) ...[
+                          const SizedBox(height: 2),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: List.generate(
+                              entries.length > 3 ? 3 : entries.length,
+                              (index) => Container(
+                                width: 4,
+                                height: 4,
+                                margin: const EdgeInsets.symmetric(
+                                  horizontal: 1.5,
+                                ),
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: isSelected ? cs.onPrimary : cs.primary,
                                 ),
                               ),
                             ),
                           ),
+                        ] else ...[
+                          const SizedBox(
+                            height: 6,
+                          ), // Match the space if no entries to keep text centered
+                        ],
                       ],
                     ),
                   ),

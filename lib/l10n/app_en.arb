@@ -242,6 +242,10 @@
   "initErrorRetryLabel": "Retry starting the application",
   "initErrorRetryHint": "Double tap to attempt re-initializing database and services",
   "retryStartup": "Retry Startup",
+  "heightSetTo": "Height set to {height} cm",
+  "targetWeightSetTo": "Target weight set to {weight} {unit}",
+  "unitChangedTo": "Unit changed to {unit}",
+  "themeChangedTo": "Theme changed to {theme}",
   "@stepOf": {
     "description": "Onboarding step indicator showing the current step and the total number of steps.",
     "placeholders": {
@@ -375,5 +379,36 @@
       }
     }
   },
-  "csvImportSuccessSubtitle": "Data will be available immediately after finishing the onboarding process"
+  "csvImportSuccessSubtitle": "Data will be available immediately after finishing the onboarding process",
+  "@heightSetTo": {
+    "placeholders": {
+      "height": {
+        "type": "String"
+      }
+    }
+  },
+  "@targetWeightSetTo": {
+    "placeholders": {
+      "weight": {
+        "type": "String"
+      },
+      "unit": {
+        "type": "String"
+      }
+    }
+  },
+  "@unitChangedTo": {
+    "placeholders": {
+      "unit": {
+        "type": "String"
+      }
+    }
+  },
+  "@themeChangedTo": {
+    "placeholders": {
+      "theme": {
+        "type": "String"
+      }
+    }
+  }
 }
