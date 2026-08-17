@@ -585,14 +585,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
               if (value == null) return;
               ctx.read<AppSettingsBloc>().add(UpdateTheme(value));
               Navigator.pop(ctx);
-
-              if (dialogContext.mounted) {
-                AppSnackBar.show(
-                  dialogContext,
-                  message: l10n.themeChangedTo(_themeLabel(value, l10n)),
-                  type: SnackBarType.success,
-                );
-              }
             },
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -627,14 +619,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
               if (value == null) return;
               ctx.read<AppSettingsBloc>().add(UpdateMeasurementUnit(value));
               Navigator.pop(ctx);
-
-              if (dialogContext.mounted) {
-                AppSnackBar.show(
-                  dialogContext,
-                  message: l10n.unitChangedTo(_unitLabel(value, l10n)),
-                  type: SnackBarType.success,
-                );
-              }
             },
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -842,13 +826,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
   /// This requests native health permissions when enabling. When the user disables the sync, a brief informational message explains how to fully revoke access. A denied permission request is surfaced separately via a snackbar whose "Open Settings" action redirects to the OS health permissions page.
   void _handleHealthSyncToggle(BuildContext context, bool enabled) {
     context.read<AppSettingsBloc>().add(ToggleHealthSync(enabled));
-    if (!enabled) {
-      AppSnackBar.show(
-        context,
-        message: AppLocalizations.of(context).healthSyncDisabledInfo,
-        type: SnackBarType.info,
-      );
-    }
   }
 
   /// Shows a dialog explaining that Health Connect must be installed before sync can be enabled.
@@ -956,14 +933,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
       initialTime: initialTime,
     );
     if (newTime != null && context.mounted) {
-      final l10n = AppLocalizations.of(context);
       context.read<AppSettingsBloc>().add(
         UpdateNotificationTime((hour: newTime.hour, minute: newTime.minute)),
-      );
-      AppSnackBar.show(
-        context,
-        message: l10n.reminderTimeSet(newTime.format(context)),
-        type: SnackBarType.info,
       );
     }
   }

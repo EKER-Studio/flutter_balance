@@ -552,12 +552,7 @@ void main() {
         await tester.tap(healthSyncSwitch());
         await tester.pumpAndSettle();
 
-        expect(
-          find.textContaining(
-            'To fully revoke system-level access, go to system settings',
-          ),
-          findsOneWidget,
-        );
+        expect(settingsBloc.state.isHealthSyncEnabled, isFalse);
       },
     );
 
@@ -889,7 +884,7 @@ void main() {
       await tester.tap(find.text('OK'));
       await tester.pumpAndSettle();
 
-      expect(find.textContaining('Daily reminder set to'), findsOneWidget);
+      expect(settingsBloc.state.notificationTime, (hour: 8, minute: 0));
     });
 
     testWidgets('health install dialog can be canceled', (tester) async {
@@ -1077,7 +1072,7 @@ void main() {
       await tester.tap(find.text('OK'));
       await tester.pumpAndSettle();
 
-      expect(find.textContaining('Daily reminder set to'), findsOneWidget);
+      expect(settingsBloc.state.notificationTime, (hour: 8, minute: 0));
     });
   });
 
