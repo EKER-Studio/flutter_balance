@@ -722,8 +722,7 @@ void main() {
     addTearDown(tester.view.resetPhysicalSize);
     addTearDown(tester.view.resetDevicePixelRatio);
 
-    // 2026-08-12 is a Wednesday; five consecutive days span Wed-Sun so the
-    // chart (bottom interval 1) renders every weekday label.
+    // 2026-08-12 is a Wednesday; five consecutive days span Wed-Sun.
     final entries = [
       WeightEntry(id: 1, weightKg: 70.0, dateTime: DateTime(2026, 8, 12)),
       WeightEntry(id: 2, weightKg: 70.5, dateTime: DateTime(2026, 8, 13)),
@@ -736,7 +735,7 @@ void main() {
       WeightLoaded(
         entries: entries,
         filteredEntries: entries,
-        timePeriod: TimePeriod.month,
+        timePeriod: TimePeriod.week,
         heightCm: 175.0,
       ),
     );
@@ -745,7 +744,7 @@ void main() {
         WeightLoaded(
           entries: entries,
           filteredEntries: entries,
-          timePeriod: TimePeriod.month,
+          timePeriod: TimePeriod.week,
           heightCm: 175.0,
         ),
       ),
@@ -905,14 +904,15 @@ void main() {
     // The padding inside the Card is 20, so the badge's right edge should be card's right edge - 20
     expect(badgeRect.right, closeTo(cardRect.right - 20.0, 1.0));
 
-    // 2. Verify SegmentedButton and Title share the exact same Y coordinate (top position) within +- 2 px
+    // 2. Verify the period selector is centered below the title row.
     final segmentedButtonFinder = find.byType(SegmentedButton<TimePeriod>);
     final titleFinder = find.text('Weight trend', skipOffstage: false);
 
     final segmentedRect = tester.getRect(segmentedButtonFinder);
     final titleRect = tester.getRect(titleFinder);
 
-    expect(segmentedRect.center.dy, closeTo(titleRect.center.dy, 2.0));
+    expect(segmentedRect.center.dx, closeTo(cardRect.center.dx, 2.0));
+    expect(segmentedRect.top, greaterThan(titleRect.bottom));
   });
 
   testWidgets('Small-Screen Viewport Test: 320x568 with large text', (

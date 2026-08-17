@@ -5,6 +5,7 @@ import 'dart:math' as math;
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
 import 'package:balance/core/presentation/utils/app_snackbar.dart';
 import 'package:balance/core/models/measurement_unit.dart';
 import 'package:balance/core/utils/unit_converter.dart';
@@ -331,7 +332,7 @@ class _RefreshableTodayBody extends StatelessWidget {
   }
 }
 
-/// A card containing the weight trend line chart and its period filter pills.
+/// A card containing the weight trend line chart and its period filter.
 class _WeightTrendChartCard extends StatelessWidget {
   /// The entries to plot, pre-filtered by [period].
   final List<WeightEntry> entries;
@@ -365,7 +366,7 @@ class _WeightTrendChartCard extends StatelessWidget {
       color: colorScheme.surfaceContainerLow,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
       child: Padding(
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -374,38 +375,44 @@ class _WeightTrendChartCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Flexible(
-                  child: FittedBox(
-                    fit: BoxFit.scaleDown,
-                    alignment: Alignment.centerLeft,
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(
-                          Icons.show_chart_rounded,
-                          size: 20,
-                          color: colorScheme.primary,
-                        ),
-                        const SizedBox(width: 8),
-                        Text(
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        Icons.show_chart_rounded,
+                        size: 20,
+                        color: colorScheme.primary,
+                      ),
+                      const SizedBox(width: 8),
+                      Flexible(
+                        child: Text(
                           l10n.weightTrend,
+                          overflow: TextOverflow.ellipsis,
                           style: textTheme.titleMedium?.copyWith(
                             color: colorScheme.onSurface,
-                            fontWeight: FontWeight.w600,
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
                           ),
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                 ),
-                _ChartPeriodFilters(
-                  period: period,
-                  onPeriodChanged: onPeriodChanged,
+                const SizedBox(width: 12),
+                _WeightDeltaChip(
+                  entries: entries,
+                  measurementUnit: measurementUnit,
                 ),
               ],
             ),
+            const SizedBox(height: 12),
+            _ChartPeriodFilters(
+              period: period,
+              onPeriodChanged: onPeriodChanged,
+            ),
             const SizedBox(height: 16),
             SizedBox(
-              height: 240,
+              height: 190,
               child: entries.isEmpty
                   ? Center(
                       child: Text(
@@ -417,6 +424,7 @@ class _WeightTrendChartCard extends StatelessWidget {
                     )
                   : _WeightLineChart(
                       entries: entries,
+                      period: period,
                       measurementUnit: measurementUnit,
                     ),
             ),
@@ -427,7 +435,7 @@ class _WeightTrendChartCard extends StatelessWidget {
   }
 }
 
-/// A compact SegmentedButton for selecting the chart period.
+/// A centered row of buttons for selecting the chart period.
 class _ChartPeriodFilters extends StatelessWidget {
   /// The currently selected period.
   final TimePeriod period;
@@ -444,27 +452,140 @@ class _ChartPeriodFilters extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    // If the period is 'all', default to 'year' for the UI selection.
-    final selectedPeriod = period == TimePeriod.all ? TimePeriod.year : period;
+    final periods = [TimePeriod.week, TimePeriod.month, TimePeriod.year];
 
-    return SegmentedButton<TimePeriod>(
-      segments: [
-        ButtonSegment(value: TimePeriod.week, label: Text(l10n.week)),
-        ButtonSegment(value: TimePeriod.month, label: Text(l10n.month)),
-        ButtonSegment(value: TimePeriod.year, label: Text(l10n.year)),
-      ],
-      selected: {selectedPeriod},
-      onSelectionChanged: (Set<TimePeriod> newSelection) {
-        onPeriodChanged(newSelection.first);
-      },
-      showSelectedIcon: false,
-      style: const ButtonStyle(
-        visualDensity: VisualDensity(horizontal: -4, vertical: -4),
-        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-        padding: WidgetStatePropertyAll(EdgeInsets.symmetric(horizontal: 2)),
-        textStyle: WidgetStatePropertyAll(
-          TextStyle(fontSize: 12, letterSpacing: -0.5),
-        ),
+    return Center(
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: periods.asMap().entries.map((entry) {
+          final index = entry.key;
+          final candidate = entry.value;
+          return Padding(
+            padding: EdgeInsets.only(left: index == 0 ? 0 : 8),
+            child: _PeriodButton(
+              label: _periodLabel(candidate, l10n),
+              selected: period == candidate,
+              onPressed: () => onPeriodChanged(candidate),
+            ),
+          );
+        }).toList(),
+      ),
+    );
+  }
+
+  String _periodLabel(TimePeriod period, AppLocalizations l10n) {
+    return switch (period) {
+      TimePeriod.week => l10n.week,
+      TimePeriod.month => l10n.month,
+      TimePeriod.year => l10n.year,
+      TimePeriod.all => l10n.all,
+    };
+  }
+}
+
+/// A standalone button for selecting one chart period.
+class _PeriodButton extends StatelessWidget {
+  /// The localized period label.
+  final String label;
+
+  /// Whether this period is active.
+  final bool selected;
+
+  /// Invoked when the button is pressed.
+  final VoidCallback onPressed;
+
+  /// Creates a [_PeriodButton].
+  const _PeriodButton({
+    required this.label,
+    required this.selected,
+    required this.onPressed,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return TextButton(
+      onPressed: onPressed,
+      style: TextButton.styleFrom(
+        backgroundColor: selected ? const Color(0xFFA8C7FA) : null,
+        foregroundColor: selected
+            ? const Color(0xFF00325B)
+            : colorScheme.onSurfaceVariant,
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        minimumSize: Size.zero,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      ),
+      child: Text(
+        label,
+        style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+      ),
+    );
+  }
+}
+
+/// A tonal summary of the weight change in the active chart period.
+class _WeightDeltaChip extends StatelessWidget {
+  /// The entries included in the active chart period.
+  final List<WeightEntry> entries;
+
+  /// The unit used to format the displayed delta.
+  final MeasurementUnit measurementUnit;
+
+  /// Creates a [_WeightDeltaChip].
+  const _WeightDeltaChip({
+    required this.entries,
+    required this.measurementUnit,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final sortedEntries = [...entries]
+      ..sort((a, b) => a.dateTime.compareTo(b.dateTime));
+    final deltaKg = sortedEntries.length < 2
+        ? 0.0
+        : sortedEntries.last.weightKg - sortedEntries.first.weightKg;
+    final delta = _WeightLineChart._displayWeight(deltaKg, measurementUnit);
+    final isLoss = delta < 0;
+    final isGain = delta > 0;
+    final backgroundColor = isLoss
+        ? const Color(0xFF14291E)
+        : isGain
+        ? Theme.of(context).colorScheme.errorContainer
+        : Theme.of(context).colorScheme.surfaceContainerHigh;
+    final foregroundColor = isLoss
+        ? const Color(0xFF7CE38B)
+        : isGain
+        ? Theme.of(context).colorScheme.error
+        : Theme.of(context).colorScheme.onSurfaceVariant;
+    final icon = isLoss
+        ? Icons.trending_down_rounded
+        : isGain
+        ? Icons.trending_up_rounded
+        : Icons.remove_rounded;
+    final unitLabel = measurementUnit == MeasurementUnit.imperial ? 'lb' : 'kg';
+    final prefix = isGain ? '+' : '';
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+      decoration: BoxDecoration(
+        color: backgroundColor,
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 16, color: foregroundColor),
+          const SizedBox(width: 4),
+          Text(
+            '$prefix${delta.toStringAsFixed(1)} $unitLabel',
+            style: Theme.of(context).textTheme.labelMedium?.copyWith(
+              color: foregroundColor,
+              fontSize: 13,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -479,12 +600,16 @@ class _WeightLineChart extends StatelessWidget {
   /// The daily-aggregated entries to plot.
   final List<WeightEntry> entries;
 
+  /// The active chart period controlling label density and dot visibility.
+  final TimePeriod period;
+
   /// The measurement unit used to convert and format plotted values.
   final MeasurementUnit measurementUnit;
 
   /// Creates a [_WeightLineChart].
   const _WeightLineChart({
     required this.entries,
+    required this.period,
     required this.measurementUnit,
   });
 
@@ -500,6 +625,7 @@ class _WeightLineChart extends StatelessWidget {
     final maxWeight = displayWeights.reduce(math.max);
     final minY = _roundDownToHalf(minWeight - 0.5);
     final maxY = _roundUpToHalf(maxWeight + 0.5);
+    final verticalInterval = _verticalInterval(minY, maxY);
 
     final l10n = AppLocalizations.of(context);
     return Semantics(
@@ -515,7 +641,7 @@ class _WeightLineChart extends StatelessWidget {
           gridData: FlGridData(
             show: true,
             drawVerticalLine: false,
-            horizontalInterval: 0.5,
+            horizontalInterval: verticalInterval,
             getDrawingHorizontalLine: (value) {
               return FlLine(
                 color: colorScheme.surfaceContainerHighest,
@@ -535,9 +661,14 @@ class _WeightLineChart extends StatelessWidget {
               sideTitles: SideTitles(
                 showTitles: true,
                 reservedSize: 30,
-                interval: _bottomInterval(sortedEntries.length),
+                interval: _bottomInterval(sortedEntries.length, period),
                 getTitlesWidget: (value, meta) {
-                  return _buildBottomTitle(context, value, sortedEntries);
+                  return _buildBottomTitle(
+                    context,
+                    value,
+                    sortedEntries,
+                    period,
+                  );
                 },
               ),
             ),
@@ -545,7 +676,7 @@ class _WeightLineChart extends StatelessWidget {
               sideTitles: SideTitles(
                 showTitles: true,
                 reservedSize: 42,
-                interval: 0.5,
+                interval: verticalInterval,
                 getTitlesWidget: (value, meta) {
                   return Text(
                     value.toStringAsFixed(1),
@@ -608,7 +739,7 @@ class _WeightLineChart extends StatelessWidget {
               barWidth: 3,
               isStrokeCapRound: true,
               dotData: FlDotData(
-                show: true,
+                show: period == TimePeriod.week,
                 getDotPainter: (spot, percent, barData, index) {
                   return FlDotCirclePainter(
                     radius: 4,
@@ -637,6 +768,7 @@ class _WeightLineChart extends StatelessWidget {
     BuildContext context,
     double value,
     List<WeightEntry> sortedEntries,
+    TimePeriod period,
   ) {
     final index = value.round();
     if (index < 0 ||
@@ -648,7 +780,7 @@ class _WeightLineChart extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(top: 8),
       child: Text(
-        _weekdayLabel(sortedEntries[index].dateTime.weekday, l10n),
+        _bottomAxisLabel(context, sortedEntries[index].dateTime, period, l10n),
         style: Theme.of(context).textTheme.bodySmall?.copyWith(
           color: Theme.of(context).colorScheme.onSurfaceVariant,
           fontFamily: 'Roboto',
@@ -669,16 +801,41 @@ class _WeightLineChart extends StatelessWidget {
   /// Rounds [value] up to the nearest multiple of 0.5.
   static double _roundUpToHalf(double value) => (value * 2).ceil() / 2;
 
-  /// Chooses the bottom-axis tick interval so roughly four intervals span the
-  /// chart.
-  ///
-  /// Returns 1 for a single entry, otherwise the smallest whole-number
-  /// interval covering the entry range in at most four steps.
-  static double _bottomInterval(int length) {
+  /// Chooses a period-specific tick interval with no more than six labels.
+  static double _bottomInterval(int length, TimePeriod period) {
     if (length <= 1) {
       return 1;
     }
-    return math.max(1, ((length - 1) / 4).ceil()).toDouble();
+    final targetIntervals = switch (period) {
+      TimePeriod.week => 6,
+      TimePeriod.month => 4,
+      TimePeriod.year || TimePeriod.all => 5,
+    };
+    return math.max(1, ((length - 1) / targetIntervals).ceil()).toDouble();
+  }
+
+  /// Chooses a readable interval that keeps horizontal grid lines sparse.
+  static double _verticalInterval(double minY, double maxY) {
+    final rawInterval = (maxY - minY) / 4;
+    for (final interval in [0.5, 1.0, 2.0, 5.0, 10.0]) {
+      if (rawInterval <= interval) {
+        return interval;
+      }
+    }
+    return 10;
+  }
+
+  String _bottomAxisLabel(
+    BuildContext context,
+    DateTime date,
+    TimePeriod period,
+    AppLocalizations l10n,
+  ) {
+    return switch (period) {
+      TimePeriod.week => _weekdayLabel(date.weekday, l10n),
+      TimePeriod.month => date.day.toString(),
+      TimePeriod.year || TimePeriod.all => _monthLabel(context, date),
+    };
   }
 
   String _weekdayLabel(int weekday, AppLocalizations l10n) {
@@ -693,6 +850,9 @@ class _WeightLineChart extends StatelessWidget {
       _ => l10n.weekdayShortMonday,
     };
   }
+
+  String _monthLabel(BuildContext context, DateTime date) =>
+      DateFormat.MMM(Localizations.localeOf(context).toString()).format(date);
 }
 
 /// A card with a rotating daily weight-logging tip.
