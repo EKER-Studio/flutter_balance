@@ -92,8 +92,5 @@ final class SyncHealthEntries extends WeightEvent {
   final DateTime? startDate;
 
   /// Creates [SyncHealthEntries] with the given [startDate].
-  ///
-  /// @param startDate Start of the sync window, or `null` to default to the
-  ///   deep past.
   const SyncHealthEntries({this.startDate});
 }

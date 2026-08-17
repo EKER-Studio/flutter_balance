@@ -23,7 +23,7 @@ import 'package:balance/features/settings/presentation/bloc/app_settings_bloc.da
 ///
 /// bloc.add(AddWeight(weightKg: 75.4, note: 'Morning'));
 /// bloc.add(ChangeChartFilter(TimePeriod.month));
-///// ```
+/// ```
 class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
   /// The [WeightRepository] backing data operations.
   final WeightRepository repository;
@@ -41,11 +41,9 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
 
   /// Creates a [WeightBloc] backed by the given [repository].
   ///
-  /// @param repository Source of weight data.
-  /// @param appSettingsBloc Optional settings BLoC consulted for the health
-  /// sync toggle; health-sync behavior stays dormant when omitted.
-  /// @param healthService Optional health backend; defaults to
-  /// [NativeHealthService.instance].
+  /// [appSettingsBloc] is optional and consulted for the health sync toggle;
+  /// health-sync behavior stays dormant when omitted.
+  /// [healthService] is optional and defaults to [NativeHealthService.instance].
   WeightBloc({
     required this.repository,
     AppSettingsBloc? appSettingsBloc,
@@ -81,7 +79,7 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
   /// Filters [entries] by [period] and aggregates them per calendar day.
   ///
   /// Uses a memoized result keyed on the entry content so identical stream
-  ///// emissions skip the filter and aggregation work entirely.
+  /// emissions skip the filter and aggregation work entirely.
   List<WeightEntry> _filterEntries(
     List<WeightEntry> entries,
     TimePeriod period,
@@ -134,7 +132,7 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
   ///
   /// The merged entry carries the mean [WeightEntry.weightKg] for that day,
   /// with [WeightEntry.dateTime] set to noon (12:00) of the day to keep the
-  ///// X-axis positions stable across re-renders.
+  /// X-axis positions stable across re-renders.
   List<WeightEntry> _aggregateByDay(List<WeightEntry> entries) {
     if (entries.length <= 1) return entries;
 
@@ -169,7 +167,7 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
   }
 
   /// Subscribes to the repository watch stream and forwards emissions to
-  ///// [WeightLoaded], or to [WeightError] with the mapped [WeightRepositoryException].
+  /// [WeightLoaded], or to [WeightError] with the mapped [WeightRepositoryException].
   Future<void> _onSubscribeToWeightChanges(
     SubscribeToWeightChanges event,
     Emitter<WeightState> emit,
@@ -232,7 +230,7 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
   ///
   /// When the database holds no entries yet (e.g. the first onboarding
   /// measurement), a [WeightLoading] state is emitted so the UI never flashes
-  ///// the empty view while the write is in flight.
+  /// the empty view while the write is in flight.
   Future<void> _onAddWeight(AddWeight event, Emitter<WeightState> emit) async {
     final heightCm = state.heightCm;
     final entries = _entriesFromState(state);
@@ -291,7 +289,7 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
   /// mirrored to the health platform as an unawaited, best-effort operation
   /// (see [_mirrorDeleteToHealth]) only when health sync is enabled and the
   /// target entry was found locally; mirror failures never fail the local
-  ///// delete.
+  /// delete.
   Future<void> _onDeleteWeight(
     DeleteWeight event,
     Emitter<WeightState> emit,
@@ -326,7 +324,7 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
   }
 
   /// Mirrors a locally persisted [entry] to the health platform on a
-  ///// best-effort basis; failures are logged but never propagated.
+  /// best-effort basis; failures are logged but never propagated.
   Future<void> _mirrorWriteToHealth(WeightEntry entry) async {
     try {
       await _healthService.writeWeight(
@@ -341,7 +339,7 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
   }
 
   /// Mirrors a local deletion of [entry] to the health platform on a
-  ///// best-effort basis; failures are logged but never propagated.
+  /// best-effort basis; failures are logged but never propagated.
   Future<void> _mirrorDeleteToHealth(WeightEntry entry) async {
     try {
       await _healthService.deleteWeight(
@@ -371,7 +369,7 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
   /// are merged in but never overwrite or delete local data, and the import
   /// itself never triggers mirror writes, so a sync pass cannot re-enter
   /// itself. The pull aborts silently (no state change) when health sync is
-  ///// disabled, the platform errors out, or there are no new records.
+  /// disabled, the platform errors out, or there are no new records.
   Future<void> _onSyncHealthEntries(
     SyncHealthEntries event,
     Emitter<WeightState> emit,
@@ -469,7 +467,7 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
   }
 
   /// Re-reads all entries from the repository and emits a fresh [WeightLoaded]
-  ///// state, emitting [WeightErrorType.readFailed] on failure.
+  /// state, emitting [WeightErrorType.readFailed] on failure.
   Future<void> _onRefreshWeightData(
     RefreshWeightData event,
     Emitter<WeightState> emit,
@@ -505,7 +503,7 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
   }
 
   /// Wipes all stored weight data and emits an empty [WeightLoaded] state,
-  ///// emitting [WeightErrorType.wipeFailed] on failure.
+  /// emitting [WeightErrorType.wipeFailed] on failure.
   Future<void> _onClearAllWeightData(
     ClearAllWeightData event,
     Emitter<WeightState> emit,
@@ -537,7 +535,7 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
   }
 
   /// Bulk imports [ImportWeightEntries.entries] into the repository, then
-  ///// re-reads the full dataset and emits an updated [WeightLoaded] state.
+  /// re-reads the full dataset and emits an updated [WeightLoaded] state.
   Future<void> _onImportWeightEntries(
     ImportWeightEntries event,
     Emitter<WeightState> emit,

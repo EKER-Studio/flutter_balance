@@ -97,7 +97,7 @@ List<_EncryptionPayload> _encryptPayloads((List<WeightEntry>, Uint8List) args) {
 ///   unlockSignal: BiometricService.instance.authenticationSuccesses,
 /// );
 /// final stream = repository.watchAllEntries();
-///// ```
+/// ```
 class IsarWeightRepository implements WeightRepository {
   /// The default cap on entries loaded or watched at once, newest-first.
   ///
@@ -162,7 +162,7 @@ class IsarWeightRepository implements WeightRepository {
   /// Loads the cached AES-256 key or reads it from secure storage.
   ///
   /// Throws [WeightRepositoryException] with the given [WeightErrorType] when
-  ///// the key is missing or inaccessible.
+  /// the key is missing or inaccessible.
   Future<Uint8List> _getOrLoadKey({bool isWrite = false}) async {
     if (_encryptionKey != null) {
       return _encryptionKey!;
@@ -255,7 +255,7 @@ class IsarWeightRepository implements WeightRepository {
   ///
   /// The returned stream errors (surfaced as a [WeightRepositoryException])
   /// when the encryption key is missing or the database raises an error, but
-  ///// never completes on its own.
+  /// never completes on its own.
   Stream<List<WeightEntry>> _watchAndDecryptEntries() {
     return liveIsar.weightEntryModels
         .where()
@@ -508,11 +508,11 @@ class IsarWeightRepository implements WeightRepository {
 /// errors forwarded through `yield*` cannot be intercepted by a surrounding
 /// `try`/`catch` when the listener handles errors.
 ///
-/// @param createStream Factory producing the stream to retry.
-/// @param mapError Maps each failure into the error surfaced to listeners.
-/// @param recoverySignal Optional signal that fires a retry before the backoff
-///   elapses, so recovery is immediate once the underlying condition clears.
-/// @param backoffFor Computes the retry delay from the number of consecutive failures.
+/// [createStream] is the factory producing the stream to retry.
+/// [mapError] maps each failure into the error surfaced to listeners.
+/// [recoverySignal] optionally fires a retry before the backoff elapses,
+/// so recovery is immediate once the underlying condition clears.
+/// [backoffFor] computes the retry delay from the number of consecutive failures.
 Stream<T> resilientStream<T>(
   Stream<T> Function() createStream, {
   required Object Function(Object error, StackTrace stack) mapError,

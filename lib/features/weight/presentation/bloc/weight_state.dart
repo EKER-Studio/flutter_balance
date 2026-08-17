@@ -10,10 +10,7 @@ sealed class WeightState {
   /// The currently selected time period for the chart.
   final TimePeriod timePeriod;
 
-  /// Creates a [WeightState] with the given parameters.
-  ///
-  /// @param heightCm User's height in cm, persisted via HydratedBloc.
-  /// @param timePeriod Currently selected time period for the chart, defaults to [TimePeriod.week].
+  /// Creates a [WeightState] with optional [heightCm] and [timePeriod] (defaults to [TimePeriod.week]).
   const WeightState({this.heightCm, this.timePeriod = TimePeriod.week});
 }
 
@@ -40,10 +37,7 @@ final class WeightLoaded extends WeightState {
   /// Entries filtered by the current [timePeriod].
   final List<WeightEntry> filteredEntries;
 
-  /// Creates [WeightLoaded] with the given parameters.
-  ///
-  /// @param entries All stored weight entries.
-  /// @param filteredEntries Entries filtered by the current [timePeriod].
+  /// Creates [WeightLoaded] with [entries] and [filteredEntries].
   const WeightLoaded({
     super.heightCm,
     super.timePeriod,
@@ -63,11 +57,7 @@ final class WeightError extends WeightState {
   /// Last known filtered entries preserved for display.
   final List<WeightEntry> filteredEntries;
 
-  /// Creates [WeightError] with the given parameters.
-  ///
-  /// @param errorType The reason for the error.
-  /// @param entries Last known entries preserved for display.
-  /// @param filteredEntries Last known filtered entries preserved for display.
+  /// Creates [WeightError] with [errorType], [entries], and [filteredEntries].
   const WeightError({
     super.heightCm,
     super.timePeriod,
