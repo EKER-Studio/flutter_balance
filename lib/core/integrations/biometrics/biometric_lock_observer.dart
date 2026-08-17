@@ -12,7 +12,7 @@ import 'package:balance/core/integrations/biometrics/biometric_service.dart';
 /// enabled and no authentication dialog is active; on `resumed` it first
 /// re-verifies the `Isar` instance — the auto-reopen clears dead query
 /// streams — and the shield then runs the biometric authentication flow to
-///// unlock the app.
+/// unlock the app.
 class BiometricLockObserver with WidgetsBindingObserver {
   /// A callback returning whether biometric lock is enabled.
   final bool Function() isBiometricLockEnabled;
@@ -74,9 +74,7 @@ class BiometricLockObserver with WidgetsBindingObserver {
     }
   }
 
-  /// Re-checks the Isar instance after the app resumes.
-  ///
-  ///// Invokes [onDatabaseReopened] when the database had to be re-opened.
+  /// Re-checks the Isar instance after the app resumes and invokes [onDatabaseReopened] if it had to be re-opened.
   Future<void> _verifyDatabaseIntegrity() async {
     try {
       final result = await verifyDatabaseIntegrity();
@@ -94,7 +92,7 @@ class BiometricLockObserver with WidgetsBindingObserver {
 
   /// Locks the app when it is backgrounded and biometric lock is enabled.
   ///
-  ///// Does not lock if an authentication dialog is active or the app is already locked.
+  /// Does not lock if an authentication dialog is active or the app is already locked.
   Future<void> _checkBiometricLock() async {
     if (!_isLockEnabled) return;
 

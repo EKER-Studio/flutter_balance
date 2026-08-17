@@ -8,17 +8,15 @@ import 'package:isar_community/isar.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:balance/features/weight/data/models/weight_entry_model.dart';
 
-/// Database initialization, encryption key management, and crash-recovery handling.
-///
-/// A module that initializes and provides the app database instance.
+/// Manages database initialization, AES encryption key provisioning, and crash-recovery.
 ///
 /// ## Schema Versioning & Recovery
 /// Isar Community 3.x uses automatic schema migration for non-breaking additions
 /// (e.g. indices or new optional fields). For breaking schema changes:
-/// 1. Increment database version name suffix (e.g. `balance_v2`).
+/// 1. Increment the database version name suffix (e.g. `balance_v2`).
 /// 2. If initialization fails due to schema corruption or file lock issues,
 ///    [initialize] captures the failure, creates a timestamped backup of the
-/////    corrupted database, cleans up stale locks, and safely re-opens a fresh instance.
+///    corrupted database, cleans up stale locks, and safely re-opens a fresh instance.
 class DatabaseModule {
   /// The versioned database name.
   ///
@@ -159,18 +157,15 @@ class DatabaseModule {
     );
   }
 
-  /// Moves database files from previous app versions to backup files.
+  /// Moves database files from previous app versions to timestamped `.legacy.bak` backup files.
   ///
-  /// Legacy files (if present) are moved to `.legacy.bak` files so they are
-  /// never opened under the current schema.
-  ///
+  /// Legacy files are moved so they are never opened under the current schema.
   /// This is a safety guard, not a data migration: values inside the legacy
   /// files are NOT copied into the new `balance_v1` database. It prevents the
   /// silent-corruption failure mode where Isar reopens an old file under a new
   /// schema and historical entries decrypt to `0.0 kg` (see
   /// [DatabaseModule.dbName] doc comment). Runs at most once — if a legacy
-  /// file is already gone (already
-  /// quarantined, or a fresh install), it is a no-op.
+  /// file is already gone (already quarantined, or a fresh install), it is a no-op.
   @visibleForTesting
   static Future<void> quarantineLegacyDatabaseForTesting(
     String directoryPath,

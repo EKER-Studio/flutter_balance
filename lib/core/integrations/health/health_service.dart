@@ -6,11 +6,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:balance/features/weight/domain/entities/weight_entry.dart';
 
-/// Weight record integration with Apple HealthKit and Android Health Connect.
-///
-/// An abstraction over platform-specific checks.
-///
-///// Allows mocking platform behavior in tests without modifying global state.
+/// Allows platform-specific behaviour to be mocked in tests without modifying global state.
 abstract class PlatformDetector {
   /// Whether the app is running on Android.
   bool get isAndroid;
@@ -19,7 +15,7 @@ abstract class PlatformDetector {
   bool get isIOS;
 }
 
-///// A default implementation using `dart:io`.
+/// The default [PlatformDetector] implementation backed by `dart:io`.
 class NativePlatformDetector implements PlatformDetector {
   @override
   bool get isAndroid => Platform.isAndroid;
@@ -27,38 +23,35 @@ class NativePlatformDetector implements PlatformDetector {
   bool get isIOS => Platform.isIOS;
 }
 
-/// An abstraction over the native health data platform.
+/// A platform-neutral abstraction for querying and modifying body weight records.
 ///
-/// Exposes a platform-neutral API for querying and modifying body weight
-/// records backed by Apple HealthKit (iOS) or Google Health Connect (Android),
-///// hiding the underlying plugin details from the rest of the app.
+/// Backed by Apple HealthKit (iOS) or Google Health Connect (Android),
+/// hiding the underlying plugin details from the rest of the app.
 abstract class HealthService {
-  ///// Checks if HealthKit (iOS) or Health Connect (Android) is available on the device.
+  /// Checks if HealthKit (iOS) or Health Connect (Android) is available on the device.
   Future<bool> isHealthApiAvailable();
 
-  ///// Checks if read/write permissions for WEIGHT are already granted.
+  /// Checks if read/write permissions for WEIGHT are already granted.
   Future<bool> hasPermissions();
 
-  ///// Requests native OS permissions for WEIGHT (Read & Write).
+  /// Requests native OS permissions for WEIGHT (read and write).
   Future<bool> requestPermissions();
 
-  ///// Opens native app system settings so the user can manage permissions manually.
+  /// Opens the native app system settings so the user can manage permissions manually.
   Future<bool> openSystemSettings();
 
   /// Opens the Google Play Store listing for Health Connect on Android.
   ///
-  /// Intended for devices where [isHealthApiAvailable] reports `false`; a
-  ///// no-op on other platforms.
+  /// Intended for devices where [isHealthApiAvailable] reports `false`;
+  /// a no-op on other platforms.
   Future<void> installHealthConnect();
 
   /// Fetches weight entries within a date range.
   ///
   /// Only readings between 20 kg and 300 kg are returned; out-of-range or
   /// non-numeric points are discarded. Entries are sorted newest first.
-  ///
-  /// @param start Inclusive start of the query window.
-  /// @param end Inclusive end of the query window.
-  ///// Returns an empty list on failure.
+  /// [start] is the inclusive start of the query window.
+  /// [end] is the inclusive end of the query window.
   Future<List<WeightEntry>> fetchWeightHistory({
     required DateTime start,
     required DateTime end,
@@ -66,8 +59,8 @@ abstract class HealthService {
 
   /// Writes a weight entry to HealthKit / Health Connect.
   ///
-  /// @param weightKg Weight value in kilograms.
-  ///// @param timestamp Instant the measurement was recorded.
+  /// [weightKg] is the weight value in kilograms.
+  /// [timestamp] is the instant the measurement was recorded.
   Future<bool> writeWeight({
     required double weightKg,
     required DateTime timestamp,
@@ -77,9 +70,8 @@ abstract class HealthService {
   ///
   /// Deletes the entry matching [weightKg] within the minute around
   /// [timestamp] on a best-effort basis.
-  ///
-  /// @param weightKg Weight value in kilograms of the entry to delete.
-  ///// @param timestamp Instant the entry to delete was recorded.
+  /// [weightKg] is the weight value in kilograms of the entry to delete.
+  /// [timestamp] is the instant the entry to delete was recorded.
   Future<bool> deleteWeight({
     required double weightKg,
     required DateTime timestamp,
@@ -107,12 +99,11 @@ abstract class HealthService {
 /// ([requestPermissions]); [hasPermissions] reports the current grant state
 /// (on iOS only the WRITE grant is disclosed by HealthKit), and
 /// [openSystemSettings] lets the user adjust the grant later from the system
-///// settings app.
+/// settings app.
 class NativeHealthService implements HealthService {
-  /// Creates a service wrapping [health], which defaults to a fresh plugin instance.
+  /// Creates a [NativeHealthService] wrapping [health], which defaults to a fresh plugin instance.
   ///
-  /// @param health Optional plugin instance, useful for tests.
-  /// @param platformDetector Platform detector, defaults to native implementation.
+  /// [platformDetector] defaults to the native implementation.
   NativeHealthService({Health? health, PlatformDetector? platformDetector})
     : _health = health ?? Health(),
       _platformDetector = platformDetector ?? NativePlatformDetector();
@@ -351,9 +342,8 @@ class NativeHealthService implements HealthService {
   /// Non-numeric points and readings outside the plausible 20-300 kg range are
   /// discarded; surviving entries are sorted newest first. Any plugin error
   /// degrades to an empty list.
-  ///
-  /// @param start Inclusive start of the query window.
-  /// @param end Inclusive end of the query window.
+  /// [start] is the inclusive start of the query window.
+  /// [end] is the inclusive end of the query window.
   @override
   Future<List<WeightEntry>> fetchWeightHistory({
     required DateTime start,
@@ -392,10 +382,8 @@ class NativeHealthService implements HealthService {
   ///
   /// The manual recording method is required on iOS, which only accepts manual
   /// or automatic entries for weight records. Any plugin error degrades to
-  /// `false`.
-  ///
-  /// @param weightKg Weight value in kilograms.
-  /// @param timestamp Instant the measurement was recorded.
+  /// `false`. [weightKg] is the weight in kilograms; [timestamp] is when the
+  /// measurement was recorded.
   @override
   Future<bool> writeWeight({
     required double weightKg,
@@ -426,9 +414,8 @@ class NativeHealthService implements HealthService {
   /// The entry is located within a one-minute window around [timestamp],
   /// tolerating a [_deleteWeightToleranceKg] kg difference, and removed by its
   /// UUID. Returns `false` when no match is found or the plugin call fails.
-  ///
-  /// @param weightKg Weight value in kilograms of the entry to delete.
-  /// @param timestamp Instant the entry to delete was recorded.
+  /// [weightKg] is the weight in kilograms of the entry to delete.
+  /// [timestamp] is the instant the entry to delete was recorded.
   @override
   Future<bool> deleteWeight({
     required double weightKg,

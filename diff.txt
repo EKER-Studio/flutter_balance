@@ -1,0 +1,528 @@
+diff --git a/lib/core/database/database_module.dart b/lib/core/database/database_module.dart
+index 95d5d1e..a8a3bdf 100644
+--- a/lib/core/database/database_module.dart
++++ b/lib/core/database/database_module.dart
+@@ -8,17 +8,15 @@ import 'package:isar_community/isar.dart';
+ import 'package:path_provider/path_provider.dart';
+ import 'package:balance/features/weight/data/models/weight_entry_model.dart';
+ 
+-/// Database initialization, encryption key management, and crash-recovery handling.
+-///
+-/// A module that initializes and provides the app database instance.
++/// Manages database initialization, AES encryption key provisioning, and crash-recovery.
+ ///
+ /// ## Schema Versioning & Recovery
+ /// Isar Community 3.x uses automatic schema migration for non-breaking additions
+ /// (e.g. indices or new optional fields). For breaking schema changes:
+-/// 1. Increment database version name suffix (e.g. `balance_v2`).
++/// 1. Increment the database version name suffix (e.g. `balance_v2`).
+ /// 2. If initialization fails due to schema corruption or file lock issues,
+ ///    [initialize] captures the failure, creates a timestamped backup of the
+-/////    corrupted database, cleans up stale locks, and safely re-opens a fresh instance.
++///    corrupted database, cleans up stale locks, and safely re-opens a fresh instance.
+ class DatabaseModule {
+   /// The versioned database name.
+   ///
+@@ -159,18 +157,15 @@ class DatabaseModule {
+     );
+   }
+ 
+-  /// Moves database files from previous app versions to backup files.
+-  ///
+-  /// Legacy files (if present) are moved to `.legacy.bak` files so they are
+-  /// never opened under the current schema.
++  /// Moves database files from previous app versions to timestamped `.legacy.bak` backup files.
+   ///
++  /// Legacy files are moved so they are never opened under the current schema.
+   /// This is a safety guard, not a data migration: values inside the legacy
+   /// files are NOT copied into the new `balance_v1` database. It prevents the
+   /// silent-corruption failure mode where Isar reopens an old file under a new
+   /// schema and historical entries decrypt to `0.0 kg` (see
+   /// [DatabaseModule.dbName] doc comment). Runs at most once — if a legacy
+-  /// file is already gone (already
+-  /// quarantined, or a fresh install), it is a no-op.
++  /// file is already gone (already quarantined, or a fresh install), it is a no-op.
+   @visibleForTesting
+   static Future<void> quarantineLegacyDatabaseForTesting(
+     String directoryPath,
+diff --git a/lib/core/integrations/biometrics/biometric_lock_observer.dart b/lib/core/integrations/biometrics/biometric_lock_observer.dart
+index a2c0932..e77ced2 100644
+--- a/lib/core/integrations/biometrics/biometric_lock_observer.dart
++++ b/lib/core/integrations/biometrics/biometric_lock_observer.dart
+@@ -12,7 +12,7 @@ import 'package:balance/core/integrations/biometrics/biometric_service.dart';
+ /// enabled and no authentication dialog is active; on `resumed` it first
+ /// re-verifies the `Isar` instance — the auto-reopen clears dead query
+ /// streams — and the shield then runs the biometric authentication flow to
+-///// unlock the app.
++/// unlock the app.
+ class BiometricLockObserver with WidgetsBindingObserver {
+   /// A callback returning whether biometric lock is enabled.
+   final bool Function() isBiometricLockEnabled;
+@@ -74,9 +74,7 @@ class BiometricLockObserver with WidgetsBindingObserver {
+     }
+   }
+ 
+-  /// Re-checks the Isar instance after the app resumes.
+-  ///
+-  ///// Invokes [onDatabaseReopened] when the database had to be re-opened.
++  /// Re-checks the Isar instance after the app resumes and invokes [onDatabaseReopened] if it had to be re-opened.
+   Future<void> _verifyDatabaseIntegrity() async {
+     try {
+       final result = await verifyDatabaseIntegrity();
+@@ -94,7 +92,7 @@ class BiometricLockObserver with WidgetsBindingObserver {
+ 
+   /// Locks the app when it is backgrounded and biometric lock is enabled.
+   ///
+-  ///// Does not lock if an authentication dialog is active or the app is already locked.
++  /// Does not lock if an authentication dialog is active or the app is already locked.
+   Future<void> _checkBiometricLock() async {
+     if (!_isLockEnabled) return;
+ 
+diff --git a/lib/core/integrations/biometrics/biometric_service.dart b/lib/core/integrations/biometrics/biometric_service.dart
+index 8bcef3e..21bac69 100644
+--- a/lib/core/integrations/biometrics/biometric_service.dart
++++ b/lib/core/integrations/biometrics/biometric_service.dart
+@@ -8,9 +8,7 @@ import 'package:local_auth_darwin/local_auth_darwin.dart';
+ import 'package:local_auth_platform_interface/local_auth_platform_interface.dart';
+ import 'package:balance/l10n/app_localizations.dart';
+ 
+-/// Device biometric capability checks and OS credential authentication flow.
+-///
+-///// The outcome of a biometric authentication attempt.
++/// Represents the outcome of a biometric authentication attempt.
+ enum BiometricAuthResult {
+   /// Authentication succeeded.
+   success,
+@@ -37,10 +35,7 @@ enum BiometricAuthResult {
+   error,
+ }
+ 
+-/// A singleton service for checking device credential availability.
+-///
+-/// Authenticates the user via Face ID, Touch ID, fingerprint, or the OS
+-///// lock screen (PIN/pattern/password) as fallback.
++/// A singleton service that authenticates users via Face ID, Touch ID, fingerprint, or the OS lock screen (PIN/pattern/password) as fallback.
+ class BiometricService {
+   BiometricService._();
+ 
+@@ -69,7 +64,7 @@ class BiometricService {
+         StreamController<void>.broadcast();
+   }
+ 
+-  ///// Closes the authentication success stream controller.
++  /// Closes the authentication success stream controller.
+   Future<void> dispose() async {
+     if (!_authenticationSuccessController.isClosed) {
+       await _authenticationSuccessController.close();
+@@ -85,9 +80,8 @@ class BiometricService {
+ 
+   /// Checks whether the device has active biometric hardware and enrolled credentials.
+   ///
+-  /// Returns a Future resolving to `true` if the device supports biometric
+-  /// sensors and at least one credential is enrolled, `false` otherwise.
+-  ///// Catches hardware or platform exceptions safely and logs errors.
++  /// Returns `true` if the device supports biometric sensors and at least one
++  /// credential is enrolled; catches hardware or platform exceptions and returns `false`.
+   Future<bool> isAvailable() async {
+     try {
+       final canCheck = await _authentication.canCheckBiometrics;
+@@ -110,9 +104,8 @@ class BiometricService {
+ 
+   /// Checks whether biometric authentication is fully supported on the device.
+   ///
+-  /// Returns a Future resolving to `true` if biometrics are both available and
+-  /// supported by OS hardware abstractions, `false` otherwise.
+-  ///// Catches platform exceptions safely and logs errors.
++  /// Returns `true` if biometrics are both available and supported by OS
++  /// hardware abstractions; catches platform exceptions and returns `false`.
+   Future<bool> isSupported() async {
+     try {
+       final deviceSupported = await _authentication.isDeviceSupported();
+@@ -135,10 +128,10 @@ class BiometricService {
+ 
+   /// Checks whether the device can present any OS credential prompt.
+   ///
+-  /// Returns a Future resolving to `true` if the device supports biometric
+-  /// checks OR can fail over to the OS lock screen credentials (PIN, pattern,
+-  /// or password), so devices with only a system PIN configured can still use
+-  ///// the app lock. Catches platform exceptions safely and logs errors.
++  /// Returns `true` if the device supports biometric checks or can fall over
++  /// to the OS lock screen (PIN, pattern, or password), so devices with only a
++  /// system PIN can still use the app lock; catches platform exceptions and
++  /// returns `false`.
+   Future<bool> canAuthenticate() async {
+     try {
+       final deviceSupported = await _authentication.isDeviceSupported();
+@@ -175,13 +168,11 @@ class BiometricService {
+ 
+   /// Prompts the user for device credential authentication.
+   ///
+-  /// Uses biometrics with automatic fallback to the OS PIN/pattern/password prompt.
+-  ///
+-  /// Takes a mandatory [localizedReason] string explaining the authentication request.
+-  /// Optional [authMessages] can be provided to customize dialog strings per locale.
++  /// Uses biometrics with automatic fallback to the OS PIN/pattern/password
++  /// prompt. Takes a mandatory [localizedReason] string explaining the request.
++  /// Optional [authMessages] can customize dialog strings per locale.
+   /// Concurrent calls while authentication is in progress await the same active
+   /// operation rather than launching overlapping native dialogs.
+-  ///// Returns a Future resolving to a [BiometricAuthResult] describing the outcome.
+   Future<BiometricAuthResult> authenticate({
+     required String localizedReason,
+     Iterable<AuthMessages>? authMessages,
+@@ -208,13 +199,10 @@ class BiometricService {
+     }
+   }
+ 
+-  /// Runs the platform authentication flow and maps every outcome.
+-  ///
+-  /// Maps every outcome (including platform exceptions) to a [BiometricAuthResult].
++  /// Runs the platform authentication flow and maps every outcome to a [BiometricAuthResult].
+   ///
+-  /// Authentication is not restricted to biometrics: with `biometricOnly:
+-  /// false`, the OS falls back to the system PIN/pattern/password prompt when
+-  ///// biometrics are unavailable, disabled, or fail.
++  /// With `biometricOnly: false` the OS falls back to the system PIN/pattern/password
++  /// prompt when biometrics are unavailable, disabled, or fail.
+   Future<BiometricAuthResult> _performAuthentication({
+     required String localizedReason,
+     Iterable<AuthMessages>? authMessages,
+diff --git a/lib/core/integrations/csv/csv_exporter.dart b/lib/core/integrations/csv/csv_exporter.dart
+index 95b8c90..0aa971f 100644
+--- a/lib/core/integrations/csv/csv_exporter.dart
++++ b/lib/core/integrations/csv/csv_exporter.dart
+@@ -4,9 +4,7 @@ import 'package:intl/intl.dart';
+ import 'package:path_provider/path_provider.dart';
+ import 'package:balance/features/weight/domain/entities/weight_entry.dart';
+ 
+-/// Exporting weight measurements as shareable CSV files.
+-///
+-///// A utility class for exporting weight measurements as formatted CSV files.
++/// Exports weight measurements as shareable CSV files.
+ class CsvExporter {
+   /// Generates a CSV-formatted string from [entries].
+   ///
+@@ -15,8 +13,6 @@ class CsvExporter {
+   /// `Note`; timestamps use `yyyy-MM-dd HH:mm`, weight values are formatted
+   /// with one decimal in kilograms, and a missing note is encoded as an
+   /// empty field.
+-  ///
+-  /// @param entries List of weight entry entities to encode.
+   static String generateCsv(List<WeightEntry> entries) {
+     final List<List<dynamic>> rows = [
+       ['ID', 'Date', 'Weight (kg)', 'Note'],
+@@ -38,10 +34,8 @@ class CsvExporter {
+ 
+   /// Writes [entries] as a timestamped CSV file in the system temp directory.
+   ///
+-  /// The file is named `balance_export_<yyyyMMdd_HHmmss>.csv` and is ready for
+-  /// sharing via the `share_plus` plugin.
+-  ///
+-  /// @param entries List of weight entry entities to export.
++  /// The file is named `balance_export_<yyyyMMdd_HHmmss>.csv` and is ready
++  /// for sharing via the `share_plus` plugin.
+   static Future<File> exportToFile(List<WeightEntry> entries) async {
+     final csvData = generateCsv(entries);
+     final tempDir = await getTemporaryDirectory();
+diff --git a/lib/core/integrations/csv/csv_import_service.dart b/lib/core/integrations/csv/csv_import_service.dart
+index e4c9004..c59631f 100644
+--- a/lib/core/integrations/csv/csv_import_service.dart
++++ b/lib/core/integrations/csv/csv_import_service.dart
+@@ -4,20 +4,16 @@ import 'package:file_picker/file_picker.dart';
+ import 'package:balance/core/integrations/csv/csv_importer.dart';
+ import 'package:balance/features/weight/domain/entities/weight_entry.dart';
+ 
+-/// Picking and parsing user-provided CSV weight history files.
+-///
+-///// The outcome of picking and parsing a CSV file.
++/// The result of picking and parsing a CSV file, containing parsed [WeightEntry] entities and a skip count.
+ typedef CsvImportResult = ({List<WeightEntry> entries, int skippedRows});
+ 
+-/// A service that picks a CSV file from the system file picker and parses its
+-///// contents into [WeightEntry] entities entirely in memory.
++/// Picks a CSV file from the system file picker and parses its contents into [WeightEntry] entities.
+ class CsvImportService {
+-  /// Opens the system file picker filtered to CSV files and parses the
+-  /// selected file content via [CsvImporter].
++  /// Opens the system file picker filtered to CSV files and parses the selected file via [CsvImporter].
+   ///
+-  /// The file content is read as UTF-8. Returns `null` when the user cancels
++  /// Reads the file content as UTF-8. Returns `null` when the user cancels
+   /// the picker. Throws a [FormatException] when the file is not a valid
+-  ///// weight-history CSV.
++  /// weight-history CSV.
+   Future<CsvImportResult?> pickAndImport() async {
+     final result = await FilePicker.pickFiles(
+       type: FileType.custom,
+diff --git a/lib/core/integrations/csv/csv_importer.dart b/lib/core/integrations/csv/csv_importer.dart
+index 2ad3e83..d5fa709 100644
+--- a/lib/core/integrations/csv/csv_importer.dart
++++ b/lib/core/integrations/csv/csv_importer.dart
+@@ -2,10 +2,7 @@ import 'dart:isolate';
+ import 'package:intl/intl.dart';
+ import 'package:balance/features/weight/domain/entities/weight_entry.dart';
+ 
+-/// Parsing weight-history CSV content into [WeightEntry] entities on a
+-/// background isolate.
+-///
+-/// A parser that converts CSV file content into a list of [WeightEntry].
++/// Parses weight-history CSV content into [WeightEntry] entities on a background isolate.
+ ///
+ /// ## CSV contract
+ /// The parser mirrors the `CsvExporter` output but is lenient about headers,
+@@ -30,7 +27,7 @@ import 'package:balance/features/weight/domain/entities/weight_entry.dart';
+ /// ID,Data,Weight (kg),Note
+ /// 1,2024-01-15 07:30,75.2,Morning measurement
+ /// 2,2024-01-16 07:30,75.0,
+-///// ```
++/// ```
+ class CsvImporter {
+   /// The attempted date formats in order of precedence.
+   static final List<DateFormat> _dateFormats = [
+diff --git a/lib/core/integrations/health/health_service.dart b/lib/core/integrations/health/health_service.dart
+index af300ef..ae6276a 100644
+--- a/lib/core/integrations/health/health_service.dart
++++ b/lib/core/integrations/health/health_service.dart
+@@ -6,11 +6,7 @@ import 'package:permission_handler/permission_handler.dart';
+ import 'package:url_launcher/url_launcher.dart';
+ import 'package:balance/features/weight/domain/entities/weight_entry.dart';
+ 
+-/// Weight record integration with Apple HealthKit and Android Health Connect.
+-///
+-/// An abstraction over platform-specific checks.
+-///
+-///// Allows mocking platform behavior in tests without modifying global state.
++/// Allows platform-specific behaviour to be mocked in tests without modifying global state.
+ abstract class PlatformDetector {
+   /// Whether the app is running on Android.
+   bool get isAndroid;
+@@ -19,7 +15,7 @@ abstract class PlatformDetector {
+   bool get isIOS;
+ }
+ 
+-///// A default implementation using `dart:io`.
++/// The default [PlatformDetector] implementation backed by `dart:io`.
+ class NativePlatformDetector implements PlatformDetector {
+   @override
+   bool get isAndroid => Platform.isAndroid;
+@@ -27,38 +23,35 @@ class NativePlatformDetector implements PlatformDetector {
+   bool get isIOS => Platform.isIOS;
+ }
+ 
+-/// An abstraction over the native health data platform.
++/// A platform-neutral abstraction for querying and modifying body weight records.
+ ///
+-/// Exposes a platform-neutral API for querying and modifying body weight
+-/// records backed by Apple HealthKit (iOS) or Google Health Connect (Android),
+-///// hiding the underlying plugin details from the rest of the app.
++/// Backed by Apple HealthKit (iOS) or Google Health Connect (Android),
++/// hiding the underlying plugin details from the rest of the app.
+ abstract class HealthService {
+-  ///// Checks if HealthKit (iOS) or Health Connect (Android) is available on the device.
++  /// Checks if HealthKit (iOS) or Health Connect (Android) is available on the device.
+   Future<bool> isHealthApiAvailable();
+ 
+-  ///// Checks if read/write permissions for WEIGHT are already granted.
++  /// Checks if read/write permissions for WEIGHT are already granted.
+   Future<bool> hasPermissions();
+ 
+-  ///// Requests native OS permissions for WEIGHT (Read & Write).
++  /// Requests native OS permissions for WEIGHT (read and write).
+   Future<bool> requestPermissions();
+ 
+-  ///// Opens native app system settings so the user can manage permissions manually.
++  /// Opens the native app system settings so the user can manage permissions manually.
+   Future<bool> openSystemSettings();
+ 
+   /// Opens the Google Play Store listing for Health Connect on Android.
+   ///
+-  /// Intended for devices where [isHealthApiAvailable] reports `false`; a
+-  ///// no-op on other platforms.
++  /// Intended for devices where [isHealthApiAvailable] reports `false`;
++  /// a no-op on other platforms.
+   Future<void> installHealthConnect();
+ 
+   /// Fetches weight entries within a date range.
+   ///
+   /// Only readings between 20 kg and 300 kg are returned; out-of-range or
+   /// non-numeric points are discarded. Entries are sorted newest first.
+-  ///
+-  /// @param start Inclusive start of the query window.
+-  /// @param end Inclusive end of the query window.
+-  ///// Returns an empty list on failure.
++  /// [start] is the inclusive start of the query window.
++  /// [end] is the inclusive end of the query window.
+   Future<List<WeightEntry>> fetchWeightHistory({
+     required DateTime start,
+     required DateTime end,
+@@ -66,8 +59,8 @@ abstract class HealthService {
+ 
+   /// Writes a weight entry to HealthKit / Health Connect.
+   ///
+-  /// @param weightKg Weight value in kilograms.
+-  ///// @param timestamp Instant the measurement was recorded.
++  /// [weightKg] is the weight value in kilograms.
++  /// [timestamp] is the instant the measurement was recorded.
+   Future<bool> writeWeight({
+     required double weightKg,
+     required DateTime timestamp,
+@@ -77,9 +70,8 @@ abstract class HealthService {
+   ///
+   /// Deletes the entry matching [weightKg] within the minute around
+   /// [timestamp] on a best-effort basis.
+-  ///
+-  /// @param weightKg Weight value in kilograms of the entry to delete.
+-  ///// @param timestamp Instant the entry to delete was recorded.
++  /// [weightKg] is the weight value in kilograms of the entry to delete.
++  /// [timestamp] is the instant the entry to delete was recorded.
+   Future<bool> deleteWeight({
+     required double weightKg,
+     required DateTime timestamp,
+@@ -107,12 +99,11 @@ abstract class HealthService {
+ /// ([requestPermissions]); [hasPermissions] reports the current grant state
+ /// (on iOS only the WRITE grant is disclosed by HealthKit), and
+ /// [openSystemSettings] lets the user adjust the grant later from the system
+-///// settings app.
++/// settings app.
+ class NativeHealthService implements HealthService {
+-  /// Creates a service wrapping [health], which defaults to a fresh plugin instance.
++  /// Creates a [NativeHealthService] wrapping [health], which defaults to a fresh plugin instance.
+   ///
+-  /// @param health Optional plugin instance, useful for tests.
+-  /// @param platformDetector Platform detector, defaults to native implementation.
++  /// [platformDetector] defaults to the native implementation.
+   NativeHealthService({Health? health, PlatformDetector? platformDetector})
+     : _health = health ?? Health(),
+       _platformDetector = platformDetector ?? NativePlatformDetector();
+@@ -351,9 +342,8 @@ class NativeHealthService implements HealthService {
+   /// Non-numeric points and readings outside the plausible 20-300 kg range are
+   /// discarded; surviving entries are sorted newest first. Any plugin error
+   /// degrades to an empty list.
+-  ///
+-  /// @param start Inclusive start of the query window.
+-  /// @param end Inclusive end of the query window.
++  /// [start] is the inclusive start of the query window.
++  /// [end] is the inclusive end of the query window.
+   @override
+   Future<List<WeightEntry>> fetchWeightHistory({
+     required DateTime start,
+@@ -392,10 +382,8 @@ class NativeHealthService implements HealthService {
+   ///
+   /// The manual recording method is required on iOS, which only accepts manual
+   /// or automatic entries for weight records. Any plugin error degrades to
+-  /// `false`.
+-  ///
+-  /// @param weightKg Weight value in kilograms.
+-  /// @param timestamp Instant the measurement was recorded.
++  /// `false`. [weightKg] is the weight in kilograms; [timestamp] is when the
++  /// measurement was recorded.
+   @override
+   Future<bool> writeWeight({
+     required double weightKg,
+@@ -426,9 +414,8 @@ class NativeHealthService implements HealthService {
+   /// The entry is located within a one-minute window around [timestamp],
+   /// tolerating a [_deleteWeightToleranceKg] kg difference, and removed by its
+   /// UUID. Returns `false` when no match is found or the plugin call fails.
+-  ///
+-  /// @param weightKg Weight value in kilograms of the entry to delete.
+-  /// @param timestamp Instant the entry to delete was recorded.
++  /// [weightKg] is the weight in kilograms of the entry to delete.
++  /// [timestamp] is the instant the entry to delete was recorded.
+   @override
+   Future<bool> deleteWeight({
+     required double weightKg,
+diff --git a/lib/core/integrations/notifications/notification_service.dart b/lib/core/integrations/notifications/notification_service.dart
+index 5a8c704..3e9ac95 100644
+--- a/lib/core/integrations/notifications/notification_service.dart
++++ b/lib/core/integrations/notifications/notification_service.dart
+@@ -7,12 +7,10 @@ import 'package:flutter_timezone/flutter_timezone.dart';
+ import 'package:timezone/data/latest.dart' as tz_data;
+ import 'package:timezone/timezone.dart' as tz;
+ 
+-/// Local notification scheduling for the daily weight reminder.
+-///
+-/// A singleton service for managing local scheduled notifications.
++/// Manages local notification scheduling for the daily weight reminder.
+ ///
+ /// Must be initialized via [initialize] during app startup before invoking
+-///// any scheduling APIs.
++/// any scheduling APIs.
+ class NotificationService {
+   /// A private constructor to enforce the singleton pattern.
+   NotificationService._();
+@@ -70,7 +68,7 @@ class NotificationService {
+   ///
+   /// Creates or updates the notification channel on Android devices
+   /// using [_channelId], [_channelName], and [_channelDescription].
+-  ///// Safe to call multiple times; the channel is recreated each invocation.
++  /// Safe to call multiple times; the channel is recreated each invocation.
+   Future<void> _updateAndroidChannel() async {
+     final androidChannel = AndroidNotificationChannel(
+       _channelId,
+@@ -88,8 +86,7 @@ class NotificationService {
+   /// Initializes the local notification plugin and timezone database.
+   ///
+   /// Must be called after `WidgetsFlutterBinding.ensureInitialized()`.
+-  /// Safe to call multiple times; subsequent invocations no-op if already initialized.
+-  ///// Catches and logs non-fatal setup exceptions.
++  /// Safe to call multiple times; subsequent invocations are no-ops if already initialized.
+   Future<void> initialize() async {
+     if (_initialized) return;
+     try {
+@@ -143,7 +140,6 @@ class NotificationService {
+   /// Requests notification permissions on iOS, macOS, and Android 13+.
+   ///
+   /// Returns `true` if permission is granted, `false` otherwise.
+-  ///// Logs the per-platform grant results for diagnostic purposes.
+   Future<bool> requestPermissions() async {
+     if (!_initialized) {
+       await initialize();
+@@ -189,7 +185,7 @@ class NotificationService {
+   ///
+   /// Reflects the `SCHEDULE_EXACT_ALARM` permission on Android 12+, which the
+   /// user can revoke at any time in system settings; always `true` on other
+-  ///// platforms or when the platform check itself fails.
++  /// platforms or when the platform check itself fails.
+   Future<bool> canScheduleExactNotifications() async {
+     try {
+       final androidPlugin = _plugin
+@@ -211,7 +207,7 @@ class NotificationService {
+   ///
+   /// On Android 14+ a revoked `SCHEDULE_EXACT_ALARM` permission triggers the
+   /// system permission prompt; on older versions the permission is granted by
+-  ///// default and this is a no-op returning `true`.
++  /// default and this is a no-op returning `true`.
+   Future<bool> requestExactAlarmsPermission() async {
+     try {
+       final androidPlugin = _plugin
+@@ -231,16 +227,11 @@ class NotificationService {
+ 
+   /// Schedules (or replaces) a repeating daily reminder at [time].
+   ///
+-  /// Takes the mandatory [time] specifying when the daily reminder should fire.
+   /// The notification fires every day at [time] in the device's local time zone
+-  /// using the localized texts configured via [setLocalizedTexts].
+-  /// Any previously scheduled reminder is cancelled first.
+-  /// Uses high notification importance and priority for prominent delivery.
+-  /// Returns `true` when the reminder is scheduled with exact timing, and
+-  /// `false` when exact alarm permission is missing (Android 12+ revocation)
+-  /// so the reminder fell back to the less precise inexact scheduling, or
+-  /// scheduling failed entirely.
+-  ///// Catches and logs non-fatal notification scheduling errors.
++  /// using the localized texts configured via [setLocalizedTexts]. Any
++  /// previously scheduled reminder is cancelled first.
++  /// Returns `true` when scheduled with exact timing, `false` when exact
++  /// alarm permission is missing (Android 12+ revocation) or scheduling failed.
+   Future<bool> scheduleDailyReminder(({int hour, int minute}) time) async {
+     if (!_initialized) return false;
+     try {
+@@ -314,9 +305,6 @@ class NotificationService {
+   }
+ 
+   /// Cancels the active daily weight reminder notification, if any.
+-  ///
+-  /// Returns a Future that completes when cancellation is registered.
+-  ///// Catches and logs non-fatal cancellation errors.
+   Future<void> cancelDailyReminder() async {
+     if (!_initialized) return;
+     try {

@@ -8,9 +8,7 @@ import 'package:local_auth_darwin/local_auth_darwin.dart';
 import 'package:local_auth_platform_interface/local_auth_platform_interface.dart';
 import 'package:balance/l10n/app_localizations.dart';
 
-/// Device biometric capability checks and OS credential authentication flow.
-///
-///// The outcome of a biometric authentication attempt.
+/// Represents the outcome of a biometric authentication attempt.
 enum BiometricAuthResult {
   /// Authentication succeeded.
   success,
@@ -37,10 +35,7 @@ enum BiometricAuthResult {
   error,
 }
 
-/// A singleton service for checking device credential availability.
-///
-/// Authenticates the user via Face ID, Touch ID, fingerprint, or the OS
-///// lock screen (PIN/pattern/password) as fallback.
+/// A singleton service that authenticates users via Face ID, Touch ID, fingerprint, or the OS lock screen (PIN/pattern/password) as fallback.
 class BiometricService {
   BiometricService._();
 
@@ -69,7 +64,7 @@ class BiometricService {
         StreamController<void>.broadcast();
   }
 
-  ///// Closes the authentication success stream controller.
+  /// Closes the authentication success stream controller.
   Future<void> dispose() async {
     if (!_authenticationSuccessController.isClosed) {
       await _authenticationSuccessController.close();
@@ -85,9 +80,8 @@ class BiometricService {
 
   /// Checks whether the device has active biometric hardware and enrolled credentials.
   ///
-  /// Returns a Future resolving to `true` if the device supports biometric
-  /// sensors and at least one credential is enrolled, `false` otherwise.
-  ///// Catches hardware or platform exceptions safely and logs errors.
+  /// Returns `true` if the device supports biometric sensors and at least one
+  /// credential is enrolled; catches hardware or platform exceptions and returns `false`.
   Future<bool> isAvailable() async {
     try {
       final canCheck = await _authentication.canCheckBiometrics;
@@ -110,9 +104,8 @@ class BiometricService {
 
   /// Checks whether biometric authentication is fully supported on the device.
   ///
-  /// Returns a Future resolving to `true` if biometrics are both available and
-  /// supported by OS hardware abstractions, `false` otherwise.
-  ///// Catches platform exceptions safely and logs errors.
+  /// Returns `true` if biometrics are both available and supported by OS
+  /// hardware abstractions; catches platform exceptions and returns `false`.
   Future<bool> isSupported() async {
     try {
       final deviceSupported = await _authentication.isDeviceSupported();
@@ -135,10 +128,10 @@ class BiometricService {
 
   /// Checks whether the device can present any OS credential prompt.
   ///
-  /// Returns a Future resolving to `true` if the device supports biometric
-  /// checks OR can fail over to the OS lock screen credentials (PIN, pattern,
-  /// or password), so devices with only a system PIN configured can still use
-  ///// the app lock. Catches platform exceptions safely and logs errors.
+  /// Returns `true` if the device supports biometric checks or can fall over
+  /// to the OS lock screen (PIN, pattern, or password), so devices with only a
+  /// system PIN can still use the app lock; catches platform exceptions and
+  /// returns `false`.
   Future<bool> canAuthenticate() async {
     try {
       final deviceSupported = await _authentication.isDeviceSupported();
@@ -175,13 +168,11 @@ class BiometricService {
 
   /// Prompts the user for device credential authentication.
   ///
-  /// Uses biometrics with automatic fallback to the OS PIN/pattern/password prompt.
-  ///
-  /// Takes a mandatory [localizedReason] string explaining the authentication request.
-  /// Optional [authMessages] can be provided to customize dialog strings per locale.
+  /// Uses biometrics with automatic fallback to the OS PIN/pattern/password
+  /// prompt. Takes a mandatory [localizedReason] string explaining the request.
+  /// Optional [authMessages] can customize dialog strings per locale.
   /// Concurrent calls while authentication is in progress await the same active
   /// operation rather than launching overlapping native dialogs.
-  ///// Returns a Future resolving to a [BiometricAuthResult] describing the outcome.
   Future<BiometricAuthResult> authenticate({
     required String localizedReason,
     Iterable<AuthMessages>? authMessages,
@@ -208,13 +199,10 @@ class BiometricService {
     }
   }
 
-  /// Runs the platform authentication flow and maps every outcome.
+  /// Runs the platform authentication flow and maps every outcome to a [BiometricAuthResult].
   ///
-  /// Maps every outcome (including platform exceptions) to a [BiometricAuthResult].
-  ///
-  /// Authentication is not restricted to biometrics: with `biometricOnly:
-  /// false`, the OS falls back to the system PIN/pattern/password prompt when
-  ///// biometrics are unavailable, disabled, or fail.
+  /// With `biometricOnly: false` the OS falls back to the system PIN/pattern/password
+  /// prompt when biometrics are unavailable, disabled, or fail.
   Future<BiometricAuthResult> _performAuthentication({
     required String localizedReason,
     Iterable<AuthMessages>? authMessages,

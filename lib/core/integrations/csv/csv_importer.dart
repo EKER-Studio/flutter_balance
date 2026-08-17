@@ -2,10 +2,7 @@ import 'dart:isolate';
 import 'package:intl/intl.dart';
 import 'package:balance/features/weight/domain/entities/weight_entry.dart';
 
-/// Parsing weight-history CSV content into [WeightEntry] entities on a
-/// background isolate.
-///
-/// A parser that converts CSV file content into a list of [WeightEntry].
+/// Parses weight-history CSV content into [WeightEntry] entities on a background isolate.
 ///
 /// ## CSV contract
 /// The parser mirrors the `CsvExporter` output but is lenient about headers,
@@ -30,7 +27,7 @@ import 'package:balance/features/weight/domain/entities/weight_entry.dart';
 /// ID,Data,Weight (kg),Note
 /// 1,2024-01-15 07:30,75.2,Morning measurement
 /// 2,2024-01-16 07:30,75.0,
-///// ```
+/// ```
 class CsvImporter {
   /// The attempted date formats in order of precedence.
   static final List<DateFormat> _dateFormats = [
