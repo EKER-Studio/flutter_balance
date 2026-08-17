@@ -1,4 +1,3 @@
-
 import 'dart:isolate';
 import 'package:intl/intl.dart';
 import 'package:balance/features/weight/domain/entities/weight_entry.dart';

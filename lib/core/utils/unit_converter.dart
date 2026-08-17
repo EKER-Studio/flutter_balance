@@ -1,6 +1,5 @@
 /// Pure utility functions for converting and formatting metric and imperial units.
 
-
 import 'package:balance/core/models/measurement_unit.dart';
 
 /// Converts a body weight from kilograms to pounds (lbs).

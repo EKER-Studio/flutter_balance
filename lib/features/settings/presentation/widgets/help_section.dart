@@ -1,6 +1,5 @@
 // Help settings group with crash log sharing and app version tiles.
 
-
 import 'package:flutter/material.dart';
 import 'package:balance/l10n/app_localizations.dart';
 import 'package:package_info_plus/package_info_plus.dart';

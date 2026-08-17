@@ -1,6 +1,5 @@
 /// The Today-screen summary card: latest measurement, BMI badge, and goal progress.
 
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';

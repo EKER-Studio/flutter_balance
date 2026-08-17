@@ -1,6 +1,5 @@
 /// Error state shown when the local weight database cannot be read.
 
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:balance/features/weight/presentation/bloc/weight_bloc.dart';

@@ -1,6 +1,5 @@
 /// The Statistics tab: composite health metric cards and the BMI history chart.
 
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';

@@ -1,6 +1,5 @@
 /// Empty state shown when the selected calendar day has no measurements.
 
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:balance/features/weight/presentation/bloc/weight_bloc.dart';

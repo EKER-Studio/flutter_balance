@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 
 /// A responsive layout helper that clamps content width to 600 px on large screens.

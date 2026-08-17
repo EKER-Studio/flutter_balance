@@ -1,7 +1,6 @@
 // Defines the application bootstrap: platform bindings, uncaught-error
 // reporting, and [HydratedBloc] storage initialization.
 
-
 import 'dart:io';
 import 'dart:ui' as ui;
 

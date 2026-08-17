@@ -1,6 +1,5 @@
 /// Root scaffold hosting the app's four-tab navigation shell.
 
-
 import 'package:flutter/material.dart';
 import 'package:balance/features/calendar/presentation/screens/calendar_screen.dart';
 import 'package:balance/features/statistics/presentation/screens/statistics_screen.dart';

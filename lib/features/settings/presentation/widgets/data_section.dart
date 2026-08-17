@@ -1,6 +1,5 @@
 // Data management settings group: CSV import, export and wipe controls.
 
-
 import 'package:flutter/material.dart';
 import 'package:balance/l10n/app_localizations.dart';
 import 'custom_settings_tile.dart';

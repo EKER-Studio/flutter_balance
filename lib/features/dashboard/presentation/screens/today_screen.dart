@@ -1,6 +1,5 @@
 /// The Today tab: daily weight summary, trend chart, tips, and quick add-weight flow.
 
-
 import 'dart:math' as math;
 
 import 'package:fl_chart/fl_chart.dart';

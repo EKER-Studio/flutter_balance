@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:balance/core/integrations/csv/csv_import_service.dart';
 import 'package:balance/features/weight/domain/entities/weight_entry.dart';

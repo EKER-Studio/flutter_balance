@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 
 /// Material 3 theme definitions for the Balance (Serene Metric) design system.

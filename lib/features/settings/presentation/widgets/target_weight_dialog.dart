@@ -1,6 +1,5 @@
 // Dialog for setting, updating or removing the target weight.
 
-
 import 'package:flutter/material.dart';
 import 'package:balance/core/models/measurement_unit.dart';
 import 'package:balance/core/utils/unit_converter.dart';

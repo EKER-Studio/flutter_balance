@@ -1,6 +1,5 @@
 // Dialog for entering the user's height in centimeters.
 
-
 import 'package:flutter/material.dart';
 import 'package:balance/l10n/app_localizations.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_state.dart';

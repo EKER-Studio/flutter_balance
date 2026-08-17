@@ -1,6 +1,5 @@
 /// Contract for persisting, querying, and observing weight entries.
 
-
 import 'package:balance/features/weight/domain/entities/weight_entry.dart';
 
 /// A domain repository contract for managing persistent weight entries.

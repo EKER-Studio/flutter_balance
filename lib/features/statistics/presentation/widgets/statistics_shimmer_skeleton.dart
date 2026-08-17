@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 
 /// A shimmer loading skeleton for the statistics screen.

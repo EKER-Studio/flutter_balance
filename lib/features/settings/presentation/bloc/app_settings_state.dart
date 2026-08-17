@@ -1,6 +1,5 @@
 // Immutable application settings state persisted across restarts.
 
-
 import 'package:equatable/equatable.dart';
 
 import 'package:balance/features/settings/presentation/bloc/app_theme_mode.dart';

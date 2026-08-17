@@ -1,6 +1,5 @@
 // Section header label rendered above each settings group.
 
-
 import 'package:flutter/material.dart';
 
 ///// A widget that renders a section header label above each settings group.

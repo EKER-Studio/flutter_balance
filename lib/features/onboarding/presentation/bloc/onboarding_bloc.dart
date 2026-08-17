@@ -1,4 +1,3 @@
-
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:balance/core/models/measurement_unit.dart';
 import 'package:balance/features/weight/domain/entities/weight_entry.dart';

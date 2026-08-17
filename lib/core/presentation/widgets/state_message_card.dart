@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 
 /// Centered message states with icon, title, subtitle, and optional CTA button.

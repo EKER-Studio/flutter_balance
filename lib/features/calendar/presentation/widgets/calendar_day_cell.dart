@@ -1,6 +1,5 @@
 /// A single tappable day cell inside the monthly calendar grid.
 
-
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:balance/features/weight/domain/entities/weight_entry.dart';

@@ -7,7 +7,6 @@
 /// and 30.0 falls in [obese]. The localized display name is exposed by the
 //// `localizedName` extension from `bmi_category_localizer.dart`.
 
-
 enum BmiCategory {
   /// BMI below 18.5 kg/m².
   underweight,

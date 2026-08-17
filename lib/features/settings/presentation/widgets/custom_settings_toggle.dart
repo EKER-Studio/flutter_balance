@@ -1,6 +1,5 @@
 // Settings list tile with a trailing switch for boolean preferences.
 
-
 import 'package:flutter/material.dart';
 
 ///// A widget that represents a settings list tile with a trailing switch, used for boolean preferences.

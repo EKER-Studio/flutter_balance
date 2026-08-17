@@ -1,6 +1,5 @@
 // BLoC that manages persistent application settings via HydratedBloc.
 
-
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:balance/core/integrations/health/health_service.dart';
 import 'package:balance/core/integrations/notifications/notification_service.dart';

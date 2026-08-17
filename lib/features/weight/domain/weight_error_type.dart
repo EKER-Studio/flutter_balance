@@ -3,7 +3,6 @@
 /// Emitted by weight domain logic and state management (e.g. BLoC) instead of raw exception
 //// messages to decouple presentation layers from error strings and enable type-safe localization.
 
-
 enum WeightErrorType {
   /// Indicates an unrecoverable failure while listening to the real-time weight entries stream.
   streamError,

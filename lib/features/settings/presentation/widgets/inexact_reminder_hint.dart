@@ -1,6 +1,5 @@
 // Inline hint shown when the daily reminder falls back to inexact scheduling.
 
-
 import 'package:flutter/material.dart';
 import 'package:balance/l10n/app_localizations.dart';
 

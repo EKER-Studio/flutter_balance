@@ -1,6 +1,5 @@
 /// Shimmer placeholder mirroring the calendar layout while data loads.
 
-
 import 'package:flutter/material.dart';
 
 /// Loading placeholder that mirrors the calendar layout with a repeating
