@@ -762,8 +762,8 @@ class _WeightLineChart extends StatelessWidget {
 
   /// Builds the bottom axis label for the entry at [value].
   ///
-  /// Renders the weekday for integer tick values inside the entry list;
-  /// fractional or out-of-range values render nothing.
+  /// Renders a localized date label for valid index ticks while suppressing
+  /// duplicate month names on yearly and multi-year spans.
   Widget _buildBottomTitle(
     BuildContext context,
     double value,
@@ -776,11 +776,19 @@ class _WeightLineChart extends StatelessWidget {
         (value - index).abs() > 0.01) {
       return const SizedBox.shrink();
     }
+
+    // Suppress duplicate month labels on consecutive tick intervals
+    if (_isDuplicateMonthTick(index, sortedEntries, period)) {
+      return const SizedBox.shrink();
+    }
+
     final l10n = AppLocalizations.of(context);
+    final currentDate = sortedEntries[index].dateTime;
+
     return Padding(
       padding: const EdgeInsets.only(top: 8),
       child: Text(
-        _bottomAxisLabel(context, sortedEntries[index].dateTime, period, l10n),
+        _bottomAxisLabel(context, currentDate, period, l10n),
         style: Theme.of(context).textTheme.bodySmall?.copyWith(
           color: Theme.of(context).colorScheme.onSurfaceVariant,
           fontFamily: 'Roboto',
@@ -788,6 +796,29 @@ class _WeightLineChart extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  /// Checks if the tick at [index] shares the same month and year as the previous sampled tick.
+  static bool _isDuplicateMonthTick(
+    int index,
+    List<WeightEntry> sortedEntries,
+    TimePeriod period,
+  ) {
+    if (period != TimePeriod.year && period != TimePeriod.all) {
+      return false;
+    }
+
+    final step = _bottomInterval(sortedEntries.length, period).toInt();
+    final prevIndex = index - step;
+    if (prevIndex < 0 || prevIndex >= sortedEntries.length) {
+      return false;
+    }
+
+    final currentDate = sortedEntries[index].dateTime;
+    final prevDate = sortedEntries[prevIndex].dateTime;
+
+    return prevDate.year == currentDate.year &&
+        prevDate.month == currentDate.month;
   }
 
   /// Converts a weight in kilograms to the display [unit].

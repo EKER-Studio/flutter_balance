@@ -294,7 +294,7 @@ class BmiChartCard extends StatelessWidget {
                 barWidth: 3,
                 isStrokeCapRound: true,
                 dotData: FlDotData(
-                  show: true,
+                  show: sortedEntries.length <= 10,
                   getDotPainter: (spot, percent, barData, index) {
                     return FlDotCirclePainter(
                       radius: 3,

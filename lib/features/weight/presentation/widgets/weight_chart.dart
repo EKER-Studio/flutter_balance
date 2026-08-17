@@ -198,7 +198,7 @@ class WeightChart extends StatelessWidget {
                       barWidth: 3,
                       isStrokeCapRound: true,
                       dotData: FlDotData(
-                        show: true,
+                        show: period == TimePeriod.week,
                         getDotPainter: (spot, percent, barData, index) {
                           return FlDotCirclePainter(
                             radius: 4,
