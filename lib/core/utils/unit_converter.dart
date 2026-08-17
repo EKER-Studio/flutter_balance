@@ -1,31 +1,20 @@
-/// Pure utility functions for converting and formatting metric and imperial units.
-
 import 'package:balance/core/models/measurement_unit.dart';
 
-/// Converts a body weight from kilograms to pounds (lbs).
+/// Converts a body weight from kilograms to pounds.
 ///
 /// Formula: `lbs = kg * 2.20462`.
-///
-/// @param kg Weight in kilograms.
-/// Returns the weight in pounds as a double.
 double kgToLbs(double kg) => kg * 2.20462;
 
-/// Converts a body weight from pounds (lbs) to kilograms.
+/// Converts a body weight from pounds to kilograms.
 ///
 /// Formula: `kg = lbs / 2.20462`.
-///
-/// @param lbs Weight in pounds.
-/// Returns the weight in kilograms as a double.
 double lbsToKg(double lbs) => lbs / 2.20462;
 
 /// Converts a height in centimeters into whole feet and remaining inches.
 ///
+/// Returns `[feet, remainingInches]` where `remainingInches` is in `[0, 12)`.
 /// Formula: `totalInches = cm / 2.54`, `feet = truncate(totalInches / 12)`,
-/// `remainingInches = totalInches - feet * 12`, so `remainingInches` is in
-/// the half-open range `[0, 12)` and negative inputs truncate toward zero.
-///
-/// @param cm Height in centimeters.
-///// Returns the pair `[feet, remainingInches]`.
+/// `remainingInches = totalInches - feet * 12`.
 List<double> cmToFeetInches(double cm) {
   final totalInches = cm / 2.54;
   final feet = (totalInches / 12).truncateToDouble();
@@ -35,11 +24,7 @@ List<double> cmToFeetInches(double cm) {
 
 /// Formats a body weight stored in kilograms for user display according to [unit].
 ///
-/// Formats as `X.X kg` for metric or `X.X lbs` for imperial, always with one
-/// decimal place.
-///
-/// @param weightKg Weight in kilograms.
-/// @param unit Target display unit system.
+/// Formats as `X.X kg` for metric or `X.X lbs` for imperial, always with one decimal place.
 String formatWeight(double weightKg, MeasurementUnit unit) {
   if (unit == MeasurementUnit.imperial) {
     final lbs = kgToLbs(weightKg);
@@ -48,21 +33,18 @@ String formatWeight(double weightKg, MeasurementUnit unit) {
   return '${weightKg.toStringAsFixed(1)} kg';
 }
 
-/// Returns the plain unit suffix for the given [unit] (`kg` or `lb`).
+/// Returns the plain unit suffix (`kg` or `lb`) for the given [unit].
 String unitLabelFor(MeasurementUnit unit) {
   return unit == MeasurementUnit.imperial ? 'lb' : 'kg';
 }
 
-/// The label for BMI values, which are always expressed in kg/m².
+/// The unit label for BMI values, which are always expressed in kg/m².
 const String bmiUnitLabel = 'kg/m²';
 
 /// Formats a height stored in centimeters for user display according to [unit].
 ///
-/// Formats as `X cm` for metric (no decimals) or `F'I"` for imperial, where
-/// the remaining inches are rounded to the nearest whole number.
-///
-/// @param heightCm Height in centimeters.
-/// @param unit Target display unit system.
+/// Formats as `X cm` for metric (no decimals) or `F'I"` for imperial,
+/// where remaining inches are rounded to the nearest whole number.
 String formatHeight(double heightCm, MeasurementUnit unit) {
   if (unit == MeasurementUnit.imperial) {
     final [feet, inches] = cmToFeetInches(heightCm);
