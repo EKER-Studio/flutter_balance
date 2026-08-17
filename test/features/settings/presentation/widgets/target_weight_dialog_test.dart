@@ -21,10 +21,10 @@ void main() {
   });
 
   Future<dynamic> openDialog(
-    WidgetTester tester, {
-    double? currentValue,
-    MeasurementUnit unit = MeasurementUnit.metric,
-  }) async {
+      WidgetTester tester, {
+        double? currentValue,
+        MeasurementUnit unit = MeasurementUnit.metric,
+      }) async {
     when(() => mockSettingsBloc.state).thenReturn(
       AppSettingsState(targetWeight: currentValue, measurementUnit: unit),
     );
@@ -42,9 +42,9 @@ void main() {
                   onPressed: () async {
                     result = await showDialog<dynamic>(
                       context: context,
-                      builder: (_) => BlocProvider.value(
-                        value: mockSettingsBloc as AppSettingsBloc,
-                        child: const TargetWeightDialog(),
+                      builder: (_) => TargetWeightDialog(
+                        currentValueKg: currentValue,
+                        measurementUnit: unit,
                       ),
                     );
                   },
@@ -97,8 +97,8 @@ void main() {
   });
 
   testWidgets('clears the target weight when the field is empty', (
-    tester,
-  ) async {
+      tester,
+      ) async {
     final getResult = await openDialog(tester, currentValue: 75.5);
 
     await tester.enterText(find.byType(TextField), '   ');
@@ -109,8 +109,8 @@ void main() {
   });
 
   testWidgets('clear button pops with clear when a current value exists', (
-    tester,
-  ) async {
+      tester,
+      ) async {
     final getResult = await openDialog(tester, currentValue: 75.5);
 
     await tester.tap(find.text('Remove goal'));
@@ -120,8 +120,8 @@ void main() {
   });
 
   testWidgets('hides the remove button when there is no current value', (
-    tester,
-  ) async {
+      tester,
+      ) async {
     await openDialog(tester);
 
     expect(find.text('Remove goal'), findsNothing);
@@ -149,8 +149,8 @@ void main() {
   });
 
   testWidgets('clears the error once the user starts typing again', (
-    tester,
-  ) async {
+      tester,
+      ) async {
     await openDialog(tester);
 
     await tester.enterText(find.byType(TextField), 'abc');
@@ -164,8 +164,8 @@ void main() {
   });
 
   testWidgets('cancel button closes the dialog without a result', (
-    tester,
-  ) async {
+      tester,
+      ) async {
     final getResult = await openDialog(tester);
 
     await tester.tap(find.text('Cancel'));

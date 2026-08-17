@@ -409,9 +409,9 @@ class HealthSummaryCard extends StatelessWidget {
   ) async {
     final result = await showDialog<dynamic>(
       context: context,
-      builder: (ctx) => BlocProvider.value(
-        value: context.read<AppSettingsBloc>(),
-        child: const TargetWeightDialog(),
+      builder: (ctx) => TargetWeightDialog(
+        currentValueKg: targetWeightKg,
+        measurementUnit: unit,
       ),
     );
 

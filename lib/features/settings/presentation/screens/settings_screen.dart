@@ -41,6 +41,8 @@ import 'package:balance/features/settings/presentation/widgets/security_section.
 import 'package:balance/features/settings/presentation/widgets/data_section.dart';
 import 'package:balance/features/settings/presentation/widgets/help_section.dart';
 
+import '../../../../core/utils/unit_converter.dart';
+
 /// A widget that provides a screen for managing profile, application, security, and data settings.
 ///
 /// It provides controls for adjusting the user's height and target weight, as well as changing the theme, measurement unit, daily reminder, biometric lock, and managing CSV import/export/wipe functionality. On wide layouts, the sections are arranged in a two-column grid.
@@ -463,9 +465,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
     AppSnackBar.show(
       context,
-      message: AppLocalizations.of(context).heightSetTo(
-        result.toString().replaceAll(RegExp(r'\.0$'), ''),
-      ),
+      message: AppLocalizations.of(
+        context,
+      ).heightSetTo(result.toString().replaceAll(RegExp(r'\.0$'), '')),
       type: SnackBarType.success,
     );
   }
@@ -528,11 +530,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
   /// `double` result sets it; both are dispatched to the [AppSettingsBloc] so
   /// that progress calculations reflect the change.
   void _showTargetWeightDialog(BuildContext dialogContext) async {
+    final settingsBloc = dialogContext.read<AppSettingsBloc>();
+    final settingsState = settingsBloc.state;
+
     final result = await showDialog<dynamic>(
       context: dialogContext,
-      builder: (ctx) => BlocProvider.value(
-        value: dialogContext.read<AppSettingsBloc>(),
-        child: const TargetWeightDialog(),
+      builder: (ctx) => TargetWeightDialog(
+        currentValueKg: settingsState.targetWeight,
+        measurementUnit: settingsState.measurementUnit,
       ),
     );
 
@@ -542,9 +547,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
       if (result == 'clear') {
         context.read<AppSettingsBloc>().add(const TargetWeightChanged(null));
       } else if (result is double) {
-        context.read<AppSettingsBloc>().add(TargetWeightChanged(result));
-        
-        final unitStr = context.read<AppSettingsBloc>().state.measurementUnit == MeasurementUnit.metric ? 'kg' : 'lbs';
+        final targetKg =
+            settingsState.measurementUnit == MeasurementUnit.imperial
+            ? lbsToKg(result)
+            : result;
+        context.read<AppSettingsBloc>().add(TargetWeightChanged(targetKg));
+
+        final unitStr = settingsState.measurementUnit == MeasurementUnit.metric
+            ? 'kg'
+            : 'lbs';
         AppSnackBar.show(
           context,
           message: AppLocalizations.of(context).targetWeightSetTo(
