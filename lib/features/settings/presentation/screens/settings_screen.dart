@@ -3,6 +3,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:balance/core/presentation/utils/app_snackbar.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:balance/l10n/app_localizations.dart';
 import 'package:balance/core/utils/crash_log.dart';
@@ -94,18 +95,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
             // the user to the OS health permissions page, where the grant can be
             // made from the system settings.
             final l10n = AppLocalizations.of(context);
-            ScaffoldMessenger.of(context)
-              ..hideCurrentSnackBar()
-              ..showSnackBar(
-                SnackBar(
-                  content: Text(l10n.healthPermissionDenied),
-                  behavior: SnackBarBehavior.floating,
-                  action: SnackBarAction(
-                    label: l10n.openSettings,
-                    onPressed: NativeHealthService.instance.openSystemSettings,
-                  ),
-                ),
-              );
+            AppSnackBar.show(
+              context,
+              message: l10n.healthPermissionDenied,
+              type: SnackBarType.error,
+              action: SnackBarAction(
+                label: l10n.openSettings,
+                onPressed: NativeHealthService.instance.openSystemSettings,
+              ),
+            );
           },
           child: BlocListener<AppSettingsBloc, AppSettingsState>(
             listenWhen: (previous, current) =>
@@ -115,18 +113,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
               // Notification permission denied: show a snackbar whose action
               // redirects the user to the OS app settings page.
               final l10n = AppLocalizations.of(context);
-              ScaffoldMessenger.of(context)
-                ..hideCurrentSnackBar()
-                ..showSnackBar(
-                  SnackBar(
-                    content: Text(l10n.notificationPermissionDenied),
-                    behavior: SnackBarBehavior.floating,
-                    action: SnackBarAction(
-                      label: l10n.openSettings,
-                      onPressed: openAppSettings,
-                    ),
-                  ),
-                );
+              AppSnackBar.show(
+                context,
+                message: l10n.notificationPermissionDenied,
+                type: SnackBarType.error,
+                action: SnackBarAction(
+                  label: l10n.openSettings,
+                  onPressed: openAppSettings,
+                ),
+              );
             },
             child: BlocListener<WeightBloc, WeightState>(
               listener: _onWeightStateChange,
@@ -493,9 +488,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
         case CsvErrorType.noEntries:
           errorMessage = l10n.csvImportNoEntries;
       }
-      ScaffoldMessenger.of(context)
-        ..hideCurrentSnackBar()
-        ..showSnackBar(SnackBar(content: Text(errorMessage)));
+      AppSnackBar.show(
+        context,
+        message: errorMessage,
+        type: SnackBarType.error,
+      );
     } else if (state is CsvAnalysisReady) {
       final confirmed = await CsvImportPreviewDialog.show(
         context,
@@ -508,11 +505,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
       }
     } else if (state is WeightImportSuccess) {
       final l10n = AppLocalizations.of(context);
-      ScaffoldMessenger.of(context)
-        ..hideCurrentSnackBar()
-        ..showSnackBar(
-          SnackBar(content: Text(l10n.csvImportComplete(state.importedCount))),
-        );
+      AppSnackBar.show(
+        context,
+        message: l10n.csvImportComplete(state.importedCount),
+        type: SnackBarType.success,
+      );
     }
   }
 
@@ -659,7 +656,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
   /// The outcome snackbar is shown only once the wipe has actually completed, because BLoC events are processed asynchronously and a failing clear surfaces as a [WeightError] state instead of a thrown exception.
   Future<void> _wipeDatabase() async {
     final l10n = AppLocalizations.of(context);
-    final theme = Theme.of(context);
     final weightBloc = context.read<WeightBloc>();
     final appSettingsBloc = context.read<AppSettingsBloc>();
 
@@ -679,25 +675,19 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
       if (!mounted) return;
       final isError = outcome is WeightError;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            isError
-                ? WeightErrorType.wipeFailed.localizedMessage(l10n)
-                : l10n.dataWipedSuccess,
-          ),
-          backgroundColor: isError
-              ? theme.colorScheme.error
-              : theme.colorScheme.tertiary,
-        ),
+      AppSnackBar.show(
+        context,
+        message: isError
+            ? WeightErrorType.wipeFailed.localizedMessage(l10n)
+            : l10n.dataWipedSuccess,
+        type: isError ? SnackBarType.error : SnackBarType.success,
       );
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(l10n.errorWipingData(e.toString())),
-          backgroundColor: theme.colorScheme.error,
-        ),
+      AppSnackBar.show(
+        context,
+        message: l10n.errorWipingData(e.toString()),
+        type: SnackBarType.error,
       );
     }
   }
@@ -715,9 +705,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
       if (entries.isEmpty) {
         if (context.mounted) {
-          ScaffoldMessenger.of(
+          AppSnackBar.show(
             context,
-          ).showSnackBar(SnackBar(content: Text(l10n.exportNoData)));
+            message: l10n.exportNoData,
+            type: SnackBarType.warning,
+          );
         }
         return;
       }
@@ -737,19 +729,20 @@ class _SettingsScreenState extends State<SettingsScreen> {
         );
 
         if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(l10n.exportSuccess),
-              backgroundColor: Theme.of(context).colorScheme.tertiary,
-            ),
+          AppSnackBar.show(
+            context,
+            message: l10n.exportSuccess,
+            type: SnackBarType.success,
           );
         }
       }
     } catch (e) {
       if (context.mounted) {
-        ScaffoldMessenger.of(
+        AppSnackBar.show(
           context,
-        ).showSnackBar(SnackBar(content: Text(l10n.exportError(e.toString()))));
+          message: l10n.exportError(e.toString()),
+          type: SnackBarType.error,
+        );
       }
     }
   }
@@ -764,9 +757,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
       final file = File('${dir.path}/$crashLogFileName');
       if (!await file.exists() || await file.length() == 0) {
         if (context.mounted) {
-          ScaffoldMessenger.of(context)
-            ..hideCurrentSnackBar()
-            ..showSnackBar(SnackBar(content: Text(l10n.crashLogEmpty)));
+          AppSnackBar.show(
+            context,
+            message: l10n.crashLogEmpty,
+            type: SnackBarType.warning,
+          );
         }
         return;
       }
@@ -785,11 +780,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
       );
     } catch (e) {
       if (context.mounted) {
-        ScaffoldMessenger.of(context)
-          ..hideCurrentSnackBar()
-          ..showSnackBar(
-            SnackBar(content: Text(l10n.shareCrashLogError(e.toString()))),
-          );
+        AppSnackBar.show(
+          context,
+          message: l10n.shareCrashLogError(e.toString()),
+          type: SnackBarType.error,
+        );
       }
     }
   }
@@ -807,14 +802,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
   void _handleHealthSyncToggle(BuildContext context, bool enabled) {
     context.read<AppSettingsBloc>().add(ToggleHealthSync(enabled));
     if (!enabled) {
-      ScaffoldMessenger.of(context)
-        ..hideCurrentSnackBar()
-        ..showSnackBar(
-          SnackBar(
-            content: Text(AppLocalizations.of(context).healthSyncDisabledInfo),
-            behavior: SnackBarBehavior.floating,
-          ),
-        );
+      AppSnackBar.show(
+        context,
+        message: AppLocalizations.of(context).healthSyncDisabledInfo,
+        type: SnackBarType.info,
+      );
     }
   }
 
@@ -866,9 +858,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
       final available = await BiometricService.instance.canAuthenticate();
       if (!available) {
         if (context.mounted) {
-          ScaffoldMessenger.of(
+          AppSnackBar.show(
             context,
-          ).showSnackBar(SnackBar(content: Text(l10n.biometricsNotAvailable)));
+            message: l10n.biometricsNotAvailable,
+            type: SnackBarType.error,
+          );
         }
         return;
       }
@@ -883,17 +877,21 @@ class _SettingsScreenState extends State<SettingsScreen> {
         // Biometrics became unavailable between the availability check and
         // the authentication call (e.g. user deleted fingerprints mid-flow).
         if (context.mounted) {
-          ScaffoldMessenger.of(
+          AppSnackBar.show(
             context,
-          ).showSnackBar(SnackBar(content: Text(l10n.biometricsNotAvailable)));
+            message: l10n.biometricsNotAvailable,
+            type: SnackBarType.error,
+          );
         }
       } else {
         // User canceled or failed — do not enable the lock.
         bloc.add(const UpdateBiometricLock(false));
         if (context.mounted) {
-          ScaffoldMessenger.of(
+          AppSnackBar.show(
             context,
-          ).showSnackBar(SnackBar(content: Text(l10n.biometricAuthFailed)));
+            message: l10n.biometricAuthFailed,
+            type: SnackBarType.error,
+          );
         }
       }
     } else {
@@ -921,14 +919,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
       context.read<AppSettingsBloc>().add(
         UpdateNotificationTime((hour: newTime.hour, minute: newTime.minute)),
       );
-      ScaffoldMessenger.of(context)
-        ..hideCurrentSnackBar()
-        ..showSnackBar(
-          SnackBar(
-            content: Text(l10n.reminderTimeSet(newTime.format(context))),
-            behavior: SnackBarBehavior.floating,
-          ),
-        );
+      AppSnackBar.show(
+        context,
+        message: l10n.reminderTimeSet(newTime.format(context)),
+        type: SnackBarType.info,
+      );
     }
   }
 }

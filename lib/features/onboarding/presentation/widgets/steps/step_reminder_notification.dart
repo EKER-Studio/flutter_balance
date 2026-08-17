@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:balance/core/presentation/utils/app_snackbar.dart';
 import 'package:balance/l10n/app_localizations.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_bloc.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_event.dart';
@@ -53,11 +54,10 @@ class _StepReminderNotificationState extends State<StepReminderNotification> {
         UpdateNotificationTime((hour: picked.hour, minute: picked.minute)),
       );
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(l10n.reminderTimeSet(picked.format(context))),
-          behavior: SnackBarBehavior.floating,
-        ),
+      AppSnackBar.show(
+        context,
+        message: l10n.reminderTimeSet(picked.format(context)),
+        type: SnackBarType.info,
       );
     }
   }

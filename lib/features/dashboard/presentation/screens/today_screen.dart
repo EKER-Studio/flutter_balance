@@ -5,6 +5,7 @@ import 'dart:math' as math;
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:balance/core/presentation/utils/app_snackbar.dart';
 import 'package:balance/core/models/measurement_unit.dart';
 import 'package:balance/core/utils/unit_converter.dart';
 import 'package:balance/features/weight/domain/entities/weight_entry.dart';
@@ -257,16 +258,15 @@ class TodayScreen extends StatelessWidget {
     AppLocalizations l10n,
   ) {
     final message = errorType.localizedMessage(l10n);
-    ScaffoldMessenger.of(context).hideCurrentSnackBar();
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        action: SnackBarAction(
-          label: l10n.retry,
-          onPressed: () {
-            context.read<WeightBloc>().add(const SubscribeToWeightChanges());
-          },
-        ),
+    AppSnackBar.show(
+      context,
+      message: message,
+      type: SnackBarType.error,
+      action: SnackBarAction(
+        label: l10n.retry,
+        onPressed: () {
+          context.read<WeightBloc>().add(const SubscribeToWeightChanges());
+        },
       ),
     );
   }

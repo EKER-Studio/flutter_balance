@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:balance/core/presentation/utils/app_snackbar.dart';
 import 'package:intl/intl.dart';
 import 'package:balance/core/models/measurement_unit.dart';
 import 'package:balance/core/utils/unit_converter.dart';
@@ -334,10 +335,10 @@ class _AddWeightSheetState extends State<AddWeightSheet> {
       final parsed = double.tryParse(normalized);
 
       if (parsed == null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(AppLocalizations.of(context).enterValidNumber),
-          ),
+        AppSnackBar.show(
+          context,
+          message: AppLocalizations.of(context).enterValidNumber,
+          type: SnackBarType.error,
         );
         return;
       }

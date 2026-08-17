@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:balance/core/presentation/utils/app_snackbar.dart';
 import 'package:balance/core/integrations/biometrics/biometric_service.dart';
 import 'package:balance/l10n/app_localizations.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_bloc.dart';
@@ -58,11 +59,10 @@ class _StepBiometricLockState extends State<StepBiometricLock> {
       final available = await BiometricService.instance.canAuthenticate();
       if (!available) {
         if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(l10n.biometricsNotAvailable),
-              behavior: SnackBarBehavior.floating,
-            ),
+          AppSnackBar.show(
+            context,
+            message: l10n.biometricsNotAvailable,
+            type: SnackBarType.error,
           );
         }
         return;
@@ -77,11 +77,10 @@ class _StepBiometricLockState extends State<StepBiometricLock> {
         bloc.add(const UpdateBiometricLock(true));
       } else {
         if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(l10n.biometricAuthFailed),
-              behavior: SnackBarBehavior.floating,
-            ),
+          AppSnackBar.show(
+            context,
+            message: l10n.biometricAuthFailed,
+            type: SnackBarType.error,
           );
         }
       }

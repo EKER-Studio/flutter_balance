@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:balance/core/presentation/utils/app_snackbar.dart';
 
 import 'package:balance/core/integrations/biometrics/biometric_service.dart';
 import 'package:balance/l10n/app_localizations.dart';
@@ -71,9 +72,11 @@ class _BiometricShieldScreenState extends State<BiometricShieldScreen> {
           bloc.add(const SetLocked(true));
         }
         if (context.mounted) {
-          ScaffoldMessenger.of(
+          AppSnackBar.show(
             context,
-          ).showSnackBar(SnackBar(content: Text(l10n.biometricAuthFailed)));
+            message: l10n.biometricAuthFailed,
+            type: SnackBarType.error,
+          );
         }
       }
     } catch (e, stack) {
