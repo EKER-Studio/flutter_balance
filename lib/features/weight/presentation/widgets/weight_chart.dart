@@ -14,17 +14,6 @@ import 'package:balance/core/models/measurement_unit.dart';
 /// Plots [entries] on a time-based X-axis, converts values into the active
 /// measurement unit, and renders the optional [targetWeight] as a dashed
 /// reference line.
-///
-/// ```dart
-/// WeightChart(
-///   entries: filteredEntries,
-///   period: TimePeriod.month,
-///   onPeriodChanged: (period) {
-///     // dispatch the newly selected period to the weight BLoC
-///   },
-///   targetWeight: 72.5,
-/// )
-/// ```
 class WeightChart extends StatelessWidget {
   /// The list of weight entries to plot.
   final List<WeightEntry> entries;

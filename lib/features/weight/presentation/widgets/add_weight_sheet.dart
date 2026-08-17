@@ -9,16 +9,11 @@ import 'package:balance/features/weight/presentation/bloc/weight_event.dart';
 import 'package:balance/l10n/app_localizations.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_bloc.dart';
 
-/// A modal dialog form for adding a new weight measurement with date, time, and note selection,
-/// adhering to Material 3 dialog guidelines and accessibility (a11y) standards.
+/// A modal dialog form for adding a new weight measurement.
 ///
 /// Validates the weight against [WeightEntry.minWeightKg] and
 /// [WeightEntry.maxWeightKg], converts imperial input to kilograms, and
 /// dispatches [AddWeight] to [WeightBloc] on save.
-///
-/// ```dart
-/// showDialog(context: context, builder: (_) => const AddWeightSheet());
-/// ```
 class AddWeightSheet extends StatefulWidget {
   /// The optional initial date/time for the measurement.
   final DateTime? initialDate;
