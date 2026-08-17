@@ -465,6 +465,72 @@ class IsarWeightRepository implements WeightRepository {
   /// Throws [WeightRepositoryException] with [WeightErrorType.wipeFailed] when
   /// the clear transaction fails or an unexpected error occurs.
   @override
+  @override
+  Future<int> syncRemoteEntries(List<WeightEntry> remoteEntries) async {
+    try {
+      final key = await _getOrLoadKey(isWrite: true);
+
+      final existingModels = await liveIsar.weightEntryModels.where().findAll();
+      final existingPayloads = existingModels
+          .map((m) => (m.id, m.dateTime, m.encryptedWeight, m.encryptedNote))
+          .toList();
+      final localEntries = await compute(_decryptPayloads, (
+        existingPayloads,
+        key,
+      ));
+
+      final newEntries = <WeightEntry>[];
+      for (final remote in remoteEntries) {
+        final rUtc = remote.dateTime.toUtc();
+        bool isDuplicate = false;
+        for (final local in localEntries) {
+          final lUtc = local.dateTime.toUtc();
+          if ((remote.weightKg - local.weightKg).abs() <= 0.05 &&
+              rUtc.difference(lUtc).inSeconds.abs() <= 60) {
+            isDuplicate = true;
+            break;
+          }
+        }
+        if (!isDuplicate) {
+          newEntries.add(remote);
+        }
+      }
+
+      if (newEntries.isEmpty) {
+        return 0;
+      }
+
+      final payloadsToEncrypt = await compute(_encryptPayloads, (
+        newEntries,
+        key,
+      ));
+      final modelsToPut = payloadsToEncrypt.map((p) {
+        return WeightEntryModel()
+          ..id = p.$1
+          ..dateTime = p.$2
+          ..encryptedWeight = p.$3
+          ..encryptedNote = p.$4;
+      }).toList();
+
+      await liveIsar.writeTxn(() async {
+        await liveIsar.weightEntryModels.putAll(modelsToPut);
+      });
+      return modelsToPut.length;
+    } on WeightRepositoryException {
+      rethrow;
+    } catch (e) {
+      if (kDebugMode) {
+        debugPrint('[IsarWeightRepository] syncRemoteEntries error: $e');
+      }
+      throw WeightRepositoryException(
+        type: WeightErrorType.writeFailed,
+        message: 'Sync error: $e',
+        sourceError: e,
+      );
+    }
+  }
+
+  @override
   Future<void> clearAllData() async {
     try {
       await liveIsar.writeTxn(() async {

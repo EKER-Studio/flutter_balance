@@ -40,6 +40,10 @@ abstract class WeightRepository {
   /// when the transaction fails.
   Future<int> bulkImportEntries(List<WeightEntry> entries);
 
+  /// Synchronizes remote entries into the local database with deduplication.
+  /// Deduplication logic uses a 60-second and 0.05kg tolerance.
+  Future<int> syncRemoteEntries(List<WeightEntry> remoteEntries);
+
   /// Removes all stored weight data from persistent storage.
   ///
   /// Throws a `WeightRepositoryException` when the wipe fails.

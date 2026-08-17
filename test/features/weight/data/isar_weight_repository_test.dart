@@ -853,4 +853,60 @@ void main() {
       );
     });
   });
+
+  group('syncRemoteEntries', () {
+    test(
+      'deduplicates entries based on timestamp and weight tolerance',
+      () async {
+        if (isar == null) return;
+        await isar!.writeTxn(() async {
+          await isar!.weightEntryModels.put(
+            WeightEntryModel()
+              ..id = 1
+              ..dateTime = DateTime(2026, 1, 1, 10, 30, 0)
+              ..encryptedWeight = FieldCipher.encrypt('72.0', testKeyA),
+          );
+        });
+
+        final newEntries = [
+          WeightEntry(
+            id: 0,
+            weightKg: 72.0,
+            dateTime: DateTime(2026, 1, 1, 10, 30, 0, 500),
+          ),
+          WeightEntry(
+            id: 0,
+            weightKg: 72.04,
+            dateTime: DateTime(2026, 1, 1, 10, 30, 45),
+          ),
+          WeightEntry(
+            id: 0,
+            weightKg: 72.0,
+            dateTime: DateTime(2026, 1, 1, 10, 31, 5),
+          ),
+          WeightEntry(
+            id: 0,
+            weightKg: 72.06,
+            dateTime: DateTime(2026, 1, 1, 10, 30, 0),
+          ),
+        ];
+
+        final writtenCount = await repository!.syncRemoteEntries(newEntries);
+        expect(writtenCount, 2);
+
+        final all = await repository!.getAllEntries();
+        expect(all.length, 3);
+        expect(all.any((e) => e.weightKg == 72.04), false);
+        expect(all.any((e) => e.weightKg == 72.06), true);
+        expect(
+          all.any(
+            (e) =>
+                e.weightKg == 72.0 &&
+                e.dateTime == DateTime(2026, 1, 1, 10, 31, 5),
+          ),
+          true,
+        );
+      },
+    );
+  });
 }
