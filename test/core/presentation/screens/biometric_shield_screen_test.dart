@@ -126,7 +126,7 @@ void main() {
         final l10n = AppLocalizations.of(
           tester.element(find.byType(AlertDialog)),
         );
-        await tester.tap(find.widgetWithText(FilledButton, l10n.disableLock));
+        await tester.tap(find.widgetWithText(TextButton, l10n.disableLock));
         await tester.pumpAndSettle();
 
         expect(bloc.state.isBiometricLockEnabled, false);

@@ -111,29 +111,16 @@ class HeightDialogState extends State<HeightDialog> {
     final l10n = AppLocalizations.of(context);
     final isMetric = widget.measurementUnit == MeasurementUnit.metric;
 
-    final isLandscape =
-        MediaQuery.of(context).orientation == Orientation.landscape;
-    final isKeyboardOpen = MediaQuery.viewInsetsOf(context).bottom > 0;
-    final hideChrome = isLandscape && isKeyboardOpen;
-
-    final inputPadding = hideChrome
-        ? const EdgeInsets.symmetric(horizontal: 12, vertical: 8)
-        : const EdgeInsetsDirectional.fromSTEB(12, 16, 12, 12);
-
     return AlertDialog(
       scrollable: true,
-      insetPadding: EdgeInsets.symmetric(
-        horizontal: isLandscape ? 32 : 24,
-        vertical: isLandscape ? 8 : 24,
-      ),
-      title: hideChrome ? null : Text(l10n.heightDialogTitle),
+      insetPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
+      title: Text(l10n.heightDialogTitle),
       content: SizedBox(
         width: 320,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            if (!hideChrome) const SizedBox(height: 4),
             if (isMetric)
               TextField(
                 controller: _cmController,
@@ -146,6 +133,7 @@ class HeightDialogState extends State<HeightDialog> {
                 decoration: InputDecoration(
                   labelText: l10n.heightCmLabel,
                   hintText: l10n.heightHint,
+                  border: const OutlineInputBorder(),
                   errorText: _errorText != null ? "" : null,
                   errorStyle: const TextStyle(height: 0, fontSize: 0),
                   helperText: l10n.heightRangeHint(
@@ -153,8 +141,12 @@ class HeightDialogState extends State<HeightDialog> {
                     AppSettingsState.maxHeightCm.toStringAsFixed(0),
                   ),
                   helperMaxLines: 2,
-                  isDense: hideChrome,
-                  contentPadding: inputPadding,
+                  contentPadding: const EdgeInsetsDirectional.fromSTEB(
+                    12,
+                    16,
+                    12,
+                    12,
+                  ),
                 ),
                 onChanged: (_) {
                   if (_errorText != null) setState(() => _errorText = null);
@@ -174,10 +166,15 @@ class HeightDialogState extends State<HeightDialog> {
                       decoration: InputDecoration(
                         labelText: l10n.feetLabel,
                         suffixText: 'ft',
+                        border: const OutlineInputBorder(),
                         errorText: _errorText != null ? "" : null,
                         errorStyle: const TextStyle(height: 0, fontSize: 0),
-                        isDense: hideChrome,
-                        contentPadding: inputPadding,
+                        contentPadding: const EdgeInsetsDirectional.fromSTEB(
+                          12,
+                          16,
+                          12,
+                          12,
+                        ),
                       ),
                       onChanged: (_) {
                         if (_errorText != null) {
@@ -195,10 +192,15 @@ class HeightDialogState extends State<HeightDialog> {
                       decoration: InputDecoration(
                         labelText: l10n.inchesLabel,
                         suffixText: 'in',
+                        border: const OutlineInputBorder(),
                         errorText: _errorText != null ? "" : null,
                         errorStyle: const TextStyle(height: 0, fontSize: 0),
-                        isDense: hideChrome,
-                        contentPadding: inputPadding,
+                        contentPadding: const EdgeInsetsDirectional.fromSTEB(
+                          12,
+                          16,
+                          12,
+                          12,
+                        ),
                       ),
                       onChanged: (_) {
                         if (_errorText != null) {
@@ -224,15 +226,13 @@ class HeightDialogState extends State<HeightDialog> {
           ],
         ),
       ),
-      actions: hideChrome
-          ? null
-          : [
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(),
-                child: Text(l10n.cancel),
-              ),
-              TextButton(onPressed: _handleSave, child: Text(l10n.save)),
-            ],
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(),
+          child: Text(l10n.cancel),
+        ),
+        TextButton(onPressed: _handleSave, child: Text(l10n.save)),
+      ],
     );
   }
 }

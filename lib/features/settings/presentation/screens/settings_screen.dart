@@ -767,19 +767,19 @@ class _SettingsScreenState extends State<SettingsScreen> {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        icon: Icon(
-          Icons.monitor_heart_outlined,
-          size: 28,
-          color: Theme.of(context).colorScheme.primary,
-        ),
+        scrollable: true,
+        insetPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
         title: Text(l10n.healthConnectRequiredTitle),
-        content: Text(l10n.healthConnectRequiredSubtitle),
+        content: SizedBox(
+          width: 320,
+          child: Text(l10n.healthConnectRequiredSubtitle),
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
             child: Text(l10n.cancel),
           ),
-          FilledButton(
+          TextButton(
             onPressed: () {
               Navigator.pop(ctx);
               NativeHealthService.instance.installHealthConnect();

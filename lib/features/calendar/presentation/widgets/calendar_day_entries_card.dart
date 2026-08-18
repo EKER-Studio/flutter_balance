@@ -245,23 +245,19 @@ class CalendarDayEntriesCard extends StatelessWidget {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        icon: Icon(
-          Icons.delete_outline,
-          size: 28,
-          color: Theme.of(context).colorScheme.error,
-        ),
+        scrollable: true,
+        insetPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
         title: Text(l10n.deleteEntryTitle),
-        content: Text(l10n.deleteEntryMessage),
+        content: SizedBox(width: 320, child: Text(l10n.deleteEntryMessage)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(dialogContext, false),
             child: Text(l10n.cancel),
           ),
-          FilledButton(
+          TextButton(
             onPressed: () => Navigator.pop(dialogContext, true),
-            style: FilledButton.styleFrom(
-              backgroundColor: Theme.of(context).colorScheme.error,
-              foregroundColor: Theme.of(context).colorScheme.onError,
+            style: TextButton.styleFrom(
+              foregroundColor: Theme.of(context).colorScheme.error,
             ),
             child: Text(l10n.deleteEntryTooltip),
           ),

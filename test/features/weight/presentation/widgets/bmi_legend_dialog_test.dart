@@ -33,7 +33,6 @@ void main() {
     await pumpDialog(tester);
 
     expect(find.byType(AlertDialog), findsOneWidget);
-    expect(find.byIcon(Icons.info_outline), findsOneWidget);
     expect(find.text('BMI Categories'), findsOneWidget);
 
     expect(find.text('Underweight'), findsOneWidget);

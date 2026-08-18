@@ -121,40 +121,22 @@ class _AddWeightDialogState extends State<AddWeightDialog> {
     final l10n = AppLocalizations.of(context);
     final unit = context.watch<AppSettingsBloc>().state.measurementUnit;
 
-    final isLandscapePhone =
-        MediaQuery.of(context).orientation == Orientation.landscape &&
-        MediaQuery.sizeOf(context).height < 500;
-
     final dateStr = DateFormat.yMd(
       Localizations.localeOf(context).toString(),
     ).format(_selectedDate);
 
     final timeStr = _selectedTime.format(context);
 
-    final inputPadding = isLandscapePhone
-        ? const EdgeInsets.symmetric(horizontal: 12, vertical: 8)
-        : const EdgeInsetsDirectional.fromSTEB(12, 16, 12, 12);
-
     return AlertDialog(
       scrollable: true,
-      insetPadding: EdgeInsets.symmetric(
-        horizontal: isLandscapePhone ? 32 : 24,
-        vertical: isLandscapePhone ? 8 : 24,
-      ),
-      title: isLandscapePhone ? null : Text(l10n.addWeight),
-      contentPadding: EdgeInsets.fromLTRB(
-        24,
-        isLandscapePhone ? 12 : 20,
-        24,
-        isLandscapePhone ? 8 : 20,
-      ),
+      insetPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
+      title: Text(l10n.addWeight),
       content: SizedBox(
         width: 320,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            if (!isLandscapePhone) const SizedBox(height: 4),
             Row(
               children: [
                 Expanded(
@@ -173,8 +155,12 @@ class _AddWeightDialogState extends State<AddWeightDialog> {
                             Icons.calendar_today_outlined,
                             size: 20,
                           ),
-                          isDense: isLandscapePhone,
-                          contentPadding: inputPadding,
+                          contentPadding: const EdgeInsetsDirectional.fromSTEB(
+                            12,
+                            16,
+                            12,
+                            12,
+                          ),
                         ),
                         child: FittedBox(
                           fit: BoxFit.scaleDown,
@@ -205,8 +191,12 @@ class _AddWeightDialogState extends State<AddWeightDialog> {
                             Icons.access_time_outlined,
                             size: 20,
                           ),
-                          isDense: isLandscapePhone,
-                          contentPadding: inputPadding,
+                          contentPadding: const EdgeInsetsDirectional.fromSTEB(
+                            12,
+                            16,
+                            12,
+                            12,
+                          ),
                         ),
                         child: FittedBox(
                           fit: BoxFit.scaleDown,
@@ -235,7 +225,7 @@ class _AddWeightDialogState extends State<AddWeightDialog> {
                 ),
               ),
             ],
-            SizedBox(height: isLandscapePhone ? 8 : 16),
+            const SizedBox(height: 16),
             TextField(
               controller: _weightController,
               autofocus: false,
@@ -251,8 +241,12 @@ class _AddWeightDialogState extends State<AddWeightDialog> {
                 border: const OutlineInputBorder(),
                 errorText: _weightError != null ? "" : null,
                 errorStyle: const TextStyle(height: 0, fontSize: 0),
-                isDense: isLandscapePhone,
-                contentPadding: inputPadding,
+                contentPadding: const EdgeInsetsDirectional.fromSTEB(
+                  12,
+                  16,
+                  12,
+                  12,
+                ),
               ),
               onChanged: (_) {
                 if (_weightError != null) setState(() => _weightError = null);
@@ -269,14 +263,18 @@ class _AddWeightDialogState extends State<AddWeightDialog> {
                   ),
                 ),
               ),
-            SizedBox(height: isLandscapePhone ? 8 : 16),
+            const SizedBox(height: 16),
             TextField(
               controller: _noteController,
               decoration: InputDecoration(
                 labelText: l10n.noteLabel,
                 border: const OutlineInputBorder(),
-                isDense: isLandscapePhone,
-                contentPadding: inputPadding,
+                contentPadding: const EdgeInsetsDirectional.fromSTEB(
+                  12,
+                  16,
+                  12,
+                  12,
+                ),
               ),
               maxLines: 1,
               textInputAction: TextInputAction.done,
@@ -285,15 +283,13 @@ class _AddWeightDialogState extends State<AddWeightDialog> {
           ],
         ),
       ),
-      actions: isLandscapePhone
-          ? null
-          : [
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(),
-                child: Text(l10n.cancel),
-              ),
-              TextButton(onPressed: _onSave, child: Text(l10n.save)),
-            ],
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(),
+          child: Text(l10n.cancel),
+        ),
+        TextButton(onPressed: _onSave, child: Text(l10n.save)),
+      ],
     );
   }
 

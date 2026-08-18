@@ -109,19 +109,16 @@ class _BiometricShieldScreenState extends State<BiometricShieldScreen> {
     final disable = await showDialog<bool>(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        icon: Icon(
-          Icons.fingerprint,
-          size: 28,
-          color: Theme.of(context).colorScheme.primary,
-        ),
+        scrollable: true,
+        insetPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
         title: Text(l10n.biometricLockoutTitle),
-        content: Text(l10n.biometricLockoutBody),
+        content: SizedBox(width: 320, child: Text(l10n.biometricLockoutBody)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(dialogContext, false),
             child: Text(l10n.keepLocked),
           ),
-          FilledButton(
+          TextButton(
             onPressed: () => Navigator.pop(dialogContext, true),
             child: Text(l10n.disableLock),
           ),

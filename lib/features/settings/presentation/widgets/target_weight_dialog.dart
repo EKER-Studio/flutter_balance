@@ -85,30 +85,20 @@ class _TargetWeightDialogState extends State<TargetWeightDialog> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final colorScheme = Theme.of(context).colorScheme;
 
-    final isLandscape =
-        MediaQuery.of(context).orientation == Orientation.landscape;
-    final isKeyboardOpen = MediaQuery.viewInsetsOf(context).bottom > 0;
-    final hideChrome = isLandscape && isKeyboardOpen;
-
-    final inputPadding = hideChrome
-        ? const EdgeInsets.symmetric(horizontal: 12, vertical: 8)
-        : const EdgeInsetsDirectional.fromSTEB(12, 16, 12, 12);
+    final hasTarget = widget.currentValueKg != null;
 
     return AlertDialog(
       scrollable: true,
-      insetPadding: EdgeInsets.symmetric(
-        horizontal: isLandscape ? 32 : 24,
-        vertical: isLandscape ? 8 : 24,
-      ),
-      title: hideChrome ? null : Text(l10n.targetWeightDialogTitle),
+      insetPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
+      title: Text(l10n.targetWeightDialogTitle),
       content: SizedBox(
         width: 320,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            if (!hideChrome) const SizedBox(height: 4),
             TextField(
               controller: _controller,
               keyboardType: const TextInputType.numberWithOptions(
@@ -122,10 +112,15 @@ class _TargetWeightDialogState extends State<TargetWeightDialog> {
                     ? l10n.weightInLbLabel
                     : l10n.weightInKgLabel,
                 hintText: l10n.weightHint,
+                border: const OutlineInputBorder(),
                 errorText: _errorText,
                 errorMaxLines: 2,
-                isDense: hideChrome,
-                contentPadding: inputPadding,
+                contentPadding: const EdgeInsetsDirectional.fromSTEB(
+                  12,
+                  16,
+                  12,
+                  12,
+                ),
               ),
               onChanged: (_) {
                 if (_errorText != null) {
@@ -137,17 +132,26 @@ class _TargetWeightDialogState extends State<TargetWeightDialog> {
           ],
         ),
       ),
-      actions: hideChrome
-          ? null
-          : [
-              if (widget.currentValueKg != null)
-                TextButton(
-                  onPressed: () => Navigator.of(context).pop('clear'),
-                  style: TextButton.styleFrom(
-                    foregroundColor: Theme.of(context).colorScheme.error,
+      actionsAlignment: hasTarget ? MainAxisAlignment.spaceBetween : null,
+      actions: hasTarget
+          ? [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop('clear'),
+                style: TextButton.styleFrom(foregroundColor: colorScheme.error),
+                child: Text(l10n.removeTargetWeight),
+              ),
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  TextButton(
+                    onPressed: () => Navigator.of(context).pop(),
+                    child: Text(l10n.cancel),
                   ),
-                  child: Text(l10n.removeTargetWeight),
-                ),
+                  TextButton(onPressed: _handleSave, child: Text(l10n.save)),
+                ],
+              ),
+            ]
+          : [
               TextButton(
                 onPressed: () => Navigator.of(context).pop(),
                 child: Text(l10n.cancel),

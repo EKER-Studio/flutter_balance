@@ -530,7 +530,7 @@ void main() {
 
       expect(find.text('Delete entry'), findsWidgets);
 
-      await tester.tap(find.widgetWithText(FilledButton, 'Delete entry'));
+      await tester.tap(find.widgetWithText(TextButton, 'Delete entry'));
       await tester.pump();
       await tester.pump(const Duration(seconds: 2));
 

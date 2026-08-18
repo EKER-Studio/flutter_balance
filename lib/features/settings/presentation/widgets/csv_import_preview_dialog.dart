@@ -35,10 +35,6 @@ class CsvImportPreviewDialog extends StatelessWidget {
     final textTheme = Theme.of(context).textTheme;
     final colorScheme = Theme.of(context).colorScheme;
 
-    final isLandscapePhone =
-        MediaQuery.of(context).orientation == Orientation.landscape &&
-        MediaQuery.sizeOf(context).height < 500;
-
     final dateFormat = DateFormat.yMMMd(
       Localizations.localeOf(context).languageCode,
     );
@@ -56,24 +52,8 @@ class CsvImportPreviewDialog extends StatelessWidget {
 
     return AlertDialog(
       scrollable: true,
-      insetPadding: EdgeInsets.symmetric(
-        horizontal: isLandscapePhone ? 32 : 24,
-        vertical: isLandscapePhone ? 8 : 24,
-      ),
-      icon: isLandscapePhone
-          ? null
-          : Icon(
-              Icons.analytics_outlined,
-              color: colorScheme.primary,
-              size: 32,
-            ),
-      title: Text(l10n.csvPreviewTitle, textAlign: TextAlign.center),
-      contentPadding: EdgeInsets.fromLTRB(
-        24,
-        isLandscapePhone ? 8 : 16,
-        24,
-        isLandscapePhone ? 12 : 20,
-      ),
+      insetPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
+      title: Text(l10n.csvPreviewTitle),
       content: SizedBox(
         width: 320,
         child: Column(
@@ -82,10 +62,7 @@ class CsvImportPreviewDialog extends StatelessWidget {
           children: [
             // Valid Entries Count & Date Range Card
             Container(
-              padding: EdgeInsets.symmetric(
-                vertical: isLandscapePhone ? 10 : 16,
-                horizontal: 16,
-              ),
+              padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
               decoration: BoxDecoration(
                 color: colorScheme.primaryContainer.withAlpha(80),
                 borderRadius: BorderRadius.circular(12),
@@ -95,14 +72,10 @@ class CsvImportPreviewDialog extends StatelessWidget {
                 children: [
                   Text(
                     analysis.validEntries.length.toString(),
-                    style:
-                        (isLandscapePhone
-                                ? textTheme.headlineSmall
-                                : textTheme.headlineMedium)
-                            ?.copyWith(
-                              color: colorScheme.onPrimaryContainer,
-                              fontWeight: FontWeight.bold,
-                            ),
+                    style: textTheme.headlineMedium?.copyWith(
+                      color: colorScheme.onPrimaryContainer,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                   if (dateRangeText != null) ...[
                     const SizedBox(height: 4),
@@ -120,7 +93,7 @@ class CsvImportPreviewDialog extends StatelessWidget {
 
             // Skipped Rows
             if (analysis.skippedRowCount > 0) ...[
-              SizedBox(height: isLandscapePhone ? 8 : 12),
+              const SizedBox(height: 12),
               Row(
                 children: [
                   Icon(
@@ -143,13 +116,12 @@ class CsvImportPreviewDialog extends StatelessWidget {
           ],
         ),
       ),
-      actionsAlignment: MainAxisAlignment.spaceBetween,
       actions: [
         TextButton(
           onPressed: () => Navigator.of(context).pop(false),
           child: Text(l10n.csvPreviewCancel),
         ),
-        FilledButton(
+        TextButton(
           onPressed: () => Navigator.of(context).pop(true),
           child: Text(l10n.csvPreviewConfirm),
         ),
