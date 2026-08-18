@@ -76,7 +76,7 @@ class CustomSettingsToggleState extends State<CustomSettingsToggle> {
         focusNode: _focusNode,
         child: SwitchListTile.adaptive(
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
+            borderRadius: BorderRadius.circular(16),
           ),
           secondary: Icon(widget.icon, color: colorScheme.onSurfaceVariant),
           title: Text(
@@ -102,7 +102,7 @@ class CustomSettingsToggleState extends State<CustomSettingsToggle> {
     if (_isFocused) {
       return Container(
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(16),
           border: Border.all(color: colorScheme.primary, width: 2),
         ),
         child: tile,

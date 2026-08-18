@@ -117,10 +117,10 @@ class CalendarDayEntriesCard extends StatelessWidget {
                 margin: EdgeInsets.zero,
                 color: cs.surfaceContainerLow,
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(28),
+                  borderRadius: BorderRadius.circular(16),
                 ),
                 child: InkWell(
-                  borderRadius: BorderRadius.circular(28),
+                  borderRadius: BorderRadius.circular(16),
                   onTap: () {
                     // Reserved: tap-to-edit entry handling.
                   },

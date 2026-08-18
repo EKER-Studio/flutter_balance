@@ -180,7 +180,7 @@ class _StepReminderNotificationState extends State<StepReminderNotification> {
                     padding: const EdgeInsets.all(12.0),
                     decoration: BoxDecoration(
                       color: theme.colorScheme.errorContainer,
-                      borderRadius: BorderRadius.circular(12.0),
+                      borderRadius: BorderRadius.circular(16.0),
                     ),
                     child: Row(
                       children: [

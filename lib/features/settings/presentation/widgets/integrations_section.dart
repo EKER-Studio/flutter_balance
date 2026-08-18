@@ -42,7 +42,7 @@ class IntegrationsSection extends StatelessWidget {
       margin: EdgeInsets.zero,
       color: colorScheme.surfaceContainerLow,
       elevation: 0,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: showInstallAction
           ? CustomSettingsTile(
               icon: Icons.monitor_heart_outlined,

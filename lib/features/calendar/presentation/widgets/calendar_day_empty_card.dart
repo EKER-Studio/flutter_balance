@@ -23,7 +23,7 @@ class CalendarDayEmptyCard extends StatelessWidget {
       elevation: 0,
       margin: EdgeInsets.zero,
       color: cs.surfaceContainerLow,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
         child: Column(

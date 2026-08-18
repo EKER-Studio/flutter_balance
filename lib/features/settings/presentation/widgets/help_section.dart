@@ -36,7 +36,7 @@ class HelpSectionState extends State<HelpSection> {
       margin: EdgeInsets.zero,
       color: colorScheme.surfaceContainerLow,
       elevation: 0,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: FutureBuilder<PackageInfo>(
         future: _packageInfo,
         builder: (context, snapshot) {

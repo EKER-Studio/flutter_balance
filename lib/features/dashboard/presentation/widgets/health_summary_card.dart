@@ -85,7 +85,7 @@ class HealthSummaryCard extends StatelessWidget {
               clipBehavior: Clip.antiAlias,
               color: colorScheme.surfaceContainerLow,
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(28),
+                borderRadius: BorderRadius.circular(16),
                 side: BorderSide(
                   color: colorScheme.outlineVariant.withValues(alpha: 0.3),
                 ),

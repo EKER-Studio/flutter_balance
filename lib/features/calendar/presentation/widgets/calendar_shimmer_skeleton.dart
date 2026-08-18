@@ -61,7 +61,7 @@ class _CalendarShimmerSkeletonState extends State<CalendarShimmerSkeleton>
                   margin: EdgeInsets.zero,
                   color: cs.surfaceContainerLow,
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(28),
+                    borderRadius: BorderRadius.circular(16),
                   ),
                   child: Padding(
                     padding: const EdgeInsets.all(16),
@@ -162,7 +162,7 @@ class _CalendarShimmerSkeletonState extends State<CalendarShimmerSkeleton>
                   margin: EdgeInsets.zero,
                   color: cs.surfaceContainerLow,
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(28),
+                    borderRadius: BorderRadius.circular(16),
                   ),
                   child: Padding(
                     padding: const EdgeInsets.symmetric(

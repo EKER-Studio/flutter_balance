@@ -116,7 +116,7 @@ class CustomSettingsTileState extends State<CustomSettingsTile> {
         focusNode: _focusNode,
         child: ListTile(
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
+            borderRadius: BorderRadius.circular(16),
           ),
           leading: Icon(widget.icon, color: effectiveColor),
           title: Text(
@@ -143,7 +143,7 @@ class CustomSettingsTileState extends State<CustomSettingsTile> {
     if (_isFocused) {
       return Container(
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(16),
           border: Border.all(color: colorScheme.primary, width: 2),
         ),
         child: tile,

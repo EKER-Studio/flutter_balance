@@ -48,7 +48,7 @@ void main() {
       expect(card.shape, isA<RoundedRectangleBorder>());
       expect(
         (card.shape! as RoundedRectangleBorder).borderRadius,
-        BorderRadius.circular(28),
+        BorderRadius.circular(16),
       );
     });
 
@@ -74,12 +74,12 @@ void main() {
       expect(
         (AppTheme.lightTheme.dialogTheme.shape! as RoundedRectangleBorder)
             .borderRadius,
-        BorderRadius.circular(28),
+        BorderRadius.circular(16),
       );
       expect(
         (AppTheme.lightTheme.bottomSheetTheme.shape! as RoundedRectangleBorder)
             .borderRadius,
-        const BorderRadius.vertical(top: Radius.circular(28)),
+        const BorderRadius.vertical(top: Radius.circular(16)),
       );
     });
   });
@@ -98,7 +98,7 @@ void main() {
       expect(card.shape, isA<RoundedRectangleBorder>());
       expect(
         (card.shape! as RoundedRectangleBorder).borderRadius,
-        BorderRadius.circular(28),
+        BorderRadius.circular(16),
       );
     });
 

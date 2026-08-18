@@ -356,12 +356,12 @@ class _StepCsvImportState extends State<StepCsvImport> {
           SizedBox(height: isLandscape ? 8.0 : 20.0),
           Material(
             color: theme.colorScheme.errorContainer,
-            borderRadius: BorderRadius.circular(28.0),
+            borderRadius: BorderRadius.circular(16.0),
             clipBehavior: Clip.antiAlias,
             child: Container(
               padding: const EdgeInsets.all(24.0),
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(28.0),
+                borderRadius: BorderRadius.circular(16.0),
               ),
               child: Column(
                 children: [

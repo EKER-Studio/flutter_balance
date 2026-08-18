@@ -107,7 +107,7 @@ class _TodayShimmerSkeletonState extends State<TodayShimmerSkeleton>
       margin: EdgeInsets.zero,
       elevation: 0,
       color: cs.surfaceContainerLow,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(
@@ -158,7 +158,7 @@ class _TodayShimmerSkeletonState extends State<TodayShimmerSkeleton>
                     height: 32,
                     decoration: BoxDecoration(
                       color: shimmerColor,
-                      borderRadius: BorderRadius.circular(20),
+                      borderRadius: BorderRadius.circular(16),
                     ),
                   ),
                 ),
@@ -175,7 +175,7 @@ class _TodayShimmerSkeletonState extends State<TodayShimmerSkeleton>
       margin: EdgeInsets.zero,
       elevation: 0,
       color: cs.surfaceContainerLow,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -209,7 +209,7 @@ class _TodayShimmerSkeletonState extends State<TodayShimmerSkeleton>
       margin: EdgeInsets.zero,
       elevation: 0,
       color: cs.surfaceContainerLow,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Row(

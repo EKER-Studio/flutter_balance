@@ -25,7 +25,7 @@ class StepWelcome extends StatelessWidget {
 
     return Material(
       color: theme.colorScheme.surfaceContainerLow,
-      borderRadius: BorderRadius.circular(12.0),
+      borderRadius: BorderRadius.circular(16.0),
       child: Padding(
         padding: EdgeInsets.symmetric(
           horizontal: 16.0,

@@ -65,7 +65,7 @@ class CsvImportPreviewDialog extends StatelessWidget {
               padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
               decoration: BoxDecoration(
                 color: colorScheme.primaryContainer.withAlpha(80),
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(16),
                 border: Border.all(color: colorScheme.primaryContainer),
               ),
               child: Column(

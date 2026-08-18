@@ -425,7 +425,7 @@ class _StatisticsShimmerSkeletonState extends State<StatisticsShimmerSkeleton>
       margin: EdgeInsets.zero,
       elevation: 0,
       color: Theme.of(context).colorScheme.surfaceContainerLow,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: Padding(padding: const EdgeInsets.all(16), child: child),
     );
   }

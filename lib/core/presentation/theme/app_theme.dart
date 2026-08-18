@@ -177,7 +177,7 @@ abstract final class AppTheme {
     cardTheme: CardThemeData(
       elevation: 0,
       color: lightColorScheme.surfaceContainerLow,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
     ),
     filledButtonTheme: FilledButtonThemeData(
       style: FilledButton.styleFrom(
@@ -249,12 +249,12 @@ abstract final class AppTheme {
       ),
     ),
     dialogTheme: DialogThemeData(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       backgroundColor: lightColorScheme.surfaceContainerHigh,
     ),
     bottomSheetTheme: BottomSheetThemeData(
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
       ),
       backgroundColor: lightColorScheme.surfaceContainerLow,
     ),
@@ -276,7 +276,7 @@ abstract final class AppTheme {
     cardTheme: CardThemeData(
       elevation: 0,
       color: darkColorScheme.surfaceContainerLow,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
     ),
     filledButtonTheme: FilledButtonThemeData(
       style: FilledButton.styleFrom(
@@ -346,12 +346,12 @@ abstract final class AppTheme {
       secondaryLabelStyle: TextStyle(color: darkColorScheme.onPrimaryContainer),
     ),
     dialogTheme: DialogThemeData(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       backgroundColor: darkColorScheme.surfaceContainerHigh,
     ),
     bottomSheetTheme: BottomSheetThemeData(
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
       ),
       backgroundColor: darkColorScheme.surfaceContainerLow,
     ),

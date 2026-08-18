@@ -176,9 +176,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                       margin: EdgeInsets.zero,
                       color: Theme.of(context).colorScheme.surfaceContainerLow,
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(
-                          isLandscape ? 24 : 28,
-                        ),
+                        borderRadius: BorderRadius.circular(16),
                       ),
                       child: Padding(
                         padding: EdgeInsets.fromLTRB(
