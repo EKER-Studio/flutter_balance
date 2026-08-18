@@ -741,6 +741,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
           subject: 'Balance Export CSV',
           sharePositionOrigin: originRect,
         );
+
+        if (context.mounted) {
+          AppSnackBar.show(
+            context,
+            message: l10n.exportSuccess,
+            type: SnackBarType.success,
+          );
+        }
       }
     } catch (e) {
       if (context.mounted) {
