@@ -67,7 +67,6 @@ class HeightDialogState extends State<HeightDialog> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final isError = _errorText != null;
 
     return AlertDialog(
       icon: Icon(
@@ -83,7 +82,7 @@ class HeightDialogState extends State<HeightDialog> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              const SizedBox(height: 16),
+              const SizedBox(height: 4),
               TextField(
                 controller: _controller,
                 keyboardType: const TextInputType.numberWithOptions(
@@ -94,24 +93,27 @@ class HeightDialogState extends State<HeightDialog> {
                 decoration: InputDecoration(
                   labelText: l10n.heightCmLabel,
                   hintText: l10n.heightHint,
-                  enabledBorder: isError
-                      ? OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                          borderSide: BorderSide(
-                            color: Theme.of(context).colorScheme.error,
-                            width: 2,
-                          ),
-                        )
-                      : null,
-                  focusedBorder: isError
-                      ? OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                          borderSide: BorderSide(
-                            color: Theme.of(context).colorScheme.error,
-                            width: 2,
-                          ),
-                        )
-                      : null,
+                  errorText: _errorText,
+                  helperText: l10n.heightRangeHint(
+                    AppSettingsState.minHeightCm.toStringAsFixed(0),
+                    AppSettingsState.maxHeightCm.toStringAsFixed(0),
+                  ),
+                  helperMaxLines: 2,
+                  errorMaxLines: 2,
+                  errorBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                    borderSide: BorderSide(
+                      color: Theme.of(context).colorScheme.error,
+                      width: 2,
+                    ),
+                  ),
+                  focusedErrorBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                    borderSide: BorderSide(
+                      color: Theme.of(context).colorScheme.error,
+                      width: 2,
+                    ),
+                  ),
                 ),
                 onChanged: (_) {
                   if (_errorText != null) {
@@ -119,22 +121,6 @@ class HeightDialogState extends State<HeightDialog> {
                   }
                 },
                 onSubmitted: (_) => _handleSave(),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                isError
-                    ? _errorText!
-                    : l10n.heightRangeHint(
-                        AppSettingsState.minHeightCm.toStringAsFixed(0),
-                        AppSettingsState.maxHeightCm.toStringAsFixed(0),
-                      ),
-                style: TextStyle(
-                  color: isError
-                      ? Theme.of(context).colorScheme.error
-                      : Theme.of(context).colorScheme.onSurfaceVariant,
-                  fontSize: 12,
-                  fontWeight: isError ? FontWeight.w500 : FontWeight.w400,
-                ),
               ),
             ],
           ),
@@ -145,7 +131,10 @@ class HeightDialogState extends State<HeightDialog> {
           onPressed: () => Navigator.of(context).pop(),
           child: Text(l10n.cancel),
         ),
-        FilledButton(onPressed: _handleSave, child: Text(l10n.save)),
+        TextButton(
+          onPressed: _handleSave,
+          child: Text(l10n.save),
+        ),
       ],
     );
   }

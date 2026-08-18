@@ -85,7 +85,6 @@ class _TargetWeightDialogState extends State<TargetWeightDialog> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final isError = _errorText != null;
 
     return AlertDialog(
       icon: Icon(
@@ -101,7 +100,7 @@ class _TargetWeightDialogState extends State<TargetWeightDialog> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              const SizedBox(height: 16),
+              const SizedBox(height: 4),
               TextField(
                 controller: _controller,
                 keyboardType: const TextInputType.numberWithOptions(
@@ -114,24 +113,22 @@ class _TargetWeightDialogState extends State<TargetWeightDialog> {
                       ? l10n.weightInLbLabel
                       : l10n.weightInKgLabel,
                   hintText: l10n.weightHint,
-                  enabledBorder: isError
-                      ? OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                          borderSide: BorderSide(
-                            color: Theme.of(context).colorScheme.error,
-                            width: 2,
-                          ),
-                        )
-                      : null,
-                  focusedBorder: isError
-                      ? OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                          borderSide: BorderSide(
-                            color: Theme.of(context).colorScheme.error,
-                            width: 2,
-                          ),
-                        )
-                      : null,
+                  errorText: _errorText,
+                  errorMaxLines: 2,
+                  errorBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                    borderSide: BorderSide(
+                      color: Theme.of(context).colorScheme.error,
+                      width: 2,
+                    ),
+                  ),
+                  focusedErrorBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                    borderSide: BorderSide(
+                      color: Theme.of(context).colorScheme.error,
+                      width: 2,
+                    ),
+                  ),
                 ),
                 onChanged: (_) {
                   if (_errorText != null) {
@@ -140,16 +137,6 @@ class _TargetWeightDialogState extends State<TargetWeightDialog> {
                 },
                 onSubmitted: (_) => _handleSave(),
               ),
-              const SizedBox(height: 8),
-              if (isError)
-                Text(
-                  _errorText!,
-                  style: TextStyle(
-                    color: Theme.of(context).colorScheme.error,
-                    fontSize: 12,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
             ],
           ),
         ),
@@ -167,7 +154,10 @@ class _TargetWeightDialogState extends State<TargetWeightDialog> {
           onPressed: () => Navigator.of(context).pop(),
           child: Text(l10n.cancel),
         ),
-        FilledButton(onPressed: _handleSave, child: Text(l10n.save)),
+        TextButton(
+          onPressed: _handleSave,
+          child: Text(l10n.save),
+        ),
       ],
     );
   }
