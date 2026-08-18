@@ -40,11 +40,7 @@ class CustomSettingsToggle extends StatelessWidget {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
-    final labelParts = [
-      if (sectionLabel != null) sectionLabel!,
-      title,
-      if (subtitle != null) subtitle!,
-    ];
+    final labelParts = [?sectionLabel, title, ?subtitle];
 
     return Semantics(
       label: labelParts.join(', '),

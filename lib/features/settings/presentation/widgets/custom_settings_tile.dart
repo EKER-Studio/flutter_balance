@@ -35,11 +35,7 @@ class CustomSettingsTile extends StatelessWidget {
         ? colorScheme.error
         : colorScheme.onSurfaceVariant;
 
-    final labelParts = [
-      if (sectionLabel != null) sectionLabel!,
-      title,
-      if (effectiveSubtitle != null) effectiveSubtitle,
-    ];
+    final labelParts = [?sectionLabel, title, ?effectiveSubtitle];
 
     Widget? trailingWidget;
     if (showChevron) {
