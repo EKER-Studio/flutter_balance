@@ -27,7 +27,6 @@ import 'package:balance/features/navigation/presentation/screens/main_navigation
 class FakePathProviderPlatform extends PathProviderPlatform {
   FakePathProviderPlatform(this.fileSystemPath);
 
-  /// The path returned as the application documents directory.
   final String fileSystemPath;
 
   @override
@@ -51,11 +50,7 @@ void main() {
   late MockHydratedStorage storage;
 
   setUpAll(() async {
-    try {
-      await Isar.initializeIsarCore(download: true);
-    } catch (_) {
-      // Ignore initialization errors so tests can skip gracefully when native binaries are unavailable.
-    }
+    await Isar.initializeIsarCore(download: true);
   });
 
   setUp(() {
@@ -70,8 +65,6 @@ void main() {
     ).thenAnswer((_) => Stream.value(<WeightEntry>[]));
   });
 
-  /// Pumps repeatedly while real async I/O (Isar FFI, plugin channels)
-  /// completes outside the FakeAsync zone until [until] is satisfied.
   Future<void> pumpForInitialization(
     WidgetTester tester,
     bool Function() until,
@@ -97,7 +90,6 @@ void main() {
         ),
       );
       await tester.pumpAndSettle();
-      // Flush the delayed initial-focus request of the first step.
       await tester.pump(const Duration(milliseconds: 300));
 
       expect(find.text('Welcome to Balance'), findsOneWidget);
@@ -132,7 +124,6 @@ void main() {
     (tester) async {
       final settingsBloc = AppSettingsBloc();
 
-      // 1. Arrange: Start with completed onboarding
       settingsBloc.add(const CompleteOnboarding());
 
       await tester.pumpWidget(
@@ -143,16 +134,12 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      // Verify main screen navigation.
       expect(find.byType(MainNavigationScreen), findsOneWidget);
 
-      // 2. Act: Reset app settings (simulating "Wipe Data")
       settingsBloc.add(const ResetAppSettings());
       await tester.pumpAndSettle();
-      // Flush the delayed initial-focus request of the first step.
       await tester.pump(const Duration(milliseconds: 300));
 
-      // 3. Assert: Verify we are back on the Onboarding Screen
       expect(find.byType(MainNavigationScreen), findsNothing);
       expect(find.text('Welcome to Balance'), findsOneWidget);
       expect(find.text('Units & Height'), findsOneWidget);
@@ -185,8 +172,7 @@ void main() {
     }
 
     testWidgets(
-      'App dispatches SyncHealthEntries at startup when health sync was '
-      'persisted as enabled',
+      'App dispatches SyncHealthEntries at startup when health sync was persisted as enabled',
       (tester) async {
         when(
           () => storage.read('AppSettingsBloc'),
@@ -205,7 +191,6 @@ void main() {
           ),
         );
         await tester.pumpAndSettle();
-        // Flush the delayed initial-focus request of the first step.
         await tester.pump(const Duration(milliseconds: 300));
 
         final imported =
@@ -221,8 +206,7 @@ void main() {
     );
 
     testWidgets(
-      'App does not dispatch SyncHealthEntries at startup when health sync '
-      'is disabled',
+      'App does not dispatch SyncHealthEntries at startup when health sync is disabled',
       (tester) async {
         final settingsBloc = AppSettingsBloc();
         final healthService = healthServiceWithEntries();
@@ -238,7 +222,6 @@ void main() {
           ),
         );
         await tester.pumpAndSettle();
-        // Flush the delayed initial-focus request of the first step.
         await tester.pump(const Duration(milliseconds: 300));
 
         verifyNever(() => repository.syncRemoteEntries(any()));
@@ -267,11 +250,8 @@ void main() {
           ),
         );
         await tester.pumpAndSettle();
-        // Flush the delayed initial-focus request of the first step.
         await tester.pump(const Duration(milliseconds: 300));
 
-        // Background and resume the app; the lifecycle observer must pull
-        // again, importing the entry a second time.
         tester.binding.handleAppLifecycleStateChanged(
           AppLifecycleState.inactive,
         );
@@ -287,8 +267,6 @@ void main() {
             end: any(named: 'end'),
           ),
         ).called(2);
-        // Counts the startup import and the resume import (mocktail counts
-        // only unverified calls, so no intermediate verify() may precede).
         verify(() => repository.syncRemoteEntries(any())).called(2);
 
         settingsBloc.close();
@@ -355,14 +333,6 @@ void main() {
         ),
       );
 
-      // Let the shield's authentication prompt (started at mount, still in
-      // flight inside the fake zone) fail and complete, so the observer's
-      // lock check below is not short-circuited. The completed prompt also
-      // counts as a recent authentication for one real second, so keep
-      // cycling real async time past that window. The app is locked at
-      // this point; unlock it (which unmounts the shield without starting
-      // a new prompt) so the backgrounding lock check below has to issue
-      // the lock transition itself.
       await pumpForInitialization(
         tester,
         () => !BiometricService.instance.isAuthenticating,
@@ -376,14 +346,11 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.byType(BiometricShieldScreen), findsNothing);
 
-      // Background the app: the observer then runs its full lock check
-      // (re-reading lock state and dispatching the transition), which
-      // re-locks through the observer-driven setter.
       tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.hidden);
       await tester.pumpAndSettle();
-      // The observer must have re-locked through its own transition setter.
       expect(settingsBloc.state.isLocked, isTrue);
     });
+
     testWidgets('renders the shield on top when the app is locked', (
       tester,
     ) async {
@@ -424,10 +391,6 @@ void main() {
       }
     });
 
-    /// Starts closing the Isar instance opened by a full-initialization test.
-    /// The close must not be awaited: Isar teardown is real FFI async that
-    /// never completes inside the FakeAsync zone, so it runs fire-and-forget
-    /// like the other service singletons in this suite.
     void closeOpenIsar() {
       final instance = Isar.getInstance(DatabaseModule.dbName);
       if (instance != null) {
@@ -438,8 +401,6 @@ void main() {
     testWidgets(
       'shows the error screen and retries when initialization fails',
       (tester) async {
-        // A file where the documents directory is expected makes Isar unable
-        // to open, which fails the entire initialization.
         tempDir.deleteSync(recursive: true);
         File(tempDir.path).writeAsStringSync('not a directory');
         final settingsBloc = AppSettingsBloc();
@@ -450,8 +411,6 @@ void main() {
             child: const App(),
           ),
         );
-        // Real async I/O (expect Isar open to fail) must run outside
-        // FakeAsync; cycle until the error surface appears.
         await pumpForInitialization(
           tester,
           () =>
@@ -460,8 +419,6 @@ void main() {
 
         expect(find.byType(AppInitializationErrorContent), findsOneWidget);
 
-        // Tap the retry action; initialization fails again, so the error
-        // screen stays visible and the retry handler is exercised.
         await tester.tap(find.byType(FilledButton));
         await pumpForInitialization(
           tester,
@@ -475,13 +432,8 @@ void main() {
     );
 
     testWidgets(
-      're-opens the database and re-subscribes when a closed instance is '
-      'found on resume',
+      're-opens the database and re-subscribes when a closed instance is found on resume',
       (tester) async {
-        // Runs before the splash test so no real Isar instance is registered
-        // yet; the resume integrity check must then open one and re-subscribe
-        // the weight BLoC. The repository override keeps the BLoC on mocked
-        // streams, so the opened instance has no active Isar watchers.
         final settingsBloc = AppSettingsBloc()..add(const CompleteOnboarding());
 
         await tester.pumpWidget(

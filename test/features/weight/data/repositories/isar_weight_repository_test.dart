@@ -35,42 +35,36 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   late Directory tempDir;
-  Isar? isar;
-  IsarWeightRepository? repository;
+  late Isar isar;
+  late IsarWeightRepository repository;
   late MockFlutterSecureStorage mockSecureStorage;
   final testKeyA = Uint8List.fromList(List.generate(32, (i) => i));
   final testKeyB = Uint8List.fromList(List.generate(32, (i) => i + 1));
 
   setUpAll(() async {
-    try {
-      await Isar.initializeIsarCore(download: true);
-    } catch (_) {
-      // Ignore initialization errors so tests can skip gracefully when native binaries are unavailable.
-    }
+    await Isar.initializeIsarCore(download: true);
   });
 
   setUp(() async {
     mockSecureStorage = MockFlutterSecureStorage();
     tempDir = Directory.systemTemp.createTempSync('isar_test_');
-    try {
-      isar = await Isar.open(
-        [WeightEntryModelSchema],
-        directory: tempDir.path,
-        name: 'isar_repo_test',
-        inspector: false,
-      );
-    } catch (_) {
-      return;
-    }
+    isar = await Isar.open(
+      [WeightEntryModelSchema],
+      directory: tempDir.path,
+      name: 'isar_repo_test',
+      inspector: false,
+    );
     repository = IsarWeightRepository(
-      isar: isar!,
+      isar: isar,
       secureStorage: mockSecureStorage,
       encryptionKey: testKeyA,
     );
   });
 
   tearDown(() async {
-    await isar?.close();
+    if (isar.isOpen) {
+      await isar.close();
+    }
     if (tempDir.existsSync()) {
       tempDir.deleteSync(recursive: true);
     }
@@ -80,22 +74,15 @@ void main() {
     test(
       'CASE 1 (Happy Path): Write encrypts data as Base64 ciphertext on disk and decrypts to original entity on read',
       () async {
-        if (isar == null) {
-          markTestSkipped(
-            'Isar native library not available in this environment',
-          );
-          return;
-        }
         final entry = WeightEntry(
           weightKg: 78.5,
           dateTime: DateTime(2026, 7, 29, 10, 0),
           note: 'Valid Note',
         );
 
-        await repository!.addEntry(entry);
+        await repository.addEntry(entry);
 
-        // Verify physical disk/Isar model contains unreadable Base64 ciphertext
-        final rawModels = await isar!.weightEntryModels.where().findAll();
+        final rawModels = await isar.weightEntryModels.where().findAll();
         expect(rawModels.length, 1);
         expect(rawModels.first.encryptedWeight, isNot(contains('78.5')));
         expect(rawModels.first.encryptedNote, isNot(contains('Valid Note')));
@@ -108,8 +95,7 @@ void main() {
           returnsNormally,
         );
 
-        // Verify read returns original plaintext values
-        final entries = await repository!.getAllEntries();
+        final entries = await repository.getAllEntries();
         expect(entries.length, 1);
         expect(entries.first.weightKg, 78.5);
         expect(entries.first.note, 'Valid Note');
@@ -120,23 +106,15 @@ void main() {
     test(
       'CASE 1.5 (Full FieldCipher round-trip): On-disk ciphertext decrypts via FieldCipher and repository read matches the exact original inputs',
       () async {
-        if (isar == null) {
-          markTestSkipped(
-            'Isar native library not available in this environment',
-          );
-          return;
-        }
         final original = WeightEntry(
           weightKg: 87.25,
           dateTime: DateTime(2026, 7, 29, 23, 59, 30, 123),
           note: 'Stretki ąśćżźł — ünïcödé 🎯',
         );
 
-        await repository!.addEntry(original);
+        await repository.addEntry(original);
 
-        // The persisted model must hold ciphertext that FieldCipher decrypts
-        // back to exactly the plaintext values handed to the repository.
-        final rawModels = await isar!.weightEntryModels.where().findAll();
+        final rawModels = await isar.weightEntryModels.where().findAll();
         expect(rawModels.length, 1);
         expect(
           FieldCipher.decrypt(rawModels.first.encryptedWeight, testKeyA),
@@ -147,8 +125,7 @@ void main() {
           original.note,
         );
 
-        // Reading via the repository must restore the original entries verbatim.
-        final entries = await repository!.getAllEntries();
+        final entries = await repository.getAllEntries();
         expect(entries.length, 1);
         expect(entries.first.weightKg, original.weightKg);
         expect(entries.first.note, original.note);
@@ -159,18 +136,12 @@ void main() {
     test(
       'CASE 2 (Corrupted/Changed Key): Read with wrong key does not crash and returns fallback object',
       () async {
-        if (isar == null) {
-          markTestSkipped(
-            'Isar native library not available in this environment',
-          );
-          return;
-        }
         final repoKeyA = IsarWeightRepository(
-          isar: isar!,
+          isar: isar,
           encryptionKey: testKeyA,
         );
         final repoKeyB = IsarWeightRepository(
-          isar: isar!,
+          isar: isar,
           encryptionKey: testKeyB,
         );
 
@@ -182,7 +153,6 @@ void main() {
 
         await repoKeyA.addEntry(entry);
 
-        // Attempt reading with Key B
         final entries = await repoKeyB.getAllEntries();
         expect(entries.length, 1);
         expect(entries.first.weightKg, 0.0);
@@ -193,18 +163,12 @@ void main() {
     test(
       'CASE 3 (Missing Key): Throws WeightDatabaseFailure when key supplier returns null',
       () async {
-        if (isar == null) {
-          markTestSkipped(
-            'Isar native library not available in this environment',
-          );
-          return;
-        }
         when(
           () => mockSecureStorage.read(key: 'isar_encryption_key'),
         ).thenAnswer((_) async => null);
 
         final repoMissingKey = IsarWeightRepository(
-          isar: isar!,
+          isar: isar,
           secureStorage: mockSecureStorage,
         );
 
@@ -228,22 +192,16 @@ void main() {
     test(
       'CASE 4 (Malformed Data in DB): Handles non-Base64 malformed payload safely with fallback object',
       () async {
-        if (isar == null) {
-          markTestSkipped(
-            'Isar native library not available in this environment',
-          );
-          return;
-        }
         final malformedModel = WeightEntryModel()
           ..encryptedWeight = r'%%%THIS_IS_NOT_BASE64$$$'
           ..encryptedNote = r'@@@GARBAGE_PAYLOAD###'
           ..dateTime = DateTime(2026, 7, 29);
 
-        await isar!.writeTxn(() async {
-          await isar!.weightEntryModels.put(malformedModel);
+        await isar.writeTxn(() async {
+          await isar.weightEntryModels.put(malformedModel);
         });
 
-        final entries = await repository!.getAllEntries();
+        final entries = await repository.getAllEntries();
         expect(entries.length, 1);
         expect(entries.first.weightKg, 0.0);
         expect(entries.first.note, contains('Decryption Error'));
@@ -253,16 +211,10 @@ void main() {
 
   group('IsarWeightRepository Standard Operations', () {
     test('watchAllEntries emits decrypted entries after addEntry', () async {
-      if (isar == null) {
-        markTestSkipped(
-          'Isar native library not available in this environment',
-        );
-        return;
-      }
-      final stream = repository!.watchAllEntries();
+      final stream = repository.watchAllEntries();
       final entriesFuture = stream.firstWhere((e) => e.length == 1);
 
-      await repository!.addEntry(
+      await repository.addEntry(
         WeightEntry(
           weightKg: 80.0,
           dateTime: DateTime(2025, 2, 1),
@@ -277,45 +229,33 @@ void main() {
     });
 
     test('deleteEntry removes an entry', () async {
-      if (isar == null) {
-        markTestSkipped(
-          'Isar native library not available in this environment',
-        );
-        return;
-      }
       final entry = WeightEntry(
         weightKg: 65.0,
         dateTime: DateTime(2025, 3, 10),
       );
-      await repository!.addEntry(entry);
+      await repository.addEntry(entry);
 
-      var entries = await repository!.getAllEntries();
+      var entries = await repository.getAllEntries();
       expect(entries.length, 1);
       final id = entries.first.id;
 
-      await repository!.deleteEntry(id);
+      await repository.deleteEntry(id);
 
-      entries = await repository!.getAllEntries();
+      entries = await repository.getAllEntries();
       expect(entries, isEmpty);
     });
 
     test('bulkImportEntries persists multiple entries encrypted', () async {
-      if (isar == null) {
-        markTestSkipped(
-          'Isar native library not available in this environment',
-        );
-        return;
-      }
       final entries = [
         WeightEntry(weightKg: 60.0, dateTime: DateTime(2025, 4, 1)),
         WeightEntry(weightKg: 61.0, dateTime: DateTime(2025, 4, 2)),
         WeightEntry(weightKg: 62.0, dateTime: DateTime(2025, 4, 3)),
       ];
 
-      final count = await repository!.bulkImportEntries(entries);
+      final count = await repository.bulkImportEntries(entries);
       expect(count, 3);
 
-      final stored = await repository!.getAllEntries();
+      final stored = await repository.getAllEntries();
       expect(stored.length, 3);
       expect(stored[0].weightKg, 62.0);
       expect(stored[1].weightKg, 61.0);
@@ -325,31 +265,17 @@ void main() {
     test(
       'bulkImportEntries is idempotent, prevents duplicates, and backfills notes',
       () async {
-        if (isar == null) {
-          markTestSkipped(
-            'Isar native library not available in this environment',
-          );
-          return;
-        }
-
         final initialEntries = [
           WeightEntry(weightKg: 85.0, dateTime: DateTime(2025, 4, 1, 12, 0)),
-          WeightEntry(
-            weightKg: 85.5,
-            dateTime: DateTime(2025, 4, 2, 12, 0),
-          ), // no note
+          WeightEntry(weightKg: 85.5, dateTime: DateTime(2025, 4, 2, 12, 0)),
         ];
 
-        final count1 = await repository!.bulkImportEntries(initialEntries);
+        final count1 = await repository.bulkImportEntries(initialEntries);
         expect(count1, 2);
 
-        // Re-import exactly the same entries (should insert 0)
-        final count2 = await repository!.bulkImportEntries(initialEntries);
+        final count2 = await repository.bulkImportEntries(initialEntries);
         expect(count2, 0);
 
-        // Import with note backfill
-        // 85.5 kg matches exactly (with note added).
-        // 86.0 kg is new (time differs).
         final newBatch = [
           WeightEntry(
             weightKg: 85.5,
@@ -359,11 +285,11 @@ void main() {
           WeightEntry(weightKg: 86.0, dateTime: DateTime(2025, 4, 3, 12, 0)),
         ];
 
-        final count3 = await repository!.bulkImportEntries(newBatch);
-        expect(count3, 1); // Only the 86.0 entry is new!
+        final count3 = await repository.bulkImportEntries(newBatch);
+        expect(count3, 1);
 
-        final stored = await repository!.getAllEntries();
-        expect(stored.length, 3); // 85.0, 85.5 (updated), 86.0
+        final stored = await repository.getAllEntries();
+        expect(stored.length, 3);
 
         final backfilledEntry = stored.firstWhere((e) => e.weightKg == 85.5);
         expect(backfilledEntry.note, 'Backfilled Note');
@@ -371,48 +297,36 @@ void main() {
     );
 
     test('clearAllData removes all entries', () async {
-      if (isar == null) {
-        markTestSkipped(
-          'Isar native library not available in this environment',
-        );
-        return;
-      }
-      await repository!.addEntry(
+      await repository.addEntry(
         WeightEntry(weightKg: 90.0, dateTime: DateTime(2025, 5, 1)),
       );
-      await repository!.addEntry(
+      await repository.addEntry(
         WeightEntry(weightKg: 91.0, dateTime: DateTime(2025, 5, 2)),
       );
 
-      var entries = await repository!.getAllEntries();
+      var entries = await repository.getAllEntries();
       expect(entries.length, 2);
 
-      await repository!.clearAllData();
+      await repository.clearAllData();
 
-      entries = await repository!.getAllEntries();
+      entries = await repository.getAllEntries();
       expect(entries, isEmpty);
     });
 
     test(
       'watchAllEntries returns entries ordered by dateTime descending',
       () async {
-        if (isar == null) {
-          markTestSkipped(
-            'Isar native library not available in this environment',
-          );
-          return;
-        }
-        await repository!.addEntry(
+        await repository.addEntry(
           WeightEntry(weightKg: 70.0, dateTime: DateTime(2025, 1, 1)),
         );
-        await repository!.addEntry(
+        await repository.addEntry(
           WeightEntry(weightKg: 71.0, dateTime: DateTime(2025, 1, 3)),
         );
-        await repository!.addEntry(
+        await repository.addEntry(
           WeightEntry(weightKg: 72.0, dateTime: DateTime(2025, 1, 2)),
         );
 
-        final entries = await repository!.getAllEntries();
+        final entries = await repository.getAllEntries();
 
         expect(entries.length, 3);
         expect(entries[0].dateTime, DateTime(2025, 1, 3));
@@ -423,78 +337,66 @@ void main() {
   });
 
   group('IsarWeightRepository Stream Resilience', () {
-    test('watchAllEntries surfaces errors as domain exceptions and recovers '
-        'after the unlock signal fires', () async {
-      if (isar == null) {
-        markTestSkipped(
-          'Isar native library not available in this environment',
+    test(
+      'watchAllEntries surfaces errors as domain exceptions and recovers after the unlock signal fires',
+      () async {
+        final unlockSignal = StreamController<void>.broadcast();
+        final repo = IsarWeightRepository(
+          isar: isar,
+          secureStorage: mockSecureStorage,
+          unlockSignal: unlockSignal.stream,
         );
-        return;
-      }
-      final unlockSignal = StreamController<void>.broadcast();
-      final repo = IsarWeightRepository(
-        isar: isar!,
-        secureStorage: mockSecureStorage,
-        unlockSignal: unlockSignal.stream,
-      );
-      when(
-        () => mockSecureStorage.read(key: 'isar_encryption_key'),
-      ).thenAnswer((_) async => null);
+        when(
+          () => mockSecureStorage.read(key: 'isar_encryption_key'),
+        ).thenAnswer((_) async => null);
 
-      // Persist an entry while the key is still available, so the watch phase
-      // has encrypted data to decrypt once the keystore becomes accessible.
-      final keyedWriter = IsarWeightRepository(
-        isar: isar!,
-        encryptionKey: testKeyA,
-      );
-      await keyedWriter.addEntry(
-        WeightEntry(weightKg: 82.0, dateTime: DateTime(2025, 6, 1)),
-      );
+        final keyedWriter = IsarWeightRepository(
+          isar: isar,
+          encryptionKey: testKeyA,
+        );
+        await keyedWriter.addEntry(
+          WeightEntry(weightKg: 82.0, dateTime: DateTime(2025, 6, 1)),
+        );
 
-      final events = <Object>[];
-      final streamDone = Completer<void>();
-      final subscription = repo.watchAllEntries().listen(
-        (entries) => events.add(entries),
-        onError: (Object error, StackTrace stackTrace) => events.add(error),
-        onDone: streamDone.complete,
-      );
-      addTearDown(subscription.cancel);
-      addTearDown(unlockSignal.close);
+        final events = <Object>[];
+        final streamDone = Completer<void>();
+        final subscription = repo.watchAllEntries().listen(
+          (entries) => events.add(entries),
+          onError: (Object error, StackTrace stackTrace) => events.add(error),
+          onDone: streamDone.complete,
+        );
+        addTearDown(subscription.cancel);
+        addTearDown(unlockSignal.close);
 
-      // First emission fails because the encryption key is inaccessible.
-      await waitUntil(() => events.any((e) => e is WeightRepositoryException));
+        await waitUntil(
+          () => events.any((e) => e is WeightRepositoryException),
+        );
 
-      // The key becomes available again; the unlock signal must trigger an
-      // immediate re-subscribe instead of waiting out the backoff.
-      when(
-        () => mockSecureStorage.read(key: 'isar_encryption_key'),
-      ).thenAnswer((_) async => base64Encode(testKeyA));
-      unlockSignal.add(null);
+        when(
+          () => mockSecureStorage.read(key: 'isar_encryption_key'),
+        ).thenAnswer((_) async => base64Encode(testKeyA));
+        unlockSignal.add(null);
 
-      await waitUntil(() => events.any((e) => e is List<WeightEntry>));
+        await waitUntil(() => events.any((e) => e is List<WeightEntry>));
 
-      final recovered =
-          events.firstWhere((e) => e is List<WeightEntry>) as List<WeightEntry>;
-      expect(recovered.length, 1);
-      expect(recovered.first.weightKg, 82.0);
-      expect(streamDone.isCompleted, isFalse);
-    });
+        final recovered =
+            events.firstWhere((e) => e is List<WeightEntry>)
+                as List<WeightEntry>;
+        expect(recovered.length, 1);
+        expect(recovered.first.weightKg, 82.0);
+        expect(streamDone.isCompleted, isFalse);
+      },
+    );
   });
 
   group('IsarWeightRepository Failure Paths', () {
     test('secure storage read errors surface as domain exceptions', () async {
-      if (isar == null) {
-        markTestSkipped(
-          'Isar native library not available in this environment',
-        );
-        return;
-      }
       when(
         () => mockSecureStorage.read(key: 'isar_encryption_key'),
       ).thenThrow(PlatformException(code: 'keystore_locked'));
 
       final repo = IsarWeightRepository(
-        isar: isar!,
+        isar: isar,
         secureStorage: mockSecureStorage,
       );
 
@@ -525,18 +427,12 @@ void main() {
     test(
       'corrupt stored key string maps to unexpected-error exceptions',
       () async {
-        if (isar == null) {
-          markTestSkipped(
-            'Isar native library not available in this environment',
-          );
-          return;
-        }
         when(
           () => mockSecureStorage.read(key: 'isar_encryption_key'),
         ).thenAnswer((_) async => 'not-valid-base64!!');
 
         final repo = IsarWeightRepository(
-          isar: isar!,
+          isar: isar,
           secureStorage: mockSecureStorage,
         );
 
@@ -580,12 +476,6 @@ void main() {
     test(
       'operations on a closed database map IsarError to domain exceptions',
       () async {
-        if (isar == null) {
-          markTestSkipped(
-            'Isar native library not available in this environment',
-          );
-          return;
-        }
         final closedDir = Directory.systemTemp.createTempSync('isar_closed_');
         addTearDown(() {
           if (closedDir.existsSync()) {
@@ -664,18 +554,12 @@ void main() {
     test(
       'watchAllEntries decryption failures surface as read-failed exceptions',
       () async {
-        if (isar == null) {
-          markTestSkipped(
-            'Isar native library not available in this environment',
-          );
-          return;
-        }
         when(
           () => mockSecureStorage.read(key: 'isar_encryption_key'),
         ).thenAnswer((_) async => 'not-valid-base64!!');
 
         final repo = IsarWeightRepository(
-          isar: isar!,
+          isar: isar,
           secureStorage: mockSecureStorage,
         );
 
@@ -753,12 +637,6 @@ void main() {
     );
 
     test('bulkImportEntries encrypts and restores notes', () async {
-      if (isar == null) {
-        markTestSkipped(
-          'Isar native library not available in this environment',
-        );
-        return;
-      }
       final entries = [
         WeightEntry(
           weightKg: 60.0,
@@ -768,56 +646,52 @@ void main() {
         WeightEntry(weightKg: 61.0, dateTime: DateTime(2025, 4, 2)),
       ];
 
-      final count = await repository!.bulkImportEntries(entries);
+      final count = await repository.bulkImportEntries(entries);
       expect(count, 2);
 
-      final stored = await repository!.getAllEntries();
+      final stored = await repository.getAllEntries();
       expect(stored.first.note, isNull);
       expect(stored.last.note, 'First note');
     });
 
-    test('watchAllEntries on a closed database surfaces a retried stream '
-        'error instead of throwing synchronously', () async {
-      if (isar == null) {
-        markTestSkipped(
-          'Isar native library not available in this environment',
+    test(
+      'watchAllEntries on a closed database surfaces a retried stream error instead of throwing synchronously',
+      () async {
+        final closedDir = Directory.systemTemp.createTempSync(
+          'isar_watch_closed_',
         );
-        return;
-      }
-      final closedDir = Directory.systemTemp.createTempSync(
-        'isar_watch_closed_',
-      );
-      addTearDown(() {
-        if (closedDir.existsSync()) {
-          closedDir.deleteSync(recursive: true);
-        }
-      });
-      final closedIsar = await Isar.open(
-        [WeightEntryModelSchema],
-        directory: closedDir.path,
-        name: 'isar_repo_watch_fail_test',
-        inspector: false,
-      );
-      await closedIsar.close();
-      final repo = IsarWeightRepository(
-        isar: closedIsar,
-        encryptionKey: testKeyA,
-      );
+        addTearDown(() {
+          if (closedDir.existsSync()) {
+            closedDir.deleteSync(recursive: true);
+          }
+        });
+        final closedIsar = await Isar.open(
+          [WeightEntryModelSchema],
+          directory: closedDir.path,
+          name: 'isar_repo_watch_fail_test',
+          inspector: false,
+        );
+        await closedIsar.close();
+        final repo = IsarWeightRepository(
+          isar: closedIsar,
+          encryptionKey: testKeyA,
+        );
 
-      final errors = <Object>[];
-      final subscription = repo.watchAllEntries().listen(
-        (_) {},
-        onError: (Object error, StackTrace stackTrace) => errors.add(error),
-      );
-      addTearDown(subscription.cancel);
+        final errors = <Object>[];
+        final subscription = repo.watchAllEntries().listen(
+          (_) {},
+          onError: (Object error, StackTrace stackTrace) => errors.add(error),
+        );
+        addTearDown(subscription.cancel);
 
-      await waitUntil(() => errors.isNotEmpty);
-      expect(errors.first, isA<WeightRepositoryException>());
-      expect(
-        (errors.first as WeightRepositoryException).type,
-        WeightErrorType.streamError,
-      );
-    });
+        await waitUntil(() => errors.isNotEmpty);
+        expect(errors.first, isA<WeightRepositoryException>());
+        expect(
+          (errors.first as WeightRepositoryException).type,
+          WeightErrorType.streamError,
+        );
+      },
+    );
   });
 
   group('resilientStream retry logic', () {
@@ -907,7 +781,6 @@ void main() {
       recoverySignal.add(null);
       await waitUntil(() => events.any((e) => e == const [7]));
 
-      // Recovery happened well before the 30s backoff would have elapsed.
       expect(
         DateTime.now().difference(started),
         lessThan(const Duration(seconds: 5)),
@@ -941,8 +814,6 @@ void main() {
       source.add(const [1, 2]);
       await waitUntil(() => events.any((e) => e is List<int>));
 
-      // The synchronous throw was surfaced as the mapped error, not as an
-      // unhandled exception, and the retry loop recovered with fresh data.
       expect(events.first, isA<StateError>());
       expect(events.whereType<List<int>>().single, [1, 2]);
       expect(attempts, 2);
@@ -953,9 +824,8 @@ void main() {
     test(
       'deduplicates entries based on timestamp and weight tolerance',
       () async {
-        if (isar == null) return;
-        await isar!.writeTxn(() async {
-          await isar!.weightEntryModels.put(
+        await isar.writeTxn(() async {
+          await isar.weightEntryModels.put(
             WeightEntryModel()
               ..id = 1
               ..dateTime = DateTime(2026, 1, 1, 10, 30, 0)
@@ -986,10 +856,10 @@ void main() {
           ),
         ];
 
-        final writtenCount = await repository!.syncRemoteEntries(newEntries);
+        final writtenCount = await repository.syncRemoteEntries(newEntries);
         expect(writtenCount, 2);
 
-        final all = await repository!.getAllEntries();
+        final all = await repository.getAllEntries();
         expect(all.length, 3);
         expect(all.any((e) => e.weightKg == 72.04), false);
         expect(all.any((e) => e.weightKg == 72.06), true);

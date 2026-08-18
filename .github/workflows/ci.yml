@@ -30,6 +30,12 @@ jobs:
       - name: Install dependencies
         run: flutter pub get
 
+      - name: Fetch Isar core binary for native tests
+        run: |
+          ISAR_VERSION=$(awk '/isar_community:/{flag=1; next} flag && /version:/{print $2; exit}' pubspec.lock | tr -d '"')
+          echo "Using Isar version: $ISAR_VERSION"
+          curl -fsSL "https://binaries.isar-community.dev/${ISAR_VERSION}/libisar_linux_x64.so" -o libisar.so
+
       - name: Generate localization files (i18n)
         run: flutter gen-l10n
 

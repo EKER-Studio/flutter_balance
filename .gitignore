@@ -55,6 +55,8 @@ app.*.map.json
 
 # Native dynamic libraries downloaded during testing
 *.dylib
+*.so
+*.dll
 
 # Golden test failure output artifacts
 **/failures/
