@@ -515,7 +515,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
       AppSnackBar.show(
         context,
         message: l10n.csvImportComplete(state.importedCount),
-        type: SnackBarType.success,
+        type: state.importedCount == 0
+            ? SnackBarType.info
+            : SnackBarType.success,
       );
     }
   }
