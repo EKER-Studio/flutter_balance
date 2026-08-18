@@ -133,6 +133,7 @@ class StatisticsScreen extends StatelessWidget {
                             );
 
                             return ClampedLayout(
+                              maxWidth: isWide ? 1000 : 600,
                               padding: const EdgeInsets.symmetric(
                                 horizontal: 16,
                                 vertical: 12,
@@ -306,22 +307,26 @@ class StatisticsScreen extends StatelessWidget {
                     ),
                   ),
                   if (statusBadge != null)
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 6,
-                      ),
-                      decoration: BoxDecoration(
-                        color: badgeBg,
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Text(
-                        statusBadge,
-                        style: Theme.of(context).textTheme.labelMedium
-                            ?.copyWith(
-                              color: badgeFg,
-                              fontWeight: FontWeight.bold,
-                            ),
+                    Flexible(
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 6,
+                        ),
+                        decoration: BoxDecoration(
+                          color: badgeBg,
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: Text(
+                          statusBadge,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: Theme.of(context).textTheme.labelMedium
+                              ?.copyWith(
+                                color: badgeFg,
+                                fontWeight: FontWeight.bold,
+                              ),
+                        ),
                       ),
                     ),
                 ],
@@ -543,11 +548,15 @@ class StatisticsScreen extends StatelessWidget {
                 children: [
                   Icon(Icons.analytics_outlined, size: 24, color: cs.primary),
                   const SizedBox(width: 8),
-                  Text(
-                    l10n.weightRangeCardTitle,
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      color: cs.onSurface,
-                      fontWeight: FontWeight.w600,
+                  Flexible(
+                    child: Text(
+                      l10n.weightRangeCardTitle,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        color: cs.onSurface,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                   ),
                 ],
