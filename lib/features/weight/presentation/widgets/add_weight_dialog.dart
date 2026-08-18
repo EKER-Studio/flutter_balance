@@ -15,19 +15,19 @@ import 'package:balance/features/settings/presentation/bloc/app_settings_bloc.da
 /// Validates the weight against [WeightEntry.minWeightKg] and
 /// [WeightEntry.maxWeightKg], converts imperial input to kilograms, and
 /// dispatches [AddWeight] to [WeightBloc] on save.
-class AddWeightSheet extends StatefulWidget {
+class AddWeightDialog extends StatefulWidget {
   /// The optional initial date/time for the measurement.
   final DateTime? initialDate;
 
-  /// Creates an [AddWeightSheet] with an optional [initialDate].
-  const AddWeightSheet({super.key, this.initialDate});
+  /// Creates an [AddWeightDialog] with an optional [initialDate].
+  const AddWeightDialog({super.key, this.initialDate});
 
   @override
-  State<AddWeightSheet> createState() => _AddWeightSheetState();
+  State<AddWeightDialog> createState() => _AddWeightDialogState();
 }
 
 /// The state owning the form controllers, selected date/time, and save flow.
-class _AddWeightSheetState extends State<AddWeightSheet> {
+class _AddWeightDialogState extends State<AddWeightDialog> {
   final _weightController = TextEditingController();
   final _noteController = TextEditingController();
 
@@ -119,26 +119,41 @@ class _AddWeightSheetState extends State<AddWeightSheet> {
     final l10n = AppLocalizations.of(context);
     final unit = context.watch<AppSettingsBloc>().state.measurementUnit;
 
+    final isLandscape =
+        MediaQuery.of(context).orientation == Orientation.landscape;
+    final isKeyboardOpen = MediaQuery.viewInsetsOf(context).bottom > 0;
+    final hideChrome = isLandscape && isKeyboardOpen;
+
     final dateStr = DateFormat.yMd(
       Localizations.localeOf(context).toString(),
     ).format(_selectedDate);
 
     final timeStr = _selectedTime.format(context);
 
+    final inputPadding = hideChrome
+        ? const EdgeInsets.symmetric(horizontal: 12, vertical: 8)
+        : const EdgeInsetsDirectional.fromSTEB(12, 16, 12, 12);
+
     return AlertDialog(
       scrollable: true,
-      insetPadding: const EdgeInsets.symmetric(
-        horizontal: 40.0,
-        vertical: 16.0,
+      insetPadding: EdgeInsets.symmetric(
+        horizontal: isLandscape ? 32 : 24,
+        vertical: isLandscape ? 8 : 24,
       ),
-      title: Text(l10n.addWeight),
+      title: hideChrome ? null : Text(l10n.addWeight),
+      contentPadding: EdgeInsets.fromLTRB(
+        24,
+        hideChrome ? 8 : (isLandscape ? 12 : 20),
+        24,
+        hideChrome ? 8 : (isLandscape ? 12 : 20),
+      ),
       content: SizedBox(
         width: 320,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const SizedBox(height: 4),
+            if (!hideChrome) const SizedBox(height: 4),
             Row(
               children: [
                 Expanded(
@@ -157,12 +172,8 @@ class _AddWeightSheetState extends State<AddWeightSheet> {
                             Icons.calendar_today_outlined,
                             size: 20,
                           ),
-                          contentPadding: const EdgeInsetsDirectional.fromSTEB(
-                            12,
-                            16,
-                            12,
-                            12,
-                          ),
+                          isDense: hideChrome,
+                          contentPadding: inputPadding,
                         ),
                         child: FittedBox(
                           fit: BoxFit.scaleDown,
@@ -193,12 +204,8 @@ class _AddWeightSheetState extends State<AddWeightSheet> {
                             Icons.access_time_outlined,
                             size: 20,
                           ),
-                          contentPadding: const EdgeInsetsDirectional.fromSTEB(
-                            12,
-                            16,
-                            12,
-                            12,
-                          ),
+                          isDense: hideChrome,
+                          contentPadding: inputPadding,
                         ),
                         child: FittedBox(
                           fit: BoxFit.scaleDown,
@@ -227,13 +234,14 @@ class _AddWeightSheetState extends State<AddWeightSheet> {
                 ),
               ),
             ],
-            const SizedBox(height: 16),
+            SizedBox(height: hideChrome ? 8 : 16),
             TextField(
               controller: _weightController,
               autofocus: true,
               keyboardType: const TextInputType.numberWithOptions(
                 decimal: true,
               ),
+              textInputAction: TextInputAction.next,
               decoration: InputDecoration(
                 labelText: unit == MeasurementUnit.imperial
                     ? l10n.weightInLbLabel
@@ -242,12 +250,8 @@ class _AddWeightSheetState extends State<AddWeightSheet> {
                 border: const OutlineInputBorder(),
                 errorText: _weightError != null ? "" : null,
                 errorStyle: const TextStyle(height: 0, fontSize: 0),
-                contentPadding: const EdgeInsetsDirectional.fromSTEB(
-                  12,
-                  16,
-                  12,
-                  12,
-                ),
+                isDense: hideChrome,
+                contentPadding: inputPadding,
               ),
               onChanged: (_) {
                 if (_weightError != null) setState(() => _weightError = null);
@@ -264,18 +268,14 @@ class _AddWeightSheetState extends State<AddWeightSheet> {
                   ),
                 ),
               ),
-            const SizedBox(height: 16),
+            SizedBox(height: hideChrome ? 8 : 16),
             TextField(
               controller: _noteController,
               decoration: InputDecoration(
                 labelText: l10n.noteLabel,
                 border: const OutlineInputBorder(),
-                contentPadding: const EdgeInsetsDirectional.fromSTEB(
-                  12,
-                  16,
-                  12,
-                  12,
-                ),
+                isDense: hideChrome,
+                contentPadding: inputPadding,
               ),
               maxLines: 1,
               textInputAction: TextInputAction.done,
@@ -284,13 +284,15 @@ class _AddWeightSheetState extends State<AddWeightSheet> {
           ],
         ),
       ),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.of(context).pop(),
-          child: Text(l10n.cancel),
-        ),
-        TextButton(onPressed: _onSave, child: Text(l10n.save)),
-      ],
+      actions: hideChrome
+          ? null
+          : [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: Text(l10n.cancel),
+              ),
+              TextButton(onPressed: _onSave, child: Text(l10n.save)),
+            ],
     );
   }
 

@@ -9,7 +9,7 @@ import 'package:balance/features/weight/domain/entities/weight_entry.dart';
 import 'package:balance/features/weight/presentation/bloc/weight_bloc.dart';
 import 'package:balance/features/weight/presentation/bloc/weight_event.dart';
 import 'package:balance/features/weight/presentation/bloc/weight_state.dart';
-import 'package:balance/features/weight/presentation/widgets/add_weight_sheet.dart';
+import 'package:balance/features/weight/presentation/widgets/add_weight_dialog.dart';
 import 'package:balance/features/statistics/presentation/widgets/bmi_chart_card.dart';
 import 'package:balance/features/statistics/presentation/widgets/statistics_shimmer_skeleton.dart';
 import 'package:balance/l10n/app_localizations.dart';
@@ -744,13 +744,13 @@ class StatisticsScreen extends StatelessWidget {
     return DateFormat.yMMMd(locale).format(date);
   }
 
-  /// Shows the [AddWeightSheet] dialog.
+  /// Shows the [AddWeightDialog] dialog.
   void _showAddWeightSheet(BuildContext context) {
     showDialog<void>(
       context: context,
       builder: (dialogCtx) => BlocProvider.value(
         value: context.read<WeightBloc>(),
-        child: const AddWeightSheet(),
+        child: const AddWeightDialog(),
       ),
     );
   }

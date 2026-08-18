@@ -13,7 +13,7 @@ import 'package:balance/features/calendar/presentation/screens/calendar_screen.d
 import 'package:balance/features/calendar/presentation/widgets/calendar_day_cell.dart';
 import 'package:balance/features/calendar/presentation/widgets/calendar_day_empty_card.dart';
 import 'package:balance/features/calendar/presentation/widgets/calendar_day_entries_card.dart';
-import 'package:balance/features/weight/presentation/widgets/add_weight_sheet.dart';
+import 'package:balance/features/weight/presentation/widgets/add_weight_dialog.dart';
 
 import 'package:balance/features/calendar/presentation/widgets/calendar_error_card.dart';
 import 'package:balance/features/calendar/presentation/widgets/calendar_grid.dart';
@@ -484,7 +484,7 @@ void main() {
     await tester.tap(find.byIcon(Icons.add));
     await tester.pumpAndSettle();
 
-    expect(find.byType(AddWeightSheet), findsOneWidget);
+    expect(find.byType(AddWeightDialog), findsOneWidget);
 
     await tester.tapAt(const Offset(10, 10));
     await tester.pumpAndSettle();

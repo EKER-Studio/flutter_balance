@@ -3,11 +3,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:balance/features/weight/presentation/bloc/weight_bloc.dart';
-import 'package:balance/features/weight/presentation/widgets/add_weight_sheet.dart';
+import 'package:balance/features/weight/presentation/widgets/add_weight_dialog.dart';
 import 'package:balance/l10n/app_localizations.dart';
 
 /// Empty state for a selected day without measurements, offering a shortcut
-/// to add the first entry for that date via [AddWeightSheet].
+/// to add the first entry for that date via [AddWeightDialog].
 class CalendarDayEmptyCard extends StatelessWidget {
   /// The selected date with zero measurements.
   final DateTime selectedDate;
@@ -65,7 +65,7 @@ class CalendarDayEmptyCard extends StatelessWidget {
                     context: context,
                     builder: (dialogCtx) => BlocProvider.value(
                       value: context.read<WeightBloc>(),
-                      child: AddWeightSheet(initialDate: selectedDate),
+                      child: AddWeightDialog(initialDate: selectedDate),
                     ),
                   );
                 },

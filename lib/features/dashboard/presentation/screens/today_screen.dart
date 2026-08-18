@@ -15,7 +15,7 @@ import 'package:balance/features/weight/presentation/bloc/weight_bloc.dart';
 import 'package:balance/features/weight/presentation/bloc/weight_event.dart';
 import 'package:balance/features/weight/presentation/bloc/weight_state.dart';
 import 'package:balance/features/weight/presentation/utils/weight_error_localizer.dart';
-import 'package:balance/features/weight/presentation/widgets/add_weight_sheet.dart';
+import 'package:balance/features/weight/presentation/widgets/add_weight_dialog.dart';
 import 'package:balance/features/dashboard/presentation/widgets/health_summary_card.dart';
 import 'package:balance/features/dashboard/presentation/widgets/today_shimmer_skeleton.dart';
 import 'package:balance/l10n/app_localizations.dart';
@@ -275,13 +275,13 @@ class TodayScreen extends StatelessWidget {
     );
   }
 
-  /// Opens the [AddWeightSheet] dialog to allow the user to add a new weight entry.
+  /// Opens the [AddWeightDialog] dialog to allow the user to add a new weight entry.
   void _showAddWeightSheet(BuildContext context) {
     showDialog<void>(
       context: context,
       builder: (dialogCtx) => BlocProvider.value(
         value: context.read<WeightBloc>(),
-        child: const AddWeightSheet(),
+        child: const AddWeightDialog(),
       ),
     );
   }

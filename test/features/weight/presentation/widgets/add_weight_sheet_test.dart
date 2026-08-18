@@ -7,7 +7,7 @@ import 'package:mocktail/mocktail.dart';
 import 'package:balance/features/weight/presentation/bloc/weight_bloc.dart';
 import 'package:balance/features/weight/presentation/bloc/weight_event.dart';
 import 'package:balance/features/weight/presentation/bloc/weight_state.dart';
-import 'package:balance/features/weight/presentation/widgets/add_weight_sheet.dart';
+import 'package:balance/features/weight/presentation/widgets/add_weight_dialog.dart';
 import 'package:balance/l10n/app_localizations.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_bloc.dart';
 
@@ -73,7 +73,7 @@ void main() {
   }
 
   testWidgets('renders date, time, weight, and note fields', (tester) async {
-    await tester.pumpWidget(createTestWidget(const AddWeightSheet()));
+    await tester.pumpWidget(createTestWidget(const AddWeightDialog()));
     await tester.pumpAndSettle();
 
     expect(find.text('Measurement date'), findsOneWidget);
@@ -85,7 +85,7 @@ void main() {
   testWidgets('parses comma as decimal separator and dispatches AddWeight', (
     tester,
   ) async {
-    await tester.pumpWidget(createTestWidget(const AddWeightSheet()));
+    await tester.pumpWidget(createTestWidget(const AddWeightDialog()));
     await tester.pumpAndSettle();
 
     final weightField = find.byType(TextField).at(0);
@@ -112,7 +112,7 @@ void main() {
   testWidgets('parses dot as decimal separator and dispatches AddWeight', (
     tester,
   ) async {
-    await tester.pumpWidget(createTestWidget(const AddWeightSheet()));
+    await tester.pumpWidget(createTestWidget(const AddWeightDialog()));
     await tester.pumpAndSettle();
 
     final weightField = find.byType(TextField).at(0);
@@ -140,7 +140,7 @@ void main() {
     final futureDate = DateTime.now().add(const Duration(days: 10));
 
     await tester.pumpWidget(
-      createTestWidget(AddWeightSheet(initialDate: futureDate)),
+      createTestWidget(AddWeightDialog(initialDate: futureDate)),
     );
     await tester.pumpAndSettle();
 
@@ -157,20 +157,20 @@ void main() {
   });
 
   testWidgets('cancel dismisses the sheet without dispatching', (tester) async {
-    await tester.pumpWidget(createTestWidget(const AddWeightSheet()));
+    await tester.pumpWidget(createTestWidget(const AddWeightDialog()));
     await tester.pumpAndSettle();
 
     await tester.tap(find.text('Cancel'));
     await tester.pumpAndSettle();
 
-    expect(find.byType(AddWeightSheet), findsNothing);
+    expect(find.byType(AddWeightDialog), findsNothing);
     verifyNever(() => weightBloc.add(any()));
   });
 
   testWidgets('choosing a date through the picker updates the field', (
     tester,
   ) async {
-    await tester.pumpWidget(createTestWidget(const AddWeightSheet()));
+    await tester.pumpWidget(createTestWidget(const AddWeightDialog()));
     await tester.pumpAndSettle();
 
     await tester.tap(find.byIcon(Icons.calendar_today_outlined));
@@ -186,7 +186,7 @@ void main() {
   testWidgets('dismissing the date picker leaves the field unchanged', (
     tester,
   ) async {
-    await tester.pumpWidget(createTestWidget(const AddWeightSheet()));
+    await tester.pumpWidget(createTestWidget(const AddWeightDialog()));
     await tester.pumpAndSettle();
 
     await tester.tap(find.byIcon(Icons.calendar_today_outlined));
@@ -206,7 +206,7 @@ void main() {
   testWidgets('choosing a time through the picker updates the field', (
     tester,
   ) async {
-    await tester.pumpWidget(createTestWidget(const AddWeightSheet()));
+    await tester.pumpWidget(createTestWidget(const AddWeightDialog()));
     await tester.pumpAndSettle();
 
     await tester.tap(find.byIcon(Icons.access_time_outlined));
@@ -222,7 +222,7 @@ void main() {
   testWidgets('shows validation errors for empty and non-numeric weights', (
     tester,
   ) async {
-    await tester.pumpWidget(createTestWidget(const AddWeightSheet()));
+    await tester.pumpWidget(createTestWidget(const AddWeightDialog()));
     await tester.pumpAndSettle();
 
     await tester.tap(find.text('Save'));
@@ -245,7 +245,7 @@ void main() {
   testWidgets('dispatches AddWeight with a note when one is entered', (
     tester,
   ) async {
-    await tester.pumpWidget(createTestWidget(const AddWeightSheet()));
+    await tester.pumpWidget(createTestWidget(const AddWeightDialog()));
     await tester.pumpAndSettle();
 
     final weightField = find.byType(TextField).at(0);
@@ -270,7 +270,7 @@ void main() {
     when(() => storage.read(any())).thenReturn({'measurementUnit': 'imperial'});
     settingsBloc = AppSettingsBloc();
 
-    await tester.pumpWidget(createTestWidget(const AddWeightSheet()));
+    await tester.pumpWidget(createTestWidget(const AddWeightDialog()));
     await tester.pumpAndSettle();
 
     expect(find.text('Weight in lb'), findsOneWidget);
