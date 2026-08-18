@@ -51,14 +51,14 @@ class ProfileSection extends StatelessWidget {
           CustomSettingsTile(
             icon: Icons.height,
             title: l10n.height,
-            valueText: heightValue,
+            subtitle: heightValue,
             sectionLabel: l10n.profileSection,
             onTap: onHeightTap,
           ),
           CustomSettingsTile(
             icon: Icons.flag_outlined,
             title: l10n.targetWeight,
-            valueText: targetWeightValue,
+            subtitle: targetWeightValue,
             sectionLabel: l10n.profileSection,
             onTap: onTargetWeightTap,
           ),

@@ -1,18 +1,25 @@
 // Main settings screen composing profile, application, integrations, security,
 // data and help sections.
 
-import 'package:balance/core/presentation/utils/picker_helpers.dart';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:balance/core/presentation/utils/app_snackbar.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:balance/l10n/app_localizations.dart';
-import 'package:balance/core/utils/crash_log.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:share_plus/share_plus.dart';
+
 import 'package:balance/core/integrations/biometrics/biometric_service.dart';
-import 'package:balance/core/integrations/health/health_service.dart';
 import 'package:balance/core/integrations/csv/csv_exporter.dart';
+import 'package:balance/core/integrations/health/health_service.dart';
+import 'package:balance/core/models/measurement_unit.dart';
+import 'package:balance/core/presentation/utils/app_snackbar.dart';
+import 'package:balance/core/presentation/utils/app_theme_mode_localizer.dart';
+import 'package:balance/core/presentation/utils/picker_helpers.dart';
+import 'package:balance/core/presentation/widgets/app_top_bar.dart';
+import 'package:balance/core/utils/crash_log.dart';
+import 'package:balance/core/utils/unit_converter.dart';
+import 'package:balance/l10n/app_localizations.dart';
 
 import 'package:balance/features/weight/domain/entities/weight_entry.dart';
 import 'package:balance/features/weight/domain/weight_error_type.dart';
@@ -21,32 +28,27 @@ import 'package:balance/features/weight/presentation/bloc/weight_event.dart';
 import 'package:balance/features/weight/presentation/bloc/weight_state.dart';
 import 'package:balance/features/weight/presentation/utils/measurement_unit_localizer.dart';
 import 'package:balance/features/weight/presentation/utils/weight_error_localizer.dart';
+
 import 'package:balance/features/settings/presentation/bloc/app_settings_bloc.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_event.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_state.dart';
 import 'package:balance/features/settings/presentation/bloc/app_theme_mode.dart';
-import 'package:balance/core/presentation/utils/app_theme_mode_localizer.dart';
-import 'package:balance/core/models/measurement_unit.dart';
-import 'package:permission_handler/permission_handler.dart';
-import 'package:balance/core/presentation/widgets/app_top_bar.dart';
-import 'package:balance/features/settings/presentation/widgets/target_weight_dialog.dart';
-import 'package:balance/features/settings/presentation/widgets/csv_import_preview_dialog.dart';
-import 'dart:io';
-
-import 'package:balance/features/settings/presentation/widgets/height_dialog.dart';
-import 'package:balance/features/settings/presentation/widgets/section_header.dart';
-import 'package:balance/features/settings/presentation/widgets/profile_section.dart';
 import 'package:balance/features/settings/presentation/widgets/application_section.dart';
-import 'package:balance/features/settings/presentation/widgets/integrations_section.dart';
-import 'package:balance/features/settings/presentation/widgets/security_section.dart';
+import 'package:balance/features/settings/presentation/widgets/csv_import_preview_dialog.dart';
 import 'package:balance/features/settings/presentation/widgets/data_section.dart';
+import 'package:balance/features/settings/presentation/widgets/height_dialog.dart';
 import 'package:balance/features/settings/presentation/widgets/help_section.dart';
-
-import '../../../../core/utils/unit_converter.dart';
+import 'package:balance/features/settings/presentation/widgets/integrations_section.dart';
+import 'package:balance/features/settings/presentation/widgets/profile_section.dart';
+import 'package:balance/features/settings/presentation/widgets/section_header.dart';
+import 'package:balance/features/settings/presentation/widgets/security_section.dart';
+import 'package:balance/features/settings/presentation/widgets/target_weight_dialog.dart';
 
 /// A widget that provides a screen for managing profile, application, security, and data settings.
 ///
-/// It provides controls for adjusting the user's height and target weight, as well as changing the theme, measurement unit, daily reminder, biometric lock, and managing CSV import/export/wipe functionality. On wide layouts, the sections are arranged in a two-column grid.
+/// It provides controls for adjusting the user's height and target weight, as well as changing the theme,
+/// measurement unit, daily reminder, biometric lock, and managing CSV import/export/wipe functionality.
+/// On wide layouts, the sections are arranged in a two-column grid.
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
 
@@ -77,16 +79,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
     return Scaffold(
       backgroundColor: colorScheme.surface,
-
       body: BlocListener<AppSettingsBloc, AppSettingsState>(
         listenWhen: (previous, current) =>
             !previous.isHealthSyncEnabled && current.isHealthSyncEnabled,
         listener: (context, state) {
           // Health sync was just activated: pull the weight history recorded
-          // in Apple Health / Health Connect (e.g. by a smart scale) into the
-          // local database. The transition only fires when the permission
-          // request succeeded, because [AppSettingsState.isHealthSyncEnabled]
-          // is set to true only after the OS permission is granted.
+          // in Apple Health / Health Connect into the local database.
           context.read<WeightBloc>().add(const SyncHealthEntries());
         },
         child: BlocListener<AppSettingsBloc, AppSettingsState>(
@@ -94,9 +92,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
               !previous.healthPermissionDenied &&
               current.healthPermissionDenied,
           listener: (context, state) {
-            // Health permission denied: show a snackbar whose action redirects
-            // the user to the OS health permissions page, where the grant can be
-            // made from the system settings.
             final l10n = AppLocalizations.of(context);
             AppSnackBar.show(
               context,
@@ -113,8 +108,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 !previous.notificationPermissionDenied &&
                 current.notificationPermissionDenied,
             listener: (context, state) {
-              // Notification permission denied: show a snackbar whose action
-              // redirects the user to the OS app settings page.
               final l10n = AppLocalizations.of(context);
               AppSnackBar.show(
                 context,
@@ -447,10 +440,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   /// Shows the [HeightDialog] and persists the returned height (in cm).
-  ///
-  /// On confirm, the value is written to both the [AppSettingsBloc] and the
-  /// [WeightBloc] so that BMI calculations and user profile data remain
-  /// synchronized.
   void _showHeightDialog(BuildContext dialogContext) async {
     final settingsState = dialogContext.read<AppSettingsBloc>().state;
     final currentHeight = settingsState.height;
@@ -524,11 +513,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   /// Shows the [TargetWeightDialog] and applies the returned value.
-  ///
-  /// The dialog is pre-filled with the current target and the active
-  /// measurement unit. A `'clear'` result removes the target weight, while a
-  /// `double` result sets it; both are dispatched to the [AppSettingsBloc] so
-  /// that progress calculations reflect the change.
   void _showTargetWeightDialog(BuildContext dialogContext) async {
     final settingsBloc = dialogContext.read<AppSettingsBloc>();
     final settingsState = settingsBloc.state;
@@ -557,8 +541,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   /// Shows the theme mode selection dialog and applies the chosen mode.
-  ///
-  /// The selected mode is saved to the [AppSettingsBloc] to immediately update the visual style of the application.
   void _showThemeSelection(BuildContext dialogContext) {
     final state = dialogContext.read<AppSettingsBloc>().state;
     final l10n = AppLocalizations.of(dialogContext);
@@ -591,8 +573,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   /// Shows the measurement unit selection dialog and applies the chosen unit.
-  ///
-  /// The selected unit is persisted via the [AppSettingsBloc] so that all weight values are formatted correctly.
   void _showUnitSelection(BuildContext dialogContext) {
     final state = dialogContext.read<AppSettingsBloc>().state;
     final l10n = AppLocalizations.of(dialogContext);
@@ -631,8 +611,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
       unit.localizedName(l10n);
 
   /// Asks for confirmation before wiping all stored weight data.
-  ///
-  /// This prevents accidental deletion of all user records by requiring explicit intent before calling [_wipeDatabase].
   void _showWipeConfirmation(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final errorColor = Theme.of(context).colorScheme.error;
@@ -665,8 +643,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   /// Clears all weight entries and resets every app setting.
-  ///
-  /// The outcome snackbar is shown only once the wipe has actually completed, because BLoC events are processed asynchronously and a failing clear surfaces as a [WeightError] state instead of a thrown exception.
   Future<void> _wipeDatabase() async {
     final l10n = AppLocalizations.of(context);
     final weightBloc = context.read<WeightBloc>();
@@ -706,8 +682,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   /// Exports the current weight entries via [CsvExporter] and shares the file.
-  ///
-  /// Generates a CSV file containing all records and invokes the native share sheet so the user can save or distribute the data.
   Future<void> _exportCsv(BuildContext context) async {
     final l10n = AppLocalizations.of(context);
     try {
@@ -729,7 +703,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
         return;
       }
 
-      final exportedFile = await CsvExporter.exportToFile(entries);
+      // Kopia listy chroniąca stan BLoC przed bezpośrednią mutacją
+      final exportedFile = await CsvExporter.exportToFile(List.of(entries));
 
       if (context.mounted) {
         final box = context.findRenderObject() as RenderBox?;
@@ -763,8 +738,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   /// Shares the on-device crash log via the system share sheet.
-  ///
-  /// Reads the log file from the application documents directory and invokes the share sheet, or informs the user if no crash log has been recorded yet.
   Future<void> _sendCrashLog(BuildContext context) async {
     final l10n = AppLocalizations.of(context);
     try {
@@ -804,23 +777,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
     }
   }
 
-  /// Toggles the daily reminder via the [AppSettingsBloc].
-  ///
-  /// This requests OS notification permission and schedules or cancels the reminder based on the [enabled] state.
   void _handleNotificationToggle(BuildContext context, bool enabled) {
     context.read<AppSettingsBloc>().add(ToggleNotifications(enabled));
   }
 
-  /// Toggles health sync via the [AppSettingsBloc].
-  ///
-  /// This requests native health permissions when enabling. When the user disables the sync, a brief informational message explains how to fully revoke access. A denied permission request is surfaced separately via a snackbar whose "Open Settings" action redirects to the OS health permissions page.
   void _handleHealthSyncToggle(BuildContext context, bool enabled) {
     context.read<AppSettingsBloc>().add(ToggleHealthSync(enabled));
   }
 
-  /// Shows a dialog explaining that Health Connect must be installed before sync can be enabled.
-  ///
-  /// Provides an action button that redirects the user to the Play Store listing for Health Connect.
   void _showHealthConnectInstallDialog(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     showDialog(
@@ -850,9 +814,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
-  /// Toggles the biometric lock, authenticating the user before enabling it.
-  ///
-  /// Checks for hardware availability and prompts the user for authentication. The lock is only enabled if the authentication is successful.
   Future<void> _handleBiometricToggle(
     BuildContext context,
     bool enabled,
@@ -861,8 +822,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final bloc = context.read<AppSettingsBloc>();
 
     if (enabled) {
-      // Guard: verify a device credential (biometric or OS PIN/pattern/
-      // password) is available before prompting.
       final available = await BiometricService.instance.canAuthenticate();
       if (!available) {
         if (context.mounted) {
@@ -882,8 +841,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
       if (result == BiometricAuthResult.success) {
         bloc.add(const UpdateBiometricLock(true));
       } else if (BiometricService.isTerminalFailure(result)) {
-        // Biometrics became unavailable between the availability check and
-        // the authentication call (e.g. user deleted fingerprints mid-flow).
         if (context.mounted) {
           AppSnackBar.show(
             context,
@@ -892,7 +849,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
           );
         }
       } else {
-        // User canceled or failed — do not enable the lock.
         bloc.add(const UpdateBiometricLock(false));
         if (context.mounted) {
           AppSnackBar.show(
@@ -907,9 +863,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
     }
   }
 
-  /// Shows the time picker and persists the chosen reminder time.
-  ///
-  /// The new schedule is confirmed with a `SnackBar` and updated in the [AppSettingsBloc].
   Future<void> _selectNotificationTime(
     BuildContext context,
     ({int hour, int minute}) initialTimeRecord,

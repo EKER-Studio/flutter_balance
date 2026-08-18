@@ -1,203 +1,79 @@
-// Generic tappable settings list tile with icon, title, optional subtitle,
-// trailing value, error styling and keyboard focus ring.
+// Reusable settings tile following Material 3 List Item guidelines.
 
 import 'package:flutter/material.dart';
 
-/// A widget that represents a generic interactive settings list tile used across the app's configuration screens.
-class CustomSettingsTile extends StatefulWidget {
-  /// The leading icon rendered inside a circular container.
+/// A custom settings tile with an icon, title, supporting subtitle, optional trailing value, and chevron.
+class CustomSettingsTile extends StatelessWidget {
   final IconData icon;
-
-  /// The tile title text.
   final String title;
-
-  /// The optional supporting text shown below the [title].
   final String? subtitle;
-
-  /// The optional trailing value text shown before the chevron.
   final String? valueText;
-
-  /// The callback invoked when the tile is tapped.
-  ///
-  /// Passing `null` disables the tap interaction.
+  final String? sectionLabel;
   final VoidCallback? onTap;
-
-  /// Whether the tile is rendered with error colors.
   final bool isError;
-
-  /// Whether a trailing chevron icon is shown.
   final bool showChevron;
 
-  /// The optional parent section label prepended to the accessibility label.
-  final String? sectionLabel;
-
-  /// Creates a [CustomSettingsTile] with the given properties.
   const CustomSettingsTile({
     super.key,
     required this.icon,
     required this.title,
     this.subtitle,
     this.valueText,
+    this.sectionLabel,
     this.onTap,
     this.isError = false,
     this.showChevron = true,
-    this.sectionLabel,
   });
 
   @override
-  State<CustomSettingsTile> createState() => CustomSettingsTileState();
-}
-
-class CustomSettingsTileState extends State<CustomSettingsTile> {
-  final _focusNode = FocusNode();
-  bool _isFocused = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _focusNode.addListener(_onFocusChange);
-  }
-
-  void _onFocusChange() {
-    if (_isFocused != _focusNode.hasFocus) {
-      setState(() => _isFocused = _focusNode.hasFocus);
-    }
-  }
-
-  @override
-  void dispose() {
-    _focusNode.removeListener(_onFocusChange);
-    _focusNode.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-    final textTheme = Theme.of(context).textTheme;
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
 
-    final leading = ExcludeSemantics(
-      child: Container(
-        width: 40,
-        height: 40,
-        decoration: BoxDecoration(
-          color: colorScheme.surfaceContainer,
-          shape: BoxShape.circle,
-        ),
-        alignment: Alignment.center,
-        child: Icon(
-          widget.icon,
-          size: 24,
-          color: widget.isError
-              ? colorScheme.error
-              : colorScheme.onSurfaceVariant,
-        ),
-      ),
-    );
+    final effectiveSubtitle = subtitle ?? valueText;
+    final effectiveColor = isError
+        ? colorScheme.error
+        : colorScheme.onSurfaceVariant;
 
-    final titleWidget = Text(
-      widget.title,
-      style: textTheme.bodyLarge?.copyWith(
-        color: widget.isError ? colorScheme.error : colorScheme.onSurface,
-      ),
-    );
-
-    final subtitleWidget = widget.subtitle != null
-        ? Text(
-            widget.subtitle!,
-            style: textTheme.bodyMedium?.copyWith(
-              color: colorScheme.onSurfaceVariant,
-            ),
-          )
-        : null;
-
-    Widget? trailingWidget;
-    if (widget.valueText != null) {
-      trailingWidget = Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Flexible(
-            child: Text(
-              widget.valueText!,
-              style: textTheme.bodyMedium?.copyWith(
-                color: widget.isError
-                    ? colorScheme.error
-                    : colorScheme.onSurfaceVariant,
-              ),
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-            ),
-          ),
-          if (widget.showChevron)
-            ExcludeSemantics(
-              child: Icon(
-                Icons.chevron_right,
-                color: colorScheme.onSurfaceVariant,
-              ),
-            ),
-        ],
-      );
-    } else if (widget.showChevron) {
-      trailingWidget = ExcludeSemantics(
-        child: Icon(Icons.chevron_right, color: colorScheme.onSurfaceVariant),
-      );
-    }
-
-    final shape = RoundedRectangleBorder(
-      borderRadius: BorderRadius.circular(20),
-    );
-
-    final labelParts = <String>[
-      if (widget.sectionLabel != null) widget.sectionLabel!,
-      widget.title,
-      if (widget.subtitle != null) widget.subtitle!,
+    final labelParts = [
+      if (sectionLabel != null) sectionLabel!,
+      title,
+      if (effectiveSubtitle != null) effectiveSubtitle,
     ];
 
-    final tile = Semantics(
-      button: true,
-      excludeSemantics: labelParts.length > 1,
-      label: labelParts.length > 1 ? labelParts.join(', ') : null,
-      child: Focus(
-        focusNode: _focusNode,
-        child: Theme(
-          data: Theme.of(context).copyWith(
-            highlightColor: widget.isError
-                ? colorScheme.error.withValues(alpha: 0.12)
-                : colorScheme.primary.withValues(alpha: 0.08),
-            splashColor: widget.isError
-                ? colorScheme.error.withValues(alpha: 0.12)
-                : colorScheme.primary.withValues(alpha: 0.12),
-          ),
-          child: ListTile(
-            shape: shape,
-            hoverColor: widget.isError
-                ? colorScheme.error.withValues(alpha: 0.08)
-                : colorScheme.onSurface.withValues(alpha: 0.08),
-            focusColor: widget.isError
-                ? colorScheme.error.withValues(alpha: 0.12)
-                : colorScheme.onSurface.withValues(alpha: 0.12),
-            minLeadingWidth: 40,
-            minVerticalPadding: 8,
-            onTap: widget.onTap,
-            leading: leading,
-            title: titleWidget,
-            subtitle: subtitleWidget,
-            trailing: trailingWidget,
-          ),
-        ),
-      ),
-    );
-
-    if (_isFocused) {
-      return Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: colorScheme.primary, width: 2),
-        ),
-        child: tile,
+    Widget? trailingWidget;
+    if (showChevron) {
+      trailingWidget = Icon(
+        Icons.chevron_right,
+        size: 20,
+        color: effectiveColor,
       );
     }
 
-    return tile;
+    return Semantics(
+      button: onTap != null,
+      label: labelParts.join(', '),
+      child: ListTile(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        leading: Icon(icon, color: effectiveColor),
+        title: Text(
+          title,
+          style: theme.textTheme.bodyLarge?.copyWith(
+            fontWeight: FontWeight.w500,
+            color: isError ? colorScheme.error : null,
+          ),
+        ),
+        subtitle: effectiveSubtitle != null
+            ? Text(
+                effectiveSubtitle,
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: effectiveColor,
+                ),
+              )
+            : null,
+        trailing: trailingWidget,
+        onTap: onTap,
+      ),
+    );
   }
 }
