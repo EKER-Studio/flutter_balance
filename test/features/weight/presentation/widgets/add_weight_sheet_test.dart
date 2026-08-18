@@ -88,7 +88,7 @@ void main() {
     await tester.pumpWidget(createTestWidget(const AddWeightSheet()));
     await tester.pumpAndSettle();
 
-    final weightField = find.byType(TextFormField).at(0);
+    final weightField = find.byType(TextField).at(0);
     await tester.enterText(weightField, '72,5');
     await tester.pumpAndSettle();
 
@@ -115,7 +115,7 @@ void main() {
     await tester.pumpWidget(createTestWidget(const AddWeightSheet()));
     await tester.pumpAndSettle();
 
-    final weightField = find.byType(TextFormField).at(0);
+    final weightField = find.byType(TextField).at(0);
     await tester.enterText(weightField, '72.5');
     await tester.pumpAndSettle();
 
@@ -144,7 +144,7 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    final weightField = find.byType(TextFormField).at(0);
+    final weightField = find.byType(TextField).at(0);
     await tester.enterText(weightField, '72.5');
     await tester.pumpAndSettle();
 
@@ -229,7 +229,7 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('Weight cannot be empty'), findsOneWidget);
 
-    final weightField = find.byType(TextFormField).at(0);
+    final weightField = find.byType(TextField).at(0);
     await tester.enterText(weightField, 'abc');
     await tester.tap(find.text('Save'));
     await tester.pumpAndSettle();
@@ -248,9 +248,9 @@ void main() {
     await tester.pumpWidget(createTestWidget(const AddWeightSheet()));
     await tester.pumpAndSettle();
 
-    final weightField = find.byType(TextFormField).at(0);
+    final weightField = find.byType(TextField).at(0);
     await tester.enterText(weightField, '72.5');
-    final noteField = find.byType(TextFormField).at(1);
+    final noteField = find.byType(TextField).at(1);
     await tester.enterText(noteField, 'morning');
     await tester.pumpAndSettle();
 
@@ -275,7 +275,7 @@ void main() {
 
     expect(find.text('Weight in lb'), findsOneWidget);
 
-    final weightField = find.byType(TextFormField).at(0);
+    final weightField = find.byType(TextField).at(0);
     await tester.enterText(weightField, '160');
     await tester.pumpAndSettle();
 
