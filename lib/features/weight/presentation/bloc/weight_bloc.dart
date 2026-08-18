@@ -197,7 +197,9 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
 
     if (currentEntries.isEmpty) {
       // Emit loading state while establishing the new subscription.
-      emit(WeightLoading(heightCm: state.heightCm, timePeriod: state.timePeriod));
+      emit(
+        WeightLoading(heightCm: state.heightCm, timePeriod: state.timePeriod),
+      );
     }
 
     final Stream<List<WeightEntry>> watch;
@@ -208,7 +210,9 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
       // instance) must not leave the bloc stuck in a transient state; report
       // it as a typed error while preserving the last-known entries.
       if (kDebugMode) {
-        debugPrint('[WeightBloc] Failed to start the weight stream: $e\n$stack');
+        debugPrint(
+          '[WeightBloc] Failed to start the weight stream: $e\n$stack',
+        );
       }
       final errorType = e is WeightRepositoryException
           ? e.type

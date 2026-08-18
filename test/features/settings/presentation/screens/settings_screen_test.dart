@@ -1376,7 +1376,9 @@ void main() {
       await stateController.close();
     });
 
-    testWidgets('exports entries and shows success snackbar', (tester) async {
+    testWidgets('exports entries to a CSV file via the share sheet', (
+      tester,
+    ) async {
       useWideSurface(tester);
       when(() => weightBloc.state).thenReturn(
         WeightLoaded(
@@ -1403,8 +1405,10 @@ void main() {
       });
       await tester.pumpAndSettle();
 
-      expect(find.text('Export completed successfully.'), findsOneWidget);
+      // The export writes the CSV file and shares it; no success snackbar is
+      // shown anymore (redundant feedback was removed from the settings flow).
       expect(tempDir.listSync().isNotEmpty, isTrue);
+      expect(find.text('Export completed successfully.'), findsNothing);
     });
 
     testWidgets('shows error snackbar when sharing fails', (tester) async {

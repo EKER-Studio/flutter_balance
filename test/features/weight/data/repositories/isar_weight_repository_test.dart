@@ -776,7 +776,8 @@ void main() {
       expect(stored.last.note, 'First note');
     });
 
-    test('watchAllEntries on a closed database throws synchronously', () async {
+    test('watchAllEntries on a closed database surfaces a retried stream '
+        'error instead of throwing synchronously', () async {
       if (isar == null) {
         markTestSkipped(
           'Isar native library not available in this environment',
@@ -803,7 +804,19 @@ void main() {
         encryptionKey: testKeyA,
       );
 
-      expect(() => repo.watchAllEntries(), throwsA(isA<IsarError>()));
+      final errors = <Object>[];
+      final subscription = repo.watchAllEntries().listen(
+        (_) {},
+        onError: (Object error, StackTrace stackTrace) => errors.add(error),
+      );
+      addTearDown(subscription.cancel);
+
+      await waitUntil(() => errors.isNotEmpty);
+      expect(errors.first, isA<WeightRepositoryException>());
+      expect(
+        (errors.first as WeightRepositoryException).type,
+        WeightErrorType.streamError,
+      );
     });
   });
 
@@ -899,6 +912,40 @@ void main() {
         DateTime.now().difference(started),
         lessThan(const Duration(seconds: 5)),
       );
+    });
+
+    test('recovers when createStream throws synchronously', () async {
+      var attempts = 0;
+      final source = StreamController<List<int>>();
+      final stream = resilientStream<List<int>>(
+        () {
+          attempts++;
+          if (attempts == 1) {
+            throw StateError('database closed');
+          }
+          return source.stream;
+        },
+        mapError: (error, stack) => StateError('mapped: $error'),
+        backoffFor: (_) => const Duration(milliseconds: 10),
+      );
+
+      final events = <Object>[];
+      final subscription = stream.listen(
+        (entries) => events.add(entries),
+        onError: (Object error, StackTrace stackTrace) => events.add(error),
+      );
+      addTearDown(subscription.cancel);
+      addTearDown(source.close);
+
+      await waitUntil(() => events.any((e) => e is StateError));
+      source.add(const [1, 2]);
+      await waitUntil(() => events.any((e) => e is List<int>));
+
+      // The synchronous throw was surfaced as the mapped error, not as an
+      // unhandled exception, and the retry loop recovered with fresh data.
+      expect(events.first, isA<StateError>());
+      expect(events.whereType<List<int>>().single, [1, 2]);
+      expect(attempts, 2);
     });
   });
 

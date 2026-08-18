@@ -217,7 +217,8 @@ class IsarWeightRepository implements WeightRepository {
   ///
   /// Emits a [WeightRepositoryException] as a stream error if the decryption
   /// key is missing or the underlying Isar stream fails. Never completes on
-  /// its own.
+  /// its own and never throws synchronously — even a closed database instance
+  /// surfaces as a retried stream error instead of a thrown exception.
   @override
   Stream<List<WeightEntry>> watchAllEntries() {
     return resilientStream(
@@ -661,6 +662,9 @@ class IsarWeightRepository implements WeightRepository {
 /// unless [recoverySignal] fires first. The returned stream never terminates
 /// on its own, so transient infrastructure failures (e.g. an encryption key
 /// that is inaccessible while the device is locked) recover without a restart.
+/// Synchronous exceptions thrown by [createStream] itself (e.g. when the
+/// database instance is closed) are treated identically to asynchronous
+/// stream errors and also trigger the retry loop.
 ///
 /// The controller approach is used (instead of `yield*`) because inner-stream
 /// errors forwarded through `yield*` cannot be intercepted by a surrounding
@@ -700,7 +704,21 @@ Stream<T> resilientStream<T>(
     cancelWait();
     sourceSub?.cancel();
     if (disposed) return;
-    sourceSub = createStream().listen(
+    Stream<T> source;
+    try {
+      source = createStream();
+    } catch (error, stack) {
+      if (disposed) return;
+      // A synchronous factory failure (e.g. the database instance was closed
+      // while the app was backgrounded) must not kill the retry loop: surface
+      // it exactly like an asynchronous stream error and schedule the next
+      // attempt.
+      consecutiveFailures++;
+      controller.addError(mapError(error, stack), stack);
+      scheduleRetry();
+      return;
+    }
+    sourceSub = source.listen(
       (data) {
         if (disposed) return;
         consecutiveFailures = 0;

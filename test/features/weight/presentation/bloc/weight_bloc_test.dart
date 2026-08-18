@@ -94,6 +94,63 @@ void main() {
     );
 
     blocTest<WeightBloc, WeightState>(
+      'keeps existing entries and skips WeightLoading when re-subscribing',
+      build: () => WeightBloc(repository: repository),
+      seed: () => WeightLoaded(
+        heightCm: 170,
+        entries: [
+          WeightEntry(id: 1, weightKg: 70, dateTime: DateTime(2025, 1, 1)),
+        ],
+        filteredEntries: [
+          WeightEntry(id: 1, weightKg: 70, dateTime: DateTime(2025, 1, 1)),
+        ],
+      ),
+      act: (bloc) async {
+        bloc.add(SubscribeToWeightChanges());
+        await Future(() {});
+        streamController.add([
+          WeightEntry(id: 1, weightKg: 70, dateTime: DateTime(2025, 1, 1)),
+        ]);
+      },
+      expect: () => [
+        isA<WeightLoaded>()
+            .having((s) => s.entries, 'entries', isNotEmpty)
+            .having((s) => s.heightCm, 'heightCm', 170),
+      ],
+    );
+
+    blocTest<WeightBloc, WeightState>(
+      'emits WeightError preserving entries when the stream fails to start',
+      build: () {
+        when(() => repository.watchAllEntries()).thenThrow(
+          WeightRepositoryException(
+            type: WeightErrorType.streamError,
+            message: 'database closed',
+          ),
+        );
+        return WeightBloc(repository: repository);
+      },
+      seed: () => WeightLoaded(
+        entries: [
+          WeightEntry(id: 1, weightKg: 70, dateTime: DateTime(2025, 1, 1)),
+        ],
+        filteredEntries: [
+          WeightEntry(id: 1, weightKg: 70, dateTime: DateTime(2025, 1, 1)),
+        ],
+      ),
+      act: (bloc) => bloc.add(SubscribeToWeightChanges()),
+      expect: () => [
+        isA<WeightError>()
+            .having(
+              (s) => s.errorType,
+              'errorType',
+              WeightErrorType.streamError,
+            )
+            .having((s) => s.entries, 'entries', isNotEmpty),
+      ],
+    );
+
+    blocTest<WeightBloc, WeightState>(
       'emits [WeightLoading, WeightError] with the domain error type when '
       'the stream emits a WeightRepositoryException',
       build: () {
