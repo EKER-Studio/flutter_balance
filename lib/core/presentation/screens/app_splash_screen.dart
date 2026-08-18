@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:balance/l10n/app_localizations.dart';
+import 'package:balance/features/dashboard/presentation/widgets/today_shimmer_skeleton.dart';
 
 /// The in-app splash screen shown during startup initialization.
 ///
@@ -17,15 +18,13 @@ class AppSplashScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     // Scaffold automatically uses Theme.of(context).colorScheme.surface as background.
     return Scaffold(
-      body: Center(
-        child: Semantics(
-          label: AppLocalizations.of(context).appLoadingSemantics,
-          textDirection: TextDirection.ltr,
-          child: Image.asset(
-            'assets/icon/app_icon.png',
-            width: 144,
-            height: 144,
-            excludeFromSemantics: true,
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+          child: Semantics(
+            label: AppLocalizations.of(context).appLoadingSemantics,
+            textDirection: TextDirection.ltr,
+            child: const TodayShimmerSkeleton(),
           ),
         ),
       ),

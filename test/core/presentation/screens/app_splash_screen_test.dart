@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:balance/features/dashboard/presentation/widgets/today_shimmer_skeleton.dart';
 import 'package:balance/l10n/app_localizations.dart';
 import 'package:balance/core/presentation/screens/app_splash_screen.dart';
 
@@ -14,20 +15,12 @@ void main() {
   }
 
   group('AppSplashScreen', () {
-    testWidgets('renders the app icon image', (tester) async {
+    testWidgets('renders the skeleton loader', (tester) async {
       await tester.pumpWidget(buildTestWidget());
       await tester.pump();
 
       expect(find.byType(AppSplashScreen), findsOneWidget);
-      expect(find.byType(Image), findsOneWidget);
-
-      final image = tester.widget<Image>(find.byType(Image));
-      expect(image.width, 144);
-      expect(image.height, 144);
-      expect(image.excludeFromSemantics, isTrue);
-
-      // Swallow the async asset-load exception raised in the test harness.
-      tester.takeException();
+      expect(find.byType(TodayShimmerSkeleton), findsOneWidget);
     });
 
     testWidgets('exposes the app loading semantics label', (tester) async {
