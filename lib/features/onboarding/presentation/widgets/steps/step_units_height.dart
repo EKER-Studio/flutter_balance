@@ -274,7 +274,8 @@ class _StepUnitsHeightState extends State<StepUnitsHeight> {
                     decoration: InputDecoration(
                       labelText: l10n.feetLabel,
                       suffixText: 'ft',
-                      errorText: _imperialErrorText,
+                      errorText: _imperialErrorText != null ? "" : null,
+                      errorStyle: const TextStyle(height: 0, fontSize: 0),
                     ),
                     onChanged: (_) {
                       if (_imperialErrorText != null) {
@@ -294,7 +295,8 @@ class _StepUnitsHeightState extends State<StepUnitsHeight> {
                     decoration: InputDecoration(
                       labelText: l10n.inchesLabel,
                       suffixText: 'in',
-                      errorText: _imperialErrorText,
+                      errorText: _imperialErrorText != null ? "" : null,
+                      errorStyle: const TextStyle(height: 0, fontSize: 0),
                     ),
                     onChanged: (_) {
                       if (_imperialErrorText != null) {
@@ -306,6 +308,16 @@ class _StepUnitsHeightState extends State<StepUnitsHeight> {
                 ),
               ],
             ),
+            if (_imperialErrorText != null)
+              Padding(
+                padding: const EdgeInsets.only(top: 8.0, left: 12.0),
+                child: Text(
+                  _imperialErrorText!,
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: theme.colorScheme.error,
+                  ),
+                ),
+              ),
           ],
           const Spacer(),
           ConstrainedBox(
