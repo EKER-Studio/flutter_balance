@@ -87,45 +87,44 @@ class _TargetWeightDialogState extends State<TargetWeightDialog> {
     final l10n = AppLocalizations.of(context);
 
     return AlertDialog(
+      scrollable: true,
       title: Text(l10n.targetWeightDialogTitle),
       content: SizedBox(
         width: 320,
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              const SizedBox(height: 4),
-              TextField(
-                controller: _controller,
-                keyboardType: const TextInputType.numberWithOptions(
-                  decimal: true,
-                  signed: false,
-                ),
-                autofocus: true,
-                decoration: InputDecoration(
-                  labelText: widget.measurementUnit == MeasurementUnit.imperial
-                      ? l10n.weightInLbLabel
-                      : l10n.weightInKgLabel,
-                  hintText: l10n.weightHint,
-                  errorText: _errorText,
-                  errorMaxLines: 2,
-                  contentPadding: const EdgeInsetsDirectional.fromSTEB(
-                    12,
-                    16,
-                    12,
-                    12,
-                  ),
-                ),
-                onChanged: (_) {
-                  if (_errorText != null) {
-                    setState(() => _errorText = null);
-                  }
-                },
-                onSubmitted: (_) => _handleSave(),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            const SizedBox(height: 4),
+            TextField(
+              controller: _controller,
+              keyboardType: const TextInputType.numberWithOptions(
+                decimal: true,
+                signed: false,
               ),
-            ],
-          ),
+              autofocus: true,
+              decoration: InputDecoration(
+                labelText: widget.measurementUnit == MeasurementUnit.imperial
+                    ? l10n.weightInLbLabel
+                    : l10n.weightInKgLabel,
+                hintText: l10n.weightHint,
+                errorText: _errorText,
+                errorMaxLines: 2,
+                contentPadding: const EdgeInsetsDirectional.fromSTEB(
+                  12,
+                  16,
+                  12,
+                  12,
+                ),
+              ),
+              onChanged: (_) {
+                if (_errorText != null) {
+                  setState(() => _errorText = null);
+                }
+              },
+              onSubmitted: (_) => _handleSave(),
+            ),
+          ],
         ),
       ),
       actions: [

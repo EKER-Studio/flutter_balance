@@ -410,5 +410,15 @@
         "type": "String"
       }
     }
+  },
+  "@heightRangeHint": {
+    "placeholders": {
+      "min": {
+        "type": "String"
+      },
+      "max": {
+        "type": "String"
+      }
+    }
   }
 }

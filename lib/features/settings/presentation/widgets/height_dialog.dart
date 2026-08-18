@@ -112,114 +112,113 @@ class HeightDialogState extends State<HeightDialog> {
     final isMetric = widget.measurementUnit == MeasurementUnit.metric;
 
     return AlertDialog(
+      scrollable: true,
       title: Text(l10n.heightDialogTitle),
       content: SizedBox(
         width: 320,
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              const SizedBox(height: 4),
-              if (isMetric)
-                TextField(
-                  controller: _cmController,
-                  keyboardType: const TextInputType.numberWithOptions(
-                    decimal: true,
-                    signed: false,
-                  ),
-                  autofocus: true,
-                  decoration: InputDecoration(
-                    labelText: l10n.heightCmLabel,
-                    hintText: l10n.heightHint,
-                    errorText: _errorText != null ? "" : null,
-                    errorStyle: const TextStyle(height: 0, fontSize: 0),
-                    helperText: l10n.heightRangeHint(
-                      AppSettingsState.minHeightCm.toStringAsFixed(0),
-                      AppSettingsState.maxHeightCm.toStringAsFixed(0),
-                    ),
-                    helperMaxLines: 2,
-                    contentPadding: const EdgeInsetsDirectional.fromSTEB(
-                      12,
-                      16,
-                      12,
-                      12,
-                    ),
-                  ),
-                  onChanged: (_) {
-                    if (_errorText != null) setState(() => _errorText = null);
-                  },
-                  onSubmitted: (_) => _handleSave(),
-                )
-              else
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Expanded(
-                      child: TextField(
-                        controller: _feetController,
-                        keyboardType: TextInputType.number,
-                        autofocus: true,
-                        decoration: InputDecoration(
-                          labelText: l10n.feetLabel,
-                          suffixText: 'ft',
-                          errorText: _errorText != null ? "" : null,
-                          errorStyle: const TextStyle(height: 0, fontSize: 0),
-                          contentPadding: const EdgeInsetsDirectional.fromSTEB(
-                            12,
-                            16,
-                            12,
-                            12,
-                          ),
-                        ),
-                        onChanged: (_) {
-                          if (_errorText != null) {
-                            setState(() => _errorText = null);
-                          }
-                        },
-                        onSubmitted: (_) => _handleSave(),
-                      ),
-                    ),
-                    const SizedBox(width: 16.0),
-                    Expanded(
-                      child: TextField(
-                        controller: _inchesController,
-                        keyboardType: TextInputType.number,
-                        decoration: InputDecoration(
-                          labelText: l10n.inchesLabel,
-                          suffixText: 'in',
-                          errorText: _errorText != null ? "" : null,
-                          errorStyle: const TextStyle(height: 0, fontSize: 0),
-                          contentPadding: const EdgeInsetsDirectional.fromSTEB(
-                            12,
-                            16,
-                            12,
-                            12,
-                          ),
-                        ),
-                        onChanged: (_) {
-                          if (_errorText != null) {
-                            setState(() => _errorText = null);
-                          }
-                        },
-                        onSubmitted: (_) => _handleSave(),
-                      ),
-                    ),
-                  ],
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            const SizedBox(height: 4),
+            if (isMetric)
+              TextField(
+                controller: _cmController,
+                keyboardType: const TextInputType.numberWithOptions(
+                  decimal: true,
+                  signed: false,
                 ),
-              if (_errorText != null)
-                Padding(
-                  padding: const EdgeInsets.only(top: 8.0, left: 12.0),
-                  child: Text(
-                    _errorText!,
-                    style: TextStyle(
-                      color: Theme.of(context).colorScheme.error,
-                      fontSize: 12.0,
-                    ),
+                autofocus: true,
+                decoration: InputDecoration(
+                  labelText: l10n.heightCmLabel,
+                  hintText: l10n.heightHint,
+                  errorText: _errorText != null ? "" : null,
+                  errorStyle: const TextStyle(height: 0, fontSize: 0),
+                  helperText: l10n.heightRangeHint(
+                    AppSettingsState.minHeightCm.toStringAsFixed(0),
+                    AppSettingsState.maxHeightCm.toStringAsFixed(0),
+                  ),
+                  helperMaxLines: 2,
+                  contentPadding: const EdgeInsetsDirectional.fromSTEB(
+                    12,
+                    16,
+                    12,
+                    12,
                   ),
                 ),
-            ],
-          ),
+                onChanged: (_) {
+                  if (_errorText != null) setState(() => _errorText = null);
+                },
+                onSubmitted: (_) => _handleSave(),
+              )
+            else
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    child: TextField(
+                      controller: _feetController,
+                      keyboardType: TextInputType.number,
+                      autofocus: true,
+                      decoration: InputDecoration(
+                        labelText: l10n.feetLabel,
+                        suffixText: 'ft',
+                        errorText: _errorText != null ? "" : null,
+                        errorStyle: const TextStyle(height: 0, fontSize: 0),
+                        contentPadding: const EdgeInsetsDirectional.fromSTEB(
+                          12,
+                          16,
+                          12,
+                          12,
+                        ),
+                      ),
+                      onChanged: (_) {
+                        if (_errorText != null) {
+                          setState(() => _errorText = null);
+                        }
+                      },
+                      onSubmitted: (_) => _handleSave(),
+                    ),
+                  ),
+                  const SizedBox(width: 16.0),
+                  Expanded(
+                    child: TextField(
+                      controller: _inchesController,
+                      keyboardType: TextInputType.number,
+                      decoration: InputDecoration(
+                        labelText: l10n.inchesLabel,
+                        suffixText: 'in',
+                        errorText: _errorText != null ? "" : null,
+                        errorStyle: const TextStyle(height: 0, fontSize: 0),
+                        contentPadding: const EdgeInsetsDirectional.fromSTEB(
+                          12,
+                          16,
+                          12,
+                          12,
+                        ),
+                      ),
+                      onChanged: (_) {
+                        if (_errorText != null) {
+                          setState(() => _errorText = null);
+                        }
+                      },
+                      onSubmitted: (_) => _handleSave(),
+                    ),
+                  ),
+                ],
+              ),
+            if (_errorText != null)
+              Padding(
+                padding: const EdgeInsets.only(top: 8.0, left: 12.0),
+                child: Text(
+                  _errorText!,
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.error,
+                    fontSize: 12.0,
+                  ),
+                ),
+              ),
+          ],
         ),
       ),
       actions: [
