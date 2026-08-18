@@ -62,24 +62,27 @@ class TodayScreen extends StatelessWidget {
           return _RefreshableTodayBody(
             onRefresh: () => _refreshWeightData(context),
             title: l10n.todayTabTitle,
+            onAddWeight: _showAddWeightSheet,
             child: _buildBody(context, state, l10n),
           );
         },
       ),
-      floatingActionButton: BlocBuilder<WeightBloc, WeightState>(
-        builder: (context, state) {
-          final entries = _entriesFromState(state);
-          if (entries.isEmpty ||
-              state is WeightInitial ||
-              state is WeightLoading) {
-            return const SizedBox.shrink();
-          }
-          return FloatingActionButton(
-            onPressed: () => _showAddWeightSheet(context),
-            child: const Icon(Icons.add),
-          );
-        },
-      ),
+      floatingActionButton: MediaQuery.viewInsetsOf(context).bottom > 0
+          ? null
+          : BlocBuilder<WeightBloc, WeightState>(
+              builder: (context, state) {
+                final entries = _entriesFromState(state);
+                if (entries.isEmpty ||
+                    state is WeightInitial ||
+                    state is WeightLoading) {
+                  return const SizedBox.shrink();
+                }
+                return FloatingActionButton(
+                  onPressed: () => _showAddWeightSheet(context),
+                  child: const Icon(Icons.add),
+                );
+              },
+            ),
     );
   }
 
@@ -296,10 +299,13 @@ class _RefreshableTodayBody extends StatelessWidget {
   final String title;
 
   /// Creates a [_RefreshableTodayBody].
+  final void Function(BuildContext) onAddWeight;
+
   const _RefreshableTodayBody({
     required this.onRefresh,
     required this.child,
     required this.title,
+    required this.onAddWeight,
   });
 
   @override

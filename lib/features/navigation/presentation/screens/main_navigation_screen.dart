@@ -102,43 +102,56 @@ class _MainNavigationScreenState extends State<MainNavigationScreen>
                     color: colorScheme.onSurfaceVariant,
                   ),
                 ),
-                child: NavigationRail(
-                  selectedIndex: _currentIndex,
-                  onDestinationSelected: _onTabSelected,
-                  labelType: NavigationRailLabelType.all,
-                  groupAlignment: 0.0, // Center the items vertically
-                  minWidth: 88.0, // Make it slightly wider to breathe
-                  backgroundColor: colorScheme.surfaceContainer,
-                  destinations: [
-                    NavigationRailDestination(
-                      icon: Semantics(
-                        selected: _currentIndex == 0,
-                        label: l10n.todayTabHomeSemanticsLabel,
-                        child: const Icon(Icons.today_outlined),
+                child: LayoutBuilder(
+                  builder: (context, constraints) {
+                    return SingleChildScrollView(
+                      child: ConstrainedBox(
+                        constraints: BoxConstraints(
+                          minHeight: constraints.maxHeight,
+                        ),
+                        child: IntrinsicHeight(
+                          child: NavigationRail(
+                            selectedIndex: _currentIndex,
+                            onDestinationSelected: _onTabSelected,
+                            labelType: NavigationRailLabelType.all,
+                            groupAlignment: 0.0, // Center the items vertically
+                            minWidth: 88.0, // Make it slightly wider to breathe
+                            backgroundColor: colorScheme.surfaceContainer,
+                            destinations: [
+                              NavigationRailDestination(
+                                icon: Semantics(
+                                  selected: _currentIndex == 0,
+                                  label: l10n.todayTabHomeSemanticsLabel,
+                                  child: const Icon(Icons.today_outlined),
+                                ),
+                                selectedIcon: Semantics(
+                                  selected: _currentIndex == 0,
+                                  label: l10n.todayTabHomeSemanticsLabel,
+                                  child: const Icon(Icons.today, fill: 1),
+                                ),
+                                label: Text(l10n.tabToday),
+                              ),
+                              NavigationRailDestination(
+                                icon: const Icon(Icons.calendar_month_outlined),
+                                selectedIcon: const Icon(Icons.calendar_month),
+                                label: Text(l10n.tabCalendar),
+                              ),
+                              NavigationRailDestination(
+                                icon: const Icon(Icons.insights_outlined),
+                                selectedIcon: const Icon(Icons.insights),
+                                label: Text(l10n.tabStats),
+                              ),
+                              NavigationRailDestination(
+                                icon: const Icon(Icons.settings_outlined),
+                                selectedIcon: const Icon(Icons.settings),
+                                label: Text(l10n.tabSettings),
+                              ),
+                            ],
+                          ),
+                        ),
                       ),
-                      selectedIcon: Semantics(
-                        selected: _currentIndex == 0,
-                        label: l10n.todayTabHomeSemanticsLabel,
-                        child: const Icon(Icons.today, fill: 1),
-                      ),
-                      label: Text(l10n.tabToday),
-                    ),
-                    NavigationRailDestination(
-                      icon: const Icon(Icons.calendar_month_outlined),
-                      selectedIcon: const Icon(Icons.calendar_month),
-                      label: Text(l10n.tabCalendar),
-                    ),
-                    NavigationRailDestination(
-                      icon: const Icon(Icons.insights_outlined),
-                      selectedIcon: const Icon(Icons.insights),
-                      label: Text(l10n.tabStats),
-                    ),
-                    NavigationRailDestination(
-                      icon: const Icon(Icons.settings_outlined),
-                      selectedIcon: const Icon(Icons.settings),
-                      label: Text(l10n.tabSettings),
-                    ),
-                  ],
+                    );
+                  },
                 ),
               ),
               VerticalDivider(

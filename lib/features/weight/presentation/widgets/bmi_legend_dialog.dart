@@ -15,42 +15,41 @@ class BmiLegendDialog extends StatelessWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return AlertDialog(
+      scrollable: true,
       icon: Icon(Icons.info_outline, color: cs.primary, size: 28),
       title: Text(l10n.bmiLegendTitle),
-      content: SingleChildScrollView(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            _buildLegendItem(
-              context: context,
-              category: BmiCategory.underweight,
-              range: '< 18.5',
-              isDark: isDark,
-            ),
-            const SizedBox(height: 12),
-            _buildLegendItem(
-              context: context,
-              category: BmiCategory.normal,
-              range: '18.5 – 24.9',
-              isDark: isDark,
-            ),
-            const SizedBox(height: 12),
-            _buildLegendItem(
-              context: context,
-              category: BmiCategory.overweight,
-              range: '25.0 – 29.9',
-              isDark: isDark,
-            ),
-            const SizedBox(height: 12),
-            _buildLegendItem(
-              context: context,
-              category: BmiCategory.obese,
-              range: '≥ 30.0',
-              isDark: isDark,
-            ),
-          ],
-        ),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          _buildLegendItem(
+            context: context,
+            category: BmiCategory.underweight,
+            range: '< 18.5',
+            isDark: isDark,
+          ),
+          const SizedBox(height: 12),
+          _buildLegendItem(
+            context: context,
+            category: BmiCategory.normal,
+            range: '18.5 – 24.9',
+            isDark: isDark,
+          ),
+          const SizedBox(height: 12),
+          _buildLegendItem(
+            context: context,
+            category: BmiCategory.overweight,
+            range: '25.0 – 29.9',
+            isDark: isDark,
+          ),
+          const SizedBox(height: 12),
+          _buildLegendItem(
+            context: context,
+            category: BmiCategory.obese,
+            range: '≥ 30.0',
+            isDark: isDark,
+          ),
+        ],
       ),
       actions: [
         TextButton(

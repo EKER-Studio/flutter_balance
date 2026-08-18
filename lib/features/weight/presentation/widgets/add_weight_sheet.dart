@@ -125,161 +125,162 @@ class _AddWeightSheetState extends State<AddWeightSheet> {
     final timeStr = _selectedTime.format(context);
 
     return AlertDialog(
+      scrollable: true,
+      insetPadding: const EdgeInsets.symmetric(
+        horizontal: 40.0,
+        vertical: 16.0,
+      ),
       title: Text(l10n.addWeight),
       content: SizedBox(
         width: 320,
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              const SizedBox(height: 4),
-              Row(
-                children: [
-                  Expanded(
-                    child: Semantics(
-                      button: true,
-                      label: '${l10n.measurementDate}: $dateStr',
-                      hint: l10n.doubleTapToOpenCalendarHint,
-                      child: InkWell(
-                        onTap: () => _pickDate(context),
-                        borderRadius: BorderRadius.circular(8),
-                        child: InputDecorator(
-                          decoration: InputDecoration(
-                            labelText: l10n.measurementDate,
-                            border: const OutlineInputBorder(),
-                            suffixIcon: const Icon(
-                              Icons.calendar_today_outlined,
-                              size: 20,
-                            ),
-                            contentPadding:
-                                const EdgeInsetsDirectional.fromSTEB(
-                                  12,
-                                  16,
-                                  12,
-                                  12,
-                                ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            const SizedBox(height: 4),
+            Row(
+              children: [
+                Expanded(
+                  child: Semantics(
+                    button: true,
+                    label: '${l10n.measurementDate}: $dateStr',
+                    hint: l10n.doubleTapToOpenCalendarHint,
+                    child: InkWell(
+                      onTap: () => _pickDate(context),
+                      borderRadius: BorderRadius.circular(8),
+                      child: InputDecorator(
+                        decoration: InputDecoration(
+                          labelText: l10n.measurementDate,
+                          border: const OutlineInputBorder(),
+                          suffixIcon: const Icon(
+                            Icons.calendar_today_outlined,
+                            size: 20,
                           ),
-                          child: FittedBox(
-                            fit: BoxFit.scaleDown,
-                            alignment: Alignment.centerLeft,
-                            child: Text(
-                              dateStr,
-                              style: Theme.of(context).textTheme.bodyLarge,
-                            ),
+                          contentPadding: const EdgeInsetsDirectional.fromSTEB(
+                            12,
+                            16,
+                            12,
+                            12,
+                          ),
+                        ),
+                        child: FittedBox(
+                          fit: BoxFit.scaleDown,
+                          alignment: Alignment.centerLeft,
+                          child: Text(
+                            dateStr,
+                            style: Theme.of(context).textTheme.bodyLarge,
                           ),
                         ),
                       ),
                     ),
                   ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Semantics(
-                      button: true,
-                      label: '${l10n.measurementTime}: $timeStr',
-                      hint: l10n.doubleTapToChangeTimeHint,
-                      child: InkWell(
-                        onTap: () => _pickTime(context),
-                        borderRadius: BorderRadius.circular(8),
-                        child: InputDecorator(
-                          decoration: InputDecoration(
-                            labelText: l10n.measurementTime,
-                            border: const OutlineInputBorder(),
-                            suffixIcon: const Icon(
-                              Icons.access_time_outlined,
-                              size: 20,
-                            ),
-                            contentPadding:
-                                const EdgeInsetsDirectional.fromSTEB(
-                                  12,
-                                  16,
-                                  12,
-                                  12,
-                                ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Semantics(
+                    button: true,
+                    label: '${l10n.measurementTime}: $timeStr',
+                    hint: l10n.doubleTapToChangeTimeHint,
+                    child: InkWell(
+                      onTap: () => _pickTime(context),
+                      borderRadius: BorderRadius.circular(8),
+                      child: InputDecorator(
+                        decoration: InputDecoration(
+                          labelText: l10n.measurementTime,
+                          border: const OutlineInputBorder(),
+                          suffixIcon: const Icon(
+                            Icons.access_time_outlined,
+                            size: 20,
                           ),
-                          child: FittedBox(
-                            fit: BoxFit.scaleDown,
-                            alignment: Alignment.centerLeft,
-                            child: Text(
-                              timeStr,
-                              style: Theme.of(context).textTheme.bodyLarge,
-                            ),
+                          contentPadding: const EdgeInsetsDirectional.fromSTEB(
+                            12,
+                            16,
+                            12,
+                            12,
+                          ),
+                        ),
+                        child: FittedBox(
+                          fit: BoxFit.scaleDown,
+                          alignment: Alignment.centerLeft,
+                          child: Text(
+                            timeStr,
+                            style: Theme.of(context).textTheme.bodyLarge,
                           ),
                         ),
                       ),
-                    ),
-                  ),
-                ],
-              ),
-              if (_dateTimeError != null) ...[
-                const SizedBox(height: 6),
-                Padding(
-                  padding: const EdgeInsets.only(left: 12.0),
-                  child: Text(
-                    _dateTimeError!,
-                    style: TextStyle(
-                      color: Theme.of(context).colorScheme.error,
-                      fontSize: 12,
                     ),
                   ),
                 ),
               ],
-              const SizedBox(height: 16),
-              TextField(
-                controller: _weightController,
-                autofocus: true,
-                keyboardType: const TextInputType.numberWithOptions(
-                  decimal: true,
-                ),
-                decoration: InputDecoration(
-                  labelText: unit == MeasurementUnit.imperial
-                      ? l10n.weightInLbLabel
-                      : l10n.weightInKgLabel,
-                  hintText: l10n.weightHint,
-                  border: const OutlineInputBorder(),
-                  errorText: _weightError != null ? "" : null,
-                  errorStyle: const TextStyle(height: 0, fontSize: 0),
-                  contentPadding: const EdgeInsetsDirectional.fromSTEB(
-                    12,
-                    16,
-                    12,
-                    12,
+            ),
+            if (_dateTimeError != null) ...[
+              const SizedBox(height: 6),
+              Padding(
+                padding: const EdgeInsets.only(left: 12.0),
+                child: Text(
+                  _dateTimeError!,
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.error,
+                    fontSize: 12,
                   ),
                 ),
-                onChanged: (_) {
-                  if (_weightError != null) setState(() => _weightError = null);
-                },
-              ),
-              if (_weightError != null)
-                Padding(
-                  padding: const EdgeInsets.only(top: 8.0, left: 12.0),
-                  child: Text(
-                    _weightError!,
-                    style: TextStyle(
-                      color: Theme.of(context).colorScheme.error,
-                      fontSize: 12.0,
-                    ),
-                  ),
-                ),
-              const SizedBox(height: 16),
-              TextField(
-                controller: _noteController,
-                decoration: InputDecoration(
-                  labelText: l10n.noteLabel,
-                  border: const OutlineInputBorder(),
-                  contentPadding: const EdgeInsetsDirectional.fromSTEB(
-                    12,
-                    16,
-                    12,
-                    12,
-                  ),
-                ),
-                maxLines: 1,
-                textInputAction: TextInputAction.done,
-                onSubmitted: (_) => _onSave(),
               ),
             ],
-          ),
+            const SizedBox(height: 16),
+            TextField(
+              controller: _weightController,
+              autofocus: true,
+              keyboardType: const TextInputType.numberWithOptions(
+                decimal: true,
+              ),
+              decoration: InputDecoration(
+                labelText: unit == MeasurementUnit.imperial
+                    ? l10n.weightInLbLabel
+                    : l10n.weightInKgLabel,
+                hintText: l10n.weightHint,
+                border: const OutlineInputBorder(),
+                errorText: _weightError != null ? "" : null,
+                errorStyle: const TextStyle(height: 0, fontSize: 0),
+                contentPadding: const EdgeInsetsDirectional.fromSTEB(
+                  12,
+                  16,
+                  12,
+                  12,
+                ),
+              ),
+              onChanged: (_) {
+                if (_weightError != null) setState(() => _weightError = null);
+              },
+            ),
+            if (_weightError != null)
+              Padding(
+                padding: const EdgeInsets.only(top: 8.0, left: 12.0),
+                child: Text(
+                  _weightError!,
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.error,
+                    fontSize: 12.0,
+                  ),
+                ),
+              ),
+            const SizedBox(height: 16),
+            TextField(
+              controller: _noteController,
+              decoration: InputDecoration(
+                labelText: l10n.noteLabel,
+                border: const OutlineInputBorder(),
+                contentPadding: const EdgeInsetsDirectional.fromSTEB(
+                  12,
+                  16,
+                  12,
+                  12,
+                ),
+              ),
+              maxLines: 1,
+              textInputAction: TextInputAction.done,
+              onSubmitted: (_) => _onSave(),
+            ),
+          ],
         ),
       ),
       actions: [
