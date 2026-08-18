@@ -43,6 +43,7 @@ import 'package:balance/features/settings/presentation/widgets/profile_section.d
 import 'package:balance/features/settings/presentation/widgets/section_header.dart';
 import 'package:balance/features/settings/presentation/widgets/security_section.dart';
 import 'package:balance/features/settings/presentation/widgets/target_weight_dialog.dart';
+import 'package:balance/features/settings/presentation/widgets/wipe_data_dialog.dart';
 
 /// A widget that provides a screen for managing profile, application, security, and data settings.
 ///
@@ -611,53 +612,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
       unit.localizedName(l10n);
 
   /// Asks for confirmation before wiping all stored weight data.
-  void _showWipeConfirmation(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
-    final errorColor = Theme.of(context).colorScheme.error;
-
-    final isLandscapePhone =
-        MediaQuery.of(context).orientation == Orientation.landscape &&
-        MediaQuery.sizeOf(context).height < 500;
-
-    showDialog(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        scrollable: true,
-        insetPadding: EdgeInsets.symmetric(
-          horizontal: isLandscapePhone ? 32 : 24,
-          vertical: isLandscapePhone ? 8 : 24,
-        ),
-        icon: isLandscapePhone
-            ? null
-            : Icon(Icons.delete_forever_outlined, size: 28, color: errorColor),
-        title: Text(l10n.wipeData),
-        contentPadding: EdgeInsets.fromLTRB(
-          24,
-          isLandscapePhone ? 8 : 16,
-          24,
-          isLandscapePhone ? 12 : 20,
-        ),
-        content: Text(l10n.wipeDataContent),
-        actionsAlignment: MainAxisAlignment.end,
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: Text(l10n.cancel),
-          ),
-          FilledButton(
-            onPressed: () async {
-              Navigator.pop(ctx);
-              await _wipeDatabase();
-            },
-            style: FilledButton.styleFrom(
-              backgroundColor: errorColor,
-              foregroundColor: Theme.of(ctx).colorScheme.onError,
-            ),
-            child: Text(l10n.wipeDataButton),
-          ),
-        ],
-      ),
-    );
+  Future<void> _showWipeConfirmation(BuildContext context) async {
+    final confirmed = await WipeDataDialog.show(context);
+    if (confirmed && mounted) {
+      await _wipeDatabase();
+    }
   }
 
   /// Clears all weight entries and resets every app setting.
