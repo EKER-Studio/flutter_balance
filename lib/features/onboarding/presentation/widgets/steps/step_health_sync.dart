@@ -78,120 +78,105 @@ class _StepHealthSyncState extends State<StepHealthSync> {
               final enabled = settingsState.isHealthSyncEnabled;
               final apiAvailable = settingsState.isHealthApiAvailable;
 
-              return Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Expanded(
-                    child: SingleChildScrollView(
-                      physics: const BouncingScrollPhysics(),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          Text(
-                            l10n.healthSyncStepOptionalTitle,
-                            style: theme.textTheme.headlineSmall?.copyWith(
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          SizedBox(height: isLandscape ? 4.0 : 8.0),
-                          Text(
-                            Platform.isIOS
-                                ? l10n.healthSyncDescriptionIOS
-                                : l10n.healthSyncDescriptionAndroid,
-                            style: theme.textTheme.bodyMedium?.copyWith(
-                              color: theme.colorScheme.onSurfaceVariant,
-                            ),
-                          ),
-                          SizedBox(height: isLandscape ? 12.0 : 24.0),
-                          Material(
-                            color: theme.colorScheme.surfaceContainerLow,
-                            borderRadius: BorderRadius.circular(16.0),
-                            clipBehavior: Clip.antiAlias,
-                            child: Container(
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(16.0),
-                                border: Border.all(
-                                  color: theme.colorScheme.outlineVariant
-                                      .withValues(alpha: 0.3),
-                                ),
-                              ),
-                              child: SwitchListTile(
-                                key: const Key('health_sync_step_switch'),
-                                value: enabled,
-                                onChanged: _handleToggle,
-                                title: Text(
-                                  l10n.healthSync,
-                                  style: theme.textTheme.titleMedium?.copyWith(
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                                subtitle: Text(
-                                  apiAvailable
-                                      ? (Platform.isIOS
-                                            ? l10n.healthSyncTileSubtitleIOS
-                                            : l10n.healthSyncTileSubtitleAndroid)
-                                      : l10n.healthSyncUnavailable,
-                                ),
-                                secondary: Icon(
-                                  Icons.monitor_heart_outlined,
-                                  color: enabled
-                                      ? theme.colorScheme.primary
-                                      : theme.colorScheme.onSurfaceVariant,
-                                ),
-                              ),
-                            ),
-                          ),
-                          if (_permissionDenied) ...[
-                            const SizedBox(height: 12.0),
-                            Container(
-                              padding: const EdgeInsets.all(12.0),
-                              decoration: BoxDecoration(
-                                color: theme.colorScheme.errorContainer,
-                                borderRadius: BorderRadius.circular(12.0),
-                              ),
-                              child: Row(
-                                children: [
-                                  Icon(
-                                    Icons.warning_amber_rounded,
-                                    color: theme.colorScheme.onErrorContainer,
-                                    size: 20.0,
-                                  ),
-                                  const SizedBox(width: 8.0),
-                                  Expanded(
-                                    child: Text(
-                                      l10n.healthPermissionDenied,
-                                      style: theme.textTheme.bodySmall
-                                          ?.copyWith(
-                                            color: theme
-                                                .colorScheme
-                                                .onErrorContainer,
-                                          ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ],
+              return SingleChildScrollView(
+                physics: const BouncingScrollPhysics(),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Text(
+                      l10n.healthSyncStepOptionalTitle,
+                      style: theme.textTheme.headlineSmall?.copyWith(
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
-                  ),
-                  SafeArea(
-                    top: false,
-                    bottom: true,
-                    child: Padding(
-                      padding: EdgeInsets.only(top: isLandscape ? 8.0 : 16.0),
-                      child: ConstrainedBox(
-                        constraints: const BoxConstraints(minHeight: 48.0),
-                        child: FilledButton(
-                          key: const Key('health_sync_step_next_button'),
-                          onPressed: widget.onNext,
-                          child: Text(l10n.next),
+                    SizedBox(height: isLandscape ? 4.0 : 8.0),
+                    Text(
+                      Platform.isIOS
+                          ? l10n.healthSyncDescriptionIOS
+                          : l10n.healthSyncDescriptionAndroid,
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: theme.colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                    SizedBox(height: isLandscape ? 8.0 : 20.0),
+                    Material(
+                      color: theme.colorScheme.surfaceContainerLow,
+                      borderRadius: BorderRadius.circular(16.0),
+                      clipBehavior: Clip.antiAlias,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(16.0),
+                          border: Border.all(
+                            color: theme.colorScheme.outlineVariant.withValues(
+                              alpha: 0.3,
+                            ),
+                          ),
+                        ),
+                        child: SwitchListTile(
+                          key: const Key('health_sync_step_switch'),
+                          value: enabled,
+                          onChanged: _handleToggle,
+                          title: Text(
+                            l10n.healthSync,
+                            style: theme.textTheme.titleMedium?.copyWith(
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          subtitle: Text(
+                            apiAvailable
+                                ? (Platform.isIOS
+                                      ? l10n.healthSyncTileSubtitleIOS
+                                      : l10n.healthSyncTileSubtitleAndroid)
+                                : l10n.healthSyncUnavailable,
+                          ),
+                          secondary: Icon(
+                            Icons.monitor_heart_outlined,
+                            color: enabled
+                                ? theme.colorScheme.primary
+                                : theme.colorScheme.onSurfaceVariant,
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                ],
+                    if (_permissionDenied) ...[
+                      const SizedBox(height: 12.0),
+                      Container(
+                        padding: const EdgeInsets.all(12.0),
+                        decoration: BoxDecoration(
+                          color: theme.colorScheme.errorContainer,
+                          borderRadius: BorderRadius.circular(12.0),
+                        ),
+                        child: Row(
+                          children: [
+                            Icon(
+                              Icons.warning_amber_rounded,
+                              color: theme.colorScheme.onErrorContainer,
+                              size: 20.0,
+                            ),
+                            const SizedBox(width: 8.0),
+                            Expanded(
+                              child: Text(
+                                l10n.healthPermissionDenied,
+                                style: theme.textTheme.bodySmall?.copyWith(
+                                  color: theme.colorScheme.onErrorContainer,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                    SizedBox(height: isLandscape ? 16.0 : 24.0),
+                    ConstrainedBox(
+                      constraints: const BoxConstraints(minHeight: 48.0),
+                      child: FilledButton(
+                        key: const Key('health_sync_step_next_button'),
+                        onPressed: widget.onNext,
+                        child: Text(l10n.next),
+                      ),
+                    ),
+                  ],
+                ),
               );
             },
           ),

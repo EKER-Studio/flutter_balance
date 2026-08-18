@@ -193,90 +193,76 @@ class _StepTargetWeightState extends State<StepTargetWeight> {
         horizontal: 24.0,
         vertical: isLandscape ? 12.0 : 24.0,
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Expanded(
-            child: SingleChildScrollView(
-              physics: const BouncingScrollPhysics(),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Text(
-                    l10n.targetWeightOptionalTitle,
-                    style: theme.textTheme.headlineSmall?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  SizedBox(height: isLandscape ? 4.0 : 8.0),
-                  Text(
-                    l10n.targetWeightStepSubtitle,
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      color: theme.colorScheme.onSurfaceVariant,
-                    ),
-                  ),
-                  SizedBox(height: isLandscape ? 12.0 : 24.0),
-                  TextField(
-                    key: const Key('target_weight_input'),
-                    controller: _weightController,
-                    focusNode: _focusNode,
-                    keyboardType: const TextInputType.numberWithOptions(
-                      decimal: true,
-                    ),
-                    decoration: InputDecoration(
-                      labelText:
-                          '${l10n.targetWeightDialogTitle} ($unitSuffix)',
-                      suffixText: unitSuffix,
-                      enabledBorder: isError ? errorOutline : null,
-                      focusedBorder: isError ? errorOutline : null,
-                    ),
-                    onChanged: _validate,
-                    onSubmitted: (_) {
-                      if (isNextEnabled) _handleNext();
-                    },
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    isError ? _errorText! : l10n.targetWeightOptionalHint,
-                    style: TextStyle(
-                      color: isError
-                          ? theme.colorScheme.error
-                          : theme.colorScheme.onSurfaceVariant,
-                      fontSize: 12,
-                      fontWeight: isError ? FontWeight.w500 : FontWeight.w400,
-                    ),
-                  ),
-                  if (deltaText != null) ...[
-                    const SizedBox(height: 8),
-                    Text(
-                      key: const Key('target_delta_text'),
-                      deltaText,
-                      style: TextStyle(
-                        color: theme.colorScheme.primary,
-                        fontSize: 13,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ],
-                ],
+      child: SingleChildScrollView(
+        physics: const BouncingScrollPhysics(),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text(
+              l10n.targetWeightOptionalTitle,
+              style: theme.textTheme.headlineSmall?.copyWith(
+                fontWeight: FontWeight.bold,
               ),
             ),
-          ),
-          SafeArea(
-            top: false,
-            bottom: true,
-            child: Padding(
-              padding: EdgeInsets.only(top: isLandscape ? 8.0 : 16.0),
-              child: ConstrainedBox(
-                constraints: const BoxConstraints(minHeight: 48.0),
-                child: FilledButton(
-                  onPressed: isNextEnabled ? _handleNext : null,
-                  child: Text(l10n.next),
+            SizedBox(height: isLandscape ? 4.0 : 8.0),
+            Text(
+              l10n.targetWeightStepSubtitle,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
+            ),
+            SizedBox(height: isLandscape ? 8.0 : 20.0),
+            TextField(
+              key: const Key('target_weight_input'),
+              controller: _weightController,
+              focusNode: _focusNode,
+              keyboardType: const TextInputType.numberWithOptions(
+                decimal: true,
+              ),
+              decoration: InputDecoration(
+                labelText: '${l10n.targetWeightDialogTitle} ($unitSuffix)',
+                suffixText: unitSuffix,
+                enabledBorder: isError ? errorOutline : null,
+                focusedBorder: isError ? errorOutline : null,
+              ),
+              onChanged: _validate,
+              onSubmitted: (_) {
+                if (isNextEnabled) _handleNext();
+              },
+            ),
+            const SizedBox(height: 8),
+            Text(
+              isError ? _errorText! : l10n.targetWeightOptionalHint,
+              style: TextStyle(
+                color: isError
+                    ? theme.colorScheme.error
+                    : theme.colorScheme.onSurfaceVariant,
+                fontSize: 12,
+                fontWeight: isError ? FontWeight.w500 : FontWeight.w400,
+              ),
+            ),
+            if (deltaText != null) ...[
+              const SizedBox(height: 8),
+              Text(
+                key: const Key('target_delta_text'),
+                deltaText,
+                style: TextStyle(
+                  color: theme.colorScheme.primary,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
                 ),
               ),
+            ],
+            SizedBox(height: isLandscape ? 16.0 : 24.0),
+            ConstrainedBox(
+              constraints: const BoxConstraints(minHeight: 48.0),
+              child: FilledButton(
+                onPressed: isNextEnabled ? _handleNext : null,
+                child: Text(l10n.next),
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

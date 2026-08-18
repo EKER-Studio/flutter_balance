@@ -106,91 +106,79 @@ class _StepBiometricLockState extends State<StepBiometricLock> {
         builder: (context, settingsState) {
           final enabled = settingsState.isBiometricLockEnabled;
 
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Expanded(
-                child: SingleChildScrollView(
-                  physics: const BouncingScrollPhysics(),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      Text(
-                        l10n.biometricStepOptionalTitle,
-                        style: theme.textTheme.headlineSmall?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      SizedBox(height: isLandscape ? 4.0 : 8.0),
-                      Text(
-                        l10n.biometricStepSubtitle,
-                        style: theme.textTheme.bodyMedium?.copyWith(
-                          color: theme.colorScheme.onSurfaceVariant,
-                        ),
-                      ),
-                      SizedBox(height: isLandscape ? 12.0 : 24.0),
-                      Material(
-                        color: theme.colorScheme.surfaceContainerLow,
-                        borderRadius: BorderRadius.circular(16.0),
-                        clipBehavior: Clip.antiAlias,
-                        child: Container(
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(16.0),
-                            border: Border.all(
-                              color: theme.colorScheme.outlineVariant
-                                  .withValues(alpha: 0.3),
-                            ),
-                          ),
-                          child: Column(
-                            children: [
-                              SwitchListTile(
-                                key: const Key('biometric_step_switch'),
-                                value: enabled,
-                                onChanged: _isAvailable
-                                    ? (val) => _handleToggle(context, val)
-                                    : null,
-                                title: Text(
-                                  l10n.biometricLock,
-                                  style: theme.textTheme.titleMedium?.copyWith(
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                                subtitle: Text(
-                                  _isAvailable
-                                      ? l10n.biometricDesc
-                                      : l10n.biometricsNotAvailable,
-                                ),
-                                secondary: Icon(
-                                  Icons.fingerprint,
-                                  color: enabled
-                                      ? theme.colorScheme.primary
-                                      : theme.colorScheme.onSurfaceVariant,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ],
+          return SingleChildScrollView(
+            physics: const BouncingScrollPhysics(),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Text(
+                  l10n.biometricStepOptionalTitle,
+                  style: theme.textTheme.headlineSmall?.copyWith(
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
-              ),
-              SafeArea(
-                top: false,
-                bottom: true,
-                child: Padding(
-                  padding: EdgeInsets.only(top: isLandscape ? 8.0 : 16.0),
-                  child: ConstrainedBox(
-                    constraints: const BoxConstraints(minHeight: 48.0),
-                    child: FilledButton(
-                      key: const Key('biometric_step_next_button'),
-                      onPressed: widget.onNext,
-                      child: Text(l10n.next),
+                SizedBox(height: isLandscape ? 4.0 : 8.0),
+                Text(
+                  l10n.biometricStepSubtitle,
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
+                ),
+                SizedBox(height: isLandscape ? 8.0 : 20.0),
+                Material(
+                  color: theme.colorScheme.surfaceContainerLow,
+                  borderRadius: BorderRadius.circular(16.0),
+                  clipBehavior: Clip.antiAlias,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(16.0),
+                      border: Border.all(
+                        color: theme.colorScheme.outlineVariant.withValues(
+                          alpha: 0.3,
+                        ),
+                      ),
+                    ),
+                    child: Column(
+                      children: [
+                        SwitchListTile(
+                          key: const Key('biometric_step_switch'),
+                          value: enabled,
+                          onChanged: _isAvailable
+                              ? (val) => _handleToggle(context, val)
+                              : null,
+                          title: Text(
+                            l10n.biometricLock,
+                            style: theme.textTheme.titleMedium?.copyWith(
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          subtitle: Text(
+                            _isAvailable
+                                ? l10n.biometricDesc
+                                : l10n.biometricsNotAvailable,
+                          ),
+                          secondary: Icon(
+                            Icons.fingerprint,
+                            color: enabled
+                                ? theme.colorScheme.primary
+                                : theme.colorScheme.onSurfaceVariant,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ),
-              ),
-            ],
+                SizedBox(height: isLandscape ? 16.0 : 24.0),
+                ConstrainedBox(
+                  constraints: const BoxConstraints(minHeight: 48.0),
+                  child: FilledButton(
+                    key: const Key('biometric_step_next_button'),
+                    onPressed: widget.onNext,
+                    child: Text(l10n.next),
+                  ),
+                ),
+              ],
+            ),
           );
         },
       ),

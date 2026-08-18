@@ -207,161 +207,138 @@ class _StepUnitsHeightState extends State<StepUnitsHeight> {
         horizontal: 24.0,
         vertical: isLandscape ? 12.0 : 24.0,
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Expanded(
-            child: SingleChildScrollView(
-              physics: const BouncingScrollPhysics(),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
+      child: SingleChildScrollView(
+        physics: const BouncingScrollPhysics(),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text(
+              l10n.onboardingUnitsHeightTitle,
+              style: theme.textTheme.headlineSmall?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            SizedBox(height: isLandscape ? 4.0 : 8.0),
+            Text(
+              l10n.onboardingUnitsHeightSubtitle,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
+            ),
+            SizedBox(height: isLandscape ? 8.0 : 20.0),
+            SegmentedButton<MeasurementUnit>(
+              segments: [
+                ButtonSegment<MeasurementUnit>(
+                  value: MeasurementUnit.metric,
+                  label: Text(l10n.metricUnitOption),
+                  icon: const ExcludeSemantics(child: Icon(Icons.straighten)),
+                ),
+                ButtonSegment<MeasurementUnit>(
+                  value: MeasurementUnit.imperial,
+                  label: Text(l10n.imperialUnitOption),
+                  icon: const ExcludeSemantics(child: Icon(Icons.square_foot)),
+                ),
+              ],
+              selected: {_selectedUnit},
+              onSelectionChanged: (selection) {
+                if (selection.isNotEmpty) {
+                  _onUnitChanged(selection.first);
+                }
+              },
+            ),
+            SizedBox(height: isLandscape ? 8.0 : 20.0),
+            if (_selectedUnit == MeasurementUnit.metric) ...[
+              TextField(
+                key: const Key('height_cm_input'),
+                controller: _cmController,
+                focusNode: _cmFocusNode,
+                keyboardType: const TextInputType.numberWithOptions(
+                  decimal: true,
+                ),
+                decoration: InputDecoration(
+                  labelText: l10n.heightCmLabel,
+                  hintText: l10n.heightHint,
+                  errorText: _cmErrorText,
+                  helperText: l10n.heightRangeHint(
+                    AppSettingsState.minHeightCm.toStringAsFixed(0),
+                    AppSettingsState.maxHeightCm.toStringAsFixed(0),
+                  ),
+                ),
+                onChanged: (_) {
+                  if (_cmErrorText != null) {
+                    setState(() => _cmErrorText = null);
+                  }
+                },
+                onSubmitted: (_) => _handleNext(),
+              ),
+            ] else ...[
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    l10n.onboardingUnitsHeightTitle,
-                    style: theme.textTheme.headlineSmall?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  SizedBox(height: isLandscape ? 4.0 : 8.0),
-                  Text(
-                    l10n.onboardingUnitsHeightSubtitle,
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      color: theme.colorScheme.onSurfaceVariant,
-                    ),
-                  ),
-                  SizedBox(height: isLandscape ? 12.0 : 24.0),
-                  SegmentedButton<MeasurementUnit>(
-                    segments: [
-                      ButtonSegment<MeasurementUnit>(
-                        value: MeasurementUnit.metric,
-                        label: Text(l10n.metricUnitOption),
-                        icon: const ExcludeSemantics(
-                          child: Icon(Icons.straighten),
-                        ),
-                      ),
-                      ButtonSegment<MeasurementUnit>(
-                        value: MeasurementUnit.imperial,
-                        label: Text(l10n.imperialUnitOption),
-                        icon: const ExcludeSemantics(
-                          child: Icon(Icons.square_foot),
-                        ),
-                      ),
-                    ],
-                    selected: {_selectedUnit},
-                    onSelectionChanged: (selection) {
-                      if (selection.isNotEmpty) {
-                        _onUnitChanged(selection.first);
-                      }
-                    },
-                  ),
-                  SizedBox(height: isLandscape ? 12.0 : 24.0),
-                  if (_selectedUnit == MeasurementUnit.metric) ...[
-                    TextField(
-                      key: const Key('height_cm_input'),
-                      controller: _cmController,
-                      focusNode: _cmFocusNode,
-                      keyboardType: const TextInputType.numberWithOptions(
-                        decimal: true,
-                      ),
+                  Expanded(
+                    child: TextField(
+                      key: const Key('height_feet_input'),
+                      controller: _feetController,
+                      focusNode: _feetFocusNode,
+                      keyboardType: TextInputType.number,
                       decoration: InputDecoration(
-                        labelText: l10n.heightCmLabel,
-                        hintText: l10n.heightHint,
-                        errorText: _cmErrorText,
-                        helperText: l10n.heightRangeHint(
-                          AppSettingsState.minHeightCm.toStringAsFixed(0),
-                          AppSettingsState.maxHeightCm.toStringAsFixed(0),
-                        ),
+                        labelText: l10n.feetLabel,
+                        suffixText: 'ft',
+                        errorText: _imperialErrorText != null ? "" : null,
+                        errorStyle: const TextStyle(height: 0, fontSize: 0),
                       ),
                       onChanged: (_) {
-                        if (_cmErrorText != null) {
-                          setState(() => _cmErrorText = null);
+                        if (_imperialErrorText != null) {
+                          setState(() => _imperialErrorText = null);
                         }
                       },
                       onSubmitted: (_) => _handleNext(),
                     ),
-                  ] else ...[
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Expanded(
-                          child: TextField(
-                            key: const Key('height_feet_input'),
-                            controller: _feetController,
-                            focusNode: _feetFocusNode,
-                            keyboardType: TextInputType.number,
-                            decoration: InputDecoration(
-                              labelText: l10n.feetLabel,
-                              suffixText: 'ft',
-                              errorText: _imperialErrorText != null ? "" : null,
-                              errorStyle: const TextStyle(
-                                height: 0,
-                                fontSize: 0,
-                              ),
-                            ),
-                            onChanged: (_) {
-                              if (_imperialErrorText != null) {
-                                setState(() => _imperialErrorText = null);
-                              }
-                            },
-                            onSubmitted: (_) => _handleNext(),
-                          ),
-                        ),
-                        const SizedBox(width: 16.0),
-                        Expanded(
-                          child: TextField(
-                            key: const Key('height_inches_input'),
-                            controller: _inchesController,
-                            focusNode: _inchesFocusNode,
-                            keyboardType: TextInputType.number,
-                            decoration: InputDecoration(
-                              labelText: l10n.inchesLabel,
-                              suffixText: 'in',
-                              errorText: _imperialErrorText != null ? "" : null,
-                              errorStyle: const TextStyle(
-                                height: 0,
-                                fontSize: 0,
-                              ),
-                            ),
-                            onChanged: (_) {
-                              if (_imperialErrorText != null) {
-                                setState(() => _imperialErrorText = null);
-                              }
-                            },
-                            onSubmitted: (_) => _handleNext(),
-                          ),
-                        ),
-                      ],
-                    ),
-                    if (_imperialErrorText != null)
-                      Padding(
-                        padding: const EdgeInsets.only(top: 8.0, left: 12.0),
-                        child: Text(
-                          _imperialErrorText!,
-                          style: theme.textTheme.bodySmall?.copyWith(
-                            color: theme.colorScheme.error,
-                          ),
-                        ),
+                  ),
+                  const SizedBox(width: 16.0),
+                  Expanded(
+                    child: TextField(
+                      key: const Key('height_inches_input'),
+                      controller: _inchesController,
+                      focusNode: _inchesFocusNode,
+                      keyboardType: TextInputType.number,
+                      decoration: InputDecoration(
+                        labelText: l10n.inchesLabel,
+                        suffixText: 'in',
+                        errorText: _imperialErrorText != null ? "" : null,
+                        errorStyle: const TextStyle(height: 0, fontSize: 0),
                       ),
-                  ],
+                      onChanged: (_) {
+                        if (_imperialErrorText != null) {
+                          setState(() => _imperialErrorText = null);
+                        }
+                      },
+                      onSubmitted: (_) => _handleNext(),
+                    ),
+                  ),
                 ],
               ),
-            ),
-          ),
-          SafeArea(
-            top: false,
-            bottom: true,
-            child: Padding(
-              padding: EdgeInsets.only(top: isLandscape ? 8.0 : 16.0),
-              child: ConstrainedBox(
-                constraints: const BoxConstraints(minHeight: 48.0),
-                child: FilledButton(
-                  onPressed: _handleNext,
-                  child: Text(l10n.next),
+              if (_imperialErrorText != null)
+                Padding(
+                  padding: const EdgeInsets.only(top: 8.0, left: 12.0),
+                  child: Text(
+                    _imperialErrorText!,
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: theme.colorScheme.error,
+                    ),
+                  ),
                 ),
+            ],
+            SizedBox(height: isLandscape ? 16.0 : 24.0),
+            ConstrainedBox(
+              constraints: const BoxConstraints(minHeight: 48.0),
+              child: FilledButton(
+                onPressed: _handleNext,
+                child: Text(l10n.next),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
