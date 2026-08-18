@@ -26,24 +26,24 @@ class StepWelcome extends StatelessWidget {
       borderRadius: BorderRadius.circular(12.0),
       child: Padding(
         padding: EdgeInsets.symmetric(
-          horizontal: isLandscape ? 12.0 : 16.0,
-          vertical: isLandscape ? 8.0 : 12.0,
+          horizontal: 16.0,
+          vertical: isLandscape ? 12.0 : 16.0,
         ),
         child: Row(
           children: [
             Icon(
               icon,
-              size: isLandscape ? 20.0 : 24.0,
+              size: isLandscape ? 24.0 : 28.0,
               color: theme.colorScheme.primary,
             ),
-            SizedBox(width: isLandscape ? 8.0 : 12.0),
+            SizedBox(width: 12.0),
             Expanded(
               child: Text(
                 title,
                 style:
                     (isLandscape
-                            ? theme.textTheme.bodySmall
-                            : theme.textTheme.bodyMedium)
+                            ? theme.textTheme.bodyMedium
+                            : theme.textTheme.bodyLarge)
                         ?.copyWith(fontWeight: FontWeight.w500),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
@@ -143,7 +143,7 @@ class StepWelcome extends StatelessWidget {
                         Expanded(child: featureCards[1]),
                       ],
                     ),
-                    const SizedBox(height: 8.0),
+                    const SizedBox(height: 12.0),
                     Row(
                       children: [
                         Expanded(child: featureCards[2]),
@@ -151,7 +151,7 @@ class StepWelcome extends StatelessWidget {
                         Expanded(child: featureCards[3]),
                       ],
                     ),
-                    const SizedBox(height: 8.0),
+                    const SizedBox(height: 12.0),
                     Row(
                       children: [
                         Expanded(child: featureCards[4]),
@@ -163,7 +163,7 @@ class StepWelcome extends StatelessWidget {
                     for (int i = 0; i < featureCards.length; i++) ...[
                       featureCards[i],
                       if (i < featureCards.length - 1)
-                        const SizedBox(height: 8.0),
+                        const SizedBox(height: 12.0),
                     ],
                   ],
                 ],
