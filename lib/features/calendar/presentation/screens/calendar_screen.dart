@@ -21,17 +21,14 @@ import 'package:balance/features/calendar/presentation/widgets/calendar_weekday_
 import 'package:balance/l10n/app_localizations.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_bloc.dart';
 import 'package:balance/core/presentation/widgets/app_top_bar.dart';
-import 'package:balance/core/presentation/core/clamped_layout.dart';
 
 /// A screen showing weight measurements in a monthly calendar view.
 ///
-/// Months are paged horizontally through a [PageView]. Selecting a day
-/// filters the loaded entries to that date, and a detail section below the
-/// grid shows either the day's measurements or an empty state. Portrait
-/// layouts stack the sections; landscape splits them side by side, though
-/// content is clamped to 600 px wide, so wide-landscape layouts are
-/// unreachable. Days whose measurements reach the target weight are marked
-/// as goal-achieved. Serves as the second tab in the main navigation.
+/// Months are paged horizontally. Selecting a day filters the loaded entries
+/// to that date, and a detail section shows either the day's measurements or
+/// an empty state. Portrait layouts stack the sections vertically; landscape
+/// layouts place the calendar card and detail section side by side.
+/// Serves as the second tab in the main navigation.
 class CalendarScreen extends StatefulWidget {
   const CalendarScreen({super.key});
 
@@ -116,24 +113,48 @@ class _CalendarScreenState extends State<CalendarScreen> {
               sliver: SliverToBoxAdapter(
                 child: BlocBuilder<WeightBloc, WeightState>(
                   builder: (context, state) {
+                    final isLandscape =
+                        MediaQuery.of(context).orientation ==
+                        Orientation.landscape;
+                    final maxContentWidth = isLandscape ? 900.0 : 600.0;
+                    final horizontalPadding = isLandscape ? 16.0 : 16.0;
+
                     if (state is WeightInitial || state is WeightLoading) {
-                      return const ClampedLayout(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 12,
+                      return Align(
+                        alignment: Alignment.topCenter,
+                        child: ConstrainedBox(
+                          constraints: BoxConstraints(
+                            maxWidth: maxContentWidth,
+                          ),
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: horizontalPadding,
+                              vertical: 12,
+                            ),
+                            child: const CalendarShimmerSkeleton(),
+                          ),
                         ),
-                        child: CalendarShimmerSkeleton(),
                       );
                     }
 
                     if (state is WeightError) {
-                      return ClampedLayout(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 12,
-                        ),
-                        child: CalendarErrorCard(
-                          errorMessage: state.errorType.localizedMessage(l10n),
+                      return Align(
+                        alignment: Alignment.topCenter,
+                        child: ConstrainedBox(
+                          constraints: BoxConstraints(
+                            maxWidth: maxContentWidth,
+                          ),
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: horizontalPadding,
+                              vertical: 12,
+                            ),
+                            child: CalendarErrorCard(
+                              errorMessage: state.errorType.localizedMessage(
+                                l10n,
+                              ),
+                            ),
+                          ),
                         ),
                       );
                     }
@@ -149,174 +170,169 @@ class _CalendarScreenState extends State<CalendarScreen> {
                         )
                         .toList();
 
-                    return ClampedLayout(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 12,
+                    final calendarCard = Card(
+                      elevation: 0,
+                      margin: EdgeInsets.zero,
+                      color: Theme.of(context).colorScheme.surfaceContainerLow,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(
+                          isLandscape ? 20 : 28,
+                        ),
                       ),
-                      child: LayoutBuilder(
-                        builder: (context, constraints) {
-                          final isLandscape =
-                              MediaQuery.of(context).orientation ==
-                              Orientation.landscape;
-                          final calendarCard = Card(
-                            elevation: 0,
-                            margin: EdgeInsets.zero,
-                            color: Theme.of(
-                              context,
-                            ).colorScheme.surfaceContainerLow,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(28),
-                            ),
-                            child: Padding(
-                              padding: const EdgeInsets.fromLTRB(0, 16, 0, 20),
-                              child: Column(
-                                children: [
-                                  Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 16,
-                                    ),
-                                    child: CalendarMonthHeader(
-                                      focusedMonth: _focusedMonth,
-                                      onPreviousMonth: _previousMonth,
-                                      onNextMonth: _nextMonth,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 16),
-                                  const Padding(
-                                    padding: EdgeInsets.symmetric(
-                                      horizontal: 16,
-                                    ),
-                                    child: CalendarWeekdayHeader(),
-                                  ),
-                                  const SizedBox(height: 12),
-                                  GestureDetector(
-                                    onHorizontalDragEnd: (details) {
-                                      if (details.primaryVelocity != null) {
-                                        if (details.primaryVelocity! > 0) {
-                                          _previousMonth();
-                                        } else if (details.primaryVelocity! <
-                                            0) {
-                                          _nextMonth();
-                                        }
-                                      }
-                                    },
-                                    child: Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                        horizontal: 16,
-                                      ),
-                                      child: AnimatedSwitcher(
-                                        duration: const Duration(
-                                          milliseconds: 250,
-                                        ),
-                                        child: CalendarGrid(
-                                          key: ValueKey(_focusedMonth),
-                                          focusedMonth: _focusedMonth,
-                                          selectedDate: _selectedDate,
-                                          entries: entries,
-                                          targetWeight: targetWeight,
-                                          onDaySelected: (date, _) =>
-                                              _onDaySelected(date),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ],
+                      child: Padding(
+                        padding: EdgeInsets.fromLTRB(
+                          0,
+                          isLandscape ? 10 : 16,
+                          0,
+                          isLandscape ? 10 : 20,
+                        ),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                              ),
+                              child: CalendarMonthHeader(
+                                focusedMonth: _focusedMonth,
+                                onPreviousMonth: _previousMonth,
+                                onNextMonth: _nextMonth,
                               ),
                             ),
-                          );
-
-                          final isImperial =
-                              appSettingsState.measurementUnit ==
-                              MeasurementUnit.imperial;
-                          final unitLabel = unitLabelFor(
-                            appSettingsState.measurementUnit,
-                          );
-                          double averageKg = 0;
-                          if (dayEntries.isNotEmpty) {
-                            averageKg =
-                                dayEntries.fold<double>(
-                                  0,
-                                  (sum, e) => sum + e.weightKg,
-                                ) /
-                                dayEntries.length;
-                          }
-                          final displayAverage = isImperial
-                              ? kgToLbs(averageKg)
-                              : averageKg;
-
-                          final selectedDayHeader = Padding(
-                            padding: const EdgeInsets.only(bottom: 16),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  l10n.entriesFromDate(formattedSelectedDate),
-                                  style: Theme.of(context).textTheme.titleMedium
-                                      ?.copyWith(
-                                        fontWeight: FontWeight.bold,
-                                        color: Theme.of(
-                                          context,
-                                        ).colorScheme.onSurfaceVariant,
-                                      ),
-                                ),
-                                if (dayEntries.length > 1) ...[
-                                  const SizedBox(height: 4),
-                                  Text(
-                                    '${l10n.multipleEntries(dayEntries.length)} • ${l10n.averageWeight}: ${displayAverage.toStringAsFixed(1)} $unitLabel',
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .bodyMedium
-                                        ?.copyWith(
-                                          color: Theme.of(context)
-                                              .colorScheme
-                                              .onSurfaceVariant
-                                              .withValues(alpha: 0.8),
-                                        ),
-                                  ),
-                                ],
-                              ],
+                            SizedBox(height: isLandscape ? 6 : 16),
+                            const Padding(
+                              padding: EdgeInsets.symmetric(horizontal: 12),
+                              child: CalendarWeekdayHeader(),
                             ),
-                          );
-
-                          final detailSection = Column(
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            children: [
-                              selectedDayHeader,
-                              if (dayEntries.isEmpty)
-                                CalendarDayEmptyCard(
-                                  selectedDate: _selectedDate,
-                                )
-                              else
-                                CalendarDayEntriesCard(
-                                  selectedDate: _selectedDate,
-                                  entries: dayEntries,
-                                  targetWeight: targetWeight,
+                            SizedBox(height: isLandscape ? 4 : 12),
+                            GestureDetector(
+                              onHorizontalDragEnd: (details) {
+                                if (details.primaryVelocity != null) {
+                                  if (details.primaryVelocity! > 0) {
+                                    _previousMonth();
+                                  } else if (details.primaryVelocity! < 0) {
+                                    _nextMonth();
+                                  }
+                                }
+                              },
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 12,
                                 ),
-                            ],
-                          );
+                                child: AnimatedSwitcher(
+                                  duration: const Duration(milliseconds: 250),
+                                  child: CalendarGrid(
+                                    key: ValueKey(_focusedMonth),
+                                    focusedMonth: _focusedMonth,
+                                    selectedDate: _selectedDate,
+                                    entries: entries,
+                                    targetWeight: targetWeight,
+                                    onDaySelected: (date, _) =>
+                                        _onDaySelected(date),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
 
-                          if (isLandscape && constraints.maxWidth >= 720) {
-                            return Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Expanded(flex: 5, child: calendarCard),
-                                const SizedBox(width: 20),
-                                Expanded(flex: 5, child: detailSection),
-                              ],
-                            );
-                          }
+                    final isImperial =
+                        appSettingsState.measurementUnit ==
+                        MeasurementUnit.imperial;
+                    final unitLabel = unitLabelFor(
+                      appSettingsState.measurementUnit,
+                    );
+                    double averageKg = 0;
+                    if (dayEntries.isNotEmpty) {
+                      averageKg =
+                          dayEntries.fold<double>(
+                            0,
+                            (sum, e) => sum + e.weightKg,
+                          ) /
+                          dayEntries.length;
+                    }
+                    final displayAverage = isImperial
+                        ? kgToLbs(averageKg)
+                        : averageKg;
 
-                          return Column(
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            children: [
-                              calendarCard,
-                              const SizedBox(height: 24),
-                              detailSection,
-                              const SizedBox(height: 80),
-                            ],
-                          );
-                        },
+                    final selectedDayHeader = Padding(
+                      padding: const EdgeInsets.only(bottom: 12),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            l10n.entriesFromDate(formattedSelectedDate),
+                            style: Theme.of(context).textTheme.titleMedium
+                                ?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                  color: Theme.of(
+                                    context,
+                                  ).colorScheme.onSurfaceVariant,
+                                ),
+                          ),
+                          if (dayEntries.length > 1) ...[
+                            const SizedBox(height: 4),
+                            Text(
+                              '${l10n.multipleEntries(dayEntries.length)} • ${l10n.averageWeight}: ${displayAverage.toStringAsFixed(1)} $unitLabel',
+                              style: Theme.of(context).textTheme.bodyMedium
+                                  ?.copyWith(
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .onSurfaceVariant
+                                        .withValues(alpha: 0.8),
+                                  ),
+                            ),
+                          ],
+                        ],
+                      ),
+                    );
+
+                    final detailSection = Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        selectedDayHeader,
+                        if (dayEntries.isEmpty)
+                          CalendarDayEmptyCard(selectedDate: _selectedDate)
+                        else
+                          CalendarDayEntriesCard(
+                            selectedDate: _selectedDate,
+                            entries: dayEntries,
+                            targetWeight: targetWeight,
+                          ),
+                      ],
+                    );
+
+                    return Align(
+                      alignment: Alignment.topCenter,
+                      child: ConstrainedBox(
+                        constraints: BoxConstraints(maxWidth: maxContentWidth),
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: horizontalPadding,
+                            vertical: 12,
+                          ),
+                          child: isLandscape
+                              ? Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Expanded(flex: 5, child: calendarCard),
+                                    const SizedBox(width: 16),
+                                    Expanded(flex: 5, child: detailSection),
+                                  ],
+                                )
+                              : Column(
+                                  crossAxisAlignment:
+                                      CrossAxisAlignment.stretch,
+                                  children: [
+                                    calendarCard,
+                                    const SizedBox(height: 24),
+                                    detailSection,
+                                    const SizedBox(height: 80),
+                                  ],
+                                ),
+                        ),
                       ),
                     );
                   },

@@ -1,3 +1,4 @@
+import 'package:balance/core/presentation/utils/picker_helpers.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:balance/core/models/measurement_unit.dart';
@@ -92,7 +93,7 @@ class _StepInitialWeightState extends State<StepInitialWeight> {
 
     if (pickedDate == null || !mounted) return;
 
-    final pickedTime = await showTimePicker(
+    final pickedTime = await showSafeTimePicker(
       context: context,
       initialTime: TimeOfDay.fromDateTime(_selectedTimestamp),
     );

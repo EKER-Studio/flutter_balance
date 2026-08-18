@@ -1,3 +1,4 @@
+import 'package:balance/core/presentation/utils/picker_helpers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:balance/core/presentation/utils/app_snackbar.dart';
@@ -38,15 +39,9 @@ class _StepReminderNotificationState extends State<StepReminderNotification> {
       minute: recordTime.minute,
     );
 
-    final picked = await showTimePicker(
+    final picked = await showSafeTimePicker(
       context: context,
       initialTime: initialTime,
-      builder: (context, child) {
-        return MediaQuery(
-          data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true),
-          child: child!,
-        );
-      },
     );
 
     if (picked != null && context.mounted) {

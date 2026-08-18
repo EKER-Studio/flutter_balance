@@ -61,16 +61,18 @@ class CalendarGrid extends StatelessWidget {
 
     final now = DateTime.now();
     final todayEnd = DateTime(now.year, now.month, now.day, 23, 59, 59);
+    final isLandscape =
+        MediaQuery.of(context).orientation == Orientation.landscape;
 
     return GridView.builder(
       physics: const NeverScrollableScrollPhysics(),
       shrinkWrap: true,
       clipBehavior: Clip.none,
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 7,
-        mainAxisSpacing: 8,
-        crossAxisSpacing: 4,
-        childAspectRatio: 0.85,
+        mainAxisSpacing: isLandscape ? 2 : 8,
+        crossAxisSpacing: isLandscape ? 2 : 4,
+        childAspectRatio: isLandscape ? 1.45 : 0.85,
       ),
       itemCount: totalCells,
       itemBuilder: (context, index) {

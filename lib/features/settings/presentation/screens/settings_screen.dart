@@ -1,6 +1,7 @@
 // Main settings screen composing profile, application, integrations, security,
 // data and help sections.
 
+import 'package:balance/core/presentation/utils/picker_helpers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:balance/core/presentation/utils/app_snackbar.dart';
@@ -917,7 +918,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       hour: initialTimeRecord.hour,
       minute: initialTimeRecord.minute,
     );
-    final newTime = await showTimePicker(
+    final newTime = await showSafeTimePicker(
       context: context,
       initialTime: initialTime,
     );

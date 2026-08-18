@@ -1,3 +1,4 @@
+import 'package:balance/core/presentation/utils/picker_helpers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
@@ -89,7 +90,7 @@ class _AddWeightSheetState extends State<AddWeightSheet> {
 
   /// Shows the time picker and validates the combined selection.
   Future<void> _pickTime(BuildContext context) async {
-    final picked = await showTimePicker(
+    final picked = await showSafeTimePicker(
       context: context,
       initialTime: _selectedTime,
     );
