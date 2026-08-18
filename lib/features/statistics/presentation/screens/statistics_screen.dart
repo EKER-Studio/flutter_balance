@@ -93,50 +93,90 @@ class StatisticsScreen extends StatelessWidget {
                         final heightCm = settingsState.height;
                         final targetWeight = settingsState.targetWeight;
 
-                        return ClampedLayout(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 12,
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            children: [
-                              _buildHeroProgressAndGoalCard(
-                                context,
-                                entries: entries,
-                                targetWeight: targetWeight,
-                                weeklyPace: weeklyPace,
-                                unit: unit,
-                                l10n: l10n,
+                        return LayoutBuilder(
+                          builder: (context, constraints) {
+                            final isWide = constraints.maxWidth >= 600;
+
+                            final heroProgressCard =
+                                _buildHeroProgressAndGoalCard(
+                                  context,
+                                  entries: entries,
+                                  targetWeight: targetWeight,
+                                  weeklyPace: weeklyPace,
+                                  unit: unit,
+                                  l10n: l10n,
+                                );
+
+                            final habitsCard = _buildHabitsAndActivityCard(
+                              context,
+                              streak: streak,
+                              compliancePct: compliancePct,
+                              l10n: l10n,
+                            );
+
+                            final rangeCard = _buildCombinedWeightRangeCard(
+                              context,
+                              entries: entries,
+                              unit: unit,
+                              l10n: l10n,
+                            );
+
+                            final bmiCard = BmiChartCard(
+                              entries: filteredEntries,
+                              heightCm: heightCm,
+                              period: weightState.timePeriod,
+                              onPeriodChanged: (period) {
+                                context.read<WeightBloc>().add(
+                                  ChangeChartFilter(period),
+                                );
+                              },
+                            );
+
+                            return ClampedLayout(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 12,
                               ),
-                              const SizedBox(height: 16),
-                              _buildHabitsAndActivityCard(
-                                context,
-                                streak: streak,
-                                compliancePct: compliancePct,
-                                l10n: l10n,
-                              ),
-                              const SizedBox(height: 16),
-                              _buildCombinedWeightRangeCard(
-                                context,
-                                entries: entries,
-                                unit: unit,
-                                l10n: l10n,
-                              ),
-                              const SizedBox(height: 16),
-                              BmiChartCard(
-                                entries: filteredEntries,
-                                heightCm: heightCm,
-                                period: weightState.timePeriod,
-                                onPeriodChanged: (period) {
-                                  context.read<WeightBloc>().add(
-                                    ChangeChartFilter(period),
-                                  );
-                                },
-                              ),
-                              const SizedBox(height: 100),
-                            ],
-                          ),
+                              child: isWide
+                                  ? Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.stretch,
+                                      children: [
+                                        // Rząd 1: Dwie główne karty obok siebie
+                                        Row(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Expanded(child: heroProgressCard),
+                                            const SizedBox(width: 16),
+                                            Expanded(child: rangeCard),
+                                          ],
+                                        ),
+                                        const SizedBox(height: 16),
+                                        // Rząd 2: Pasek nawyków na pełną szerokość
+                                        habitsCard,
+                                        const SizedBox(height: 16),
+                                        // Rząd 3: Wykres na pełną szerokość
+                                        bmiCard,
+                                        const SizedBox(height: 32),
+                                      ],
+                                    )
+                                  : Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.stretch,
+                                      children: [
+                                        heroProgressCard,
+                                        const SizedBox(height: 16),
+                                        habitsCard,
+                                        const SizedBox(height: 16),
+                                        rangeCard,
+                                        const SizedBox(height: 16),
+                                        bmiCard,
+                                        const SizedBox(height: 100),
+                                      ],
+                                    ),
+                            );
+                          },
                         );
                       },
                     );
@@ -645,18 +685,12 @@ class StatisticsScreen extends StatelessWidget {
   int _calculateStreak(List<WeightEntry> entries, DateTime now) {
     if (entries.isEmpty) return 0;
 
-    final dates =
-        entries
-            .map(
-              (e) =>
-                  DateTime(e.dateTime.year, e.dateTime.month, e.dateTime.day),
-            )
-            .toSet()
-            .toList()
-          ..sort((a, b) => b.compareTo(a));
+    final dates = entries
+        .map((e) => DateTime(e.dateTime.year, e.dateTime.month, e.dateTime.day))
+        .toSet();
 
     final todayDate = DateTime(now.year, now.month, now.day);
-    final yesterdayDate = todayDate.subtract(const Duration(days: 1));
+    final yesterdayDate = DateTime(now.year, now.month, now.day - 1);
 
     if (!dates.contains(todayDate) && !dates.contains(yesterdayDate)) {
       return 0;
@@ -667,7 +701,7 @@ class StatisticsScreen extends StatelessWidget {
 
     while (dates.contains(checkDate)) {
       streak++;
-      checkDate = checkDate.subtract(const Duration(days: 1));
+      checkDate = DateTime(checkDate.year, checkDate.month, checkDate.day - 1);
     }
 
     return streak;
