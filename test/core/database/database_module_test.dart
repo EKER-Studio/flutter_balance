@@ -26,6 +26,39 @@ class FakePathProviderPlatform extends PathProviderPlatform {
   Future<String?> getTemporaryPath() async => fileSystemPath;
 }
 
+bool? _isIsarAvailable;
+
+/// Probes whether the native Isar binary is available in the current test runner.
+Future<bool> _guardIsarAvailable() async {
+  if (_isIsarAvailable != null) {
+    if (!_isIsarAvailable!) {
+      markTestSkipped('Isar native library not available in this environment');
+      return false;
+    }
+    return true;
+  }
+
+  final probeDir = Directory.systemTemp.createTempSync('isar_probe_');
+  try {
+    final testDb = await Isar.open(
+      [WeightEntryModelSchema],
+      directory: probeDir.path,
+      name: 'isar_probe_db',
+    );
+    await testDb.close();
+    _isIsarAvailable = true;
+    return true;
+  } catch (_) {
+    _isIsarAvailable = false;
+    markTestSkipped('Isar native library not available in this environment');
+    return false;
+  } finally {
+    if (probeDir.existsSync()) {
+      probeDir.deleteSync(recursive: true);
+    }
+  }
+}
+
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
@@ -121,19 +154,7 @@ void main() {
     test(
       'create record, watch broadcast, physical write check, reopen',
       () async {
-        try {
-          final testDb = await Isar.open(
-            [WeightEntryModelSchema],
-            directory: tempDir.path,
-            name: 'test_integration_db',
-          );
-          await testDb.close();
-        } catch (_) {
-          markTestSkipped(
-            'Isar native library not available in this environment',
-          );
-          return;
-        }
+        if (!await _guardIsarAvailable()) return;
 
         final dbName = 'test_integration_db';
 
@@ -270,6 +291,8 @@ void main() {
     });
 
     test('returns the existing open instance instead of reopening', () async {
+      if (!await _guardIsarAvailable()) return;
+
       final existing = await Isar.open(
         [WeightEntryModelSchema],
         directory: tempDir.path,
@@ -283,6 +306,8 @@ void main() {
     });
 
     test('opens a fresh instance and persists an encryption key', () async {
+      if (!await _guardIsarAvailable()) return;
+
       final isar = await DatabaseModule.initialize();
       openedInstances.add(isar);
 
@@ -293,6 +318,8 @@ void main() {
     });
 
     test('rethrows when the database cannot be recovered', () async {
+      if (!await _guardIsarAvailable()) return;
+
       final dbFile = File('${tempDir.path}/${DatabaseModule.dbName}.isar');
       dbFile.writeAsBytesSync(List.filled(4096, 7));
       final chmodDir = await Process.run('chmod', ['0555', tempDir.path]);
@@ -361,6 +388,8 @@ void main() {
     });
 
     test('returns the live instance with reopened=false', () async {
+      if (!await _guardIsarAvailable()) return;
+
       final existing = await Isar.open(
         [WeightEntryModelSchema],
         directory: tempDir.path,
@@ -377,6 +406,8 @@ void main() {
     test(
       're-initializes with reopened=true when no instance is open',
       () async {
+        if (!await _guardIsarAvailable()) return;
+
         PathProviderPlatform.instance = FakePathProviderPlatform(tempDir.path);
         final instanceToClose = Isar.getInstance(DatabaseModule.dbName);
         if (instanceToClose != null && instanceToClose.isOpen) {
@@ -396,6 +427,8 @@ void main() {
     );
 
     test('rethrows when the recovery initialization itself fails', () async {
+      if (!await _guardIsarAvailable()) return;
+
       PathProviderPlatform.instance = FakePathProviderPlatform(
         '${tempDir.path}/does_not_exist',
       );

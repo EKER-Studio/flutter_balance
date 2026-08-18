@@ -50,6 +50,14 @@ void main() {
   late MockWeightRepository repository;
   late MockHydratedStorage storage;
 
+  setUpAll(() async {
+    try {
+      await Isar.initializeIsarCore(download: true);
+    } catch (_) {
+      // Ignore initialization errors so tests can skip gracefully when native binaries are unavailable.
+    }
+  });
+
   setUp(() {
     repository = MockWeightRepository();
     storage = MockHydratedStorage();
