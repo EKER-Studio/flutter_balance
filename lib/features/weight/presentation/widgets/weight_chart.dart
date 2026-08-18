@@ -140,7 +140,9 @@ class WeightChart extends StatelessWidget {
                     leftTitles: AxisTitles(
                       sideTitles: SideTitles(
                         showTitles: true,
-                        reservedSize: 45,
+                        reservedSize: unit == MeasurementUnit.imperial
+                            ? 55
+                            : 45,
                         getTitlesWidget: (value, meta) {
                           final originalKg = unit == MeasurementUnit.imperial
                               ? lbsToKg(value)

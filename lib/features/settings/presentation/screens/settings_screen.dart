@@ -467,14 +467,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
     context.read<AppSettingsBloc>().add(UpdateHeight(result));
     context.read<WeightBloc>().add(UpdateUserHeight(result));
-
-    AppSnackBar.show(
-      context,
-      message: AppLocalizations.of(
-        context,
-      ).heightSetTo(result.toString().replaceAll(RegExp(r'\.0$'), '')),
-      type: SnackBarType.success,
-    );
   }
 
   /// Shows the system file picker to select a CSV file.
@@ -557,18 +549,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
             ? lbsToKg(result)
             : result;
         context.read<AppSettingsBloc>().add(TargetWeightChanged(targetKg));
-
-        final unitStr = settingsState.measurementUnit == MeasurementUnit.metric
-            ? 'kg'
-            : 'lbs';
-        AppSnackBar.show(
-          context,
-          message: AppLocalizations.of(context).targetWeightSetTo(
-            result.toString().replaceAll(RegExp(r'\.0$'), ''),
-            unitStr,
-          ),
-          type: SnackBarType.success,
-        );
       }
     }
   }
@@ -759,14 +739,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
           subject: 'Balance Export CSV',
           sharePositionOrigin: originRect,
         );
-
-        if (context.mounted) {
-          AppSnackBar.show(
-            context,
-            message: l10n.exportSuccess,
-            type: SnackBarType.success,
-          );
-        }
       }
     } catch (e) {
       if (context.mounted) {

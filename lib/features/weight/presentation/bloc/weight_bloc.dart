@@ -183,15 +183,50 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
 
   /// Subscribes to the repository watch stream and forwards emissions to
   /// [WeightLoaded], or to [WeightError] with the mapped [WeightRepositoryException].
+  ///
+  /// Re-subscriptions (e.g. after the app resumes from the background) keep
+  /// the last-known entries visible while the new stream is established, so
+  /// the UI never flashes an empty state and state consumers (like the CSV
+  /// export) never observe a temporarily empty dataset. Only the very first
+  /// load emits the [WeightLoading] skeleton.
   Future<void> _onSubscribeToWeightChanges(
     SubscribeToWeightChanges event,
     Emitter<WeightState> emit,
   ) async {
-    // Emit loading state while establishing the new subscription.
-    emit(WeightLoading(heightCm: state.heightCm, timePeriod: state.timePeriod));
+    final currentEntries = _entriesFromState(state);
+
+    if (currentEntries.isEmpty) {
+      // Emit loading state while establishing the new subscription.
+      emit(WeightLoading(heightCm: state.heightCm, timePeriod: state.timePeriod));
+    }
+
+    final Stream<List<WeightEntry>> watch;
+    try {
+      watch = repository.watchAllEntries();
+    } catch (e, stack) {
+      // A synchronous failure to start the stream (e.g. a closed database
+      // instance) must not leave the bloc stuck in a transient state; report
+      // it as a typed error while preserving the last-known entries.
+      if (kDebugMode) {
+        debugPrint('[WeightBloc] Failed to start the weight stream: $e\n$stack');
+      }
+      final errorType = e is WeightRepositoryException
+          ? e.type
+          : WeightErrorType.streamError;
+      emit(
+        WeightError(
+          errorType: errorType,
+          heightCm: state.heightCm,
+          timePeriod: state.timePeriod,
+          entries: currentEntries,
+          filteredEntries: _filterEntries(currentEntries, state.timePeriod),
+        ),
+      );
+      return;
+    }
 
     await emit.forEach<List<WeightEntry>>(
-      repository.watchAllEntries(),
+      watch,
       onData: (entries) => WeightLoaded(
         heightCm: state.heightCm,
         timePeriod: state.timePeriod,

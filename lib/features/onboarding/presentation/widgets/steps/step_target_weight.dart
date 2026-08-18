@@ -116,12 +116,14 @@ class _StepTargetWeightState extends State<StepTargetWeight> {
     if (text.isEmpty) return null;
 
     final parsed = double.tryParse(text);
-    if (parsed == null || parsed <= 0 || parsed > 500) return null;
+    if (parsed == null || parsed <= 0) return null;
 
-    if (widget.unit == MeasurementUnit.imperial) {
-      return lbsToKg(parsed);
-    }
-    return parsed;
+    final weightKg = widget.unit == MeasurementUnit.imperial
+        ? lbsToKg(parsed)
+        : parsed;
+
+    if (weightKg > 500) return null;
+    return weightKg;
   }
 
   /// Validates [value] on every keystroke and updates the inline error text.
@@ -135,15 +137,27 @@ class _StepTargetWeightState extends State<StepTargetWeight> {
     }
 
     final parsed = double.tryParse(trimmed);
-    if (parsed == null || parsed <= 0 || parsed > 500) {
+    if (parsed == null || parsed <= 0) {
       if (_errorText == null) {
         setState(
           () => _errorText = AppLocalizations.of(context).invalidPositiveNumber,
         );
       }
     } else {
-      if (_errorText != null) {
-        setState(() => _errorText = null);
+      final weightKg = widget.unit == MeasurementUnit.imperial
+          ? lbsToKg(parsed)
+          : parsed;
+      if (weightKg > 500) {
+        if (_errorText == null) {
+          setState(
+            () =>
+                _errorText = AppLocalizations.of(context).invalidPositiveNumber,
+          );
+        }
+      } else {
+        if (_errorText != null) {
+          setState(() => _errorText = null);
+        }
       }
     }
   }
