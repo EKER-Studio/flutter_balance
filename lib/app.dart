@@ -335,6 +335,11 @@ class _HealthSyncLifecycleObserverState
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state != AppLifecycleState.resumed || !mounted) return;
+
+    // Always dispatch a SubscribeToWeightChanges to immediately recover Isar streams
+    // that might have been disrupted in the background, bypassing the exponential backoff.
+    context.read<WeightBloc>().add(const SubscribeToWeightChanges());
+
     final settingsBloc = context.read<AppSettingsBloc>();
     if (!settingsBloc.state.isHealthSyncEnabled) return;
     context.read<WeightBloc>().add(const SyncHealthEntries());

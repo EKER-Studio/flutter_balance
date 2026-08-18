@@ -2,13 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:balance/l10n/app_localizations.dart';
 import 'package:balance/features/settings/presentation/widgets/height_dialog.dart';
+import 'package:balance/core/models/measurement_unit.dart';
 
 void main() {
   Widget buildTestWidget(double? initialValue) {
     return MaterialApp(
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
-      home: Scaffold(body: HeightDialog(currentValue: initialValue)),
+      home: Scaffold(
+        body: HeightDialog(
+          currentValue: initialValue,
+          measurementUnit: MeasurementUnit.metric,
+        ),
+      ),
     );
   }
 
@@ -30,7 +36,10 @@ void main() {
                 onPressed: () async {
                   final result = await showDialog<double>(
                     context: context,
-                    builder: (_) => HeightDialog(currentValue: initialValue),
+                    builder: (_) => HeightDialog(
+                      currentValue: initialValue,
+                      measurementUnit: MeasurementUnit.metric,
+                    ),
                   );
                   onResult?.call(result);
                 },

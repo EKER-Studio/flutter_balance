@@ -451,11 +451,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
   /// [WeightBloc] so that BMI calculations and user profile data remain
   /// synchronized.
   void _showHeightDialog(BuildContext dialogContext) async {
-    final currentHeight = dialogContext.read<AppSettingsBloc>().state.height;
+    final settingsState = dialogContext.read<AppSettingsBloc>().state;
+    final currentHeight = settingsState.height;
+    final currentUnit = settingsState.measurementUnit;
 
     final result = await showDialog<double>(
       context: dialogContext,
-      builder: (ctx) => HeightDialog(currentValue: currentHeight),
+      builder: (ctx) => HeightDialog(
+        currentValue: currentHeight,
+        measurementUnit: currentUnit,
+      ),
     );
 
     if (result == null || !mounted) return;
@@ -724,9 +729,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final l10n = AppLocalizations.of(context);
     try {
       final weightState = context.read<WeightBloc>().state;
-      final entries = weightState is WeightLoaded
-          ? weightState.entries
-          : <WeightEntry>[];
+      final entries = switch (weightState) {
+        WeightLoaded() => weightState.entries,
+        WeightError() => weightState.entries,
+        _ => <WeightEntry>[],
+      };
 
       if (entries.isEmpty) {
         if (context.mounted) {

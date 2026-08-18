@@ -47,6 +47,8 @@ class StepUnitsHeight extends StatefulWidget {
 
 class _StepUnitsHeightState extends State<StepUnitsHeight> {
   late MeasurementUnit _selectedUnit;
+  String? _cmErrorText;
+  String? _imperialErrorText;
 
   late final TextEditingController _cmController;
   late final TextEditingController _feetController;
@@ -55,9 +57,6 @@ class _StepUnitsHeightState extends State<StepUnitsHeight> {
   late final FocusNode _cmFocusNode;
   late final FocusNode _feetFocusNode;
   late final FocusNode _inchesFocusNode;
-
-  String? _cmErrorText;
-  String? _imperialErrorText;
 
   @override
   void initState() {
@@ -133,15 +132,9 @@ class _StepUnitsHeightState extends State<StepUnitsHeight> {
       final feet = double.tryParse(
         _feetController.text.trim().replaceAll(',', '.'),
       );
-      final inches = double.tryParse(
-        _inchesController.text.trim().replaceAll(',', '.'),
-      );
-      if (feet != null &&
-          inches != null &&
-          feet >= 1 &&
-          feet <= 8 &&
-          inches >= 0 &&
-          inches < 12) {
+      final inchesText = _inchesController.text.trim().replaceAll(',', '.');
+      final inches = inchesText.isEmpty ? 0.0 : double.tryParse(inchesText);
+      if (feet != null && inches != null && feet >= 0 && inches >= 0) {
         final totalInches = (feet * 12) + inches;
         final cm = totalInches * 2.54;
         if (cm >= AppSettingsState.minHeightCm &&
@@ -188,7 +181,9 @@ class _StepUnitsHeightState extends State<StepUnitsHeight> {
   /// Validates the form and invokes [StepUnitsHeight.onNext] on success.
   void _handleNext() {
     final heightCm = _calculateHeightCm();
-    if (heightCm == null) {
+    if (heightCm != null) {
+      widget.onNext(_selectedUnit, heightCm);
+    } else {
       setState(() {
         if (_selectedUnit == MeasurementUnit.metric) {
           _cmErrorText = AppLocalizations.of(context).heightRangeError;
@@ -196,8 +191,6 @@ class _StepUnitsHeightState extends State<StepUnitsHeight> {
           _imperialErrorText = AppLocalizations.of(context).heightRangeError;
         }
       });
-    } else {
-      widget.onNext(_selectedUnit, heightCm);
     }
   }
 
@@ -205,14 +198,6 @@ class _StepUnitsHeightState extends State<StepUnitsHeight> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context);
-
-    final isMetricError = _cmErrorText != null;
-    final isImperialError = _imperialErrorText != null;
-
-    final errorOutline = OutlineInputBorder(
-      borderRadius: BorderRadius.circular(8),
-      borderSide: BorderSide(color: theme.colorScheme.error, width: 2),
-    );
 
     return ClampedLayout(
       padding: const EdgeInsets.all(24.0),
@@ -265,31 +250,16 @@ class _StepUnitsHeightState extends State<StepUnitsHeight> {
               decoration: InputDecoration(
                 labelText: l10n.heightCmLabel,
                 hintText: l10n.heightHint,
-                enabledBorder: isMetricError ? errorOutline : null,
-                focusedBorder: isMetricError ? errorOutline : null,
+                errorText: _cmErrorText,
+                helperText: l10n.heightRangeHint(
+                  AppSettingsState.minHeightCm.toStringAsFixed(0),
+                  AppSettingsState.maxHeightCm.toStringAsFixed(0),
+                ),
               ),
               onChanged: (_) {
-                if (_cmErrorText != null) {
-                  setState(() => _cmErrorText = null);
-                }
+                if (_cmErrorText != null) setState(() => _cmErrorText = null);
               },
               onSubmitted: (_) => _handleNext(),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              isMetricError
-                  ? _cmErrorText!
-                  : l10n.heightRangeHint(
-                      AppSettingsState.minHeightCm.toStringAsFixed(0),
-                      AppSettingsState.maxHeightCm.toStringAsFixed(0),
-                    ),
-              style: TextStyle(
-                color: isMetricError
-                    ? theme.colorScheme.error
-                    : theme.colorScheme.onSurfaceVariant,
-                fontSize: 12,
-                fontWeight: isMetricError ? FontWeight.w500 : FontWeight.w400,
-              ),
             ),
           ] else ...[
             Row(
@@ -304,8 +274,7 @@ class _StepUnitsHeightState extends State<StepUnitsHeight> {
                     decoration: InputDecoration(
                       labelText: l10n.feetLabel,
                       suffixText: 'ft',
-                      enabledBorder: isImperialError ? errorOutline : null,
-                      focusedBorder: isImperialError ? errorOutline : null,
+                      errorText: _imperialErrorText,
                     ),
                     onChanged: (_) {
                       if (_imperialErrorText != null) {
@@ -325,8 +294,7 @@ class _StepUnitsHeightState extends State<StepUnitsHeight> {
                     decoration: InputDecoration(
                       labelText: l10n.inchesLabel,
                       suffixText: 'in',
-                      enabledBorder: isImperialError ? errorOutline : null,
-                      focusedBorder: isImperialError ? errorOutline : null,
+                      errorText: _imperialErrorText,
                     ),
                     onChanged: (_) {
                       if (_imperialErrorText != null) {
@@ -338,17 +306,6 @@ class _StepUnitsHeightState extends State<StepUnitsHeight> {
                 ),
               ],
             ),
-            if (isImperialError) ...[
-              const SizedBox(height: 8),
-              Text(
-                _imperialErrorText!,
-                style: TextStyle(
-                  color: theme.colorScheme.error,
-                  fontSize: 12,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-            ],
           ],
           const Spacer(),
           ConstrainedBox(

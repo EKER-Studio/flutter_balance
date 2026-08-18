@@ -87,11 +87,6 @@ class _TargetWeightDialogState extends State<TargetWeightDialog> {
     final l10n = AppLocalizations.of(context);
 
     return AlertDialog(
-      icon: Icon(
-        Icons.flag_outlined,
-        size: 28,
-        color: Theme.of(context).colorScheme.primary,
-      ),
       title: Text(l10n.targetWeightDialogTitle),
       content: SizedBox(
         width: 320,
@@ -115,19 +110,11 @@ class _TargetWeightDialogState extends State<TargetWeightDialog> {
                   hintText: l10n.weightHint,
                   errorText: _errorText,
                   errorMaxLines: 2,
-                  errorBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                    borderSide: BorderSide(
-                      color: Theme.of(context).colorScheme.error,
-                      width: 2,
-                    ),
-                  ),
-                  focusedErrorBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                    borderSide: BorderSide(
-                      color: Theme.of(context).colorScheme.error,
-                      width: 2,
-                    ),
+                  contentPadding: const EdgeInsetsDirectional.fromSTEB(
+                    12,
+                    16,
+                    12,
+                    12,
                   ),
                 ),
                 onChanged: (_) {
@@ -154,10 +141,7 @@ class _TargetWeightDialogState extends State<TargetWeightDialog> {
           onPressed: () => Navigator.of(context).pop(),
           child: Text(l10n.cancel),
         ),
-        TextButton(
-          onPressed: _handleSave,
-          child: Text(l10n.save),
-        ),
+        TextButton(onPressed: _handleSave, child: Text(l10n.save)),
       ],
     );
   }
