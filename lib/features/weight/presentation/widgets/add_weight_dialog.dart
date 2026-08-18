@@ -71,6 +71,7 @@ class _AddWeightDialogState extends State<AddWeightDialog> {
   /// Shows the date picker and validates that the combined selection is not
   /// in the future.
   Future<void> _pickDate(BuildContext context) async {
+    FocusScope.of(context).unfocus();
     final now = DateTime.now();
     final picked = await showDatePicker(
       context: context,
@@ -90,6 +91,7 @@ class _AddWeightDialogState extends State<AddWeightDialog> {
 
   /// Shows the time picker and validates the combined selection.
   Future<void> _pickTime(BuildContext context) async {
+    FocusScope.of(context).unfocus();
     final picked = await showSafeTimePicker(
       context: context,
       initialTime: _selectedTime,
@@ -119,10 +121,9 @@ class _AddWeightDialogState extends State<AddWeightDialog> {
     final l10n = AppLocalizations.of(context);
     final unit = context.watch<AppSettingsBloc>().state.measurementUnit;
 
-    final isLandscape =
-        MediaQuery.of(context).orientation == Orientation.landscape;
-    final isKeyboardOpen = MediaQuery.viewInsetsOf(context).bottom > 0;
-    final hideChrome = isLandscape && isKeyboardOpen;
+    final isLandscapePhone =
+        MediaQuery.of(context).orientation == Orientation.landscape &&
+        MediaQuery.sizeOf(context).height < 500;
 
     final dateStr = DateFormat.yMd(
       Localizations.localeOf(context).toString(),
@@ -130,22 +131,22 @@ class _AddWeightDialogState extends State<AddWeightDialog> {
 
     final timeStr = _selectedTime.format(context);
 
-    final inputPadding = hideChrome
+    final inputPadding = isLandscapePhone
         ? const EdgeInsets.symmetric(horizontal: 12, vertical: 8)
         : const EdgeInsetsDirectional.fromSTEB(12, 16, 12, 12);
 
     return AlertDialog(
       scrollable: true,
       insetPadding: EdgeInsets.symmetric(
-        horizontal: isLandscape ? 32 : 24,
-        vertical: isLandscape ? 8 : 24,
+        horizontal: isLandscapePhone ? 32 : 24,
+        vertical: isLandscapePhone ? 8 : 24,
       ),
-      title: hideChrome ? null : Text(l10n.addWeight),
+      title: isLandscapePhone ? null : Text(l10n.addWeight),
       contentPadding: EdgeInsets.fromLTRB(
         24,
-        hideChrome ? 8 : (isLandscape ? 12 : 20),
+        isLandscapePhone ? 12 : 20,
         24,
-        hideChrome ? 8 : (isLandscape ? 12 : 20),
+        isLandscapePhone ? 8 : 20,
       ),
       content: SizedBox(
         width: 320,
@@ -153,7 +154,7 @@ class _AddWeightDialogState extends State<AddWeightDialog> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            if (!hideChrome) const SizedBox(height: 4),
+            if (!isLandscapePhone) const SizedBox(height: 4),
             Row(
               children: [
                 Expanded(
@@ -172,7 +173,7 @@ class _AddWeightDialogState extends State<AddWeightDialog> {
                             Icons.calendar_today_outlined,
                             size: 20,
                           ),
-                          isDense: hideChrome,
+                          isDense: isLandscapePhone,
                           contentPadding: inputPadding,
                         ),
                         child: FittedBox(
@@ -204,7 +205,7 @@ class _AddWeightDialogState extends State<AddWeightDialog> {
                             Icons.access_time_outlined,
                             size: 20,
                           ),
-                          isDense: hideChrome,
+                          isDense: isLandscapePhone,
                           contentPadding: inputPadding,
                         ),
                         child: FittedBox(
@@ -234,10 +235,10 @@ class _AddWeightDialogState extends State<AddWeightDialog> {
                 ),
               ),
             ],
-            SizedBox(height: hideChrome ? 8 : 16),
+            SizedBox(height: isLandscapePhone ? 8 : 16),
             TextField(
               controller: _weightController,
-              autofocus: true,
+              autofocus: false,
               keyboardType: const TextInputType.numberWithOptions(
                 decimal: true,
               ),
@@ -250,7 +251,7 @@ class _AddWeightDialogState extends State<AddWeightDialog> {
                 border: const OutlineInputBorder(),
                 errorText: _weightError != null ? "" : null,
                 errorStyle: const TextStyle(height: 0, fontSize: 0),
-                isDense: hideChrome,
+                isDense: isLandscapePhone,
                 contentPadding: inputPadding,
               ),
               onChanged: (_) {
@@ -268,13 +269,13 @@ class _AddWeightDialogState extends State<AddWeightDialog> {
                   ),
                 ),
               ),
-            SizedBox(height: hideChrome ? 8 : 16),
+            SizedBox(height: isLandscapePhone ? 8 : 16),
             TextField(
               controller: _noteController,
               decoration: InputDecoration(
                 labelText: l10n.noteLabel,
                 border: const OutlineInputBorder(),
-                isDense: hideChrome,
+                isDense: isLandscapePhone,
                 contentPadding: inputPadding,
               ),
               maxLines: 1,
@@ -284,7 +285,7 @@ class _AddWeightDialogState extends State<AddWeightDialog> {
           ],
         ),
       ),
-      actions: hideChrome
+      actions: isLandscapePhone
           ? null
           : [
               TextButton(
