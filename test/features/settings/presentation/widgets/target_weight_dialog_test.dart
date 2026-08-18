@@ -108,23 +108,25 @@ void main() {
     expect(getResult(), 'clear');
   });
 
-  testWidgets('clear button pops with clear when a current value exists', (
-    tester,
-  ) async {
-    final getResult = await openDialog(tester, currentValue: 75.5);
+  testWidgets(
+    'delete icon in suffixIcon pops with clear when a current value exists',
+    (tester) async {
+      final getResult = await openDialog(tester, currentValue: 75.5);
 
-    await tester.tap(find.text('Remove goal'));
-    await tester.pumpAndSettle();
+      expect(find.byIcon(Icons.delete_outline), findsOneWidget);
+      await tester.tap(find.byIcon(Icons.delete_outline));
+      await tester.pumpAndSettle();
 
-    expect(getResult(), 'clear');
-  });
+      expect(getResult(), 'clear');
+    },
+  );
 
-  testWidgets('hides the remove button when there is no current value', (
+  testWidgets('hides the delete icon when there is no current value', (
     tester,
   ) async {
     await openDialog(tester);
 
-    expect(find.text('Remove goal'), findsNothing);
+    expect(find.byIcon(Icons.delete_outline), findsNothing);
   });
 
   testWidgets('shows an error for non-numeric input', (tester) async {

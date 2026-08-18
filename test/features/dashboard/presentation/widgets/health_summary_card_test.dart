@@ -145,7 +145,7 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.byType(TargetWeightDialog), findsOneWidget);
 
-    await tester.tap(find.text('Remove goal'));
+    await tester.tap(find.byIcon(Icons.delete_outline));
     await tester.pumpAndSettle();
 
     expect(bloc.state.targetWeight, isNull);

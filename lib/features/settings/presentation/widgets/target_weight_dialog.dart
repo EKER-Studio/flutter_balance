@@ -115,6 +115,19 @@ class _TargetWeightDialogState extends State<TargetWeightDialog> {
                 border: const OutlineInputBorder(),
                 errorText: _errorText,
                 errorMaxLines: 2,
+                suffixIcon: hasTarget
+                    ? IconButton(
+                        icon: Icon(
+                          Icons.delete_outline,
+                          color: colorScheme.error,
+                        ),
+                        tooltip: l10n.removeTargetWeight,
+                        onPressed: () {
+                          FocusScope.of(context).unfocus();
+                          Navigator.of(context).pop('clear');
+                        },
+                      )
+                    : null,
                 contentPadding: const EdgeInsetsDirectional.fromSTEB(
                   12,
                   16,
@@ -132,32 +145,13 @@ class _TargetWeightDialogState extends State<TargetWeightDialog> {
           ],
         ),
       ),
-      actionsAlignment: hasTarget ? MainAxisAlignment.spaceBetween : null,
-      actions: hasTarget
-          ? [
-              TextButton(
-                onPressed: () => Navigator.of(context).pop('clear'),
-                style: TextButton.styleFrom(foregroundColor: colorScheme.error),
-                child: Text(l10n.removeTargetWeight),
-              ),
-              Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  TextButton(
-                    onPressed: () => Navigator.of(context).pop(),
-                    child: Text(l10n.cancel),
-                  ),
-                  TextButton(onPressed: _handleSave, child: Text(l10n.save)),
-                ],
-              ),
-            ]
-          : [
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(),
-                child: Text(l10n.cancel),
-              ),
-              TextButton(onPressed: _handleSave, child: Text(l10n.save)),
-            ],
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(),
+          child: Text(l10n.cancel),
+        ),
+        TextButton(onPressed: _handleSave, child: Text(l10n.save)),
+      ],
     );
   }
 }
