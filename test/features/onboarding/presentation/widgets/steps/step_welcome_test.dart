@@ -13,7 +13,9 @@ void main() {
   }
 
   group('StepWelcome', () {
-    testWidgets('renders title, subtitle, and feature cards in landscape', (tester) async {
+    testWidgets('renders title, subtitle, and feature cards in landscape', (
+      tester,
+    ) async {
       // Default test orientation is usually landscape-like (800x600)
       await tester.pumpWidget(buildTestWidget(onNext: () {}));
 
@@ -27,7 +29,9 @@ void main() {
       expect(find.text('Get Started'), findsOneWidget);
     });
 
-    testWidgets('renders title, subtitle, and feature cards in portrait', (tester) async {
+    testWidgets('renders title, subtitle, and feature cards in portrait', (
+      tester,
+    ) async {
       tester.view.physicalSize = const Size(400, 800);
       tester.view.devicePixelRatio = 1.0;
       addTearDown(tester.view.resetPhysicalSize);

@@ -212,21 +212,6 @@ class _OnboardingWizardContentState extends State<_OnboardingWizardContent> {
     _goToNextStep();
   }
 
-  /// Wraps a step in a scrollable, full-height column for small screens and
-  /// keyboard inset safety.
-  Widget _buildStepWrapper(Widget child) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        return SingleChildScrollView(
-          child: ConstrainedBox(
-            constraints: BoxConstraints(minHeight: constraints.maxHeight),
-            child: IntrinsicHeight(child: child),
-          ),
-        );
-      },
-    );
-  }
-
   /// Builds the progress app bar shown on every step except Welcome.
   ///
   /// Renders a "step X of Y" title (via [displayStep]/[displayTotalSteps]),
@@ -295,45 +280,33 @@ class _OnboardingWizardContentState extends State<_OnboardingWizardContent> {
         builder: (context, state) {
           final steps = <Widget>[
             StepWelcome(onNext: _handleWelcomeNext),
-            _buildStepWrapper(
-              StepUnitsHeight(
-                initialUnit: state.selectedUnit,
-                initialHeightCm: context.read<AppSettingsBloc>().state.height,
-                isCurrentPage: state.currentStepIndex == 1,
-                onNext: _handleUnitsHeightNext,
-              ),
+            StepUnitsHeight(
+              initialUnit: state.selectedUnit,
+              initialHeightCm: context.read<AppSettingsBloc>().state.height,
+              isCurrentPage: state.currentStepIndex == 1,
+              onNext: _handleUnitsHeightNext,
             ),
-            _buildStepWrapper(
-              StepCsvImport(
-                importService: widget.csvImportService,
-                onFileImported: _handleCsvImported,
-                onSkipped: _handleCsvSkipped,
-              ),
+            StepCsvImport(
+              importService: widget.csvImportService,
+              onFileImported: _handleCsvImported,
+              onSkipped: _handleCsvSkipped,
             ),
-            _buildStepWrapper(
-              StepInitialWeight(
-                unit: state.selectedUnit,
-                initialWeightKg: state.latestImportedEntry?.weightKg,
-                initialTimestamp: state.latestImportedEntry?.dateTime,
-                onNext: _handleInitialWeightNext,
-              ),
+            StepInitialWeight(
+              unit: state.selectedUnit,
+              initialWeightKg: state.latestImportedEntry?.weightKg,
+              initialTimestamp: state.latestImportedEntry?.dateTime,
+              onNext: _handleInitialWeightNext,
             ),
-            _buildStepWrapper(
-              StepTargetWeight(
-                unit: state.selectedUnit,
-                initialTargetWeightKg: state.draftTargetWeight,
-                initialWeightKg: state.draftInitialWeight,
-                onNext: _handleTargetWeightNext,
-              ),
+            StepTargetWeight(
+              unit: state.selectedUnit,
+              initialTargetWeightKg: state.draftTargetWeight,
+              initialWeightKg: state.draftInitialWeight,
+              onNext: _handleTargetWeightNext,
             ),
-            _buildStepWrapper(
-              StepReminderNotification(onNext: _handleReminderNext),
-            ),
-            _buildStepWrapper(StepHealthSync(onNext: _handleHealthSyncNext)),
+            StepReminderNotification(onNext: _handleReminderNext),
+            StepHealthSync(onNext: _handleHealthSyncNext),
             if (isBiometricSupported)
-              _buildStepWrapper(
-                StepBiometricLock(onNext: _handleBiometricNext),
-              ),
+              StepBiometricLock(onNext: _handleBiometricNext),
           ];
 
           final isWelcomeStep = state.currentStepIndex == 0;

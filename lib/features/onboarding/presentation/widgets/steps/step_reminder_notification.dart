@@ -66,9 +66,15 @@ class _StepReminderNotificationState extends State<StepReminderNotification> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context);
+    final isLandscape =
+        MediaQuery.sizeOf(context).height < 500 ||
+        MediaQuery.orientationOf(context) == Orientation.landscape;
 
     return ClampedLayout(
-      padding: const EdgeInsets.all(24.0),
+      padding: EdgeInsets.symmetric(
+        horizontal: 24.0,
+        vertical: isLandscape ? 12.0 : 24.0,
+      ),
       child: BlocBuilder<AppSettingsBloc, AppSettingsState>(
         builder: (context, settingsState) {
           final enabled = settingsState.notificationsEnabled;
@@ -78,159 +84,179 @@ class _StepReminderNotificationState extends State<StepReminderNotification> {
           return Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Text(
-                l10n.dailyReminderStepOptionalTitle,
-                style: theme.textTheme.headlineSmall?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 8.0),
-              Text(
-                l10n.dailyReminderStepSubtitle,
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  color: theme.colorScheme.onSurfaceVariant,
-                ),
-              ),
-              const SizedBox(height: 24.0),
-              Material(
-                color: theme.colorScheme.surfaceContainerLow,
-                borderRadius: BorderRadius.circular(16.0),
-                clipBehavior: Clip.antiAlias,
-                child: Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(16.0),
-                    border: Border.all(
-                      color: theme.colorScheme.outlineVariant.withValues(
-                        alpha: 0.3,
-                      ),
-                    ),
-                  ),
+              Expanded(
+                child: SingleChildScrollView(
+                  physics: const BouncingScrollPhysics(),
                   child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      SwitchListTile(
-                        key: const Key('notification_step_switch'),
-                        value: enabled,
-                        onChanged: (val) => _handleToggle(context, val),
-                        title: Text(
-                          l10n.dailyReminder,
-                          style: theme.textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.w600,
+                      Text(
+                        l10n.dailyReminderStepOptionalTitle,
+                        style: theme.textTheme.headlineSmall?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      SizedBox(height: isLandscape ? 4.0 : 8.0),
+                      Text(
+                        l10n.dailyReminderStepSubtitle,
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          color: theme.colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                      SizedBox(height: isLandscape ? 12.0 : 24.0),
+                      Material(
+                        color: theme.colorScheme.surfaceContainerLow,
+                        borderRadius: BorderRadius.circular(16.0),
+                        clipBehavior: Clip.antiAlias,
+                        child: Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(16.0),
+                            border: Border.all(
+                              color: theme.colorScheme.outlineVariant
+                                  .withValues(alpha: 0.3),
+                            ),
+                          ),
+                          child: Column(
+                            children: [
+                              SwitchListTile(
+                                key: const Key('notification_step_switch'),
+                                value: enabled,
+                                onChanged: (val) => _handleToggle(context, val),
+                                title: Text(
+                                  l10n.dailyReminder,
+                                  style: theme.textTheme.titleMedium?.copyWith(
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                                subtitle: Text(l10n.dailyReminderDesc),
+                                secondary: Icon(
+                                  Icons.notifications,
+                                  color: enabled
+                                      ? theme.colorScheme.primary
+                                      : theme.colorScheme.onSurfaceVariant,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
-                        subtitle: Text(l10n.dailyReminderDesc),
-                        secondary: Icon(
-                          Icons.notifications,
-                          color: enabled
-                              ? theme.colorScheme.primary
-                              : theme.colorScheme.onSurfaceVariant,
-                        ),
                       ),
-                    ],
-                  ),
-                ),
-              ),
-              // Reminder time row, shown only while notifications are ON.
-              if (enabled) ...[
-                const SizedBox(height: 16.0),
-                Material(
-                  key: const Key('notification_step_time_tile'),
-                  color: theme.colorScheme.surfaceContainerLow,
-                  borderRadius: BorderRadius.circular(16.0),
-                  clipBehavior: Clip.antiAlias,
-                  child: Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(16.0),
-                      border: Border.all(
-                        color: theme.colorScheme.outlineVariant.withValues(
-                          alpha: 0.3,
-                        ),
-                      ),
-                    ),
-                    child: InkWell(
-                      borderRadius: BorderRadius.circular(16.0),
-                      onTap: () => _handleTimePicker(context),
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 16.0,
-                          vertical: 16.0,
-                        ),
-                        child: Row(
-                          children: [
-                            Icon(
-                              Icons.access_time,
-                              color: theme.colorScheme.primary,
-                            ),
-                            const SizedBox(width: 16.0),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisSize: MainAxisSize
-                                    .min, // Keeps the Row from full height sizing.
-                                children: [
-                                  Text(
-                                    l10n.reminderTime,
-                                    style: theme.textTheme.titleMedium
-                                        ?.copyWith(fontWeight: FontWeight.w600),
-                                  ),
-                                  const SizedBox(height: 4.0),
-                                  Text(
-                                    TimeOfDay(
-                                      hour: notificationTime.hour,
-                                      minute: notificationTime.minute,
-                                    ).format(context),
-                                    style: theme.textTheme.bodyMedium?.copyWith(
-                                      color: theme.colorScheme.onSurfaceVariant,
-                                    ),
-                                  ),
-                                ],
+                      // Reminder time row, shown only while notifications are ON.
+                      if (enabled) ...[
+                        SizedBox(height: isLandscape ? 10.0 : 16.0),
+                        Material(
+                          key: const Key('notification_step_time_tile'),
+                          color: theme.colorScheme.surfaceContainerLow,
+                          borderRadius: BorderRadius.circular(16.0),
+                          clipBehavior: Clip.antiAlias,
+                          child: Container(
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(16.0),
+                              border: Border.all(
+                                color: theme.colorScheme.outlineVariant
+                                    .withValues(alpha: 0.3),
                               ),
                             ),
-                            Icon(
-                              Icons.chevron_right,
-                              color: theme.colorScheme.onSurfaceVariant,
+                            child: InkWell(
+                              borderRadius: BorderRadius.circular(16.0),
+                              onTap: () => _handleTimePicker(context),
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 16.0,
+                                  vertical: 16.0,
+                                ),
+                                child: Row(
+                                  children: [
+                                    Icon(
+                                      Icons.access_time,
+                                      color: theme.colorScheme.primary,
+                                    ),
+                                    const SizedBox(width: 16.0),
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        mainAxisSize: MainAxisSize
+                                            .min, // Keeps the Row from full height sizing.
+                                        children: [
+                                          Text(
+                                            l10n.reminderTime,
+                                            style: theme.textTheme.titleMedium
+                                                ?.copyWith(
+                                                  fontWeight: FontWeight.w600,
+                                                ),
+                                          ),
+                                          const SizedBox(height: 4.0),
+                                          Text(
+                                            TimeOfDay(
+                                              hour: notificationTime.hour,
+                                              minute: notificationTime.minute,
+                                            ).format(context),
+                                            style: theme.textTheme.bodyMedium
+                                                ?.copyWith(
+                                                  color: theme
+                                                      .colorScheme
+                                                      .onSurfaceVariant,
+                                                ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    Icon(
+                                      Icons.chevron_right,
+                                      color: theme.colorScheme.onSurfaceVariant,
+                                    ),
+                                  ],
+                                ),
+                              ),
                             ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-              if (permissionDenied) ...[
-                const SizedBox(height: 12.0),
-                Container(
-                  padding: const EdgeInsets.all(12.0),
-                  decoration: BoxDecoration(
-                    color: theme.colorScheme.errorContainer,
-                    borderRadius: BorderRadius.circular(12.0),
-                  ),
-                  child: Row(
-                    children: [
-                      Icon(
-                        Icons.warning_amber_rounded,
-                        color: theme.colorScheme.onErrorContainer,
-                        size: 20.0,
-                      ),
-                      const SizedBox(width: 8.0),
-                      Expanded(
-                        child: Text(
-                          l10n.notificationPermissionDenied,
-                          style: theme.textTheme.bodySmall?.copyWith(
-                            color: theme.colorScheme.onErrorContainer,
                           ),
                         ),
-                      ),
+                      ],
+                      if (permissionDenied) ...[
+                        const SizedBox(height: 12.0),
+                        Container(
+                          padding: const EdgeInsets.all(12.0),
+                          decoration: BoxDecoration(
+                            color: theme.colorScheme.errorContainer,
+                            borderRadius: BorderRadius.circular(12.0),
+                          ),
+                          child: Row(
+                            children: [
+                              Icon(
+                                Icons.warning_amber_rounded,
+                                color: theme.colorScheme.onErrorContainer,
+                                size: 20.0,
+                              ),
+                              const SizedBox(width: 8.0),
+                              Expanded(
+                                child: Text(
+                                  l10n.notificationPermissionDenied,
+                                  style: theme.textTheme.bodySmall?.copyWith(
+                                    color: theme.colorScheme.onErrorContainer,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
                     ],
                   ),
                 ),
-              ],
-              const Spacer(),
-              ConstrainedBox(
-                constraints: const BoxConstraints(minHeight: 48.0),
-                child: FilledButton(
-                  key: const Key('notification_step_next_button'),
-                  onPressed: widget.onNext,
-                  child: Text(l10n.next),
+              ),
+              SafeArea(
+                top: false,
+                bottom: true,
+                child: Padding(
+                  padding: EdgeInsets.only(top: isLandscape ? 8.0 : 16.0),
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(minHeight: 48.0),
+                    child: FilledButton(
+                      key: const Key('notification_step_next_button'),
+                      onPressed: widget.onNext,
+                      child: Text(l10n.next),
+                    ),
+                  ),
                 ),
               ),
             ],

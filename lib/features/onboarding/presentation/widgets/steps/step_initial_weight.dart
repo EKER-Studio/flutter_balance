@@ -170,6 +170,9 @@ class _StepInitialWeightState extends State<StepInitialWeight> {
     final formattedDate = DateFormat.yMMMd().add_jm().format(
       _selectedTimestamp,
     );
+    final isLandscape =
+        MediaQuery.sizeOf(context).height < 500 ||
+        MediaQuery.orientationOf(context) == Orientation.landscape;
 
     final isError = _errorText != null;
     final isNextEnabled = _weightController.text.trim().isNotEmpty && !isError;
@@ -180,73 +183,96 @@ class _StepInitialWeightState extends State<StepInitialWeight> {
     );
 
     return ClampedLayout(
-      padding: const EdgeInsets.all(24.0),
+      padding: EdgeInsets.symmetric(
+        horizontal: 24.0,
+        vertical: isLandscape ? 12.0 : 24.0,
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text(
-            l10n.initialWeightStepTitle,
-            style: theme.textTheme.headlineSmall?.copyWith(
-              fontWeight: FontWeight.bold,
+          Expanded(
+            child: SingleChildScrollView(
+              physics: const BouncingScrollPhysics(),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Text(
+                    l10n.initialWeightStepTitle,
+                    style: theme.textTheme.headlineSmall?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  SizedBox(height: isLandscape ? 4.0 : 8.0),
+                  Text(
+                    l10n.initialWeightStepSubtitle,
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                  SizedBox(height: isLandscape ? 12.0 : 24.0),
+                  TextField(
+                    key: const Key('initial_weight_input'),
+                    controller: _weightController,
+                    focusNode: _focusNode,
+                    keyboardType: const TextInputType.numberWithOptions(
+                      decimal: true,
+                    ),
+                    decoration: InputDecoration(
+                      labelText: '${l10n.currentWeightLabel} ($unitSuffix)',
+                      suffixText: unitSuffix,
+                      enabledBorder: isError ? errorOutline : null,
+                      focusedBorder: isError ? errorOutline : null,
+                    ),
+                    onChanged: _validate,
+                    onSubmitted: (_) {
+                      if (isNextEnabled) _handleNext();
+                    },
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    isError ? _errorText! : l10n.enterInitialWeightHint,
+                    style: TextStyle(
+                      color: isError
+                          ? theme.colorScheme.error
+                          : theme.colorScheme.onSurfaceVariant,
+                      fontSize: 12,
+                      fontWeight: isError ? FontWeight.w500 : FontWeight.w400,
+                    ),
+                  ),
+                  SizedBox(height: isLandscape ? 12.0 : 20.0),
+                  Text(
+                    l10n.measurementDateTimeLabel,
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  const SizedBox(height: 8.0),
+                  ConstrainedBox(
+                    constraints: const BoxConstraints(minHeight: 48.0),
+                    child: OutlinedButton.icon(
+                      onPressed: _pickDateTime,
+                      icon: const ExcludeSemantics(
+                        child: Icon(Icons.calendar_today),
+                      ),
+                      label: Text(formattedDate),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
-          const SizedBox(height: 8.0),
-          Text(
-            l10n.initialWeightStepSubtitle,
-            style: theme.textTheme.bodyMedium?.copyWith(
-              color: theme.colorScheme.onSurfaceVariant,
-            ),
-          ),
-          const SizedBox(height: 24.0),
-          TextField(
-            key: const Key('initial_weight_input'),
-            controller: _weightController,
-            focusNode: _focusNode,
-            keyboardType: const TextInputType.numberWithOptions(decimal: true),
-            decoration: InputDecoration(
-              labelText: '${l10n.currentWeightLabel} ($unitSuffix)',
-              suffixText: unitSuffix,
-              enabledBorder: isError ? errorOutline : null,
-              focusedBorder: isError ? errorOutline : null,
-            ),
-            onChanged: _validate,
-            onSubmitted: (_) {
-              if (isNextEnabled) _handleNext();
-            },
-          ),
-          const SizedBox(height: 8),
-          Text(
-            isError ? _errorText! : l10n.enterInitialWeightHint,
-            style: TextStyle(
-              color: isError
-                  ? theme.colorScheme.error
-                  : theme.colorScheme.onSurfaceVariant,
-              fontSize: 12,
-              fontWeight: isError ? FontWeight.w500 : FontWeight.w400,
-            ),
-          ),
-          const SizedBox(height: 20.0),
-          Text(
-            l10n.measurementDateTimeLabel,
-            style: theme.textTheme.bodyMedium?.copyWith(
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-          const SizedBox(height: 8.0),
-          ConstrainedBox(
-            constraints: const BoxConstraints(minHeight: 48.0),
-            child: OutlinedButton.icon(
-              onPressed: _pickDateTime,
-              icon: const ExcludeSemantics(child: Icon(Icons.calendar_today)),
-              label: Text(formattedDate),
-            ),
-          ),
-          const Spacer(),
-          ConstrainedBox(
-            constraints: const BoxConstraints(minHeight: 48.0),
-            child: FilledButton(
-              onPressed: isNextEnabled ? _handleNext : null,
-              child: Text(l10n.next),
+          SafeArea(
+            top: false,
+            bottom: true,
+            child: Padding(
+              padding: EdgeInsets.only(top: isLandscape ? 8.0 : 16.0),
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(minHeight: 48.0),
+                child: FilledButton(
+                  onPressed: isNextEnabled ? _handleNext : null,
+                  child: Text(l10n.next),
+                ),
+              ),
             ),
           ),
         ],

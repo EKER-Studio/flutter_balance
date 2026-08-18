@@ -522,4 +522,48 @@ void main() {
       expect(timeResult, isNotNull);
     });
   });
+
+  group('Landscape Rendering Tests (No Overflow)', () {
+    testWidgets(
+      'renders all onboarding steps without overflow on landscape phone',
+      (tester) async {
+        tester.view.physicalSize = const Size(700, 320);
+        tester.view.devicePixelRatio = 1.0;
+        addTearDown(tester.view.resetPhysicalSize);
+        addTearDown(tester.view.resetDevicePixelRatio);
+
+        // StepUnitsHeight
+        await tester.pumpWidget(
+          buildApp(
+            StepUnitsHeight(
+              initialUnit: MeasurementUnit.metric,
+              initialHeightCm: 175.0,
+              isCurrentPage: true,
+              onNext: (_, _) {},
+            ),
+          ),
+        );
+        await tester.pump(const Duration(milliseconds: 300));
+        expect(tester.takeException(), isNull);
+
+        // StepInitialWeight
+        await tester.pumpWidget(
+          buildApp(
+            StepInitialWeight(unit: MeasurementUnit.metric, onNext: (_, _) {}),
+          ),
+        );
+        await tester.pump(const Duration(milliseconds: 300));
+        expect(tester.takeException(), isNull);
+
+        // StepTargetWeight
+        await tester.pumpWidget(
+          buildApp(
+            StepTargetWeight(unit: MeasurementUnit.metric, onNext: (_) {}),
+          ),
+        );
+        await tester.pump(const Duration(milliseconds: 300));
+        expect(tester.takeException(), isNull);
+      },
+    );
+  });
 }
