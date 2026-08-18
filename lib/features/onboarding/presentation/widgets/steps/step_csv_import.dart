@@ -118,7 +118,7 @@ class _StepCsvImportState extends State<StepCsvImport> {
     return ClampedLayout(
       padding: EdgeInsets.symmetric(
         horizontal: 24.0,
-        vertical: isLandscape ? 12.0 : 24.0,
+        vertical: isLandscape ? 8.0 : 24.0,
       ),
       child: switch (_status) {
         _CsvImportStatus.idle => _buildIdle(theme, l10n, isLandscape),
@@ -133,6 +133,7 @@ class _StepCsvImportState extends State<StepCsvImport> {
   Widget _buildIdle(ThemeData theme, AppLocalizations l10n, bool isLandscape) {
     return SingleChildScrollView(
       physics: const BouncingScrollPhysics(),
+      keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -189,7 +190,7 @@ class _StepCsvImportState extends State<StepCsvImport> {
             ),
           ),
           Padding(
-            padding: const EdgeInsets.only(top: 12.0),
+            padding: EdgeInsets.only(top: isLandscape ? 6.0 : 12.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -202,9 +203,9 @@ class _StepCsvImportState extends State<StepCsvImport> {
                 const SizedBox(height: 4.0),
                 Container(
                   width: double.infinity,
-                  padding: const EdgeInsets.symmetric(
+                  padding: EdgeInsets.symmetric(
                     horizontal: 12.0,
-                    vertical: 8.0,
+                    vertical: isLandscape ? 4.0 : 8.0,
                   ),
                   decoration: BoxDecoration(
                     color: theme.colorScheme.surfaceContainerHighest,
@@ -221,7 +222,7 @@ class _StepCsvImportState extends State<StepCsvImport> {
               ],
             ),
           ),
-          SizedBox(height: isLandscape ? 16.0 : 24.0),
+          SizedBox(height: isLandscape ? 12.0 : 24.0),
           ConstrainedBox(
             constraints: const BoxConstraints(minHeight: 48.0),
             child: FilledButton(
@@ -262,6 +263,7 @@ class _StepCsvImportState extends State<StepCsvImport> {
   ) {
     return SingleChildScrollView(
       physics: const BouncingScrollPhysics(),
+      keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -334,6 +336,7 @@ class _StepCsvImportState extends State<StepCsvImport> {
 
     return SingleChildScrollView(
       physics: const BouncingScrollPhysics(),
+      keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [

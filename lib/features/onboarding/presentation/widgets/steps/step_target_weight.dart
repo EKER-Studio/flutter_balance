@@ -98,7 +98,9 @@ class _StepTargetWeightState extends State<StepTargetWeight> {
     if (targetKg == null) return null;
 
     if (initialWeight <= targetKg) {
-      return '🏆 ${l10n.goalAchieved}';
+      // During initial setup/onboarding, suppress trophy notice to avoid
+      // confusion for users aiming for weight gain or setting baseline target.
+      return null;
     }
 
     final distKg = initialWeight - targetKg;
@@ -191,10 +193,11 @@ class _StepTargetWeightState extends State<StepTargetWeight> {
     return ClampedLayout(
       padding: EdgeInsets.symmetric(
         horizontal: 24.0,
-        vertical: isLandscape ? 12.0 : 24.0,
+        vertical: isLandscape ? 8.0 : 24.0,
       ),
       child: SingleChildScrollView(
         physics: const BouncingScrollPhysics(),
+        keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [

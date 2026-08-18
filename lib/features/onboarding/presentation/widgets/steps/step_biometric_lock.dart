@@ -100,7 +100,7 @@ class _StepBiometricLockState extends State<StepBiometricLock> {
     return ClampedLayout(
       padding: EdgeInsets.symmetric(
         horizontal: 24.0,
-        vertical: isLandscape ? 12.0 : 24.0,
+        vertical: isLandscape ? 8.0 : 24.0,
       ),
       child: BlocBuilder<AppSettingsBloc, AppSettingsState>(
         builder: (context, settingsState) {
@@ -108,6 +108,7 @@ class _StepBiometricLockState extends State<StepBiometricLock> {
 
           return SingleChildScrollView(
             physics: const BouncingScrollPhysics(),
+            keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [

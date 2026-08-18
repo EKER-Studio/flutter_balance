@@ -248,9 +248,9 @@ class _OnboardingWizardContentState extends State<_OnboardingWizardContent> {
         },
       ),
       bottom: PreferredSize(
-        preferredSize: const Size.fromHeight(4.0),
+        preferredSize: const Size.fromHeight(8.0),
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+          padding: const EdgeInsets.only(left: 16.0, right: 16.0, bottom: 6.0),
           child: Semantics(
             label: l10n.stepOf(displayStep, displayTotalSteps),
             child: ClipRRect(
@@ -258,6 +258,7 @@ class _OnboardingWizardContentState extends State<_OnboardingWizardContent> {
               child: LinearProgressIndicator(
                 value: progress,
                 minHeight: 4.0,
+                borderRadius: BorderRadius.circular(4.0),
                 backgroundColor: theme.colorScheme.surfaceContainerHighest,
               ),
             ),

@@ -21,6 +21,8 @@ class StepWelcome extends StatelessWidget {
     bool isLandscape = false,
   }) {
     final theme = Theme.of(context);
+    final primaryColor = theme.colorScheme.primary;
+
     return Material(
       color: theme.colorScheme.surfaceContainerLow,
       borderRadius: BorderRadius.circular(12.0),
@@ -35,12 +37,12 @@ class StepWelcome extends StatelessWidget {
               padding: EdgeInsets.all(isLandscape ? 6.0 : 8.0),
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: theme.colorScheme.primaryContainer,
+                color: primaryColor.withValues(alpha: 0.12),
               ),
               child: Icon(
                 icon,
                 size: isLandscape ? 18.0 : 20.0,
-                color: theme.colorScheme.onPrimaryContainer,
+                color: primaryColor,
               ),
             ),
             const SizedBox(width: 12.0),
@@ -112,10 +114,11 @@ class StepWelcome extends StatelessWidget {
     return ClampedLayout(
       padding: EdgeInsets.symmetric(
         horizontal: 24.0,
-        vertical: isLandscape ? 12.0 : 24.0,
+        vertical: isLandscape ? 8.0 : 24.0,
       ),
       child: SingleChildScrollView(
         physics: const BouncingScrollPhysics(),
+        keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [

@@ -51,7 +51,7 @@ class _StepHealthSyncState extends State<StepHealthSync> {
     return ClampedLayout(
       padding: EdgeInsets.symmetric(
         horizontal: 24.0,
-        vertical: isLandscape ? 12.0 : 24.0,
+        vertical: isLandscape ? 8.0 : 24.0,
       ),
       child: BlocListener<AppSettingsBloc, AppSettingsState>(
         // Edge-triggered on the transient denial flag: the bloc resets the
@@ -80,6 +80,8 @@ class _StepHealthSyncState extends State<StepHealthSync> {
 
               return SingleChildScrollView(
                 physics: const BouncingScrollPhysics(),
+                keyboardDismissBehavior:
+                    ScrollViewKeyboardDismissBehavior.onDrag,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
