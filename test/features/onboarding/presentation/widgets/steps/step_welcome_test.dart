@@ -13,13 +13,35 @@ void main() {
   }
 
   group('StepWelcome', () {
-    testWidgets('renders title, subtitle, and feature cards', (tester) async {
+    testWidgets('renders title, subtitle, and feature cards in landscape', (tester) async {
+      // Default test orientation is usually landscape-like (800x600)
       await tester.pumpWidget(buildTestWidget(onNext: () {}));
 
       expect(find.text('Welcome to Balance'), findsOneWidget);
       expect(find.text('Units & Height'), findsOneWidget);
-      expect(find.text('Weight & Goal'), findsOneWidget);
-      expect(find.text('Privacy & Sync'), findsOneWidget);
+      expect(find.text('Initial Weight'), findsOneWidget);
+      expect(find.text('Target Weight'), findsOneWidget);
+      expect(find.text('Health Sync'), findsOneWidget);
+      expect(find.text('Daily Reminders'), findsOneWidget);
+      expect(find.text('Privacy & Security'), findsOneWidget);
+      expect(find.text('Get Started'), findsOneWidget);
+    });
+
+    testWidgets('renders title, subtitle, and feature cards in portrait', (tester) async {
+      tester.view.physicalSize = const Size(400, 800);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+
+      await tester.pumpWidget(buildTestWidget(onNext: () {}));
+
+      expect(find.text('Welcome to Balance'), findsOneWidget);
+      expect(find.text('Units & Height'), findsOneWidget);
+      expect(find.text('Initial Weight'), findsOneWidget);
+      expect(find.text('Target Weight'), findsOneWidget);
+      expect(find.text('Health Sync'), findsOneWidget);
+      expect(find.text('Daily Reminders'), findsOneWidget);
+      expect(find.text('Privacy & Security'), findsOneWidget);
       expect(find.text('Get Started'), findsOneWidget);
     });
 
