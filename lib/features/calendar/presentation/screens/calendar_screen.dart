@@ -106,6 +106,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
           }
         },
         child: CustomScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
           slivers: [
             AppTopBar(title: l10n.tabCalendar),
             SliverSafeArea(
@@ -117,7 +118,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                         MediaQuery.of(context).orientation ==
                         Orientation.landscape;
                     final maxContentWidth = isLandscape ? 900.0 : 600.0;
-                    final horizontalPadding = isLandscape ? 16.0 : 16.0;
+                    final horizontalPadding = 16.0;
 
                     if (state is WeightInitial || state is WeightLoading) {
                       return Align(
@@ -176,22 +177,22 @@ class _CalendarScreenState extends State<CalendarScreen> {
                       color: Theme.of(context).colorScheme.surfaceContainerLow,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(
-                          isLandscape ? 20 : 28,
+                          isLandscape ? 24 : 28,
                         ),
                       ),
                       child: Padding(
                         padding: EdgeInsets.fromLTRB(
                           0,
-                          isLandscape ? 10 : 16,
+                          isLandscape ? 16 : 16,
                           0,
-                          isLandscape ? 10 : 20,
+                          isLandscape ? 16 : 20,
                         ),
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             Padding(
                               padding: const EdgeInsets.symmetric(
-                                horizontal: 12,
+                                horizontal: 16,
                               ),
                               child: CalendarMonthHeader(
                                 focusedMonth: _focusedMonth,
@@ -199,12 +200,12 @@ class _CalendarScreenState extends State<CalendarScreen> {
                                 onNextMonth: _nextMonth,
                               ),
                             ),
-                            SizedBox(height: isLandscape ? 6 : 16),
+                            SizedBox(height: isLandscape ? 12 : 16),
                             const Padding(
-                              padding: EdgeInsets.symmetric(horizontal: 12),
+                              padding: EdgeInsets.symmetric(horizontal: 16),
                               child: CalendarWeekdayHeader(),
                             ),
-                            SizedBox(height: isLandscape ? 4 : 12),
+                            SizedBox(height: isLandscape ? 10 : 12),
                             GestureDetector(
                               onHorizontalDragEnd: (details) {
                                 if (details.primaryVelocity != null) {
@@ -217,7 +218,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                               },
                               child: Padding(
                                 padding: const EdgeInsets.symmetric(
-                                  horizontal: 12,
+                                  horizontal: 16,
                                 ),
                                 child: AnimatedSwitcher(
                                   duration: const Duration(milliseconds: 250),

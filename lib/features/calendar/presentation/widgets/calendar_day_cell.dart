@@ -128,8 +128,8 @@ class CalendarDayCell extends StatelessWidget {
             ),
             if (isGoalAchieved && !isFuture)
               Positioned(
-                top: 2,
-                right: 2,
+                top: 0,
+                right: 0,
                 child: Container(
                   padding: const EdgeInsets.all(1.5),
                   decoration: const BoxDecoration(
