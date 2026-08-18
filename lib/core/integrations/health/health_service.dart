@@ -340,8 +340,9 @@ class NativeHealthService implements HealthService {
   /// Fetches and filters weight entries within an inclusive date window.
   ///
   /// Non-numeric points and readings outside the plausible 20-300 kg range are
-  /// discarded; surviving entries are sorted newest first. Any plugin error
-  /// degrades to an empty list.
+  /// discarded; duplicate readings within the same minute with the same weight
+  /// are collapsed into a single entry; surviving entries are sorted newest first.
+  /// Any plugin error degrades to an empty list.
   /// [start] is the inclusive start of the query window.
   /// [end] is the inclusive end of the query window.
   @override
@@ -358,6 +359,8 @@ class NativeHealthService implements HealthService {
         preferredUnits: const {_weightType: _weightUnit},
       );
       final entries = <WeightEntry>[];
+      final seenKeys = <String>{};
+
       for (final point in points) {
         if (point.value is! NumericHealthValue) {
           continue;
@@ -365,7 +368,15 @@ class NativeHealthService implements HealthService {
         final value = (point.value as NumericHealthValue).numericValue
             .toDouble();
         if (value >= _minWeightKg && value <= _maxWeightKg) {
-          entries.add(WeightEntry(weightKg: value, dateTime: point.dateFrom));
+          // Deduplikacja punktów o identycznej dacie (z dokładnością do minuty) i wartości
+          final key =
+              '${point.dateFrom.year}-${point.dateFrom.month}-${point.dateFrom.day}_'
+              '${point.dateFrom.hour}:${point.dateFrom.minute}_'
+              '${value.toStringAsFixed(1)}';
+
+          if (seenKeys.add(key)) {
+            entries.add(WeightEntry(weightKg: value, dateTime: point.dateFrom));
+          }
         }
       }
       entries.sort((a, b) => b.dateTime.compareTo(a.dateTime));
