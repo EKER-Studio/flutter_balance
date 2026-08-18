@@ -94,61 +94,64 @@ class _TargetWeightDialogState extends State<TargetWeightDialog> {
         color: Theme.of(context).colorScheme.primary,
       ),
       title: Text(l10n.targetWeightDialogTitle),
-      content: SingleChildScrollView(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            const SizedBox(height: 16),
-            TextField(
-              controller: _controller,
-              keyboardType: const TextInputType.numberWithOptions(
-                decimal: true,
-                signed: false,
-              ),
-              autofocus: true,
-              decoration: InputDecoration(
-                labelText: widget.measurementUnit == MeasurementUnit.imperial
-                    ? l10n.weightInLbLabel
-                    : l10n.weightInKgLabel,
-                hintText: l10n.weightHint,
-                enabledBorder: isError
-                    ? OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        borderSide: BorderSide(
-                          color: Theme.of(context).colorScheme.error,
-                          width: 2,
-                        ),
-                      )
-                    : null,
-                focusedBorder: isError
-                    ? OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        borderSide: BorderSide(
-                          color: Theme.of(context).colorScheme.error,
-                          width: 2,
-                        ),
-                      )
-                    : null,
-              ),
-              onChanged: (_) {
-                if (_errorText != null) {
-                  setState(() => _errorText = null);
-                }
-              },
-              onSubmitted: (_) => _handleSave(),
-            ),
-            const SizedBox(height: 8),
-            if (isError)
-              Text(
-                _errorText!,
-                style: TextStyle(
-                  color: Theme.of(context).colorScheme.error,
-                  fontSize: 12,
-                  fontWeight: FontWeight.w500,
+      content: SizedBox(
+        width: 320,
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              const SizedBox(height: 16),
+              TextField(
+                controller: _controller,
+                keyboardType: const TextInputType.numberWithOptions(
+                  decimal: true,
+                  signed: false,
                 ),
+                autofocus: true,
+                decoration: InputDecoration(
+                  labelText: widget.measurementUnit == MeasurementUnit.imperial
+                      ? l10n.weightInLbLabel
+                      : l10n.weightInKgLabel,
+                  hintText: l10n.weightHint,
+                  enabledBorder: isError
+                      ? OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide: BorderSide(
+                            color: Theme.of(context).colorScheme.error,
+                            width: 2,
+                          ),
+                        )
+                      : null,
+                  focusedBorder: isError
+                      ? OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide: BorderSide(
+                            color: Theme.of(context).colorScheme.error,
+                            width: 2,
+                          ),
+                        )
+                      : null,
+                ),
+                onChanged: (_) {
+                  if (_errorText != null) {
+                    setState(() => _errorText = null);
+                  }
+                },
+                onSubmitted: (_) => _handleSave(),
               ),
-          ],
+              const SizedBox(height: 8),
+              if (isError)
+                Text(
+                  _errorText!,
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.error,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+            ],
+          ),
         ),
       ),
       actions: [

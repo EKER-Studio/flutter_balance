@@ -76,65 +76,68 @@ class HeightDialogState extends State<HeightDialog> {
         color: Theme.of(context).colorScheme.primary,
       ),
       title: Text(l10n.heightDialogTitle),
-      content: SingleChildScrollView(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            const SizedBox(height: 16),
-            TextField(
-              controller: _controller,
-              keyboardType: const TextInputType.numberWithOptions(
-                decimal: true,
-                signed: false,
+      content: SizedBox(
+        width: 320,
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              const SizedBox(height: 16),
+              TextField(
+                controller: _controller,
+                keyboardType: const TextInputType.numberWithOptions(
+                  decimal: true,
+                  signed: false,
+                ),
+                autofocus: true,
+                decoration: InputDecoration(
+                  labelText: l10n.heightCmLabel,
+                  hintText: l10n.heightHint,
+                  enabledBorder: isError
+                      ? OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide: BorderSide(
+                            color: Theme.of(context).colorScheme.error,
+                            width: 2,
+                          ),
+                        )
+                      : null,
+                  focusedBorder: isError
+                      ? OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide: BorderSide(
+                            color: Theme.of(context).colorScheme.error,
+                            width: 2,
+                          ),
+                        )
+                      : null,
+                ),
+                onChanged: (_) {
+                  if (_errorText != null) {
+                    setState(() => _errorText = null);
+                  }
+                },
+                onSubmitted: (_) => _handleSave(),
               ),
-              autofocus: true,
-              decoration: InputDecoration(
-                labelText: l10n.heightCmLabel,
-                hintText: l10n.heightHint,
-                enabledBorder: isError
-                    ? OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        borderSide: BorderSide(
-                          color: Theme.of(context).colorScheme.error,
-                          width: 2,
-                        ),
-                      )
-                    : null,
-                focusedBorder: isError
-                    ? OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        borderSide: BorderSide(
-                          color: Theme.of(context).colorScheme.error,
-                          width: 2,
-                        ),
-                      )
-                    : null,
+              const SizedBox(height: 8),
+              Text(
+                isError
+                    ? _errorText!
+                    : l10n.heightRangeHint(
+                        AppSettingsState.minHeightCm.toStringAsFixed(0),
+                        AppSettingsState.maxHeightCm.toStringAsFixed(0),
+                      ),
+                style: TextStyle(
+                  color: isError
+                      ? Theme.of(context).colorScheme.error
+                      : Theme.of(context).colorScheme.onSurfaceVariant,
+                  fontSize: 12,
+                  fontWeight: isError ? FontWeight.w500 : FontWeight.w400,
+                ),
               ),
-              onChanged: (_) {
-                if (_errorText != null) {
-                  setState(() => _errorText = null);
-                }
-              },
-              onSubmitted: (_) => _handleSave(),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              isError
-                  ? _errorText!
-                  : l10n.heightRangeHint(
-                      AppSettingsState.minHeightCm.toStringAsFixed(0),
-                      AppSettingsState.maxHeightCm.toStringAsFixed(0),
-                    ),
-              style: TextStyle(
-                color: isError
-                    ? Theme.of(context).colorScheme.error
-                    : Theme.of(context).colorScheme.onSurfaceVariant,
-                fontSize: 12,
-                fontWeight: isError ? FontWeight.w500 : FontWeight.w400,
-              ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
       actions: [
