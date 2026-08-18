@@ -27,16 +27,23 @@ class StepWelcome extends StatelessWidget {
       child: Padding(
         padding: EdgeInsets.symmetric(
           horizontal: 16.0,
-          vertical: isLandscape ? 12.0 : 16.0,
+          vertical: isLandscape ? 10.0 : 12.0,
         ),
         child: Row(
           children: [
-            Icon(
-              icon,
-              size: isLandscape ? 24.0 : 28.0,
-              color: theme.colorScheme.primary,
+            Container(
+              padding: EdgeInsets.all(isLandscape ? 6.0 : 8.0),
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: theme.colorScheme.primaryContainer,
+              ),
+              child: Icon(
+                icon,
+                size: isLandscape ? 18.0 : 20.0,
+                color: theme.colorScheme.onPrimaryContainer,
+              ),
             ),
-            SizedBox(width: 12.0),
+            const SizedBox(width: 12.0),
             Expanded(
               child: Text(
                 title,

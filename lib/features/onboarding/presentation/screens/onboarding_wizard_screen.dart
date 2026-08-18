@@ -214,9 +214,9 @@ class _OnboardingWizardContentState extends State<_OnboardingWizardContent> {
 
   /// Builds the progress app bar shown on every step except Welcome.
   ///
-  /// Renders a "step X of Y" title (via [displayStep]/[displayTotalSteps]),
-  /// a linear [progress] indicator, and a back arrow that unfocuses the
-  /// keyboard and rewinds one step via [OnboardingStepRewound].
+  /// Renders a modern, centered [LinearProgressIndicator] progress pill,
+  /// with [Semantics] for screen readers, and a back arrow that unfocuses
+  /// the keyboard and rewinds one step via [OnboardingStepRewound].
   PreferredSizeWidget _buildAppBar(
     BuildContext context, {
     required bool isWelcomeStep,
@@ -226,6 +226,9 @@ class _OnboardingWizardContentState extends State<_OnboardingWizardContent> {
   }) {
     final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context);
+    final isLandscape =
+        MediaQuery.sizeOf(context).height < 500 ||
+        MediaQuery.orientationOf(context) == Orientation.landscape;
 
     if (isWelcomeStep) {
       return const PreferredSize(
@@ -235,13 +238,7 @@ class _OnboardingWizardContentState extends State<_OnboardingWizardContent> {
     }
 
     return AppBar(
-      title: Text(
-        l10n.stepOf(displayStep, displayTotalSteps),
-        style: theme.textTheme.titleMedium?.copyWith(
-          color: theme.colorScheme.onSurfaceVariant,
-        ),
-      ),
-      centerTitle: true,
+      toolbarHeight: isLandscape ? 40.0 : 48.0,
       leading: IconButton(
         icon: const Icon(Icons.arrow_back),
         tooltip: l10n.previousStepTooltip,
@@ -252,9 +249,19 @@ class _OnboardingWizardContentState extends State<_OnboardingWizardContent> {
       ),
       bottom: PreferredSize(
         preferredSize: const Size.fromHeight(4.0),
-        child: LinearProgressIndicator(
-          value: progress,
-          backgroundColor: theme.colorScheme.surfaceContainerHighest,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+          child: Semantics(
+            label: l10n.stepOf(displayStep, displayTotalSteps),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(4.0),
+              child: LinearProgressIndicator(
+                value: progress,
+                minHeight: 4.0,
+                backgroundColor: theme.colorScheme.surfaceContainerHighest,
+              ),
+            ),
+          ),
         ),
       ),
     );

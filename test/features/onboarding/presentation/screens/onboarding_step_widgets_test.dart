@@ -124,7 +124,7 @@ void main() {
         ),
       );
 
-      expect(find.text('Your Dream Goal (Optional)'), findsOneWidget);
+      expect(find.text('Your Dream Goal'), findsOneWidget);
       expect(find.byKey(const Key('target_weight_input')), findsOneWidget);
       expect(find.text('Next'), findsOneWidget);
     });

@@ -61,7 +61,7 @@ void main() {
     ) async {
       await tester.pumpWidget(buildSubject(onNext: () {}));
 
-      expect(find.text('Weight Notifications (Optional)'), findsWidgets);
+      expect(find.text('Weight Notifications'), findsWidgets);
       expect(
         find.text(
           'Build a healthy habit and let us remind you to log your weight every day.',
@@ -90,24 +90,24 @@ void main() {
     });
 
     testWidgets(
-      'toggling the switch enables notifications via the bloc and shows time tile',
+      'toggling the switch enables notifications via the bloc and enables time tile',
       (tester) async {
         await tester.pumpWidget(buildEnabledSubject());
 
         expect(settingsBloc.state.notificationsEnabled, isFalse);
-        expect(
+        final timeTileBefore = tester.widget<ListTile>(
           find.byKey(const Key('notification_step_time_tile')),
-          findsNothing,
         );
+        expect(timeTileBefore.enabled, isFalse);
 
         await tester.tap(find.byKey(const Key('notification_step_switch')));
         await tester.pumpAndSettle();
 
         expect(settingsBloc.state.notificationsEnabled, isTrue);
-        expect(
+        final timeTileAfter = tester.widget<ListTile>(
           find.byKey(const Key('notification_step_time_tile')),
-          findsOneWidget,
         );
+        expect(timeTileAfter.enabled, isTrue);
       },
     );
 

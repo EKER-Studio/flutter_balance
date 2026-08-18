@@ -114,7 +114,7 @@ void main() {
       await tester.pumpAndSettle();
 
       // Hide step indicator on the Welcome screen.
-      expect(find.text('Step 1 of 8'), findsNothing);
+      expect(find.bySemanticsLabel('Step 1 of 8'), findsNothing);
       expect(find.text('Welcome to Balance'), findsOneWidget);
       expect(find.byIcon(Icons.arrow_back), findsNothing);
     });
@@ -132,7 +132,7 @@ void main() {
       await tester.tap(find.text('Get Started'));
       await tester.pumpAndSettle();
 
-      expect(find.text('Step 1 of 7'), findsOneWidget);
+      expect(find.bySemanticsLabel('Step 1 of 7'), findsOneWidget);
       expect(find.text('Your Basic Details'), findsOneWidget);
 
       // Advance from Step 2 (Your Basic Details)
@@ -141,8 +141,8 @@ void main() {
       await tester.tap(find.text('Next'));
       await tester.pumpAndSettle();
 
-      expect(find.text('Step 2 of 7'), findsOneWidget);
-      expect(find.text('Your Past History (Optional)'), findsOneWidget);
+      expect(find.bySemanticsLabel('Step 2 of 7'), findsOneWidget);
+      expect(find.text('Your Past History'), findsOneWidget);
       expect(find.byIcon(Icons.arrow_back), findsOneWidget);
 
       // Sync height to WeightBloc to prevent heightNotSet errors
@@ -155,7 +155,7 @@ void main() {
       await tester.tap(find.byKey(const Key('csv_import_next_button')));
       await tester.pumpAndSettle();
 
-      expect(find.text('Step 3 of 7'), findsOneWidget);
+      expect(find.bySemanticsLabel('Step 3 of 7'), findsOneWidget);
       expect(find.text('Your Starting Point'), findsOneWidget);
 
       // Step 4 (Your Starting Point) -> Next
@@ -176,29 +176,29 @@ void main() {
         ),
       ).called(1);
 
-      expect(find.text('Step 4 of 7'), findsOneWidget);
-      expect(find.text('Your Dream Goal (Optional)'), findsOneWidget);
+      expect(find.bySemanticsLabel('Step 4 of 7'), findsOneWidget);
+      expect(find.text('Your Dream Goal'), findsOneWidget);
 
       // Step 5 (Target Weight) -> Next (Leave empty for optional target weight)
       await tester.tap(find.text('Next').first);
       await tester.pumpAndSettle();
 
-      expect(find.text('Step 5 of 7'), findsOneWidget);
-      expect(find.text('Weight Notifications (Optional)'), findsOneWidget);
+      expect(find.bySemanticsLabel('Step 5 of 7'), findsOneWidget);
+      expect(find.text('Weight Notifications'), findsOneWidget);
 
       // Step 6 (Daily Reminder) -> Next (Skip/Next reminder)
       await tester.tap(find.byKey(const Key('notification_step_next_button')));
       await tester.pumpAndSettle();
 
-      expect(find.text('Step 6 of 7'), findsOneWidget);
-      expect(find.text('Health Sync (Optional)'), findsOneWidget);
+      expect(find.bySemanticsLabel('Step 6 of 7'), findsOneWidget);
+      expect(find.text('Health Sync'), findsWidgets);
 
       // Step 7 (Health Sync) -> Next (skip by not enabling the switch)
       await tester.tap(find.byKey(const Key('health_sync_step_next_button')));
       await tester.pumpAndSettle();
 
-      expect(find.text('Step 7 of 7'), findsOneWidget);
-      expect(find.text('Biometric Protection (Optional)'), findsOneWidget);
+      expect(find.bySemanticsLabel('Step 7 of 7'), findsOneWidget);
+      expect(find.text('Biometric Protection'), findsWidgets);
 
       // Step 8 (Biometric Protection) -> Next (Skip/Next biometric lock)
       await tester.tap(find.byKey(const Key('biometric_step_next_button')));
@@ -217,21 +217,21 @@ void main() {
       // Advance to Step 4 (Your Starting Point)
       await pumpToStep4(tester);
 
-      expect(find.text('Step 3 of 7'), findsOneWidget);
+      expect(find.bySemanticsLabel('Step 3 of 7'), findsOneWidget);
       expect(find.text('Your Starting Point'), findsOneWidget);
 
       // Back to Step 3 (CSV Import)
       await tester.tap(find.byIcon(Icons.arrow_back));
       await tester.pumpAndSettle();
 
-      expect(find.text('Step 2 of 7'), findsOneWidget);
-      expect(find.text('Your Past History (Optional)'), findsOneWidget);
+      expect(find.bySemanticsLabel('Step 2 of 7'), findsOneWidget);
+      expect(find.text('Your Past History'), findsOneWidget);
 
       // Back to Step 2 (Your Basic Details)
       await tester.tap(find.byIcon(Icons.arrow_back));
       await tester.pumpAndSettle();
 
-      expect(find.text('Step 1 of 7'), findsOneWidget);
+      expect(find.bySemanticsLabel('Step 1 of 7'), findsOneWidget);
     });
 
     testWidgets('rewinds one step when the system back gesture is invoked on a '
@@ -247,7 +247,7 @@ void main() {
       await tester.binding.handlePopRoute();
       await tester.pumpAndSettle();
 
-      expect(find.text('Your Past History (Optional)'), findsOneWidget);
+      expect(find.text('Your Past History'), findsOneWidget);
       expect(find.text('Your Starting Point'), findsNothing);
     });
 
@@ -280,7 +280,7 @@ void main() {
         await tester.pumpAndSettle();
 
         // Step 4 (Your Starting Point) shows the latest entry pre-filled.
-        expect(find.text('Step 3 of 7'), findsOneWidget);
+        expect(find.bySemanticsLabel('Step 3 of 7'), findsOneWidget);
         final field = tester.widget<TextField>(
           find.byKey(const Key('initial_weight_input')),
         );
@@ -301,7 +301,7 @@ void main() {
             ),
           ),
         ).called(1);
-        expect(find.text('Step 4 of 7'), findsOneWidget);
+        expect(find.bySemanticsLabel('Step 4 of 7'), findsOneWidget);
       },
     );
 
@@ -319,7 +319,7 @@ void main() {
       await tester.pumpAndSettle();
 
       // Step 4 (Your Starting Point) starts blank with Next disabled.
-      expect(find.text('Step 3 of 7'), findsOneWidget);
+      expect(find.bySemanticsLabel('Step 3 of 7'), findsOneWidget);
       final field = tester.widget<TextField>(
         find.byKey(const Key('initial_weight_input')),
       );
@@ -365,7 +365,7 @@ void main() {
         await tester.pumpAndSettle();
 
         // Should not navigate to step 3
-        expect(find.text('Step 2 of 7'), findsNothing);
+        expect(find.bySemanticsLabel('Step 2 of 7'), findsNothing);
 
         // Should display the validation error text
         expect(
@@ -391,7 +391,7 @@ void main() {
       await tester.tap(find.text('Get Started'));
       await tester.pumpAndSettle();
 
-      expect(find.text('Step 1 of 6'), findsOneWidget);
+      expect(find.bySemanticsLabel('Step 1 of 6'), findsOneWidget);
       expect(find.text('Your Basic Details'), findsOneWidget);
 
       // Navigate to step 3 (CSV Import)
@@ -400,14 +400,14 @@ void main() {
       await tester.tap(find.text('Next'));
       await tester.pumpAndSettle();
 
-      expect(find.text('Step 2 of 6'), findsOneWidget);
-      expect(find.text('Your Past History (Optional)'), findsOneWidget);
+      expect(find.bySemanticsLabel('Step 2 of 6'), findsOneWidget);
+      expect(find.text('Your Past History'), findsOneWidget);
 
       // Skip the optional CSV import and advance to step 4 (Your Starting Point)
       await tester.tap(find.byKey(const Key('csv_import_next_button')));
       await tester.pumpAndSettle();
 
-      expect(find.text('Step 3 of 6'), findsOneWidget);
+      expect(find.bySemanticsLabel('Step 3 of 6'), findsOneWidget);
       expect(find.text('Your Starting Point'), findsOneWidget);
 
       // Log the initial weight and advance to step 5 (Target Weight)
@@ -419,22 +419,22 @@ void main() {
       await tester.tap(find.text('Next'));
       await tester.pumpAndSettle();
 
-      expect(find.text('Step 4 of 6'), findsOneWidget);
-      expect(find.text('Your Dream Goal (Optional)'), findsOneWidget);
+      expect(find.bySemanticsLabel('Step 4 of 6'), findsOneWidget);
+      expect(find.text('Your Dream Goal'), findsOneWidget);
 
       // Skip the optional target weight and advance to step 6 (Daily Reminder)
       await tester.tap(find.text('Next').first);
       await tester.pumpAndSettle();
 
-      expect(find.text('Step 5 of 6'), findsOneWidget);
-      expect(find.text('Weight Notifications (Optional)'), findsOneWidget);
+      expect(find.bySemanticsLabel('Step 5 of 6'), findsOneWidget);
+      expect(find.text('Weight Notifications'), findsOneWidget);
 
       // Advance from step 6 (Daily Reminder) to step 7 (Health Sync)
       await tester.tap(find.byKey(const Key('notification_step_next_button')));
       await tester.pumpAndSettle();
 
-      expect(find.text('Step 6 of 6'), findsOneWidget);
-      expect(find.text('Health Sync (Optional)'), findsOneWidget);
+      expect(find.bySemanticsLabel('Step 6 of 6'), findsOneWidget);
+      expect(find.text('Health Sync'), findsWidgets);
 
       // Step 7 (Health Sync) is the final step without biometrics: pressing
       // next without enabling the switch finishes the wizard.

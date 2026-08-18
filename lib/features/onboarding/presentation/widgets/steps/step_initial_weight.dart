@@ -236,19 +236,16 @@ class _StepInitialWeightState extends State<StepInitialWeight> {
               ),
             ),
             SizedBox(height: isLandscape ? 8.0 : 16.0),
-            Text(
-              l10n.measurementDateTimeLabel,
-              style: theme.textTheme.bodyMedium?.copyWith(
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            const SizedBox(height: 8.0),
-            ConstrainedBox(
-              constraints: const BoxConstraints(minHeight: 48.0),
-              child: OutlinedButton.icon(
-                onPressed: _pickDateTime,
-                icon: const ExcludeSemantics(child: Icon(Icons.calendar_today)),
-                label: Text(formattedDate),
+            InkWell(
+              key: const Key('initial_weight_date_picker'),
+              onTap: _pickDateTime,
+              borderRadius: BorderRadius.circular(8.0),
+              child: InputDecorator(
+                decoration: InputDecoration(
+                  labelText: l10n.measurementDateTimeLabel,
+                  suffixIcon: const Icon(Icons.calendar_today_outlined),
+                ),
+                child: Text(formattedDate, style: theme.textTheme.bodyLarge),
               ),
             ),
             SizedBox(height: isLandscape ? 16.0 : 24.0),

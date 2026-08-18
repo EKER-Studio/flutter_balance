@@ -79,14 +79,13 @@ void main() {
       await tester.pumpWidget(buildSubject(onNext: () {}));
       await tester.pumpAndSettle();
 
-      expect(find.text('Biometric Protection (Optional)'), findsWidgets);
+      expect(find.text('Biometric Protection'), findsNWidgets(2));
       expect(
         find.text(
           'Secure your measurements from prying eyes and unlock the app instantly using your face or fingerprint.',
         ),
         findsOneWidget,
       );
-      expect(find.text('Biometric Protection'), findsOneWidget);
       expect(find.text('Additional app security'), findsOneWidget);
       expect(find.byKey(const Key('biometric_step_switch')), findsOneWidget);
       expect(

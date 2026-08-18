@@ -65,7 +65,7 @@ void main() {
       await tester.pumpWidget(buildSubject(service: FakeCsvImportService()));
       await tester.pumpAndSettle();
 
-      expect(find.text('Your Past History (Optional)'), findsOneWidget);
+      expect(find.text('Your Past History'), findsOneWidget);
       expect(
         find.text(
           'Coming from another app? Import your CSV file to continue '

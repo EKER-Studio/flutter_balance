@@ -318,7 +318,7 @@ class _StepCsvImportState extends State<StepCsvImport> {
             child: FilledButton(
               key: const Key('csv_import_continue_button'),
               onPressed: () => widget.onFileImported(_entries),
-              child: Text(l10n.csvImportContinueButton),
+              child: Text(l10n.next),
             ),
           ),
         ],

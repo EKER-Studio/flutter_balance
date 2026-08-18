@@ -133,81 +133,46 @@ class _StepReminderNotificationState extends State<StepReminderNotification> {
                                 : theme.colorScheme.onSurfaceVariant,
                           ),
                         ),
-                      ],
-                    ),
-                  ),
-                ),
-                // Reminder time row, shown only while notifications are ON.
-                if (enabled) ...[
-                  SizedBox(height: isLandscape ? 8.0 : 16.0),
-                  Material(
-                    key: const Key('notification_step_time_tile'),
-                    color: theme.colorScheme.surfaceContainerLow,
-                    borderRadius: BorderRadius.circular(16.0),
-                    clipBehavior: Clip.antiAlias,
-                    child: Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(16.0),
-                        border: Border.all(
+                        Divider(
+                          height: 1.0,
+                          indent: 16.0,
+                          endIndent: 16.0,
                           color: theme.colorScheme.outlineVariant.withValues(
                             alpha: 0.3,
                           ),
                         ),
-                      ),
-                      child: InkWell(
-                        borderRadius: BorderRadius.circular(16.0),
-                        onTap: () => _handleTimePicker(context),
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 16.0,
-                            vertical: 16.0,
+                        ListTile(
+                          key: const Key('notification_step_time_tile'),
+                          enabled: enabled,
+                          leading: Icon(
+                            Icons.access_time,
+                            color: enabled
+                                ? theme.colorScheme.primary
+                                : theme.colorScheme.onSurfaceVariant.withValues(
+                                    alpha: 0.38,
+                                  ),
                           ),
-                          child: Row(
-                            children: [
-                              Icon(
-                                Icons.access_time,
-                                color: theme.colorScheme.primary,
-                              ),
-                              const SizedBox(width: 16.0),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Text(
-                                      l10n.reminderTime,
-                                      style: theme.textTheme.titleMedium
-                                          ?.copyWith(
-                                            fontWeight: FontWeight.w600,
-                                          ),
-                                    ),
-                                    const SizedBox(height: 4.0),
-                                    Text(
-                                      TimeOfDay(
-                                        hour: notificationTime.hour,
-                                        minute: notificationTime.minute,
-                                      ).format(context),
-                                      style: theme.textTheme.bodyMedium
-                                          ?.copyWith(
-                                            color: theme
-                                                .colorScheme
-                                                .onSurfaceVariant,
-                                          ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              Icon(
-                                Icons.chevron_right,
-                                color: theme.colorScheme.onSurfaceVariant,
-                              ),
-                            ],
+                          title: Text(
+                            l10n.reminderTime,
+                            style: theme.textTheme.titleMedium?.copyWith(
+                              fontWeight: FontWeight.w600,
+                            ),
                           ),
+                          subtitle: Text(
+                            TimeOfDay(
+                              hour: notificationTime.hour,
+                              minute: notificationTime.minute,
+                            ).format(context),
+                          ),
+                          trailing: const Icon(Icons.chevron_right),
+                          onTap: enabled
+                              ? () => _handleTimePicker(context)
+                              : null,
                         ),
-                      ),
+                      ],
                     ),
                   ),
-                ],
+                ),
                 if (permissionDenied) ...[
                   const SizedBox(height: 12.0),
                   Container(

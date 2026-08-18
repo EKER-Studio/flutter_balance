@@ -283,7 +283,7 @@ void main() {
         .widget<Text>(find.textContaining(', ').first)
         .data;
 
-    await tester.tap(find.byType(OutlinedButton));
+    await tester.tap(find.byKey(const Key('initial_weight_date_picker')));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Cancel'));
     await tester.pumpAndSettle();
@@ -303,7 +303,7 @@ void main() {
 
     await tester.pumpAndSettle();
 
-    await tester.tap(find.byType(OutlinedButton));
+    await tester.tap(find.byKey(const Key('initial_weight_date_picker')));
     await tester.pumpAndSettle();
     await tester.tap(find.text('OK'));
     await tester.pumpAndSettle();
@@ -330,12 +330,12 @@ void main() {
     await tester.pumpAndSettle();
 
     final labelFinder = find.descendant(
-      of: find.byType(OutlinedButton),
-      matching: find.byType(Text),
+      of: find.byKey(const Key('initial_weight_date_picker')),
+      matching: find.textContaining(', '),
     );
     final labelBefore = tester.widget<Text>(labelFinder).data;
 
-    await tester.tap(find.byType(OutlinedButton));
+    await tester.tap(find.byKey(const Key('initial_weight_date_picker')));
     await tester.pumpAndSettle();
     await tester.tap(find.text('1'));
     await tester.pumpAndSettle();
