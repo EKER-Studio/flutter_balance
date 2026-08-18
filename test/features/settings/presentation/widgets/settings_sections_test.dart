@@ -349,7 +349,8 @@ void main() {
         ),
       );
 
-      expect(find.text('Health Sync'), findsOneWidget);
+      expect(find.text('Health Connect'), findsOneWidget);
+      expect(find.text('Sync weight data with Health Connect'), findsOneWidget);
       final toggle = tester.widget<CustomSettingsToggle>(
         find.byType(CustomSettingsToggle),
       );
@@ -372,6 +373,7 @@ void main() {
         platform: TargetPlatform.iOS,
       );
 
+      expect(find.text('Apple Health'), findsOneWidget);
       expect(find.text('Unavailable on this device'), findsOneWidget);
       final toggle = tester.widget<CustomSettingsToggle>(
         find.byType(CustomSettingsToggle),
@@ -399,7 +401,7 @@ void main() {
       expect(find.text('Unavailable on this device'), findsOneWidget);
       expect(find.byType(CustomSettingsToggle), findsNothing);
 
-      await tester.tap(find.text('Health Sync'));
+      await tester.tap(find.text('Health Connect'));
       await tester.pump();
 
       expect(installTapped, isTrue);

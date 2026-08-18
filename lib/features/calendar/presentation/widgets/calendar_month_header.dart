@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:balance/l10n/app_localizations.dart';
+import 'package:balance/core/utils/string_capitalize.dart';
 
 /// Displays the focused month and year with previous/next navigation
 /// controls wired to [onPreviousMonth] and [onNextMonth].
@@ -28,7 +29,7 @@ class CalendarMonthHeader extends StatelessWidget {
     final l10n = AppLocalizations.of(context);
     final monthYearStr = DateFormat.yMMMM(
       Localizations.localeOf(context).toString(),
-    ).format(focusedMonth);
+    ).format(focusedMonth).capitalizeFirst();
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 8),

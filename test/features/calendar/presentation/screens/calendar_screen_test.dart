@@ -357,18 +357,18 @@ void main() {
 
 String _monthName(DateTime date) {
   const months = [
-    'styczeń',
-    'luty',
-    'marzec',
-    'kwiecień',
-    'maj',
-    'czerwiec',
-    'lipiec',
-    'sierpień',
-    'wrzesień',
-    'październik',
-    'listopad',
-    'grudzień',
+    'Styczeń',
+    'Luty',
+    'Marzec',
+    'Kwiecień',
+    'Maj',
+    'Czerwiec',
+    'Lipiec',
+    'Sierpień',
+    'Wrzesień',
+    'Październik',
+    'Listopad',
+    'Grudzień',
   ];
   return months[date.month - 1];
 }

@@ -437,10 +437,13 @@ void main() {
   });
 
   group('Health sync', () {
-    Finder healthSyncSwitch() => find.descendant(
-      of: find.widgetWithText(ListTile, 'Health Sync'),
-      matching: find.byType(Switch),
-    );
+    const healthServiceTitle = 'Health Connect';
+
+    Finder healthSyncSwitch([String title = healthServiceTitle]) =>
+        find.descendant(
+          of: find.widgetWithText(ListTile, title),
+          matching: find.byType(Switch),
+        );
 
     testWidgets('renders the health sync switch enabled by default', (
       tester,
@@ -448,11 +451,8 @@ void main() {
       await tester.pumpWidget(createTestWidget());
       await tester.pump();
 
-      expect(find.text('Health Sync'), findsOneWidget);
-      expect(
-        find.text('Sync weight data with Apple Health / Health Connect'),
-        findsOneWidget,
-      );
+      expect(find.text('Health Connect'), findsOneWidget);
+      expect(find.text('Sync weight data with Health Connect'), findsOneWidget);
       expect(tester.widget<Switch>(healthSyncSwitch()).value, isFalse);
       expect(tester.widget<Switch>(healthSyncSwitch()).onChanged, isNotNull);
     });
@@ -607,7 +607,10 @@ void main() {
           await tester.pumpAndSettle();
 
           expect(find.text('Unavailable on this device'), findsOneWidget);
-          expect(tester.widget<Switch>(healthSyncSwitch()).onChanged, isNull);
+          expect(
+            tester.widget<Switch>(healthSyncSwitch('Apple Health')).onChanged,
+            isNull,
+          );
           verifyNever(() => healthService.requestPermissions());
         } finally {
           debugDefaultTargetPlatformOverride = null;
@@ -637,15 +640,15 @@ void main() {
           expect(find.text('Unavailable on this device'), findsOneWidget);
           expect(
             find.descendant(
-              of: find.widgetWithText(ListTile, 'Health Sync'),
+              of: find.widgetWithText(ListTile, 'Health Connect'),
               matching: find.byType(Switch),
             ),
             findsNothing,
           );
 
-          await tester.ensureVisible(find.text('Health Sync'));
+          await tester.ensureVisible(find.text('Health Connect'));
           await tester.pumpAndSettle();
-          await tester.tap(find.text('Health Sync'));
+          await tester.tap(find.text('Health Connect'));
           await tester.pumpAndSettle();
 
           expect(find.text('Health Connect App Required'), findsOneWidget);
@@ -903,9 +906,9 @@ void main() {
         await tester.pumpWidget(createTestWidget());
         await tester.pumpAndSettle();
 
-        await tester.ensureVisible(find.text('Health Sync'));
+        await tester.ensureVisible(find.text('Health Connect'));
         await tester.pumpAndSettle();
-        await tester.tap(find.text('Health Sync'));
+        await tester.tap(find.text('Health Connect'));
         await tester.pumpAndSettle();
         expect(find.text('Health Connect App Required'), findsOneWidget);
 
@@ -948,7 +951,7 @@ void main() {
       ).thenAnswer((_) async => true);
       when(() => healthService.hasPermissions()).thenAnswer((_) async => true);
       final syncSwitch = find.descendant(
-        of: find.widgetWithText(ListTile, 'Health Sync'),
+        of: find.widgetWithText(ListTile, 'Health Connect'),
         matching: find.byType(Switch),
       );
 

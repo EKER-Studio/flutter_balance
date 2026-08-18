@@ -1,7 +1,7 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:balance/l10n/app_localizations.dart';
+import 'package:balance/core/presentation/utils/health_service_platform_localizer.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_bloc.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_event.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_state.dart';
@@ -43,6 +43,7 @@ class _StepHealthSyncState extends State<StepHealthSync> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context);
+    final platform = Theme.of(context).platform;
 
     final isLandscape =
         MediaQuery.sizeOf(context).height < 500 ||
@@ -93,7 +94,7 @@ class _StepHealthSyncState extends State<StepHealthSync> {
                     ),
                     SizedBox(height: isLandscape ? 4.0 : 8.0),
                     Text(
-                      Platform.isIOS
+                      platform == TargetPlatform.iOS
                           ? l10n.healthSyncDescriptionIOS
                           : l10n.healthSyncDescriptionAndroid,
                       style: theme.textTheme.bodyMedium?.copyWith(
@@ -119,14 +120,14 @@ class _StepHealthSyncState extends State<StepHealthSync> {
                           value: enabled,
                           onChanged: _handleToggle,
                           title: Text(
-                            l10n.healthSync,
+                            platform.healthServiceName(l10n),
                             style: theme.textTheme.titleMedium?.copyWith(
                               fontWeight: FontWeight.w600,
                             ),
                           ),
                           subtitle: Text(
                             apiAvailable
-                                ? (Platform.isIOS
+                                ? (platform == TargetPlatform.iOS
                                       ? l10n.healthSyncTileSubtitleIOS
                                       : l10n.healthSyncTileSubtitleAndroid)
                                 : l10n.healthSyncUnavailable,

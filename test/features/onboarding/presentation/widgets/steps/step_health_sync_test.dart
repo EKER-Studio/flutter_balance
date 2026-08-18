@@ -76,7 +76,8 @@ void main() {
 
       await tester.pumpWidget(buildSubject(onNext: () {}, bloc: bloc));
 
-      expect(find.text('Health Sync'), findsNWidgets(2));
+      expect(find.text('Health Sync'), findsOneWidget);
+      expect(find.text('Health Connect'), findsOneWidget);
       expect(
         find.text(
           'Save new measurements and read history from other fitness apps to keep all your data in one place.',

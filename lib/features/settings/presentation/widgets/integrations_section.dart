@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:balance/l10n/app_localizations.dart';
+import 'package:balance/core/presentation/utils/health_service_platform_localizer.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_state.dart';
 import 'custom_settings_tile.dart';
 import 'custom_settings_toggle.dart';
@@ -35,7 +36,8 @@ class IntegrationsSection extends StatelessWidget {
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
     final apiAvailable = state.isHealthApiAvailable;
-    final isAndroid = Theme.of(context).platform == TargetPlatform.android;
+    final platform = Theme.of(context).platform;
+    final isAndroid = platform == TargetPlatform.android;
     final showInstallAction = !apiAvailable && isAndroid;
 
     return Card(
@@ -46,16 +48,16 @@ class IntegrationsSection extends StatelessWidget {
       child: showInstallAction
           ? CustomSettingsTile(
               icon: Icons.monitor_heart_outlined,
-              title: l10n.healthSync,
+              title: platform.healthServiceName(l10n),
               subtitle: l10n.healthSyncUnavailable,
               sectionLabel: l10n.integrationsSection,
               onTap: onInstallHealthConnect,
             )
           : CustomSettingsToggle(
               icon: Icons.monitor_heart_outlined,
-              title: l10n.healthSync,
+              title: platform.healthServiceName(l10n),
               subtitle: apiAvailable
-                  ? l10n.healthSyncDesc
+                  ? platform.healthServiceSyncDescription(l10n)
                   : l10n.healthSyncUnavailable,
               sectionLabel: l10n.integrationsSection,
               value: state.isHealthSyncEnabled,
