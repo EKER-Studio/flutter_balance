@@ -106,6 +106,8 @@ class _MainNavigationScreenState extends State<MainNavigationScreen>
                   selectedIndex: _currentIndex,
                   onDestinationSelected: _onTabSelected,
                   labelType: NavigationRailLabelType.all,
+                  groupAlignment: 0.0, // Center the items vertically
+                  minWidth: 88.0, // Make it slightly wider to breathe
                   backgroundColor: colorScheme.surfaceContainer,
                   destinations: [
                     NavigationRailDestination(
