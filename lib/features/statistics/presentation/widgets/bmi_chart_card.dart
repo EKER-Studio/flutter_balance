@@ -4,6 +4,7 @@ import 'dart:math' as math;
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:balance/core/presentation/widgets/pill_segmented_control.dart';
 import 'package:balance/features/settings/presentation/bloc/bmi_category.dart';
 import 'package:balance/features/weight/domain/entities/weight_entry.dart';
 import 'package:balance/features/weight/domain/time_period.dart';
@@ -436,51 +437,24 @@ class _BmiPeriodFilters extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final periods = [TimePeriod.week, TimePeriod.month, TimePeriod.year];
+    const periods = [TimePeriod.week, TimePeriod.month, TimePeriod.year];
 
-    return Center(
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: periods.asMap().entries.map((entry) {
-          final index = entry.key;
-          final candidate = entry.value;
-          final isSelected = period == candidate;
-          final label = switch (candidate) {
-            TimePeriod.week => l10n.week,
-            TimePeriod.month => l10n.month,
-            TimePeriod.year => l10n.year,
-            TimePeriod.all => l10n.all,
-          };
-
-          return Padding(
-            padding: EdgeInsets.only(left: index == 0 ? 0 : 8),
-            child: TextButton(
-              onPressed: () => onPeriodChanged(candidate),
-              style: TextButton.styleFrom(
-                backgroundColor: isSelected ? const Color(0xFFA8C7FA) : null,
-                foregroundColor: isSelected
-                    ? const Color(0xFF00325B)
-                    : Theme.of(context).colorScheme.onSurfaceVariant,
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 8,
-                ),
-                minimumSize: Size.zero,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-              ),
-              child: Text(
-                label,
-                style: const TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ),
-          );
-        }).toList(),
-      ),
+    return PillSegmentedControl<TimePeriod>(
+      selectedValue: period,
+      onValueChanged: onPeriodChanged,
+      expand: false,
+      segments: [
+        for (final candidate in periods)
+          PillSegment(
+            value: candidate,
+            label: switch (candidate) {
+              TimePeriod.week => l10n.week,
+              TimePeriod.month => l10n.month,
+              TimePeriod.year => l10n.year,
+              TimePeriod.all => l10n.all,
+            },
+          ),
+      ],
     );
   }
 }

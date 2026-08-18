@@ -17,6 +17,7 @@ import 'package:balance/core/presentation/utils/app_snackbar.dart';
 import 'package:balance/core/presentation/utils/app_theme_mode_localizer.dart';
 import 'package:balance/core/presentation/utils/picker_helpers.dart';
 import 'package:balance/core/presentation/widgets/app_top_bar.dart';
+import 'package:balance/core/presentation/widgets/pill_segmented_control.dart';
 import 'package:balance/core/utils/crash_log.dart';
 import 'package:balance/core/utils/unit_converter.dart';
 import 'package:balance/l10n/app_localizations.dart';
@@ -579,28 +580,19 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final l10n = AppLocalizations.of(dialogContext);
     showDialog(
       context: dialogContext,
-      builder: (ctx) => SimpleDialog(
+      builder: (ctx) => AlertDialog(
         title: Text(l10n.measurementUnit),
-        children: [
-          RadioGroup<MeasurementUnit>(
-            groupValue: state.measurementUnit,
-            onChanged: (value) {
-              if (value == null) return;
-              ctx.read<AppSettingsBloc>().add(UpdateMeasurementUnit(value));
-              Navigator.pop(ctx);
-            },
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                for (final unit in MeasurementUnit.values)
-                  RadioListTile<MeasurementUnit>(
-                    title: Text(_unitLabel(unit, l10n)),
-                    value: unit,
-                  ),
-              ],
-            ),
-          ),
-        ],
+        content: PillSegmentedControl<MeasurementUnit>(
+          selectedValue: state.measurementUnit,
+          onValueChanged: (value) {
+            ctx.read<AppSettingsBloc>().add(UpdateMeasurementUnit(value));
+            Navigator.pop(ctx);
+          },
+          segments: [
+            for (final unit in MeasurementUnit.values)
+              PillSegment(value: unit, label: _unitLabel(unit, l10n)),
+          ],
+        ),
       ),
     );
   }

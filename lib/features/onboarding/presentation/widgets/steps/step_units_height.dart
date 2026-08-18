@@ -3,6 +3,7 @@ import 'package:balance/core/utils/unit_converter.dart';
 import 'package:balance/l10n/app_localizations.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_state.dart';
 import 'package:balance/core/presentation/core/clamped_layout.dart';
+import 'package:balance/core/presentation/widgets/pill_segmented_control.dart';
 import 'package:flutter/material.dart';
 
 /// Form widget for Step 1 of the onboarding wizard: choosing a unit system
@@ -194,6 +195,28 @@ class _StepUnitsHeightState extends State<StepUnitsHeight> {
     }
   }
 
+  /// Builds the custom pill-style unit selector matching the charts filter.
+  ///
+  /// @param l10n The localized app resources.
+  Widget _buildUnitSelector(AppLocalizations l10n) {
+    return PillSegmentedControl<MeasurementUnit>(
+      selectedValue: _selectedUnit,
+      onValueChanged: _onUnitChanged,
+      segments: [
+        PillSegment(
+          value: MeasurementUnit.metric,
+          label: l10n.metricUnitOption,
+          key: const Key('unit_selector_metric'),
+        ),
+        PillSegment(
+          value: MeasurementUnit.imperial,
+          label: l10n.imperialUnitOption,
+          key: const Key('unit_selector_imperial'),
+        ),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -227,26 +250,7 @@ class _StepUnitsHeightState extends State<StepUnitsHeight> {
               ),
             ),
             SizedBox(height: isLandscape ? 8.0 : 20.0),
-            SegmentedButton<MeasurementUnit>(
-              segments: [
-                ButtonSegment<MeasurementUnit>(
-                  value: MeasurementUnit.metric,
-                  label: Text(l10n.metricUnitOption),
-                  icon: const ExcludeSemantics(child: Icon(Icons.straighten)),
-                ),
-                ButtonSegment<MeasurementUnit>(
-                  value: MeasurementUnit.imperial,
-                  label: Text(l10n.imperialUnitOption),
-                  icon: const ExcludeSemantics(child: Icon(Icons.square_foot)),
-                ),
-              ],
-              selected: {_selectedUnit},
-              onSelectionChanged: (selection) {
-                if (selection.isNotEmpty) {
-                  _onUnitChanged(selection.first);
-                }
-              },
-            ),
+            _buildUnitSelector(l10n),
             SizedBox(height: isLandscape ? 8.0 : 20.0),
             if (_selectedUnit == MeasurementUnit.metric) ...[
               TextField(

@@ -197,7 +197,7 @@ void main() {
       );
       await tester.pump(const Duration(milliseconds: 300));
 
-      await tester.tap(find.text('Metric (kg / cm)'));
+      await tester.tap(find.text('Metric (kg, cm)'));
       await tester.pumpAndSettle();
 
       expect(find.byKey(const Key('height_cm_input')), findsOneWidget);
@@ -226,7 +226,7 @@ void main() {
         find.byKey(const Key('height_cm_input')),
         'not a number',
       );
-      await tester.tap(find.text('Imperial (lbs / ft-in)'));
+      await tester.tap(find.text('Imperial (lbs, ft-in)'));
       await tester.pumpAndSettle();
 
       final feet = tester.widget<TextField>(

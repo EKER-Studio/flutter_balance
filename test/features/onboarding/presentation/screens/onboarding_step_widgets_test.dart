@@ -16,7 +16,7 @@ void main() {
   }
 
   group('StepUnitsHeight Widget Tests', () {
-    testWidgets('renders unit segmented button and metric height input', (
+    testWidgets('renders unit selector and metric height input', (
       tester,
     ) async {
       await tester.pumpWidget(
@@ -33,8 +33,8 @@ void main() {
       await tester.pump(const Duration(milliseconds: 300));
 
       expect(find.text('Your Basic Details'), findsOneWidget);
-      expect(find.text('Metric (kg / cm)'), findsOneWidget);
-      expect(find.text('Imperial (lbs / ft-in)'), findsOneWidget);
+      expect(find.text('Metric (kg, cm)'), findsOneWidget);
+      expect(find.text('Imperial (lbs, ft-in)'), findsOneWidget);
       expect(find.byKey(const Key('height_cm_input')), findsOneWidget);
     });
 
@@ -54,7 +54,7 @@ void main() {
       // Flush the delayed initial-focus request scheduled in initState.
       await tester.pump(const Duration(milliseconds: 300));
 
-      await tester.tap(find.text('Imperial (lbs / ft-in)'));
+      await tester.tap(find.text('Imperial (lbs, ft-in)'));
       await tester.pumpAndSettle();
 
       expect(find.byKey(const Key('height_feet_input')), findsOneWidget);

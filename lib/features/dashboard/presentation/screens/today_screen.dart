@@ -23,6 +23,7 @@ import 'package:balance/features/settings/presentation/bloc/app_settings_bloc.da
 import 'package:balance/features/settings/presentation/bloc/app_settings_state.dart';
 import 'package:balance/core/presentation/core/clamped_layout.dart';
 import 'package:balance/core/presentation/widgets/app_top_bar.dart';
+import 'package:balance/core/presentation/widgets/pill_segmented_control.dart';
 import 'package:balance/core/presentation/widgets/state_message_card.dart';
 
 /// A screen displaying the daily summary, BMI, goal progress, and weight trend.
@@ -458,24 +459,16 @@ class _ChartPeriodFilters extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final periods = [TimePeriod.week, TimePeriod.month, TimePeriod.year];
+    const periods = [TimePeriod.week, TimePeriod.month, TimePeriod.year];
 
-    return Center(
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: periods.asMap().entries.map((entry) {
-          final index = entry.key;
-          final candidate = entry.value;
-          return Padding(
-            padding: EdgeInsets.only(left: index == 0 ? 0 : 8),
-            child: _PeriodButton(
-              label: _periodLabel(candidate, l10n),
-              selected: period == candidate,
-              onPressed: () => onPeriodChanged(candidate),
-            ),
-          );
-        }).toList(),
-      ),
+    return PillSegmentedControl<TimePeriod>(
+      selectedValue: period,
+      onValueChanged: onPeriodChanged,
+      expand: false,
+      segments: [
+        for (final p in periods)
+          PillSegment(value: p, label: _periodLabel(p, l10n)),
+      ],
     );
   }
 
@@ -486,47 +479,6 @@ class _ChartPeriodFilters extends StatelessWidget {
       TimePeriod.year => l10n.year,
       TimePeriod.all => l10n.all,
     };
-  }
-}
-
-/// A standalone button for selecting one chart period.
-class _PeriodButton extends StatelessWidget {
-  /// The localized period label.
-  final String label;
-
-  /// Whether this period is active.
-  final bool selected;
-
-  /// Invoked when the button is pressed.
-  final VoidCallback onPressed;
-
-  /// Creates a [_PeriodButton].
-  const _PeriodButton({
-    required this.label,
-    required this.selected,
-    required this.onPressed,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-
-    return TextButton(
-      onPressed: onPressed,
-      style: TextButton.styleFrom(
-        backgroundColor: selected ? const Color(0xFFA8C7FA) : null,
-        foregroundColor: selected
-            ? const Color(0xFF00325B)
-            : colorScheme.onSurfaceVariant,
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        minimumSize: Size.zero,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      ),
-      child: Text(
-        label,
-        style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
-      ),
-    );
   }
 }
 

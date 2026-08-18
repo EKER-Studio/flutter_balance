@@ -559,11 +559,8 @@ void main() {
     when(() => weightBloc.add(any())).thenAnswer((invocation) {
       dispatched = invocation.positionalArguments.first as WeightEvent;
     });
-    final yearButton = tester.widget<TextButton>(
-      find.ancestor(of: find.text('Year'), matching: find.byType(TextButton)),
-    );
-    yearButton.onPressed!();
-    await tester.pump();
+    await tester.tap(find.text('Year'));
+    await tester.pumpAndSettle();
 
     expect(dispatched, isA<ChangeChartFilter>());
     expect((dispatched as ChangeChartFilter).period, TimePeriod.year);
