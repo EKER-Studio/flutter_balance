@@ -35,96 +35,113 @@ class CsvImportPreviewDialog extends StatelessWidget {
     final textTheme = Theme.of(context).textTheme;
     final colorScheme = Theme.of(context).colorScheme;
 
+    final isLandscapePhone =
+        MediaQuery.of(context).orientation == Orientation.landscape &&
+        MediaQuery.sizeOf(context).height < 500;
+
     final dateFormat = DateFormat.yMMMd(
       Localizations.localeOf(context).languageCode,
     );
 
+    final String? dateRangeText;
+    if (analysis.earliestDate != null && analysis.latestDate != null) {
+      final start = dateFormat.format(analysis.earliestDate!);
+      final end = dateFormat.format(analysis.latestDate!);
+      dateRangeText = start == end
+          ? start
+          : l10n.csvPreviewDateRange(start, end);
+    } else {
+      dateRangeText = null;
+    }
+
     return AlertDialog(
-      icon: Icon(
-        Icons.analytics_outlined,
-        color: colorScheme.primary,
-        size: 32,
+      scrollable: true,
+      insetPadding: EdgeInsets.symmetric(
+        horizontal: isLandscapePhone ? 32 : 24,
+        vertical: isLandscapePhone ? 8 : 24,
       ),
+      icon: isLandscapePhone
+          ? null
+          : Icon(
+              Icons.analytics_outlined,
+              color: colorScheme.primary,
+              size: 32,
+            ),
       title: Text(l10n.csvPreviewTitle, textAlign: TextAlign.center),
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          // Valid Entries Count
-          Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: colorScheme.primaryContainer.withAlpha(80),
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: colorScheme.primaryContainer),
-            ),
-            child: Column(
-              children: [
-                Text(
-                  analysis.validEntries.length.toString(),
-                  style: textTheme.headlineMedium?.copyWith(
-                    color: colorScheme.onPrimaryContainer,
-                    fontWeight: FontWeight.bold,
+      contentPadding: EdgeInsets.fromLTRB(
+        24,
+        isLandscapePhone ? 8 : 16,
+        24,
+        isLandscapePhone ? 12 : 20,
+      ),
+      content: SizedBox(
+        width: 320,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            // Valid Entries Count & Date Range Card
+            Container(
+              padding: EdgeInsets.symmetric(
+                vertical: isLandscapePhone ? 10 : 16,
+                horizontal: 16,
+              ),
+              decoration: BoxDecoration(
+                color: colorScheme.primaryContainer.withAlpha(80),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: colorScheme.primaryContainer),
+              ),
+              child: Column(
+                children: [
+                  Text(
+                    analysis.validEntries.length.toString(),
+                    style:
+                        (isLandscapePhone
+                                ? textTheme.headlineSmall
+                                : textTheme.headlineMedium)
+                            ?.copyWith(
+                              color: colorScheme.onPrimaryContainer,
+                              fontWeight: FontWeight.bold,
+                            ),
                   ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  l10n.csvPreviewFoundCount(analysis.validEntries.length),
-                  style: textTheme.bodyMedium?.copyWith(
-                    color: colorScheme.onSurfaceVariant,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 16),
-
-          // Date Range
-          if (analysis.earliestDate != null && analysis.latestDate != null)
-            Row(
-              children: [
-                Icon(
-                  Icons.date_range,
-                  size: 20,
-                  color: colorScheme.onSurfaceVariant,
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Text(
-                    l10n.csvPreviewDateRange(
-                      dateFormat.format(analysis.earliestDate!),
-                      dateFormat.format(analysis.latestDate!),
+                  if (dateRangeText != null) ...[
+                    const SizedBox(height: 4),
+                    Text(
+                      dateRangeText,
+                      style: textTheme.bodyMedium?.copyWith(
+                        color: colorScheme.onSurfaceVariant,
+                      ),
+                      textAlign: TextAlign.center,
                     ),
-                    style: textTheme.bodyMedium,
-                  ),
-                ),
-              ],
+                  ],
+                ],
+              ),
             ),
 
-          // Skipped Rows
-          if (analysis.skippedRowCount > 0) ...[
-            const SizedBox(height: 12),
-            Row(
-              children: [
-                Icon(
-                  Icons.warning_amber_rounded,
-                  size: 20,
-                  color: colorScheme.error,
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Text(
-                    l10n.csvPreviewSkippedRows(analysis.skippedRowCount),
-                    style: textTheme.bodyMedium?.copyWith(
-                      color: colorScheme.error,
+            // Skipped Rows
+            if (analysis.skippedRowCount > 0) ...[
+              SizedBox(height: isLandscapePhone ? 8 : 12),
+              Row(
+                children: [
+                  Icon(
+                    Icons.warning_amber_rounded,
+                    size: 20,
+                    color: colorScheme.error,
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      l10n.csvPreviewSkippedRows(analysis.skippedRowCount),
+                      style: textTheme.bodyMedium?.copyWith(
+                        color: colorScheme.error,
+                      ),
                     ),
                   ),
-                ),
-              ],
-            ),
+                ],
+              ),
+            ],
           ],
-        ],
+        ),
       ),
       actionsAlignment: MainAxisAlignment.spaceBetween,
       actions: [

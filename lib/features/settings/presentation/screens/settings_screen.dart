@@ -615,12 +615,30 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final l10n = AppLocalizations.of(context);
     final errorColor = Theme.of(context).colorScheme.error;
 
+    final isLandscapePhone =
+        MediaQuery.of(context).orientation == Orientation.landscape &&
+        MediaQuery.sizeOf(context).height < 500;
+
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        icon: Icon(Icons.delete_forever_outlined, size: 28, color: errorColor),
+        scrollable: true,
+        insetPadding: EdgeInsets.symmetric(
+          horizontal: isLandscapePhone ? 32 : 24,
+          vertical: isLandscapePhone ? 8 : 24,
+        ),
+        icon: isLandscapePhone
+            ? null
+            : Icon(Icons.delete_forever_outlined, size: 28, color: errorColor),
         title: Text(l10n.wipeData),
+        contentPadding: EdgeInsets.fromLTRB(
+          24,
+          isLandscapePhone ? 8 : 16,
+          24,
+          isLandscapePhone ? 12 : 20,
+        ),
         content: Text(l10n.wipeDataContent),
+        actionsAlignment: MainAxisAlignment.end,
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
