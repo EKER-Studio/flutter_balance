@@ -368,7 +368,7 @@ class NativeHealthService implements HealthService {
         final value = (point.value as NumericHealthValue).numericValue
             .toDouble();
         if (value >= _minWeightKg && value <= _maxWeightKg) {
-          // Deduplikacja punktów o identycznej dacie (z dokładnością do minuty) i wartości
+          // Deduplicate data points sharing identical timestamps (down to the minute) and values.
           final key =
               '${point.dateFrom.year}-${point.dateFrom.month}-${point.dateFrom.day}_'
               '${point.dateFrom.hour}:${point.dateFrom.minute}_'
