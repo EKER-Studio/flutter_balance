@@ -13,6 +13,7 @@ import 'package:balance/features/weight/presentation/bloc/weight_state.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_bloc.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_event.dart';
 import 'package:balance/core/integrations/health/health_service.dart';
+import 'package:balance/core/utils/analytics.dart';
 import 'package:balance/core/utils/crash_reporter.dart';
 
 /// A BLoC managing weight entries and user height.
@@ -440,6 +441,7 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
     Emitter<WeightState> emit,
   ) async {
     if (!_isHealthSyncEnabled || _settingsBloc == null) return;
+    AppAnalytics.logHealthSyncStarted();
     try {
       final end = DateTime.now();
       final lastSync = _settingsBloc.state.lastHealthSyncTimestamp;
@@ -485,10 +487,15 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
       }
 
       _settingsBloc.add(UpdateLastHealthSyncTimestamp(DateTime.now().toUtc()));
+      AppAnalytics.logHealthSyncSuccess(
+        remoteCount: remoteEntries.length,
+        pushedLocalCount: missingRemoteEntries.length,
+      );
 
       // Note: No need to explicitly emit here if we rely on watchAllEntries to emit WeightLoaded.
       // But we will emit to be safe in case of no changes, just to complete the bloc cycle cleanly if we wanted.
     } catch (e, stack) {
+      AppAnalytics.logHealthSyncFailed(e.toString());
       AppCrashReporter.recordError(
         e,
         stack,

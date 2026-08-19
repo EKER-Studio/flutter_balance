@@ -174,6 +174,11 @@ class _AddWeightDialogState extends State<AddWeightDialog> {
               ),
               maxLines: 1,
               textInputAction: TextInputAction.done,
+              onChanged: (val) {
+                AppAnalytics.logDialogAddWeightNoteChanged(
+                  val.trim().isNotEmpty,
+                );
+              },
               onSubmitted: (_) => _onSave(),
             ),
           ],

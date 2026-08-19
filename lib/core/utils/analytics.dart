@@ -1467,6 +1467,81 @@ class AppAnalytics {
     );
   }
 
+  /// Logs scheduling a daily reminder notification in the system service.
+  ///
+  /// @param hour Scheduled reminder hour.
+  /// @param minute Scheduled reminder minute.
+  /// @param isExact Flag indicating whether the alarm was scheduled with exact timing.
+  static Future<void> logNotificationScheduled({
+    required int hour,
+    required int minute,
+    required bool isExact,
+  }) {
+    return logEvent(
+      name: 'notification_scheduled',
+      parameters: {'hour': hour, 'minute': minute, 'is_exact': isExact},
+    );
+  }
+
+  /// Logs cancelling the active daily reminder notification.
+  static Future<void> logNotificationCancelled() {
+    return logEvent(name: 'notification_cancelled');
+  }
+
+  /// Logs tapping the inexact reminder notification hint in settings.
+  static Future<void> logSettingsInexactNotificationHintTapped() {
+    return logEvent(name: 'settings_inexact_notification_hint_tapped');
+  }
+
+  /// Logs the start of an Apple Health or Google Health Connect sync cycle.
+  static Future<void> logHealthSyncStarted() {
+    return logEvent(name: 'health_sync_started');
+  }
+
+  /// Logs successful completion of a health data synchronization cycle.
+  ///
+  /// @param remoteCount Number of entries pulled from health platform.
+  /// @param pushedLocalCount Number of local entries mirrored to health platform.
+  static Future<void> logHealthSyncSuccess({
+    required int remoteCount,
+    required int pushedLocalCount,
+  }) {
+    return logEvent(
+      name: 'health_sync_success',
+      parameters: {
+        'remote_count': remoteCount,
+        'pushed_local_count': pushedLocalCount,
+      },
+    );
+  }
+
+  /// Logs an error during health data synchronization.
+  ///
+  /// @param error The failure description.
+  static Future<void> logHealthSyncFailed(String error) {
+    return logEvent(name: 'health_sync_failed', parameters: {'error': error});
+  }
+
+  /// Logs automatic biometric app locking when the application transitions to background.
+  static Future<void> logBiometricBackgroundLocked() {
+    return logEvent(name: 'biometric_background_locked');
+  }
+
+  /// Logs typing in the AddWeight dialog note field.
+  ///
+  /// @param hasNote Flag declaring if the note text field currently contains text.
+  static Future<void> logDialogAddWeightNoteChanged(bool hasNote) {
+    return logEvent(
+      name: 'dialog_add_weight_note_changed',
+      parameters: {'has_note': hasNote},
+    );
+  }
+
+  /// Logs displaying the startup splash screen.
+  static Future<void> logSplashScreenViewed() {
+    return logScreenView(screenName: 'splash_screen');
+  }
+
   /// Logs opening the BMI legend informational dialog.
   static Future<void> logDialogBmiLegendOpened() {
     return logEvent(name: 'dialog_bmi_legend_opened');

@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:balance/core/utils/analytics.dart';
 import 'package:balance/core/utils/crash_reporter.dart';
 
 import 'package:balance/core/integrations/biometrics/biometric_service.dart';
@@ -108,6 +109,7 @@ class BiometricLockObserver with WidgetsBindingObserver {
     // We do NOT call authenticate() here, because BiometricShieldScreen will
     // automatically mount when isLocked becomes true, and it handles the auth prompt
     // when the app resumes.
+    AppAnalytics.logBiometricBackgroundLocked();
     onLockStateChanged(true);
   }
 

@@ -268,6 +268,22 @@ void main() {
         await AppAnalytics.logStatisticsHabitMetricTapped('streak');
         await AppAnalytics.logStatisticsWeightDetailRowTapped('highest');
         await AppAnalytics.logSettingsAppVersionTapped('1.0.0');
+        await AppAnalytics.logNotificationScheduled(
+          hour: 8,
+          minute: 30,
+          isExact: true,
+        );
+        await AppAnalytics.logNotificationCancelled();
+        await AppAnalytics.logSettingsInexactNotificationHintTapped();
+        await AppAnalytics.logHealthSyncStarted();
+        await AppAnalytics.logHealthSyncSuccess(
+          remoteCount: 5,
+          pushedLocalCount: 2,
+        );
+        await AppAnalytics.logHealthSyncFailed('timeout');
+        await AppAnalytics.logBiometricBackgroundLocked();
+        await AppAnalytics.logDialogAddWeightNoteChanged(true);
+        await AppAnalytics.logSplashScreenViewed();
 
         // User properties & generic
         await AppAnalytics.setUserId('user_123');

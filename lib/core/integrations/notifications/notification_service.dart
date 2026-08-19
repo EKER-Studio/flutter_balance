@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_timezone/flutter_timezone.dart';
+import 'package:balance/core/utils/analytics.dart';
 import 'package:balance/core/utils/crash_reporter.dart';
 import 'package:timezone/data/latest.dart' as tz_data;
 import 'package:timezone/timezone.dart' as tz;
@@ -296,6 +297,11 @@ class NotificationService {
         body: _body,
         matchDateTimeComponents: DateTimeComponents.time,
       );
+      AppAnalytics.logNotificationScheduled(
+        hour: time.hour,
+        minute: time.minute,
+        isExact: exactScheduling,
+      );
       if (kDebugMode) {
         debugPrint(
           '[NotificationService] scheduled daily reminder for $scheduledDate '
@@ -319,6 +325,7 @@ class NotificationService {
     if (!_initialized) return;
     try {
       await _plugin.cancel(id: _dailyReminderId);
+      AppAnalytics.logNotificationCancelled();
     } catch (e, stack) {
       AppCrashReporter.recordError(
         e,
