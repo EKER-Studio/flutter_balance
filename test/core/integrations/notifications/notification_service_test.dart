@@ -20,8 +20,14 @@ class FakeNotificationsChannel {
   bool? requestExactResult = true;
   bool requestNotificationsResult = true;
 
+  /// The local ISO-8601 date string of the last `zonedSchedule` call.
+  String? latestScheduledDateTime;
+
   Future<Object?> handle(MethodCall call) async {
     invokedMethods.add(call.method);
+    if (call.method == 'zonedSchedule') {
+      latestScheduledDateTime = call.arguments['scheduledDateTime'] as String?;
+    }
     if (call.method == 'requestExactAlarmsPermission' &&
         requestExactResult == true) {
       canScheduleExact = true;
@@ -94,11 +100,11 @@ void main() {
       expect(result, isFalse);
     });
 
-    test('scheduleDailyReminder does not crash', () async {
+    test('scheduleDailyReminder returns false before initialization', () async {
       final result = await NotificationService.instance.scheduleDailyReminder(
         const (hour: 8, minute: 0),
       );
-      expect(result, isA<bool>());
+      expect(result, isFalse);
     });
 
     test(
@@ -154,14 +160,32 @@ void main() {
       debugDefaultTargetPlatformOverride = null;
     });
 
+    test('requestPermissions initializes the service first when not yet '
+        'initialized', () async {
+      fake.requestNotificationsResult = true;
+
+      final granted = await NotificationService.instance.requestPermissions();
+
+      expect(granted, isTrue);
+      expect(fake.invokedMethods, contains('initialize'));
+      expect(fake.invokedMethods, contains('requestNotificationsPermission'));
+    });
+
     test('initialize completes successfully and becomes idempotent', () async {
       await NotificationService.instance.initialize();
-      await NotificationService.instance.initialize();
+      final channelCallsAfterFirst = fake.invokedMethods
+          .where((m) => m == 'createNotificationChannel')
+          .length;
 
-      // The channel was created once during the first initialization.
+      await NotificationService.instance.initialize();
+      final channelCallsAfterSecond = fake.invokedMethods
+          .where((m) => m == 'createNotificationChannel')
+          .length;
+
       expect(
-        fake.invokedMethods.where((m) => m == 'createNotificationChannel'),
-        hasLength(1),
+        channelCallsAfterSecond,
+        channelCallsAfterFirst,
+        reason: 'A second initialize must not recreate the channel',
       );
     });
 
@@ -290,6 +314,26 @@ void main() {
       },
     );
 
+    test(
+      'scheduleDailyReminder schedules for a moment in the future',
+      () async {
+        await NotificationService.instance.initialize();
+        fake.canScheduleExact = true;
+
+        await NotificationService.instance.scheduleDailyReminder(const (
+          hour: 23,
+          minute: 59,
+        ));
+
+        final scheduledAt = DateTime.parse(fake.latestScheduledDateTime!);
+        expect(
+          scheduledAt.isAfter(DateTime.now()),
+          isTrue,
+          reason: 'A reminder must never be scheduled in the past',
+        );
+      },
+    );
+
     test('cancelDailyReminder invokes the platform cancel', () async {
       await NotificationService.instance.initialize();
 
@@ -309,6 +353,10 @@ void main() {
         timezoneChannel,
         (call) async => throw PlatformException(code: 'TEST_FAILURE'),
       );
+    });
+
+    test('initialize swallows platform-channel errors', () async {
+      await expectLater(NotificationService.instance.initialize(), completes);
     });
 
     test('canScheduleExactNotifications falls back to true on error', () async {

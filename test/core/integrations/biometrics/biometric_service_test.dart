@@ -285,6 +285,80 @@ void main() {
         );
       });
 
+      test('systemCanceled to canceled', () async {
+        expect(
+          await authenticateWith(
+            const LocalAuthException(
+              code: LocalAuthExceptionCode.systemCanceled,
+            ),
+          ),
+          BiometricAuthResult.canceled,
+        );
+      });
+
+      test('userRequestedFallback to canceled', () async {
+        expect(
+          await authenticateWith(
+            const LocalAuthException(
+              code: LocalAuthExceptionCode.userRequestedFallback,
+            ),
+          ),
+          BiometricAuthResult.canceled,
+        );
+      });
+
+      test('timeout to canceled', () async {
+        expect(
+          await authenticateWith(
+            const LocalAuthException(code: LocalAuthExceptionCode.timeout),
+          ),
+          BiometricAuthResult.canceled,
+        );
+      });
+
+      test('biometricHardwareTemporarilyUnavailable to notAvailable', () async {
+        expect(
+          await authenticateWith(
+            const LocalAuthException(
+              code: LocalAuthExceptionCode
+                  .biometricHardwareTemporarilyUnavailable,
+            ),
+          ),
+          BiometricAuthResult.notAvailable,
+        );
+      });
+
+      test('authInProgress to error', () async {
+        expect(
+          await authenticateWith(
+            const LocalAuthException(
+              code: LocalAuthExceptionCode.authInProgress,
+            ),
+          ),
+          BiometricAuthResult.error,
+        );
+      });
+
+      test('uiUnavailable to error', () async {
+        expect(
+          await authenticateWith(
+            const LocalAuthException(
+              code: LocalAuthExceptionCode.uiUnavailable,
+            ),
+          ),
+          BiometricAuthResult.error,
+        );
+      });
+
+      test('deviceError to error', () async {
+        expect(
+          await authenticateWith(
+            const LocalAuthException(code: LocalAuthExceptionCode.deviceError),
+          ),
+          BiometricAuthResult.error,
+        );
+      });
+
       test('unknownError to error', () async {
         expect(
           await authenticateWith(
@@ -359,6 +433,41 @@ void main() {
       test('unknown code to error', () async {
         expect(
           await authenticateWith('UnknownError'),
+          BiometricAuthResult.error,
+        );
+      });
+
+      test('SystemCanceled to canceled', () async {
+        expect(
+          await authenticateWith('SystemCanceled'),
+          BiometricAuthResult.canceled,
+        );
+      });
+
+      test('AuthenticationCanceled to canceled', () async {
+        expect(
+          await authenticateWith('AuthenticationCanceled'),
+          BiometricAuthResult.canceled,
+        );
+      });
+
+      test('user_canceled to canceled', () async {
+        expect(
+          await authenticateWith('user_canceled'),
+          BiometricAuthResult.canceled,
+        );
+      });
+
+      test('canceled to canceled', () async {
+        expect(
+          await authenticateWith('canceled'),
+          BiometricAuthResult.canceled,
+        );
+      });
+
+      test('auth_in_progress to error', () async {
+        expect(
+          await authenticateWith('auth_in_progress'),
           BiometricAuthResult.error,
         );
       });
@@ -438,6 +547,23 @@ void main() {
         );
 
         expect(service.wasAuthenticatingRecently, isTrue);
+      },
+    );
+
+    test(
+      'wasAuthenticatingRecently is false before any authentication or after reset',
+      () async {
+        final service = BiometricService.instance;
+
+        expect(service.wasAuthenticatingRecently, isFalse);
+
+        await service.authenticate(
+          localizedReason: 'Unlock to view your weight data',
+        );
+        expect(service.wasAuthenticatingRecently, isTrue);
+
+        BiometricService.resetForTesting();
+        expect(service.wasAuthenticatingRecently, isFalse);
       },
     );
 

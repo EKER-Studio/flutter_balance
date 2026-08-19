@@ -138,6 +138,25 @@ void main() {
       expect(locked, isTrue);
     });
 
+    test('hidden lifecycle state locks the app when lock is enabled', () {
+      var locked = false;
+      BiometricService.resetForTesting();
+      final observer = BiometricLockObserver(
+        isBiometricLockEnabled: () => true,
+        onLockStateChanged: (isLocked) {
+          locked = isLocked;
+        },
+        isAppLocked: () => false,
+        localizedReason: () => 'Authenticate to access Balance',
+        verifyDatabaseIntegrity: () async => (reopened: false),
+      );
+
+      observer.didChangeAppLifecycleState(AppLifecycleState.hidden);
+      observer.dispose();
+
+      expect(locked, isTrue);
+    });
+
     test(
       'backgrounding skips the lock when authentication is in progress',
       () async {
@@ -212,6 +231,58 @@ void main() {
       observer.dispose();
 
       expect(locked, isFalse);
+    });
+
+    test(
+      'resumption with reopened database and no reopen callback completes',
+      () async {
+        final observer = BiometricLockObserver(
+          isBiometricLockEnabled: () => false,
+          onLockStateChanged: (_) {},
+          localizedReason: () => 'Authenticate to access Balance',
+          verifyDatabaseIntegrity: () async => (reopened: true),
+        );
+
+        observer.didChangeAppLifecycleState(AppLifecycleState.resumed);
+        await pumpEventQueue();
+        observer.dispose();
+      },
+    );
+
+    test('dispose is idempotent and removes the binding observer', () {
+      var locked = false;
+      BiometricService.resetForTesting();
+      final observer = BiometricLockObserver(
+        isBiometricLockEnabled: () => true,
+        onLockStateChanged: (_) {
+          locked = true;
+        },
+        isAppLocked: () => false,
+        localizedReason: () => 'Authenticate to access Balance',
+        verifyDatabaseIntegrity: () async => (reopened: false),
+      );
+
+      observer.dispose();
+      observer.dispose();
+      observer.removeThisObserver();
+
+      observer.didChangeAppLifecycleState(AppLifecycleState.paused);
+
+      expect(locked, isFalse);
+    });
+
+    test('dispose cancels the lock-enabled stream subscription', () async {
+      final observer = BiometricLockObserver(
+        isBiometricLockEnabled: () => false,
+        onLockStateChanged: (_) {},
+        lockEnabledStream: lockStreamController.stream,
+        localizedReason: () => 'Authenticate to access Balance',
+        verifyDatabaseIntegrity: () async => (reopened: false),
+      );
+
+      expect(lockStreamController.hasListener, isTrue);
+      observer.dispose();
+      expect(lockStreamController.hasListener, isFalse);
     });
   });
 }

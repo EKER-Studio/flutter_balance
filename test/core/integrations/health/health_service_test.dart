@@ -376,6 +376,33 @@ void main() {
       },
     );
 
+    test('returns false on iOS when the prompt is shown but the write grant '
+        'is still missing', () async {
+      when(() => platformDetector.isIOS).thenReturn(true);
+      when(() => platformDetector.isAndroid).thenReturn(false);
+
+      when(
+        () => health.requestAuthorization(
+          any(),
+          permissions: any(named: 'permissions'),
+        ),
+      ).thenAnswer((_) async => true);
+      when(
+        () => health.hasPermissions(
+          any(),
+          permissions: any(named: 'permissions'),
+        ),
+      ).thenAnswer((_) async => false);
+
+      expect(await service.requestPermissions(), isFalse);
+      verify(
+        () => health.hasPermissions(
+          [HealthDataType.WEIGHT],
+          permissions: [HealthDataAccess.WRITE],
+        ),
+      ).called(1);
+    });
+
     test(
       'returns false on Android when authorization is declined by the user',
       () async {
@@ -655,6 +682,66 @@ void main() {
 
       expect(entries, hasLength(2));
     });
+
+    test(
+      'collapses duplicate readings within the same minute and weight',
+      () async {
+        final date = DateTime(2026, 1, 1, 8, 30);
+        when(
+          () => health.getHealthDataFromTypes(
+            types: any(named: 'types'),
+            preferredUnits: any(named: 'preferredUnits'),
+            startTime: any(named: 'startTime'),
+            endTime: any(named: 'endTime'),
+          ),
+        ).thenAnswer(
+          (_) async => [
+            point(uuid: 'dup-a', value: 75.5, dateFrom: date),
+            point(uuid: 'dup-b', value: 75.5, dateFrom: date),
+            point(
+              uuid: 'dup-c',
+              value: 75.5,
+              dateFrom: date.add(const Duration(seconds: 30)),
+            ),
+          ],
+        );
+
+        final entries = await service.fetchWeightHistory(
+          start: date,
+          end: date,
+        );
+
+        expect(entries, hasLength(1));
+        expect(entries.single.weightKg, 75.5);
+      },
+    );
+
+    test(
+      'keeps readings with different weights within the same minute',
+      () async {
+        final date = DateTime(2026, 1, 1, 8, 30);
+        when(
+          () => health.getHealthDataFromTypes(
+            types: any(named: 'types'),
+            preferredUnits: any(named: 'preferredUnits'),
+            startTime: any(named: 'startTime'),
+            endTime: any(named: 'endTime'),
+          ),
+        ).thenAnswer(
+          (_) async => [
+            point(uuid: 'first', value: 75.5, dateFrom: date),
+            point(uuid: 'second', value: 75.6, dateFrom: date),
+          ],
+        );
+
+        final entries = await service.fetchWeightHistory(
+          start: date,
+          end: date,
+        );
+
+        expect(entries, hasLength(2));
+      },
+    );
   });
 
   group('NativeHealthService.writeWeight', () {
@@ -859,6 +946,56 @@ void main() {
         () => health.deleteByUUID(uuid: 'target', type: HealthDataType.WEIGHT),
       ).called(1);
     });
+
+    test(
+      'deletes a point within the tolerance window and skips non-numeric points',
+      () async {
+        final timestamp = DateTime(2026, 1, 1, 8, 30);
+        when(
+          () => health.getHealthDataFromTypes(
+            types: any(named: 'types'),
+            preferredUnits: any(named: 'preferredUnits'),
+            startTime: any(named: 'startTime'),
+            endTime: any(named: 'endTime'),
+          ),
+        ).thenAnswer(
+          (_) async => [
+            HealthDataPoint(
+              uuid: 'non-numeric',
+              value: HealthValue(),
+              type: HealthDataType.WEIGHT,
+              unit: HealthDataUnit.KILOGRAM,
+              dateFrom: timestamp,
+              dateTo: timestamp,
+              sourcePlatform: HealthPlatformType.appleHealth,
+              sourceDeviceId: 'device-1',
+              sourceId: 'source-1',
+              sourceName: 'Balance',
+            ),
+            point(uuid: 'tolerance-match', value: 72.505, dateFrom: timestamp),
+          ],
+        );
+        when(
+          () => health.deleteByUUID(
+            uuid: any(named: 'uuid'),
+            type: any(named: 'type'),
+          ),
+        ).thenAnswer((_) async => true);
+
+        final deleted = await service.deleteWeight(
+          weightKg: 72.5,
+          timestamp: timestamp,
+        );
+
+        expect(deleted, isTrue);
+        verify(
+          () => health.deleteByUUID(
+            uuid: 'tolerance-match',
+            type: HealthDataType.WEIGHT,
+          ),
+        ).called(1);
+      },
+    );
   });
 
   group('NativePlatformDetector', () {
@@ -940,5 +1077,21 @@ void main() {
       await expectLater(service.installHealthConnect(), completes);
       expect(fakeLauncher.launchCount, greaterThanOrEqualTo(1));
     });
+
+    test(
+      'configures the health plugin only once across repeated calls',
+      () async {
+        when(() => platformDetector.isAndroid).thenReturn(true);
+        when(() => platformDetector.isIOS).thenReturn(false);
+        when(
+          () => health.getHealthConnectSdkStatus(),
+        ).thenAnswer((_) async => HealthConnectSdkStatus.sdkAvailable);
+
+        await service.isHealthApiAvailable();
+        await service.isHealthApiAvailable();
+
+        verify(() => health.configure()).called(1);
+      },
+    );
   });
 }
