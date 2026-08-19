@@ -446,10 +446,12 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
         await repository.syncRemoteEntries(remoteEntries);
       }
 
-      // 2. Push local records missing from remote health platform (optional, if we want two-way)
-      // Omitted to keep it simple and strictly use syncRemoteEntries as asked, unless needed.
-      // Wait, we need to push too if they are missing? "Fix the health data synchronization mechanism so that it reliably pulls historical and newly added external weight measurements"
-      // The prompt only asked for pull, but existing code did two-way. Let's preserve two-way but handle it safely without blocking.
+      // Two-way sync: also push local records within the same fetch window
+      // that are missing from the health platform (e.g. entries added
+      // locally while offline, or before health sync was first enabled).
+      // Scoped to [start, end] — the same window used for the pull above —
+      // so that local history *outside* this window is never treated as
+      // "missing" just because it wasn't part of this incremental fetch.
       final localEntries = (await repository.getAllEntries())
           .where((e) => e.dateTime.isAfter(start) && e.dateTime.isBefore(end))
           .toList();
