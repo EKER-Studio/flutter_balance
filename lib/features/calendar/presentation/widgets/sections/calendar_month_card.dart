@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:balance/core/utils/analytics.dart';
 import 'package:balance/features/calendar/presentation/widgets/calendar_grid.dart';
 import 'package:balance/features/calendar/presentation/widgets/calendar_month_header.dart';
 import 'package:balance/features/calendar/presentation/widgets/calendar_weekday_header.dart';
@@ -77,8 +78,10 @@ class CalendarMonthCard extends StatelessWidget {
               onHorizontalDragEnd: (details) {
                 if (details.primaryVelocity != null) {
                   if (details.primaryVelocity! > 0) {
+                    AppAnalytics.logCalendarSwipeMonthChanged('previous');
                     onPreviousMonth();
                   } else if (details.primaryVelocity! < 0) {
+                    AppAnalytics.logCalendarSwipeMonthChanged('next');
                     onNextMonth();
                   }
                 }

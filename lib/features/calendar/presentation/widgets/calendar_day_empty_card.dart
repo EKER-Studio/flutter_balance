@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:balance/core/utils/analytics.dart';
 import 'package:balance/features/weight/presentation/bloc/weight_bloc.dart';
 import 'package:balance/features/weight/presentation/widgets/add_weight_dialog.dart';
 import 'package:balance/l10n/app_localizations.dart';
@@ -61,6 +62,12 @@ class CalendarDayEmptyCard extends StatelessWidget {
               width: double.infinity,
               child: FilledButton.icon(
                 onPressed: () {
+                  final dateStr = selectedDate.toIso8601String().substring(
+                    0,
+                    10,
+                  );
+                  AppAnalytics.logCalendarAddMeasurementClicked(dateStr);
+                  AppAnalytics.logDialogAddWeightOpened('calendar_empty_day');
                   showDialog<void>(
                     context: context,
                     builder: (dialogCtx) => BlocProvider.value(

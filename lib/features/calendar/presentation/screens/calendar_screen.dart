@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:balance/core/presentation/widgets/app_top_bar.dart';
+import 'package:balance/core/utils/analytics.dart';
 import 'package:balance/features/calendar/presentation/widgets/calendar_error_card.dart';
 import 'package:balance/features/calendar/presentation/widgets/calendar_shimmer_skeleton.dart';
 import 'package:balance/features/calendar/presentation/widgets/sections/calendar_month_card.dart';
@@ -51,15 +52,23 @@ class _CalendarScreenState extends State<CalendarScreen> {
 
   /// Shifts the focused month one month back.
   void _previousMonth() {
+    final newMonth = DateTime(_focusedMonth.year, _focusedMonth.month - 1, 1);
+    AppAnalytics.logCalendarMonthChanged(
+      '${newMonth.year}-${newMonth.month.toString().padLeft(2, '0')}',
+    );
     setState(() {
-      _focusedMonth = DateTime(_focusedMonth.year, _focusedMonth.month - 1, 1);
+      _focusedMonth = newMonth;
     });
   }
 
   /// Shifts the focused month one month forward.
   void _nextMonth() {
+    final newMonth = DateTime(_focusedMonth.year, _focusedMonth.month + 1, 1);
+    AppAnalytics.logCalendarMonthChanged(
+      '${newMonth.year}-${newMonth.month.toString().padLeft(2, '0')}',
+    );
     setState(() {
-      _focusedMonth = DateTime(_focusedMonth.year, _focusedMonth.month + 1, 1);
+      _focusedMonth = newMonth;
     });
   }
 
@@ -67,6 +76,18 @@ class _CalendarScreenState extends State<CalendarScreen> {
   ///
   /// Moves the focused month if the selected date falls outside the current view.
   void _onDaySelected(DateTime date) {
+    final dateStr = date.toIso8601String().substring(0, 10);
+    final weightState = context.read<WeightBloc>().state;
+    final entries = weightState is WeightLoaded
+        ? weightState.entries
+        : (weightState is WeightError ? weightState.entries : <WeightEntry>[]);
+    final hasEntry = entries.any(
+      (e) =>
+          e.dateTime.year == date.year &&
+          e.dateTime.month == date.month &&
+          e.dateTime.day == date.day,
+    );
+    AppAnalytics.logCalendarDaySelected(date: dateStr, hasEntry: hasEntry);
     setState(() {
       _selectedDate = date;
       if (date.year != _focusedMonth.year ||

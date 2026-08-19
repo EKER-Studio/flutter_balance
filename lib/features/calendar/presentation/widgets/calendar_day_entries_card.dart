@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:balance/core/models/measurement_unit.dart';
+import 'package:balance/core/utils/analytics.dart';
 import 'package:balance/core/utils/unit_converter.dart';
 import 'package:balance/features/weight/domain/entities/weight_entry.dart';
 import 'package:balance/features/weight/presentation/bloc/weight_bloc.dart';
@@ -98,20 +99,16 @@ class CalendarDayEntriesCard extends StatelessWidget {
             final displayWeight = isImperial
                 ? kgToLbs(entry.weightKg)
                 : entry.weightKg;
-            final timeStr = DateFormat.Hm(
-              Localizations.localeOf(context).toString(),
-            ).format(entry.dateTime);
-
-            final meetsGoal =
-                targetWeight != null && entry.weightKg <= targetWeight!;
-
             final bmi = (heightCm != null && heightCm > 0)
                 ? appSettingsState.calculateBmi(entry.weightKg)
                 : double.nan;
             final category = bmi.isFinite ? BmiCategory.fromBmi(bmi) : null;
             final categoryText = category?.localizedName(l10n) ?? '';
 
-            return MergeSemantics(
+            return Semantics(
+              container: true,
+              label:
+                  '${DateFormat.jm(Localizations.localeOf(context).toString()).format(entry.dateTime)}, ${displayWeight.toStringAsFixed(1)} $unitLabel${entry.note != null ? ", ${entry.note}" : ""}${categoryText.isNotEmpty ? ", $categoryText" : ""}',
               child: Card(
                 elevation: 0,
                 margin: EdgeInsets.zero,
@@ -122,66 +119,36 @@ class CalendarDayEntriesCard extends StatelessWidget {
                 child: InkWell(
                   borderRadius: BorderRadius.circular(16),
                   onTap: () {
-                    // Reserved: tap-to-edit entry handling.
+                    AppAnalytics.logCalendarEntryClicked(
+                      entryId: entry.id,
+                      hasNote: entry.note != null,
+                    );
                   },
                   child: Padding(
-                    padding: const EdgeInsets.all(16),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 12,
+                    ),
                     child: Row(
                       children: [
-                        CircleAvatar(
-                          radius: 24,
-                          backgroundColor: meetsGoal
-                              ? Colors.green.withValues(alpha: 0.15)
-                              : cs.secondaryContainer,
-                          child: Icon(
-                            meetsGoal ? Icons.star : Icons.monitor_weight,
-                            size: 24,
-                            color: meetsGoal
-                                ? (Theme.of(context).brightness ==
-                                          Brightness.light
-                                      ? Colors.green.shade800
-                                      : Colors.green.shade300)
-                                : cs.onSecondaryContainer,
-                          ),
-                        ),
-                        const SizedBox(width: 16),
                         Expanded(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
                                 '${displayWeight.toStringAsFixed(1)} $unitLabel',
-                                style: Theme.of(context).textTheme.titleLarge
-                                    ?.copyWith(
-                                      fontWeight: FontWeight.bold,
-                                      color: cs.onSurface,
-                                    ),
+                                style: Theme.of(context).textTheme.titleMedium
+                                    ?.copyWith(fontWeight: FontWeight.bold),
                               ),
-                              Row(
-                                children: [
-                                  Icon(
-                                    Icons.schedule,
-                                    size: 16,
-                                    color: cs.onSurfaceVariant,
+                              if (entry.note != null && entry.note!.isNotEmpty)
+                                Padding(
+                                  padding: const EdgeInsets.only(top: 2),
+                                  child: Text(
+                                    entry.note!,
+                                    style: Theme.of(context).textTheme.bodySmall
+                                        ?.copyWith(color: cs.onSurfaceVariant),
                                   ),
-                                  const SizedBox(width: 4),
-                                  Expanded(
-                                    child: Text(
-                                      entry.note != null &&
-                                              entry.note!.isNotEmpty
-                                          ? '$timeStr • ${entry.note}'
-                                          : timeStr,
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .bodyMedium
-                                          ?.copyWith(
-                                            color: cs.onSurfaceVariant,
-                                          ),
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                  ),
-                                ],
-                              ),
+                                ),
                             ],
                           ),
                         ),
@@ -191,11 +158,19 @@ class CalendarDayEntriesCard extends StatelessWidget {
                             Text(
                               bmi.isFinite
                                   ? l10n.bmiValueLabel(bmi.toStringAsFixed(1))
-                                  : '',
-                              style: Theme.of(context).textTheme.titleMedium
+                                  : DateFormat.jm(
+                                      Localizations.localeOf(
+                                        context,
+                                      ).toString(),
+                                    ).format(entry.dateTime),
+                              style: Theme.of(context).textTheme.labelMedium
                                   ?.copyWith(
-                                    fontWeight: FontWeight.bold,
-                                    color: cs.primary,
+                                    color: bmi.isFinite
+                                        ? cs.primary
+                                        : cs.onSurfaceVariant,
+                                    fontWeight: bmi.isFinite
+                                        ? FontWeight.bold
+                                        : FontWeight.normal,
                                   ),
                             ),
                             if (categoryText.isNotEmpty)
@@ -224,6 +199,9 @@ class CalendarDayEntriesCard extends StatelessWidget {
         const SizedBox(height: 24),
         OutlinedButton.icon(
           onPressed: () {
+            final dateStr = selectedDate.toIso8601String().substring(0, 10);
+            AppAnalytics.logCalendarAddMeasurementClicked(dateStr);
+            AppAnalytics.logDialogAddWeightOpened('calendar');
             showDialog<void>(
               context: context,
               builder: (dialogCtx) => BlocProvider.value(
@@ -242,6 +220,7 @@ class CalendarDayEntriesCard extends StatelessWidget {
   /// Prompts the user for confirmation before deleting the entry with [entryId].
   Future<void> _confirmDelete(BuildContext context, int entryId) async {
     final l10n = AppLocalizations.of(context);
+    AppAnalytics.logDialogDeleteWeightOpened(entryId);
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (dialogContext) => AlertDialog(
@@ -265,8 +244,11 @@ class CalendarDayEntriesCard extends StatelessWidget {
       ),
     );
     if (confirmed == true) {
+      AppAnalytics.logCalendarEntryDeleted(entryId);
       if (!context.mounted) return;
       context.read<WeightBloc>().add(DeleteWeight(entryId));
+    } else {
+      AppAnalytics.logDialogDeleteWeightCancelled();
     }
   }
 }
