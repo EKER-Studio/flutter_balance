@@ -9,6 +9,7 @@ import 'package:balance/core/integrations/biometrics/biometric_service.dart';
 import 'package:balance/core/integrations/health/health_service.dart';
 import 'package:balance/core/presentation/utils/app_snackbar.dart';
 import 'package:balance/core/presentation/widgets/app_top_bar.dart';
+import 'package:balance/core/utils/analytics.dart';
 import 'package:balance/l10n/app_localizations.dart';
 
 import 'package:balance/features/weight/presentation/bloc/weight_bloc.dart';
@@ -121,21 +122,31 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                 SettingsDataCoordinator.showUnitSelection(
                                   context,
                                 ),
-                            onNotificationsChanged: (v) => context
-                                .read<AppSettingsBloc>()
-                                .add(ToggleNotifications(v)),
+                            onNotificationsChanged: (v) {
+                              AppAnalytics.logSettingsReminderToggled(
+                                enabled: v,
+                              );
+                              context.read<AppSettingsBloc>().add(
+                                ToggleNotifications(v),
+                              );
+                            },
                             onNotificationTimeTap: () =>
                                 SettingsDataCoordinator.selectNotificationTime(
                                   context,
                                   state.notificationTime,
                                 ),
-                            onHealthSyncChanged: (v) => context
-                                .read<AppSettingsBloc>()
-                                .add(ToggleHealthSync(v)),
-                            onInstallHealthConnect: () =>
-                                SettingsDataCoordinator.showHealthConnectInstall(
-                                  context,
-                                ),
+                            onHealthSyncChanged: (v) {
+                              AppAnalytics.logSettingsHealthSyncToggled(v);
+                              context.read<AppSettingsBloc>().add(
+                                ToggleHealthSync(v),
+                              );
+                            },
+                            onInstallHealthConnect: () {
+                              AppAnalytics.logSettingsHealthConnectInstallClicked();
+                              SettingsDataCoordinator.showHealthConnectInstall(
+                                context,
+                              );
+                            },
                             onBiometricChanged: (v) =>
                                 SettingsDataCoordinator.handleBiometricToggle(
                                   context,
@@ -169,6 +180,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   void _onWeightStateChange(BuildContext context, WeightState state) async {
     if (state is CsvAnalysisError) {
+      AppAnalytics.logDialogCsvAnalysisError(state.errorType.name);
       final l10n = AppLocalizations.of(context);
       String errorMessage;
       switch (state.errorType) {
@@ -195,6 +207,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         );
       }
     } else if (state is WeightImportSuccess) {
+      AppAnalytics.logSettingsCsvImportCompleted(state.importedCount);
       final l10n = AppLocalizations.of(context);
       AppSnackBar.show(
         context,

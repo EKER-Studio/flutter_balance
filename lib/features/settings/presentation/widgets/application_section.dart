@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:balance/core/presentation/utils/app_theme_mode_localizer.dart';
+import 'package:balance/core/utils/analytics.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_state.dart';
 import 'package:balance/features/weight/presentation/utils/measurement_unit_localizer.dart';
 import 'package:balance/l10n/app_localizations.dart';
@@ -50,14 +51,22 @@ class ApplicationSection extends StatelessWidget {
             title: l10n.measurementUnit,
             subtitle: unitLabel,
             sectionLabel: l10n.applicationSection,
-            onTap: onUnitTap,
+            onTap: () {
+              AppAnalytics.logSettingsUnitTileClicked(
+                state.measurementUnit.name,
+              );
+              onUnitTap();
+            },
           ),
           CustomSettingsTile(
             icon: Icons.palette_outlined,
             title: l10n.theme,
             subtitle: themeLabel,
             sectionLabel: l10n.applicationSection,
-            onTap: onThemeTap,
+            onTap: () {
+              AppAnalytics.logSettingsThemeTileClicked(state.themeMode.name);
+              onThemeTap();
+            },
           ),
           CustomSettingsToggle(
             icon: Icons.notifications_outlined,
@@ -73,7 +82,12 @@ class ApplicationSection extends StatelessWidget {
               title: l10n.reminderTime,
               subtitle: notificationTimeText,
               sectionLabel: l10n.applicationSection,
-              onTap: onNotificationTimeTap,
+              onTap: () {
+                AppAnalytics.logSettingsReminderTimeTileClicked(
+                  notificationTimeText,
+                );
+                onNotificationTimeTap();
+              },
             ),
           if (state.notificationsEnabled && state.notificationInexactScheduling)
             InexactReminderHint(l10n: l10n),
