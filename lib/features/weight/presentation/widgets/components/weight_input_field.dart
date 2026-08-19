@@ -35,9 +35,7 @@ class WeightInputField extends StatelessWidget {
         TextField(
           controller: controller,
           autofocus: false,
-          keyboardType: const TextInputType.numberWithOptions(
-            decimal: true,
-          ),
+          keyboardType: const TextInputType.numberWithOptions(decimal: true),
           textInputAction: TextInputAction.next,
           decoration: InputDecoration(
             labelText: unit == MeasurementUnit.imperial

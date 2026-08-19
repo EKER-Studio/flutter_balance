@@ -30,7 +30,9 @@ void main() {
   }
 
   group('DateTimePickerRow', () {
-    testWidgets('renders date and time fields with formatted text', (tester) async {
+    testWidgets('renders date and time fields with formatted text', (
+      tester,
+    ) async {
       await tester.pumpWidget(buildTestWidget());
       await tester.pumpAndSettle();
 
@@ -41,7 +43,9 @@ void main() {
       expect(find.byKey(const Key('date_time_error_text')), findsNothing);
     });
 
-    testWidgets('triggers onPickDate callback when date field tapped', (tester) async {
+    testWidgets('triggers onPickDate callback when date field tapped', (
+      tester,
+    ) async {
       var dateTapped = false;
       await tester.pumpWidget(
         buildTestWidget(onPickDate: () => dateTapped = true),
@@ -52,7 +56,9 @@ void main() {
       expect(dateTapped, isTrue);
     });
 
-    testWidgets('triggers onPickTime callback when time field tapped', (tester) async {
+    testWidgets('triggers onPickTime callback when time field tapped', (
+      tester,
+    ) async {
       var timeTapped = false;
       await tester.pumpWidget(
         buildTestWidget(onPickTime: () => timeTapped = true),
@@ -63,7 +69,9 @@ void main() {
       expect(timeTapped, isTrue);
     });
 
-    testWidgets('displays error banner when dateTimeError is present', (tester) async {
+    testWidgets('displays error banner when dateTimeError is present', (
+      tester,
+    ) async {
       const errorMsg = 'Future date not allowed';
       await tester.pumpWidget(buildTestWidget(dateTimeError: errorMsg));
       await tester.pumpAndSettle();

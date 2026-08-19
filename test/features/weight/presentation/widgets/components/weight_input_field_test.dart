@@ -72,7 +72,9 @@ void main() {
       expect(updatedText, equals('82.3'));
     });
 
-    testWidgets('displays error text when weightError is provided', (tester) async {
+    testWidgets('displays error text when weightError is provided', (
+      tester,
+    ) async {
       final controller = TextEditingController();
       addTearDown(controller.dispose);
       const errorMsg = 'Please enter a valid weight';

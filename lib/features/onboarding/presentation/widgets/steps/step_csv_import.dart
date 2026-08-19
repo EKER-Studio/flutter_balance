@@ -124,21 +124,21 @@ class _StepCsvImportState extends State<StepCsvImport> {
       ),
       child: switch (_status) {
         _CsvImportStatus.idle => CsvImportIdleView(
-            onPickFile: _handlePickFile,
-            onSkipped: widget.onSkipped,
-            isLandscape: isLandscape,
-          ),
+          onPickFile: _handlePickFile,
+          onSkipped: widget.onSkipped,
+          isLandscape: isLandscape,
+        ),
         _CsvImportStatus.loading => const CsvImportLoadingView(),
         _CsvImportStatus.success => CsvImportSuccessView(
-            count: _entries.length,
-            onContinue: () => widget.onFileImported(_entries),
-            isLandscape: isLandscape,
-          ),
+          count: _entries.length,
+          onContinue: () => widget.onFileImported(_entries),
+          isLandscape: isLandscape,
+        ),
         _CsvImportStatus.error => CsvImportErrorView(
-            message: errorMessage,
-            onRetry: _handlePickFile,
-            isLandscape: isLandscape,
-          ),
+          message: errorMessage,
+          onRetry: _handlePickFile,
+          isLandscape: isLandscape,
+        ),
       },
     );
   }

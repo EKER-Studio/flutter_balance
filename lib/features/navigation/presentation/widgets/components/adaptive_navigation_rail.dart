@@ -29,9 +29,7 @@ class AdaptiveNavigationRail extends StatelessWidget {
         selectedIconTheme: IconThemeData(
           color: colorScheme.onSecondaryContainer,
         ),
-        unselectedIconTheme: IconThemeData(
-          color: colorScheme.onSurfaceVariant,
-        ),
+        unselectedIconTheme: IconThemeData(color: colorScheme.onSurfaceVariant),
         selectedLabelTextStyle: textTheme.labelMedium?.copyWith(
           color: colorScheme.onSurface,
           fontWeight: FontWeight.w500,

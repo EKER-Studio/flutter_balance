@@ -62,7 +62,9 @@ class WeightDeltaChip extends StatelessWidget {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            ExcludeSemantics(child: Icon(icon, size: 16, color: foregroundColor)),
+            ExcludeSemantics(
+              child: Icon(icon, size: 16, color: foregroundColor),
+            ),
             const SizedBox(width: 4),
             Text(
               formattedDelta,

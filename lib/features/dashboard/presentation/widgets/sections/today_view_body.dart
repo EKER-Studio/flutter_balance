@@ -68,7 +68,9 @@ class TodayViewBody extends StatelessWidget {
     }
 
     final filteredEntries = _filteredEntriesFromState(currentState);
-    final errorType = currentState is WeightError ? currentState.errorType : null;
+    final errorType = currentState is WeightError
+        ? currentState.errorType
+        : null;
 
     return BlocBuilder<AppSettingsBloc, AppSettingsState>(
       builder: (context, settings) {

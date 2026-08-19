@@ -126,8 +126,8 @@ class WeightChartCanvas extends StatelessWidget {
                       return Text(
                         formatted,
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                              color: colorScheme.onSurfaceVariant,
-                            ),
+                          color: colorScheme.onSurfaceVariant,
+                        ),
                       );
                     },
                   ),
@@ -153,8 +153,7 @@ class WeightChartCanvas extends StatelessWidget {
                               horizontal: 6,
                               vertical: 2,
                             ),
-                            labelResolver: (line) =>
-                                l10n.chartTargetLabel,
+                            labelResolver: (line) => l10n.chartTargetLabel,
                             alignment: Alignment.topRight,
                           ),
                         ),
@@ -311,8 +310,8 @@ class WeightChartCanvas extends StatelessWidget {
       child: Text(
         formattedDate,
         style: Theme.of(context).textTheme.bodySmall?.copyWith(
-              color: Theme.of(context).colorScheme.onSurfaceVariant,
-            ),
+          color: Theme.of(context).colorScheme.onSurfaceVariant,
+        ),
       ),
     );
   }

@@ -61,10 +61,6 @@ class BmiChartBody extends StatelessWidget {
       );
     }
 
-    return BmiLineChart(
-      entries: entries,
-      heightCm: heightCm!,
-      period: period,
-    );
+    return BmiLineChart(entries: entries, heightCm: heightCm!, period: period);
   }
 }

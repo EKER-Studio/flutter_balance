@@ -76,9 +76,6 @@ class BmiChartCard extends StatelessWidget {
   }
 
   void _showLegendDialog(BuildContext context) {
-    showDialog<void>(
-      context: context,
-      builder: (_) => const BmiLegendDialog(),
-    );
+    showDialog<void>(context: context, builder: (_) => const BmiLegendDialog());
   }
 }

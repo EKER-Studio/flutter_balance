@@ -48,7 +48,9 @@ class HeroProgressCard extends StatelessWidget {
 
     // Weekly pace text
     final paceDisplay = weeklyPace != null
-        ? (unit == MeasurementUnit.imperial ? kgToLbs(weeklyPace!) : weeklyPace!)
+        ? (unit == MeasurementUnit.imperial
+              ? kgToLbs(weeklyPace!)
+              : weeklyPace!)
         : null;
     final paceSign = (paceDisplay != null && paceDisplay > 0) ? '+' : '';
     final paceBadgeText = paceDisplay != null

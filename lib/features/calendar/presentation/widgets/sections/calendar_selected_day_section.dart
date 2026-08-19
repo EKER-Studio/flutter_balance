@@ -34,9 +34,7 @@ class CalendarSelectedDaySection extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final locale = Localizations.localeOf(context).toString();
-    final formattedSelectedDate = DateFormat.MMMMd(
-      locale,
-    ).format(selectedDate);
+    final formattedSelectedDate = DateFormat.MMMMd(locale).format(selectedDate);
     final isImperial = unit == MeasurementUnit.imperial;
     final unitLabel = unitLabelFor(unit);
 
@@ -65,10 +63,9 @@ class CalendarSelectedDaySection extends StatelessWidget {
             Text(
               '${l10n.multipleEntries(dayEntries.length)} • ${l10n.averageWeight}: ${displayAverage.toStringAsFixed(1)} $unitLabel',
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: Theme.of(context)
-                    .colorScheme
-                    .onSurfaceVariant
-                    .withValues(alpha: 0.8),
+                color: Theme.of(
+                  context,
+                ).colorScheme.onSurfaceVariant.withValues(alpha: 0.8),
               ),
             ),
           ],

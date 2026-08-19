@@ -37,9 +37,7 @@ class MetricHeightInput extends StatelessWidget {
       key: const Key('height_cm_input'),
       controller: controller,
       focusNode: focusNode,
-      keyboardType: const TextInputType.numberWithOptions(
-        decimal: true,
-      ),
+      keyboardType: const TextInputType.numberWithOptions(decimal: true),
       decoration: InputDecoration(
         labelText: l10n.heightCmLabel,
         hintText: l10n.heightHint,

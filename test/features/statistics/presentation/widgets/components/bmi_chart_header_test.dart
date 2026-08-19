@@ -27,35 +27,32 @@ void main() {
   }
 
   group('BmiChartHeader', () {
-    testWidgets('renders basic title and legend icon when height is null or entries are empty', (
-      tester,
-    ) async {
-      var legendTapped = false;
-      await tester.pumpWidget(
-        buildTestWidget(
-          entries: const [],
-          heightCm: null,
-          onLegendTap: () => legendTapped = true,
-        ),
-      );
-      await tester.pumpAndSettle();
+    testWidgets(
+      'renders basic title and legend icon when height is null or entries are empty',
+      (tester) async {
+        var legendTapped = false;
+        await tester.pumpWidget(
+          buildTestWidget(
+            entries: const [],
+            heightCm: null,
+            onLegendTap: () => legendTapped = true,
+          ),
+        );
+        await tester.pumpAndSettle();
 
-      expect(find.text('BMI'), findsOneWidget);
-      expect(find.byIcon(Icons.help_outline), findsOneWidget);
+        expect(find.text('BMI'), findsOneWidget);
+        expect(find.byIcon(Icons.help_outline), findsOneWidget);
 
-      await tester.tap(find.byIcon(Icons.help_outline));
-      expect(legendTapped, isTrue);
-    });
+        await tester.tap(find.byIcon(Icons.help_outline));
+        expect(legendTapped, isTrue);
+      },
+    );
 
     testWidgets('renders computed BMI value and localized category chip', (
       tester,
     ) async {
       final entries = [
-        WeightEntry(
-          id: 1,
-          weightKg: 75.0,
-          dateTime: DateTime(2026, 5, 20),
-        ),
+        WeightEntry(id: 1, weightKg: 75.0, dateTime: DateTime(2026, 5, 20)),
       ];
 
       await tester.pumpWidget(

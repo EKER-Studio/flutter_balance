@@ -133,8 +133,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                 .read<AppSettingsBloc>()
                                 .add(ToggleHealthSync(v)),
                             onInstallHealthConnect: () =>
-                                SettingsDataCoordinator
-                                    .showHealthConnectInstall(context),
+                                SettingsDataCoordinator.showHealthConnectInstall(
+                                  context,
+                                ),
                             onBiometricChanged: (v) =>
                                 SettingsDataCoordinator.handleBiometricToggle(
                                   context,

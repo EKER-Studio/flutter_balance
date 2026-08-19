@@ -43,7 +43,9 @@ class AdaptiveBottomNavigationBar extends StatelessWidget {
             if (states.contains(WidgetState.hovered) ||
                 states.contains(WidgetState.pressed) ||
                 states.contains(WidgetState.focused)) {
-              return colorScheme.surfaceContainerHighest.withValues(alpha: 0.48);
+              return colorScheme.surfaceContainerHighest.withValues(
+                alpha: 0.48,
+              );
             }
             return null;
           }),

@@ -15,11 +15,7 @@ class WeightRangeCard extends StatelessWidget {
   final MeasurementUnit unit;
 
   /// Creates a [WeightRangeCard] widget.
-  const WeightRangeCard({
-    super.key,
-    required this.entries,
-    required this.unit,
-  });
+  const WeightRangeCard({super.key, required this.entries, required this.unit});
 
   @override
   Widget build(BuildContext context) {

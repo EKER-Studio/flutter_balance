@@ -26,22 +26,23 @@ void main() {
   }
 
   group('BmiLegendItem', () {
-    testWidgets('renders category label, range, and color swatch in light theme', (
-      tester,
-    ) async {
-      await tester.pumpWidget(
-        buildTestWidget(
-          category: BmiCategory.normal,
-          range: '18.5 – 24.9',
-          isDark: false,
-        ),
-      );
-      await tester.pumpAndSettle();
+    testWidgets(
+      'renders category label, range, and color swatch in light theme',
+      (tester) async {
+        await tester.pumpWidget(
+          buildTestWidget(
+            category: BmiCategory.normal,
+            range: '18.5 – 24.9',
+            isDark: false,
+          ),
+        );
+        await tester.pumpAndSettle();
 
-      expect(find.text('Normal'), findsOneWidget);
-      expect(find.text('18.5 – 24.9'), findsOneWidget);
-      expect(find.byType(MergeSemantics), findsOneWidget);
-    });
+        expect(find.text('Normal'), findsOneWidget);
+        expect(find.text('18.5 – 24.9'), findsOneWidget);
+        expect(find.byType(MergeSemantics), findsOneWidget);
+      },
+    );
 
     testWidgets('renders obese category and handles dark theme styling', (
       tester,

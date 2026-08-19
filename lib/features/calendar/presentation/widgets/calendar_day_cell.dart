@@ -81,7 +81,8 @@ class CalendarDayCell extends StatelessWidget {
     final dateFormatted = DateFormat.yMMMd(
       Localizations.localeOf(context).toString(),
     ).format(date);
-    final semanticLabel = '$dateFormatted, ${entries.length} measurements${isGoalAchieved ? ', goal achieved' : ''}';
+    final semanticLabel =
+        '$dateFormatted, ${entries.length} measurements${isGoalAchieved ? ', goal achieved' : ''}';
 
     return Semantics(
       button: !isFuture,
@@ -126,7 +127,9 @@ class CalendarDayCell extends StatelessWidget {
                                 (index) => Container(
                                   width: 4,
                                   height: 4,
-                                  margin: const EdgeInsets.symmetric(horizontal: 1),
+                                  margin: const EdgeInsets.symmetric(
+                                    horizontal: 1,
+                                  ),
                                   decoration: BoxDecoration(
                                     color: isSelected
                                         ? colorScheme.onPrimary
@@ -152,7 +155,11 @@ class CalendarDayCell extends StatelessWidget {
                         color: Color(0xFF4CAF50),
                         shape: BoxShape.circle,
                       ),
-                      child: const Icon(Icons.star, size: 11, color: Colors.white),
+                      child: const Icon(
+                        Icons.star,
+                        size: 11,
+                        color: Colors.white,
+                      ),
                     ),
                   ),
                 ),

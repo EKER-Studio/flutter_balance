@@ -24,30 +24,33 @@ void main() {
   }
 
   group('WeightPeriodFilterChips', () {
-    testWidgets('renders all TimePeriod filter chips and indicates selected period', (
+    testWidgets(
+      'renders all TimePeriod filter chips and indicates selected period',
+      (tester) async {
+        await tester.pumpWidget(buildTestWidget(period: TimePeriod.month));
+        await tester.pumpAndSettle();
+
+        expect(find.byType(ChoiceChip), findsNWidgets(4));
+        expect(find.text('Week'), findsOneWidget);
+        expect(find.text('Month'), findsOneWidget);
+        expect(find.text('Year'), findsOneWidget);
+        expect(find.text('All'), findsOneWidget);
+
+        final monthChip = tester.widget<ChoiceChip>(
+          find.widgetWithText(ChoiceChip, 'Month'),
+        );
+        final weekChip = tester.widget<ChoiceChip>(
+          find.widgetWithText(ChoiceChip, 'Week'),
+        );
+
+        expect(monthChip.selected, isTrue);
+        expect(weekChip.selected, isFalse);
+      },
+    );
+
+    testWidgets('invokes onPeriodChanged when a new chip is selected', (
       tester,
     ) async {
-      await tester.pumpWidget(buildTestWidget(period: TimePeriod.month));
-      await tester.pumpAndSettle();
-
-      expect(find.byType(ChoiceChip), findsNWidgets(4));
-      expect(find.text('Week'), findsOneWidget);
-      expect(find.text('Month'), findsOneWidget);
-      expect(find.text('Year'), findsOneWidget);
-      expect(find.text('All'), findsOneWidget);
-
-      final monthChip = tester.widget<ChoiceChip>(
-        find.widgetWithText(ChoiceChip, 'Month'),
-      );
-      final weekChip = tester.widget<ChoiceChip>(
-        find.widgetWithText(ChoiceChip, 'Week'),
-      );
-
-      expect(monthChip.selected, isTrue);
-      expect(weekChip.selected, isFalse);
-    });
-
-    testWidgets('invokes onPeriodChanged when a new chip is selected', (tester) async {
       TimePeriod? selected;
       await tester.pumpWidget(
         buildTestWidget(

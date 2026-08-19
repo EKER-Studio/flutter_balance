@@ -68,10 +68,11 @@ class StepWelcome extends StatelessWidget {
             SizedBox(height: isLandscape ? 4.0 : 16.0),
             Text(
               l10n.onboardingWelcomeTitle,
-              style: (isLandscape
-                      ? theme.textTheme.headlineSmall
-                      : theme.textTheme.headlineMedium)
-                  ?.copyWith(fontWeight: FontWeight.bold),
+              style:
+                  (isLandscape
+                          ? theme.textTheme.headlineSmall
+                          : theme.textTheme.headlineMedium)
+                      ?.copyWith(fontWeight: FontWeight.bold),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 8.0),

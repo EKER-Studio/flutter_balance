@@ -98,7 +98,10 @@ class PillSegmentedControl<T> extends StatelessWidget {
               borderRadius: BorderRadius.circular(12.0),
               onTap: () => onValueChanged(segment.value),
               child: ConstrainedBox(
-                constraints: const BoxConstraints(minHeight: 48.0, minWidth: 48.0),
+                constraints: const BoxConstraints(
+                  minHeight: 48.0,
+                  minWidth: 48.0,
+                ),
                 child: Padding(
                   padding: itemPadding,
                   child: Center(
@@ -106,7 +109,9 @@ class PillSegmentedControl<T> extends StatelessWidget {
                       segment.label,
                       style: theme.textTheme.labelLarge?.copyWith(
                         color: isSelected ? cs.onPrimary : cs.onSurfaceVariant,
-                        fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
+                        fontWeight: isSelected
+                            ? FontWeight.w600
+                            : FontWeight.w500,
                       ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,

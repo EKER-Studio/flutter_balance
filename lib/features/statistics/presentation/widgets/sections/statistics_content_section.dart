@@ -66,10 +66,7 @@ class StatisticsContentSection extends StatelessWidget {
           compliancePct: compliancePct,
         );
 
-        final rangeCard = WeightRangeCard(
-          entries: entries,
-          unit: unit,
-        );
+        final rangeCard = WeightRangeCard(entries: entries, unit: unit);
 
         final bmiCard = BmiChartCard(
           entries: filteredEntries,
@@ -80,10 +77,7 @@ class StatisticsContentSection extends StatelessWidget {
 
         return ClampedLayout(
           maxWidth: isWide ? 1000 : 600,
-          padding: const EdgeInsets.symmetric(
-            horizontal: 16,
-            vertical: 12,
-          ),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           child: isWide
               ? Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -170,7 +164,10 @@ class StatisticsContentSection extends StatelessWidget {
     return streak;
   }
 
-  static int _calculateTotalCompliance(List<WeightEntry> entries, DateTime now) {
+  static int _calculateTotalCompliance(
+    List<WeightEntry> entries,
+    DateTime now,
+  ) {
     if (entries.isEmpty) return 0;
 
     final firstDate = entries

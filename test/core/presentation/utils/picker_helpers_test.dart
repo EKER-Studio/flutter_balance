@@ -4,7 +4,9 @@ import 'package:balance/core/presentation/utils/picker_helpers.dart';
 
 void main() {
   group('showSafeTimePicker', () {
-    testWidgets('renders time picker and returns selected time', (tester) async {
+    testWidgets('renders time picker and returns selected time', (
+      tester,
+    ) async {
       TimeOfDay? selectedTime;
 
       await tester.pumpWidget(
@@ -36,47 +38,50 @@ void main() {
       expect(selectedTime, equals(const TimeOfDay(hour: 8, minute: 30)));
     });
 
-    testWidgets('supports landscape mode with dialOnly mode and custom insets', (
-      tester,
-    ) async {
-      TimeOfDay? selectedTime;
+    testWidgets(
+      'supports landscape mode with dialOnly mode and custom insets',
+      (tester) async {
+        TimeOfDay? selectedTime;
 
-      tester.view.physicalSize = const Size(1200, 600);
-      tester.view.devicePixelRatio = 1.0;
-      addTearDown(() => tester.view.resetPhysicalSize());
+        tester.view.physicalSize = const Size(1200, 600);
+        tester.view.devicePixelRatio = 1.0;
+        addTearDown(() => tester.view.resetPhysicalSize());
 
-      await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: Builder(
-              builder: (context) => ElevatedButton(
-                onPressed: () async {
-                  selectedTime = await showSafeTimePicker(
-                    context: context,
-                    initialTime: const TimeOfDay(hour: 14, minute: 0),
-                  );
-                },
-                child: const Text('Pick Time'),
+        await tester.pumpWidget(
+          MaterialApp(
+            home: Scaffold(
+              body: Builder(
+                builder: (context) => ElevatedButton(
+                  onPressed: () async {
+                    selectedTime = await showSafeTimePicker(
+                      context: context,
+                      initialTime: const TimeOfDay(hour: 14, minute: 0),
+                    );
+                  },
+                  child: const Text('Pick Time'),
+                ),
               ),
             ),
           ),
-        ),
-      );
+        );
 
-      await tester.tap(find.text('Pick Time'));
-      await tester.pumpAndSettle();
+        await tester.tap(find.text('Pick Time'));
+        await tester.pumpAndSettle();
 
-      expect(find.byType(TimePickerDialog), findsOneWidget);
+        expect(find.byType(TimePickerDialog), findsOneWidget);
 
-      await tester.tap(find.text('Cancel'));
-      await tester.pumpAndSettle();
+        await tester.tap(find.text('Cancel'));
+        await tester.pumpAndSettle();
 
-      expect(selectedTime, isNull);
-    });
+        expect(selectedTime, isNull);
+      },
+    );
   });
 
   group('showSafeDatePicker', () {
-    testWidgets('renders date picker and returns selected date', (tester) async {
+    testWidgets('renders date picker and returns selected date', (
+      tester,
+    ) async {
       DateTime? selectedDate;
       final initialDate = DateTime(2026, 6, 15);
 

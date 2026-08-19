@@ -104,10 +104,7 @@ class TodayContentSection extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               if (errorType != null) ...[
-                InlineErrorBanner(
-                  errorType: errorType!,
-                  onRetry: onRetry,
-                ),
+                InlineErrorBanner(errorType: errorType!, onRetry: onRetry),
                 const SizedBox(height: 16),
               ],
               HealthSummaryCard(

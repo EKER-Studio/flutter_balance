@@ -52,10 +52,11 @@ class WelcomeFeatureCard extends StatelessWidget {
             Expanded(
               child: Text(
                 title,
-                style: (isLandscape
-                        ? theme.textTheme.bodyMedium
-                        : theme.textTheme.bodyLarge)
-                    ?.copyWith(fontWeight: FontWeight.w500),
+                style:
+                    (isLandscape
+                            ? theme.textTheme.bodyMedium
+                            : theme.textTheme.bodyLarge)
+                        ?.copyWith(fontWeight: FontWeight.w500),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
               ),

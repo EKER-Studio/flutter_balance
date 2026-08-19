@@ -24,26 +24,27 @@ void main() {
   }
 
   group('BmiPeriodFilters', () {
-    testWidgets('renders week, month, year pills and triggers callback on change', (
-      tester,
-    ) async {
-      TimePeriod? selected;
-      await tester.pumpWidget(
-        buildTestWidget(
-          period: TimePeriod.month,
-          onPeriodChanged: (p) => selected = p,
-        ),
-      );
-      await tester.pumpAndSettle();
+    testWidgets(
+      'renders week, month, year pills and triggers callback on change',
+      (tester) async {
+        TimePeriod? selected;
+        await tester.pumpWidget(
+          buildTestWidget(
+            period: TimePeriod.month,
+            onPeriodChanged: (p) => selected = p,
+          ),
+        );
+        await tester.pumpAndSettle();
 
-      expect(find.text('Week'), findsOneWidget);
-      expect(find.text('Month'), findsOneWidget);
-      expect(find.text('Year'), findsOneWidget);
+        expect(find.text('Week'), findsOneWidget);
+        expect(find.text('Month'), findsOneWidget);
+        expect(find.text('Year'), findsOneWidget);
 
-      await tester.tap(find.text('Week'));
-      await tester.pumpAndSettle();
+        await tester.tap(find.text('Week'));
+        await tester.pumpAndSettle();
 
-      expect(selected, equals(TimePeriod.week));
-    });
+        expect(selected, equals(TimePeriod.week));
+      },
+    );
   });
 }
