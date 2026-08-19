@@ -483,5 +483,152 @@ Cze 16, 2026,
         expect(entries[2].weightKg, 84.8);
       },
     );
+
+    test('parses tab-delimited CSV', () async {
+      const csvContent =
+          'ID\tData\tWaga (kg)\tBMI\tNotatka\n'
+          '1\t2024-04-01\t76.3\t23.4\tTab separated\n'
+          '2\t2024-04-02\t76.0\t23.3\t\n';
+
+      final result = await CsvImporter.parse(csvContent);
+      final entries = result.validEntries;
+
+      expect(entries.length, 2);
+      expect(result.skippedRowCount, 0);
+      expect(entries[0].weightKg, 76.3);
+      expect(entries[0].note, 'Tab separated');
+      expect(entries[1].weightKg, 76.0);
+    });
+
+    test('parses dd-MM-yyyy and yyyy/MM/dd date formats', () async {
+      const csvContent = '''
+Data,Waga
+15-04-2024,77.1
+2024/05/02,77.5
+''';
+
+      final result = await CsvImporter.parse(csvContent);
+      final entries = result.validEntries;
+
+      expect(entries.length, 2);
+      expect(result.skippedRowCount, 0);
+      expect(entries[0].dateTime, DateTime(2024, 4, 15));
+      expect(entries[0].weightKg, 77.1);
+      expect(entries[1].dateTime, DateTime(2024, 5, 2));
+      expect(entries[1].weightKg, 77.5);
+    });
+
+    test('parses English month names with MDY format and AM/PM time', () async {
+      const csvContent = '''
+Date,Weight
+"Jun 15, 2026 9:26 AM",86.0
+"July 3, 2026 1:48 PM",85.2
+''';
+
+      final result = await CsvImporter.parse(csvContent);
+      final entries = result.validEntries;
+
+      expect(entries.length, 2);
+      expect(result.skippedRowCount, 0);
+      expect(entries[0].dateTime, DateTime(2026, 6, 15, 9, 26));
+      expect(entries[0].weightKg, 86.0);
+      expect(entries[1].dateTime, DateTime(2026, 7, 3, 13, 48));
+      expect(entries[1].weightKg, 85.2);
+    });
+
+    test(
+      'skips rows with future timestamps beyond the 24-hour grace',
+      () async {
+        const csvContent = '''
+Data,Waga
+2099-01-01,75.0
+2024-01-15,74.5
+''';
+
+        final result = await CsvImporter.parse(csvContent);
+
+        expect(result.validEntries.length, 1);
+        expect(result.skippedRowCount, 1);
+        expect(result.validEntries[0].dateTime, DateTime(2024, 1, 15));
+      },
+    );
+
+    test(
+      'skips rows with dates before the 2000-01-01 historic limit',
+      () async {
+        const csvContent = '''
+Data,Waga
+1999-12-31,70.0
+2024-01-15,74.5
+''';
+
+        final result = await CsvImporter.parse(csvContent);
+
+        expect(result.validEntries.length, 1);
+        expect(result.skippedRowCount, 1);
+        expect(result.validEntries[0].dateTime, DateTime(2024, 1, 15));
+      },
+    );
+
+    test('truncates notes longer than 500 characters', () async {
+      final longNote = 'x' * 501;
+      final csvContent =
+          '''
+Data,Waga,Notatka
+2024-01-15,75.0,$longNote
+''';
+
+      final result = await CsvImporter.parse(csvContent);
+
+      expect(result.validEntries.length, 1);
+      expect(result.skippedRowCount, 0);
+      expect(result.validEntries[0].note, 'x' * 500);
+    });
+
+    test('tracks the earliest and latest dates across valid entries', () async {
+      const csvContent = '''
+Data,Waga
+2024-03-10,72.0
+2024-01-05,73.5
+2024-05-20,71.0
+''';
+
+      final result = await CsvImporter.parse(csvContent);
+
+      expect(result.earliestDate, DateTime(2024, 1, 5));
+      expect(result.latestDate, DateTime(2024, 5, 20));
+    });
+
+    test('consumes placeholder weight variants as date-context rows', () async {
+      const csvContent = '''
+Data,Waga
+2024-01-15,N/A
+2024-01-16,na
+2024-01-17,null
+2024-01-18,-
+2024-01-19,75.0
+''';
+
+      final result = await CsvImporter.parse(csvContent);
+
+      expect(result.validEntries.length, 1);
+      expect(result.skippedRowCount, 0);
+      expect(result.validEntries[0].weightKg, 75.0);
+    });
+
+    test('handles RFC 4180 multiline quoted note fields', () async {
+      const csvContent = '''
+Data,Waga,Notatka
+2024-01-15,75.0,"Line one
+Line two"
+''';
+
+      final result = await CsvImporter.parse(csvContent);
+      final entries = result.validEntries;
+
+      expect(entries.length, 1);
+      expect(result.skippedRowCount, 0);
+      expect(entries[0].note, 'Line one\nLine two');
+    });
   });
 }

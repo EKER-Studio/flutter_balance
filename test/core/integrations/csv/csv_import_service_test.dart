@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
@@ -155,6 +156,59 @@ void main() {
           ),
         ),
       );
+    });
+
+    test('strips a leading UTF-8 BOM before parsing', () async {
+      final file = writeCsv(
+        '\uFEFFID,Data,Weight (kg),BMI,Note\n'
+        '1,2024-01-18 07:30,74.5,22.8,BOM note\n',
+      );
+      filePicker = FakeFilePickerPlatform(
+        ({required type, allowedExtensions}) async => pickResult(file.path),
+      );
+      FilePickerPlatform.instance = filePicker;
+
+      final result = await service.pickAndImport();
+
+      expect(result, isNotNull);
+      expect(result!.validEntries, hasLength(1));
+      expect(result.validEntries.single.weightKg, 74.5);
+      expect(result.validEntries.single.note, 'BOM note');
+    });
+
+    test(
+      'decodes files with invalid UTF-8 bytes using allowMalformed',
+      () async {
+        final file = File('${tempDir.path}/weights.csv');
+        file.writeAsBytesSync([
+          ...utf8.encode(
+            'ID,Data,Weight (kg),BMI,Note\n'
+            '1,2024-01-19 07:30,73.9,22.5,Note ',
+          ),
+          0xFF,
+          ...utf8.encode(' end\n'),
+        ]);
+        filePicker = FakeFilePickerPlatform(
+          ({required type, allowedExtensions}) async => pickResult(file.path),
+        );
+        FilePickerPlatform.instance = filePicker;
+
+        final result = await service.pickAndImport();
+
+        expect(result!.validEntries, hasLength(1));
+        expect(result.validEntries.single.note, 'Note \uFFFD end');
+      },
+    );
+
+    test('allows files exactly at the size limit', () async {
+      final file = File('${tempDir.path}/weights.csv');
+      file.writeAsBytesSync(List.filled(5 * 1024 * 1024, 0x78));
+      filePicker = FakeFilePickerPlatform(
+        ({required type, allowedExtensions}) async => pickResult(file.path),
+      );
+      FilePickerPlatform.instance = filePicker;
+
+      expect(() => service.pickAndImport(), throwsFormatException);
     });
 
     test('skips invalid rows and returns valid entries', () async {

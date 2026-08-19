@@ -49,6 +49,52 @@ void main() {
       expect(rows[0], 'ID,Date,Weight (kg),Note');
     });
 
+    test('generateCsv applies RFC 4180 quoting to notes with delimiters', () {
+      final entries = [
+        WeightEntry(
+          id: 5,
+          weightKg: 71.2,
+          dateTime: DateTime(2026, 7, 26, 12, 0),
+          note: 'Comma, and "quote"',
+        ),
+      ];
+
+      final csv = CsvExporter.generateCsv(entries);
+      final rows = csv.split('\n');
+
+      expect(rows[1], '5,2026-07-26 12:00,71.2,"Comma, and ""quote"""');
+    });
+
+    test('generateCsv preserves multiline notes inside quoted fields', () {
+      final entries = [
+        WeightEntry(
+          id: 6,
+          weightKg: 74.8,
+          dateTime: DateTime(2026, 7, 27, 9, 30),
+          note: 'Line one\nLine two',
+        ),
+      ];
+
+      final csv = CsvExporter.generateCsv(entries);
+
+      expect(csv, contains('"Line one\nLine two"'));
+    });
+
+    test('generateCsv rounds weights to one decimal', () {
+      final entries = [
+        WeightEntry(
+          id: 7,
+          weightKg: 70.26,
+          dateTime: DateTime(2026, 7, 28, 6, 45),
+        ),
+      ];
+
+      final csv = CsvExporter.generateCsv(entries);
+      final rows = csv.split('\n');
+
+      expect(rows[1], '7,2026-07-28 06:45,70.3,');
+    });
+
     test('exportToFile writes CSV content to disk file', () async {
       final entries = [
         WeightEntry(
@@ -67,6 +113,24 @@ void main() {
       expect(content, contains('1,2026-08-01 08:00,75.0,Test export file'));
 
       // Cleanup
+      if (await file.exists()) {
+        await file.delete();
+      }
+    });
+
+    test('exportToFile uses the timestamped export filename pattern', () async {
+      final entries = [
+        WeightEntry(
+          id: 8,
+          weightKg: 80.0,
+          dateTime: DateTime(2026, 8, 2, 12, 30),
+        ),
+      ];
+
+      final file = await CsvExporter.exportToFile(entries);
+
+      expect(file.path, matches(RegExp(r'balance_export_\d{8}_\d{6}\.csv$')));
+
       if (await file.exists()) {
         await file.delete();
       }
