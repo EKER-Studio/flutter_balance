@@ -121,6 +121,7 @@ class TodayScreen extends StatelessWidget {
       action: SnackBarAction(
         label: l10n.retry,
         onPressed: () {
+          AppAnalytics.logTodayErrorRetryClicked();
           context.read<WeightBloc>().add(const SubscribeToWeightChanges());
         },
       ),

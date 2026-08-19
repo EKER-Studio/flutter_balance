@@ -5,7 +5,7 @@ import 'package:balance/l10n/app_localizations.dart';
 
 /// Fallback UI shown when app startup initialization fails.
 ///
-/// A stateless widget rendered as fallback content when app initialization (DB, storage, etc.) fails.
+/// Rendered as fallback content when app initialization (DB, storage, etc.) fails.
 ///
 /// Designed with high-contrast Material 3 semantics and full accessibility
 /// (a11y) support so users on TalkBack/VoiceOver are informed of initialization
@@ -14,7 +14,7 @@ import 'package:balance/l10n/app_localizations.dart';
 /// Renders inside an existing MaterialApp and resolves colors and text styles
 /// from the ambient Theme, so it can be embedded anywhere without owning its
 /// own Navigator, localization, or overlay scope.
-class AppInitializationErrorContent extends StatelessWidget {
+class AppInitializationErrorContent extends StatefulWidget {
   /// Error details for diagnostic display.
   final Object error;
 
@@ -27,6 +27,20 @@ class AppInitializationErrorContent extends StatelessWidget {
     required this.error,
     required this.onRetry,
   });
+
+  @override
+  State<AppInitializationErrorContent> createState() =>
+      _AppInitializationErrorContentState();
+}
+
+/// State for [AppInitializationErrorContent] reporting the screen view once.
+class _AppInitializationErrorContentState
+    extends State<AppInitializationErrorContent> {
+  @override
+  void initState() {
+    super.initState();
+    AppAnalytics.logAppInitErrorScreenViewed();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -87,7 +101,7 @@ class AppInitializationErrorContent extends StatelessWidget {
                     child: FilledButton.icon(
                       onPressed: () {
                         AppAnalytics.logAppInitRetryClicked();
-                        onRetry();
+                        widget.onRetry();
                       },
                       icon: const Icon(Icons.refresh_rounded),
                       label: Text(l10n.retryStartup),
