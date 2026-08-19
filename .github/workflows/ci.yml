@@ -50,8 +50,8 @@ jobs:
 
       - name: Import lint layer guardrail
         run: |
-          IMPORT_LINT_OUTPUT="$(dart run import_lint 2>&1)"
-          import_lint_status=$?
+          import_lint_status=0
+          IMPORT_LINT_OUTPUT="$(dart run import_lint 2>&1)" || import_lint_status=$?
           echo "$IMPORT_LINT_OUTPUT"
           CLEANED_IMPORT_LINT_OUTPUT="$(echo "$IMPORT_LINT_OUTPUT" | perl -pe 's/\x1b\[[0-9;]*[a-zA-Z]//g')"
           if [[ $import_lint_status -ne 0 ]]; then
