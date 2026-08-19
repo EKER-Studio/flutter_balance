@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:balance/core/utils/analytics.dart';
 import 'package:balance/features/settings/presentation/bloc/bmi_category.dart';
 import 'package:balance/features/weight/presentation/widgets/components/bmi_legend_item.dart';
 import 'package:balance/l10n/app_localizations.dart';
@@ -51,7 +52,10 @@ class BmiLegendDialog extends StatelessWidget {
       ),
       actions: [
         TextButton(
-          onPressed: () => Navigator.of(context).pop(),
+          onPressed: () {
+            AppAnalytics.logDialogBmiLegendClosed();
+            Navigator.of(context).pop();
+          },
           child: Text(l10n.ok),
         ),
       ],

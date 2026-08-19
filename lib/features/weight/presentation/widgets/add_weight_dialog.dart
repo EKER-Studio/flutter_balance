@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:balance/core/models/measurement_unit.dart';
 import 'package:balance/core/presentation/utils/picker_helpers.dart';
+import 'package:balance/core/utils/analytics.dart';
 import 'package:balance/core/utils/unit_converter.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_bloc.dart';
 import 'package:balance/features/weight/domain/entities/weight_entry.dart';
@@ -73,6 +74,7 @@ class _AddWeightDialogState extends State<AddWeightDialog> {
   /// in the future.
   Future<void> _pickDate(BuildContext context) async {
     FocusScope.of(context).unfocus();
+    AppAnalytics.logDialogAddWeightDatePickerOpened();
     final now = DateTime.now();
     final picked = await showDatePicker(
       context: context,
@@ -83,6 +85,9 @@ class _AddWeightDialogState extends State<AddWeightDialog> {
     if (!mounted) return;
 
     if (picked != null) {
+      AppAnalytics.logDialogAddWeightDateChanged(
+        picked.toIso8601String().substring(0, 10),
+      );
       setState(() {
         _selectedDate = picked;
         _validateDateTime();
@@ -93,6 +98,7 @@ class _AddWeightDialogState extends State<AddWeightDialog> {
   /// Shows the time picker and validates the combined selection.
   Future<void> _pickTime(BuildContext context) async {
     FocusScope.of(context).unfocus();
+    AppAnalytics.logDialogAddWeightTimePickerOpened();
     final picked = await showSafeTimePicker(
       context: context,
       initialTime: _selectedTime,
@@ -100,6 +106,10 @@ class _AddWeightDialogState extends State<AddWeightDialog> {
     if (!mounted) return;
 
     if (picked != null) {
+      AppAnalytics.logDialogAddWeightTimeChanged(
+        hour: picked.hour,
+        minute: picked.minute,
+      );
       setState(() {
         _selectedTime = picked;
         _validateDateTime();
@@ -111,6 +121,7 @@ class _AddWeightDialogState extends State<AddWeightDialog> {
   void _validateDateTime() {
     final now = DateTime.now().add(const Duration(minutes: 1));
     if (_combinedDateTime.isAfter(now)) {
+      AppAnalytics.logDialogAddWeightValidationError('future_date');
       _dateTimeError = AppLocalizations.of(context).futureDateError;
     } else {
       _dateTimeError = null;
@@ -170,7 +181,10 @@ class _AddWeightDialogState extends State<AddWeightDialog> {
       ),
       actions: [
         TextButton(
-          onPressed: () => Navigator.of(context).pop(),
+          onPressed: () {
+            AppAnalytics.logDialogAddWeightCancelled();
+            Navigator.of(context).pop();
+          },
           child: Text(l10n.cancel),
         ),
         TextButton(onPressed: _onSave, child: Text(l10n.save)),
@@ -181,12 +195,14 @@ class _AddWeightDialogState extends State<AddWeightDialog> {
   /// Validates the form and dispatches [AddWeight] to [WeightBloc] on success.
   void _validateWeight(String value) {
     if (value.trim().isEmpty) {
+      AppAnalytics.logDialogAddWeightValidationError('empty');
       _weightError = AppLocalizations.of(context).weightCannotBeEmpty;
       return;
     }
     final normalized = value.trim().replaceAll(',', '.');
     final parsed = double.tryParse(normalized);
     if (parsed == null) {
+      AppAnalytics.logDialogAddWeightValidationError('invalid_number');
       _weightError = AppLocalizations.of(context).enterValidNumber;
       return;
     }
@@ -196,6 +212,7 @@ class _AddWeightDialogState extends State<AddWeightDialog> {
         : parsed;
     if (weightKg < WeightEntry.minWeightKg ||
         weightKg > WeightEntry.maxWeightKg) {
+      AppAnalytics.logDialogAddWeightValidationError('range_error');
       _weightError = AppLocalizations.of(context).weightRangeError;
       return;
     }
@@ -223,6 +240,16 @@ class _AddWeightDialogState extends State<AddWeightDialog> {
     final note = _noteController.text.trim().isEmpty
         ? null
         : _noteController.text.trim();
+
+    final isPastDate = _combinedDateTime.isBefore(
+      DateTime.now().subtract(const Duration(minutes: 5)),
+    );
+
+    AppAnalytics.logDialogAddWeightSaved(
+      weightKg: weightKg,
+      hasNote: note != null,
+      isPastDate: isPastDate,
+    );
 
     context.read<WeightBloc>().add(
       AddWeight(weightKg: weightKg, note: note, dateTime: _combinedDateTime),
