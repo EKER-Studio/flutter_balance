@@ -913,7 +913,7 @@ void main() {
         seed: () =>
             const WeightLoaded(entries: [], filteredEntries: [], heightCm: 170),
         act: (bloc) async {
-          bloc.add(const SyncHealthEntries());
+          bloc.add(SyncHealthEntries(startDate: DateTime(2026, 1, 1)));
           await Future<void>.delayed(Duration.zero);
           await Future<void>.delayed(Duration.zero);
         },
@@ -925,6 +925,70 @@ void main() {
             ),
           ).called(1);
           verifyNever(() => repository.syncRemoteEntries(any()));
+        },
+      );
+
+      blocTest<WeightBloc, WeightState>(
+        'does not mirror local entries outside the sync window even when '
+        'they have no remote counterpart',
+        build: () {
+          when(() => repository.getAllEntries()).thenAnswer(
+            (_) async => [
+              // Well inside [windowStart, windowEnd] and missing remotely —
+              // should be pushed.
+              WeightEntry(
+                id: 1,
+                weightKg: 74,
+                dateTime: DateTime(2026, 2, 3, 8),
+              ),
+              // Months before windowStart — must NOT be treated as
+              // "missing from remote" just because this fetch's window
+              // doesn't cover it. Regression guard for a bug where the
+              // full local history (unbounded) was diffed against only
+              // the incremental remote fetch window, causing the entire
+              // history to be re-pushed to the health platform on every
+              // sync call.
+              WeightEntry(
+                id: 2,
+                weightKg: 71,
+                dateTime: DateTime(2025, 10, 1, 8),
+              ),
+            ],
+          );
+          when(
+            () => healthService.fetchWeightHistory(
+              start: any(named: 'start'),
+              end: any(named: 'end'),
+            ),
+          ).thenAnswer((_) async => const []);
+          return WeightBloc(
+            repository: repository,
+            appSettingsBloc: buildSettingsBloc(),
+            healthService: healthService,
+          );
+        },
+        seed: () =>
+            const WeightLoaded(entries: [], filteredEntries: [], heightCm: 170),
+        act: (bloc) async {
+          bloc.add(SyncHealthEntries(startDate: DateTime(2026, 2, 1)));
+          await Future<void>.delayed(Duration.zero);
+          await Future<void>.delayed(Duration.zero);
+        },
+        verify: (_) {
+          // The in-window entry (id: 1) is pushed exactly once...
+          verify(
+            () => healthService.writeWeight(
+              weightKg: 74,
+              timestamp: DateTime(2026, 2, 3, 8),
+            ),
+          ).called(1);
+          // ...but the out-of-window entry (id: 2) must never be.
+          verifyNever(
+            () => healthService.writeWeight(
+              weightKg: 71,
+              timestamp: any(named: 'timestamp'),
+            ),
+          );
         },
       );
 
