@@ -85,6 +85,31 @@ void main() {
         const BorderRadius.vertical(top: Radius.circular(16)),
       );
     });
+
+    test('configures elevated, outlined, and text button themes', () {
+      final elevated = AppTheme.lightTheme.elevatedButtonTheme.style;
+      expect(elevated?.elevation?.resolve({}), 1);
+      final outlined = AppTheme.lightTheme.outlinedButtonTheme.style;
+      expect(outlined?.minimumSize?.resolve({}), const Size(64, 48));
+      final text = AppTheme.lightTheme.textButtonTheme.style;
+      expect(text?.shape?.resolve({}), isA<RoundedRectangleBorder>());
+    });
+
+    test('configures fab, chip, and snackbar themes', () {
+      final fab = AppTheme.lightTheme.floatingActionButtonTheme;
+      expect(fab.elevation, 2);
+      expect(fab.backgroundColor, AppTheme.lightColorScheme.primary);
+
+      final chip = AppTheme.lightTheme.chipTheme;
+      expect(chip.selectedColor, AppTheme.lightColorScheme.primaryContainer);
+
+      final snack = AppTheme.lightTheme.snackBarTheme;
+      expect(snack.behavior, SnackBarBehavior.floating);
+      expect(
+        snack.backgroundColor,
+        AppTheme.lightColorScheme.secondaryContainer,
+      );
+    });
   });
 
   group('AppTheme.darkTheme', () {
@@ -122,6 +147,46 @@ void main() {
       expect(focused.borderRadius, BorderRadius.circular(8));
       expect(focused.borderSide.color, AppTheme.darkColorScheme.primary);
     });
+
+    test('uses rounded dialog and bottom sheet shapes in dark theme', () {
+      expect(
+        (AppTheme.darkTheme.dialogTheme.shape! as RoundedRectangleBorder)
+            .borderRadius,
+        BorderRadius.circular(16),
+      );
+      expect(
+        (AppTheme.darkTheme.bottomSheetTheme.shape! as RoundedRectangleBorder)
+            .borderRadius,
+        const BorderRadius.vertical(top: Radius.circular(16)),
+      );
+    });
+
+    test(
+      'configures elevated, outlined, text button, fab, chip, and snackbar in dark theme',
+      () {
+        final elevated = AppTheme.darkTheme.elevatedButtonTheme.style;
+        expect(elevated?.elevation?.resolve({}), 1);
+
+        final outlined = AppTheme.darkTheme.outlinedButtonTheme.style;
+        expect(outlined?.minimumSize?.resolve({}), const Size(64, 48));
+
+        final text = AppTheme.darkTheme.textButtonTheme.style;
+        expect(text?.shape?.resolve({}), isA<RoundedRectangleBorder>());
+
+        final fab = AppTheme.darkTheme.floatingActionButtonTheme;
+        expect(fab.backgroundColor, AppTheme.darkColorScheme.primary);
+
+        final chip = AppTheme.darkTheme.chipTheme;
+        expect(chip.selectedColor, AppTheme.darkColorScheme.primaryContainer);
+
+        final snack = AppTheme.darkTheme.snackBarTheme;
+        expect(snack.behavior, SnackBarBehavior.floating);
+        expect(
+          snack.backgroundColor,
+          AppTheme.darkColorScheme.secondaryContainer,
+        );
+      },
+    );
   });
 
   group('AppTheme.textTheme', () {

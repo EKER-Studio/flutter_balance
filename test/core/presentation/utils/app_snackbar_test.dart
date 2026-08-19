@@ -125,5 +125,38 @@ void main() {
       final icon = tester.widget<Icon>(find.byIcon(Icons.info_outline_rounded));
       expect(icon.color, const Color(0xFFA8C7FA));
     });
+
+    testWidgets('shows action button when provided', (tester) async {
+      await tester.pumpWidget(
+        buildTestApp(
+          themeMode: ThemeMode.light,
+          type: SnackBarType.success,
+          message: 'Message with action',
+          action: SnackBarAction(label: 'Undo', onPressed: () {}),
+        ),
+      );
+
+      await tester.tap(find.byType(ElevatedButton));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Undo'), findsOneWidget);
+    });
+
+    testWidgets('does not show action button when not provided', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        buildTestApp(
+          themeMode: ThemeMode.light,
+          type: SnackBarType.success,
+          message: 'Message without action',
+        ),
+      );
+
+      await tester.tap(find.byType(ElevatedButton));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Undo'), findsNothing);
+    });
   });
 }
