@@ -197,7 +197,7 @@ class CalendarDayEntriesCard extends StatelessWidget {
           },
         ),
         const SizedBox(height: 24),
-        OutlinedButton.icon(
+        FilledButton.icon(
           onPressed: () {
             final dateStr = selectedDate.toIso8601String().substring(0, 10);
             AppAnalytics.logCalendarAddMeasurementClicked(dateStr);
