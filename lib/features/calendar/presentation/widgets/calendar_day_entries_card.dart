@@ -9,7 +9,7 @@ import 'package:balance/core/utils/unit_converter.dart';
 import 'package:balance/features/weight/domain/entities/weight_entry.dart';
 import 'package:balance/features/weight/presentation/bloc/weight_bloc.dart';
 import 'package:balance/features/weight/presentation/bloc/weight_event.dart';
-import 'package:balance/features/weight/presentation/widgets/add_weight_dialog.dart';
+import 'package:balance/features/weight/presentation/widgets/add_weight_sheet.dart';
 import 'package:balance/l10n/app_localizations.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_bloc.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_state.dart';
@@ -202,11 +202,13 @@ class CalendarDayEntriesCard extends StatelessWidget {
             final dateStr = selectedDate.toIso8601String().substring(0, 10);
             AppAnalytics.logCalendarAddMeasurementClicked(dateStr);
             AppAnalytics.logDialogAddWeightOpened('calendar');
-            showDialog<void>(
+            final weightBloc = context.read<WeightBloc>();
+            showModalBottomSheet<void>(
               context: context,
-              builder: (dialogCtx) => BlocProvider.value(
-                value: context.read<WeightBloc>(),
-                child: AddWeightDialog(initialDate: selectedDate),
+              isScrollControlled: true,
+              builder: (sheetCtx) => BlocProvider.value(
+                value: weightBloc,
+                child: AddWeightSheet(initialDate: selectedDate),
               ),
             );
           },

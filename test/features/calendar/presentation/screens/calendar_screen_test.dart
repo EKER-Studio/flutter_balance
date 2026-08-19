@@ -11,7 +11,7 @@ import 'package:balance/features/weight/presentation/bloc/weight_state.dart';
 import 'package:balance/features/calendar/presentation/screens/calendar_screen.dart';
 import 'package:balance/features/calendar/presentation/widgets/calendar_error_card.dart';
 import 'package:balance/features/weight/domain/weight_error_type.dart';
-import 'package:balance/features/weight/presentation/widgets/add_weight_dialog.dart';
+import 'package:balance/features/weight/presentation/widgets/add_weight_sheet.dart';
 import 'package:balance/l10n/app_localizations.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_event.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_bloc.dart';
@@ -171,7 +171,7 @@ void main() {
         await tester.tap(find.byIcon(Icons.add));
         await tester.pumpAndSettle();
 
-        expect(find.byType(AddWeightDialog), findsOneWidget);
+        expect(find.byType(AddWeightSheet), findsOneWidget);
       },
     );
 

@@ -12,24 +12,25 @@ import 'package:balance/features/weight/presentation/widgets/components/date_tim
 import 'package:balance/features/weight/presentation/widgets/components/weight_input_field.dart';
 import 'package:balance/l10n/app_localizations.dart';
 
-/// A modal dialog form for adding a new weight measurement.
+/// A modal bottom sheet form for adding a new weight measurement.
 ///
 /// Validates the weight against [WeightEntry.minWeightKg] and
 /// [WeightEntry.maxWeightKg], converts imperial input to kilograms, and
 /// dispatches [AddWeight] to [WeightBloc] on save.
-class AddWeightDialog extends StatefulWidget {
+class AddWeightSheet extends StatefulWidget {
   /// The optional initial date/time for the measurement.
   final DateTime? initialDate;
 
-  /// Creates an [AddWeightDialog] with an optional [initialDate].
-  const AddWeightDialog({super.key, this.initialDate});
+  /// Creates an [AddWeightSheet] with an optional [initialDate].
+  const AddWeightSheet({super.key, this.initialDate});
 
   @override
-  State<AddWeightDialog> createState() => _AddWeightDialogState();
+  State<AddWeightSheet> createState() => _AddWeightSheetState();
 }
 
 /// The state owning the form controllers, selected date/time, and save flow.
-class _AddWeightDialogState extends State<AddWeightDialog> {
+class _AddWeightSheetState extends State<AddWeightSheet>
+    with WidgetsBindingObserver {
   final _weightController = TextEditingController();
   final _noteController = TextEditingController();
 
@@ -37,10 +38,12 @@ class _AddWeightDialogState extends State<AddWeightDialog> {
   late TimeOfDay _selectedTime;
   String? _dateTimeError;
   String? _weightError;
+  Orientation? _lastOrientation;
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     final now = DateTime.now();
     final initial = widget.initialDate ?? now;
 
@@ -56,7 +59,26 @@ class _AddWeightDialogState extends State<AddWeightDialog> {
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _lastOrientation ??= MediaQuery.orientationOf(context);
+  }
+
+  /// Dismisses the software keyboard when the device rotates so the sheet is
+  /// rebuilt without an active IME connection, avoiding an ancestor lookup on
+  /// an element deactivated during the rotation/keyboard teardown race.
+  @override
+  void didChangeMetrics() {
+    final orientation = MediaQuery.orientationOf(context);
+    if (orientation != _lastOrientation) {
+      _lastOrientation = orientation;
+      FocusManager.instance.primaryFocus?.unfocus();
+    }
+  }
+
+  @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _weightController.dispose();
     _noteController.dispose();
     super.dispose();
@@ -132,68 +154,97 @@ class _AddWeightDialogState extends State<AddWeightDialog> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final unit = context.watch<AppSettingsBloc>().state.measurementUnit;
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
 
-    return AlertDialog(
-      scrollable: true,
-      insetPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
-      title: Text(l10n.addWeight),
-      content: SizedBox(
-        width: 320,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            DateTimePickerRow(
-              selectedDate: _selectedDate,
-              selectedTime: _selectedTime,
-              dateTimeError: _dateTimeError,
-              onPickDate: () => _pickDate(context),
-              onPickTime: () => _pickTime(context),
-            ),
-            const SizedBox(height: 16),
-            WeightInputField(
-              controller: _weightController,
-              unit: unit,
-              weightError: _weightError,
-              onChanged: (_) {
-                if (_weightError != null) setState(() => _weightError = null);
-              },
-            ),
-            const SizedBox(height: 16),
-            TextField(
-              controller: _noteController,
-              decoration: InputDecoration(
-                labelText: l10n.noteLabel,
-                border: const OutlineInputBorder(),
-                contentPadding: const EdgeInsetsDirectional.fromSTEB(
-                  12,
-                  16,
-                  12,
-                  12,
+    return Padding(
+      padding: EdgeInsets.only(bottom: MediaQuery.viewInsetsOf(context).bottom),
+      child: SafeArea(
+        top: false,
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.fromLTRB(24, 12, 24, 24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Center(
+                child: Container(
+                  width: 32,
+                  height: 4,
+                  margin: const EdgeInsets.only(bottom: 16),
+                  decoration: BoxDecoration(
+                    color: colorScheme.onSurfaceVariant.withValues(alpha: 0.4),
+                    borderRadius: BorderRadius.circular(2),
+                  ),
                 ),
               ),
-              maxLines: 1,
-              textInputAction: TextInputAction.done,
-              onChanged: (val) {
-                AppAnalytics.logDialogAddWeightNoteChanged(
-                  val.trim().isNotEmpty,
-                );
-              },
-              onSubmitted: (_) => _onSave(),
-            ),
-          ],
+              Text(
+                l10n.addWeight,
+                style: textTheme.titleLarge?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: colorScheme.onSurface,
+                ),
+              ),
+              const SizedBox(height: 20),
+              DateTimePickerRow(
+                selectedDate: _selectedDate,
+                selectedTime: _selectedTime,
+                dateTimeError: _dateTimeError,
+                onPickDate: () => _pickDate(context),
+                onPickTime: () => _pickTime(context),
+              ),
+              const SizedBox(height: 16),
+              WeightInputField(
+                controller: _weightController,
+                unit: unit,
+                weightError: _weightError,
+                onChanged: (_) {
+                  if (_weightError != null) {
+                    setState(() => _weightError = null);
+                  }
+                },
+              ),
+              const SizedBox(height: 16),
+              TextField(
+                controller: _noteController,
+                decoration: InputDecoration(
+                  labelText: l10n.noteLabel,
+                  border: const OutlineInputBorder(),
+                  contentPadding: const EdgeInsetsDirectional.fromSTEB(
+                    12,
+                    16,
+                    12,
+                    12,
+                  ),
+                ),
+                maxLines: 1,
+                textInputAction: TextInputAction.done,
+                onChanged: (val) {
+                  AppAnalytics.logDialogAddWeightNoteChanged(
+                    val.trim().isNotEmpty,
+                  );
+                },
+                onSubmitted: (_) => _onSave(),
+              ),
+              const SizedBox(height: 24),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  TextButton(
+                    onPressed: () {
+                      AppAnalytics.logDialogAddWeightCancelled();
+                      Navigator.of(context).pop();
+                    },
+                    child: Text(l10n.cancel),
+                  ),
+                  const SizedBox(width: 8),
+                  FilledButton(onPressed: _onSave, child: Text(l10n.save)),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
-      actions: [
-        TextButton(
-          onPressed: () {
-            AppAnalytics.logDialogAddWeightCancelled();
-            Navigator.of(context).pop();
-          },
-          child: Text(l10n.cancel),
-        ),
-        TextButton(onPressed: _onSave, child: Text(l10n.save)),
-      ],
     );
   }
 

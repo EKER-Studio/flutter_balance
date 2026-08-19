@@ -11,7 +11,7 @@ import 'package:balance/features/weight/presentation/bloc/weight_bloc.dart';
 import 'package:balance/features/weight/presentation/bloc/weight_event.dart';
 import 'package:balance/features/weight/presentation/bloc/weight_state.dart';
 import 'package:balance/features/dashboard/presentation/screens/today_screen.dart';
-import 'package:balance/features/weight/presentation/widgets/add_weight_dialog.dart';
+import 'package:balance/features/weight/presentation/widgets/add_weight_sheet.dart';
 import 'package:balance/features/dashboard/presentation/widgets/today_shimmer_skeleton.dart';
 import 'package:balance/l10n/app_localizations.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_bloc.dart';
@@ -234,7 +234,7 @@ void main() {
     await tester.tap(find.text('Add first measurement'));
     await tester.pumpAndSettle();
 
-    expect(find.byType(AddWeightDialog), findsOneWidget);
+    expect(find.byType(AddWeightSheet), findsOneWidget);
   });
 
   testWidgets('renders cards and FAB when weight entries exist', (
@@ -314,7 +314,7 @@ void main() {
     await tester.tap(find.byType(FloatingActionButton));
     await tester.pumpAndSettle();
 
-    expect(find.byType(AddWeightDialog), findsOneWidget);
+    expect(find.byType(AddWeightSheet), findsOneWidget);
   });
 
   testWidgets('tapping the empty-state retry re-subscribes to changes', (

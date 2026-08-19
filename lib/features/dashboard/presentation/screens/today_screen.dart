@@ -13,7 +13,7 @@ import 'package:balance/features/weight/presentation/bloc/weight_bloc.dart';
 import 'package:balance/features/weight/presentation/bloc/weight_event.dart';
 import 'package:balance/features/weight/presentation/bloc/weight_state.dart';
 import 'package:balance/features/weight/presentation/utils/weight_error_localizer.dart';
-import 'package:balance/features/weight/presentation/widgets/add_weight_dialog.dart';
+import 'package:balance/features/weight/presentation/widgets/add_weight_sheet.dart';
 import 'package:balance/l10n/app_localizations.dart';
 
 /// A screen displaying the daily summary, BMI, goal progress, and weight trend.
@@ -129,12 +129,12 @@ class TodayScreen extends StatelessWidget {
 
   void _showAddWeightSheet(BuildContext context, {String source = 'fab'}) {
     AppAnalytics.logDialogAddWeightOpened(source);
-    showDialog<void>(
+    final weightBloc = context.read<WeightBloc>();
+    showModalBottomSheet<void>(
       context: context,
-      builder: (dialogCtx) => BlocProvider.value(
-        value: context.read<WeightBloc>(),
-        child: const AddWeightDialog(),
-      ),
+      isScrollControlled: true,
+      builder: (sheetCtx) =>
+          BlocProvider.value(value: weightBloc, child: const AddWeightSheet()),
     );
   }
 }
