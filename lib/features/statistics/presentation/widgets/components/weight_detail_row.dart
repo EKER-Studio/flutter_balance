@@ -31,38 +31,40 @@ class WeightDetailRow extends StatelessWidget {
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
 
-    return Row(
-      children: [
-        Icon(icon, size: 24, color: iconColor),
-        const SizedBox(width: 8),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                label,
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: cs.onSurface,
-                  fontWeight: FontWeight.w500,
+    return MergeSemantics(
+      child: Row(
+        children: [
+          ExcludeSemantics(child: Icon(icon, size: 24, color: iconColor)),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  label,
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: cs.onSurface,
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
-              ),
-              Text(
-                date,
-                style: Theme.of(
-                  context,
-                ).textTheme.labelSmall?.copyWith(color: cs.onSurfaceVariant),
-              ),
-            ],
+                Text(
+                  date,
+                  style: Theme.of(
+                    context,
+                  ).textTheme.labelSmall?.copyWith(color: cs.onSurfaceVariant),
+                ),
+              ],
+            ),
           ),
-        ),
-        Text(
-          value,
-          style: Theme.of(context).textTheme.titleMedium?.copyWith(
-            color: cs.onSurface,
-            fontWeight: FontWeight.bold,
+          Text(
+            value,
+            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+              color: cs.onSurface,
+              fontWeight: FontWeight.bold,
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }
