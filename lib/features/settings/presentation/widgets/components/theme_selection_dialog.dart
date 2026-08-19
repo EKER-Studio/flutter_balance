@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:balance/core/presentation/utils/app_theme_mode_localizer.dart';
+import 'package:balance/core/utils/analytics.dart';
 import 'package:balance/features/settings/presentation/bloc/app_theme_mode.dart';
 import 'package:balance/l10n/app_localizations.dart';
 
@@ -23,17 +24,23 @@ class ThemeSelectionDialog extends StatelessWidget {
     BuildContext context, {
     required AppThemeMode currentMode,
     required ValueChanged<AppThemeMode> onSelected,
-  }) {
-    return showDialog<void>(
+  }) async {
+    AppAnalytics.logSettingsThemeDialogOpened(currentMode.name);
+    bool selected = false;
+    await showDialog<void>(
       context: context,
       builder: (ctx) => ThemeSelectionDialog(
         currentMode: currentMode,
         onSelected: (mode) {
+          selected = true;
           onSelected(mode);
           Navigator.pop(ctx);
         },
       ),
     );
+    if (!selected) {
+      AppAnalytics.logSettingsThemeDialogCancelled();
+    }
   }
 
   @override

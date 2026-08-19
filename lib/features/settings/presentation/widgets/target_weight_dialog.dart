@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:balance/core/models/measurement_unit.dart';
+import 'package:balance/core/utils/analytics.dart';
 import 'package:balance/core/utils/unit_converter.dart';
 import 'package:balance/features/weight/domain/entities/weight_entry.dart';
 import 'package:balance/l10n/app_localizations.dart';
@@ -61,6 +62,7 @@ class _TargetWeightDialogState extends State<TargetWeightDialog> {
 
     final parsedWeight = double.tryParse(text);
     if (parsedWeight == null || parsedWeight <= 0) {
+      AppAnalytics.logSettingsTargetWeightValidationError('invalid_number');
       setState(() {
         _errorText = AppLocalizations.of(context).invalidPositiveNumber;
       });
@@ -73,6 +75,7 @@ class _TargetWeightDialogState extends State<TargetWeightDialog> {
 
     if (weightKg < WeightEntry.minWeightKg ||
         weightKg > WeightEntry.maxWeightKg) {
+      AppAnalytics.logSettingsTargetWeightValidationError('range_error');
       setState(() {
         _errorText = AppLocalizations.of(context).weightRangeError;
       });
@@ -147,7 +150,10 @@ class _TargetWeightDialogState extends State<TargetWeightDialog> {
       ),
       actions: [
         TextButton(
-          onPressed: () => Navigator.of(context).pop(),
+          onPressed: () {
+            AppAnalytics.logSettingsTargetWeightDialogCancelled();
+            Navigator.of(context).pop();
+          },
           child: Text(l10n.cancel),
         ),
         TextButton(onPressed: _handleSave, child: Text(l10n.save)),

@@ -1,10 +1,11 @@
 // Dialog for entering the user's height.
 
 import 'package:flutter/material.dart';
-import 'package:balance/l10n/app_localizations.dart';
-import 'package:balance/features/settings/presentation/bloc/app_settings_state.dart';
 import 'package:balance/core/models/measurement_unit.dart';
+import 'package:balance/core/utils/analytics.dart';
 import 'package:balance/core/utils/unit_converter.dart';
+import 'package:balance/features/settings/presentation/bloc/app_settings_state.dart';
+import 'package:balance/l10n/app_localizations.dart';
 
 /// A widget that provides a dialog for entering the user's height.
 ///
@@ -101,6 +102,7 @@ class HeightDialogState extends State<HeightDialog> {
       FocusScope.of(context).unfocus();
       Navigator.of(context).pop(height);
     } else {
+      AppAnalytics.logSettingsHeightValidationError('range_error');
       setState(() {
         _errorText = AppLocalizations.of(context).heightRangeError;
       });
@@ -229,7 +231,10 @@ class HeightDialogState extends State<HeightDialog> {
       ),
       actions: [
         TextButton(
-          onPressed: () => Navigator.of(context).pop(),
+          onPressed: () {
+            AppAnalytics.logSettingsHeightDialogCancelled();
+            Navigator.of(context).pop();
+          },
           child: Text(l10n.cancel),
         ),
         TextButton(onPressed: _handleSave, child: Text(l10n.save)),

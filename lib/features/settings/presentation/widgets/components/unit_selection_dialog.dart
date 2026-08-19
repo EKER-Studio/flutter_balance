@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:balance/core/models/measurement_unit.dart';
 import 'package:balance/core/presentation/widgets/pill_segmented_control.dart';
+import 'package:balance/core/utils/analytics.dart';
 import 'package:balance/features/weight/presentation/utils/measurement_unit_localizer.dart';
 import 'package:balance/l10n/app_localizations.dart';
 
@@ -24,17 +25,23 @@ class UnitSelectionDialog extends StatelessWidget {
     BuildContext context, {
     required MeasurementUnit currentUnit,
     required ValueChanged<MeasurementUnit> onSelected,
-  }) {
-    return showDialog<void>(
+  }) async {
+    AppAnalytics.logSettingsUnitDialogOpened(currentUnit.name);
+    bool selected = false;
+    await showDialog<void>(
       context: context,
       builder: (ctx) => UnitSelectionDialog(
         currentUnit: currentUnit,
         onSelected: (unit) {
+          selected = true;
           onSelected(unit);
           Navigator.pop(ctx);
         },
       ),
     );
+    if (!selected) {
+      AppAnalytics.logSettingsUnitDialogCancelled();
+    }
   }
 
   @override
