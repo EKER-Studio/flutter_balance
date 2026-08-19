@@ -52,7 +52,9 @@ class _BiometricShieldScreenState extends State<BiometricShieldScreen> {
   /// and routes terminal failures to the lock recovery dialog.
   Future<void> _handleUnlock(BuildContext context, AppSettingsBloc bloc) async {
     if (_isUnlocking) return;
-    _isUnlocking = true;
+    setState(() {
+      _isUnlocking = true;
+    });
     final l10n = AppLocalizations.of(context);
 
     try {

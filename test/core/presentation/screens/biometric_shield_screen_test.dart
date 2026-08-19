@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -6,10 +8,26 @@ import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:balance/l10n/app_localizations.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_bloc.dart';
+import 'package:balance/features/settings/presentation/bloc/app_settings_event.dart';
 import 'package:balance/core/presentation/screens/biometric_shield_screen.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class MockHydratedStorage extends Mock implements HydratedStorage {}
+
+/// Records every event the [AppSettingsBloc] processes.
+///
+/// `BlocObserver.onEvent` fires synchronously within `add`, unlike the bloc
+/// state stream whose deliveries are deferred past the fake-async test zone.
+class RecordingBlocObserver extends BlocObserver {
+  /// Events observed so far, in processing order.
+  final List<Object?> events = [];
+
+  @override
+  void onEvent(Bloc bloc, Object? event) {
+    super.onEvent(bloc, event);
+    events.add(event);
+  }
+}
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -104,6 +122,74 @@ void main() {
       await tester.pumpAndSettle();
 
       await tester.tap(find.byType(FilledButton));
+      await tester.pumpAndSettle();
+
+      expect(bloc.state.isLocked, false);
+    });
+
+    testWidgets('mounting while already locked does not re-lock before auth', (
+      tester,
+    ) async {
+      setupMockChannel(
+        canCheckBiometrics: true,
+        isDeviceSupported: true,
+        authenticateResult: true,
+      );
+
+      final observer = RecordingBlocObserver();
+      final originalObserver = Bloc.observer;
+      Bloc.observer = observer;
+      addTearDown(() => Bloc.observer = originalObserver);
+      bloc.close();
+      bloc = AppSettingsBloc();
+
+      bloc.add(const SetLocked(true));
+      await tester.pump();
+      expect(bloc.state.isLocked, true);
+
+      await tester.pumpWidget(buildTestWidget());
+      await tester.pumpAndSettle();
+
+      expect(bloc.state.isLocked, false);
+      expect(
+        observer.events.whereType<SetLocked>().where((e) => e.locked).length,
+        1,
+        reason: 'The mount must not emit a redundant lock-transition event',
+      );
+    });
+
+    testWidgets('disables the unlock button while authentication is running', (
+      tester,
+    ) async {
+      final completer = Completer<bool>();
+      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+          .setMockMethodCallHandler(channel, (MethodCall methodCall) async {
+            switch (methodCall.method) {
+              case 'canCheckBiometrics':
+                return true;
+              case 'isDeviceSupported':
+                return true;
+              case 'getAvailableBiometrics':
+                return <String>['fingerprint'];
+              case 'authenticate':
+                return completer.future;
+              default:
+                return null;
+            }
+          });
+
+      await tester.pumpWidget(buildTestWidget());
+      await tester.pump();
+      await tester.pump();
+
+      final button = tester.widget<FilledButton>(find.byType(FilledButton));
+      expect(
+        button.onPressed,
+        isNull,
+        reason: 'Unlock must not be tappable while auth is in flight',
+      );
+
+      completer.complete(true);
       await tester.pumpAndSettle();
 
       expect(bloc.state.isLocked, false);
