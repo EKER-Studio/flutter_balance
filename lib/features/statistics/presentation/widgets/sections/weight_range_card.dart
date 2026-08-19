@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:balance/core/models/measurement_unit.dart';
+import 'package:balance/core/utils/analytics.dart';
 import 'package:balance/core/utils/unit_converter.dart';
 import 'package:balance/features/statistics/presentation/widgets/components/weight_detail_row.dart';
 import 'package:balance/features/weight/domain/entities/weight_entry.dart';
@@ -50,59 +51,66 @@ class WeightRangeCard extends StatelessWidget {
         elevation: 0,
         color: cs.surfaceContainerLow,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        child: Padding(
-          padding: const EdgeInsets.all(20),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  Icon(Icons.analytics_outlined, size: 24, color: cs.primary),
-                  const SizedBox(width: 8),
-                  Flexible(
-                    child: Text(
-                      l10n.weightRangeCardTitle,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        color: cs.onSurface,
-                        fontWeight: FontWeight.w600,
+        clipBehavior: Clip.antiAlias,
+        child: InkWell(
+          onTap: () {
+            AppAnalytics.logStatisticsRangeCardTapped();
+          },
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Icon(Icons.analytics_outlined, size: 24, color: cs.primary),
+                    const SizedBox(width: 8),
+                    Flexible(
+                      child: Text(
+                        l10n.weightRangeCardTitle,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: Theme.of(context).textTheme.titleMedium
+                            ?.copyWith(
+                              color: cs.onSurface,
+                              fontWeight: FontWeight.w600,
+                            ),
                       ),
                     ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 16),
-              WeightDetailRow(
-                icon: Icons.north_east,
-                iconColor: cs.error,
-                label: l10n.highest,
-                value: '${maxDisplay.toStringAsFixed(1)} $unitLabel',
-                date: maxDateText,
-              ),
-              const Padding(
-                padding: EdgeInsets.symmetric(vertical: 8),
-                child: Divider(height: 1, thickness: 0.5),
-              ),
-              WeightDetailRow(
-                icon: Icons.south_east,
-                iconColor: cs.primary,
-                label: l10n.lowest,
-                value: '${minDisplay.toStringAsFixed(1)} $unitLabel',
-                date: minDateText,
-              ),
-              const Padding(
-                padding: EdgeInsets.symmetric(vertical: 8),
-                child: Divider(height: 1, thickness: 0.5),
-              ),
-              WeightDetailRow(
-                icon: Icons.bar_chart,
-                iconColor: cs.secondary,
-                label: l10n.averageWeight,
-                value: '${avgDisplay.toStringAsFixed(1)} $unitLabel',
-                date: l10n.allEntriesLabel,
-              ),
-            ],
+                  ],
+                ),
+                const SizedBox(height: 16),
+                WeightDetailRow(
+                  icon: Icons.north_east,
+                  iconColor: cs.error,
+                  label: l10n.highest,
+                  value: '${maxDisplay.toStringAsFixed(1)} $unitLabel',
+                  date: maxDateText,
+                ),
+                const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 8),
+                  child: Divider(height: 1, thickness: 0.5),
+                ),
+                WeightDetailRow(
+                  icon: Icons.south_east,
+                  iconColor: cs.primary,
+                  label: l10n.lowest,
+                  value: '${minDisplay.toStringAsFixed(1)} $unitLabel',
+                  date: minDateText,
+                ),
+                const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 8),
+                  child: Divider(height: 1, thickness: 0.5),
+                ),
+                WeightDetailRow(
+                  icon: Icons.bar_chart,
+                  iconColor: cs.secondary,
+                  label: l10n.averageWeight,
+                  value: '${avgDisplay.toStringAsFixed(1)} $unitLabel',
+                  date: l10n.allEntriesLabel,
+                ),
+              ],
+            ),
           ),
         ),
       ),

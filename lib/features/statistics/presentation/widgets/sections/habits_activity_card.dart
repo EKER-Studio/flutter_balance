@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:balance/core/utils/analytics.dart';
 import 'package:balance/features/statistics/presentation/widgets/components/habit_metric_item.dart';
 import 'package:balance/l10n/app_localizations.dart';
 
@@ -31,33 +32,39 @@ class HabitsActivityCard extends StatelessWidget {
         elevation: 0,
         color: cs.surfaceContainerLow,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        child: Padding(
-          padding: const EdgeInsets.all(20),
-          child: Row(
-            children: [
-              Expanded(
-                child: HabitMetricItem(
-                  icon: Icons.local_fire_department,
-                  iconColor: cs.primary,
-                  label: l10n.loggingStreak,
-                  value: l10n.streakDays(streak),
+        clipBehavior: Clip.antiAlias,
+        child: InkWell(
+          onTap: () {
+            AppAnalytics.logStatisticsHabitsCardTapped();
+          },
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: Row(
+              children: [
+                Expanded(
+                  child: HabitMetricItem(
+                    icon: Icons.local_fire_department,
+                    iconColor: cs.primary,
+                    label: l10n.loggingStreak,
+                    value: l10n.streakDays(streak),
+                  ),
                 ),
-              ),
-              Container(
-                margin: const EdgeInsets.symmetric(horizontal: 16),
-                height: 36,
-                width: 1,
-                color: cs.outlineVariant.withValues(alpha: 0.5),
-              ),
-              Expanded(
-                child: HabitMetricItem(
-                  icon: Icons.insights,
-                  iconColor: cs.primary,
-                  label: l10n.monthlyCompliance,
-                  value: '$compliancePct%',
+                Container(
+                  margin: const EdgeInsets.symmetric(horizontal: 16),
+                  height: 36,
+                  width: 1,
+                  color: cs.outlineVariant.withValues(alpha: 0.5),
                 ),
-              ),
-            ],
+                Expanded(
+                  child: HabitMetricItem(
+                    icon: Icons.insights,
+                    iconColor: cs.primary,
+                    label: l10n.monthlyCompliance,
+                    value: '$compliancePct%',
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),

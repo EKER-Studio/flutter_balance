@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:balance/core/utils/analytics.dart';
 import 'package:balance/features/statistics/presentation/widgets/components/bmi_chart_body.dart';
 import 'package:balance/features/statistics/presentation/widgets/components/bmi_chart_header.dart';
 import 'package:balance/features/statistics/presentation/widgets/components/bmi_period_filters.dart';
@@ -76,6 +77,8 @@ class BmiChartCard extends StatelessWidget {
   }
 
   void _showLegendDialog(BuildContext context) {
+    AppAnalytics.logStatisticsBmiLegendTapped();
+    AppAnalytics.logDialogBmiLegendOpened();
     showDialog<void>(context: context, builder: (_) => const BmiLegendDialog());
   }
 }

@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:balance/core/presentation/core/clamped_layout.dart';
 import 'package:balance/core/presentation/widgets/app_top_bar.dart';
 import 'package:balance/core/presentation/widgets/state_message_card.dart';
+import 'package:balance/core/utils/analytics.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_bloc.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_state.dart';
 import 'package:balance/features/statistics/presentation/widgets/sections/statistics_content_section.dart';
@@ -86,6 +87,9 @@ class StatisticsScreen extends StatelessWidget {
                           targetWeight: settingsState.targetWeight,
                           unit: settingsState.measurementUnit,
                           onPeriodChanged: (period) {
+                            AppAnalytics.logStatisticsFilterChanged(
+                              period.name,
+                            );
                             context.read<WeightBloc>().add(
                               ChangeChartFilter(period),
                             );
@@ -120,6 +124,8 @@ class StatisticsScreen extends StatelessWidget {
   }
 
   void _showAddWeightSheet(BuildContext context) {
+    AppAnalytics.logStatisticsAddFirstMeasurementClicked();
+    AppAnalytics.logDialogAddWeightOpened('statistics_empty_state');
     showDialog<void>(
       context: context,
       builder: (dialogCtx) => BlocProvider.value(
