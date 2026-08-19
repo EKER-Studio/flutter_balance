@@ -39,7 +39,7 @@ import_lint:
       except: []
       severity: error
     avoid_infrastructure_imports_in_app_shell:
-      target: "package:balance/presentation/**"
+      target: "package:balance/core/presentation/**"
       from: "package:balance/features/**/data/**"
       except: []
       severity: error
