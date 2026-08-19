@@ -506,15 +506,16 @@ class _WeightDeltaChip extends StatelessWidget {
     final delta = _WeightLineChart._displayWeight(deltaKg, measurementUnit);
     final isLoss = delta < 0;
     final isGain = delta > 0;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final backgroundColor = isLoss
-        ? const Color(0xFF14291E)
+        ? Colors.green.withValues(alpha: 0.15)
         : isGain
-        ? Theme.of(context).colorScheme.errorContainer
+        ? Colors.orange.withValues(alpha: 0.15)
         : Theme.of(context).colorScheme.surfaceContainerHigh;
     final foregroundColor = isLoss
-        ? const Color(0xFF7CE38B)
+        ? (isDark ? Colors.green.shade300 : Colors.green.shade800)
         : isGain
-        ? Theme.of(context).colorScheme.error
+        ? (isDark ? Colors.orange.shade300 : Colors.orange.shade800)
         : Theme.of(context).colorScheme.onSurfaceVariant;
     final icon = isLoss
         ? Icons.trending_down_rounded

@@ -273,12 +273,13 @@ class StatisticsScreen extends StatelessWidget {
     final semanticLabel =
         '${l10n.totalProgress}: $formattedValue${statusBadge != null ? ", $statusBadge" : ""}';
 
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final badgeBg = isSuccessBadge
-        ? const Color(0xFF14291E)
-        : const Color(0xFF2A200B);
+        ? Colors.green.withValues(alpha: 0.15)
+        : Colors.orange.withValues(alpha: 0.15);
     final badgeFg = isSuccessBadge
-        ? const Color(0xFF7CE38B)
-        : const Color(0xFFFFD56B);
+        ? (isDark ? Colors.green.shade300 : Colors.green.shade800)
+        : (isDark ? Colors.orange.shade300 : Colors.orange.shade800);
 
     return Semantics(
       container: true,
