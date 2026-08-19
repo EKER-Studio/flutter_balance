@@ -1,6 +1,7 @@
 // The individual day cell widget displayed in the calendar grid.
 
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:balance/features/weight/domain/entities/weight_entry.dart';
 
 /// A single day cell within the calendar grid.
@@ -32,6 +33,7 @@ class CalendarDayCell extends StatelessWidget {
   /// Callback invoked when the user taps on this day cell.
   final VoidCallback? onTap;
 
+  /// Creates a [CalendarDayCell] widget.
   const CalendarDayCell({
     super.key,
     required this.date,
@@ -76,70 +78,86 @@ class CalendarDayCell extends StatelessWidget {
       );
     }
 
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: onTap,
-        customBorder: const CircleBorder(),
-        child: Stack(
-          clipBehavior: Clip.none,
-          alignment: Alignment.center,
-          children: [
-            if (cellDecoration != null)
-              Container(width: 36, height: 36, decoration: cellDecoration),
-            Column(
-              mainAxisSize: MainAxisSize.min,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  '$dayNumber',
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    color: textColor,
-                    fontWeight: (isSelected || isToday)
-                        ? FontWeight.bold
-                        : FontWeight.normal,
+    final dateFormatted = DateFormat.yMMMd(
+      Localizations.localeOf(context).toString(),
+    ).format(date);
+    final semanticLabel = '$dateFormatted, ${entries.length} measurements${isGoalAchieved ? ', goal achieved' : ''}';
+
+    return Semantics(
+      button: !isFuture,
+      selected: isSelected,
+      label: semanticLabel,
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: isFuture ? null : onTap,
+          customBorder: const CircleBorder(),
+          child: Stack(
+            clipBehavior: Clip.none,
+            alignment: Alignment.center,
+            children: [
+              if (cellDecoration != null)
+                Container(width: 36, height: 36, decoration: cellDecoration),
+              Column(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  ExcludeSemantics(
+                    child: Text(
+                      '$dayNumber',
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: textColor,
+                        fontWeight: (isSelected || isToday)
+                            ? FontWeight.bold
+                            : FontWeight.normal,
+                      ),
+                    ),
                   ),
-                ),
-                const SizedBox(height: 2),
-                SizedBox(
-                  height: 4,
-                  child: entries.isNotEmpty
-                      ? Row(
-                          mainAxisSize: MainAxisSize.min,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: List.generate(
-                            entries.length.clamp(1, 3),
-                            (index) => Container(
-                              width: 4,
-                              height: 4,
-                              margin: const EdgeInsets.symmetric(horizontal: 1),
-                              decoration: BoxDecoration(
-                                color: isSelected
-                                    ? colorScheme.onPrimary
-                                    : colorScheme.primary,
-                                shape: BoxShape.circle,
+                  const SizedBox(height: 2),
+                  SizedBox(
+                    height: 4,
+                    child: entries.isNotEmpty
+                        ? ExcludeSemantics(
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: List.generate(
+                                entries.length.clamp(1, 3),
+                                (index) => Container(
+                                  width: 4,
+                                  height: 4,
+                                  margin: const EdgeInsets.symmetric(horizontal: 1),
+                                  decoration: BoxDecoration(
+                                    color: isSelected
+                                        ? colorScheme.onPrimary
+                                        : colorScheme.primary,
+                                    shape: BoxShape.circle,
+                                  ),
+                                ),
                               ),
                             ),
-                          ),
-                        )
-                      : const SizedBox.shrink(),
-                ),
-              ],
-            ),
-            if (isGoalAchieved && !isFuture)
-              Positioned(
-                top: 0,
-                right: 0,
-                child: Container(
-                  padding: const EdgeInsets.all(1.5),
-                  decoration: const BoxDecoration(
-                    color: Color(0xFF4CAF50),
-                    shape: BoxShape.circle,
+                          )
+                        : const SizedBox.shrink(),
                   ),
-                  child: const Icon(Icons.star, size: 11, color: Colors.white),
-                ),
+                ],
               ),
-          ],
+              if (isGoalAchieved && !isFuture)
+                Positioned(
+                  top: 0,
+                  right: 0,
+                  child: ExcludeSemantics(
+                    child: Container(
+                      padding: const EdgeInsets.all(1.5),
+                      decoration: const BoxDecoration(
+                        color: Color(0xFF4CAF50),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(Icons.star, size: 11, color: Colors.white),
+                    ),
+                  ),
+                ),
+            ],
+          ),
         ),
       ),
     );
