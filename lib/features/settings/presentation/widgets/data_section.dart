@@ -1,6 +1,7 @@
 // Data management settings group: CSV import, export and wipe controls.
 
 import 'package:flutter/material.dart';
+import 'package:balance/core/utils/analytics.dart';
 import 'package:balance/l10n/app_localizations.dart';
 import 'custom_settings_tile.dart';
 
@@ -42,13 +43,19 @@ class DataSection extends StatelessWidget {
             icon: Icons.file_upload_outlined,
             title: l10n.importCsv,
             sectionLabel: l10n.dataSection,
-            onTap: onImportTap,
+            onTap: () {
+              AppAnalytics.logSettingsCsvImportClicked();
+              onImportTap();
+            },
           ),
           CustomSettingsTile(
             icon: Icons.file_download_outlined,
             title: l10n.exportCsv,
             sectionLabel: l10n.dataSection,
-            onTap: onExportTap,
+            onTap: () {
+              AppAnalytics.logSettingsCsvExportClicked();
+              onExportTap();
+            },
           ),
           CustomSettingsTile(
             icon: Icons.delete_forever_outlined,
@@ -56,7 +63,10 @@ class DataSection extends StatelessWidget {
             isError: true,
             showChevron: false,
             sectionLabel: l10n.dataSection,
-            onTap: onWipeTap,
+            onTap: () {
+              AppAnalytics.logSettingsWipeTileClicked();
+              onWipeTap();
+            },
           ),
         ],
       ),

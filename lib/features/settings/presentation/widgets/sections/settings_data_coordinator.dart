@@ -10,7 +10,9 @@ import 'package:balance/core/integrations/csv/csv_exporter.dart';
 import 'package:balance/core/models/measurement_unit.dart';
 import 'package:balance/core/presentation/utils/app_snackbar.dart';
 import 'package:balance/core/presentation/utils/picker_helpers.dart';
+import 'package:balance/core/utils/analytics.dart';
 import 'package:balance/core/utils/crash_log.dart';
+import 'package:balance/core/utils/crash_reporter.dart';
 import 'package:balance/core/utils/unit_converter.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_bloc.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_event.dart';
@@ -35,6 +37,10 @@ class SettingsDataCoordinator {
   /// Shows the height configuration dialog.
   static Future<void> showHeightDialog(BuildContext context) async {
     final settingsState = context.read<AppSettingsBloc>().state;
+    AppAnalytics.logSettingsHeightDialogOpened(
+      currentHeightCm: settingsState.height,
+      unit: settingsState.measurementUnit.name,
+    );
     final result = await showDialog<double>(
       context: context,
       builder: (ctx) => HeightDialog(
@@ -45,6 +51,7 @@ class SettingsDataCoordinator {
 
     if (result == null || !context.mounted) return;
 
+    AppAnalytics.logSettingsHeightSaved(result);
     context.read<AppSettingsBloc>().add(UpdateHeight(result));
     context.read<WeightBloc>().add(UpdateUserHeight(result));
   }
@@ -53,6 +60,10 @@ class SettingsDataCoordinator {
   static Future<void> showTargetWeightDialog(BuildContext context) async {
     final settingsBloc = context.read<AppSettingsBloc>();
     final settingsState = settingsBloc.state;
+    AppAnalytics.logSettingsTargetWeightDialogOpened(
+      currentTargetKg: settingsState.targetWeight,
+      unit: settingsState.measurementUnit.name,
+    );
 
     final result = await showDialog<dynamic>(
       context: context,
@@ -65,11 +76,13 @@ class SettingsDataCoordinator {
     if (!context.mounted || result == null) return;
 
     if (result == 'clear') {
+      AppAnalytics.logSettingsTargetWeightCleared();
       context.read<AppSettingsBloc>().add(const TargetWeightChanged(null));
     } else if (result is double) {
       final targetKg = settingsState.measurementUnit == MeasurementUnit.imperial
           ? lbsToKg(result)
           : result;
+      AppAnalytics.logSettingsTargetWeightSaved(targetKg);
       context.read<AppSettingsBloc>().add(TargetWeightChanged(targetKg));
     }
   }
@@ -81,6 +94,7 @@ class SettingsDataCoordinator {
       context,
       currentMode: state.themeMode,
       onSelected: (mode) {
+        AppAnalytics.logSettingsThemeChanged(mode.name);
         context.read<AppSettingsBloc>().add(UpdateTheme(mode));
       },
     );
@@ -93,6 +107,7 @@ class SettingsDataCoordinator {
       context,
       currentUnit: state.measurementUnit,
       onSelected: (unit) {
+        AppAnalytics.logSettingsUnitChanged(unit.name);
         context.read<AppSettingsBloc>().add(UpdateMeasurementUnit(unit));
       },
     );
@@ -105,11 +120,15 @@ class SettingsDataCoordinator {
 
   /// Shows the system file picker to select a CSV file.
   static Future<void> handleImportCsv(BuildContext context) async {
+    AppAnalytics.logSettingsCsvImportClicked();
     final result = await FilePicker.pickFiles(
       type: FileType.custom,
       allowedExtensions: ['csv'],
     );
-    if (result == null || result.files.single.path == null) return;
+    if (result == null || result.files.single.path == null) {
+      AppAnalytics.logSettingsCsvImportPickerCancelled();
+      return;
+    }
     if (!context.mounted) return;
 
     context.read<WeightBloc>().add(
@@ -119,8 +138,10 @@ class SettingsDataCoordinator {
 
   /// Confirms and executes database wipe.
   static Future<void> showWipeConfirmation(BuildContext context) async {
+    AppAnalytics.logDialogWipeDataOpened();
     final confirmed = await WipeDataDialog.show(context);
     if (confirmed && context.mounted) {
+      AppAnalytics.logSettingsWipeDataConfirmed();
       await wipeDatabase(context);
     }
   }
@@ -147,6 +168,11 @@ class SettingsDataCoordinator {
 
       if (!context.mounted) return;
       final isError = outcome is WeightError;
+      if (isError) {
+        AppAnalytics.logSettingsWipeFailed(outcome.errorType.name);
+      } else {
+        AppAnalytics.logSettingsWipeSuccess();
+      }
       AppSnackBar.show(
         context,
         message: isError
@@ -154,7 +180,14 @@ class SettingsDataCoordinator {
             : l10n.dataWipedSuccess,
         type: isError ? SnackBarType.error : SnackBarType.success,
       );
-    } catch (e) {
+    } catch (e, stack) {
+      AppAnalytics.logSettingsWipeFailed(e.toString());
+      AppCrashReporter.recordError(
+        e,
+        stack,
+        reason: 'Wiping data failed in Settings',
+        fatal: false,
+      );
       if (!context.mounted) return;
       AppSnackBar.show(
         context,
@@ -167,6 +200,7 @@ class SettingsDataCoordinator {
   /// Exports weight entries to CSV and shares the file.
   static Future<void> exportCsv(BuildContext context) async {
     final l10n = AppLocalizations.of(context);
+    AppAnalytics.logSettingsCsvExportClicked();
     try {
       final weightState = context.read<WeightBloc>().state;
       final entries = switch (weightState) {
@@ -176,6 +210,7 @@ class SettingsDataCoordinator {
       };
 
       if (entries.isEmpty) {
+        AppAnalytics.logSettingsCsvExportNoDataAlert();
         if (context.mounted) {
           AppSnackBar.show(
             context,
@@ -187,6 +222,7 @@ class SettingsDataCoordinator {
       }
 
       final exportedFile = await CsvExporter.exportToFile(List.of(entries));
+      AppAnalytics.logSettingsCsvExportSuccess(entries.length);
 
       if (context.mounted) {
         final box = context.findRenderObject() as RenderBox?;
@@ -208,7 +244,14 @@ class SettingsDataCoordinator {
           );
         }
       }
-    } catch (e) {
+    } catch (e, stack) {
+      AppAnalytics.logSettingsCsvExportFailed(e.toString());
+      AppCrashReporter.recordError(
+        e,
+        stack,
+        reason: 'Exporting CSV failed in Settings',
+        fatal: false,
+      );
       if (context.mounted) {
         AppSnackBar.show(
           context,
@@ -222,10 +265,12 @@ class SettingsDataCoordinator {
   /// Shares on-device crash logs.
   static Future<void> sendCrashLog(BuildContext context) async {
     final l10n = AppLocalizations.of(context);
+    AppAnalytics.logSettingsShareCrashLogsClicked();
     try {
       final dir = await getApplicationDocumentsDirectory();
       final file = File('${dir.path}/$crashLogFileName');
       if (!await file.exists() || await file.length() == 0) {
+        AppAnalytics.logSettingsShareCrashLogsEmptyAlert();
         if (context.mounted) {
           AppSnackBar.show(
             context,
@@ -248,7 +293,15 @@ class SettingsDataCoordinator {
         subject: l10n.sendCrashLog,
         sharePositionOrigin: originRect,
       );
-    } catch (e) {
+      AppAnalytics.logSettingsShareCrashLogsSuccess();
+    } catch (e, stack) {
+      AppAnalytics.logSettingsShareCrashLogsFailed(e.toString());
+      AppCrashReporter.recordError(
+        e,
+        stack,
+        reason: 'Sending crash log failed in Settings',
+        fatal: false,
+      );
       if (context.mounted) {
         AppSnackBar.show(
           context,
@@ -266,10 +319,12 @@ class SettingsDataCoordinator {
   ) async {
     final l10n = AppLocalizations.of(context);
     final bloc = context.read<AppSettingsBloc>();
+    AppAnalytics.logSettingsBiometricsToggled(enabled);
 
     if (enabled) {
       final available = await BiometricService.instance.canAuthenticate();
       if (!available) {
+        AppAnalytics.logSettingsBiometricsUnavailableAlert();
         if (context.mounted) {
           AppSnackBar.show(
             context,
@@ -280,13 +335,16 @@ class SettingsDataCoordinator {
         return;
       }
 
+      AppAnalytics.logSettingsBiometricsAuthStarted();
       final result = await BiometricService.instance.authenticate(
         localizedReason: l10n.biometricAuthReason,
         authMessages: BiometricService.createAuthMessages(l10n),
       );
       if (result == BiometricAuthResult.success) {
+        AppAnalytics.logSettingsBiometricsAuthSuccess();
         bloc.add(const UpdateBiometricLock(true));
       } else if (BiometricService.isTerminalFailure(result)) {
+        AppAnalytics.logSettingsBiometricsAuthFailed(result.name);
         if (context.mounted) {
           AppSnackBar.show(
             context,
@@ -295,6 +353,7 @@ class SettingsDataCoordinator {
           );
         }
       } else {
+        AppAnalytics.logSettingsBiometricsAuthFailed(result.name);
         bloc.add(const UpdateBiometricLock(false));
         if (context.mounted) {
           AppSnackBar.show(
@@ -318,14 +377,24 @@ class SettingsDataCoordinator {
       hour: initialTimeRecord.hour,
       minute: initialTimeRecord.minute,
     );
+    AppAnalytics.logSettingsReminderTimePickerOpened(
+      hour: initialTimeRecord.hour,
+      minute: initialTimeRecord.minute,
+    );
     final newTime = await showSafeTimePicker(
       context: context,
       initialTime: initialTime,
     );
     if (newTime != null && context.mounted) {
+      AppAnalytics.logSettingsReminderTimeChanged(
+        hour: newTime.hour,
+        minute: newTime.minute,
+      );
       context.read<AppSettingsBloc>().add(
         UpdateNotificationTime((hour: newTime.hour, minute: newTime.minute)),
       );
+    } else {
+      AppAnalytics.logSettingsReminderTimePickerCancelled();
     }
   }
 }

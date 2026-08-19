@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:balance/core/utils/analytics.dart';
 import 'package:balance/l10n/app_localizations.dart';
 import 'package:balance/core/integrations/csv/csv_import_service.dart';
 
@@ -21,12 +22,23 @@ class CsvImportPreviewDialog extends StatelessWidget {
     BuildContext context, {
     required CsvImportAnalysis analysis,
   }) async {
+    AppAnalytics.logDialogCsvAnalysisOpened(
+      validCount: analysis.validEntries.length,
+      invalidCount: analysis.skippedRowCount,
+      duplicateCount: 0,
+    );
     final result = await showDialog<bool>(
       context: context,
       barrierDismissible: false,
       builder: (context) => CsvImportPreviewDialog(analysis: analysis),
     );
-    return result ?? false;
+    final confirmed = result ?? false;
+    if (confirmed) {
+      AppAnalytics.logDialogCsvAnalysisConfirmed(analysis.validEntries.length);
+    } else {
+      AppAnalytics.logSettingsCsvPreviewDialogCancelled();
+    }
+    return confirmed;
   }
 
   @override

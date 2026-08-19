@@ -1,6 +1,7 @@
 // Dialog confirming the complete wipe of all app data.
 
 import 'package:flutter/material.dart';
+import 'package:balance/core/utils/analytics.dart';
 import 'package:balance/l10n/app_localizations.dart';
 
 /// A modal dialog confirming the irreversible deletion of all database records.
@@ -14,7 +15,11 @@ class WipeDataDialog extends StatelessWidget {
       context: context,
       builder: (ctx) => const WipeDataDialog(),
     );
-    return result ?? false;
+    final confirmed = result ?? false;
+    if (!confirmed) {
+      AppAnalytics.logSettingsWipeDialogCancelled();
+    }
+    return confirmed;
   }
 
   @override
