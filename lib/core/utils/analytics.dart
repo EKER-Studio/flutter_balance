@@ -1388,6 +1388,85 @@ class AppAnalytics {
     return logEvent(name: 'app_init_retry_clicked');
   }
 
+  /// Logs tapping retry on the full-screen Today error state.
+  static Future<void> logTodayErrorRetryClicked() {
+    return logEvent(name: 'today_error_retry_clicked');
+  }
+
+  /// Logs tapping retry on the Today inline banner error.
+  static Future<void> logTodayInlineBannerRetryClicked() {
+    return logEvent(name: 'today_inline_banner_retry_clicked');
+  }
+
+  /// Logs tapping the main latest weight display on the Today hero summary card.
+  ///
+  /// @param weight The displayed weight number.
+  /// @param unit The unit symbol ('kg' or 'lb').
+  static Future<void> logTodayLatestWeightTapped({
+    required double weight,
+    required String unit,
+  }) {
+    return logEvent(
+      name: 'today_latest_weight_tapped',
+      parameters: {'weight': weight, 'unit': unit},
+    );
+  }
+
+  /// Logs triggering pull-to-refresh on the Calendar screen.
+  static Future<void> logCalendarPullToRefresh() {
+    return logEvent(name: 'calendar_pull_to_refresh');
+  }
+
+  /// Logs tapping retry on the Calendar database error card.
+  static Future<void> logCalendarErrorRetryClicked() {
+    return logEvent(name: 'calendar_error_retry_clicked');
+  }
+
+  /// Logs triggering pull-to-refresh on the Statistics screen.
+  static Future<void> logStatisticsPullToRefresh() {
+    return logEvent(name: 'statistics_pull_to_refresh');
+  }
+
+  /// Logs tapping an individual habit/activity metric item on the Statistics screen.
+  ///
+  /// @param metricKey Key identifier for the habit metric (e.g. 'streak', 'frequency').
+  static Future<void> logStatisticsHabitMetricTapped(String metricKey) {
+    return logEvent(
+      name: 'statistics_habit_metric_tapped',
+      parameters: {'metric_key': metricKey},
+    );
+  }
+
+  /// Logs tapping an individual weight detail row (highest/lowest/average) in statistics.
+  ///
+  /// @param label The label of the clicked statistic (e.g. 'highest', 'lowest', 'average').
+  static Future<void> logStatisticsWeightDetailRowTapped(String label) {
+    return logEvent(
+      name: 'statistics_weight_detail_row_tapped',
+      parameters: {'label': label},
+    );
+  }
+
+  /// Logs tapping the app version tile in the settings help section.
+  ///
+  /// @param version The app version string.
+  static Future<void> logSettingsAppVersionTapped(String version) {
+    return logEvent(
+      name: 'settings_app_version_tapped',
+      parameters: {'version': version},
+    );
+  }
+
+  /// Logs tapping a specific BMI category item in the BMI legend dialog.
+  ///
+  /// @param categoryName Name of the tapped BMI category.
+  static Future<void> logDialogBmiLegendCategoryTapped(String categoryName) {
+    return logEvent(
+      name: 'dialog_bmi_legend_category_tapped',
+      parameters: {'category_name': categoryName},
+    );
+  }
+
   /// Logs opening the BMI legend informational dialog.
   static Future<void> logDialogBmiLegendOpened() {
     return logEvent(name: 'dialog_bmi_legend_opened');

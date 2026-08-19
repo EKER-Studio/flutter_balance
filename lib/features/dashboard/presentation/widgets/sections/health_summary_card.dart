@@ -93,10 +93,19 @@ class HealthSummaryCard extends StatelessWidget {
                           child: FittedBox(
                             fit: BoxFit.scaleDown,
                             alignment: Alignment.centerLeft,
-                            child: LatestMeasurementInfo(
-                              displayWeight: displayWeight,
-                              unitLabel: unitLabel,
-                              lastUpdated: lastUpdated,
+                            child: InkWell(
+                              borderRadius: BorderRadius.circular(12),
+                              onTap: () {
+                                AppAnalytics.logTodayLatestWeightTapped(
+                                  weight: displayWeight,
+                                  unit: unitLabel,
+                                );
+                              },
+                              child: LatestMeasurementInfo(
+                                displayWeight: displayWeight,
+                                unitLabel: unitLabel,
+                                lastUpdated: lastUpdated,
+                              ),
                             ),
                           ),
                         ),

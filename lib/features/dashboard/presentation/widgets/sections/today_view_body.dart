@@ -49,6 +49,7 @@ class TodayViewBody extends StatelessWidget {
         buttonLabel: l10n.retry,
         buttonIcon: Icons.refresh,
         onButtonPressed: () {
+          AppAnalytics.logTodayErrorRetryClicked();
           context.read<WeightBloc>().add(const SubscribeToWeightChanges());
         },
       );
@@ -86,6 +87,7 @@ class TodayViewBody extends StatelessWidget {
             context.read<WeightBloc>().add(ChangeChartFilter(period));
           },
           onRetry: () {
+            AppAnalytics.logTodayInlineBannerRetryClicked();
             context.read<WeightBloc>().add(const SubscribeToWeightChanges());
           },
         );

@@ -107,6 +107,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
     return Scaffold(
       body: RefreshIndicator(
         onRefresh: () async {
+          AppAnalytics.logCalendarPullToRefresh();
           if (context.read<AppSettingsBloc>().state.isHealthSyncEnabled) {
             context.read<WeightBloc>().add(const SyncHealthEntries());
             await Future.delayed(const Duration(seconds: 1));

@@ -256,9 +256,18 @@ void main() {
         await AppAnalytics.logBiometricShieldUnlockSuccess();
         await AppAnalytics.logBiometricShieldUnlockFailed('userCanceled');
         await AppAnalytics.logAppInitErrorScreenViewed();
-        await AppAnalytics.logAppInitRetryClicked();
         await AppAnalytics.logDialogBmiLegendOpened();
         await AppAnalytics.logDialogBmiLegendClosed();
+        await AppAnalytics.logDialogBmiLegendCategoryTapped('normal');
+        await AppAnalytics.logTodayErrorRetryClicked();
+        await AppAnalytics.logTodayInlineBannerRetryClicked();
+        await AppAnalytics.logTodayLatestWeightTapped(weight: 75.0, unit: 'kg');
+        await AppAnalytics.logCalendarPullToRefresh();
+        await AppAnalytics.logCalendarErrorRetryClicked();
+        await AppAnalytics.logStatisticsPullToRefresh();
+        await AppAnalytics.logStatisticsHabitMetricTapped('streak');
+        await AppAnalytics.logStatisticsWeightDetailRowTapped('highest');
+        await AppAnalytics.logSettingsAppVersionTapped('1.0.0');
 
         // User properties & generic
         await AppAnalytics.setUserId('user_123');

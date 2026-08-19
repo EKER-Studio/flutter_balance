@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:balance/core/utils/analytics.dart';
 import 'package:balance/features/weight/presentation/bloc/weight_bloc.dart';
 import 'package:balance/features/weight/presentation/bloc/weight_event.dart';
 import 'package:balance/l10n/app_localizations.dart';
@@ -63,6 +64,7 @@ class CalendarErrorCard extends StatelessWidget {
             const SizedBox(height: 20),
             FilledButton.icon(
               onPressed: () {
+                AppAnalytics.logCalendarErrorRetryClicked();
                 context.read<WeightBloc>().add(const RefreshWeightData());
               },
               icon: const Icon(Icons.refresh),

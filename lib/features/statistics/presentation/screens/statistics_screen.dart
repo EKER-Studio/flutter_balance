@@ -29,6 +29,7 @@ class StatisticsScreen extends StatelessWidget {
     return Scaffold(
       body: RefreshIndicator(
         onRefresh: () async {
+          AppAnalytics.logStatisticsPullToRefresh();
           context.read<WeightBloc>().add(const SubscribeToWeightChanges());
         },
         child: CustomScrollView(

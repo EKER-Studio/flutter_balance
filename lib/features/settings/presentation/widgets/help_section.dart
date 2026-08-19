@@ -1,6 +1,7 @@
 // Help settings group with crash log sharing and app version tiles.
 
 import 'package:flutter/material.dart';
+import 'package:balance/core/utils/analytics.dart';
 import 'package:balance/l10n/app_localizations.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'custom_settings_tile.dart';
@@ -56,6 +57,9 @@ class HelpSectionState extends State<HelpSection> {
                 subtitle: version,
                 showChevron: false,
                 sectionLabel: l10n.helpSection,
+                onTap: () {
+                  AppAnalytics.logSettingsAppVersionTapped(version);
+                },
               ),
             ],
           );
