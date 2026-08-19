@@ -1,7 +1,8 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:balance/core/presentation/utils/app_snackbar.dart';
+import 'package:balance/core/utils/analytics.dart';
+import 'package:balance/core/utils/crash_reporter.dart';
 
 import 'package:balance/core/integrations/biometrics/biometric_service.dart';
 import 'package:balance/l10n/app_localizations.dart';
@@ -38,6 +39,7 @@ class _BiometricShieldScreenState extends State<BiometricShieldScreen> {
   @override
   void initState() {
     super.initState();
+    AppAnalytics.logBiometricShieldScreenViewed();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
         final bloc = context.read<AppSettingsBloc>();
@@ -51,23 +53,26 @@ class _BiometricShieldScreenState extends State<BiometricShieldScreen> {
   Future<void> _handleUnlock(BuildContext context, AppSettingsBloc bloc) async {
     if (_isUnlocking) return;
     _isUnlocking = true;
+    final l10n = AppLocalizations.of(context);
 
     try {
       if (!bloc.state.isLocked) {
         bloc.add(const SetLocked(true));
       }
-      final l10n = AppLocalizations.of(context);
       final result = await BiometricService.instance.authenticate(
         localizedReason: l10n.biometricAuthReason,
         authMessages: BiometricService.createAuthMessages(l10n),
       );
       if (result == BiometricAuthResult.success) {
+        AppAnalytics.logBiometricShieldUnlockSuccess();
         bloc.add(const SetLocked(false));
       } else if (BiometricService.isTerminalFailure(result) ||
           result == BiometricAuthResult.notAvailable) {
+        AppAnalytics.logBiometricShieldUnlockFailed(result.name);
         if (!context.mounted) return;
         await _offerLockRecovery(context, bloc, l10n);
       } else {
+        AppAnalytics.logBiometricShieldUnlockFailed(result.name);
         if (!bloc.state.isLocked) {
           bloc.add(const SetLocked(true));
         }
@@ -80,11 +85,22 @@ class _BiometricShieldScreenState extends State<BiometricShieldScreen> {
         }
       }
     } catch (e, stack) {
-      if (kDebugMode) {
-        debugPrint('[BiometricShieldScreen] Authentication threw: $e\n$stack');
-      }
+      AppAnalytics.logBiometricShieldUnlockFailed(e.toString());
+      AppCrashReporter.recordError(
+        e,
+        stack,
+        reason: 'Authentication threw in BiometricShieldScreen',
+        fatal: false,
+      );
       if (!bloc.state.isLocked) {
         bloc.add(const SetLocked(true));
+      }
+      if (context.mounted) {
+        AppSnackBar.show(
+          context,
+          message: l10n.biometricAuthFailed,
+          type: SnackBarType.error,
+        );
       }
     } finally {
       if (mounted) {
@@ -105,6 +121,7 @@ class _BiometricShieldScreenState extends State<BiometricShieldScreen> {
     AppSettingsBloc bloc,
     AppLocalizations l10n,
   ) async {
+    AppAnalytics.logDialogLockRecoveryOpened('biometric_lockout');
     if (!context.mounted) return;
     final disable = await showDialog<bool>(
       context: context,
@@ -120,14 +137,20 @@ class _BiometricShieldScreenState extends State<BiometricShieldScreen> {
           ),
           TextButton(
             onPressed: () => Navigator.pop(dialogContext, true),
+            style: TextButton.styleFrom(
+              foregroundColor: Theme.of(context).colorScheme.error,
+            ),
             child: Text(l10n.disableLock),
           ),
         ],
       ),
     );
     if (disable == true) {
+      AppAnalytics.logDialogLockRecoveryConfirmed();
       bloc.add(const UpdateBiometricLock(false));
       bloc.add(const SetLocked(false));
+    } else {
+      AppAnalytics.logDialogLockRecoveryCancelled();
     }
   }
 
@@ -182,7 +205,10 @@ class _BiometricShieldScreenState extends State<BiometricShieldScreen> {
                       ),
                       onPressed: _isUnlocking
                           ? null
-                          : () => _handleUnlock(context, bloc),
+                          : () {
+                              AppAnalytics.logBiometricShieldUnlockTapped();
+                              _handleUnlock(context, bloc);
+                            },
                       icon: const Icon(Icons.fingerprint),
                       label: Text(l10n.unlock),
                     ),
