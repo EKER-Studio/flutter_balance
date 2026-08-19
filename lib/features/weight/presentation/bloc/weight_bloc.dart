@@ -450,7 +450,9 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
       // Omitted to keep it simple and strictly use syncRemoteEntries as asked, unless needed.
       // Wait, we need to push too if they are missing? "Fix the health data synchronization mechanism so that it reliably pulls historical and newly added external weight measurements"
       // The prompt only asked for pull, but existing code did two-way. Let's preserve two-way but handle it safely without blocking.
-      final localEntries = await repository.getAllEntries();
+      final localEntries = (await repository.getAllEntries())
+          .where((e) => e.dateTime.isAfter(start) && e.dateTime.isBefore(end))
+          .toList();
       final missingRemoteEntries = localEntries.where((local) {
         final lUtc = local.dateTime.toUtc();
         return !remoteEntries.any((remote) {
