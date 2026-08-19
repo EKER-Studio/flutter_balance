@@ -183,20 +183,20 @@ abstract final class AppTheme {
       style: FilledButton.styleFrom(
         elevation: 0,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        minimumSize: const Size.fromHeight(48),
+        minimumSize: const Size(64, 48),
       ),
     ),
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
         elevation: 1,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        minimumSize: const Size.fromHeight(48),
+        minimumSize: const Size(64, 48),
       ),
     ),
     outlinedButtonTheme: OutlinedButtonThemeData(
       style: OutlinedButton.styleFrom(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        minimumSize: const Size.fromHeight(48),
+        minimumSize: const Size(64, 48),
       ),
     ),
     textButtonTheme: TextButtonThemeData(
@@ -282,20 +282,20 @@ abstract final class AppTheme {
       style: FilledButton.styleFrom(
         elevation: 0,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        minimumSize: const Size.fromHeight(48),
+        minimumSize: const Size(64, 48),
       ),
     ),
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
         elevation: 1,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        minimumSize: const Size.fromHeight(48),
+        minimumSize: const Size(64, 48),
       ),
     ),
     outlinedButtonTheme: OutlinedButtonThemeData(
       style: OutlinedButton.styleFrom(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        minimumSize: const Size.fromHeight(48),
+        minimumSize: const Size(64, 48),
       ),
     ),
     textButtonTheme: TextButtonThemeData(

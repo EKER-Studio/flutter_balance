@@ -52,10 +52,13 @@ void main() {
       );
     });
 
-    test('stylizes filled buttons with full-width minimum height', () {
+    test('stylizes filled buttons with a 48px height and bounded width', () {
       final style = AppTheme.lightTheme.filledButtonTheme.style;
       final minimumSize = style?.minimumSize?.resolve({}) ?? Size.zero;
-      expect(minimumSize, const Size.fromHeight(48));
+      expect(minimumSize, const Size(64, 48));
+      // A finite minimum width keeps buttons valid inside unbounded
+      // horizontal contexts such as bottom-sheet action rows.
+      expect(minimumSize.width.isFinite, isTrue);
     });
 
     test('configures input decoration with rounded outline borders', () {
@@ -102,10 +105,13 @@ void main() {
       );
     });
 
-    test('stylizes filled buttons with full-width minimum height', () {
+    test('stylizes filled buttons with a 48px height and bounded width', () {
       final style = AppTheme.darkTheme.filledButtonTheme.style;
       final minimumSize = style?.minimumSize?.resolve({}) ?? Size.zero;
-      expect(minimumSize, const Size.fromHeight(48));
+      expect(minimumSize, const Size(64, 48));
+      // A finite minimum width keeps buttons valid inside unbounded
+      // horizontal contexts such as bottom-sheet action rows.
+      expect(minimumSize.width.isFinite, isTrue);
     });
 
     test('configures input decoration with rounded outline borders', () {
