@@ -683,7 +683,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
         await Share.shareXFiles(
           [XFile(exportedFile.path)],
-          subject: 'Balance Export CSV',
+          subject: AppLocalizations.of(context).csvExportShareSubject,
           sharePositionOrigin: originRect,
         );
 

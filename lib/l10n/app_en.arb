@@ -27,6 +27,7 @@
   "exportSuccess": "Export completed successfully.",
   "exportNoData": "No weight entries to export.",
   "exportError": "Export error: {error}",
+  "csvExportShareSubject": "Balance Export CSV",
   "wipeData": "Wipe All Data",
   "sendCrashLog": "Send crash log",
   "crashLogEmpty": "No crash log available.",
