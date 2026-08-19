@@ -2,25 +2,18 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:intl/intl.dart';
-import 'package:balance/core/models/measurement_unit.dart';
-import 'package:balance/core/utils/unit_converter.dart';
+import 'package:balance/core/presentation/widgets/app_top_bar.dart';
+import 'package:balance/features/calendar/presentation/widgets/calendar_error_card.dart';
+import 'package:balance/features/calendar/presentation/widgets/calendar_shimmer_skeleton.dart';
+import 'package:balance/features/calendar/presentation/widgets/sections/calendar_month_card.dart';
+import 'package:balance/features/calendar/presentation/widgets/sections/calendar_selected_day_section.dart';
+import 'package:balance/features/settings/presentation/bloc/app_settings_bloc.dart';
 import 'package:balance/features/weight/domain/entities/weight_entry.dart';
 import 'package:balance/features/weight/presentation/bloc/weight_bloc.dart';
-import 'package:balance/features/weight/presentation/bloc/weight_state.dart';
 import 'package:balance/features/weight/presentation/bloc/weight_event.dart';
+import 'package:balance/features/weight/presentation/bloc/weight_state.dart';
 import 'package:balance/features/weight/presentation/utils/weight_error_localizer.dart';
-import 'package:balance/features/calendar/presentation/widgets/calendar_day_empty_card.dart';
-import 'package:balance/features/calendar/presentation/widgets/calendar_day_entries_card.dart';
-
-import 'package:balance/features/calendar/presentation/widgets/calendar_error_card.dart';
-import 'package:balance/features/calendar/presentation/widgets/calendar_grid.dart';
-import 'package:balance/features/calendar/presentation/widgets/calendar_month_header.dart';
-import 'package:balance/features/calendar/presentation/widgets/calendar_shimmer_skeleton.dart';
-import 'package:balance/features/calendar/presentation/widgets/calendar_weekday_header.dart';
 import 'package:balance/l10n/app_localizations.dart';
-import 'package:balance/features/settings/presentation/bloc/app_settings_bloc.dart';
-import 'package:balance/core/presentation/widgets/app_top_bar.dart';
 
 /// A screen showing weight measurements in a monthly calendar view.
 ///
@@ -30,6 +23,7 @@ import 'package:balance/core/presentation/widgets/app_top_bar.dart';
 /// layouts place the calendar card and detail section side by side.
 /// Serves as the second tab in the main navigation.
 class CalendarScreen extends StatefulWidget {
+  /// Creates a [CalendarScreen].
   const CalendarScreen({super.key});
 
   @override
@@ -53,11 +47,6 @@ class _CalendarScreenState extends State<CalendarScreen> {
     final now = DateTime.now();
     _focusedMonth = DateTime(now.year, now.month, 1);
     _selectedDate = now;
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
   }
 
   /// Shifts the focused month one month back.
@@ -90,12 +79,9 @@ class _CalendarScreenState extends State<CalendarScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final locale = Localizations.localeOf(context).toString();
-    final formattedSelectedDate = DateFormat.MMMMd(
-      locale,
-    ).format(_selectedDate);
     final appSettingsState = context.watch<AppSettingsBloc>().state;
     final targetWeight = appSettingsState.targetWeight;
+    final unit = appSettingsState.measurementUnit;
 
     return Scaffold(
       body: RefreshIndicator(
@@ -171,136 +157,21 @@ class _CalendarScreenState extends State<CalendarScreen> {
                         )
                         .toList();
 
-                    final calendarCard = Card(
-                      elevation: 0,
-                      margin: EdgeInsets.zero,
-                      color: Theme.of(context).colorScheme.surfaceContainerLow,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      child: Padding(
-                        padding: EdgeInsets.fromLTRB(
-                          0,
-                          isLandscape ? 16 : 16,
-                          0,
-                          isLandscape ? 16 : 20,
-                        ),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 16,
-                              ),
-                              child: CalendarMonthHeader(
-                                focusedMonth: _focusedMonth,
-                                onPreviousMonth: _previousMonth,
-                                onNextMonth: _nextMonth,
-                              ),
-                            ),
-                            SizedBox(height: isLandscape ? 12 : 16),
-                            const Padding(
-                              padding: EdgeInsets.symmetric(horizontal: 16),
-                              child: CalendarWeekdayHeader(),
-                            ),
-                            SizedBox(height: isLandscape ? 10 : 12),
-                            GestureDetector(
-                              onHorizontalDragEnd: (details) {
-                                if (details.primaryVelocity != null) {
-                                  if (details.primaryVelocity! > 0) {
-                                    _previousMonth();
-                                  } else if (details.primaryVelocity! < 0) {
-                                    _nextMonth();
-                                  }
-                                }
-                              },
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 16,
-                                ),
-                                child: AnimatedSwitcher(
-                                  duration: const Duration(milliseconds: 250),
-                                  child: CalendarGrid(
-                                    key: ValueKey(_focusedMonth),
-                                    focusedMonth: _focusedMonth,
-                                    selectedDate: _selectedDate,
-                                    entries: entries,
-                                    targetWeight: targetWeight,
-                                    onDaySelected: (date, _) =>
-                                        _onDaySelected(date),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
+                    final calendarCard = CalendarMonthCard(
+                      focusedMonth: _focusedMonth,
+                      selectedDate: _selectedDate,
+                      entries: entries,
+                      targetWeight: targetWeight,
+                      onPreviousMonth: _previousMonth,
+                      onNextMonth: _nextMonth,
+                      onDaySelected: _onDaySelected,
                     );
 
-                    final isImperial =
-                        appSettingsState.measurementUnit ==
-                        MeasurementUnit.imperial;
-                    final unitLabel = unitLabelFor(
-                      appSettingsState.measurementUnit,
-                    );
-                    double averageKg = 0;
-                    if (dayEntries.isNotEmpty) {
-                      averageKg =
-                          dayEntries.fold<double>(
-                            0,
-                            (sum, e) => sum + e.weightKg,
-                          ) /
-                          dayEntries.length;
-                    }
-                    final displayAverage = isImperial
-                        ? kgToLbs(averageKg)
-                        : averageKg;
-
-                    final selectedDayHeader = Padding(
-                      padding: const EdgeInsets.only(bottom: 12),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            l10n.entriesFromDate(formattedSelectedDate),
-                            style: Theme.of(context).textTheme.titleMedium
-                                ?.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                  color: Theme.of(
-                                    context,
-                                  ).colorScheme.onSurfaceVariant,
-                                ),
-                          ),
-                          if (dayEntries.length > 1) ...[
-                            const SizedBox(height: 4),
-                            Text(
-                              '${l10n.multipleEntries(dayEntries.length)} • ${l10n.averageWeight}: ${displayAverage.toStringAsFixed(1)} $unitLabel',
-                              style: Theme.of(context).textTheme.bodyMedium
-                                  ?.copyWith(
-                                    color: Theme.of(context)
-                                        .colorScheme
-                                        .onSurfaceVariant
-                                        .withValues(alpha: 0.8),
-                                  ),
-                            ),
-                          ],
-                        ],
-                      ),
-                    );
-
-                    final detailSection = Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        selectedDayHeader,
-                        if (dayEntries.isEmpty)
-                          CalendarDayEmptyCard(selectedDate: _selectedDate)
-                        else
-                          CalendarDayEntriesCard(
-                            selectedDate: _selectedDate,
-                            entries: dayEntries,
-                            targetWeight: targetWeight,
-                          ),
-                      ],
+                    final detailSection = CalendarSelectedDaySection(
+                      selectedDate: _selectedDate,
+                      dayEntries: dayEntries,
+                      targetWeight: targetWeight,
+                      unit: unit,
                     );
 
                     return Align(
