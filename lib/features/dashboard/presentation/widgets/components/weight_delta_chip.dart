@@ -48,27 +48,32 @@ class WeightDeltaChip extends StatelessWidget {
         : Icons.remove_rounded;
     final unitLabel = measurementUnit == MeasurementUnit.imperial ? 'lb' : 'kg';
     final prefix = isGain ? '+' : '';
+    final formattedDelta = '$prefix${delta.toStringAsFixed(1)} $unitLabel';
 
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-      decoration: BoxDecoration(
-        color: backgroundColor,
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(icon, size: 16, color: foregroundColor),
-          const SizedBox(width: 4),
-          Text(
-            '$prefix${delta.toStringAsFixed(1)} $unitLabel',
-            style: Theme.of(context).textTheme.labelMedium?.copyWith(
-              color: foregroundColor,
-              fontSize: 13,
-              fontWeight: FontWeight.w600,
+    return Semantics(
+      container: true,
+      label: 'Weight change: $formattedDelta',
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+        decoration: BoxDecoration(
+          color: backgroundColor,
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ExcludeSemantics(child: Icon(icon, size: 16, color: foregroundColor)),
+            const SizedBox(width: 4),
+            Text(
+              formattedDelta,
+              style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                color: foregroundColor,
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
