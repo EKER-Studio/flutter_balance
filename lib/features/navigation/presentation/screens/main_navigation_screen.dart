@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:balance/core/utils/analytics.dart';
 import 'package:balance/features/calendar/presentation/screens/calendar_screen.dart';
 import 'package:balance/features/dashboard/presentation/screens/today_screen.dart';
 import 'package:balance/features/navigation/presentation/widgets/components/adaptive_bottom_navigation_bar.dart';
@@ -33,10 +34,13 @@ class _MainNavigationScreenState extends State<MainNavigationScreen>
     with WidgetsBindingObserver {
   int _currentIndex = 0;
 
+  static const _tabNames = ['today', 'calendar', 'stats', 'settings'];
+
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
+    AppAnalytics.logTodayScreenViewed();
   }
 
   @override
@@ -47,6 +51,20 @@ class _MainNavigationScreenState extends State<MainNavigationScreen>
 
   /// Switches the active tab to [index].
   void _onTabSelected(int index) {
+    if (index >= 0 && index < _tabNames.length) {
+      final tabName = _tabNames[index];
+      AppAnalytics.logNavigationTabSwitched(tabIndex: index, tabName: tabName);
+      switch (index) {
+        case 0:
+          AppAnalytics.logTodayScreenViewed();
+        case 1:
+          AppAnalytics.logCalendarScreenViewed();
+        case 2:
+          AppAnalytics.logStatisticsScreenViewed();
+        case 3:
+          AppAnalytics.logSettingsScreenViewed();
+      }
+    }
     setState(() {
       _currentIndex = index;
     });
