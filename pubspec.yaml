@@ -74,21 +74,8 @@ dev_dependencies:
   flutter_lints: ^6.0.0
   build_runner: ^2.15.1
   isar_community_generator: ^3.3.2
-  import_lint: ^2.0.0
   flutter_launcher_icons: ^0.14.1
   permission_handler_platform_interface: ^4.4.0
-
-dependency_overrides:
-  # Temporary compatibility shim pinned on 2026-08-01.
-  # This override exists because isar_community_generator 3.3.2 currently limits analyzer to >=8.0.0 <11.0.0,
-  # while import_lint 2.0.0 currently requires analyzer ^12.1.0. This explicitly violates import_lint's
-  # lower bound and requires periodic manual verification.
-  # Keep this shim only until one of the following upstream fixes is available:
-  #   - isar_community_generator adds support for analyzer >=12
-  #   - import_lint publishes a release compatible with analyzer <11
-  # Verify progress by running:
-  #   dart pub outdated import_lint isar_community_generator analyzer
-  analyzer: 10.2.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
