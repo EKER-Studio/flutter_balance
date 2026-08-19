@@ -79,31 +79,39 @@ class PillSegmentedControl<T> extends StatelessWidget {
     final items = segments.map((segment) {
       final isSelected = selectedValue == segment.value;
 
-      final pill = AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
-        curve: Curves.easeInOut,
-        decoration: BoxDecoration(
-          color: isSelected ? cs.primary : Colors.transparent,
-          borderRadius: BorderRadius.circular(12.0),
-        ),
-        child: Material(
-          color: Colors.transparent,
-          child: InkWell(
-            key: segment.key,
+      final pill = Semantics(
+        button: true,
+        selected: isSelected,
+        inMutuallyExclusiveGroup: true,
+        label: segment.semanticsLabel ?? segment.label,
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          curve: Curves.easeInOut,
+          decoration: BoxDecoration(
+            color: isSelected ? cs.primary : Colors.transparent,
             borderRadius: BorderRadius.circular(12.0),
-            onTap: () => onValueChanged(segment.value),
-            child: Padding(
-              padding: itemPadding,
-              child: Center(
-                child: Text(
-                  segment.label,
-                  semanticsLabel: segment.semanticsLabel,
-                  style: theme.textTheme.labelLarge?.copyWith(
-                    color: isSelected ? cs.onPrimary : cs.onSurfaceVariant,
-                    fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
+          ),
+          child: Material(
+            color: Colors.transparent,
+            child: InkWell(
+              key: segment.key,
+              borderRadius: BorderRadius.circular(12.0),
+              onTap: () => onValueChanged(segment.value),
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(minHeight: 48.0, minWidth: 48.0),
+                child: Padding(
+                  padding: itemPadding,
+                  child: Center(
+                    child: Text(
+                      segment.label,
+                      style: theme.textTheme.labelLarge?.copyWith(
+                        color: isSelected ? cs.onPrimary : cs.onSurfaceVariant,
+                        fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
                   ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
                 ),
               ),
             ),
