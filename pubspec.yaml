@@ -61,6 +61,9 @@ dependencies:
   url_launcher: ^6.3.2
   path: ^1.9.0
   bloc_concurrency: ^0.3.0
+  firebase_core: ^3.12.1
+  firebase_crashlytics: ^4.3.3
+  firebase_analytics: ^11.4.3
 
 dev_dependencies:
   flutter_test:

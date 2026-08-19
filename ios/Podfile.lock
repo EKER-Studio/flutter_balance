@@ -24,11 +24,11 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/isar_community_flutter_libs/ios"
 
 SPEC CHECKSUMS:
-  Flutter: cabc95a1d2626b1b06e7179b784ebcf0c0cde467
+  Flutter: 71a624a5bc0c04062bf19101d501e466baf2fb47
   flutter_timezone: ee50ce7786b5fde27e2fe5375bbc8c9661ffc13f
   health: 4decf5d74e8f54c58a8c07a385fc72f629a831d9
   isar_community_flutter_libs: bede843185a61a05ff364a05c9b23209523f7e0d
 
-PODFILE CHECKSUM: a21e1655dcc8725bbd9aed03b632cb80e1b7c38e
+PODFILE CHECKSUM: 8a000c750fdaf93b10f1a2713b4bbaa4ebb72160
 
 COCOAPODS: 1.17.0
