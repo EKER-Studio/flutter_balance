@@ -14,8 +14,24 @@ class _FakePathProviderPlatform extends PathProviderPlatform {
   Future<String?> getApplicationDocumentsPath() async => path;
 }
 
+class _NoopBlocObserver extends BlocObserver {
+  const _NoopBlocObserver();
+}
+
 class _TestCubit extends Cubit<int> {
   _TestCubit() : super(0);
+
+  void triggerError(Object error) {
+    addError(error, StackTrace.current);
+  }
+}
+
+class _TestBlocEvent {}
+
+class _TestBloc extends Bloc<_TestBlocEvent, int> {
+  _TestBloc() : super(0) {
+    on<_TestBlocEvent>((event, emit) {});
+  }
 
   void triggerError(Object error) {
     addError(error, StackTrace.current);
@@ -34,6 +50,7 @@ void main() {
   });
 
   tearDown(() async {
+    Bloc.observer = const _NoopBlocObserver();
     if (await tempDir.exists()) {
       await tempDir.delete(recursive: true);
     }
@@ -56,10 +73,68 @@ void main() {
 
         final content = await logFile.readAsString();
         expect(content, contains('Exception: Cubit Error Occurred'));
+        expect(content, contains('Unhandled error in _TestCubit'));
         expect(content, contains('_TestCubit'));
 
         await cubit.close();
       },
     );
+
+    test(
+      'records a StateError (Error subclass) with its message and type',
+      () async {
+        const observer = AppBlocObserver();
+        Bloc.observer = observer;
+
+        final cubit = _TestCubit();
+        cubit.triggerError(StateError('state failure'));
+
+        await Future<void>.delayed(const Duration(milliseconds: 50));
+
+        final content = await File(
+          '${tempDir.path}/$crashLogFileName',
+        ).readAsString();
+        expect(content, contains('Bad state: state failure'));
+        expect(content, contains('Unhandled error in _TestCubit'));
+
+        await cubit.close();
+      },
+    );
+
+    test('records errors raised from a Bloc, not only a Cubit', () async {
+      const observer = AppBlocObserver();
+      Bloc.observer = observer;
+
+      final bloc = _TestBloc();
+      bloc.triggerError(ArgumentError('bad argument'));
+
+      await Future<void>.delayed(const Duration(milliseconds: 50));
+
+      final content = await File(
+        '${tempDir.path}/$crashLogFileName',
+      ).readAsString();
+      expect(content, contains('Invalid argument(s): bad argument'));
+      expect(content, contains('Unhandled error in _TestBloc'));
+
+      await bloc.close();
+    });
+
+    test('records arbitrary Object errors without throwing', () async {
+      const observer = AppBlocObserver();
+      Bloc.observer = observer;
+
+      final cubit = _TestCubit();
+      cubit.triggerError(Object());
+
+      await Future<void>.delayed(const Duration(milliseconds: 50));
+
+      final content = await File(
+        '${tempDir.path}/$crashLogFileName',
+      ).readAsString();
+      expect(content, contains('Instance of'));
+      expect(content, contains('Unhandled error in _TestCubit'));
+
+      await cubit.close();
+    });
   });
 }

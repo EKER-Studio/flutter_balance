@@ -253,6 +253,39 @@ void main() {
       expect(writeCall.arguments['key'], 'isar_encryption_key');
       expect(base64Decode(writeCall.arguments['value'] as String), key);
     });
+
+    test('propagates a secure storage failure when reading a key', () async {
+      messenger.setMockMethodCallHandler(secureStorageChannel, (
+        MethodCall call,
+      ) async {
+        throw PlatformException(code: 'storage_unavailable');
+      });
+
+      await expectLater(
+        DatabaseModule.getEncryptionKey(),
+        throwsA(
+          isA<PlatformException>().having(
+            (e) => e.code,
+            'code',
+            'storage_unavailable',
+          ),
+        ),
+      );
+    });
+
+    test('propagates a malformed stored key as FormatException', () async {
+      messenger.setMockMethodCallHandler(secureStorageChannel, (
+        MethodCall call,
+      ) async {
+        if (call.method == 'read') return 'not-valid-base64!';
+        return null;
+      });
+
+      await expectLater(
+        DatabaseModule.getEncryptionKey(),
+        throwsA(isA<FormatException>()),
+      );
+    });
   });
 
   group('DatabaseModule initialize', () {
@@ -336,6 +369,37 @@ void main() {
         await Process.run('chmod', ['0644', dbFile.path]);
       }
     });
+
+    test(
+      'recovers from an unopenable database by backing it up and reopening fresh',
+      () async {
+        if (!await _guardIsarAvailable()) return;
+
+        final dbFile = File('${tempDir.path}/${DatabaseModule.dbName}.isar');
+        dbFile.writeAsBytesSync(List.filled(8192, 0x21));
+        final chmodFile = await Process.run('chmod', ['0444', dbFile.path]);
+        if (chmodFile.exitCode != 0) {
+          markTestSkipped('chmod not supported in this environment');
+          return;
+        }
+
+        final isar = await DatabaseModule.initialize();
+        openedInstances.add(isar);
+        await Process.run('chmod', ['0644', dbFile.path]);
+
+        expect(isar.isOpen, isTrue);
+        expect(
+          identical(Isar.getInstance(DatabaseModule.dbName), isar),
+          isTrue,
+        );
+        final bakFiles = tempDir
+            .listSync()
+            .where((e) => e.path.endsWith('.isar.bak'))
+            .toList();
+        expect(bakFiles, hasLength(1));
+        expect(bakFiles.first.path, contains('corrupted'));
+      },
+    );
   });
 
   group('DatabaseModule quarantineLegacyDatabaseForTesting', () {
