@@ -1,16 +1,18 @@
 // Root widget of the Balance application plus the app-level DI, service
 // lifecycle, and localization wiring surrounding it.
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:health/health.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:balance/core/database/database_module.dart';
 import 'package:balance/core/integrations/biometrics/biometric_lock_observer.dart';
 import 'package:balance/core/integrations/biometrics/biometric_service.dart';
 import 'package:balance/core/integrations/health/health_service.dart';
 import 'package:balance/core/integrations/notifications/notification_service.dart';
+import 'package:balance/core/utils/analytics.dart';
+import 'package:balance/core/utils/crash_reporter.dart';
 import 'package:balance/features/weight/data/repositories/isar_weight_repository.dart';
 import 'package:balance/features/weight/domain/repositories/weight_repository.dart';
 import 'package:balance/features/weight/presentation/bloc/weight_bloc.dart';
@@ -91,9 +93,12 @@ class _AppState extends State<App> {
       try {
         await Health().configure();
       } catch (e, stack) {
-        if (kDebugMode) {
-          debugPrint('[App] Health().configure() failed: $e\n$stack');
-        }
+        AppCrashReporter.recordError(
+          e,
+          stack,
+          reason: 'Health().configure() startup degradation',
+          fatal: false,
+        );
       }
 
       // 4. Biometrics — canAuthenticate() also covers OS PIN/pattern/password
@@ -184,6 +189,10 @@ class _AppState extends State<App> {
           debugShowCheckedModeBanner: false,
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
+          navigatorObservers: [
+            if (AppAnalytics.instance != null)
+              FirebaseAnalyticsObserver(analytics: AppAnalytics.instance!),
+          ],
           builder: (context, child) {
             return Stack(
               children: [
