@@ -1,10 +1,12 @@
-import 'package:balance/core/models/measurement_unit.dart';
-import 'package:balance/core/utils/unit_converter.dart';
-import 'package:balance/l10n/app_localizations.dart';
-import 'package:balance/features/settings/presentation/bloc/app_settings_state.dart';
-import 'package:balance/core/presentation/core/clamped_layout.dart';
-import 'package:balance/core/presentation/widgets/pill_segmented_control.dart';
 import 'package:flutter/material.dart';
+import 'package:balance/core/models/measurement_unit.dart';
+import 'package:balance/core/presentation/core/clamped_layout.dart';
+import 'package:balance/core/utils/unit_converter.dart';
+import 'package:balance/features/onboarding/presentation/widgets/components/imperial_height_input.dart';
+import 'package:balance/features/onboarding/presentation/widgets/components/metric_height_input.dart';
+import 'package:balance/features/onboarding/presentation/widgets/components/onboarding_unit_selector.dart';
+import 'package:balance/features/settings/presentation/bloc/app_settings_state.dart';
+import 'package:balance/l10n/app_localizations.dart';
 
 /// Form widget for Step 1 of the onboarding wizard: choosing a unit system
 /// and entering the user's height.
@@ -195,28 +197,6 @@ class _StepUnitsHeightState extends State<StepUnitsHeight> {
     }
   }
 
-  /// Builds the custom pill-style unit selector matching the charts filter.
-  ///
-  /// @param l10n The localized app resources.
-  Widget _buildUnitSelector(AppLocalizations l10n) {
-    return PillSegmentedControl<MeasurementUnit>(
-      selectedValue: _selectedUnit,
-      onValueChanged: _onUnitChanged,
-      segments: [
-        PillSegment(
-          value: MeasurementUnit.metric,
-          label: l10n.metricUnitOption,
-          key: const Key('unit_selector_metric'),
-        ),
-        PillSegment(
-          value: MeasurementUnit.imperial,
-          label: l10n.imperialUnitOption,
-          key: const Key('unit_selector_imperial'),
-        ),
-      ],
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -250,90 +230,37 @@ class _StepUnitsHeightState extends State<StepUnitsHeight> {
               ),
             ),
             SizedBox(height: isLandscape ? 8.0 : 20.0),
-            _buildUnitSelector(l10n),
+            OnboardingUnitSelector(
+              selectedUnit: _selectedUnit,
+              onUnitChanged: _onUnitChanged,
+            ),
             SizedBox(height: isLandscape ? 8.0 : 20.0),
-            if (_selectedUnit == MeasurementUnit.metric) ...[
-              TextField(
-                key: const Key('height_cm_input'),
+            if (_selectedUnit == MeasurementUnit.metric)
+              MetricHeightInput(
                 controller: _cmController,
                 focusNode: _cmFocusNode,
-                keyboardType: const TextInputType.numberWithOptions(
-                  decimal: true,
-                ),
-                decoration: InputDecoration(
-                  labelText: l10n.heightCmLabel,
-                  hintText: l10n.heightHint,
-                  errorText: _cmErrorText,
-                  helperText: l10n.heightRangeHint(
-                    AppSettingsState.minHeightCm.toStringAsFixed(0),
-                    AppSettingsState.maxHeightCm.toStringAsFixed(0),
-                  ),
-                ),
+                errorText: _cmErrorText,
                 onChanged: (_) {
                   if (_cmErrorText != null) {
                     setState(() => _cmErrorText = null);
                   }
                 },
-                onSubmitted: (_) => _handleNext(),
+                onSubmitted: _handleNext,
+              )
+            else
+              ImperialHeightInput(
+                feetController: _feetController,
+                feetFocusNode: _feetFocusNode,
+                inchesController: _inchesController,
+                inchesFocusNode: _inchesFocusNode,
+                errorText: _imperialErrorText,
+                onChanged: () {
+                  if (_imperialErrorText != null) {
+                    setState(() => _imperialErrorText = null);
+                  }
+                },
+                onSubmitted: _handleNext,
               ),
-            ] else ...[
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Expanded(
-                    child: TextField(
-                      key: const Key('height_feet_input'),
-                      controller: _feetController,
-                      focusNode: _feetFocusNode,
-                      keyboardType: TextInputType.number,
-                      decoration: InputDecoration(
-                        labelText: l10n.feetLabel,
-                        suffixText: 'ft',
-                        errorText: _imperialErrorText != null ? "" : null,
-                        errorStyle: const TextStyle(height: 0, fontSize: 0),
-                      ),
-                      onChanged: (_) {
-                        if (_imperialErrorText != null) {
-                          setState(() => _imperialErrorText = null);
-                        }
-                      },
-                      onSubmitted: (_) => _handleNext(),
-                    ),
-                  ),
-                  const SizedBox(width: 16.0),
-                  Expanded(
-                    child: TextField(
-                      key: const Key('height_inches_input'),
-                      controller: _inchesController,
-                      focusNode: _inchesFocusNode,
-                      keyboardType: TextInputType.number,
-                      decoration: InputDecoration(
-                        labelText: l10n.inchesLabel,
-                        suffixText: 'in',
-                        errorText: _imperialErrorText != null ? "" : null,
-                        errorStyle: const TextStyle(height: 0, fontSize: 0),
-                      ),
-                      onChanged: (_) {
-                        if (_imperialErrorText != null) {
-                          setState(() => _imperialErrorText = null);
-                        }
-                      },
-                      onSubmitted: (_) => _handleNext(),
-                    ),
-                  ),
-                ],
-              ),
-              if (_imperialErrorText != null)
-                Padding(
-                  padding: const EdgeInsets.only(top: 8.0, left: 12.0),
-                  child: Text(
-                    _imperialErrorText!,
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      color: theme.colorScheme.error,
-                    ),
-                  ),
-                ),
-            ],
             SizedBox(height: isLandscape ? 16.0 : 24.0),
             ConstrainedBox(
               constraints: const BoxConstraints(minHeight: 48.0),
