@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:balance/core/integrations/csv/csv_import_service.dart';
+import 'package:balance/core/presentation/core/clamped_layout.dart';
+import 'package:balance/features/onboarding/presentation/widgets/components/csv_import_error_view.dart';
+import 'package:balance/features/onboarding/presentation/widgets/components/csv_import_idle_view.dart';
+import 'package:balance/features/onboarding/presentation/widgets/components/csv_import_loading_view.dart';
+import 'package:balance/features/onboarding/presentation/widgets/components/csv_import_success_view.dart';
 import 'package:balance/features/weight/domain/entities/weight_entry.dart';
 import 'package:balance/l10n/app_localizations.dart';
-import 'package:balance/core/presentation/core/clamped_layout.dart';
 
 /// Internal state of the CSV import step.
 enum _CsvImportStatus {
@@ -102,18 +106,16 @@ class _StepCsvImportState extends State<StepCsvImport> {
     }
   }
 
-  /// Resets the step and re-opens the file picker after an error.
-  void _handleRetry() {
-    _handlePickFile();
-  }
-
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context);
     final isLandscape =
         MediaQuery.sizeOf(context).height < 500 ||
         MediaQuery.orientationOf(context) == Orientation.landscape;
+
+    final errorMessage = _isEmptyFileError
+        ? l10n.importNoDataFound
+        : l10n.csvImportError;
 
     return ClampedLayout(
       padding: EdgeInsets.symmetric(
@@ -121,278 +123,23 @@ class _StepCsvImportState extends State<StepCsvImport> {
         vertical: isLandscape ? 8.0 : 24.0,
       ),
       child: switch (_status) {
-        _CsvImportStatus.idle => _buildIdle(theme, l10n, isLandscape),
-        _CsvImportStatus.loading => _buildLoading(theme, l10n),
-        _CsvImportStatus.success => _buildSuccess(theme, l10n, isLandscape),
-        _CsvImportStatus.error => _buildError(theme, l10n, isLandscape),
+        _CsvImportStatus.idle => CsvImportIdleView(
+            onPickFile: _handlePickFile,
+            onSkipped: widget.onSkipped,
+            isLandscape: isLandscape,
+          ),
+        _CsvImportStatus.loading => const CsvImportLoadingView(),
+        _CsvImportStatus.success => CsvImportSuccessView(
+            count: _entries.length,
+            onContinue: () => widget.onFileImported(_entries),
+            isLandscape: isLandscape,
+          ),
+        _CsvImportStatus.error => CsvImportErrorView(
+            message: errorMessage,
+            onRetry: _handlePickFile,
+            isLandscape: isLandscape,
+          ),
       },
-    );
-  }
-
-  /// Builds the idle view: the import tile and the next action.
-  Widget _buildIdle(ThemeData theme, AppLocalizations l10n, bool isLandscape) {
-    return SingleChildScrollView(
-      physics: const BouncingScrollPhysics(),
-      keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Text(
-            l10n.csvImportStepTitle,
-            style: theme.textTheme.headlineSmall?.copyWith(
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          SizedBox(height: isLandscape ? 4.0 : 8.0),
-          Text(
-            l10n.csvImportStepSubtitle,
-            style: theme.textTheme.bodyMedium?.copyWith(
-              color: theme.colorScheme.onSurfaceVariant,
-            ),
-          ),
-          SizedBox(height: isLandscape ? 8.0 : 20.0),
-          Material(
-            color: theme.colorScheme.surfaceContainerLow,
-            borderRadius: BorderRadius.circular(16.0),
-            clipBehavior: Clip.antiAlias,
-            child: Container(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(16.0),
-                border: Border.all(
-                  color: theme.colorScheme.outlineVariant.withValues(
-                    alpha: 0.3,
-                  ),
-                ),
-              ),
-              child: InkWell(
-                key: const Key('csv_import_tile'),
-                onTap: _handlePickFile,
-                child: ListTile(
-                  leading: Icon(
-                    Icons.upload_file,
-                    color: theme.colorScheme.primary,
-                  ),
-                  title: Text(
-                    l10n.csvImportTileTitle,
-                    style: theme.textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  subtitle: Text(
-                    l10n.csvImportTileSubtitle,
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      color: theme.colorScheme.onSurfaceVariant,
-                    ),
-                  ),
-                  trailing: const Icon(Icons.chevron_right),
-                ),
-              ),
-            ),
-          ),
-          Padding(
-            padding: EdgeInsets.only(top: isLandscape ? 6.0 : 12.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  l10n.csvFormatHintTitle,
-                  style: theme.textTheme.bodySmall?.copyWith(
-                    color: theme.colorScheme.onSurfaceVariant,
-                  ),
-                ),
-                const SizedBox(height: 4.0),
-                Container(
-                  width: double.infinity,
-                  padding: EdgeInsets.symmetric(
-                    horizontal: 12.0,
-                    vertical: isLandscape ? 4.0 : 8.0,
-                  ),
-                  decoration: BoxDecoration(
-                    color: theme.colorScheme.surfaceContainerHighest,
-                    borderRadius: BorderRadius.circular(8.0),
-                  ),
-                  child: Text(
-                    l10n.csvFormatHintExample,
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      fontFamily: 'monospace',
-                      color: theme.colorScheme.onSurfaceVariant,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          SizedBox(height: isLandscape ? 12.0 : 24.0),
-          ConstrainedBox(
-            constraints: const BoxConstraints(minHeight: 48.0),
-            child: FilledButton(
-              key: const Key('csv_import_next_button'),
-              onPressed: widget.onSkipped,
-              child: Text(l10n.next),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  /// Builds the loading view with a progress indicator.
-  Widget _buildLoading(ThemeData theme, AppLocalizations l10n) {
-    return Center(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const CircularProgressIndicator(),
-          const SizedBox(height: 16.0),
-          Text(
-            l10n.csvImportLoading,
-            style: theme.textTheme.bodyMedium?.copyWith(
-              color: theme.colorScheme.onSurfaceVariant,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  /// Builds the success view with the imported count and a continue action.
-  Widget _buildSuccess(
-    ThemeData theme,
-    AppLocalizations l10n,
-    bool isLandscape,
-  ) {
-    return SingleChildScrollView(
-      physics: const BouncingScrollPhysics(),
-      keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Text(
-            l10n.csvImportStepTitle,
-            style: theme.textTheme.headlineSmall?.copyWith(
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          SizedBox(height: isLandscape ? 4.0 : 8.0),
-          Text(
-            l10n.csvImportStepSubtitle,
-            style: theme.textTheme.bodyMedium?.copyWith(
-              color: theme.colorScheme.onSurfaceVariant,
-            ),
-          ),
-          SizedBox(height: isLandscape ? 8.0 : 20.0),
-          Material(
-            color: theme.colorScheme.surfaceContainerLow,
-            borderRadius: BorderRadius.circular(16.0),
-            clipBehavior: Clip.antiAlias,
-            child: Container(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(16.0),
-                border: Border.all(
-                  color: theme.colorScheme.outlineVariant.withValues(
-                    alpha: 0.3,
-                  ),
-                ),
-              ),
-              child: ListTile(
-                leading: Icon(
-                  Icons.file_upload_outlined,
-                  color: theme.colorScheme.onSurfaceVariant,
-                ),
-                title: Text(
-                  l10n.csvImportSuccess(_entries.length),
-                  style: theme.textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                subtitle: Text(
-                  l10n.csvImportSuccessSubtitle,
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    color: theme.colorScheme.onSurfaceVariant,
-                  ),
-                ),
-              ),
-            ),
-          ),
-          SizedBox(height: isLandscape ? 16.0 : 24.0),
-          ConstrainedBox(
-            constraints: const BoxConstraints(minHeight: 48.0),
-            child: FilledButton(
-              key: const Key('csv_import_continue_button'),
-              onPressed: () => widget.onFileImported(_entries),
-              child: Text(l10n.next),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  /// Builds the inline error card with a friendly message and a retry action.
-  Widget _buildError(ThemeData theme, AppLocalizations l10n, bool isLandscape) {
-    final message = _isEmptyFileError
-        ? l10n.importNoDataFound
-        : l10n.csvImportError;
-
-    return SingleChildScrollView(
-      physics: const BouncingScrollPhysics(),
-      keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Text(
-            l10n.csvImportStepTitle,
-            style: theme.textTheme.headlineSmall?.copyWith(
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          SizedBox(height: isLandscape ? 4.0 : 8.0),
-          Text(
-            l10n.csvImportStepSubtitle,
-            style: theme.textTheme.bodyMedium?.copyWith(
-              color: theme.colorScheme.onSurfaceVariant,
-            ),
-          ),
-          SizedBox(height: isLandscape ? 8.0 : 20.0),
-          Material(
-            color: theme.colorScheme.errorContainer,
-            borderRadius: BorderRadius.circular(16.0),
-            clipBehavior: Clip.antiAlias,
-            child: Container(
-              padding: const EdgeInsets.all(24.0),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(16.0),
-              ),
-              child: Column(
-                children: [
-                  Icon(
-                    Icons.error_outline,
-                    size: 48,
-                    color: theme.colorScheme.onErrorContainer,
-                  ),
-                  const SizedBox(height: 16.0),
-                  Text(
-                    message,
-                    textAlign: TextAlign.center,
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      color: theme.colorScheme.onErrorContainer,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          SizedBox(height: isLandscape ? 16.0 : 24.0),
-          ConstrainedBox(
-            constraints: const BoxConstraints(minHeight: 48.0),
-            child: FilledButton(
-              key: const Key('csv_import_retry_button'),
-              onPressed: _handleRetry,
-              child: Text(l10n.retry),
-            ),
-          ),
-        ],
-      ),
     );
   }
 }
