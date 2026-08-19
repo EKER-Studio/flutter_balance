@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:balance/core/presentation/widgets/state_message_card.dart';
+import 'package:balance/core/utils/analytics.dart';
 import 'package:balance/features/dashboard/presentation/widgets/sections/today_content_section.dart';
 import 'package:balance/features/dashboard/presentation/widgets/sections/today_shimmer_skeleton.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_bloc.dart';
@@ -81,6 +82,7 @@ class TodayViewBody extends StatelessWidget {
           errorType: errorType,
           measurementUnit: settings.measurementUnit,
           onPeriodChanged: (period) {
+            AppAnalytics.logTodayDeltaPeriodSelected(period.name);
             context.read<WeightBloc>().add(ChangeChartFilter(period));
           },
           onRetry: () {

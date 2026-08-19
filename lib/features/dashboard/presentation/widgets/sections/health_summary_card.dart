@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:balance/core/models/measurement_unit.dart';
+import 'package:balance/core/utils/analytics.dart';
 import 'package:balance/core/utils/unit_converter.dart';
 import 'package:balance/features/dashboard/presentation/widgets/components/bmi_badge.dart';
 import 'package:balance/features/dashboard/presentation/widgets/components/goal_progress_bar.dart';
@@ -103,7 +104,11 @@ class HealthSummaryCard extends StatelessWidget {
                           BmiBadge(
                             bmi: bmi,
                             category: category,
-                            onTap: () => _openBmiLegendDialog(context),
+                            onTap: () => _openBmiLegendDialog(
+                              context,
+                              bmi: bmi,
+                              category: category?.name ?? 'unknown',
+                            ),
                           ),
                       ],
                     ),
@@ -118,6 +123,7 @@ class HealthSummaryCard extends StatelessWidget {
                           context,
                           targetWeight,
                           weightUnit,
+                          latestWeightKg,
                         ),
                       ),
                     ],
@@ -131,7 +137,13 @@ class HealthSummaryCard extends StatelessWidget {
     );
   }
 
-  void _openBmiLegendDialog(BuildContext context) {
+  void _openBmiLegendDialog(
+    BuildContext context, {
+    required double bmi,
+    required String category,
+  }) {
+    AppAnalytics.logTodayBmiBadgeTapped(bmi: bmi, category: category);
+    AppAnalytics.logDialogBmiLegendOpened();
     showDialog<void>(
       context: context,
       builder: (context) => const BmiLegendDialog(),
@@ -142,7 +154,14 @@ class HealthSummaryCard extends StatelessWidget {
     BuildContext context,
     double? targetWeightKg,
     MeasurementUnit unit,
+    double currentWeightKg,
   ) async {
+    if (targetWeightKg != null) {
+      AppAnalytics.logTodayGoalProgressBarTapped(
+        targetWeightKg: targetWeightKg,
+        currentWeightKg: currentWeightKg,
+      );
+    }
     final result = await showDialog<dynamic>(
       context: context,
       builder: (ctx) => TargetWeightDialog(
@@ -153,11 +172,13 @@ class HealthSummaryCard extends StatelessWidget {
 
     if (result != null && context.mounted) {
       if (result == 'clear') {
+        AppAnalytics.logSettingsTargetWeightCleared();
         context.read<AppSettingsBloc>().add(const TargetWeightChanged(null));
       } else if (result is double) {
         final targetKg = unit == MeasurementUnit.imperial
             ? lbsToKg(result)
             : result;
+        AppAnalytics.logSettingsTargetWeightSaved(targetKg);
         context.read<AppSettingsBloc>().add(TargetWeightChanged(targetKg));
       }
     }

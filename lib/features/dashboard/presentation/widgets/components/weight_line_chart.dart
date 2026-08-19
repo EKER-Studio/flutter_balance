@@ -3,6 +3,7 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:balance/core/models/measurement_unit.dart';
+import 'package:balance/core/utils/analytics.dart';
 import 'package:balance/core/utils/unit_converter.dart';
 import 'package:balance/features/weight/domain/entities/weight_entry.dart';
 import 'package:balance/features/weight/domain/time_period.dart';
@@ -107,6 +108,22 @@ class WeightLineChart extends StatelessWidget {
           ),
           borderData: FlBorderData(show: false),
           lineTouchData: LineTouchData(
+            touchCallback: (FlTouchEvent event, LineTouchResponse? response) {
+              if (event is FlTapUpEvent &&
+                  response != null &&
+                  response.lineBarSpots != null &&
+                  response.lineBarSpots!.isNotEmpty) {
+                final spot = response.lineBarSpots!.first;
+                final index = spot.spotIndex;
+                if (index >= 0 && index < sortedEntries.length) {
+                  final entry = sortedEntries[index];
+                  AppAnalytics.logTodayChartPointTouched(
+                    date: entry.dateTime.toIso8601String(),
+                    weightKg: entry.weightKg,
+                  );
+                }
+              }
+            },
             getTouchedSpotIndicator: (barData, spotIndexes) {
               return spotIndexes.map((index) {
                 return TouchedSpotIndicatorData(

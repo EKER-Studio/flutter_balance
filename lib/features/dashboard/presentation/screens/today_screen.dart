@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:balance/core/presentation/core/clamped_layout.dart';
 import 'package:balance/core/presentation/utils/app_snackbar.dart';
 import 'package:balance/core/presentation/widgets/app_top_bar.dart';
+import 'package:balance/core/utils/analytics.dart';
 import 'package:balance/features/dashboard/presentation/widgets/sections/today_view_body.dart';
 import 'package:balance/features/weight/domain/entities/weight_entry.dart';
 import 'package:balance/features/weight/domain/weight_error_type.dart';
@@ -55,8 +56,10 @@ class TodayScreen extends StatelessWidget {
                       ),
                       child: TodayViewBody(
                         state: state,
-                        onAddFirstMeasurement: () =>
-                            _showAddWeightSheet(context),
+                        onAddFirstMeasurement: () {
+                          AppAnalytics.logTodayFirstWeightButtonClicked();
+                          _showAddWeightSheet(context, source: 'empty_state');
+                        },
                       ),
                     ),
                   ),
@@ -77,7 +80,10 @@ class TodayScreen extends StatelessWidget {
                   return const SizedBox.shrink();
                 }
                 return FloatingActionButton(
-                  onPressed: () => _showAddWeightSheet(context),
+                  onPressed: () {
+                    AppAnalytics.logTodayAddWeightFabClicked();
+                    _showAddWeightSheet(context, source: 'fab');
+                  },
                   child: const Icon(Icons.add),
                 );
               },
@@ -94,6 +100,7 @@ class TodayScreen extends StatelessWidget {
   }
 
   Future<void> _refreshWeightData(BuildContext context) async {
+    AppAnalytics.logTodayPullToRefresh();
     final bloc = context.read<WeightBloc>();
     bloc.add(const RefreshWeightData());
     await bloc.stream
@@ -120,7 +127,8 @@ class TodayScreen extends StatelessWidget {
     );
   }
 
-  void _showAddWeightSheet(BuildContext context) {
+  void _showAddWeightSheet(BuildContext context, {String source = 'fab'}) {
+    AppAnalytics.logDialogAddWeightOpened(source);
     showDialog<void>(
       context: context,
       builder: (dialogCtx) => BlocProvider.value(
