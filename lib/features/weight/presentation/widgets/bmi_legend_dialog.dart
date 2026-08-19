@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:balance/features/settings/presentation/bloc/bmi_category.dart';
-import 'package:balance/features/weight/presentation/utils/bmi_category_localizer.dart';
+import 'package:balance/features/weight/presentation/widgets/components/bmi_legend_item.dart';
 import 'package:balance/l10n/app_localizations.dart';
 
 /// A dialog that explains the BMI categories and their corresponding colors.
@@ -23,29 +23,25 @@ class BmiLegendDialog extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            _buildLegendItem(
-              context: context,
+            BmiLegendItem(
               category: BmiCategory.underweight,
               range: '< 18.5',
               isDark: isDark,
             ),
             const SizedBox(height: 12),
-            _buildLegendItem(
-              context: context,
+            BmiLegendItem(
               category: BmiCategory.normal,
               range: '18.5 – 24.9',
               isDark: isDark,
             ),
             const SizedBox(height: 12),
-            _buildLegendItem(
-              context: context,
+            BmiLegendItem(
               category: BmiCategory.overweight,
               range: '25.0 – 29.9',
               isDark: isDark,
             ),
             const SizedBox(height: 12),
-            _buildLegendItem(
-              context: context,
+            BmiLegendItem(
               category: BmiCategory.obese,
               range: '≥ 30.0',
               isDark: isDark,
@@ -57,51 +53,6 @@ class BmiLegendDialog extends StatelessWidget {
         TextButton(
           onPressed: () => Navigator.of(context).pop(),
           child: Text(l10n.ok),
-        ),
-      ],
-    );
-  }
-
-  /// Builds one legend row: a colored range swatch, the category label,
-  /// and the numeric BMI [range], shaded for light or dark mode.
-  Widget _buildLegendItem({
-    required BuildContext context,
-    required BmiCategory category,
-    required String range,
-    required bool isDark,
-  }) {
-    final label = category.localizedName(AppLocalizations.of(context));
-    final bgColor = category.chipBackgroundColor();
-    final textColor = category.chipContentColor(isDark: isDark);
-
-    return Row(
-      children: [
-        ExcludeSemantics(
-          child: Container(
-            width: 16,
-            height: 16,
-            decoration: BoxDecoration(
-              color: bgColor,
-              border: Border.all(color: textColor, width: 2),
-              borderRadius: BorderRadius.circular(4),
-            ),
-          ),
-        ),
-        const SizedBox(width: 12),
-        Expanded(
-          child: Text(
-            label,
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              fontWeight: FontWeight.w600,
-              color: Theme.of(context).colorScheme.onSurface,
-            ),
-          ),
-        ),
-        Text(
-          range,
-          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-            color: Theme.of(context).colorScheme.onSurfaceVariant,
-          ),
         ),
       ],
     );

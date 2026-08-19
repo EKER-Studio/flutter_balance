@@ -5,11 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:balance/core/presentation/core/clamped_layout.dart';
 import 'package:balance/core/presentation/utils/app_snackbar.dart';
 import 'package:balance/core/presentation/widgets/app_top_bar.dart';
-import 'package:balance/core/presentation/widgets/state_message_card.dart';
-import 'package:balance/features/dashboard/presentation/widgets/sections/today_content_section.dart';
-import 'package:balance/features/dashboard/presentation/widgets/sections/today_shimmer_skeleton.dart';
-import 'package:balance/features/settings/presentation/bloc/app_settings_bloc.dart';
-import 'package:balance/features/settings/presentation/bloc/app_settings_state.dart';
+import 'package:balance/features/dashboard/presentation/widgets/sections/today_view_body.dart';
 import 'package:balance/features/weight/domain/entities/weight_entry.dart';
 import 'package:balance/features/weight/domain/weight_error_type.dart';
 import 'package:balance/features/weight/presentation/bloc/weight_bloc.dart';
@@ -57,7 +53,11 @@ class TodayScreen extends StatelessWidget {
                         horizontal: 16,
                         vertical: 12,
                       ),
-                      child: _buildContent(context, state, l10n),
+                      child: TodayViewBody(
+                        state: state,
+                        onAddFirstMeasurement: () =>
+                            _showAddWeightSheet(context),
+                      ),
                     ),
                   ),
                 ),
@@ -85,80 +85,10 @@ class TodayScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildContent(
-    BuildContext context,
-    WeightState state,
-    AppLocalizations l10n,
-  ) {
-    if (state is WeightInitial || state is WeightLoading) {
-      return const TodayShimmerSkeleton();
-    }
-
-    final entries = _entriesFromState(state);
-    if (state is WeightError && entries.isEmpty) {
-      final colorScheme = Theme.of(context).colorScheme;
-      return StateMessageCard(
-        icon: Icons.error_outline,
-        iconColor: colorScheme.error,
-        iconContainerColor: colorScheme.errorContainer,
-        title: l10n.errorReadFailed,
-        subtitle: state.errorType.localizedMessage(l10n),
-        buttonLabel: l10n.retry,
-        buttonIcon: Icons.refresh,
-        onButtonPressed: () {
-          context.read<WeightBloc>().add(const SubscribeToWeightChanges());
-        },
-      );
-    }
-
-    if (entries.isEmpty) {
-      final colorScheme = Theme.of(context).colorScheme;
-      return StateMessageCard(
-        icon: Icons.monitor_weight_outlined,
-        iconColor: colorScheme.primary,
-        iconContainerColor: colorScheme.surfaceContainerHigh,
-        title: l10n.welcomeTitle,
-        subtitle: l10n.welcomeSubtitle,
-        buttonLabel: l10n.addFirstMeasurement,
-        buttonIcon: Icons.add,
-        onButtonPressed: () => _showAddWeightSheet(context),
-      );
-    }
-
-    final filteredEntries = _filteredEntriesFromState(state);
-    final errorType = state is WeightError ? state.errorType : null;
-
-    return BlocBuilder<AppSettingsBloc, AppSettingsState>(
-      builder: (context, settings) {
-        return TodayContentSection(
-          latestEntry: entries.first,
-          filteredEntries: filteredEntries,
-          timePeriod: state.timePeriod,
-          errorType: errorType,
-          measurementUnit: settings.measurementUnit,
-          onPeriodChanged: (period) {
-            context.read<WeightBloc>().add(ChangeChartFilter(period));
-          },
-          onRetry: () {
-            context.read<WeightBloc>().add(const SubscribeToWeightChanges());
-          },
-        );
-      },
-    );
-  }
-
   static List<WeightEntry> _entriesFromState(WeightState state) {
     return switch (state) {
       WeightLoaded(:final entries) => entries,
       WeightError(:final entries) => entries,
-      _ => <WeightEntry>[],
-    };
-  }
-
-  static List<WeightEntry> _filteredEntriesFromState(WeightState state) {
-    return switch (state) {
-      WeightLoaded(:final filteredEntries) => filteredEntries,
-      WeightError(:final filteredEntries) => filteredEntries,
       _ => <WeightEntry>[],
     };
   }

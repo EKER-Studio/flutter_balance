@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:balance/features/statistics/presentation/widgets/components/bmi_chart_body.dart';
 import 'package:balance/features/statistics/presentation/widgets/components/bmi_chart_header.dart';
-import 'package:balance/features/statistics/presentation/widgets/components/bmi_line_chart.dart';
 import 'package:balance/features/statistics/presentation/widgets/components/bmi_period_filters.dart';
 import 'package:balance/features/weight/domain/entities/weight_entry.dart';
 import 'package:balance/features/weight/domain/time_period.dart';
@@ -63,56 +63,15 @@ class BmiChartCard extends StatelessWidget {
                 ),
               ],
               const SizedBox(height: 16),
-              _buildChartBody(context, cs, l10n),
+              BmiChartBody(
+                entries: entries,
+                heightCm: heightCm,
+                period: period,
+              ),
             ],
           ),
         ),
       ),
-    );
-  }
-
-  Widget _buildChartBody(
-    BuildContext context,
-    ColorScheme cs,
-    AppLocalizations l10n,
-  ) {
-    if (heightCm == null || heightCm! <= 0) {
-      return SizedBox(
-        height: 200,
-        child: Center(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Text(
-              l10n.bmiChartNoHeight,
-              textAlign: TextAlign.center,
-              style: Theme.of(
-                context,
-              ).textTheme.bodyMedium?.copyWith(color: cs.onSurfaceVariant),
-            ),
-          ),
-        ),
-      );
-    }
-
-    if (entries.isEmpty || entries.length < 2) {
-      return SizedBox(
-        height: 200,
-        child: Center(
-          child: Text(
-            l10n.chartEmpty,
-            textAlign: TextAlign.center,
-            style: Theme.of(
-              context,
-            ).textTheme.bodyMedium?.copyWith(color: cs.onSurfaceVariant),
-          ),
-        ),
-      );
-    }
-
-    return BmiLineChart(
-      entries: entries,
-      heightCm: heightCm!,
-      period: period,
     );
   }
 

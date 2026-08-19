@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:balance/l10n/app_localizations.dart';
 import 'package:balance/core/presentation/core/clamped_layout.dart';
+import 'package:balance/features/onboarding/presentation/widgets/components/welcome_feature_card.dart';
+import 'package:balance/l10n/app_localizations.dart';
 
 /// Welcome/landing step displayed as the very first screen of the onboarding
 /// wizard. Sets user expectations and resolves initial keyboard focus issues
@@ -12,58 +13,6 @@ class StepWelcome extends StatelessWidget {
   /// Creates a [StepWelcome] widget.
   const StepWelcome({super.key, required this.onNext});
 
-  /// Builds a single feature highlight card with an icon, a title, and
-  /// an optional description.
-  Widget _buildFeatureCard(
-    BuildContext context, {
-    required IconData icon,
-    required String title,
-    bool isLandscape = false,
-  }) {
-    final theme = Theme.of(context);
-    final primaryColor = theme.colorScheme.primary;
-
-    return Material(
-      color: theme.colorScheme.surfaceContainerLow,
-      borderRadius: BorderRadius.circular(16.0),
-      child: Padding(
-        padding: EdgeInsets.symmetric(
-          horizontal: 16.0,
-          vertical: isLandscape ? 10.0 : 12.0,
-        ),
-        child: Row(
-          children: [
-            Container(
-              padding: EdgeInsets.all(isLandscape ? 6.0 : 8.0),
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: primaryColor.withValues(alpha: 0.12),
-              ),
-              child: Icon(
-                icon,
-                size: isLandscape ? 18.0 : 20.0,
-                color: primaryColor,
-              ),
-            ),
-            const SizedBox(width: 12.0),
-            Expanded(
-              child: Text(
-                title,
-                style:
-                    (isLandscape
-                            ? theme.textTheme.bodyMedium
-                            : theme.textTheme.bodyLarge)
-                        ?.copyWith(fontWeight: FontWeight.w500),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -73,38 +22,32 @@ class StepWelcome extends StatelessWidget {
         MediaQuery.orientationOf(context) == Orientation.landscape;
 
     final featureCards = [
-      _buildFeatureCard(
-        context,
+      WelcomeFeatureCard(
         icon: Icons.straighten,
         title: l10n.onboardingWelcomeUnitsHeight,
         isLandscape: isLandscape,
       ),
-      _buildFeatureCard(
-        context,
+      WelcomeFeatureCard(
         icon: Icons.monitor_weight_outlined,
         title: l10n.onboardingWelcomeInitialWeight,
         isLandscape: isLandscape,
       ),
-      _buildFeatureCard(
-        context,
+      WelcomeFeatureCard(
         icon: Icons.track_changes,
         title: l10n.onboardingWelcomeTargetWeight,
         isLandscape: isLandscape,
       ),
-      _buildFeatureCard(
-        context,
+      WelcomeFeatureCard(
         icon: Icons.monitor_heart_outlined,
         title: l10n.onboardingWelcomeHealthSync,
         isLandscape: isLandscape,
       ),
-      _buildFeatureCard(
-        context,
+      WelcomeFeatureCard(
         icon: Icons.notifications_outlined,
         title: l10n.onboardingWelcomeDailyReminders,
         isLandscape: isLandscape,
       ),
-      _buildFeatureCard(
-        context,
+      WelcomeFeatureCard(
         icon: Icons.lock_outline,
         title: l10n.onboardingWelcomePrivacy,
         isLandscape: isLandscape,
@@ -125,11 +68,10 @@ class StepWelcome extends StatelessWidget {
             SizedBox(height: isLandscape ? 4.0 : 16.0),
             Text(
               l10n.onboardingWelcomeTitle,
-              style:
-                  (isLandscape
-                          ? theme.textTheme.headlineSmall
-                          : theme.textTheme.headlineMedium)
-                      ?.copyWith(fontWeight: FontWeight.bold),
+              style: (isLandscape
+                      ? theme.textTheme.headlineSmall
+                      : theme.textTheme.headlineMedium)
+                  ?.copyWith(fontWeight: FontWeight.bold),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 8.0),

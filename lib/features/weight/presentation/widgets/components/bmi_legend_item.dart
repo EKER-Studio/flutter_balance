@@ -1,0 +1,63 @@
+import 'package:flutter/material.dart';
+import 'package:balance/features/settings/presentation/bloc/bmi_category.dart';
+import 'package:balance/features/weight/presentation/utils/bmi_category_localizer.dart';
+import 'package:balance/l10n/app_localizations.dart';
+
+/// A presentational row widget displaying a colored category swatch, localized title, and numeric BMI range.
+class BmiLegendItem extends StatelessWidget {
+  /// The BMI category represented by this item.
+  final BmiCategory category;
+
+  /// The formatted numeric range string (e.g. '18.5 – 24.9').
+  final String range;
+
+  /// Whether the current theme brightness is dark.
+  final bool isDark;
+
+  /// Creates a [BmiLegendItem] widget.
+  const BmiLegendItem({
+    super.key,
+    required this.category,
+    required this.range,
+    required this.isDark,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final label = category.localizedName(AppLocalizations.of(context));
+    final bgColor = category.chipBackgroundColor();
+    final textColor = category.chipContentColor(isDark: isDark);
+
+    return Row(
+      children: [
+        ExcludeSemantics(
+          child: Container(
+            width: 16,
+            height: 16,
+            decoration: BoxDecoration(
+              color: bgColor,
+              border: Border.all(color: textColor, width: 2),
+              borderRadius: BorderRadius.circular(4),
+            ),
+          ),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Text(
+            label,
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+              fontWeight: FontWeight.w600,
+              color: Theme.of(context).colorScheme.onSurface,
+            ),
+          ),
+        ),
+        Text(
+          range,
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
+          ),
+        ),
+      ],
+    );
+  }
+}

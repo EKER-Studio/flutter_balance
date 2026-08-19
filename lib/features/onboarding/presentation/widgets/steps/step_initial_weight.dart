@@ -1,10 +1,10 @@
-import 'package:balance/core/presentation/utils/picker_helpers.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:balance/core/models/measurement_unit.dart';
-import 'package:balance/core/utils/unit_converter.dart';
-import 'package:balance/l10n/app_localizations.dart';
 import 'package:balance/core/presentation/core/clamped_layout.dart';
+import 'package:balance/core/presentation/utils/picker_helpers.dart';
+import 'package:balance/core/utils/unit_converter.dart';
+import 'package:balance/features/onboarding/presentation/widgets/components/initial_weight_date_time_picker.dart';
+import 'package:balance/l10n/app_localizations.dart';
 
 /// Form widget for Step 3 of the onboarding wizard: logging the initial
 /// weight and its measurement timestamp.
@@ -167,9 +167,6 @@ class _StepInitialWeightState extends State<StepInitialWeight> {
     final l10n = AppLocalizations.of(context);
     final isImperial = widget.unit == MeasurementUnit.imperial;
     final unitSuffix = isImperial ? 'lbs' : 'kg';
-    final formattedDate = DateFormat.yMMMd().add_jm().format(
-      _selectedTimestamp,
-    );
     final isLandscape =
         MediaQuery.sizeOf(context).height < 500 ||
         MediaQuery.orientationOf(context) == Orientation.landscape;
@@ -237,17 +234,9 @@ class _StepInitialWeightState extends State<StepInitialWeight> {
               ),
             ),
             SizedBox(height: isLandscape ? 8.0 : 16.0),
-            InkWell(
-              key: const Key('initial_weight_date_picker'),
+            InitialWeightDateTimePicker(
+              selectedTimestamp: _selectedTimestamp,
               onTap: _pickDateTime,
-              borderRadius: BorderRadius.circular(8.0),
-              child: InputDecorator(
-                decoration: InputDecoration(
-                  labelText: l10n.measurementDateTimeLabel,
-                  suffixIcon: const Icon(Icons.calendar_today_outlined),
-                ),
-                child: Text(formattedDate, style: theme.textTheme.bodyLarge),
-              ),
             ),
             SizedBox(height: isLandscape ? 16.0 : 24.0),
             ConstrainedBox(

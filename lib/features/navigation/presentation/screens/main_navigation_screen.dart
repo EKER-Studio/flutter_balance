@@ -2,14 +2,15 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:balance/features/calendar/presentation/screens/calendar_screen.dart';
+import 'package:balance/features/dashboard/presentation/screens/today_screen.dart';
+import 'package:balance/features/navigation/presentation/widgets/components/adaptive_bottom_navigation_bar.dart';
+import 'package:balance/features/navigation/presentation/widgets/components/adaptive_navigation_rail.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_bloc.dart';
+import 'package:balance/features/settings/presentation/screens/settings_screen.dart';
+import 'package:balance/features/statistics/presentation/screens/statistics_screen.dart';
 import 'package:balance/features/weight/presentation/bloc/weight_bloc.dart';
 import 'package:balance/features/weight/presentation/bloc/weight_event.dart';
-import 'package:balance/features/calendar/presentation/screens/calendar_screen.dart';
-import 'package:balance/features/statistics/presentation/screens/statistics_screen.dart';
-import 'package:balance/features/dashboard/presentation/screens/today_screen.dart';
-import 'package:balance/l10n/app_localizations.dart';
-import 'package:balance/features/settings/presentation/screens/settings_screen.dart';
 
 /// Main container screen featuring adaptive navigation (NavigationBar in portrait, NavigationRail in landscape).
 ///
@@ -63,9 +64,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen>
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
     final colorScheme = Theme.of(context).colorScheme;
-    final textTheme = Theme.of(context).textTheme;
 
     final screens = [
       TodayScreen(onNavigateToSettings: () => _onTabSelected(3)),
@@ -84,75 +83,9 @@ class _MainNavigationScreenState extends State<MainNavigationScreen>
         body: SafeArea(
           child: Row(
             children: [
-              NavigationRailTheme(
-                data: NavigationRailThemeData(
-                  backgroundColor: colorScheme.surfaceContainer,
-                  indicatorColor: colorScheme.secondaryContainer,
-                  selectedIconTheme: IconThemeData(
-                    color: colorScheme.onSecondaryContainer,
-                  ),
-                  unselectedIconTheme: IconThemeData(
-                    color: colorScheme.onSurfaceVariant,
-                  ),
-                  selectedLabelTextStyle: textTheme.labelMedium?.copyWith(
-                    color: colorScheme.onSurface,
-                    fontWeight: FontWeight.w500,
-                  ),
-                  unselectedLabelTextStyle: textTheme.labelMedium?.copyWith(
-                    color: colorScheme.onSurfaceVariant,
-                  ),
-                ),
-                child: LayoutBuilder(
-                  builder: (context, constraints) {
-                    return SingleChildScrollView(
-                      child: ConstrainedBox(
-                        constraints: BoxConstraints(
-                          minHeight: constraints.maxHeight,
-                        ),
-                        child: IntrinsicHeight(
-                          child: NavigationRail(
-                            selectedIndex: _currentIndex,
-                            onDestinationSelected: _onTabSelected,
-                            labelType: NavigationRailLabelType.all,
-                            groupAlignment: 0.0, // Center the items vertically
-                            minWidth: 88.0, // Make it slightly wider to breathe
-                            backgroundColor: colorScheme.surfaceContainer,
-                            destinations: [
-                              NavigationRailDestination(
-                                icon: Semantics(
-                                  selected: _currentIndex == 0,
-                                  label: l10n.todayTabHomeSemanticsLabel,
-                                  child: const Icon(Icons.today_outlined),
-                                ),
-                                selectedIcon: Semantics(
-                                  selected: _currentIndex == 0,
-                                  label: l10n.todayTabHomeSemanticsLabel,
-                                  child: const Icon(Icons.today, fill: 1),
-                                ),
-                                label: Text(l10n.tabToday),
-                              ),
-                              NavigationRailDestination(
-                                icon: const Icon(Icons.calendar_month_outlined),
-                                selectedIcon: const Icon(Icons.calendar_month),
-                                label: Text(l10n.tabCalendar),
-                              ),
-                              NavigationRailDestination(
-                                icon: const Icon(Icons.insights_outlined),
-                                selectedIcon: const Icon(Icons.insights),
-                                label: Text(l10n.tabStats),
-                              ),
-                              NavigationRailDestination(
-                                icon: const Icon(Icons.settings_outlined),
-                                selectedIcon: const Icon(Icons.settings),
-                                label: Text(l10n.tabSettings),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    );
-                  },
-                ),
+              AdaptiveNavigationRail(
+                selectedIndex: _currentIndex,
+                onDestinationSelected: _onTabSelected,
               ),
               VerticalDivider(
                 width: 1,
@@ -168,83 +101,9 @@ class _MainNavigationScreenState extends State<MainNavigationScreen>
 
     return Scaffold(
       body: body,
-      bottomNavigationBar: DecoratedBox(
-        decoration: BoxDecoration(
-          color: colorScheme.surfaceContainer,
-          boxShadow: [
-            BoxShadow(
-              color: colorScheme.shadow.withValues(alpha: 0.08),
-              blurRadius: 18,
-              offset: const Offset(0, -4),
-            ),
-          ],
-        ),
-        child: NavigationBarTheme(
-          data: NavigationBarThemeData(
-            height: 80,
-            backgroundColor: colorScheme.surfaceContainer,
-            elevation: 0,
-            indicatorColor: colorScheme.secondaryContainer,
-            overlayColor: WidgetStateProperty.resolveWith((states) {
-              if (states.contains(WidgetState.hovered) ||
-                  states.contains(WidgetState.pressed) ||
-                  states.contains(WidgetState.focused)) {
-                return colorScheme.surfaceContainerHighest.withValues(
-                  alpha: 0.48,
-                );
-              }
-              return null;
-            }),
-            iconTheme: WidgetStateProperty.resolveWith((states) {
-              if (states.contains(WidgetState.selected)) {
-                return IconThemeData(color: colorScheme.onSecondaryContainer);
-              }
-              return IconThemeData(color: colorScheme.onSurfaceVariant);
-            }),
-            labelTextStyle: WidgetStateProperty.resolveWith((states) {
-              final base = textTheme.labelMedium;
-              if (states.contains(WidgetState.selected)) {
-                return base?.copyWith(
-                  color: colorScheme.onSurface,
-                  fontWeight: FontWeight.w500,
-                );
-              }
-              return base?.copyWith(color: colorScheme.onSurfaceVariant);
-            }),
-          ),
-          child: NavigationBar(
-            selectedIndex: _currentIndex,
-            onDestinationSelected: _onTabSelected,
-            destinations: [
-              // Today is the landing tab; wrap it with a custom semantics
-              // label so assistive tech reads it as the home destination.
-              Semantics(
-                selected: _currentIndex == 0,
-                label: l10n.todayTabHomeSemanticsLabel,
-                child: NavigationDestination(
-                  icon: const Icon(Icons.today_outlined),
-                  selectedIcon: const Icon(Icons.today, fill: 1),
-                  label: l10n.tabToday,
-                ),
-              ),
-              NavigationDestination(
-                icon: const Icon(Icons.calendar_month_outlined),
-                selectedIcon: const Icon(Icons.calendar_month),
-                label: l10n.tabCalendar,
-              ),
-              NavigationDestination(
-                icon: const Icon(Icons.insights_outlined),
-                selectedIcon: const Icon(Icons.insights),
-                label: l10n.tabStats,
-              ),
-              NavigationDestination(
-                icon: const Icon(Icons.settings_outlined),
-                selectedIcon: const Icon(Icons.settings),
-                label: l10n.tabSettings,
-              ),
-            ],
-          ),
-        ),
+      bottomNavigationBar: AdaptiveBottomNavigationBar(
+        selectedIndex: _currentIndex,
+        onDestinationSelected: _onTabSelected,
       ),
     );
   }
