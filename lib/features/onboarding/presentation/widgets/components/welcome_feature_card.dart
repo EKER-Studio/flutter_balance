@@ -34,16 +34,18 @@ class WelcomeFeatureCard extends StatelessWidget {
         ),
         child: Row(
           children: [
-            Container(
-              padding: EdgeInsets.all(isLandscape ? 6.0 : 8.0),
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: primaryColor.withValues(alpha: 0.12),
-              ),
-              child: Icon(
-                icon,
-                size: isLandscape ? 18.0 : 20.0,
-                color: primaryColor,
+            ExcludeSemantics(
+              child: Container(
+                padding: EdgeInsets.all(isLandscape ? 6.0 : 8.0),
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: primaryColor.withValues(alpha: 0.12),
+                ),
+                child: Icon(
+                  icon,
+                  size: isLandscape ? 18.0 : 20.0,
+                  color: primaryColor,
+                ),
               ),
             ),
             const SizedBox(width: 12.0),

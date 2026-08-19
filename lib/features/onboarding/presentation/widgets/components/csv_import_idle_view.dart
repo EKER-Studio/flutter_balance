@@ -62,9 +62,11 @@ class CsvImportIdleView extends StatelessWidget {
                 key: const Key('csv_import_tile'),
                 onTap: onPickFile,
                 child: ListTile(
-                  leading: Icon(
-                    Icons.upload_file,
-                    color: theme.colorScheme.primary,
+                  leading: ExcludeSemantics(
+                    child: Icon(
+                      Icons.upload_file,
+                      color: theme.colorScheme.primary,
+                    ),
                   ),
                   title: Text(
                     l10n.csvImportTileTitle,
@@ -78,7 +80,9 @@ class CsvImportIdleView extends StatelessWidget {
                       color: theme.colorScheme.onSurfaceVariant,
                     ),
                   ),
-                  trailing: const Icon(Icons.chevron_right),
+                  trailing: const ExcludeSemantics(
+                    child: Icon(Icons.chevron_right),
+                  ),
                 ),
               ),
             ),
