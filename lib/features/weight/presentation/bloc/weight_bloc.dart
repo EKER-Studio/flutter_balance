@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
-import 'package:flutter/foundation.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:balance/core/integrations/csv/csv_import_service.dart';
@@ -14,6 +13,7 @@ import 'package:balance/features/weight/presentation/bloc/weight_state.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_bloc.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_event.dart';
 import 'package:balance/core/integrations/health/health_service.dart';
+import 'package:balance/core/utils/crash_reporter.dart';
 
 /// A BLoC managing weight entries and user height.
 ///
@@ -206,14 +206,12 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
     try {
       watch = repository.watchAllEntries();
     } catch (e, stack) {
-      // A synchronous failure to start the stream (e.g. a closed database
-      // instance) must not leave the bloc stuck in a transient state; report
-      // it as a typed error while preserving the last-known entries.
-      if (kDebugMode) {
-        debugPrint(
-          '[WeightBloc] Failed to start the weight stream: $e\n$stack',
-        );
-      }
+      AppCrashReporter.recordError(
+        e,
+        stack,
+        reason: '[WeightBloc] Failed to start weight stream',
+        fatal: false,
+      );
       final errorType = e is WeightRepositoryException
           ? e.type
           : WeightErrorType.streamError;
@@ -238,12 +236,13 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
         filteredEntries: _filterEntries(entries, state.timePeriod),
       ),
       onError: (Object error, StackTrace stackTrace) {
-        if (kDebugMode) {
-          debugPrint(
-            '[WeightBloc] Database stream emitted an infrastructure error: '
-            '$error\n$stackTrace',
-          );
-        }
+        AppCrashReporter.recordError(
+          error,
+          stackTrace,
+          reason:
+              '[WeightBloc] Database stream emitted an infrastructure error',
+          fatal: false,
+        );
         final errorType = error is WeightRepositoryException
             ? error.type
             : WeightErrorType.streamError;
@@ -321,9 +320,12 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
         unawaited(_mirrorWriteToHealth(entry));
       }
     } catch (e, stack) {
-      if (kDebugMode) {
-        debugPrint('[WeightBloc] Failed to add entry: $e\n$stack');
-      }
+      AppCrashReporter.recordError(
+        e,
+        stack,
+        reason: '[WeightBloc] Failed to add entry',
+        fatal: false,
+      );
       emit(
         WeightError(
           errorType: WeightErrorType.addEntryFailed,
@@ -362,9 +364,12 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
         unawaited(_mirrorDeleteToHealth(target));
       }
     } catch (e, stack) {
-      if (kDebugMode) {
-        debugPrint('[WeightBloc] Failed to delete entry: $e\n$stack');
-      }
+      AppCrashReporter.recordError(
+        e,
+        stack,
+        reason: '[WeightBloc] Failed to delete entry',
+        fatal: false,
+      );
       emit(
         WeightError(
           errorType: WeightErrorType.deleteEntryFailed,
@@ -378,7 +383,7 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
   }
 
   /// Mirrors a locally persisted [entry] to the health platform on a
-  /// best-effort basis; failures are logged but never propagated.
+  /// best-effort basis; failures are logged and reported to Crashlytics but never propagated.
   Future<void> _mirrorWriteToHealth(WeightEntry entry) async {
     try {
       await _healthService.writeWeight(
@@ -386,14 +391,17 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
         timestamp: entry.dateTime,
       );
     } catch (e, stack) {
-      if (kDebugMode) {
-        debugPrint('[WeightBloc] Health mirror write failed: $e\n$stack');
-      }
+      AppCrashReporter.recordError(
+        e,
+        stack,
+        reason: '[WeightBloc] Health mirror write failed',
+        fatal: false,
+      );
     }
   }
 
   /// Mirrors a local deletion of [entry] to the health platform on a
-  /// best-effort basis; failures are logged but never propagated.
+  /// best-effort basis; failures are logged and reported to Crashlytics but never propagated.
   Future<void> _mirrorDeleteToHealth(WeightEntry entry) async {
     try {
       await _healthService.deleteWeight(
@@ -401,9 +409,12 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
         timestamp: entry.dateTime,
       );
     } catch (e, stack) {
-      if (kDebugMode) {
-        debugPrint('[WeightBloc] Health mirror delete failed: $e\n$stack');
-      }
+      AppCrashReporter.recordError(
+        e,
+        stack,
+        reason: '[WeightBloc] Health mirror delete failed',
+        fatal: false,
+      );
     }
   }
 
@@ -478,9 +489,12 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
       // Note: No need to explicitly emit here if we rely on watchAllEntries to emit WeightLoaded.
       // But we will emit to be safe in case of no changes, just to complete the bloc cycle cleanly if we wanted.
     } catch (e, stack) {
-      if (kDebugMode) {
-        debugPrint('[WeightBloc] Health sync failed: $e\n$stack');
-      }
+      AppCrashReporter.recordError(
+        e,
+        stack,
+        reason: '[WeightBloc] Health sync background failure',
+        fatal: false,
+      );
       // Never transition WeightBloc to WeightError on sync failure.
     }
   }
@@ -521,9 +535,12 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
         ),
       );
     } catch (e, stack) {
-      if (kDebugMode) {
-        debugPrint('[WeightBloc] Failed to refresh weight data: $e\n$stack');
-      }
+      AppCrashReporter.recordError(
+        e,
+        stack,
+        reason: '[WeightBloc] Failed to refresh weight data',
+        fatal: false,
+      );
       final entries = _entriesFromState(state);
       emit(
         WeightError(
@@ -554,9 +571,12 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
         ),
       );
     } catch (e, stack) {
-      if (kDebugMode) {
-        debugPrint('[WeightBloc] Failed to clear data: $e\n$stack');
-      }
+      AppCrashReporter.recordError(
+        e,
+        stack,
+        reason: '[WeightBloc] Failed to clear all data',
+        fatal: false,
+      );
       emit(
         WeightError(
           errorType: WeightErrorType.wipeFailed,
@@ -599,9 +619,12 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
         ),
       );
     } catch (e, stack) {
-      if (kDebugMode) {
-        debugPrint('[WeightBloc] Failed to import entries: $e\n$stack');
-      }
+      AppCrashReporter.recordError(
+        e,
+        stack,
+        reason: '[WeightBloc] Failed to bulk import entries',
+        fatal: false,
+      );
       final currentEntries = _entriesFromState(state);
       emit(
         WeightError(
@@ -677,7 +700,13 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
           analysis: analysis,
         ),
       );
-    } on FormatException {
+    } on FormatException catch (e, stack) {
+      AppCrashReporter.recordError(
+        e,
+        stack,
+        reason: '[WeightBloc] CSV FormatException during AnalyzeCsvFile',
+        fatal: false,
+      );
       emit(
         CsvAnalysisError(
           errorType: CsvErrorType.invalidFormat,
@@ -688,9 +717,12 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
         ),
       );
     } catch (e, stack) {
-      if (kDebugMode) {
-        debugPrint('[WeightBloc] AnalyzeCsvFile error: $e\n$stack');
-      }
+      AppCrashReporter.recordError(
+        e,
+        stack,
+        reason: '[WeightBloc] AnalyzeCsvFile error',
+        fatal: false,
+      );
       emit(
         CsvAnalysisError(
           errorType: CsvErrorType.invalidFormat,
@@ -733,9 +765,12 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
         ),
       );
     } catch (e, stack) {
-      if (kDebugMode) {
-        debugPrint('[WeightBloc] ConfirmCsvImport error: $e\n$stack');
-      }
+      AppCrashReporter.recordError(
+        e,
+        stack,
+        reason: '[WeightBloc] ConfirmCsvImport error',
+        fatal: false,
+      );
       emit(
         WeightError(
           errorType: WeightErrorType.writeFailed,
