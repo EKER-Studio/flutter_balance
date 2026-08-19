@@ -66,6 +66,7 @@ class BiometricLockObserver with WidgetsBindingObserver {
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (_disposed) return;
     if (state == AppLifecycleState.resumed) {
       _verifyDatabaseIntegrity();
     } else if (state == AppLifecycleState.paused ||

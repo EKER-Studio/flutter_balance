@@ -55,7 +55,7 @@ class BiometricService {
   StreamController<void> _authenticationSuccessController =
       StreamController<void>.broadcast();
 
-  /// Resets the internal stream controller state for test isolation.
+  /// Resets the internal state for test isolation.
   @visibleForTesting
   static void resetForTesting() {
     if (!instance._authenticationSuccessController.isClosed) {
@@ -63,6 +63,7 @@ class BiometricService {
     }
     instance._authenticationSuccessController =
         StreamController<void>.broadcast();
+    instance._lastAuthCompletionTime = null;
   }
 
   /// Closes the authentication success stream controller.
