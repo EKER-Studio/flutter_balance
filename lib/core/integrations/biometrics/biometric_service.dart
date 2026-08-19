@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:local_auth/local_auth.dart';
 import 'package:local_auth_android/local_auth_android.dart';
 import 'package:local_auth_darwin/local_auth_darwin.dart';
+import 'package:balance/core/utils/crash_reporter.dart';
 import 'package:local_auth_platform_interface/local_auth_platform_interface.dart';
 import 'package:balance/l10n/app_localizations.dart';
 
@@ -95,9 +96,12 @@ class BiometricService {
       }
       return biometrics.isNotEmpty;
     } catch (e, stack) {
-      if (kDebugMode) {
-        debugPrint('[BiometricService] isAvailable error: $e\n$stack');
-      }
+      AppCrashReporter.recordError(
+        e,
+        stack,
+        reason: '[BiometricService] isAvailable check failed',
+        fatal: false,
+      );
       return false;
     }
   }
@@ -119,9 +123,12 @@ class BiometricService {
       }
       return canCheck;
     } catch (e, stack) {
-      if (kDebugMode) {
-        debugPrint('[BiometricService] isSupported error: $e\n$stack');
-      }
+      AppCrashReporter.recordError(
+        e,
+        stack,
+        reason: '[BiometricService] isSupported check failed',
+        fatal: false,
+      );
       return false;
     }
   }
@@ -144,9 +151,12 @@ class BiometricService {
       }
       return deviceSupported || canCheck;
     } catch (e, stack) {
-      if (kDebugMode) {
-        debugPrint('[BiometricService] canAuthenticate error: $e\n$stack');
-      }
+      AppCrashReporter.recordError(
+        e,
+        stack,
+        reason: '[BiometricService] canAuthenticate check failed',
+        fatal: false,
+      );
       return false;
     }
   }
@@ -237,13 +247,15 @@ class BiometricService {
       }
       return BiometricAuthResult.canceled;
     } on LocalAuthException catch (e, stack) {
-      if (kDebugMode) {
-        debugPrint('=== BIOMETRIC LOCAL AUTH ERROR ===');
-        debugPrint('Code: ${e.code.name}');
-        debugPrint('Description: ${e.description}');
-        debugPrint('Details: ${e.details}');
-        debugPrint('StackTrace: $stack');
-        debugPrint('==================================');
+      if (e.code == LocalAuthExceptionCode.deviceError ||
+          e.code == LocalAuthExceptionCode.unknownError) {
+        AppCrashReporter.recordError(
+          e,
+          stack,
+          reason:
+              '[BiometricService] LocalAuthException ${e.code.name}: ${e.description}',
+          fatal: false,
+        );
       }
       return switch (e.code) {
         LocalAuthExceptionCode.userCanceled ||
@@ -267,14 +279,12 @@ class BiometricService {
         LocalAuthExceptionCode.unknownError => BiometricAuthResult.error,
       };
     } on PlatformException catch (e, stack) {
-      if (kDebugMode) {
-        debugPrint('=== BIOMETRIC PLATFORM ERROR ===');
-        debugPrint('Code: ${e.code}');
-        debugPrint('Message: ${e.message}');
-        debugPrint('Details: ${e.details}');
-        debugPrint('StackTrace: $stack');
-        debugPrint('================================');
-      }
+      AppCrashReporter.recordError(
+        e,
+        stack,
+        reason: '[BiometricService] PlatformException: ${e.code} ${e.message}',
+        fatal: false,
+      );
       return switch (e.code) {
         'LockedOut' => BiometricAuthResult.lockedOut,
         'PermanentlyLockedOut' => BiometricAuthResult.permanentlyLockedOut,
@@ -291,9 +301,12 @@ class BiometricService {
         _ => BiometricAuthResult.error,
       };
     } catch (e, stack) {
-      if (kDebugMode) {
-        debugPrint('[BiometricService] authenticate error: $e\n$stack');
-      }
+      AppCrashReporter.recordError(
+        e,
+        stack,
+        reason: '[BiometricService] authenticate unexpected exception',
+        fatal: false,
+      );
       return BiometricAuthResult.error;
     }
   }

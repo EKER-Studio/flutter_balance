@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_timezone/flutter_timezone.dart';
+import 'package:balance/core/utils/crash_reporter.dart';
 import 'package:timezone/data/latest.dart' as tz_data;
 import 'package:timezone/timezone.dart' as tz;
 
@@ -131,9 +132,12 @@ class NotificationService {
 
       _initialized = true;
     } catch (e, stack) {
-      if (kDebugMode) {
-        debugPrint('NotificationService.initialize error: $e\n$stack');
-      }
+      AppCrashReporter.recordError(
+        e,
+        stack,
+        reason: '[NotificationService] initialize failed',
+        fatal: false,
+      );
     }
   }
 
@@ -174,9 +178,12 @@ class NotificationService {
       }
       return granted;
     } catch (e, stack) {
-      if (kDebugMode) {
-        debugPrint('NotificationService.requestPermissions error: $e\n$stack');
-      }
+      AppCrashReporter.recordError(
+        e,
+        stack,
+        reason: '[NotificationService] requestPermissions failed',
+        fatal: false,
+      );
       return false;
     }
   }
@@ -194,11 +201,12 @@ class NotificationService {
           >();
       return await androidPlugin?.canScheduleExactNotifications() ?? true;
     } catch (e, stack) {
-      if (kDebugMode) {
-        debugPrint(
-          'NotificationService.canScheduleExactNotifications error: $e\n$stack',
-        );
-      }
+      AppCrashReporter.recordError(
+        e,
+        stack,
+        reason: '[NotificationService] canScheduleExactNotifications failed',
+        fatal: false,
+      );
       return true;
     }
   }
@@ -216,11 +224,12 @@ class NotificationService {
           >();
       return await androidPlugin?.requestExactAlarmsPermission() ?? true;
     } catch (e, stack) {
-      if (kDebugMode) {
-        debugPrint(
-          'NotificationService.requestExactAlarmsPermission error: $e\n$stack',
-        );
-      }
+      AppCrashReporter.recordError(
+        e,
+        stack,
+        reason: '[NotificationService] requestExactAlarmsPermission failed',
+        fatal: false,
+      );
       return false;
     }
   }
@@ -295,11 +304,12 @@ class NotificationService {
       }
       return exactScheduling;
     } catch (e, stack) {
-      if (kDebugMode) {
-        debugPrint(
-          'NotificationService.scheduleDailyReminder error: $e\n$stack',
-        );
-      }
+      AppCrashReporter.recordError(
+        e,
+        stack,
+        reason: '[NotificationService] scheduleDailyReminder failed',
+        fatal: false,
+      );
       return false;
     }
   }
@@ -310,9 +320,12 @@ class NotificationService {
     try {
       await _plugin.cancel(id: _dailyReminderId);
     } catch (e, stack) {
-      if (kDebugMode) {
-        debugPrint('NotificationService.cancelDailyReminder error: $e\n$stack');
-      }
+      AppCrashReporter.recordError(
+        e,
+        stack,
+        reason: '[NotificationService] cancelDailyReminder failed',
+        fatal: false,
+      );
     }
   }
 }

@@ -5,6 +5,7 @@ import 'dart:math';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:isar_community/isar.dart';
+import 'package:balance/core/utils/crash_reporter.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:balance/features/weight/data/models/weight_entry_model.dart';
 
@@ -81,32 +82,34 @@ class DatabaseModule {
     try {
       return await _openIsar(dir.path);
     } catch (e, stack) {
-      if (kDebugMode) {
-        debugPrint('[DatabaseModule] Failed to open Isar database: $e\n$stack');
-      }
-      if (kDebugMode) {
-        debugPrint(
-          '[DatabaseModule] Attempting database backup and safe recovery reset...',
-        );
-      }
+      AppCrashReporter.recordError(
+        e,
+        stack,
+        reason: '[DatabaseModule] Failed to open Isar database',
+        fatal: false,
+      );
 
       try {
         await backupCorruptedDatabase(dir.path);
-      } catch (backupError) {
-        if (kDebugMode) {
-          debugPrint('[DatabaseModule] Database backup failed: $backupError');
-        }
+      } catch (backupError, backupStack) {
+        AppCrashReporter.recordError(
+          backupError,
+          backupStack,
+          reason: '[DatabaseModule] Database backup during recovery failed',
+          fatal: false,
+        );
       }
 
       // Re-attempt opening the freshly initialized database after recovery cleanup.
       try {
         return await _openIsar(dir.path);
       } catch (retryError, retryStack) {
-        if (kDebugMode) {
-          debugPrint(
-            '[DatabaseModule] Recovery re-opening failed: $retryError\n$retryStack',
-          );
-        }
+        AppCrashReporter.recordError(
+          retryError,
+          retryStack,
+          reason: '[DatabaseModule] Recovery re-opening failed',
+          fatal: true,
+        );
         rethrow;
       }
     }
@@ -133,11 +136,13 @@ class DatabaseModule {
       }
       return (instance: instance, reopened: false);
     } catch (e, stack) {
-      if (kDebugMode) {
-        debugPrint(
-          '[DatabaseModule] Error verifying Isar instance integrity on resumption: $e\n$stack',
-        );
-      }
+      AppCrashReporter.recordError(
+        e,
+        stack,
+        reason:
+            '[DatabaseModule] Error verifying Isar instance integrity on resumption',
+        fatal: false,
+      );
       return (instance: await initialize(), reopened: true);
     }
   }
@@ -186,24 +191,18 @@ class DatabaseModule {
             '(data not auto-migrated into $dbName).',
           );
         }
-      } catch (e, stack) {
+      } catch (e) {
         // rename() can fail across filesystems/volumes; fall back to copy+delete.
-        if (kDebugMode) {
-          debugPrint(
-            '[DatabaseModule] rename() failed for legacy db, falling back to '
-            'copy+delete: $e\n$stack',
-          );
-        }
         try {
           await legacyFile.copy(quarantinePath);
           await legacyFile.delete();
         } catch (fallbackError, fallbackStack) {
-          if (kDebugMode) {
-            debugPrint(
-              '[DatabaseModule] Failed to quarantine legacy database: '
-              '$fallbackError\n$fallbackStack',
-            );
-          }
+          AppCrashReporter.recordError(
+            fallbackError,
+            fallbackStack,
+            reason: '[DatabaseModule] Failed to quarantine legacy database',
+            fatal: false,
+          );
         }
       }
     }

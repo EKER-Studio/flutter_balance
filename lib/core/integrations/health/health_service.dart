@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:health/health.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:balance/core/utils/crash_reporter.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:balance/features/weight/domain/entities/weight_entry.dart';
 
@@ -185,11 +186,12 @@ class NativeHealthService implements HealthService {
           debugPrint('[HealthService] Health plugin configured successfully.');
         }
       } catch (e, stack) {
-        if (kDebugMode) {
-          debugPrint(
-            '[HealthService] Health plugin configuration error: $e\n$stack',
-          );
-        }
+        AppCrashReporter.recordError(
+          e,
+          stack,
+          reason: '[HealthService] Health plugin configuration failed',
+          fatal: false,
+        );
       }
     }
   }
@@ -213,9 +215,12 @@ class NativeHealthService implements HealthService {
       }
       return sdkStatus == HealthConnectSdkStatus.sdkAvailable;
     } catch (e, stack) {
-      if (kDebugMode) {
-        debugPrint('[HealthService] isHealthApiAvailable error: $e\n$stack');
-      }
+      AppCrashReporter.recordError(
+        e,
+        stack,
+        reason: '[HealthService] isHealthApiAvailable failed',
+        fatal: false,
+      );
       return false;
     }
   }
@@ -245,9 +250,12 @@ class NativeHealthService implements HealthService {
           .timeout(_operationTimeout);
       return granted ?? false;
     } catch (e, stack) {
-      if (kDebugMode) {
-        debugPrint('[HealthService] hasPermissions error: $e\n$stack');
-      }
+      AppCrashReporter.recordError(
+        e,
+        stack,
+        reason: '[HealthService] hasPermissions failed',
+        fatal: false,
+      );
       return false;
     }
   }
@@ -273,10 +281,14 @@ class NativeHealthService implements HealthService {
               permissions: _readWriteAccess,
             )
             .timeout(_operationTimeout);
-      } catch (e) {
-        if (kDebugMode) {
-          debugPrint('[HealthService] Native Auth Exception: $e');
-        }
+      } catch (e, stack) {
+        AppCrashReporter.recordError(
+          e,
+          stack,
+          reason:
+              '[HealthService] Native Auth Exception in requestAuthorization',
+          fatal: false,
+        );
         return false;
       }
       if (!granted) {
@@ -289,9 +301,12 @@ class NativeHealthService implements HealthService {
       }
       return granted;
     } catch (e, stack) {
-      if (kDebugMode) {
-        debugPrint('[HealthService] requestPermissions error: $e\n$stack');
-      }
+      AppCrashReporter.recordError(
+        e,
+        stack,
+        reason: '[HealthService] requestPermissions error',
+        fatal: false,
+      );
       return false;
     }
   }
@@ -305,9 +320,12 @@ class NativeHealthService implements HealthService {
     try {
       return await openAppSettings().timeout(_operationTimeout);
     } catch (e, stack) {
-      if (kDebugMode) {
-        debugPrint('[HealthService] openSystemSettings error: $e\n$stack');
-      }
+      AppCrashReporter.recordError(
+        e,
+        stack,
+        reason: '[HealthService] openSystemSettings error',
+        fatal: false,
+      );
       return false;
     }
   }
@@ -331,9 +349,12 @@ class NativeHealthService implements HealthService {
         );
       }
     } catch (e, stack) {
-      if (kDebugMode) {
-        debugPrint('[HealthService] installHealthConnect error: $e\n$stack');
-      }
+      AppCrashReporter.recordError(
+        e,
+        stack,
+        reason: '[HealthService] installHealthConnect error',
+        fatal: false,
+      );
     }
   }
 
@@ -382,9 +403,12 @@ class NativeHealthService implements HealthService {
       entries.sort((a, b) => b.dateTime.compareTo(a.dateTime));
       return entries;
     } catch (e, stack) {
-      if (kDebugMode) {
-        debugPrint('[HealthService] fetchWeightHistory error: $e\n$stack');
-      }
+      AppCrashReporter.recordError(
+        e,
+        stack,
+        reason: '[HealthService] fetchWeightHistory error',
+        fatal: false,
+      );
       return const [];
     }
   }
@@ -413,9 +437,12 @@ class NativeHealthService implements HealthService {
         recordingMethod: RecordingMethod.manual,
       );
     } catch (e, stack) {
-      if (kDebugMode) {
-        debugPrint('[HealthService] writeWeight error: $e\n$stack');
-      }
+      AppCrashReporter.recordError(
+        e,
+        stack,
+        reason: '[HealthService] writeWeight error',
+        fatal: false,
+      );
       return false;
     }
   }
@@ -456,9 +483,12 @@ class NativeHealthService implements HealthService {
       }
       return await _health.deleteByUUID(uuid: match.uuid, type: _weightType);
     } catch (e, stack) {
-      if (kDebugMode) {
-        debugPrint('[HealthService] deleteWeight error: $e\n$stack');
-      }
+      AppCrashReporter.recordError(
+        e,
+        stack,
+        reason: '[HealthService] deleteWeight error',
+        fatal: false,
+      );
       return false;
     }
   }
