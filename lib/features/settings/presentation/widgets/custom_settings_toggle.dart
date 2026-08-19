@@ -79,7 +79,9 @@ class CustomSettingsToggleState extends State<CustomSettingsToggle> {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
           ),
-          secondary: Icon(widget.icon, color: colorScheme.onSurfaceVariant),
+          secondary: ExcludeSemantics(
+            child: Icon(widget.icon, color: colorScheme.onSurfaceVariant),
+          ),
           title: Text(
             widget.title,
             style: theme.textTheme.bodyLarge?.copyWith(

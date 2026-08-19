@@ -1,36 +1,45 @@
-// Reusable settings tile following Material 3 List Item guidelines.
+// lib/features/settings/presentation/widgets/custom_settings_tile.dart
 
 import 'package:flutter/material.dart';
 
-/// A custom settings tile with an icon, title, supporting subtitle, optional trailing value, and chevron.
+/// A reusable, accessible settings row widget.
+///
+/// Combines a leading icon, title, optional subtitle, optional current value text,
+/// and an optional trailing chevron. Supports semantic grouping for screen readers,
+/// error styling, and focused state highlighting.
 class CustomSettingsTile extends StatefulWidget {
-  /// The leading icon rendered for this tile.
+  /// The leading icon for this settings item.
   final IconData icon;
 
-  /// The tile title text.
+  /// The primary title text for this settings item.
   final String title;
 
-  /// The optional supporting text shown below the [title].
+  /// An optional supporting subtitle text.
   final String? subtitle;
 
-  /// The optional trailing value text shown before the chevron.
+  /// An optional current value string displayed before the chevron.
   final String? valueText;
 
-  /// The optional parent section label prepended to the accessibility label.
+  /// An optional category or section label prefix for accessibility readers.
   final String? sectionLabel;
 
-  /// The callback invoked when the tile is tapped.
-  ///
-  /// Passing `null` disables the tap interaction.
+  /// Callback invoked when the user taps on this tile.
   final VoidCallback? onTap;
 
-  /// Whether the tile is rendered with error colors.
+  /// Whether this tile is in an error state.
   final bool isError;
 
-  /// Whether a trailing chevron icon is shown.
+  /// Whether to display the trailing chevron icon.
   final bool showChevron;
 
-  /// Creates a [CustomSettingsTile] with the given properties.
+  /// Creates a [CustomSettingsTile].
+  ///
+  /// [icon] and [title] are required.
+  /// [subtitle] and [valueText] provide additional context.
+  /// [sectionLabel] is read by accessibility tools.
+  /// [onTap] makes the tile interactive.
+  /// [isError] applies error-themed colors.
+  /// [showChevron] controls the trailing arrow.
   const CustomSettingsTile({
     super.key,
     required this.icon,
@@ -80,7 +89,12 @@ class CustomSettingsTileState extends State<CustomSettingsTile> {
         ? colorScheme.error
         : colorScheme.onSurfaceVariant;
 
-    final labelParts = [?widget.sectionLabel, widget.title, ?widget.subtitle];
+    final labelParts = [
+      ?widget.sectionLabel,
+      widget.title,
+      ?widget.valueText,
+      ?widget.subtitle,
+    ];
 
     Widget? trailingWidget;
     if (widget.valueText != null) {
