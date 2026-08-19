@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 
+/// Severity types determining background, text, and icon styling for [AppSnackBar].
 enum SnackBarType { success, error, warning, info }
 
+/// Utility class for presenting consistent, themed SnackBar notifications.
 class AppSnackBar {
+  /// Shows a styled SnackBar with the given [message], [type], and optional [icon] or [action].
   static void show(
     BuildContext context, {
     required String message,

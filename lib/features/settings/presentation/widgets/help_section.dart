@@ -24,6 +24,7 @@ class HelpSection extends StatefulWidget {
   State<HelpSection> createState() => HelpSectionState();
 }
 
+/// State for [HelpSection] loading and displaying application package metadata.
 class HelpSectionState extends State<HelpSection> {
   late final Future<PackageInfo> _packageInfo = PackageInfo.fromPlatform();
 

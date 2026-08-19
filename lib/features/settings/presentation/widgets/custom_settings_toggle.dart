@@ -39,6 +39,7 @@ class CustomSettingsToggle extends StatefulWidget {
   State<CustomSettingsToggle> createState() => CustomSettingsToggleState();
 }
 
+/// State for [CustomSettingsToggle] managing focus and hover state listeners.
 class CustomSettingsToggleState extends State<CustomSettingsToggle> {
   final _focusNode = FocusNode();
   bool _isFocused = false;

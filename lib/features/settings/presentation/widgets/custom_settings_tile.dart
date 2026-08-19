@@ -47,6 +47,7 @@ class CustomSettingsTile extends StatefulWidget {
   State<CustomSettingsTile> createState() => CustomSettingsTileState();
 }
 
+/// State for [CustomSettingsTile] managing focus and hover state listeners.
 class CustomSettingsTileState extends State<CustomSettingsTile> {
   final _focusNode = FocusNode();
   bool _isFocused = false;

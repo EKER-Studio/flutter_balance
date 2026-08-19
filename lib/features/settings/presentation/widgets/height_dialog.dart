@@ -28,6 +28,7 @@ class HeightDialog extends StatefulWidget {
   State<HeightDialog> createState() => HeightDialogState();
 }
 
+/// State for [HeightDialog] owning text input controllers and conversion/validation logic.
 class HeightDialogState extends State<HeightDialog> {
   late final TextEditingController _cmController;
   late final TextEditingController _feetController;
