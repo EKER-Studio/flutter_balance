@@ -34,28 +34,22 @@ jobs:
         run: |
           if [ -n "${{ secrets.FIREBASE_GOOGLE_SERVICES_JSON_BASE64 }}" ]; then
             echo "${{ secrets.FIREBASE_GOOGLE_SERVICES_JSON_BASE64 }}" | base64 --decode > android/app/google-services.json
+          elif [ ! -f "android/app/google-services.json" ]; then
+            mkdir -p android/app
+            echo '{"project_info":{"project_number":"1234567890","project_id":"dummy-ci-project","storage_bucket":"dummy-ci-project.appspot.com"},"client":[{"client_info":{"mobilesdk_app_id":"1:1234567890:android:dummyappid","android_client_info":{"package_name":"com.eker.balance"}},"oauth_client":[],"api_key":[{"current_key":"dummy_api_key"}],"services":{}}],"configuration_version":"1"}' > android/app/google-services.json
           fi
+
           if [ -n "${{ secrets.FIREBASE_GOOGLE_SERVICE_INFO_PLIST_BASE64 }}" ]; then
             echo "${{ secrets.FIREBASE_GOOGLE_SERVICE_INFO_PLIST_BASE64 }}" | base64 --decode > ios/Runner/GoogleService-Info.plist
+          elif [ ! -f "ios/Runner/GoogleService-Info.plist" ]; then
+            mkdir -p ios/Runner
+            echo '<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd"><plist version="1.0"><dict><key>API_KEY</key><string>dummy_api_key</string><key>GCM_SENDER_ID</key><string>1234567890</string><key>PLIST_VERSION</key><string>1</string><key>BUNDLE_ID</key><string>com.eker.balance</string><key>PROJECT_ID</key><string>dummy-ci-project</string><key>STORAGE_BUCKET</key><string>dummy-ci-project.appspot.com</string><key>GOOGLE_APP_ID</key><string>1:1234567890:ios:dummyappid</string></dict></plist>' > ios/Runner/GoogleService-Info.plist
           fi
+
           if [ -n "${{ secrets.FIREBASE_OPTIONS_DART_BASE64 }}" ]; then
             echo "${{ secrets.FIREBASE_OPTIONS_DART_BASE64 }}" | base64 --decode > lib/firebase_options.dart
           elif [ ! -f "lib/firebase_options.dart" ]; then
-            cat << 'EOF' > lib/firebase_options.dart
-import 'package:firebase_core/firebase_core.dart' show FirebaseOptions;
-import 'package:flutter/foundation.dart' show defaultTargetPlatform, TargetPlatform;
-
-class DefaultFirebaseOptions {
-  static FirebaseOptions get currentPlatform {
-    return const FirebaseOptions(
-      apiKey: 'dummy_api_key',
-      appId: 'dummy_app_id',
-      messagingSenderId: 'dummy_sender_id',
-      projectId: 'dummy_project_id',
-    );
-  }
-}
-EOF
+            echo "aW1wb3J0ICdwYWNrYWdlOmZpcmViYXNlX2NvcmUvZmlyZWJhc2VfY29yZS5kYXJ0JyBzaG93IEZpcmViYXNlT3B0aW9uczsKaW1wb3J0ICdwYWNrYWdlOmZsdXR0ZXIvZm91bmRhdGlvbi5kYXJ0JyBzaG93IGRlZmF1bHRUYXJnZXRQbGF0Zm9ybSwgVGFyZ2V0UGxhdGZvcm07CgpjbGFzcyBEZWZhdWx0RmlyZWJhc2VPcHRpb25zIHsKICBzdGF0aWMgRmlyZWJhc2VPcHRpb25zIGdldCBjdXJyZW50UGxhdGZvcm0gewogICAgcmV0dXJuIGNvbnN0IEZpcmViYXNlT3B0aW9ucygKICAgICAgYXBpS2V5OiAnZHVtbXlfYXBpX2tleScsCiAgICAgIGFwcElkOiAnZHVtbXlfYXBwX2lkJywKICAgICAgbWVzc2FnaW5nU2VuZGVySWQ6ICdkdW1teV9zZW5kZXJfaWQnLAogICAgICBwcm9qZWN0SWQ6ICdkdW1teV9wcm9qZWN0X2lkJywKICAgICk7CiAgfQp9Cg==" | base64 --decode > lib/firebase_options.dart
           fi
 
       - name: Fetch Isar core binary for native tests
@@ -74,7 +68,7 @@ EOF
         run: dart format --set-exit-if-changed lib test
 
       - name: Static analysis
-        run: flutter analyze | perl -pe 's/\x1b\[[0-9;]*[a-zA-Z]//g' | grep -q "No issues found!" || (echo "Lint issues found!" && exit 1)
+        run: flutter analyze
 
       - name: Run unit and widget tests
         run: flutter test --exclude-tags golden
