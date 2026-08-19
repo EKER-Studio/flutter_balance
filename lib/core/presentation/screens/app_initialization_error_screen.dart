@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:balance/l10n/app_localizations.dart';
 import 'package:balance/core/presentation/theme/app_theme.dart';
+import 'package:balance/core/utils/analytics.dart';
+import 'package:balance/l10n/app_localizations.dart';
 
 /// Fallback UI shown when app startup initialization fails.
 ///
@@ -84,7 +85,10 @@ class AppInitializationErrorContent extends StatelessWidget {
                     label: l10n.initErrorRetryLabel,
                     hint: l10n.initErrorRetryHint,
                     child: FilledButton.icon(
-                      onPressed: onRetry,
+                      onPressed: () {
+                        AppAnalytics.logAppInitRetryClicked();
+                        onRetry();
+                      },
                       icon: const Icon(Icons.refresh_rounded),
                       label: Text(l10n.retryStartup),
                       style: FilledButton.styleFrom(
