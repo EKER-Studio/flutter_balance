@@ -1,7 +1,8 @@
-import 'package:balance/core/presentation/utils/picker_helpers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:balance/core/presentation/utils/app_snackbar.dart';
+import 'package:balance/core/presentation/utils/picker_helpers.dart';
+import 'package:balance/core/utils/analytics.dart';
 import 'package:balance/l10n/app_localizations.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_bloc.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_event.dart';
@@ -39,12 +40,17 @@ class _StepReminderNotificationState extends State<StepReminderNotification> {
       minute: recordTime.minute,
     );
 
+    AppAnalytics.logOnboardingReminderTimePickerOpened();
     final picked = await showSafeTimePicker(
       context: context,
       initialTime: initialTime,
     );
 
     if (picked != null && context.mounted) {
+      AppAnalytics.logOnboardingReminderTimeSelected(
+        hour: picked.hour,
+        minute: picked.minute,
+      );
       context.read<AppSettingsBloc>().add(
         UpdateNotificationTime((hour: picked.hour, minute: picked.minute)),
       );
@@ -59,6 +65,7 @@ class _StepReminderNotificationState extends State<StepReminderNotification> {
 
   /// Toggles the notification permission and dispatches the event to [AppSettingsBloc].
   Future<void> _handleToggle(BuildContext context, bool enabled) async {
+    AppAnalytics.logOnboardingReminderToggleClicked(enabled);
     context.read<AppSettingsBloc>().add(ToggleNotifications(enabled));
   }
 

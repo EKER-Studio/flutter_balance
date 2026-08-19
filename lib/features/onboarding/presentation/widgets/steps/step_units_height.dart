@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:balance/core/models/measurement_unit.dart';
 import 'package:balance/core/presentation/core/clamped_layout.dart';
+import 'package:balance/core/utils/analytics.dart';
 import 'package:balance/core/utils/unit_converter.dart';
 import 'package:balance/features/onboarding/presentation/widgets/components/imperial_height_input.dart';
 import 'package:balance/features/onboarding/presentation/widgets/components/metric_height_input.dart';
@@ -154,6 +155,7 @@ class _StepUnitsHeightState extends State<StepUnitsHeight> {
   void _onUnitChanged(MeasurementUnit newUnit) {
     if (newUnit == _selectedUnit) return;
 
+    AppAnalytics.logOnboardingUnitsTabTapped(newUnit.name);
     final currentCm = _calculateHeightCm();
     setState(() {
       _cmErrorText = null;
@@ -187,6 +189,7 @@ class _StepUnitsHeightState extends State<StepUnitsHeight> {
     if (heightCm != null) {
       widget.onNext(_selectedUnit, heightCm);
     } else {
+      AppAnalytics.logOnboardingHeightValidationError('range_error');
       setState(() {
         if (_selectedUnit == MeasurementUnit.metric) {
           _cmErrorText = AppLocalizations.of(context).heightRangeError;

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:balance/core/models/measurement_unit.dart';
 import 'package:balance/core/presentation/core/clamped_layout.dart';
 import 'package:balance/core/presentation/utils/picker_helpers.dart';
+import 'package:balance/core/utils/analytics.dart';
 import 'package:balance/core/utils/unit_converter.dart';
 import 'package:balance/features/onboarding/presentation/widgets/components/initial_weight_date_time_picker.dart';
 import 'package:balance/l10n/app_localizations.dart';
@@ -58,6 +59,12 @@ class _StepInitialWeightState extends State<StepInitialWeight> {
     super.initState();
     _selectedTimestamp = widget.initialTimestamp ?? DateTime.now();
 
+    _focusNode.addListener(() {
+      if (_focusNode.hasFocus) {
+        AppAnalytics.logOnboardingInitialWeightFieldFocused();
+      }
+    });
+
     // Request focus after the step's frame renders so the keyboard opens
     // exactly when the step becomes visible, never while it is offstage.
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -84,6 +91,7 @@ class _StepInitialWeightState extends State<StepInitialWeight> {
   /// replaces the selected timestamp with the user's choice.
   Future<void> _pickDateTime() async {
     final now = DateTime.now();
+    AppAnalytics.logOnboardingInitialWeightDatePickerOpened();
     final pickedDate = await showDatePicker(
       context: context,
       initialDate: _selectedTimestamp,
@@ -92,13 +100,21 @@ class _StepInitialWeightState extends State<StepInitialWeight> {
     );
 
     if (pickedDate == null || !mounted) return;
+    final formattedDate =
+        '${pickedDate.year.toString().padLeft(4, '0')}-${pickedDate.month.toString().padLeft(2, '0')}-${pickedDate.day.toString().padLeft(2, '0')}';
+    AppAnalytics.logOnboardingInitialWeightDateChanged(formattedDate);
 
+    AppAnalytics.logOnboardingInitialWeightTimePickerOpened();
     final pickedTime = await showSafeTimePicker(
       context: context,
       initialTime: TimeOfDay.fromDateTime(_selectedTimestamp),
     );
 
     if (pickedTime == null || !mounted) return;
+    AppAnalytics.logOnboardingInitialWeightTimeChanged(
+      hour: pickedTime.hour,
+      minute: pickedTime.minute,
+    );
 
     setState(() {
       _selectedTimestamp = DateTime(
@@ -129,22 +145,30 @@ class _StepInitialWeightState extends State<StepInitialWeight> {
 
   /// Validates [value] on every keystroke and updates the inline error text.
   void _validate(String value) {
+    AppAnalytics.logOnboardingInitialWeightInputChanged(
+      value.trim().isNotEmpty,
+    );
     setState(() {
       final trimmed = value.trim().replaceAll(',', '.');
       if (trimmed.isEmpty) {
         _errorText = AppLocalizations.of(context).initialWeightRequiredError;
+        AppAnalytics.logOnboardingInitialWeightValidationError('required');
         return;
       }
 
       final parsed = double.tryParse(trimmed);
       if (parsed == null || parsed <= 0) {
         _errorText = AppLocalizations.of(context).invalidPositiveNumber;
+        AppAnalytics.logOnboardingInitialWeightValidationError(
+          'invalid_number',
+        );
       } else {
         final weightKg = widget.unit == MeasurementUnit.imperial
             ? lbsToKg(parsed)
             : parsed;
         if (weightKg > 500) {
           _errorText = AppLocalizations.of(context).invalidPositiveNumber;
+          AppAnalytics.logOnboardingInitialWeightValidationError('range_error');
         } else {
           _errorText = null;
         }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:balance/l10n/app_localizations.dart';
 import 'package:balance/core/presentation/utils/health_service_platform_localizer.dart';
+import 'package:balance/core/utils/analytics.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_bloc.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_event.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_state.dart';
@@ -36,6 +37,7 @@ class _StepHealthSyncState extends State<StepHealthSync> {
   /// native permission request whose outcome (enabled, denied, or unavailable)
   /// is surfaced reactively via the bloc state.
   void _handleToggle(bool enabled) {
+    AppAnalytics.logOnboardingHealthSyncToggleClicked(enabled);
     context.read<AppSettingsBloc>().add(ToggleHealthSync(enabled));
   }
 
@@ -61,6 +63,10 @@ class _StepHealthSyncState extends State<StepHealthSync> {
         listenWhen: (previous, current) =>
             !previous.healthPermissionDenied && current.healthPermissionDenied,
         listener: (context, state) {
+          AppAnalytics.logOnboardingHealthSyncToggled(
+            enabled: false,
+            permissionGranted: false,
+          );
           if (!_permissionDenied) {
             setState(() => _permissionDenied = true);
           }
@@ -70,6 +76,10 @@ class _StepHealthSyncState extends State<StepHealthSync> {
           listenWhen: (previous, current) =>
               !previous.isHealthSyncEnabled && current.isHealthSyncEnabled,
           listener: (context, state) {
+            AppAnalytics.logOnboardingHealthSyncToggled(
+              enabled: true,
+              permissionGranted: true,
+            );
             if (_permissionDenied) {
               setState(() => _permissionDenied = false);
             }

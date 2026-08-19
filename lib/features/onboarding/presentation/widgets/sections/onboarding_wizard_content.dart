@@ -14,6 +14,7 @@ import 'package:balance/features/onboarding/presentation/widgets/steps/step_remi
 import 'package:balance/features/onboarding/presentation/widgets/steps/step_target_weight.dart';
 import 'package:balance/features/onboarding/presentation/widgets/steps/step_units_height.dart';
 import 'package:balance/features/onboarding/presentation/widgets/steps/step_welcome.dart';
+import 'package:balance/core/utils/analytics.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_bloc.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_event.dart';
 import 'package:balance/features/weight/domain/entities/weight_entry.dart';
@@ -43,6 +44,25 @@ class OnboardingWizardContent extends StatefulWidget {
 class _OnboardingWizardContentState extends State<OnboardingWizardContent> {
   final PageController _pageController = PageController();
 
+  static const _stepNames = [
+    'welcome',
+    'units_height',
+    'csv_import',
+    'initial_weight',
+    'target_weight',
+    'reminder_notification',
+    'health_sync',
+    'biometric_lock',
+  ];
+
+  @override
+  void initState() {
+    super.initState();
+    final bloc = context.read<OnboardingBloc>();
+    AppAnalytics.logOnboardingStarted(bloc.state.totalSteps);
+    AppAnalytics.logOnboardingStepViewed(stepIndex: 0, stepName: _stepNames[0]);
+  }
+
   @override
   void dispose() {
     _pageController.dispose();
@@ -53,6 +73,14 @@ class _OnboardingWizardContentState extends State<OnboardingWizardContent> {
     FocusManager.instance.primaryFocus?.unfocus();
     final bloc = context.read<OnboardingBloc>();
     if (bloc.state.currentStepIndex + 1 >= bloc.state.totalSteps) {
+      final settingsState = context.read<AppSettingsBloc>().state;
+      AppAnalytics.logOnboardingCompleted(
+        hasInitialWeight: bloc.state.draftInitialWeight != null,
+        hasTargetWeight: bloc.state.draftTargetWeight != null,
+        hasCsvData: bloc.state.importedCsvEntries.isNotEmpty,
+        healthSyncEnabled: settingsState.isHealthSyncEnabled,
+        biometricsEnabled: settingsState.isBiometricLockEnabled,
+      );
       bloc.add(const OnboardingCompleted());
       widget.onWizardCompleted?.call();
     } else {
@@ -61,10 +89,13 @@ class _OnboardingWizardContentState extends State<OnboardingWizardContent> {
   }
 
   void _handleWelcomeNext() {
+    AppAnalytics.logOnboardingWelcomeContinueClicked();
     context.read<OnboardingBloc>().add(const OnboardingStepAdvanced());
   }
 
   void _handleUnitsHeightNext(MeasurementUnit unit, double heightCm) {
+    AppAnalytics.logOnboardingUnitSelected(unit.name);
+    AppAnalytics.logOnboardingHeightChanged(heightCm);
     context.read<OnboardingBloc>().add(OnboardingUnitSelected(unit));
 
     final settingsBloc = context.read<AppSettingsBloc>();
@@ -77,15 +108,18 @@ class _OnboardingWizardContentState extends State<OnboardingWizardContent> {
   }
 
   void _handleCsvImported(List<WeightEntry> entries) {
+    AppAnalytics.logOnboardingCsvImportSuccess(entries.length);
     context.read<OnboardingBloc>().add(OnboardingCsvImported(entries));
     _goToNextStep();
   }
 
   void _handleCsvSkipped() {
+    AppAnalytics.logOnboardingCsvImportSkipped();
     _goToNextStep();
   }
 
   void _handleInitialWeightNext(double weightKg, DateTime timestamp) {
+    AppAnalytics.logOnboardingInitialWeightSet(weightKg);
     context.read<OnboardingBloc>().add(
       OnboardingInitialWeightSet(weightKg: weightKg, timestamp: timestamp),
     );
@@ -93,6 +127,21 @@ class _OnboardingWizardContentState extends State<OnboardingWizardContent> {
   }
 
   void _handleTargetWeightNext(double? targetWeightKg) {
+    if (targetWeightKg != null) {
+      final initialWeight = context
+          .read<OnboardingBloc>()
+          .state
+          .draftInitialWeight;
+      final deltaKg = initialWeight != null
+          ? (targetWeightKg - initialWeight)
+          : null;
+      AppAnalytics.logOnboardingTargetWeightSet(
+        targetWeightKg: targetWeightKg,
+        deltaKg: deltaKg,
+      );
+    } else {
+      AppAnalytics.logOnboardingTargetWeightSkipped();
+    }
     context.read<OnboardingBloc>().add(
       OnboardingTargetWeightSet(targetWeightKg),
     );
@@ -105,25 +154,41 @@ class _OnboardingWizardContentState extends State<OnboardingWizardContent> {
   }
 
   void _handleHealthSyncNext() {
+    final healthEnabled = context
+        .read<AppSettingsBloc>()
+        .state
+        .isHealthSyncEnabled;
+    AppAnalytics.logOnboardingHealthSyncToggled(
+      enabled: healthEnabled,
+      permissionGranted: healthEnabled,
+    );
     context.read<OnboardingBloc>().add(
-      OnboardingHealthSyncToggled(
-        context.read<AppSettingsBloc>().state.isHealthSyncEnabled,
-      ),
+      OnboardingHealthSyncToggled(healthEnabled),
     );
     _goToNextStep();
   }
 
   void _handleBiometricNext() {
+    final biometricEnabled = context
+        .read<AppSettingsBloc>()
+        .state
+        .isBiometricLockEnabled;
+    AppAnalytics.logOnboardingBiometricsToggled(biometricEnabled);
     context.read<OnboardingBloc>().add(
-      OnboardingBiometricsToggled(
-        context.read<AppSettingsBloc>().state.isBiometricLockEnabled,
-      ),
+      OnboardingBiometricsToggled(biometricEnabled),
     );
     _goToNextStep();
   }
 
   void _handleStepRewind() {
     FocusManager.instance.primaryFocus?.unfocus();
+    final currentIndex = context.read<OnboardingBloc>().state.currentStepIndex;
+    if (currentIndex > 0) {
+      AppAnalytics.logOnboardingStepBackClicked(
+        fromStepIndex: currentIndex,
+        toStepIndex: currentIndex - 1,
+      );
+    }
     context.read<OnboardingBloc>().add(const OnboardingStepRewound());
   }
 
@@ -137,6 +202,13 @@ class _OnboardingWizardContentState extends State<OnboardingWizardContent> {
       listenWhen: (previous, current) =>
           previous.currentStepIndex != current.currentStepIndex,
       listener: (context, state) {
+        final stepName = state.currentStepIndex < _stepNames.length
+            ? _stepNames[state.currentStepIndex]
+            : 'step_${state.currentStepIndex}';
+        AppAnalytics.logOnboardingStepViewed(
+          stepIndex: state.currentStepIndex,
+          stepName: stepName,
+        );
         _pageController.animateToPage(
           state.currentStepIndex,
           duration: const Duration(milliseconds: 300),

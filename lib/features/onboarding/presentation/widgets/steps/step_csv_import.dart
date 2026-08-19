@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:balance/core/integrations/csv/csv_import_service.dart';
 import 'package:balance/core/presentation/core/clamped_layout.dart';
+import 'package:balance/core/utils/analytics.dart';
+import 'package:balance/core/utils/crash_reporter.dart';
 import 'package:balance/features/onboarding/presentation/widgets/components/csv_import_error_view.dart';
 import 'package:balance/features/onboarding/presentation/widgets/components/csv_import_idle_view.dart';
 import 'package:balance/features/onboarding/presentation/widgets/components/csv_import_loading_view.dart';
@@ -71,6 +73,7 @@ class _StepCsvImportState extends State<StepCsvImport> {
   /// Opens the file picker and parses the selected file, updating the step
   /// state on every outcome (cancel keeps the idle view).
   Future<void> _handlePickFile() async {
+    AppAnalytics.logOnboardingCsvPickerOpened();
     setState(() {
       _status = _CsvImportStatus.loading;
       _isEmptyFileError = false;
@@ -81,11 +84,15 @@ class _StepCsvImportState extends State<StepCsvImport> {
       if (!mounted) return;
 
       if (result == null) {
+        AppAnalytics.logOnboardingCsvPickerCancelled();
         setState(() => _status = _CsvImportStatus.idle);
         return;
       }
 
+      AppAnalytics.logOnboardingCsvParsingStarted();
+
       if (result.validEntries.isEmpty) {
+        AppAnalytics.logOnboardingCsvImportError('empty_file');
         setState(() {
           _status = _CsvImportStatus.error;
           _isEmptyFileError = true;
@@ -97,7 +104,14 @@ class _StepCsvImportState extends State<StepCsvImport> {
         _status = _CsvImportStatus.success;
         _entries = result.validEntries;
       });
-    } catch (_) {
+    } catch (e, stack) {
+      AppAnalytics.logOnboardingCsvImportError('parse_exception');
+      AppCrashReporter.recordError(
+        e,
+        stack,
+        reason: 'CSV import during onboarding failed',
+        fatal: false,
+      );
       if (!mounted) return;
       setState(() {
         _status = _CsvImportStatus.error;
@@ -136,7 +150,10 @@ class _StepCsvImportState extends State<StepCsvImport> {
         ),
         _CsvImportStatus.error => CsvImportErrorView(
           message: errorMessage,
-          onRetry: _handlePickFile,
+          onRetry: () {
+            AppAnalytics.logOnboardingCsvRetryClicked();
+            _handlePickFile();
+          },
           isLandscape: isLandscape,
         ),
       },

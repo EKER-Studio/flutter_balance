@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:balance/core/models/measurement_unit.dart';
+import 'package:balance/core/utils/analytics.dart';
 import 'package:balance/core/utils/unit_converter.dart';
 import 'package:balance/l10n/app_localizations.dart';
 import 'package:balance/core/presentation/core/clamped_layout.dart';
@@ -130,6 +131,7 @@ class _StepTargetWeightState extends State<StepTargetWeight> {
 
   /// Validates [value] on every keystroke and updates the inline error text.
   void _validate(String value) {
+    AppAnalytics.logOnboardingTargetWeightInputChanged(value.trim().isNotEmpty);
     final trimmed = value.trim().replaceAll(',', '.');
     if (trimmed.isEmpty) {
       if (_errorText != null) {
@@ -140,6 +142,7 @@ class _StepTargetWeightState extends State<StepTargetWeight> {
 
     final parsed = double.tryParse(trimmed);
     if (parsed == null || parsed <= 0) {
+      AppAnalytics.logOnboardingTargetWeightValidationError('invalid_number');
       if (_errorText == null) {
         setState(
           () => _errorText = AppLocalizations.of(context).invalidPositiveNumber,
@@ -150,6 +153,7 @@ class _StepTargetWeightState extends State<StepTargetWeight> {
           ? lbsToKg(parsed)
           : parsed;
       if (weightKg > 500) {
+        AppAnalytics.logOnboardingTargetWeightValidationError('range_error');
         if (_errorText == null) {
           setState(
             () =>

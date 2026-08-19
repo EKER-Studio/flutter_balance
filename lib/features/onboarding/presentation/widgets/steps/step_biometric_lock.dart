@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:balance/core/presentation/utils/app_snackbar.dart';
 import 'package:balance/core/integrations/biometrics/biometric_service.dart';
+import 'package:balance/core/utils/analytics.dart';
 import 'package:balance/l10n/app_localizations.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_bloc.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_event.dart';
@@ -54,10 +55,12 @@ class _StepBiometricLockState extends State<StepBiometricLock> {
   Future<void> _handleToggle(BuildContext context, bool enabled) async {
     final l10n = AppLocalizations.of(context);
     final bloc = context.read<AppSettingsBloc>();
+    AppAnalytics.logOnboardingBiometricsToggleClicked(enabled);
 
     if (enabled) {
       final available = await BiometricService.instance.canAuthenticate();
       if (!available) {
+        AppAnalytics.logOnboardingBiometricsAuthResult(false);
         if (context.mounted) {
           AppSnackBar.show(
             context,
@@ -73,7 +76,10 @@ class _StepBiometricLockState extends State<StepBiometricLock> {
         authMessages: BiometricService.createAuthMessages(l10n),
       );
 
-      if (result == BiometricAuthResult.success) {
+      final success = result == BiometricAuthResult.success;
+      AppAnalytics.logOnboardingBiometricsAuthResult(success);
+      if (success) {
+        AppAnalytics.logOnboardingBiometricsToggled(true);
         bloc.add(const UpdateBiometricLock(true));
       } else {
         if (context.mounted) {
@@ -85,6 +91,7 @@ class _StepBiometricLockState extends State<StepBiometricLock> {
         }
       }
     } else {
+      AppAnalytics.logOnboardingBiometricsToggled(false);
       bloc.add(const UpdateBiometricLock(false));
     }
   }
