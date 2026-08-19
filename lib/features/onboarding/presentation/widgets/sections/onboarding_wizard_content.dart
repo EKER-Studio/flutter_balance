@@ -69,10 +69,17 @@ class _OnboardingWizardContentState extends State<OnboardingWizardContent> {
     super.dispose();
   }
 
-  void _goToNextStep() {
+  void _goToNextStep({bool isSkipped = false}) {
     FocusManager.instance.primaryFocus?.unfocus();
     final bloc = context.read<OnboardingBloc>();
-    if (bloc.state.currentStepIndex + 1 >= bloc.state.totalSteps) {
+    final currentIndex = bloc.state.currentStepIndex;
+    final stepName = _stepNames[currentIndex];
+    AppAnalytics.logOnboardingStepCompleted(
+      stepIndex: currentIndex,
+      stepName: stepName,
+      isSkipped: isSkipped,
+    );
+    if (currentIndex + 1 >= bloc.state.totalSteps) {
       final settingsState = context.read<AppSettingsBloc>().state;
       AppAnalytics.logOnboardingCompleted(
         hasInitialWeight: bloc.state.draftInitialWeight != null,
@@ -90,7 +97,7 @@ class _OnboardingWizardContentState extends State<OnboardingWizardContent> {
 
   void _handleWelcomeNext() {
     AppAnalytics.logOnboardingWelcomeContinueClicked();
-    context.read<OnboardingBloc>().add(const OnboardingStepAdvanced());
+    _goToNextStep();
   }
 
   void _handleUnitsHeightNext(MeasurementUnit unit, double heightCm) {
@@ -115,7 +122,7 @@ class _OnboardingWizardContentState extends State<OnboardingWizardContent> {
 
   void _handleCsvSkipped() {
     AppAnalytics.logOnboardingCsvImportSkipped();
-    _goToNextStep();
+    _goToNextStep(isSkipped: true);
   }
 
   void _handleInitialWeightNext(double weightKg, DateTime timestamp) {
@@ -146,11 +153,15 @@ class _OnboardingWizardContentState extends State<OnboardingWizardContent> {
       OnboardingTargetWeightSet(targetWeightKg),
     );
     context.read<AppSettingsBloc>().add(TargetWeightChanged(targetWeightKg));
-    _goToNextStep();
+    _goToNextStep(isSkipped: targetWeightKg == null);
   }
 
   void _handleReminderNext() {
-    _goToNextStep();
+    final notificationsEnabled = context
+        .read<AppSettingsBloc>()
+        .state
+        .notificationsEnabled;
+    _goToNextStep(isSkipped: !notificationsEnabled);
   }
 
   void _handleHealthSyncNext() {

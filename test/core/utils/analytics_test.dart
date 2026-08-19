@@ -36,6 +36,11 @@ void main() {
           stepIndex: 0,
           stepName: 'welcome',
         );
+        await AppAnalytics.logOnboardingStepCompleted(
+          stepIndex: 0,
+          stepName: 'welcome',
+          isSkipped: false,
+        );
         await AppAnalytics.logOnboardingWelcomeContinueClicked();
         await AppAnalytics.logOnboardingWelcomeFeatureCardTapped(
           'Units & Height',

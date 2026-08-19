@@ -106,6 +106,26 @@ class AppAnalytics {
     );
   }
 
+  /// Logs the user completing an onboarding step and moving to the next one.
+  ///
+  /// @param stepIndex The zero-based index of the completed step.
+  /// @param stepName The identifier of the completed step.
+  /// @param isSkipped Whether the step was skipped without providing data.
+  static Future<void> logOnboardingStepCompleted({
+    required int stepIndex,
+    required String stepName,
+    required bool isSkipped,
+  }) {
+    return logEvent(
+      name: 'onboarding_step_completed',
+      parameters: {
+        'step_index': stepIndex,
+        'step_name': stepName,
+        'is_skipped': isSkipped,
+      },
+    );
+  }
+
   /// Logs the user tapping continue on the onboarding welcome step.
   static Future<void> logOnboardingWelcomeContinueClicked() {
     return logEvent(name: 'onboarding_welcome_continue_clicked');
