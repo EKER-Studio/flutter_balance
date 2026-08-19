@@ -28,7 +28,7 @@ void main() {
       home: Scaffold(
         body: BmiChartCard(
           entries: entries,
-          heightCm: heightCm, // <-- TUTAJ było na sztywno 180.0
+          heightCm: heightCm,
           period: TimePeriod.week,
           onPeriodChanged: (_) {},
         ),
