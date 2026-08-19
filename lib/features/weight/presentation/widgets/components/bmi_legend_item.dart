@@ -28,36 +28,38 @@ class BmiLegendItem extends StatelessWidget {
     final bgColor = category.chipBackgroundColor();
     final textColor = category.chipContentColor(isDark: isDark);
 
-    return Row(
-      children: [
-        ExcludeSemantics(
-          child: Container(
-            width: 16,
-            height: 16,
-            decoration: BoxDecoration(
-              color: bgColor,
-              border: Border.all(color: textColor, width: 2),
-              borderRadius: BorderRadius.circular(4),
+    return MergeSemantics(
+      child: Row(
+        children: [
+          ExcludeSemantics(
+            child: Container(
+              width: 16,
+              height: 16,
+              decoration: BoxDecoration(
+                color: bgColor,
+                border: Border.all(color: textColor, width: 2),
+                borderRadius: BorderRadius.circular(4),
+              ),
             ),
           ),
-        ),
-        const SizedBox(width: 12),
-        Expanded(
-          child: Text(
-            label,
+          const SizedBox(width: 12),
+          Expanded(
+            child: Text(
+              label,
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                fontWeight: FontWeight.w600,
+                color: Theme.of(context).colorScheme.onSurface,
+              ),
+            ),
+          ),
+          Text(
+            range,
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              fontWeight: FontWeight.w600,
-              color: Theme.of(context).colorScheme.onSurface,
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
             ),
           ),
-        ),
-        Text(
-          range,
-          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-            color: Theme.of(context).colorScheme.onSurfaceVariant,
-          ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }
