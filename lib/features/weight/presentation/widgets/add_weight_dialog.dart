@@ -1,14 +1,15 @@
-import 'package:balance/core/presentation/utils/picker_helpers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:intl/intl.dart';
 import 'package:balance/core/models/measurement_unit.dart';
+import 'package:balance/core/presentation/utils/picker_helpers.dart';
 import 'package:balance/core/utils/unit_converter.dart';
+import 'package:balance/features/settings/presentation/bloc/app_settings_bloc.dart';
 import 'package:balance/features/weight/domain/entities/weight_entry.dart';
 import 'package:balance/features/weight/presentation/bloc/weight_bloc.dart';
 import 'package:balance/features/weight/presentation/bloc/weight_event.dart';
+import 'package:balance/features/weight/presentation/widgets/components/date_time_picker_row.dart';
+import 'package:balance/features/weight/presentation/widgets/components/weight_input_field.dart';
 import 'package:balance/l10n/app_localizations.dart';
-import 'package:balance/features/settings/presentation/bloc/app_settings_bloc.dart';
 
 /// A modal dialog form for adding a new weight measurement.
 ///
@@ -121,12 +122,6 @@ class _AddWeightDialogState extends State<AddWeightDialog> {
     final l10n = AppLocalizations.of(context);
     final unit = context.watch<AppSettingsBloc>().state.measurementUnit;
 
-    final dateStr = DateFormat.yMd(
-      Localizations.localeOf(context).toString(),
-    ).format(_selectedDate);
-
-    final timeStr = _selectedTime.format(context);
-
     return AlertDialog(
       scrollable: true,
       insetPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
@@ -137,132 +132,22 @@ class _AddWeightDialogState extends State<AddWeightDialog> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Row(
-              children: [
-                Expanded(
-                  child: Semantics(
-                    button: true,
-                    label: '${l10n.measurementDate}: $dateStr',
-                    hint: l10n.doubleTapToOpenCalendarHint,
-                    child: InkWell(
-                      onTap: () => _pickDate(context),
-                      borderRadius: BorderRadius.circular(8),
-                      child: InputDecorator(
-                        decoration: InputDecoration(
-                          labelText: l10n.measurementDate,
-                          border: const OutlineInputBorder(),
-                          suffixIcon: const Icon(
-                            Icons.calendar_today_outlined,
-                            size: 20,
-                          ),
-                          contentPadding: const EdgeInsetsDirectional.fromSTEB(
-                            12,
-                            16,
-                            12,
-                            12,
-                          ),
-                        ),
-                        child: FittedBox(
-                          fit: BoxFit.scaleDown,
-                          alignment: Alignment.centerLeft,
-                          child: Text(
-                            dateStr,
-                            style: Theme.of(context).textTheme.bodyLarge,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Semantics(
-                    button: true,
-                    label: '${l10n.measurementTime}: $timeStr',
-                    hint: l10n.doubleTapToChangeTimeHint,
-                    child: InkWell(
-                      onTap: () => _pickTime(context),
-                      borderRadius: BorderRadius.circular(8),
-                      child: InputDecorator(
-                        decoration: InputDecoration(
-                          labelText: l10n.measurementTime,
-                          border: const OutlineInputBorder(),
-                          suffixIcon: const Icon(
-                            Icons.access_time_outlined,
-                            size: 20,
-                          ),
-                          contentPadding: const EdgeInsetsDirectional.fromSTEB(
-                            12,
-                            16,
-                            12,
-                            12,
-                          ),
-                        ),
-                        child: FittedBox(
-                          fit: BoxFit.scaleDown,
-                          alignment: Alignment.centerLeft,
-                          child: Text(
-                            timeStr,
-                            style: Theme.of(context).textTheme.bodyLarge,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ],
+            DateTimePickerRow(
+              selectedDate: _selectedDate,
+              selectedTime: _selectedTime,
+              dateTimeError: _dateTimeError,
+              onPickDate: () => _pickDate(context),
+              onPickTime: () => _pickTime(context),
             ),
-            if (_dateTimeError != null) ...[
-              const SizedBox(height: 6),
-              Padding(
-                padding: const EdgeInsets.only(left: 12.0),
-                child: Text(
-                  _dateTimeError!,
-                  style: TextStyle(
-                    color: Theme.of(context).colorScheme.error,
-                    fontSize: 12,
-                  ),
-                ),
-              ),
-            ],
             const SizedBox(height: 16),
-            TextField(
+            WeightInputField(
               controller: _weightController,
-              autofocus: false,
-              keyboardType: const TextInputType.numberWithOptions(
-                decimal: true,
-              ),
-              textInputAction: TextInputAction.next,
-              decoration: InputDecoration(
-                labelText: unit == MeasurementUnit.imperial
-                    ? l10n.weightInLbLabel
-                    : l10n.weightInKgLabel,
-                hintText: l10n.weightHint,
-                border: const OutlineInputBorder(),
-                errorText: _weightError != null ? "" : null,
-                errorStyle: const TextStyle(height: 0, fontSize: 0),
-                contentPadding: const EdgeInsetsDirectional.fromSTEB(
-                  12,
-                  16,
-                  12,
-                  12,
-                ),
-              ),
+              unit: unit,
+              weightError: _weightError,
               onChanged: (_) {
                 if (_weightError != null) setState(() => _weightError = null);
               },
             ),
-            if (_weightError != null)
-              Padding(
-                padding: const EdgeInsets.only(top: 8.0, left: 12.0),
-                child: Text(
-                  _weightError!,
-                  style: TextStyle(
-                    color: Theme.of(context).colorScheme.error,
-                    fontSize: 12.0,
-                  ),
-                ),
-              ),
             const SizedBox(height: 16),
             TextField(
               controller: _noteController,
