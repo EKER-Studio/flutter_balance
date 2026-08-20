@@ -19,7 +19,7 @@ import 'package:balance/features/settings/presentation/bloc/app_settings_event.d
 import 'package:balance/features/settings/presentation/widgets/components/health_connect_install_dialog.dart';
 import 'package:balance/features/settings/presentation/widgets/components/theme_selection_dialog.dart';
 import 'package:balance/features/settings/presentation/widgets/components/unit_selection_dialog.dart';
-import 'package:balance/features/settings/presentation/widgets/height_dialog.dart';
+import 'package:balance/features/settings/presentation/widgets/height_sheet.dart';
 import 'package:balance/features/settings/presentation/widgets/target_weight_sheet.dart';
 import 'package:balance/features/settings/presentation/widgets/wipe_data_dialog.dart';
 import 'package:balance/features/weight/domain/entities/weight_entry.dart';
@@ -34,16 +34,17 @@ import 'package:balance/l10n/app_localizations.dart';
 class SettingsDataCoordinator {
   const SettingsDataCoordinator._();
 
-  /// Shows the height configuration dialog.
-  static Future<void> showHeightDialog(BuildContext context) async {
+  /// Shows the height configuration bottom sheet.
+  static Future<void> showHeightSheet(BuildContext context) async {
     final settingsState = context.read<AppSettingsBloc>().state;
     AppAnalytics.logSettingsHeightDialogOpened(
       currentHeightCm: settingsState.height,
       unit: settingsState.measurementUnit.name,
     );
-    final result = await showDialog<double>(
+    final result = await showModalBottomSheet<double>(
       context: context,
-      builder: (ctx) => HeightDialog(
+      isScrollControlled: true,
+      builder: (sheetCtx) => HeightSheet(
         currentValue: settingsState.height,
         measurementUnit: settingsState.measurementUnit,
       ),

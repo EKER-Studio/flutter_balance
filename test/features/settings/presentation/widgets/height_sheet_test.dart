@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:balance/l10n/app_localizations.dart';
-import 'package:balance/features/settings/presentation/widgets/height_dialog.dart';
+import 'package:balance/features/settings/presentation/widgets/height_sheet.dart';
 import 'package:balance/core/models/measurement_unit.dart';
 
 void main() {
@@ -10,7 +10,7 @@ void main() {
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
       home: Scaffold(
-        body: HeightDialog(
+        body: HeightSheet(
           currentValue: initialValue,
           measurementUnit: MeasurementUnit.metric,
         ),
@@ -18,9 +18,9 @@ void main() {
     );
   }
 
-  /// Opens [HeightDialog] through a real [showDialog] route so that popping
-  /// resolves the future with the dialog result.
-  Future<void> openDialog(
+  /// Opens [HeightSheet] through a real [showModalBottomSheet] route so that
+  /// popping resolves the future with the sheet result.
+  Future<void> openSheet(
     WidgetTester tester,
     double? initialValue, {
     void Function(double?)? onResult,
@@ -34,27 +34,28 @@ void main() {
             builder: (context) => Center(
               child: ElevatedButton(
                 onPressed: () async {
-                  final result = await showDialog<double>(
+                  final result = await showModalBottomSheet<double>(
                     context: context,
-                    builder: (_) => HeightDialog(
+                    isScrollControlled: true,
+                    builder: (_) => HeightSheet(
                       currentValue: initialValue,
                       measurementUnit: MeasurementUnit.metric,
                     ),
                   );
                   onResult?.call(result);
                 },
-                child: const Text('open dialog'),
+                child: const Text('open sheet'),
               ),
             ),
           ),
         ),
       ),
     );
-    await tester.tap(find.text('open dialog'));
+    await tester.tap(find.text('open sheet'));
     await tester.pumpAndSettle();
   }
 
-  group('HeightDialog', () {
+  group('HeightSheet', () {
     testWidgets('renders with initial value', (tester) async {
       await tester.pumpWidget(buildTestWidget(175.0));
       await tester.pumpAndSettle();
@@ -101,7 +102,7 @@ void main() {
     });
 
     testWidgets('shows error when height exceeds the maximum', (tester) async {
-      await openDialog(tester, null);
+      await openSheet(tester, null);
 
       await tester.enterText(find.byType(TextField), '260');
       await tester.tap(find.text('Save'));
@@ -113,7 +114,7 @@ void main() {
     testWidgets('pops with the entered height on save', (tester) async {
       double? result;
       var resolved = false;
-      await openDialog(
+      await openSheet(
         tester,
         null,
         onResult: (r) {
@@ -135,7 +136,7 @@ void main() {
     ) async {
       double? result;
       var resolved = false;
-      await openDialog(
+      await openSheet(
         tester,
         null,
         onResult: (r) {
@@ -154,7 +155,7 @@ void main() {
 
     testWidgets('cancel closes the dialog without a result', (tester) async {
       var resolved = false;
-      await openDialog(tester, null, onResult: (_) => resolved = true);
+      await openSheet(tester, null, onResult: (_) => resolved = true);
 
       await tester.tap(find.text('Cancel'));
       await tester.pumpAndSettle();

@@ -107,7 +107,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             state: state,
                             isBiometricAvailable: _isBiometricAvailable,
                             onHeightTap: () =>
-                                SettingsDataCoordinator.showHeightDialog(
+                                SettingsDataCoordinator.showHeightSheet(
                                   context,
                                 ),
                             onTargetWeightTap: () =>
