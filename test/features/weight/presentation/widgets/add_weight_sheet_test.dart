@@ -264,6 +264,33 @@ void main() {
     ).called(1);
   });
 
+  testWidgets('clear icons clear the weight and note fields', (tester) async {
+    await tester.pumpWidget(createTestWidget(const AddWeightSheet()));
+    await tester.pumpAndSettle();
+
+    expect(find.byIcon(Icons.clear), findsNothing);
+
+    final weightField = find.byType(TextField).at(0);
+    await tester.enterText(weightField, '72.5');
+    await tester.pumpAndSettle();
+    expect(find.byIcon(Icons.clear), findsOneWidget);
+
+    await tester.tap(find.byIcon(Icons.clear));
+    await tester.pumpAndSettle();
+    expect(tester.widget<TextField>(weightField).controller!.text, isEmpty);
+    expect(find.byIcon(Icons.clear), findsNothing);
+
+    final noteField = find.byType(TextField).at(1);
+    await tester.enterText(noteField, 'morning');
+    await tester.pumpAndSettle();
+    expect(find.byIcon(Icons.clear), findsOneWidget);
+
+    await tester.tap(find.byIcon(Icons.clear));
+    await tester.pumpAndSettle();
+    expect(tester.widget<TextField>(noteField).controller!.text, isEmpty);
+    expect(find.byIcon(Icons.clear), findsNothing);
+  });
+
   testWidgets('uses the imperial unit for validation and conversion', (
     tester,
   ) async {

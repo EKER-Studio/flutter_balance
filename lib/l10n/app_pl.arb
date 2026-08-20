@@ -41,6 +41,7 @@
   "heightHint": "np. 177",
   "targetWeightDialogTitle": "Waga docelowa",
   "removeTargetWeight": "Usuń cel",
+  "clearField": "Wyczyść pole",
   "targetWeightOptionalTitle": "Twój wymarzony cel",
   "weightInKgLabel": "Waga (kg)",
   "weightInLbLabel": "Waga (lb)",

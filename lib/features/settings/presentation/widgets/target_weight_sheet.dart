@@ -98,8 +98,6 @@ class _TargetWeightSheetState extends State<TargetWeightSheet> {
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
 
-    final hasTarget = widget.currentValueKg != null;
-
     return Padding(
       padding: EdgeInsets.only(bottom: MediaQuery.viewInsetsOf(context).bottom),
       child: SafeArea(
@@ -145,16 +143,15 @@ class _TargetWeightSheetState extends State<TargetWeightSheet> {
                   border: const OutlineInputBorder(),
                   errorText: _errorText,
                   errorMaxLines: 2,
-                  suffixIcon: hasTarget
+                  suffixIcon: _controller.text.isNotEmpty
                       ? IconButton(
-                          icon: Icon(
-                            Icons.delete_outline,
-                            color: colorScheme.error,
-                          ),
-                          tooltip: l10n.removeTargetWeight,
+                          icon: const Icon(Icons.clear),
+                          tooltip: l10n.clearField,
                           onPressed: () {
-                            FocusScope.of(context).unfocus();
-                            Navigator.of(context).pop('clear');
+                            setState(() {
+                              _controller.clear();
+                              _errorText = null;
+                            });
                           },
                         )
                       : null,
@@ -166,9 +163,9 @@ class _TargetWeightSheetState extends State<TargetWeightSheet> {
                   ),
                 ),
                 onChanged: (_) {
-                  if (_errorText != null) {
-                    setState(() => _errorText = null);
-                  }
+                  setState(() {
+                    _errorText = null;
+                  });
                 },
                 onSubmitted: (_) => _handleSave(),
               ),

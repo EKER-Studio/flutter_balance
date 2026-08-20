@@ -41,6 +41,7 @@
   "heightHint": "e.g. 177",
   "targetWeightDialogTitle": "Target weight",
   "removeTargetWeight": "Remove goal",
+  "clearField": "Clear field",
   "targetWeightOptionalTitle": "Your Dream Goal",
   "weightInKgLabel": "Weight (kg)",
   "weightInLbLabel": "Weight in lb",

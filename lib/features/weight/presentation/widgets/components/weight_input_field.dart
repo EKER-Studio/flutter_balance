@@ -45,6 +45,16 @@ class WeightInputField extends StatelessWidget {
             border: const OutlineInputBorder(),
             errorText: weightError != null ? "" : null,
             errorStyle: const TextStyle(height: 0, fontSize: 0),
+            suffixIcon: controller.text.isNotEmpty
+                ? IconButton(
+                    icon: const Icon(Icons.clear),
+                    tooltip: l10n.clearField,
+                    onPressed: () {
+                      controller.clear();
+                      onChanged('');
+                    },
+                  )
+                : null,
             contentPadding: const EdgeInsetsDirectional.fromSTEB(
               12,
               16,

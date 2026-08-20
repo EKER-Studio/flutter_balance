@@ -145,7 +145,9 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.byType(TargetWeightSheet), findsOneWidget);
 
-    await tester.tap(find.byIcon(Icons.delete_outline));
+    await tester.tap(find.byIcon(Icons.clear));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Save'));
     await tester.pumpAndSettle();
 
     expect(bloc.state.targetWeight, isNull);

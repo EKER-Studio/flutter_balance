@@ -15,13 +15,18 @@ void main() {
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
       home: Scaffold(
-        body: Padding(
-          padding: const EdgeInsets.all(16),
-          child: WeightInputField(
-            controller: controller,
-            unit: unit,
-            weightError: weightError,
-            onChanged: onChanged ?? (_) {},
+        body: StatefulBuilder(
+          builder: (context, setState) => Padding(
+            padding: const EdgeInsets.all(16),
+            child: WeightInputField(
+              controller: controller,
+              unit: unit,
+              weightError: weightError,
+              onChanged: (val) {
+                setState(() {});
+                onChanged?.call(val);
+              },
+            ),
           ),
         ),
       ),
@@ -85,6 +90,30 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text(errorMsg), findsOneWidget);
+    });
+
+    testWidgets('shows clear icon when text is present and clears the field', (
+      tester,
+    ) async {
+      final controller = TextEditingController(text: '70.5');
+      addTearDown(controller.dispose);
+      String? clearedText;
+
+      await tester.pumpWidget(
+        buildTestWidget(
+          controller: controller,
+          onChanged: (val) => clearedText = val,
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.byIcon(Icons.clear), findsOneWidget);
+      await tester.tap(find.byIcon(Icons.clear));
+      await tester.pumpAndSettle();
+
+      expect(controller.text, isEmpty);
+      expect(clearedText, '');
+      expect(find.byIcon(Icons.clear), findsNothing);
     });
   });
 }

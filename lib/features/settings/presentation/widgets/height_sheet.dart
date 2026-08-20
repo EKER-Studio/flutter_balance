@@ -167,6 +167,18 @@ class _HeightSheetState extends State<HeightSheet> {
                       AppSettingsState.maxHeightCm.toStringAsFixed(0),
                     ),
                     helperMaxLines: 2,
+                    suffixIcon: _cmController.text.isNotEmpty
+                        ? IconButton(
+                            icon: const Icon(Icons.clear),
+                            tooltip: l10n.clearField,
+                            onPressed: () {
+                              setState(() {
+                                _cmController.clear();
+                                _errorText = null;
+                              });
+                            },
+                          )
+                        : null,
                     contentPadding: const EdgeInsetsDirectional.fromSTEB(
                       12,
                       16,
@@ -175,7 +187,7 @@ class _HeightSheetState extends State<HeightSheet> {
                     ),
                   ),
                   onChanged: (_) {
-                    if (_errorText != null) setState(() => _errorText = null);
+                    setState(() => _errorText = null);
                   },
                   onSubmitted: (_) => _handleSave(),
                 )
@@ -195,6 +207,18 @@ class _HeightSheetState extends State<HeightSheet> {
                           border: const OutlineInputBorder(),
                           errorText: _errorText != null ? "" : null,
                           errorStyle: const TextStyle(height: 0, fontSize: 0),
+                          suffixIcon: _feetController.text.isNotEmpty
+                              ? IconButton(
+                                  icon: const Icon(Icons.clear),
+                                  tooltip: l10n.clearField,
+                                  onPressed: () {
+                                    setState(() {
+                                      _feetController.clear();
+                                      _errorText = null;
+                                    });
+                                  },
+                                )
+                              : null,
                           contentPadding: const EdgeInsetsDirectional.fromSTEB(
                             12,
                             16,
@@ -203,9 +227,7 @@ class _HeightSheetState extends State<HeightSheet> {
                           ),
                         ),
                         onChanged: (_) {
-                          if (_errorText != null) {
-                            setState(() => _errorText = null);
-                          }
+                          setState(() => _errorText = null);
                         },
                       ),
                     ),
@@ -221,6 +243,18 @@ class _HeightSheetState extends State<HeightSheet> {
                           border: const OutlineInputBorder(),
                           errorText: _errorText != null ? "" : null,
                           errorStyle: const TextStyle(height: 0, fontSize: 0),
+                          suffixIcon: _inchesController.text.isNotEmpty
+                              ? IconButton(
+                                  icon: const Icon(Icons.clear),
+                                  tooltip: l10n.clearField,
+                                  onPressed: () {
+                                    setState(() {
+                                      _inchesController.clear();
+                                      _errorText = null;
+                                    });
+                                  },
+                                )
+                              : null,
                           contentPadding: const EdgeInsetsDirectional.fromSTEB(
                             12,
                             16,
@@ -229,9 +263,7 @@ class _HeightSheetState extends State<HeightSheet> {
                           ),
                         ),
                         onChanged: (_) {
-                          if (_errorText != null) {
-                            setState(() => _errorText = null);
-                          }
+                          setState(() => _errorText = null);
                         },
                         onSubmitted: (_) => _handleSave(),
                       ),

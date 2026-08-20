@@ -199,9 +199,9 @@ class _AddWeightSheetState extends State<AddWeightSheet>
                 unit: unit,
                 weightError: _weightError,
                 onChanged: (_) {
-                  if (_weightError != null) {
-                    setState(() => _weightError = null);
-                  }
+                  setState(() {
+                    _weightError = null;
+                  });
                 },
               ),
               const SizedBox(height: 16),
@@ -210,6 +210,17 @@ class _AddWeightSheetState extends State<AddWeightSheet>
                 decoration: InputDecoration(
                   labelText: l10n.noteLabel,
                   border: const OutlineInputBorder(),
+                  suffixIcon: _noteController.text.isNotEmpty
+                      ? IconButton(
+                          icon: const Icon(Icons.clear),
+                          tooltip: l10n.clearField,
+                          onPressed: () {
+                            setState(() {
+                              _noteController.clear();
+                            });
+                          },
+                        )
+                      : null,
                   contentPadding: const EdgeInsetsDirectional.fromSTEB(
                     12,
                     16,
@@ -220,6 +231,7 @@ class _AddWeightSheetState extends State<AddWeightSheet>
                 maxLines: 1,
                 textInputAction: TextInputAction.done,
                 onChanged: (val) {
+                  setState(() {});
                   AppAnalytics.logDialogAddWeightNoteChanged(
                     val.trim().isNotEmpty,
                   );

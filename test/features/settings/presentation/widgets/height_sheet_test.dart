@@ -162,5 +162,61 @@ void main() {
 
       expect(resolved, isTrue);
     });
+
+    testWidgets('clear icon clears the cm field when text is present', (
+      tester,
+    ) async {
+      await tester.pumpWidget(buildTestWidget(175.0));
+      await tester.pumpAndSettle();
+
+      expect(find.byIcon(Icons.clear), findsOneWidget);
+      await tester.tap(find.byIcon(Icons.clear));
+      await tester.pumpAndSettle();
+
+      final textField = find.byType(TextField);
+      expect(tester.widget<TextField>(textField).controller?.text, '');
+      expect(find.byIcon(Icons.clear), findsNothing);
+    });
+
+    testWidgets('renders imperial fields with clear icons', (tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: Scaffold(
+            body: HeightSheet(
+              currentValue: null,
+              measurementUnit: MeasurementUnit.imperial,
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.byType(TextField), findsNWidgets(2));
+      expect(find.byIcon(Icons.clear), findsNothing);
+
+      await tester.enterText(find.byType(TextField).at(0), '5');
+      await tester.enterText(find.byType(TextField).at(1), '9');
+      await tester.pumpAndSettle();
+
+      expect(find.byIcon(Icons.clear), findsNWidgets(2));
+
+      await tester.tap(find.byIcon(Icons.clear).at(1));
+      await tester.pumpAndSettle();
+
+      final inchesField = tester.widget<TextField>(
+        find.byType(TextField).at(1),
+      );
+      expect(inchesField.controller?.text, '');
+      expect(find.byIcon(Icons.clear), findsOneWidget);
+
+      await tester.tap(find.byIcon(Icons.clear));
+      await tester.pumpAndSettle();
+
+      final feetField = tester.widget<TextField>(find.byType(TextField).at(0));
+      expect(feetField.controller?.text, '');
+      expect(find.byIcon(Icons.clear), findsNothing);
+    });
   });
 }
