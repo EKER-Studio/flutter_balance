@@ -1,5 +1,7 @@
 import 'dart:isolate';
 
+import 'package:device_info_plus/device_info_plus.dart';
+
 import 'package:flutter/foundation.dart';
 
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -195,12 +197,22 @@ class NotificationService {
   /// user can revoke at any time in system settings; always `true` on other
   /// platforms or when the platform check itself fails.
   Future<bool> canScheduleExactNotifications() async {
+    if (defaultTargetPlatform != TargetPlatform.android) return true;
+
     try {
+      final androidInfo = await DeviceInfoPlugin().androidInfo;
+      // SCHEDULE_EXACT_ALARM only exists on Android 12+ (API 31+); on older
+      // versions exact alarms are always allowed and the permission cannot be
+      // revoked, so the plugin-level check is skipped entirely.
+      if (androidInfo.version.sdkInt < 31) {
+        return true;
+      }
+
       final androidPlugin = _plugin
           .resolvePlatformSpecificImplementation<
             AndroidFlutterLocalNotificationsPlugin
           >();
-      return await androidPlugin?.canScheduleExactNotifications() ?? true;
+      return await androidPlugin?.canScheduleExactNotifications() ?? false;
     } catch (e, stack) {
       AppCrashReporter.recordError(
         e,

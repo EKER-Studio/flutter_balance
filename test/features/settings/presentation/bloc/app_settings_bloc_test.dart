@@ -51,6 +51,9 @@ void main() {
       () => mockNotificationService.scheduleDailyReminder(any()),
     ).thenAnswer((_) async => true);
     when(
+      () => mockNotificationService.canScheduleExactNotifications(),
+    ).thenAnswer((_) async => true);
+    when(
       () => mockNotificationService.cancelDailyReminder(),
     ).thenAnswer((_) async {});
   });
@@ -242,6 +245,9 @@ void main() {
         when(
           () => mockNotificationService.scheduleDailyReminder(any()),
         ).thenAnswer((_) async => false);
+        when(
+          () => mockNotificationService.canScheduleExactNotifications(),
+        ).thenAnswer((_) async => false);
       },
       build: () =>
           AppSettingsBloc(notificationService: mockNotificationService),
@@ -275,6 +281,9 @@ void main() {
         when(
           () => mockNotificationService.scheduleDailyReminder(any()),
         ).thenAnswer((_) async => false);
+        when(
+          () => mockNotificationService.canScheduleExactNotifications(),
+        ).thenAnswer((_) async => false);
       },
       build: () =>
           AppSettingsBloc(notificationService: mockNotificationService),
@@ -292,6 +301,29 @@ void main() {
           'notificationInexactScheduling',
           true,
         ),
+      ],
+    );
+
+    blocTest<AppSettingsBloc, AppSettingsState>(
+      'does not emit inexact flag on scheduling failure when exact alarms '
+      'are still available',
+      setUp: () {
+        when(
+          () => mockNotificationService.scheduleDailyReminder(any()),
+        ).thenAnswer((_) async => false);
+      },
+      build: () =>
+          AppSettingsBloc(notificationService: mockNotificationService),
+      seed: () => const AppSettingsState(notificationInexactScheduling: true),
+      act: (bloc) => bloc.add(const ToggleNotifications(true)),
+      expect: () => [
+        isA<AppSettingsState>()
+            .having((s) => s.notificationsEnabled, 'notificationsEnabled', true)
+            .having(
+              (s) => s.notificationInexactScheduling,
+              'notificationInexactScheduling',
+              false,
+            ),
       ],
     );
 

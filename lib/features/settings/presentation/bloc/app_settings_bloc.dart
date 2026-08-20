@@ -88,8 +88,14 @@ class AppSettingsBloc extends HydratedBloc<AppSettingsEvent, AppSettingsState> {
         ),
       );
       if (granted) {
+        await _notificationService.scheduleDailyReminder(
+          state.notificationTime,
+        );
+        // The hint must reflect the OS-level exact alarm availability, not the
+        // scheduling result: failures or inexact fallbacks on Android < 12
+        // (where the permission cannot be revoked) must never surface it.
         final exactScheduling = await _notificationService
-            .scheduleDailyReminder(state.notificationTime);
+            .canScheduleExactNotifications();
         if (!exactScheduling) {
           emit(state.copyWith(notificationInexactScheduling: true));
         }
@@ -121,9 +127,9 @@ class AppSettingsBloc extends HydratedBloc<AppSettingsEvent, AppSettingsState> {
       ),
     );
     if (state.notificationsEnabled) {
-      final exactScheduling = await _notificationService.scheduleDailyReminder(
-        event.notificationTime,
-      );
+      await _notificationService.scheduleDailyReminder(event.notificationTime);
+      final exactScheduling = await _notificationService
+          .canScheduleExactNotifications();
       if (!exactScheduling) {
         emit(state.copyWith(notificationInexactScheduling: true));
       }

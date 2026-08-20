@@ -81,8 +81,9 @@ class _AppState extends State<App> {
       final canScheduleExact = await NotificationService.instance
           .canScheduleExactNotifications();
       if (mounted) {
+        final inexact = canScheduleExact == false;
         context.read<AppSettingsBloc>().add(
-          UpdateNotificationInexactScheduling(!canScheduleExact),
+          UpdateNotificationInexactScheduling(inexact),
         );
       }
 

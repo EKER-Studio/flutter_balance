@@ -57,6 +57,7 @@ dependencies:
   flutter_native_splash: ^2.4.6
   share_plus: ^10.1.4
   package_info_plus: ^9.0.1
+  device_info_plus: ^12.1.0
   health: ^13.3.1
   url_launcher: ^6.3.2
   path: ^1.9.0

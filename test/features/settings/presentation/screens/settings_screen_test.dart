@@ -304,6 +304,9 @@ void main() {
       when(
         () => mockNotificationService.scheduleDailyReminder(any()),
       ).thenAnswer((_) async => true);
+      when(
+        () => mockNotificationService.canScheduleExactNotifications(),
+      ).thenAnswer((_) async => true);
 
       settingsBloc = AppSettingsBloc(
         notificationService: mockNotificationService,
@@ -334,6 +337,9 @@ void main() {
       ).thenAnswer((_) async => true);
       when(
         () => mockNotificationService.scheduleDailyReminder(any()),
+      ).thenAnswer((_) async => false);
+      when(
+        () => mockNotificationService.canScheduleExactNotifications(),
       ).thenAnswer((_) async => false);
 
       settingsBloc = AppSettingsBloc(
@@ -869,6 +875,9 @@ void main() {
       when(
         () => mockNotificationService.scheduleDailyReminder(any()),
       ).thenAnswer((_) async => true);
+      when(
+        () => mockNotificationService.canScheduleExactNotifications(),
+      ).thenAnswer((_) async => true);
       settingsBloc = AppSettingsBloc(
         notificationService: mockNotificationService,
       );
@@ -1055,6 +1064,9 @@ void main() {
       ).thenAnswer((_) async => true);
       when(
         () => mockNotificationService.scheduleDailyReminder(any()),
+      ).thenAnswer((_) async => true);
+      when(
+        () => mockNotificationService.canScheduleExactNotifications(),
       ).thenAnswer((_) async => true);
       settingsBloc = AppSettingsBloc(
         notificationService: mockNotificationService,

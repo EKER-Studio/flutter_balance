@@ -20,6 +20,9 @@ class FakeNotificationsChannel {
   bool? requestExactResult = true;
   bool requestNotificationsResult = true;
 
+  /// The reported Android SDK level (API 31+ exercises the permission flow).
+  int androidSdkInt = 33;
+
   /// The local ISO-8601 date string of the last `zonedSchedule` call.
   String? latestScheduledDateTime;
 
@@ -55,6 +58,9 @@ void main() {
     'dexterous.com/flutter/local_notifications',
   );
   const timezoneChannel = MethodChannel('flutter_timezone');
+  const deviceInfoChannel = MethodChannel(
+    'dev.fluttercommunity.plus/device_info',
+  );
 
   void installMocks(FakeNotificationsChannel fake) {
     messenger.setMockMethodCallHandler(notificationsChannel, fake.handle);
@@ -62,11 +68,48 @@ void main() {
       timezoneChannel,
       (call) async => 'Europe/Warsaw',
     );
+    messenger.setMockMethodCallHandler(
+      deviceInfoChannel,
+      (call) async => {
+        'version': {
+          'sdkInt': fake.androidSdkInt,
+          'release': '14',
+          'codename': 'REL',
+          'incremental': 'test',
+        },
+        'board': 'board',
+        'bootloader': 'bootloader',
+        'brand': 'brand',
+        'device': 'device',
+        'display': 'display',
+        'fingerprint': 'fingerprint',
+        'hardware': 'hardware',
+        'host': 'host',
+        'id': 'id',
+        'manufacturer': 'manufacturer',
+        'model': 'model',
+        'product': 'product',
+        'name': 'name',
+        'supported32BitAbis': <String>[],
+        'supported64BitAbis': <String>[],
+        'supportedAbis': <String>[],
+        'tags': 'tags',
+        'type': 'type',
+        'isPhysicalDevice': true,
+        'freeDiskSize': 0,
+        'totalDiskSize': 0,
+        'systemFeatures': <String>[],
+        'isLowRamDevice': false,
+        'physicalRamSize': 0,
+        'availableRamSize': 0,
+      },
+    );
   }
 
   void removeMocks() {
     messenger.setMockMethodCallHandler(notificationsChannel, null);
     messenger.setMockMethodCallHandler(timezoneChannel, null);
+    messenger.setMockMethodCallHandler(deviceInfoChannel, null);
   }
 
   tearDown(removeMocks);
@@ -247,6 +290,26 @@ void main() {
       );
     });
 
+    test(
+      'canScheduleExactNotifications is always true on Android < 12',
+      () async {
+        fake.androidSdkInt = 30;
+
+        expect(
+          await NotificationService.instance.canScheduleExactNotifications(),
+          isTrue,
+          reason: 'SCHEDULE_EXACT_ALARM does not exist before API 31',
+        );
+        expect(
+          fake.invokedMethods.where(
+            (m) => m == 'canScheduleExactNotifications',
+          ),
+          isEmpty,
+          reason: 'The plugin channel must not be consulted on Android < 12',
+        );
+      },
+    );
+
     test('requestExactAlarmsPermission reflects the platform value', () async {
       fake.requestExactResult = true;
       expect(
@@ -345,6 +408,7 @@ void main() {
 
   group('NotificationService failing platform channels', () {
     setUp(() {
+      debugDefaultTargetPlatformOverride = TargetPlatform.android;
       messenger.setMockMethodCallHandler(
         notificationsChannel,
         (call) async => throw PlatformException(code: 'TEST_FAILURE'),
@@ -353,6 +417,10 @@ void main() {
         timezoneChannel,
         (call) async => throw PlatformException(code: 'TEST_FAILURE'),
       );
+    });
+
+    tearDown(() {
+      debugDefaultTargetPlatformOverride = null;
     });
 
     test('initialize swallows platform-channel errors', () async {
@@ -366,13 +434,6 @@ void main() {
       );
     });
 
-    test('requestExactAlarmsPermission returns false on error', () async {
-      expect(
-        await NotificationService.instance.requestExactAlarmsPermission(),
-        isFalse,
-      );
-    });
-
     test('requestPermissions returns false on error', () async {
       expect(await NotificationService.instance.requestPermissions(), isFalse);
     });
@@ -383,6 +444,13 @@ void main() {
           hour: 8,
           minute: 0,
         )),
+        isFalse,
+      );
+    });
+
+    test('requestExactAlarmsPermission returns false on error', () async {
+      expect(
+        await NotificationService.instance.requestExactAlarmsPermission(),
         isFalse,
       );
     });
