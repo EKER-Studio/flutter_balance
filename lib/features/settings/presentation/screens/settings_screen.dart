@@ -111,7 +111,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                   context,
                                 ),
                             onTargetWeightTap: () =>
-                                SettingsDataCoordinator.showTargetWeightDialog(
+                                SettingsDataCoordinator.showTargetWeightSheet(
                                   context,
                                 ),
                             onThemeTap: () =>

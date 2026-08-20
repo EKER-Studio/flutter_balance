@@ -10,7 +10,7 @@ import 'package:balance/features/settings/presentation/bloc/app_settings_bloc.da
 import 'package:balance/features/settings/presentation/bloc/app_settings_event.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_state.dart';
 import 'package:balance/features/settings/presentation/bloc/bmi_category.dart';
-import 'package:balance/features/settings/presentation/widgets/target_weight_dialog.dart';
+import 'package:balance/features/settings/presentation/widgets/target_weight_sheet.dart';
 import 'package:balance/features/weight/presentation/utils/bmi_category_localizer.dart';
 import 'package:balance/features/weight/presentation/widgets/bmi_legend_dialog.dart';
 import 'package:balance/l10n/app_localizations.dart';
@@ -128,7 +128,7 @@ class HealthSummaryCard extends StatelessWidget {
                         currentWeightKg: latestWeightKg,
                         unit: weightUnit,
                         unitLabel: unitLabel,
-                        onTap: () => _openTargetWeightDialog(
+                        onTap: () => _openTargetWeightSheet(
                           context,
                           targetWeight,
                           weightUnit,
@@ -159,7 +159,7 @@ class HealthSummaryCard extends StatelessWidget {
     );
   }
 
-  Future<void> _openTargetWeightDialog(
+  Future<void> _openTargetWeightSheet(
     BuildContext context,
     double? targetWeightKg,
     MeasurementUnit unit,
@@ -171,9 +171,10 @@ class HealthSummaryCard extends StatelessWidget {
         currentWeightKg: currentWeightKg,
       );
     }
-    final result = await showDialog<dynamic>(
+    final result = await showModalBottomSheet<Object?>(
       context: context,
-      builder: (ctx) => TargetWeightDialog(
+      isScrollControlled: true,
+      builder: (sheetCtx) => TargetWeightSheet(
         currentValueKg: targetWeightKg,
         measurementUnit: unit,
       ),

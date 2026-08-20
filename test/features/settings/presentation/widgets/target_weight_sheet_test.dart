@@ -5,7 +5,7 @@ import 'package:mocktail/mocktail.dart';
 import 'package:bloc_test/bloc_test.dart';
 import 'package:balance/core/models/measurement_unit.dart';
 import 'package:balance/l10n/app_localizations.dart';
-import 'package:balance/features/settings/presentation/widgets/target_weight_dialog.dart';
+import 'package:balance/features/settings/presentation/widgets/target_weight_sheet.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_bloc.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_event.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_state.dart';
@@ -40,9 +40,10 @@ void main() {
               body: Center(
                 child: TextButton(
                   onPressed: () async {
-                    result = await showDialog<dynamic>(
+                    result = await showModalBottomSheet<Object?>(
                       context: context,
-                      builder: (_) => TargetWeightDialog(
+                      isScrollControlled: true,
+                      builder: (_) => TargetWeightSheet(
                         currentValueKg: currentValue,
                         measurementUnit: unit,
                       ),
@@ -137,7 +138,7 @@ void main() {
     await tester.pump();
 
     expect(find.text('Please enter a valid positive number.'), findsOneWidget);
-    expect(find.byType(TargetWeightDialog), findsOneWidget);
+    expect(find.byType(TargetWeightSheet), findsOneWidget);
   });
 
   testWidgets('shows a range error for out-of-range weight', (tester) async {
@@ -174,7 +175,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(getResult(), isNull);
-    expect(find.byType(TargetWeightDialog), findsNothing);
+    expect(find.byType(TargetWeightSheet), findsNothing);
   });
 
   testWidgets('submitting from the keyboard saves the weight', (tester) async {

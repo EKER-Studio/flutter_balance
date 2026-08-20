@@ -9,7 +9,7 @@ import 'package:balance/features/dashboard/presentation/widgets/health_summary_c
 import 'package:balance/l10n/app_localizations.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_bloc.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_event.dart';
-import 'package:balance/features/settings/presentation/widgets/target_weight_dialog.dart';
+import 'package:balance/features/settings/presentation/widgets/target_weight_sheet.dart';
 import 'package:balance/features/weight/presentation/widgets/bmi_legend_dialog.dart';
 
 class MockHydratedStorage extends Mock implements HydratedStorage {}
@@ -92,7 +92,7 @@ void main() {
     },
   );
 
-  testWidgets('opens TargetWeightDialog on goal button tap', (tester) async {
+  testWidgets('opens TargetWeightSheet on goal button tap', (tester) async {
     final bloc = AppSettingsBloc();
     bloc.add(
       const TargetWeightChanged(70.0),
@@ -108,7 +108,7 @@ void main() {
     await tester.tap(find.text('Remaining: 2.0 kg'));
     await tester.pumpAndSettle();
 
-    expect(find.byType(TargetWeightDialog), findsOneWidget);
+    expect(find.byType(TargetWeightSheet), findsOneWidget);
   });
 
   testWidgets('opens BmiLegendDialog on BMI badge tap', (tester) async {
@@ -143,7 +143,7 @@ void main() {
 
     await tester.tap(find.text('Remaining: 2.0 kg'));
     await tester.pumpAndSettle();
-    expect(find.byType(TargetWeightDialog), findsOneWidget);
+    expect(find.byType(TargetWeightSheet), findsOneWidget);
 
     await tester.tap(find.byIcon(Icons.delete_outline));
     await tester.pumpAndSettle();
@@ -189,7 +189,7 @@ void main() {
 
     await tester.tap(find.text('Remaining: 11.0 lb'));
     await tester.pumpAndSettle();
-    expect(find.byType(TargetWeightDialog), findsOneWidget);
+    expect(find.byType(TargetWeightSheet), findsOneWidget);
     expect(find.textContaining('154.3'), findsWidgets);
 
     await tester.enterText(find.byType(TextField), '165.3');

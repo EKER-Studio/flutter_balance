@@ -20,7 +20,7 @@ import 'package:balance/features/settings/presentation/widgets/components/health
 import 'package:balance/features/settings/presentation/widgets/components/theme_selection_dialog.dart';
 import 'package:balance/features/settings/presentation/widgets/components/unit_selection_dialog.dart';
 import 'package:balance/features/settings/presentation/widgets/height_dialog.dart';
-import 'package:balance/features/settings/presentation/widgets/target_weight_dialog.dart';
+import 'package:balance/features/settings/presentation/widgets/target_weight_sheet.dart';
 import 'package:balance/features/settings/presentation/widgets/wipe_data_dialog.dart';
 import 'package:balance/features/weight/domain/entities/weight_entry.dart';
 import 'package:balance/features/weight/domain/weight_error_type.dart';
@@ -56,8 +56,8 @@ class SettingsDataCoordinator {
     context.read<WeightBloc>().add(UpdateUserHeight(result));
   }
 
-  /// Shows the target weight configuration dialog.
-  static Future<void> showTargetWeightDialog(BuildContext context) async {
+  /// Shows the target weight configuration bottom sheet.
+  static Future<void> showTargetWeightSheet(BuildContext context) async {
     final settingsBloc = context.read<AppSettingsBloc>();
     final settingsState = settingsBloc.state;
     AppAnalytics.logSettingsTargetWeightDialogOpened(
@@ -65,9 +65,10 @@ class SettingsDataCoordinator {
       unit: settingsState.measurementUnit.name,
     );
 
-    final result = await showDialog<dynamic>(
+    final result = await showModalBottomSheet<Object?>(
       context: context,
-      builder: (ctx) => TargetWeightDialog(
+      isScrollControlled: true,
+      builder: (sheetCtx) => TargetWeightSheet(
         currentValueKg: settingsState.targetWeight,
         measurementUnit: settingsState.measurementUnit,
       ),
