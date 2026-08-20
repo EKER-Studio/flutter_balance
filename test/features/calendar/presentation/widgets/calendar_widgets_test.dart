@@ -237,6 +237,10 @@ void main() {
       expect(find.textContaining('Morning weight'), findsOneWidget);
       expect(find.byIcon(Icons.delete_outline), findsOneWidget);
       expect(find.byIcon(Icons.add), findsOneWidget);
+      expect(find.byIcon(Icons.schedule), findsOneWidget);
+      expect(find.textContaining('08:30'), findsOneWidget);
+      expect(find.byType(CircleAvatar), findsOneWidget);
+      expect(find.byIcon(Icons.monitor_weight), findsOneWidget);
     },
   );
 
@@ -268,6 +272,8 @@ void main() {
       );
 
       expect(find.textContaining('Cel wagi został osiągnięty'), findsOneWidget);
+      expect(find.byIcon(Icons.star), findsOneWidget);
+      expect(find.byIcon(Icons.monitor_weight), findsOneWidget);
     },
   );
 

@@ -99,6 +99,13 @@ class CalendarDayEntriesCard extends StatelessWidget {
             final displayWeight = isImperial
                 ? kgToLbs(entry.weightKg)
                 : entry.weightKg;
+            final timeStr = DateFormat.Hm(
+              Localizations.localeOf(context).toString(),
+            ).format(entry.dateTime);
+
+            final meetsGoal =
+                targetWeight != null && entry.weightKg <= targetWeight!;
+
             final bmi = (heightCm != null && heightCm > 0)
                 ? appSettingsState.calculateBmi(entry.weightKg)
                 : double.nan;
@@ -125,30 +132,63 @@ class CalendarDayEntriesCard extends StatelessWidget {
                     );
                   },
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 12,
-                    ),
+                    padding: const EdgeInsets.all(16),
                     child: Row(
                       children: [
+                        CircleAvatar(
+                          radius: 24,
+                          backgroundColor: meetsGoal
+                              ? Colors.green.withValues(alpha: 0.15)
+                              : cs.secondaryContainer,
+                          child: Icon(
+                            meetsGoal ? Icons.star : Icons.monitor_weight,
+                            size: 24,
+                            color: meetsGoal
+                                ? (Theme.of(context).brightness ==
+                                          Brightness.light
+                                      ? Colors.green.shade800
+                                      : Colors.green.shade300)
+                                : cs.onSecondaryContainer,
+                          ),
+                        ),
+                        const SizedBox(width: 16),
                         Expanded(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
                                 '${displayWeight.toStringAsFixed(1)} $unitLabel',
-                                style: Theme.of(context).textTheme.titleMedium
-                                    ?.copyWith(fontWeight: FontWeight.bold),
+                                style: Theme.of(context).textTheme.titleLarge
+                                    ?.copyWith(
+                                      fontWeight: FontWeight.bold,
+                                      color: cs.onSurface,
+                                    ),
                               ),
-                              if (entry.note != null && entry.note!.isNotEmpty)
-                                Padding(
-                                  padding: const EdgeInsets.only(top: 2),
-                                  child: Text(
-                                    entry.note!,
-                                    style: Theme.of(context).textTheme.bodySmall
-                                        ?.copyWith(color: cs.onSurfaceVariant),
+                              Row(
+                                children: [
+                                  Icon(
+                                    Icons.schedule,
+                                    size: 16,
+                                    color: cs.onSurfaceVariant,
                                   ),
-                                ),
+                                  const SizedBox(width: 4),
+                                  Expanded(
+                                    child: Text(
+                                      entry.note != null &&
+                                              entry.note!.isNotEmpty
+                                          ? '$timeStr • ${entry.note}'
+                                          : timeStr,
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodyMedium
+                                          ?.copyWith(
+                                            color: cs.onSurfaceVariant,
+                                          ),
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ],
                           ),
                         ),
@@ -158,19 +198,11 @@ class CalendarDayEntriesCard extends StatelessWidget {
                             Text(
                               bmi.isFinite
                                   ? l10n.bmiValueLabel(bmi.toStringAsFixed(1))
-                                  : DateFormat.jm(
-                                      Localizations.localeOf(
-                                        context,
-                                      ).toString(),
-                                    ).format(entry.dateTime),
-                              style: Theme.of(context).textTheme.labelMedium
+                                  : '',
+                              style: Theme.of(context).textTheme.titleMedium
                                   ?.copyWith(
-                                    color: bmi.isFinite
-                                        ? cs.primary
-                                        : cs.onSurfaceVariant,
-                                    fontWeight: bmi.isFinite
-                                        ? FontWeight.bold
-                                        : FontWeight.normal,
+                                    fontWeight: FontWeight.bold,
+                                    color: cs.primary,
                                   ),
                             ),
                             if (categoryText.isNotEmpty)
