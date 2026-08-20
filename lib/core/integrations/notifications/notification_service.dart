@@ -310,6 +310,9 @@ class NotificationService {
       }
       return exactScheduling;
     } catch (e, stack) {
+      debugPrint(
+        '[NotificationService] scheduleDailyReminder failed: $e\n$stack',
+      );
       AppCrashReporter.recordError(
         e,
         stack,
