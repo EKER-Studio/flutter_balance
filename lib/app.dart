@@ -74,18 +74,9 @@ class _AppState extends State<App> {
         unlockSignal: BiometricService.instance.authenticationSuccesses,
       );
 
-      // 2. Notifications — evaluate exact alarm scheduling availability; the
-      // SCHEDULE_EXACT_ALARM permission can be revoked by the user on Android
-      // 12+ at any time, which would otherwise silently break daily reminders.
+      // 2. Notifications — initialize the plugin and timezone database so
+      // reminders can be scheduled with the device's local time zone.
       await NotificationService.instance.initialize();
-      final canScheduleExact = await NotificationService.instance
-          .canScheduleExactNotifications();
-      if (mounted) {
-        final inexact = canScheduleExact == false;
-        context.read<AppSettingsBloc>().add(
-          UpdateNotificationInexactScheduling(inexact),
-        );
-      }
 
       // 3. Health — the plugin requires configure() before any other API call.
       // A failure (e.g. device_info channel error on devices without health

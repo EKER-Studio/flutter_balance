@@ -60,13 +60,6 @@ final class AppSettingsState extends Equatable {
   /// never persisted, and reset by any subsequent notification-related event.
   final bool notificationPermissionDenied;
 
-  /// Whether the daily reminder currently falls back to inexact Android alarm
-  /// scheduling because the `SCHEDULE_EXACT_ALARM` permission was revoked.
-  ///
-  /// Transient: re-evaluated on each app launch and whenever a reminder is
-  /// (re)scheduled, never persisted.
-  final bool notificationInexactScheduling;
-
   /// Whether the device hardware supports biometrics.
   ///
   /// Not persisted; evaluated freshly on each app launch.
@@ -104,7 +97,6 @@ final class AppSettingsState extends Equatable {
     this.isLocked = false,
     this.isOnboardingCompleted = false,
     this.notificationPermissionDenied = false,
-    this.notificationInexactScheduling = false,
     this.isBiometricSupported = true,
     this.isHealthSyncEnabled = false,
     this.isHealthApiAvailable = true,
@@ -127,7 +119,6 @@ final class AppSettingsState extends Equatable {
     bool? isLocked,
     bool? isOnboardingCompleted,
     bool? notificationPermissionDenied,
-    bool? notificationInexactScheduling,
     bool? isBiometricSupported,
     bool? isHealthSyncEnabled,
     bool? isHealthApiAvailable,
@@ -150,8 +141,6 @@ final class AppSettingsState extends Equatable {
           isOnboardingCompleted ?? this.isOnboardingCompleted,
       notificationPermissionDenied:
           notificationPermissionDenied ?? this.notificationPermissionDenied,
-      notificationInexactScheduling:
-          notificationInexactScheduling ?? this.notificationInexactScheduling,
       isBiometricSupported: isBiometricSupported ?? this.isBiometricSupported,
       isHealthSyncEnabled: isHealthSyncEnabled ?? this.isHealthSyncEnabled,
       isHealthApiAvailable: isHealthApiAvailable ?? this.isHealthApiAvailable,
@@ -174,7 +163,6 @@ final class AppSettingsState extends Equatable {
     isLocked,
     isOnboardingCompleted,
     notificationPermissionDenied,
-    notificationInexactScheduling,
     isBiometricSupported,
     isHealthSyncEnabled,
     isHealthApiAvailable,
@@ -223,7 +211,6 @@ final class AppSettingsState extends Equatable {
       isHealthSyncEnabled: json['isHealthSyncEnabled'] as bool? ?? false,
       // Transient flags: never restored from storage.
       notificationPermissionDenied: false,
-      notificationInexactScheduling: false,
       isBiometricSupported: true,
       // Transient flags: never restored from storage.
       isHealthApiAvailable: true,

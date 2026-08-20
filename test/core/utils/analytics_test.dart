@@ -279,7 +279,6 @@ void main() {
           isExact: true,
         );
         await AppAnalytics.logNotificationCancelled();
-        await AppAnalytics.logSettingsInexactNotificationHintTapped();
         await AppAnalytics.logHealthSyncStarted();
         await AppAnalytics.logHealthSyncSuccess(
           remoteCount: 5,

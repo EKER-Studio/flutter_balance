@@ -8,7 +8,6 @@ import 'package:balance/features/weight/presentation/utils/measurement_unit_loca
 import 'package:balance/l10n/app_localizations.dart';
 import 'custom_settings_tile.dart';
 import 'custom_settings_toggle.dart';
-import 'inexact_reminder_hint.dart';
 
 /// A widget that represents the application settings group.
 class ApplicationSection extends StatelessWidget {
@@ -89,8 +88,6 @@ class ApplicationSection extends StatelessWidget {
                 onNotificationTimeTap();
               },
             ),
-          if (state.notificationsEnabled && state.notificationInexactScheduling)
-            InexactReminderHint(l10n: l10n),
         ],
       ),
     );

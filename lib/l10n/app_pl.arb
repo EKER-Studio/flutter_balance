@@ -107,7 +107,6 @@
   "dailyReminderDesc": "Regularny alert w centrum powiadomień",
   "reminderTime": "Godzina przypomnienia",
   "notificationPermissionDenied": "Wymagane są uprawnienia do wysyłania powiadomień.",
-  "notificationInexactHint": "Przypomnienia mogą być opóźnione o kilka minut. Zezwól na dokładne planowanie alarmów w ustawieniach systemu, aby były wysyłane precyzyjnie.",
   "healthServiceNameAndroid": "Health Connect",
   "healthServiceNameIOS": "Apple Health",
   "healthServiceNameOther": "Usługi zdrowia",

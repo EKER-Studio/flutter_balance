@@ -17,7 +17,6 @@ void main() {
         hour: 9,
         minute: 30,
       ));
-      expect(UpdateNotificationInexactScheduling(true).inexact, isTrue);
       expect(TargetWeightChanged(80).weight, 80);
       expect(TargetWeightChanged(null).weight, isNull);
       expect(UpdateBiometricLock(true).enabled, isTrue);

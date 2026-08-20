@@ -1508,11 +1508,6 @@ class AppAnalytics {
     return logEvent(name: 'notification_cancelled');
   }
 
-  /// Logs tapping the inexact reminder notification hint in settings.
-  static Future<void> logSettingsInexactNotificationHintTapped() {
-    return logEvent(name: 'settings_inexact_notification_hint_tapped');
-  }
-
   /// Logs the start of an Apple Health or Google Health Connect sync cycle.
   static Future<void> logHealthSyncStarted() {
     return logEvent(name: 'health_sync_started');

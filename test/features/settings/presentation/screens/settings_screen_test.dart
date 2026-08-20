@@ -304,9 +304,6 @@ void main() {
       when(
         () => mockNotificationService.scheduleDailyReminder(any()),
       ).thenAnswer((_) async => true);
-      when(
-        () => mockNotificationService.canScheduleExactNotifications(),
-      ).thenAnswer((_) async => true);
 
       settingsBloc = AppSettingsBloc(
         notificationService: mockNotificationService,
@@ -328,7 +325,7 @@ void main() {
   );
 
   testWidgets(
-    'shows inexact reminder hint when exact alarm permission is missing',
+    'enables daily reminder notification without requiring exact alarms',
     (tester) async {
       final mockNotificationService = MockNotificationService();
       registerFallbackValue(const (hour: 8, minute: 0));
@@ -337,10 +334,7 @@ void main() {
       ).thenAnswer((_) async => true);
       when(
         () => mockNotificationService.scheduleDailyReminder(any()),
-      ).thenAnswer((_) async => false);
-      when(
-        () => mockNotificationService.canScheduleExactNotifications(),
-      ).thenAnswer((_) async => false);
+      ).thenAnswer((_) async => true);
 
       settingsBloc = AppSettingsBloc(
         notificationService: mockNotificationService,
@@ -349,14 +343,14 @@ void main() {
       await tester.pumpWidget(createTestWidget());
       await tester.pump();
 
-      expect(find.textContaining('exact alarm scheduling'), findsNothing);
-
       await tester.ensureVisible(find.byType(Switch).first);
       await tester.pumpAndSettle();
       await tester.tap(find.byType(Switch).first);
       await tester.pumpAndSettle();
 
-      expect(find.textContaining('exact alarm scheduling'), findsOneWidget);
+      verify(
+        () => mockNotificationService.scheduleDailyReminder(any()),
+      ).called(1);
     },
   );
 
@@ -606,7 +600,6 @@ void main() {
             () => healthService.hasPermissions(),
           ).thenAnswer((_) async => false);
 
-          // Constructed in the test body (see target weight test comment).
           settingsBloc = AppSettingsBloc(healthService: healthService);
           settingsBloc.add(const CheckHealthSyncStatus());
           await tester.pumpWidget(createTestWidget());
@@ -636,13 +629,11 @@ void main() {
             () => healthService.hasPermissions(),
           ).thenAnswer((_) async => false);
 
-          // Constructed in the test body (see target weight test comment).
           settingsBloc = AppSettingsBloc(healthService: healthService);
           settingsBloc.add(const CheckHealthSyncStatus());
           await tester.pumpWidget(createTestWidget());
           await tester.pumpAndSettle();
 
-          // The disabled switch is replaced by a tappable tile.
           expect(find.text('Unavailable on this device'), findsOneWidget);
           expect(
             find.descendant(
@@ -836,9 +827,6 @@ void main() {
 
     testWidgets('target weight can be saved and cleared', (tester) async {
       useNarrowSurface(tester);
-      // The bloc must be constructed inside the test body: instances created
-      // in `setUp` emit on streams that widget listeners never receive under
-      // the test's fake-async zone.
       settingsBloc = AppSettingsBloc(healthService: healthService);
       await tester.pumpWidget(createTestWidget());
       await tester.pumpAndSettle();
@@ -874,9 +862,6 @@ void main() {
       ).thenAnswer((_) async => true);
       when(
         () => mockNotificationService.scheduleDailyReminder(any()),
-      ).thenAnswer((_) async => true);
-      when(
-        () => mockNotificationService.canScheduleExactNotifications(),
       ).thenAnswer((_) async => true);
       settingsBloc = AppSettingsBloc(
         notificationService: mockNotificationService,
@@ -1065,9 +1050,6 @@ void main() {
       when(
         () => mockNotificationService.scheduleDailyReminder(any()),
       ).thenAnswer((_) async => true);
-      when(
-        () => mockNotificationService.canScheduleExactNotifications(),
-      ).thenAnswer((_) async => true);
       settingsBloc = AppSettingsBloc(
         notificationService: mockNotificationService,
       );
@@ -1166,16 +1148,12 @@ void main() {
       'shows unavailability snackbar when biometrics become unavailable '
       'after the screen loaded',
       (tester) async {
-        // Biometrics are available when the screen builds, so the switch is
-        // enabled...
         await tester.pumpWidget(createTestWidget());
         await tester.pumpAndSettle();
 
         await tester.ensureVisible(biometricSwitch());
         await tester.pumpAndSettle();
 
-        // ...but disappear before the toggle is flipped, so the handler must
-        // surface the unavailability snackbar instead of enabling the lock.
         platform.deviceSupported = false;
         platform.supportsBiometrics = false;
 
@@ -1284,7 +1262,6 @@ void main() {
       await tester.ensureVisible(find.text('Import data from CSV'));
       await tester.pumpAndSettle();
 
-      // 1. User taps Import, triggers FilePicker
       await tester.runAsync(() async {
         await tester.tap(find.text('Import data from CSV'));
         await tester.pump();
@@ -1292,11 +1269,9 @@ void main() {
       });
       await tester.pumpAndSettle();
 
-      // Verify BLoC received AnalyzeCsvFile event
       final captured = verify(() => weightBloc.add(captureAny())).captured;
       expect(captured.last, isA<AnalyzeCsvFile>());
 
-      // 2. BLoC emits CsvAnalysisReady -> UI should show the preview dialog
       stateController.add(
         CsvAnalysisReady(
           entries: [],
@@ -1316,14 +1291,12 @@ void main() {
       expect(find.text('Import Preview'), findsOneWidget);
       expect(find.text('Confirm import'), findsOneWidget);
 
-      // 3. User taps confirm on dialog -> UI adds ConfirmCsvImport event
       await tester.tap(find.text('Confirm import'));
       await tester.pumpAndSettle();
 
       final captured2 = verify(() => weightBloc.add(captureAny())).captured;
       expect(captured2.last, isA<ConfirmCsvImport>());
 
-      // 4. BLoC emits WeightImportSuccess -> UI shows success snackbar
       stateController.add(
         const WeightImportSuccess(
           entries: [],
@@ -1348,7 +1321,6 @@ void main() {
       await tester.pumpWidget(createTestWidget());
       await tester.pumpAndSettle();
 
-      // Simulate BLoC emitting the error state directly
       stateController.add(
         const CsvAnalysisError(
           entries: [],
@@ -1376,7 +1348,6 @@ void main() {
       await tester.pumpWidget(createTestWidget());
       await tester.pumpAndSettle();
 
-      // Simulate BLoC emitting the error state directly
       stateController.add(
         const CsvAnalysisError(
           entries: [],
@@ -1420,7 +1391,6 @@ void main() {
       });
       await tester.pumpAndSettle();
 
-      // The export writes the CSV file and shares it; we expect the success snackbar.
       expect(tempDir.listSync().isNotEmpty, isTrue);
       expect(find.text('Export completed successfully.'), findsOneWidget);
     });
@@ -1577,8 +1547,6 @@ void main() {
     testWidgets('shows error snackbar when the wipe stream times out', (
       tester,
     ) async {
-      // A stream that never emits a matching outcome forces the 10s guard
-      // inside [_wipeDatabase] to expire, exercising the catch branch.
       when(
         () => weightBloc.stream,
       ).thenAnswer((_) => Stream.fromIterable(const [WeightLoading()]));

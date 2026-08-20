@@ -16,24 +16,22 @@ import 'package:flutter_local_notifications/src/platform_flutter_local_notificat
 class FakeNotificationsChannel {
   final List<String> invokedMethods = [];
 
-  bool canScheduleExact = true;
-  bool? requestExactResult = true;
   bool requestNotificationsResult = true;
-
-  /// The reported Android SDK level (API 31+ exercises the permission flow).
-  int androidSdkInt = 33;
 
   /// The local ISO-8601 date string of the last `zonedSchedule` call.
   String? latestScheduledDateTime;
+
+  /// The `scheduleMode` value of the last `zonedSchedule` call.
+  String? latestScheduleMode;
 
   Future<Object?> handle(MethodCall call) async {
     invokedMethods.add(call.method);
     if (call.method == 'zonedSchedule') {
       latestScheduledDateTime = call.arguments['scheduledDateTime'] as String?;
-    }
-    if (call.method == 'requestExactAlarmsPermission' &&
-        requestExactResult == true) {
-      canScheduleExact = true;
+      final platformSpecifics = call.arguments['platformSpecifics'];
+      if (platformSpecifics is Map<Object?, Object?>) {
+        latestScheduleMode = platformSpecifics['scheduleMode'] as String?;
+      }
     }
     return switch (call.method) {
       'initialize' => true,
@@ -42,8 +40,6 @@ class FakeNotificationsChannel {
       'zonedSchedule' => null,
       'requestNotificationsPermission' => requestNotificationsResult,
       'requestPermissions' => true,
-      'canScheduleExactNotifications' => canScheduleExact,
-      'requestExactAlarmsPermission' => requestExactResult,
       _ => null,
     };
   }
@@ -58,9 +54,6 @@ void main() {
     'dexterous.com/flutter/local_notifications',
   );
   const timezoneChannel = MethodChannel('flutter_timezone');
-  const deviceInfoChannel = MethodChannel(
-    'dev.fluttercommunity.plus/device_info',
-  );
 
   void installMocks(FakeNotificationsChannel fake) {
     messenger.setMockMethodCallHandler(notificationsChannel, fake.handle);
@@ -68,48 +61,11 @@ void main() {
       timezoneChannel,
       (call) async => 'Europe/Warsaw',
     );
-    messenger.setMockMethodCallHandler(
-      deviceInfoChannel,
-      (call) async => {
-        'version': {
-          'sdkInt': fake.androidSdkInt,
-          'release': '14',
-          'codename': 'REL',
-          'incremental': 'test',
-        },
-        'board': 'board',
-        'bootloader': 'bootloader',
-        'brand': 'brand',
-        'device': 'device',
-        'display': 'display',
-        'fingerprint': 'fingerprint',
-        'hardware': 'hardware',
-        'host': 'host',
-        'id': 'id',
-        'manufacturer': 'manufacturer',
-        'model': 'model',
-        'product': 'product',
-        'name': 'name',
-        'supported32BitAbis': <String>[],
-        'supported64BitAbis': <String>[],
-        'supportedAbis': <String>[],
-        'tags': 'tags',
-        'type': 'type',
-        'isPhysicalDevice': true,
-        'freeDiskSize': 0,
-        'totalDiskSize': 0,
-        'systemFeatures': <String>[],
-        'isLowRamDevice': false,
-        'physicalRamSize': 0,
-        'availableRamSize': 0,
-      },
-    );
   }
 
   void removeMocks() {
     messenger.setMockMethodCallHandler(notificationsChannel, null);
     messenger.setMockMethodCallHandler(timezoneChannel, null);
-    messenger.setMockMethodCallHandler(deviceInfoChannel, null);
   }
 
   tearDown(removeMocks);
@@ -149,24 +105,6 @@ void main() {
       );
       expect(result, isFalse);
     });
-
-    test(
-      'canScheduleExactNotifications returns true when plugin is unavailable',
-      () async {
-        final result = await NotificationService.instance
-            .canScheduleExactNotifications();
-        expect(result, isTrue);
-      },
-    );
-
-    test(
-      'requestExactAlarmsPermission returns false when plugin is unavailable',
-      () async {
-        final result = await NotificationService.instance
-            .requestExactAlarmsPermission();
-        expect(result, isFalse);
-      },
-    );
 
     test('cancelDailyReminder does not crash', () async {
       await expectLater(
@@ -276,112 +214,22 @@ void main() {
       },
     );
 
-    test('canScheduleExactNotifications reflects the platform value', () async {
-      fake.canScheduleExact = true;
-      expect(
-        await NotificationService.instance.canScheduleExactNotifications(),
-        isTrue,
-      );
-
-      fake.canScheduleExact = false;
-      expect(
-        await NotificationService.instance.canScheduleExactNotifications(),
-        isFalse,
-      );
-    });
-
-    test(
-      'canScheduleExactNotifications is always true on Android < 12',
-      () async {
-        fake.androidSdkInt = 30;
-
-        expect(
-          await NotificationService.instance.canScheduleExactNotifications(),
-          isTrue,
-          reason: 'SCHEDULE_EXACT_ALARM does not exist before API 31',
-        );
-        expect(
-          fake.invokedMethods.where(
-            (m) => m == 'canScheduleExactNotifications',
-          ),
-          isEmpty,
-          reason: 'The plugin channel must not be consulted on Android < 12',
-        );
-      },
-    );
-
-    test('requestExactAlarmsPermission reflects the platform value', () async {
-      fake.requestExactResult = true;
-      expect(
-        await NotificationService.instance.requestExactAlarmsPermission(),
-        isTrue,
-      );
-
-      fake.requestExactResult = false;
-      expect(
-        await NotificationService.instance.requestExactAlarmsPermission(),
-        isFalse,
-      );
-    });
-
-    test(
-      'scheduleDailyReminder schedules with exact timing by default',
-      () async {
-        await NotificationService.instance.initialize();
-        fake.canScheduleExact = true;
-
-        final scheduled = await NotificationService.instance
-            .scheduleDailyReminder(const (hour: 8, minute: 0));
-
-        expect(scheduled, isTrue);
-        expect(fake.invokedMethods, contains('cancel'));
-        expect(fake.invokedMethods, contains('zonedSchedule'));
-      },
-    );
-
-    test('scheduleDailyReminder falls back to inexact scheduling when exact '
-        'alarms are revoked', () async {
+    test('scheduleDailyReminder always schedules with inexact mode', () async {
       await NotificationService.instance.initialize();
-      fake.canScheduleExact = false;
-      fake.requestExactResult = false;
 
       final scheduled = await NotificationService.instance
           .scheduleDailyReminder(const (hour: 8, minute: 0));
 
-      expect(scheduled, isFalse);
-      expect(fake.invokedMethods, contains('requestExactAlarmsPermission'));
-      final zonedScheduleCall = fake.invokedMethods.indexOf('zonedSchedule');
-      expect(
-        fake.invokedMethods.indexOf('cancel'),
-        lessThan(zonedScheduleCall),
-      );
+      expect(scheduled, isTrue);
+      expect(fake.invokedMethods, contains('cancel'));
+      expect(fake.invokedMethods, contains('zonedSchedule'));
+      expect(fake.latestScheduleMode, 'inexactAllowWhileIdle');
     });
-
-    test(
-      'scheduleDailyReminder stays exact when permission is re-granted',
-      () async {
-        await NotificationService.instance.initialize();
-        fake.canScheduleExact = false;
-        fake.requestExactResult = true;
-
-        final scheduled = await NotificationService.instance
-            .scheduleDailyReminder(const (hour: 8, minute: 0));
-
-        expect(scheduled, isTrue);
-        expect(
-          fake.invokedMethods.where(
-            (m) => m == 'canScheduleExactNotifications',
-          ),
-          hasLength(2),
-        );
-      },
-    );
 
     test(
       'scheduleDailyReminder schedules for a moment in the future',
       () async {
         await NotificationService.instance.initialize();
-        fake.canScheduleExact = true;
 
         await NotificationService.instance.scheduleDailyReminder(const (
           hour: 23,
@@ -427,13 +275,6 @@ void main() {
       await expectLater(NotificationService.instance.initialize(), completes);
     });
 
-    test('canScheduleExactNotifications falls back to true on error', () async {
-      expect(
-        await NotificationService.instance.canScheduleExactNotifications(),
-        isTrue,
-      );
-    });
-
     test('requestPermissions returns false on error', () async {
       expect(await NotificationService.instance.requestPermissions(), isFalse);
     });
@@ -444,13 +285,6 @@ void main() {
           hour: 8,
           minute: 0,
         )),
-        isFalse,
-      );
-    });
-
-    test('requestExactAlarmsPermission returns false on error', () async {
-      expect(
-        await NotificationService.instance.requestExactAlarmsPermission(),
         isFalse,
       );
     });

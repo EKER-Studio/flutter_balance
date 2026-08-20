@@ -10,7 +10,6 @@ import 'package:balance/features/settings/presentation/widgets/application_secti
 import 'package:balance/features/settings/presentation/widgets/custom_settings_toggle.dart';
 import 'package:balance/features/settings/presentation/widgets/data_section.dart';
 import 'package:balance/features/settings/presentation/widgets/help_section.dart';
-import 'package:balance/features/settings/presentation/widgets/inexact_reminder_hint.dart';
 import 'package:balance/features/settings/presentation/widgets/integrations_section.dart';
 import 'package:balance/features/settings/presentation/widgets/profile_section.dart';
 import 'package:balance/features/settings/presentation/widgets/section_header.dart';
@@ -41,27 +40,6 @@ void main() {
     });
   });
 
-  group('InexactReminderHint', () {
-    testWidgets('renders the inexact alarm hint text', (tester) async {
-      await pumpWithL10n(
-        tester,
-        Builder(
-          builder: (context) =>
-              InexactReminderHint(l10n: AppLocalizations.of(context)),
-        ),
-      );
-
-      expect(find.byIcon(Icons.info_outline), findsOneWidget);
-      expect(
-        find.text(
-          'Reminders may be delayed by a few minutes. Allow exact alarm '
-          'scheduling in system settings for precise delivery.',
-        ),
-        findsOneWidget,
-      );
-    });
-  });
-
   group('ApplicationSection', () {
     testWidgets('renders unit, theme, and reminder tiles', (tester) async {
       await pumpWithL10n(
@@ -88,15 +66,15 @@ void main() {
       expect(find.text('APPLICATION'), findsNothing);
     });
 
-    testWidgets('shows reminder time and inexact hint when notifications '
-        'are enabled', (tester) async {
+    testWidgets('shows reminder time when notifications are enabled', (
+      tester,
+    ) async {
       await pumpWithL10n(
         tester,
         Builder(
           builder: (context) => ApplicationSection(
             state: const AppSettingsState(
               notificationsEnabled: true,
-              notificationInexactScheduling: true,
               notificationTime: (hour: 8, minute: 0),
             ),
             l10n: AppLocalizations.of(context),
@@ -110,7 +88,6 @@ void main() {
 
       expect(find.text('Reminder Time'), findsOneWidget);
       expect(find.textContaining('8:00'), findsOneWidget);
-      expect(find.textContaining('may be delayed'), findsOneWidget);
     });
 
     testWidgets('invokes tile callbacks on tap', (tester) async {

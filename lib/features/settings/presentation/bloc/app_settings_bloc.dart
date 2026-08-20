@@ -33,9 +33,6 @@ class AppSettingsBloc extends HydratedBloc<AppSettingsEvent, AppSettingsState> {
       _onUpdateNotificationTime,
       transformer: restartable(),
     );
-    on<UpdateNotificationInexactScheduling>(
-      _onUpdateNotificationInexactScheduling,
-    );
     on<TargetWeightChanged>(_onTargetWeightChanged, transformer: restartable());
     on<UpdateBiometricLock>(_onUpdateBiometricLock);
     on<UpdateBiometricSupport>(_onUpdateBiometricSupport);
@@ -84,28 +81,18 @@ class AppSettingsBloc extends HydratedBloc<AppSettingsEvent, AppSettingsState> {
         state.copyWith(
           notificationsEnabled: granted,
           notificationPermissionDenied: !granted,
-          notificationInexactScheduling: false,
         ),
       );
       if (granted) {
         await _notificationService.scheduleDailyReminder(
           state.notificationTime,
         );
-        // The hint must reflect the OS-level exact alarm availability, not the
-        // scheduling result: failures or inexact fallbacks on Android < 12
-        // (where the permission cannot be revoked) must never surface it.
-        final exactScheduling = await _notificationService
-            .canScheduleExactNotifications();
-        if (!exactScheduling) {
-          emit(state.copyWith(notificationInexactScheduling: true));
-        }
       }
     } else {
       emit(
         state.copyWith(
           notificationsEnabled: false,
           notificationPermissionDenied: false,
-          notificationInexactScheduling: false,
         ),
       );
       await _notificationService.cancelDailyReminder();
@@ -123,27 +110,11 @@ class AppSettingsBloc extends HydratedBloc<AppSettingsEvent, AppSettingsState> {
       state.copyWith(
         notificationTime: event.notificationTime,
         notificationPermissionDenied: false,
-        notificationInexactScheduling: false,
       ),
     );
     if (state.notificationsEnabled) {
       await _notificationService.scheduleDailyReminder(event.notificationTime);
-      final exactScheduling = await _notificationService
-          .canScheduleExactNotifications();
-      if (!exactScheduling) {
-        emit(state.copyWith(notificationInexactScheduling: true));
-      }
     }
-  }
-
-  /// Records whether the daily reminder falls back to inexact Android alarm scheduling.
-  ///
-  /// This occurs because the exact alarm permission was revoked.
-  void _onUpdateNotificationInexactScheduling(
-    UpdateNotificationInexactScheduling event,
-    Emitter<AppSettingsState> emit,
-  ) {
-    emit(state.copyWith(notificationInexactScheduling: event.inexact));
   }
 
   /// Updates the target weight to the [TargetWeightChanged.weight] value.

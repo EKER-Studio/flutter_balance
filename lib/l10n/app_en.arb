@@ -108,7 +108,6 @@
   "dailyReminderDesc": "Regular alert in your notification center",
   "reminderTime": "Reminder Time",
   "notificationPermissionDenied": "Notification permission is required to enable reminders.",
-  "notificationInexactHint": "Reminders may be delayed by a few minutes. Allow exact alarm scheduling in system settings for precise delivery.",
   "healthServiceNameAndroid": "Health Connect",
   "healthServiceNameIOS": "Apple Health",
   "healthServiceNameOther": "Health Services",
