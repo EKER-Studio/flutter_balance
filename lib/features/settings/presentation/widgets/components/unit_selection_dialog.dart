@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:balance/core/models/measurement_unit.dart';
-import 'package:balance/core/presentation/widgets/pill_segmented_control.dart';
 import 'package:balance/core/utils/analytics.dart';
 import 'package:balance/features/weight/presentation/utils/measurement_unit_localizer.dart';
 import 'package:balance/l10n/app_localizations.dart';
@@ -48,16 +47,28 @@ class UnitSelectionDialog extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
 
-    return AlertDialog(
+    return SimpleDialog(
       title: Text(l10n.measurementUnit),
-      content: PillSegmentedControl<MeasurementUnit>(
-        selectedValue: currentUnit,
-        onValueChanged: onSelected,
-        segments: [
-          for (final unit in MeasurementUnit.values)
-            PillSegment(value: unit, label: unit.localizedName(l10n)),
-        ],
-      ),
+      children: [
+        RadioGroup<MeasurementUnit>(
+          groupValue: currentUnit,
+          onChanged: (value) {
+            if (value != null) {
+              onSelected(value);
+            }
+          },
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              for (final mode in MeasurementUnit.values)
+                RadioListTile<MeasurementUnit>(
+                  title: Text(mode.localizedName(l10n)),
+                  value: mode,
+                ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 }
