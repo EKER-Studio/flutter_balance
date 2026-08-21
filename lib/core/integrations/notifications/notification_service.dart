@@ -228,7 +228,8 @@ class NotificationService {
             presentSound: true,
           ),
         ),
-        // Kluczowa zmiana: inexactAllowWhileIdle budzi telefon w wybranym oknie czasowym bez restrykcji Google
+        // Inexact scheduling that still permits delivery while the device is
+        // idle, so the daily reminder is not dropped by battery optimizations.
         androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
         title: _title,
         body: _body,
