@@ -628,5 +628,36 @@ Line two"
       expect(result.skippedRowCount, 0);
       expect(entries[0].note, 'Line one\nLine two');
     });
+
+    test('parses hierarchical Polish date groups with time and weight units', () async {
+      const csvContent = '''
+Czas,Ciężar,Zmiana,BMI,Tkanka tłuszczowa,Masa mięśni szkieletowych,Masa kostna,Woda w organizmie
+"sie 24, 2026",,,,,,,
+09:42,87.0 kg,1.0 kg,27.8,--,--,--,--
+"sie 23, 2026",,,,,,,
+11:00,86.0 kg,0.2 kg,27.5,--,--,--,--
+"lip 31, 2026",,,,,,,
+08:40,86.7 kg,0.4 kg,27.7,--,--,--,--
+"cze 30, 2026",,,,,,,
+11:32,88.5 kg,0.0 kg,28.2,--,--,--,--
+"maj 30, 2026",,,,,,,
+12:09,91.0 kg,--,29,--,--,--,--
+''';
+
+      final result = await CsvImporter.parse(csvContent);
+      final entries = result.validEntries;
+
+      expect(entries.length, 5);
+      expect(entries[0].weightKg, 87.0);
+      expect(entries[0].dateTime, DateTime(2026, 8, 24, 9, 42));
+      expect(entries[1].weightKg, 86.0);
+      expect(entries[1].dateTime, DateTime(2026, 8, 23, 11, 0));
+      expect(entries[2].weightKg, 86.7);
+      expect(entries[2].dateTime, DateTime(2026, 7, 31, 8, 40));
+      expect(entries[3].weightKg, 88.5);
+      expect(entries[3].dateTime, DateTime(2026, 6, 30, 11, 32));
+      expect(entries[4].weightKg, 91.0);
+      expect(entries[4].dateTime, DateTime(2026, 5, 30, 12, 9));
+    });
   });
 }

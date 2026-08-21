@@ -74,17 +74,8 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
 
   /// Extracts the persisted entries from any [WeightState], falling back to
   /// an empty list for [WeightInitial] and [WeightLoading].
-  static List<WeightEntry> _entriesFromState(WeightState state) {
-    return switch (state) {
-      WeightLoaded(:final entries) => entries,
-      WeightError(:final entries) => entries,
-      CsvAnalysisInProgress(:final entries) => entries,
-      CsvAnalysisReady(:final entries) => entries,
-      WeightImportSuccess(:final entries) => entries,
-      CsvAnalysisError(:final entries) => entries,
-      _ => <WeightEntry>[],
-    };
-  }
+  static List<WeightEntry> _entriesFromState(WeightState state) =>
+      state.entries;
 
   /// Filters [entries] by [period] and aggregates them per calendar day.
   ///
@@ -751,13 +742,22 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
       }
 
       final updatedEntries = await repository.getAllEntries();
+      final filtered = _filterEntries(updatedEntries, state.timePeriod);
       emit(
         WeightImportSuccess(
           importedCount: count,
           heightCm: state.heightCm,
           timePeriod: state.timePeriod,
           entries: updatedEntries,
-          filteredEntries: _filterEntries(updatedEntries, state.timePeriod),
+          filteredEntries: filtered,
+        ),
+      );
+      emit(
+        WeightLoaded(
+          heightCm: state.heightCm,
+          timePeriod: state.timePeriod,
+          entries: updatedEntries,
+          filteredEntries: filtered,
         ),
       );
     } catch (e, stack) {

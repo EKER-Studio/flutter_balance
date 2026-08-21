@@ -90,13 +90,8 @@ class TodayScreen extends StatelessWidget {
     );
   }
 
-  static List<WeightEntry> _entriesFromState(WeightState state) {
-    return switch (state) {
-      WeightLoaded(:final entries) => entries,
-      WeightError(:final entries) => entries,
-      _ => <WeightEntry>[],
-    };
-  }
+  static List<WeightEntry> _entriesFromState(WeightState state) =>
+      state.entries;
 
   Future<void> _refreshWeightData(BuildContext context) async {
     AppAnalytics.logTodayPullToRefresh();

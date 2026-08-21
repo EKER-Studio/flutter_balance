@@ -94,19 +94,9 @@ class TodayViewBody extends StatelessWidget {
     );
   }
 
-  static List<WeightEntry> _entriesFromState(WeightState state) {
-    return switch (state) {
-      WeightLoaded(:final entries) => entries,
-      WeightError(:final entries) => entries,
-      _ => <WeightEntry>[],
-    };
-  }
+  static List<WeightEntry> _entriesFromState(WeightState state) =>
+      state.entries;
 
-  static List<WeightEntry> _filteredEntriesFromState(WeightState state) {
-    return switch (state) {
-      WeightLoaded(:final filteredEntries) => filteredEntries,
-      WeightError(:final filteredEntries) => filteredEntries,
-      _ => <WeightEntry>[],
-    };
-  }
+  static List<WeightEntry> _filteredEntriesFromState(WeightState state) =>
+      state.filteredEntries;
 }

@@ -1241,5 +1241,41 @@ void main() {
         ]);
       },
     );
+
+    blocTest<WeightBloc, WeightState>(
+      'ConfirmCsvImport bulk imports entries, emits WeightImportSuccess then WeightLoaded',
+      build: () {
+        when(
+          () => repository.bulkImportEntries(any()),
+        ).thenAnswer((_) async => 2);
+        when(() => repository.getAllEntries()).thenAnswer(
+          (_) async => [
+            WeightEntry(id: 1, weightKg: 75.0, dateTime: DateTime(2026, 8, 20)),
+            WeightEntry(id: 2, weightKg: 74.5, dateTime: DateTime(2026, 8, 21)),
+          ],
+        );
+        return WeightBloc(repository: repository);
+      },
+      seed: () => const WeightLoaded(
+        entries: [],
+        filteredEntries: [],
+        heightCm: 180,
+      ),
+      act: (bloc) => bloc.add(
+        ConfirmCsvImport(
+          validEntries: [
+            WeightEntry(id: 1, weightKg: 75.0, dateTime: DateTime(2026, 8, 20)),
+            WeightEntry(id: 2, weightKg: 74.5, dateTime: DateTime(2026, 8, 21)),
+          ],
+        ),
+      ),
+      expect: () => [
+        isA<WeightImportSuccess>()
+            .having((s) => s.importedCount, 'importedCount', 2)
+            .having((s) => s.entries.length, 'entries.length', 2),
+        isA<WeightLoaded>()
+            .having((s) => s.entries.length, 'entries.length', 2),
+      ],
+    );
   });
 }

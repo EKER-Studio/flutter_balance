@@ -7,18 +7,35 @@ import 'package:balance/features/weight/presentation/bloc/weight_event.dart';
 sealed class WeightState {
   final double? heightCm;
   final TimePeriod timePeriod;
+  final List<WeightEntry> entries;
+  final List<WeightEntry> filteredEntries;
 
-  const WeightState({this.heightCm, this.timePeriod = TimePeriod.week});
+  const WeightState({
+    this.heightCm,
+    this.timePeriod = TimePeriod.week,
+    this.entries = const [],
+    this.filteredEntries = const [],
+  });
 }
 
 /// The initial state before any subscription or interaction.
 final class WeightInitial extends WeightState {
-  const WeightInitial({super.heightCm, super.timePeriod});
+  const WeightInitial({
+    super.heightCm,
+    super.timePeriod,
+    super.entries,
+    super.filteredEntries,
+  });
 }
 
 /// A transitional state while subscribing to the reactive stream.
 final class WeightLoading extends WeightState {
-  const WeightLoading({super.heightCm, super.timePeriod});
+  const WeightLoading({
+    super.heightCm,
+    super.timePeriod,
+    super.entries,
+    super.filteredEntries,
+  });
 }
 
 /// A steady state with a list of entries and optional height.
@@ -26,29 +43,24 @@ final class WeightLoading extends WeightState {
 /// Also emitted after a [SyncHealthEntries] pull merges remote records into
 /// the local database, exposing the refreshed dataset to the UI.
 final class WeightLoaded extends WeightState {
-  final List<WeightEntry> entries;
-  final List<WeightEntry> filteredEntries;
-
   const WeightLoaded({
     super.heightCm,
     super.timePeriod,
-    required this.entries,
-    required this.filteredEntries,
+    required super.entries,
+    required super.filteredEntries,
   });
 }
 
 /// An error state with a typed [errorType] and last known [entries].
 final class WeightError extends WeightState {
   final WeightErrorType errorType;
-  final List<WeightEntry> entries;
-  final List<WeightEntry> filteredEntries;
 
   const WeightError({
     super.heightCm,
     super.timePeriod,
     required this.errorType,
-    required this.entries,
-    required this.filteredEntries,
+    required super.entries,
+    required super.filteredEntries,
   });
 }
 
@@ -66,30 +78,24 @@ enum CsvErrorType {
 
 /// Transient state emitted while the CSV file is being parsed on the isolate.
 final class CsvAnalysisInProgress extends WeightState {
-  final List<WeightEntry> entries;
-  final List<WeightEntry> filteredEntries;
-
   const CsvAnalysisInProgress({
     super.heightCm,
     super.timePeriod,
-    required this.entries,
-    required this.filteredEntries,
+    required super.entries,
+    required super.filteredEntries,
   });
 }
 
 /// Transient state carrying the [CsvImportAnalysis] result for the preview dialog.
 final class CsvAnalysisReady extends WeightState {
-  final List<WeightEntry> entries;
-  final List<WeightEntry> filteredEntries;
-
   /// The parsed analysis result containing valid entries and audit statistics.
   final CsvImportAnalysis analysis;
 
   const CsvAnalysisReady({
     super.heightCm,
     super.timePeriod,
-    required this.entries,
-    required this.filteredEntries,
+    required super.entries,
+    required super.filteredEntries,
     required this.analysis,
   });
 }
@@ -99,29 +105,25 @@ final class CsvAnalysisReady extends WeightState {
 final class WeightImportSuccess extends WeightState {
   /// The number of new records inserted (duplicate entries are excluded).
   final int importedCount;
-  final List<WeightEntry> entries;
-  final List<WeightEntry> filteredEntries;
 
   const WeightImportSuccess({
     super.heightCm,
     super.timePeriod,
     required this.importedCount,
-    required this.entries,
-    required this.filteredEntries,
+    required super.entries,
+    required super.filteredEntries,
   });
 }
 
 /// Error state specific to CSV file analysis; never replaces [WeightError].
 final class CsvAnalysisError extends WeightState {
   final CsvErrorType errorType;
-  final List<WeightEntry> entries;
-  final List<WeightEntry> filteredEntries;
 
   const CsvAnalysisError({
     super.heightCm,
     super.timePeriod,
     required this.errorType,
-    required this.entries,
-    required this.filteredEntries,
+    required super.entries,
+    required super.filteredEntries,
   });
 }

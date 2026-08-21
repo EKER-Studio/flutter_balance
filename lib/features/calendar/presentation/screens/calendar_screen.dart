@@ -167,10 +167,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                       );
                     }
 
-                    final entries = switch (state) {
-                      WeightLoaded(:final entries) => entries,
-                      _ => <WeightEntry>[],
-                    };
+                    final entries = state.entries;
 
                     final dayEntries = entries
                         .where(
