@@ -6,16 +6,10 @@ import 'package:balance/l10n/app_localizations.dart';
 
 /// A presentational widget resolving the BMI chart canvas, empty placeholder, or missing height guide.
 class BmiChartBody extends StatelessWidget {
-  /// The list of recorded weight entries.
   final List<WeightEntry> entries;
-
-  /// The user's recorded height in centimeters.
   final double? heightCm;
-
-  /// The active time period filter.
   final TimePeriod period;
 
-  /// Creates a [BmiChartBody] widget.
   const BmiChartBody({
     super.key,
     required this.entries,

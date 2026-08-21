@@ -10,19 +10,11 @@ import 'package:balance/l10n/app_localizations.dart';
 
 /// A composite card section displaying BMI history with headers, period tabs, and chart styles.
 class BmiChartCard extends StatelessWidget {
-  /// The list of recorded weight entries.
   final List<WeightEntry> entries;
-
-  /// The user's recorded height in centimeters.
   final double? heightCm;
-
-  /// The active time period filter.
   final TimePeriod period;
-
-  /// A callback invoked when the user selects a new time period.
   final ValueChanged<TimePeriod> onPeriodChanged;
 
-  /// Creates a [BmiChartCard] widget.
   const BmiChartCard({
     super.key,
     required this.entries,

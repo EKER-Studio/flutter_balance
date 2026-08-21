@@ -9,16 +9,10 @@ import 'package:balance/l10n/app_localizations.dart';
 
 /// A presentational line chart plotting BMI points with touch tooltips and formatted date axis ticks.
 class BmiLineChart extends StatelessWidget {
-  /// The list of recorded weight entries.
   final List<WeightEntry> entries;
-
-  /// The user's height in centimeters.
   final double heightCm;
-
-  /// The active time period filter.
   final TimePeriod period;
 
-  /// Creates a [BmiLineChart] widget.
   const BmiLineChart({
     super.key,
     required this.entries,

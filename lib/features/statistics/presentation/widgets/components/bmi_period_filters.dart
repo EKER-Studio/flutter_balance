@@ -5,13 +5,9 @@ import 'package:balance/l10n/app_localizations.dart';
 
 /// A presentational segmented control pill selector for BMI chart time periods.
 class BmiPeriodFilters extends StatelessWidget {
-  /// The currently active period.
   final TimePeriod period;
-
-  /// A callback invoked when a new period is selected.
   final ValueChanged<TimePeriod> onPeriodChanged;
 
-  /// Creates a [BmiPeriodFilters] widget.
   const BmiPeriodFilters({
     super.key,
     required this.period,

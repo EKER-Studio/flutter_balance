@@ -8,19 +8,11 @@ import 'package:balance/l10n/app_localizations.dart';
 
 /// A card section displaying overall weight change progress, pace, and goal progress bar.
 class HeroProgressCard extends StatelessWidget {
-  /// The list of recorded weight entries.
   final List<WeightEntry> entries;
-
-  /// An optional user-defined target weight in kilograms.
   final double? targetWeight;
-
-  /// The estimated weekly pace of weight change.
   final double? weeklyPace;
-
-  /// The user's active measurement unit.
   final MeasurementUnit unit;
 
-  /// Creates a [HeroProgressCard] widget.
   const HeroProgressCard({
     super.key,
     required this.entries,

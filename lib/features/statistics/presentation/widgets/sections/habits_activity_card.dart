@@ -5,13 +5,9 @@ import 'package:balance/l10n/app_localizations.dart';
 
 /// A card section displaying the current logging streak and monthly compliance percentage.
 class HabitsActivityCard extends StatelessWidget {
-  /// The current streak of consecutive days logged.
   final int streak;
-
-  /// The percentage of days logged over the tracking timeframe.
   final int compliancePct;
 
-  /// Creates a [HabitsActivityCard] widget.
   const HabitsActivityCard({
     super.key,
     required this.streak,

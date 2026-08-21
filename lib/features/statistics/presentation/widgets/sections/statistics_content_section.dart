@@ -10,28 +10,14 @@ import 'package:balance/features/weight/domain/time_period.dart';
 
 /// The responsive content section composing progress, habits, range, and BMI chart cards.
 class StatisticsContentSection extends StatelessWidget {
-  /// The full list of recorded weight entries.
   final List<WeightEntry> entries;
-
-  /// The entries filtered by [timePeriod] for the BMI chart.
   final List<WeightEntry> filteredEntries;
-
-  /// The active BMI chart time period.
   final TimePeriod timePeriod;
-
-  /// The user's recorded height in centimeters.
   final double? heightCm;
-
-  /// The user's target goal weight in kilograms.
   final double? targetWeight;
-
-  /// The user's active measurement unit.
   final MeasurementUnit unit;
-
-  /// A callback fired when the chart time period is updated.
   final ValueChanged<TimePeriod> onPeriodChanged;
 
-  /// Creates a [StatisticsContentSection] widget.
   const StatisticsContentSection({
     super.key,
     required this.entries,

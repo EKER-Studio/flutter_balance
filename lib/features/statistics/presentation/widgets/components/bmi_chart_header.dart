@@ -6,16 +6,10 @@ import 'package:balance/l10n/app_localizations.dart';
 
 /// A presentational header for the BMI card displaying the section title, category chip, and legend trigger.
 class BmiChartHeader extends StatelessWidget {
-  /// The list of recorded weight entries.
   final List<WeightEntry> entries;
-
-  /// The user's recorded height in centimeters.
   final double? heightCm;
-
-  /// A callback invoked when the user taps to see the BMI legend.
   final VoidCallback onLegendTap;
 
-  /// Creates a [BmiChartHeader] widget.
   const BmiChartHeader({
     super.key,
     required this.entries,

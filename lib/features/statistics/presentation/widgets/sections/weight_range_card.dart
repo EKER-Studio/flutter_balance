@@ -9,13 +9,9 @@ import 'package:balance/l10n/app_localizations.dart';
 
 /// A card section displaying the highest, lowest, and average weight across all recorded entries.
 class WeightRangeCard extends StatelessWidget {
-  /// The list of weight entries to calculate extremes and averages from.
   final List<WeightEntry> entries;
-
-  /// The active measurement unit.
   final MeasurementUnit unit;
 
-  /// Creates a [WeightRangeCard] widget.
   const WeightRangeCard({super.key, required this.entries, required this.unit});
 
   @override

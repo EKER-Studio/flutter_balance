@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 ///
 /// Mirrors the statistics layout: habit summary cards, hero trend card with chart, and key metrics bento grid.
 class StatisticsShimmerSkeleton extends StatefulWidget {
-  /// Creates a [StatisticsShimmerSkeleton].
   const StatisticsShimmerSkeleton({super.key});
 
   @override
@@ -54,7 +53,6 @@ class _StatisticsShimmerSkeletonState extends State<StatisticsShimmerSkeleton>
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                // Habit Summary Cards Skeleton (2 cards side by side)
                 Row(
                   children: [
                     Expanded(
@@ -129,8 +127,6 @@ class _StatisticsShimmerSkeletonState extends State<StatisticsShimmerSkeleton>
                   ],
                 ),
                 const SizedBox(height: 16),
-
-                // Hero Trend Card Skeleton
                 _buildShimmerCard(
                   context,
                   shimmerColor: shimmerColor,
@@ -199,8 +195,6 @@ class _StatisticsShimmerSkeletonState extends State<StatisticsShimmerSkeleton>
                   ),
                 ),
                 const SizedBox(height: 16),
-
-                // Key Metrics Bento Grid Skeleton (2x2)
                 Row(
                   children: [
                     Expanded(

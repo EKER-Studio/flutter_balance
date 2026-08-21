@@ -3,19 +3,11 @@ import 'package:balance/core/utils/analytics.dart';
 
 /// A presentational widget displaying a single habit or activity metric item with an icon, label, and bold value.
 class HabitMetricItem extends StatelessWidget {
-  /// The icon representing the metric.
   final IconData icon;
-
-  /// The color for [icon].
   final Color iconColor;
-
-  /// The label describing the metric.
   final String label;
-
-  /// The formatted value string.
   final String value;
 
-  /// Creates a [HabitMetricItem] widget.
   const HabitMetricItem({
     super.key,
     required this.icon,

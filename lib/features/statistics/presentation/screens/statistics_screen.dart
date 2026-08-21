@@ -1,5 +1,3 @@
-// The Statistics tab: composite health metric cards and the BMI history chart.
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:balance/core/presentation/core/clamped_layout.dart';
@@ -19,7 +17,6 @@ import 'package:balance/l10n/app_localizations.dart';
 
 /// A consolidated statistics screen combining all health metrics into data-dense composite cards.
 class StatisticsScreen extends StatelessWidget {
-  /// Creates a [StatisticsScreen].
   const StatisticsScreen({super.key});
 
   @override

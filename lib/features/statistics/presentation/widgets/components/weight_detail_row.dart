@@ -3,22 +3,12 @@ import 'package:balance/core/utils/analytics.dart';
 
 /// A presentational row widget displaying a weight statistic with an icon, title, date subtitle, and value.
 class WeightDetailRow extends StatelessWidget {
-  /// The icon representing the metric.
   final IconData icon;
-
-  /// The color for [icon].
   final Color iconColor;
-
-  /// The label for the row (e.g., Highest, Lowest, Average).
   final String label;
-
-  /// The formatted value string (e.g., '72.5 kg').
   final String value;
-
-  /// The formatted date string corresponding to the measurement.
   final String date;
 
-  /// Creates a [WeightDetailRow] widget.
   const WeightDetailRow({
     super.key,
     required this.icon,
