@@ -69,7 +69,5 @@ app.*.map.json
 # Visual Studio Code settings folder
 .vscode/
 
-# Stray diff dumps from review tooling — should be applied and discarded,
-# never committed.
-diff.txt
-*.diff
+# Custom files
+COMMENT_CLEANUP_LOG.md

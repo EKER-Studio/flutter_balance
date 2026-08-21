@@ -1,3 +1,8 @@
+---
+name: AGENTS Rules
+alwaysApply: true
+---
+
 # AI Agent Project Rules
 
 ## Universal Conventions
