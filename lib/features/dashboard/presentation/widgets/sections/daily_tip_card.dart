@@ -4,7 +4,6 @@ import 'package:balance/l10n/app_localizations.dart';
 
 /// A card displaying a rotating daily weight-logging tip.
 class DailyTipCard extends StatelessWidget {
-  /// Creates a [DailyTipCard].
   const DailyTipCard({super.key});
 
   @override

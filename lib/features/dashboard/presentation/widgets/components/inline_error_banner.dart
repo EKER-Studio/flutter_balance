@@ -11,7 +11,6 @@ class InlineErrorBanner extends StatelessWidget {
   /// An optional callback invoked when the retry button is pressed.
   final VoidCallback? onRetry;
 
-  /// Creates an [InlineErrorBanner] widget.
   const InlineErrorBanner({super.key, required this.errorType, this.onRetry});
 
   @override

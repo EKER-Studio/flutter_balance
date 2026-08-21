@@ -20,7 +20,6 @@ class GoalProgressBar extends StatelessWidget {
   /// An optional callback invoked when the progress bar is tapped.
   final VoidCallback? onTap;
 
-  /// Creates a [GoalProgressBar] widget.
   const GoalProgressBar({
     super.key,
     required this.targetWeightKg,

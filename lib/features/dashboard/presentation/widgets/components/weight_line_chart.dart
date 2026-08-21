@@ -20,7 +20,6 @@ class WeightLineChart extends StatelessWidget {
   /// The measurement unit used to convert and format plotted values.
   final MeasurementUnit measurementUnit;
 
-  /// Creates a [WeightLineChart] widget.
   const WeightLineChart({
     super.key,
     required this.entries,

@@ -21,7 +21,6 @@ class WeightTrendChartCard extends StatelessWidget {
   /// A callback invoked when a new chart period is selected.
   final ValueChanged<TimePeriod> onPeriodChanged;
 
-  /// Creates a [WeightTrendChartCard].
   const WeightTrendChartCard({
     super.key,
     required this.entries,

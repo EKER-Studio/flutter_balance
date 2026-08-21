@@ -21,7 +21,6 @@ class TodayViewBody extends StatelessWidget {
   /// Callback when user taps to add first weight measurement.
   final VoidCallback onAddFirstMeasurement;
 
-  /// Creates a [TodayViewBody] widget.
   const TodayViewBody({
     super.key,
     required this.state,

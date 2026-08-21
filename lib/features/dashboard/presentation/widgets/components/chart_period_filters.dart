@@ -11,7 +11,6 @@ class ChartPeriodFilters extends StatelessWidget {
   /// A callback invoked when a new period is selected.
   final ValueChanged<TimePeriod> onPeriodChanged;
 
-  /// Creates a [ChartPeriodFilters] widget.
   const ChartPeriodFilters({
     super.key,
     required this.period,

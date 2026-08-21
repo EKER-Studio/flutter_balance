@@ -11,7 +11,6 @@ class WeightDeltaChip extends StatelessWidget {
   /// The unit used to format the displayed delta.
   final MeasurementUnit measurementUnit;
 
-  /// Creates a [WeightDeltaChip].
   const WeightDeltaChip({
     super.key,
     required this.entries,

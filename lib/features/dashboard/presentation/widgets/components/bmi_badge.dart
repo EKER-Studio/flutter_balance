@@ -14,7 +14,6 @@ class BmiBadge extends StatelessWidget {
   /// An optional callback invoked when the badge is tapped.
   final VoidCallback? onTap;
 
-  /// Creates a [BmiBadge] widget.
   const BmiBadge({super.key, required this.bmi, this.category, this.onTap});
 
   @override

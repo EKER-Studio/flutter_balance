@@ -13,7 +13,6 @@ class LatestMeasurementInfo extends StatelessWidget {
   /// The timestamp when the weight measurement was recorded.
   final DateTime? lastUpdated;
 
-  /// Creates a [LatestMeasurementInfo] widget.
   const LatestMeasurementInfo({
     super.key,
     required this.displayWeight,

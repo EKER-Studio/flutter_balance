@@ -31,7 +31,6 @@ class TodayContentSection extends StatelessWidget {
   /// An optional callback to retry data subscription.
   final VoidCallback? onRetry;
 
-  /// Creates a [TodayContentSection] widget.
   const TodayContentSection({
     super.key,
     required this.latestEntry,

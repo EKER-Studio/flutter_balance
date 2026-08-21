@@ -21,7 +21,6 @@ class TodayScreen extends StatelessWidget {
   /// An optional callback to navigate to settings when the profile icon is pressed.
   final VoidCallback? onNavigateToSettings;
 
-  /// Creates a [TodayScreen].
   const TodayScreen({super.key, this.onNavigateToSettings});
 
   @override

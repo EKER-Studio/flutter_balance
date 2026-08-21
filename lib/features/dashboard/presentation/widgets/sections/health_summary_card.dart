@@ -23,7 +23,6 @@ class HealthSummaryCard extends StatelessWidget {
   /// An optional date of the latest recorded weight measurement.
   final DateTime? lastUpdated;
 
-  /// Creates a [HealthSummaryCard].
   const HealthSummaryCard({
     super.key,
     required this.latestWeightKg,
