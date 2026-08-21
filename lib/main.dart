@@ -1,6 +1,3 @@
-// Defines the application bootstrap: platform bindings, uncaught-error
-// reporting, and [HydratedBloc] storage initialization.
-
 import 'dart:ui' as ui;
 
 import 'package:firebase_core/firebase_core.dart';
