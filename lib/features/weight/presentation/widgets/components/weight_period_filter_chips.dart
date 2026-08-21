@@ -4,13 +4,9 @@ import 'package:balance/l10n/app_localizations.dart';
 
 /// A presentational wrap of choice chips for selecting the chart time period.
 class WeightPeriodFilterChips extends StatelessWidget {
-  /// The currently active time period filter.
   final TimePeriod period;
-
-  /// Callback invoked when a period choice chip is selected.
   final ValueChanged<TimePeriod> onPeriodChanged;
 
-  /// Creates a [WeightPeriodFilterChips] widget.
   const WeightPeriodFilterChips({
     super.key,
     required this.period,

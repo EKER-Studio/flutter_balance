@@ -13,22 +13,12 @@ import 'package:balance/l10n/app_localizations.dart';
 /// measurement unit, and renders the optional [targetWeight] as a dashed
 /// reference line.
 class WeightChart extends StatelessWidget {
-  /// The list of weight entries to plot.
   final List<WeightEntry> entries;
-
-  /// The currently selected time period for formatting the X-axis.
   final TimePeriod period;
-
-  /// A callback fired when the user selects a new time period.
   final ValueChanged<TimePeriod> onPeriodChanged;
-
-  /// An optional target weight to display as a horizontal reference line.
   final double? targetWeight;
-
-  /// An optional fixed height for the chart canvas. Defaults to 280px.
   final double chartHeight;
 
-  /// Creates a [WeightChart] widget.
   const WeightChart({
     super.key,
     required this.entries,

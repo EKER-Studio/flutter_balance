@@ -32,16 +32,12 @@ enum WeightErrorType {
 /// Carries a [WeightErrorType] so the presentation layer can map it to a
 /// user-facing error state without depending on infrastructure exception types.
 class WeightRepositoryException implements Exception {
-  /// Categorizes the failed operation.
   final WeightErrorType type;
-
-  /// A human-readable description of what went wrong.
   final String message;
 
   /// The originating infrastructure exception, if available.
   final Object? sourceError;
 
-  /// Creates a repository exception with error [type], descriptive [message], and optional [sourceError].
   const WeightRepositoryException({
     required this.type,
     required this.message,

@@ -24,11 +24,6 @@ class WeightEntry {
   /// An optional user-provided text note accompanying the weight record.
   final String? note;
 
-  /// Creates an immutable [WeightEntry] domain entity instance.
-  ///
-  /// The [weightKg] and [dateTime] parameters are mandatory.
-  /// Parameter [id] defaults to 0 for new unsaved entries.
-  /// Parameter [note] is optional.
   const WeightEntry({
     this.id = 0,
     required this.weightKg,

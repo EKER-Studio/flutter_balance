@@ -6,7 +6,6 @@ import 'package:balance/l10n/app_localizations.dart';
 
 /// A dialog that explains the BMI categories and their corresponding colors.
 class BmiLegendDialog extends StatelessWidget {
-  /// Creates a [BmiLegendDialog] explaining the BMI category ranges and colors.
   const BmiLegendDialog({super.key});
 
   @override

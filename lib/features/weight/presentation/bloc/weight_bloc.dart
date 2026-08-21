@@ -32,7 +32,6 @@ import 'package:balance/core/utils/crash_reporter.dart';
 /// bloc.add(ChangeChartFilter(TimePeriod.month));
 /// ```
 class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
-  /// The [WeightRepository] backing data operations.
   final WeightRepository repository;
 
   /// An optional settings BLoC used to gate health synchronization; when null,
@@ -46,11 +45,6 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
   TimePeriod _memoPeriod = TimePeriod.week;
   List<WeightEntry> _memoResult = const [];
 
-  /// Creates a [WeightBloc] backed by the given [repository].
-  ///
-  /// [appSettingsBloc] is optional and consulted for the health sync toggle;
-  /// health-sync behavior stays dormant when omitted.
-  /// [healthService] is optional and defaults to [NativeHealthService.instance].
   WeightBloc({
     required this.repository,
     AppSettingsBloc? appSettingsBloc,
@@ -150,9 +144,6 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
   /// with [WeightEntry.dateTime] set to noon (12:00) of the day to keep the
   /// X-axis positions stable across re-renders.
   List<WeightEntry> _aggregateByDay(List<WeightEntry> entries) {
-    if (entries.length <= 1) return entries;
-
-    // Group by date (year-month-day)
     final Map<String, List<WeightEntry>> grouped = {};
     for (final e in entries) {
       final key = '${e.dateTime.year}-${e.dateTime.month}-${e.dateTime.day}';
@@ -259,8 +250,6 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
     );
   }
 
-  /// Persists the new [UpdateUserHeight.heightCm] and re-emits the current
-  /// entries with an updated [WeightLoaded] state.
   void _onUpdateUserHeight(UpdateUserHeight event, Emitter<WeightState> emit) {
     final entries = _entriesFromState(state);
     emit(
@@ -813,8 +802,6 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
   /// dynamic entry lists to avoid redundant disk I/O.
   @override
   Map<String, dynamic>? toJson(WeightState state) {
-    // Omit dynamic data collections (entries & filteredEntries) from JSON persistence
-    // to prevent redundant disk I/O. Only lightweight user preferences are serialized.
     return {'heightCm': state.heightCm, 'timePeriod': state.timePeriod.name};
   }
 }

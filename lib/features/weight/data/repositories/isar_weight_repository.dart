@@ -125,22 +125,13 @@ class IsarWeightRepository implements WeightRepository {
   /// The cap in milliseconds on the exponential retry backoff.
   static const int _retryMaxDelayMs = 32000;
 
-  /// The [Isar] database instance.
   final Isar isar;
-
-  /// The secure storage instance for retrieving the encryption key.
   final FlutterSecureStorage secureStorage;
 
   /// A cached AES-256 encryption key, dropped on stream failures so it is
   /// re-read from secure storage once the device is unlocked again.
   Uint8List? _encryptionKey;
 
-  /// Creates an [IsarWeightRepository] backed by [isar] and managed secure storage.
-  ///
-  /// Takes an optional [secureStorage] handler.
-  /// Takes an optional [encryptionKey] for testing override.
-  /// Takes an optional [maxEntriesLoaded] cap, defaulting to [defaultMaxEntriesLoaded].
-  /// Takes an optional [unlockSignal] that triggers immediate stream recovery.
   IsarWeightRepository({
     required this.isar,
     this.secureStorage = const FlutterSecureStorage(),
@@ -190,7 +181,6 @@ class IsarWeightRepository implements WeightRepository {
     );
   }
 
-  /// Converts a domain [WeightEntry] into its encrypted [WeightEntryModel].
   WeightEntryModel _entityToModel(WeightEntry entity, Uint8List key) {
     final model = WeightEntryModel()
       ..id = entity.id == 0 ? Isar.autoIncrement : entity.id
@@ -553,11 +543,6 @@ class IsarWeightRepository implements WeightRepository {
     }
   }
 
-  /// Wipes all stored Isar collections within a single write transaction.
-  ///
-  /// Throws [WeightRepositoryException] with [WeightErrorType.wipeFailed] when
-  /// the clear transaction fails or an unexpected error occurs.
-  @override
   @override
   Future<int> syncRemoteEntries(List<WeightEntry> remoteEntries) async {
     try {
@@ -623,6 +608,10 @@ class IsarWeightRepository implements WeightRepository {
     }
   }
 
+  /// Wipes all stored Isar collections within a single write transaction.
+  ///
+  /// Throws [WeightRepositoryException] with [WeightErrorType.wipeFailed] when
+  /// the clear transaction fails or an unexpected error occurs.
   @override
   Future<void> clearAllData() async {
     try {

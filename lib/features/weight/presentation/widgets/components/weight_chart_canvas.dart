@@ -9,22 +9,12 @@ import 'package:balance/l10n/app_localizations.dart';
 
 /// A presentational line chart canvas plotting weight entries, target guide line, and axis tick labels.
 class WeightChartCanvas extends StatelessWidget {
-  /// The list of recorded weight entries sorted ascending by date.
   final List<WeightEntry> sortedEntries;
-
-  /// The active time period filter.
   final TimePeriod period;
-
-  /// The user's active measurement unit.
   final MeasurementUnit unit;
-
-  /// An optional target weight in kilograms.
   final double? targetWeight;
-
-  /// Fixed canvas height.
   final double chartHeight;
 
-  /// Creates a [WeightChartCanvas] widget.
   const WeightChartCanvas({
     super.key,
     required this.sortedEntries,

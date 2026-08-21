@@ -21,7 +21,6 @@ class AddWeightSheet extends StatefulWidget {
   /// The optional initial date/time for the measurement.
   final DateTime? initialDate;
 
-  /// Creates an [AddWeightSheet] with an optional [initialDate].
   const AddWeightSheet({super.key, this.initialDate});
 
   @override
@@ -260,7 +259,7 @@ class _AddWeightSheetState extends State<AddWeightSheet>
     );
   }
 
-  /// Validates the form and dispatches [AddWeight] to [WeightBloc] on success.
+  /// Validates [value] against weight bounds and sets [_weightError].
   void _validateWeight(String value) {
     if (value.trim().isEmpty) {
       AppAnalytics.logDialogAddWeightValidationError('empty');

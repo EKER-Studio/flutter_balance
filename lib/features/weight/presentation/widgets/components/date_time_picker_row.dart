@@ -4,22 +4,12 @@ import 'package:balance/l10n/app_localizations.dart';
 
 /// A presentational row widget displaying interactive date and time pickers with semantic labeling and error hints.
 class DateTimePickerRow extends StatelessWidget {
-  /// The currently selected date.
   final DateTime selectedDate;
-
-  /// The currently selected time of day.
   final TimeOfDay selectedTime;
-
-  /// Optional error text when the combined date/time is invalid.
   final String? dateTimeError;
-
-  /// Callback when the user taps to pick a date.
   final VoidCallback onPickDate;
-
-  /// Callback when the user taps to pick a time.
   final VoidCallback onPickTime;
 
-  /// Creates a [DateTimePickerRow] widget.
   const DateTimePickerRow({
     super.key,
     required this.selectedDate,

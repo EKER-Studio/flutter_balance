@@ -6,16 +6,10 @@ import 'package:balance/l10n/app_localizations.dart';
 
 /// A presentational row widget displaying a colored category swatch, localized title, and numeric BMI range.
 class BmiLegendItem extends StatelessWidget {
-  /// The BMI category represented by this item.
   final BmiCategory category;
-
-  /// The formatted numeric range string (e.g. '18.5 – 24.9').
   final String range;
-
-  /// Whether the current theme brightness is dark.
   final bool isDark;
 
-  /// Creates a [BmiLegendItem] widget.
   const BmiLegendItem({
     super.key,
     required this.category,

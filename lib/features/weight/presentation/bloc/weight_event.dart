@@ -16,44 +16,32 @@ final class SubscribeToWeightChanges extends WeightEvent {
 
 /// An event that updates the user's height (in cm), persisted via HydratedBloc.
 final class UpdateUserHeight extends WeightEvent {
-  /// Height in centimetres.
   final double heightCm;
 
-  /// Creates [UpdateUserHeight] with the given [heightCm].
   const UpdateUserHeight(this.heightCm);
 }
 
 /// An event that adds a new weight measurement; BMI is auto-calculated from
 /// stored height.
 final class AddWeight extends WeightEvent {
-  /// Weight in kilograms.
   final double weightKg;
-
-  /// Optional note attached to this measurement.
   final String? note;
-
-  /// Optional custom timestamp for the measurement (defaults to current date/time if null).
   final DateTime? dateTime;
 
-  /// Creates [AddWeight] with the given [weightKg], optional [note], and optional [dateTime].
   const AddWeight({required this.weightKg, this.note, this.dateTime});
 }
 
 /// An event that removes the entry with the given [id].
 final class DeleteWeight extends WeightEvent {
-  /// Identifier of the entry to remove.
   final int id;
 
-  /// Creates [DeleteWeight] targeting [id].
   const DeleteWeight(this.id);
 }
 
 /// An event that changes the active time filter for the weight chart.
 final class ChangeChartFilter extends WeightEvent {
-  /// The newly selected time period.
   final TimePeriod period;
 
-  /// Creates [ChangeChartFilter] with the given [period].
   const ChangeChartFilter(this.period);
 }
 
@@ -73,10 +61,8 @@ final class ClearAllWeightData extends WeightEvent {
 
 /// An event that bulk imports weight entries into the database.
 final class ImportWeightEntries extends WeightEvent {
-  /// Entries to import.
   final List<WeightEntry> entries;
 
-  /// Creates [ImportWeightEntries] with the given [entries].
   const ImportWeightEntries(this.entries);
 }
 
@@ -89,10 +75,8 @@ final class ImportWeightEntries extends WeightEvent {
 /// The window starts at [startDate] (or the deep past when it is `null`,
 /// so historical records are never missed) and ends at the present.
 final class SyncHealthEntries extends WeightEvent {
-  /// Start of the sync window; `null` defaults to the deep past.
   final DateTime? startDate;
 
-  /// Creates [SyncHealthEntries] with the given [startDate].
   const SyncHealthEntries({this.startDate});
 }
 
@@ -103,10 +87,8 @@ final class SyncHealthEntries extends WeightEvent {
 /// [CsvImportAnalysis] summary for the preview dialog.
 /// On failure it emits [CsvAnalysisError] with a typed [CsvErrorType].
 final class AnalyzeCsvFile extends WeightEvent {
-  /// Absolute path to the CSV file selected by the file picker.
   final String filePath;
 
-  /// Creates [AnalyzeCsvFile] with the given [filePath].
   const AnalyzeCsvFile({required this.filePath});
 }
 
@@ -115,9 +97,7 @@ final class AnalyzeCsvFile extends WeightEvent {
 /// Writes the entries to the database via an idempotent bulk transaction and
 /// emits [WeightImportSuccess] with the count of newly inserted records.
 final class ConfirmCsvImport extends WeightEvent {
-  /// Entries to persist, sourced directly from [CsvImportAnalysis.validEntries].
   final List<WeightEntry> validEntries;
 
-  /// Creates [ConfirmCsvImport] with the given [validEntries].
   const ConfirmCsvImport({required this.validEntries});
 }

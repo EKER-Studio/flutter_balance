@@ -4,19 +4,11 @@ import 'package:balance/l10n/app_localizations.dart';
 
 /// A presentational input field for weight measurements with localized unit labels and error messaging.
 class WeightInputField extends StatelessWidget {
-  /// The controller for the weight numeric input.
   final TextEditingController controller;
-
-  /// The active measurement unit.
   final MeasurementUnit unit;
-
-  /// Optional error text to display.
   final String? weightError;
-
-  /// Callback when text changes.
   final ValueChanged<String> onChanged;
 
-  /// Creates a [WeightInputField] widget.
   const WeightInputField({
     super.key,
     required this.controller,
