@@ -21,7 +21,6 @@ class CalendarSelectedDaySection extends StatelessWidget {
   /// The active measurement unit.
   final MeasurementUnit unit;
 
-  /// Creates a [CalendarSelectedDaySection] widget.
   const CalendarSelectedDaySection({
     super.key,
     required this.selectedDate,

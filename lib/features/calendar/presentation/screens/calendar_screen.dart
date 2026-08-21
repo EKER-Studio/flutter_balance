@@ -24,7 +24,6 @@ import 'package:balance/l10n/app_localizations.dart';
 /// layouts place the calendar card and detail section side by side.
 /// Serves as the second tab in the main navigation.
 class CalendarScreen extends StatefulWidget {
-  /// Creates a [CalendarScreen].
   const CalendarScreen({super.key});
 
   @override

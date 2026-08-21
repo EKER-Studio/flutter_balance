@@ -33,7 +33,6 @@ class CalendarDayCell extends StatelessWidget {
   /// Callback invoked when the user taps on this day cell.
   final VoidCallback? onTap;
 
-  /// Creates a [CalendarDayCell] widget.
   const CalendarDayCell({
     super.key,
     required this.date,

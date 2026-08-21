@@ -28,7 +28,6 @@ class CalendarMonthCard extends StatelessWidget {
   /// Callback when a day in the grid is selected.
   final ValueChanged<DateTime> onDaySelected;
 
-  /// Creates a [CalendarMonthCard] widget.
   const CalendarMonthCard({
     super.key,
     required this.focusedMonth,
