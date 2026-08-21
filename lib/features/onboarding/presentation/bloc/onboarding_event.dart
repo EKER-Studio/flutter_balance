@@ -28,10 +28,8 @@ final class OnboardingStepRewound extends OnboardingEvent {
 /// An event that updates the measurement unit selected on the units & height
 /// step.
 final class OnboardingUnitSelected extends OnboardingEvent {
-  /// The newly selected unit system.
   final MeasurementUnit unit;
 
-  /// Creates [OnboardingUnitSelected] with the given [unit].
   const OnboardingUnitSelected(this.unit);
 
   @override
@@ -43,7 +41,6 @@ final class OnboardingCsvImported extends OnboardingEvent {
   /// Parsed entries to keep as draft data for the wizard.
   final List<WeightEntry> entries;
 
-  /// Creates [OnboardingCsvImported] with the parsed [entries].
   const OnboardingCsvImported(this.entries);
 
   @override
@@ -53,13 +50,11 @@ final class OnboardingCsvImported extends OnboardingEvent {
 /// An event that updates the draft initial weight (and its optional
 /// timestamp).
 final class OnboardingInitialWeightSet extends OnboardingEvent {
-  /// Initial weight in kilograms.
   final double weightKg;
 
   /// Timestamp of the measurement, or `null` to default to now.
   final DateTime? timestamp;
 
-  /// Creates [OnboardingInitialWeightSet] with [weightKg] and optional [timestamp].
   const OnboardingInitialWeightSet({required this.weightKg, this.timestamp});
 
   @override
@@ -72,7 +67,6 @@ final class OnboardingTargetWeightSet extends OnboardingEvent {
   /// Target weight in kilograms, or `null` when no target was set.
   final double? weightKg;
 
-  /// Creates [OnboardingTargetWeightSet] with [weightKg], or `null` when no target is set.
   const OnboardingTargetWeightSet(this.weightKg);
 
   @override
@@ -82,10 +76,8 @@ final class OnboardingTargetWeightSet extends OnboardingEvent {
 /// An event that records whether the user connected health sync during
 /// onboarding.
 final class OnboardingHealthSyncToggled extends OnboardingEvent {
-  /// Whether health sync was requested.
   final bool enabled;
 
-  /// Creates [OnboardingHealthSyncToggled] with whether health sync was [enabled].
   const OnboardingHealthSyncToggled(this.enabled);
 
   @override
@@ -95,10 +87,8 @@ final class OnboardingHealthSyncToggled extends OnboardingEvent {
 /// An event that records whether the user enabled the biometric lock during
 /// onboarding.
 final class OnboardingBiometricsToggled extends OnboardingEvent {
-  /// Whether the biometric lock was enabled.
   final bool enabled;
 
-  /// Creates [OnboardingBiometricsToggled] with whether biometric lock was [enabled].
   const OnboardingBiometricsToggled(this.enabled);
 
   @override

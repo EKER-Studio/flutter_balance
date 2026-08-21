@@ -3,16 +3,10 @@ import 'package:balance/l10n/app_localizations.dart';
 
 /// A presentational widget displaying the idle state of the CSV import step.
 class CsvImportIdleView extends StatelessWidget {
-  /// Callback to initiate file picking.
   final VoidCallback onPickFile;
-
-  /// Callback to skip the CSV import step.
   final VoidCallback onSkipped;
-
-  /// Whether the current screen orientation is landscape.
   final bool isLandscape;
 
-  /// Creates a [CsvImportIdleView] widget.
   const CsvImportIdleView({
     super.key,
     required this.onPickFile,

@@ -35,14 +35,9 @@ class StepCsvImport extends StatefulWidget {
   /// [CsvImportService] and can be replaced with a fake in tests.
   final CsvImportService? importService;
 
-  /// Callback invoked with the parsed entries when the user confirms the
-  /// import and proceeds to the next step.
   final void Function(List<WeightEntry> entries) onFileImported;
-
-  /// Callback invoked when the user skips the step without importing.
   final VoidCallback onSkipped;
 
-  /// Creates a [StepCsvImport] widget.
   const StepCsvImport({
     super.key,
     required this.onFileImported,

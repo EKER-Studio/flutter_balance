@@ -22,7 +22,6 @@ import 'package:balance/l10n/app_localizations.dart';
 /// current height into the new system, and the active field requests focus
 /// whenever the step becomes the current page.
 class StepUnitsHeight extends StatefulWidget {
-  /// Initial measurement unit system preference.
   final MeasurementUnit initialUnit;
 
   /// Initial height in centimeters, or `null` if not yet set.
@@ -36,7 +35,6 @@ class StepUnitsHeight extends StatefulWidget {
   /// Passes the chosen measurement unit system and a validated height in cm.
   final void Function(MeasurementUnit unit, double heightCm) onNext;
 
-  /// Creates a [StepUnitsHeight] widget.
   const StepUnitsHeight({
     super.key,
     required this.initialUnit,

@@ -3,16 +3,10 @@ import 'package:balance/l10n/app_localizations.dart';
 
 /// A presentational widget displaying the success state and count of imported entries.
 class CsvImportSuccessView extends StatelessWidget {
-  /// The number of validly parsed weight entries.
   final int count;
-
-  /// Callback invoked when the user confirms and continues.
   final VoidCallback onContinue;
-
-  /// Whether the current screen orientation is landscape.
   final bool isLandscape;
 
-  /// Creates a [CsvImportSuccessView] widget.
   const CsvImportSuccessView({
     super.key,
     required this.count,

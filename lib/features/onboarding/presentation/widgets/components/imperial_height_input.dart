@@ -3,28 +3,14 @@ import 'package:balance/l10n/app_localizations.dart';
 
 /// A presentational row with dual text fields for entering height in feet and inches.
 class ImperialHeightInput extends StatelessWidget {
-  /// Controller managing the feet string value.
   final TextEditingController feetController;
-
-  /// Focus node for the feet text field.
   final FocusNode feetFocusNode;
-
-  /// Controller managing the inches string value.
   final TextEditingController inchesController;
-
-  /// Focus node for the inches text field.
   final FocusNode inchesFocusNode;
-
-  /// Optional error text to display beneath the inputs.
   final String? errorText;
-
-  /// Callback when either feet or inches value changes.
   final VoidCallback onChanged;
-
-  /// Callback when submitted from keyboard.
   final VoidCallback onSubmitted;
 
-  /// Creates an [ImperialHeightInput] widget.
   const ImperialHeightInput({
     super.key,
     required this.feetController,

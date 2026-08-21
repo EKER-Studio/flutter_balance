@@ -18,7 +18,6 @@ import 'package:balance/l10n/app_localizations.dart';
 /// button is disabled and an inline error is shown. The date/time button
 /// opens the platform pickers to override the default "now" timestamp.
 class StepInitialWeight extends StatefulWidget {
-  /// The user's active measurement unit system.
   final MeasurementUnit unit;
 
   /// Pre-filled initial weight in kilograms (e.g. imported from CSV), or
@@ -35,7 +34,6 @@ class StepInitialWeight extends StatefulWidget {
   /// Passes the initial weight in kg and the chosen measurement timestamp.
   final void Function(double weightKg, DateTime timestamp) onNext;
 
-  /// Creates a [StepInitialWeight] widget.
   const StepInitialWeight({
     super.key,
     required this.unit,
@@ -143,7 +141,6 @@ class _StepInitialWeightState extends State<StepInitialWeight> {
     return weightKg;
   }
 
-  /// Validates [value] on every keystroke and updates the inline error text.
   void _validate(String value) {
     AppAnalytics.logOnboardingInitialWeightInputChanged(
       value.trim().isNotEmpty,

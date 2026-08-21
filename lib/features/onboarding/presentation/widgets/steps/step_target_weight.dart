@@ -16,10 +16,8 @@ import 'package:balance/core/presentation/core/clamped_layout.dart';
 /// weight are present, a delta line shows how far the target is, or a goal
 /// achieved notice when it is already met.
 class StepTargetWeight extends StatefulWidget {
-  /// The user's active measurement unit system.
   final MeasurementUnit unit;
 
-  /// Initial target weight in kg (if already set).
   final double? initialTargetWeightKg;
 
   /// Initial weight in kg logged in the previous step, used to display the
@@ -31,7 +29,6 @@ class StepTargetWeight extends StatefulWidget {
   /// Passes the target weight in kg, or `null` if no target weight is set.
   final void Function(double? targetWeightKg) onNext;
 
-  /// Creates a [StepTargetWeight] widget.
   const StepTargetWeight({
     super.key,
     required this.unit,
@@ -129,7 +126,6 @@ class _StepTargetWeightState extends State<StepTargetWeight> {
     return weightKg;
   }
 
-  /// Validates [value] on every keystroke and updates the inline error text.
   void _validate(String value) {
     AppAnalytics.logOnboardingTargetWeightInputChanged(value.trim().isNotEmpty);
     final trimmed = value.trim().replaceAll(',', '.');

@@ -3,7 +3,6 @@ import 'package:balance/l10n/app_localizations.dart';
 
 /// A presentational widget displaying a progress spinner during CSV parsing.
 class CsvImportLoadingView extends StatelessWidget {
-  /// Creates a [CsvImportLoadingView] widget.
   const CsvImportLoadingView({super.key});
 
   @override

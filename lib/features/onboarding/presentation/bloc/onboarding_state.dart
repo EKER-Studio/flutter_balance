@@ -17,7 +17,6 @@ final class OnboardingState extends Equatable {
   /// biometric credential support.
   final int totalSteps;
 
-  /// Measurement unit system selected during onboarding.
   final MeasurementUnit selectedUnit;
 
   /// History parsed from the CSV import step, not yet persisted.
@@ -32,13 +31,9 @@ final class OnboardingState extends Equatable {
   /// Target weight in kg confirmed on the target-weight step (`null` when skipped).
   final double? draftTargetWeight;
 
-  /// Whether the user connected health sync during onboarding.
   final bool isHealthSyncRequested;
-
-  /// Whether the user enabled the biometric lock during onboarding.
   final bool isBiometricEnabled;
 
-  /// Creates an [OnboardingState]; all parameters are optional with sensible defaults.
   const OnboardingState({
     this.currentStepIndex = 0,
     this.totalSteps = 6,

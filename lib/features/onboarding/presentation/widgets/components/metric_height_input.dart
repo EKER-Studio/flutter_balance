@@ -4,22 +4,12 @@ import 'package:balance/l10n/app_localizations.dart';
 
 /// A presentational text field for entering height in centimeters with validation and bounds helper.
 class MetricHeightInput extends StatelessWidget {
-  /// Controller managing the cm string text.
   final TextEditingController controller;
-
-  /// Focus node for the cm text field.
   final FocusNode focusNode;
-
-  /// Optional error text to display.
   final String? errorText;
-
-  /// Callback when text changes.
   final ValueChanged<String> onChanged;
-
-  /// Callback when submitted from keyboard.
   final VoidCallback onSubmitted;
 
-  /// Creates a [MetricHeightInput] widget.
   const MetricHeightInput({
     super.key,
     required this.controller,

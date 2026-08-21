@@ -21,7 +21,6 @@ class StepBiometricLock extends StatefulWidget {
   /// Callback invoked when proceeding to the next step (or skipping).
   final VoidCallback onNext;
 
-  /// Creates a [StepBiometricLock] widget.
   const StepBiometricLock({super.key, required this.onNext});
 
   @override

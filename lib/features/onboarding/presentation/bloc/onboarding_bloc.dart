@@ -18,10 +18,7 @@ import 'package:balance/features/settings/presentation/bloc/app_settings_event.d
 /// [AppSettingsBloc] when a step is confirmed or [OnboardingCompleted] is
 /// dispatched.
 class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
-  /// Target for the persistent settings dispatched on completion.
   final AppSettingsBloc appSettingsBloc;
-
-  /// Target for the weight entries dispatched during the wizard.
   final WeightBloc weightBloc;
 
   final int _totalSteps;
@@ -95,7 +92,6 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
     emit(state.copyWith(currentStepIndex: state.currentStepIndex - 1));
   }
 
-  /// Stores the unit selected on the units & height step.
   void _onUnitSelected(
     OnboardingUnitSelected event,
     Emitter<OnboardingState> emit,
@@ -103,7 +99,6 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
     emit(state.copyWith(selectedUnit: event.unit));
   }
 
-  /// Stores the history parsed by the CSV import step.
   void _onCsvImported(
     OnboardingCsvImported event,
     Emitter<OnboardingState> emit,

@@ -16,10 +16,8 @@ import 'package:balance/core/presentation/core/clamped_layout.dart';
 /// permission request through [AppSettingsBloc]; the wizard advances via the
 /// next action once the choice is made.
 class StepHealthSync extends StatefulWidget {
-  /// Callback invoked when the user proceeds to the next step.
   final VoidCallback onNext;
 
-  /// Creates a [StepHealthSync] widget with the given [onNext] callback.
   const StepHealthSync({super.key, required this.onNext});
 
   @override

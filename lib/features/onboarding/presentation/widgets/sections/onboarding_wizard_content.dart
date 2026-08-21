@@ -23,13 +23,9 @@ import 'package:balance/features/weight/presentation/bloc/weight_event.dart';
 
 /// A section widget that manages the page transitions, per-step callbacks, and progress bar for the onboarding wizard.
 class OnboardingWizardContent extends StatefulWidget {
-  /// Optional callback invoked when the wizard completes the last step.
   final VoidCallback? onWizardCompleted;
-
-  /// Service used by the CSV import step.
   final CsvImportService? csvImportService;
 
-  /// Creates an [OnboardingWizardContent] widget.
   const OnboardingWizardContent({
     super.key,
     required this.onWizardCompleted,

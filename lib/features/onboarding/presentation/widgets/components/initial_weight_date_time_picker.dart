@@ -4,13 +4,9 @@ import 'package:balance/l10n/app_localizations.dart';
 
 /// A presentational button/decorator for picking date and time for initial weight onboarding.
 class InitialWeightDateTimePicker extends StatelessWidget {
-  /// The selected timestamp.
   final DateTime selectedTimestamp;
-
-  /// Callback when tapped.
   final VoidCallback onTap;
 
-  /// Creates an [InitialWeightDateTimePicker] widget.
   const InitialWeightDateTimePicker({
     super.key,
     required this.selectedTimestamp,

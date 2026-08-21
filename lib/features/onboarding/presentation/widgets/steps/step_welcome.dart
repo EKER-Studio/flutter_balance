@@ -7,10 +7,8 @@ import 'package:balance/l10n/app_localizations.dart';
 /// wizard. Sets user expectations and resolves initial keyboard focus issues
 /// by deferring input fields until after an explicit user gesture.
 class StepWelcome extends StatelessWidget {
-  /// Callback invoked when the user proceeds to the next step.
   final VoidCallback onNext;
 
-  /// Creates a [StepWelcome] widget.
   const StepWelcome({super.key, required this.onNext});
 
   @override

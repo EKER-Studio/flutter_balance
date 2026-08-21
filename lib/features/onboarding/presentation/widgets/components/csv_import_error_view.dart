@@ -5,14 +5,9 @@ import 'package:balance/l10n/app_localizations.dart';
 class CsvImportErrorView extends StatelessWidget {
   /// The localized error message to present.
   final String message;
-
-  /// Callback invoked when the user taps retry.
   final VoidCallback onRetry;
-
-  /// Whether the current screen orientation is landscape.
   final bool isLandscape;
 
-  /// Creates a [CsvImportErrorView] widget.
   const CsvImportErrorView({
     super.key,
     required this.message,

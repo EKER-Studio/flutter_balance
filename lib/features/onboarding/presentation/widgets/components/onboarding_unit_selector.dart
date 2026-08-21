@@ -5,13 +5,9 @@ import 'package:balance/l10n/app_localizations.dart';
 
 /// A presentational segmented control pill selector for choosing between metric and imperial unit systems.
 class OnboardingUnitSelector extends StatelessWidget {
-  /// The currently selected measurement unit system.
   final MeasurementUnit selectedUnit;
-
-  /// Callback invoked when the user selects a different unit system.
   final ValueChanged<MeasurementUnit> onUnitChanged;
 
-  /// Creates an [OnboardingUnitSelector] widget.
   const OnboardingUnitSelector({
     super.key,
     required this.selectedUnit,

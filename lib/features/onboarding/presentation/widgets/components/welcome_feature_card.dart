@@ -3,16 +3,10 @@ import 'package:balance/core/utils/analytics.dart';
 
 /// A presentational card highlighting an onboarding feature with an icon and title.
 class WelcomeFeatureCard extends StatelessWidget {
-  /// The icon representing the feature.
   final IconData icon;
-
-  /// The title label of the feature.
   final String title;
-
-  /// Whether the screen is in landscape mode.
   final bool isLandscape;
 
-  /// Creates a [WelcomeFeatureCard] widget.
   const WelcomeFeatureCard({
     super.key,
     required this.icon,

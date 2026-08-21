@@ -19,10 +19,8 @@ import 'package:balance/core/presentation/core/clamped_layout.dart';
 /// needs no further persistence on the way out. A permission-denied notice is
 /// shown when the OS rejected the notification request.
 class StepReminderNotification extends StatefulWidget {
-  /// Callback invoked when proceeding to the next step.
   final VoidCallback onNext;
 
-  /// Creates a [StepReminderNotification] widget.
   const StepReminderNotification({super.key, required this.onNext});
 
   @override

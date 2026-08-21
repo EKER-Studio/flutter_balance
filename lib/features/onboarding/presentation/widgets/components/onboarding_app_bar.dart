@@ -12,10 +12,8 @@ class OnboardingAppBar extends StatelessWidget implements PreferredSizeWidget {
   /// The progress fraction between 0.0 and 1.0.
   final double progress;
 
-  /// A callback invoked when the user taps the back button.
   final VoidCallback onBackPressed;
 
-  /// Creates an [OnboardingAppBar] widget.
   const OnboardingAppBar({
     super.key,
     required this.displayStep,
