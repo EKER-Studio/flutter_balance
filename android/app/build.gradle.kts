@@ -53,11 +53,11 @@ android {
     buildTypes {
         debug {
             applicationIdSuffix = ".debug"
-            resValue("string", "app_name", "Balance (Debug)")
+            manifestPlaceholders["appName"] = "Balance (Dev)"
         }
         release {
-            resValue("string", "app_name", "Balance")
             signingConfig = signingConfigs.getByName("release")
+            manifestPlaceholders["appName"] = "Balance"
             
             isMinifyEnabled = true
             isShrinkResources = true
