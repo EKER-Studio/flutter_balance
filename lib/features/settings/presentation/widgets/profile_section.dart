@@ -1,5 +1,3 @@
-// Profile settings group with height and target weight tiles.
-
 import 'package:flutter/material.dart';
 import 'package:balance/core/utils/analytics.dart';
 import 'package:balance/core/utils/unit_converter.dart';
@@ -9,19 +7,11 @@ import 'custom_settings_tile.dart';
 
 /// A widget that displays the profile settings group with height and target weight tiles.
 class ProfileSection extends StatelessWidget {
-  /// The current app settings [state] driving the displayed values.
   final AppSettingsState state;
-
-  /// Localized strings for the [ProfileSection] widget.
   final AppLocalizations l10n;
-
-  /// Callback invoked when the height tile is tapped, allowing the user to update their height.
   final VoidCallback onHeightTap;
-
-  /// Callback invoked when the target weight tile is tapped, allowing the user to update their target weight.
   final VoidCallback onTargetWeightTap;
 
-  /// Creates a [ProfileSection] with the given dependencies.
   const ProfileSection({
     super.key,
     required this.state,

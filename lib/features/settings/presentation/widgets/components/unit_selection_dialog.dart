@@ -6,13 +6,9 @@ import 'package:balance/l10n/app_localizations.dart';
 
 /// A dialog for choosing the measurement unit system.
 class UnitSelectionDialog extends StatelessWidget {
-  /// The current active measurement unit.
   final MeasurementUnit currentUnit;
-
-  /// Callback when a measurement unit is selected.
   final ValueChanged<MeasurementUnit> onSelected;
 
-  /// Creates a [UnitSelectionDialog] widget.
   const UnitSelectionDialog({
     super.key,
     required this.currentUnit,

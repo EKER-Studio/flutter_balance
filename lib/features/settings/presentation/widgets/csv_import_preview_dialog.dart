@@ -10,10 +10,8 @@ import 'package:balance/core/integrations/csv/csv_import_service.dart';
 /// measurements, and any skipped (invalid/unparseable) rows. Confirms the
 /// final import operation.
 class CsvImportPreviewDialog extends StatelessWidget {
-  /// The analysis result containing entries and statistics.
   final CsvImportAnalysis analysis;
 
-  /// Creates a [CsvImportPreviewDialog] with the given [analysis].
   const CsvImportPreviewDialog({super.key, required this.analysis});
 
   /// Displays the dialog and returns `true` if the user confirmed the import,
@@ -72,7 +70,6 @@ class CsvImportPreviewDialog extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // Valid Entries Count & Date Range Card
             Container(
               padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
               decoration: BoxDecoration(
@@ -102,8 +99,6 @@ class CsvImportPreviewDialog extends StatelessWidget {
                 ],
               ),
             ),
-
-            // Skipped Rows
             if (analysis.skippedRowCount > 0) ...[
               const SizedBox(height: 12),
               Row(

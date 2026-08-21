@@ -6,13 +6,9 @@ import 'package:balance/l10n/app_localizations.dart';
 
 /// A dialog for choosing the app theme mode (system, light, dark).
 class ThemeSelectionDialog extends StatelessWidget {
-  /// The current active theme mode.
   final AppThemeMode currentMode;
-
-  /// Callback when a theme mode is selected.
   final ValueChanged<AppThemeMode> onSelected;
 
-  /// Creates a [ThemeSelectionDialog] widget.
   const ThemeSelectionDialog({
     super.key,
     required this.currentMode,

@@ -1,5 +1,3 @@
-// BLoC that manages persistent application settings via HydratedBloc.
-
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:balance/core/integrations/health/health_service.dart';
@@ -47,12 +45,10 @@ class AppSettingsBloc extends HydratedBloc<AppSettingsEvent, AppSettingsState> {
     on<UpdateLastHealthSyncTimestamp>(_onUpdateLastHealthSyncTimestamp);
   }
 
-  /// Updates the theme mode to the [UpdateTheme.themeMode] value.
   void _onUpdateTheme(UpdateTheme event, Emitter<AppSettingsState> emit) {
     emit(state.copyWith(themeMode: event.themeMode));
   }
 
-  /// Updates the measurement unit to the [UpdateMeasurementUnit.measurementUnit] value.
   void _onUpdateMeasurementUnit(
     UpdateMeasurementUnit event,
     Emitter<AppSettingsState> emit,
@@ -60,7 +56,6 @@ class AppSettingsBloc extends HydratedBloc<AppSettingsEvent, AppSettingsState> {
     emit(state.copyWith(measurementUnit: event.measurementUnit));
   }
 
-  /// Updates the user's height to the [UpdateHeight.height] value in centimeters.
   void _onUpdateHeight(UpdateHeight event, Emitter<AppSettingsState> emit) {
     emit(state.copyWith(height: event.height));
   }
@@ -127,7 +122,6 @@ class AppSettingsBloc extends HydratedBloc<AppSettingsEvent, AppSettingsState> {
     emit(state.copyWith(targetWeight: event.weight));
   }
 
-  /// Updates the biometric lock preference to the [UpdateBiometricLock.enabled] state.
   void _onUpdateBiometricLock(
     UpdateBiometricLock event,
     Emitter<AppSettingsState> emit,
@@ -142,7 +136,6 @@ class AppSettingsBloc extends HydratedBloc<AppSettingsEvent, AppSettingsState> {
     emit(state.copyWith(isLocked: event.locked));
   }
 
-  /// Updates whether the device hardware supports biometrics.
   void _onUpdateBiometricSupport(
     UpdateBiometricSupport event,
     Emitter<AppSettingsState> emit,
@@ -150,7 +143,6 @@ class AppSettingsBloc extends HydratedBloc<AppSettingsEvent, AppSettingsState> {
     emit(state.copyWith(isBiometricSupported: event.isSupported));
   }
 
-  /// Marks the initial onboarding wizard as completed.
   void _onCompleteOnboarding(
     CompleteOnboarding event,
     Emitter<AppSettingsState> emit,
@@ -236,7 +228,6 @@ class AppSettingsBloc extends HydratedBloc<AppSettingsEvent, AppSettingsState> {
     );
   }
 
-  /// Resets every setting back to the default [AppSettingsState].
   void _onUpdateLastHealthSyncTimestamp(
     UpdateLastHealthSyncTimestamp event,
     Emitter<AppSettingsState> emit,
@@ -244,6 +235,7 @@ class AppSettingsBloc extends HydratedBloc<AppSettingsEvent, AppSettingsState> {
     emit(state.copyWith(lastHealthSyncTimestamp: event.timestamp));
   }
 
+  /// Resets every setting back to the default [AppSettingsState].
   void _onResetAppSettings(
     ResetAppSettings event,
     Emitter<AppSettingsState> emit,
@@ -251,13 +243,11 @@ class AppSettingsBloc extends HydratedBloc<AppSettingsEvent, AppSettingsState> {
     emit(const AppSettingsState());
   }
 
-  /// Restores the persisted settings from the hydrated [json] map.
   @override
   AppSettingsState? fromJson(Map<String, dynamic> json) {
     return AppSettingsState.fromJson(json);
   }
 
-  /// Serializes the current [state] into a JSON map for hydration.
   @override
   Map<String, dynamic> toJson(AppSettingsState state) {
     return state.toJson();

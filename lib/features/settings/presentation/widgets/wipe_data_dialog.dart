@@ -1,5 +1,3 @@
-// Dialog confirming the complete wipe of all app data.
-
 import 'package:flutter/material.dart';
 import 'package:balance/core/utils/analytics.dart';
 import 'package:balance/l10n/app_localizations.dart';

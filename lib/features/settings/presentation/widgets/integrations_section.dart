@@ -1,5 +1,3 @@
-// Integrations settings group with the health sync switch.
-
 import 'package:flutter/material.dart';
 import 'package:balance/l10n/app_localizations.dart';
 import 'package:balance/core/presentation/utils/health_service_platform_localizer.dart';
@@ -9,21 +7,13 @@ import 'custom_settings_toggle.dart';
 
 /// A widget that displays the integrations settings group with the health sync switch.
 class IntegrationsSection extends StatelessWidget {
-  /// The current app settings [state] driving the displayed values.
   final AppSettingsState state;
-
-  /// Localized strings for the [IntegrationsSection] widget.
   final AppLocalizations l10n;
-
-  /// Callback invoked when the health sync switch is toggled, allowing the app to sync with health services.
   final ValueChanged<bool> onHealthSyncChanged;
 
-  /// Callback invoked when the tile asks to install Health Connect.
-  ///
-  /// Only invoked on Android when the health API is unavailable.
+  /// Callback invoked when the tile asks to install Health Connect (Android only).
   final VoidCallback onInstallHealthConnect;
 
-  /// Creates an [IntegrationsSection] with the given dependencies.
   const IntegrationsSection({
     super.key,
     required this.state,

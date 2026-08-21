@@ -1,5 +1,3 @@
-// Immutable application settings state persisted across restarts.
-
 import 'package:equatable/equatable.dart';
 
 import 'package:balance/features/settings/presentation/bloc/app_theme_mode.dart';
@@ -85,7 +83,6 @@ final class AppSettingsState extends Equatable {
   /// The UTC timestamp of the last successful health sync.
   final DateTime? lastHealthSyncTimestamp;
 
-  /// Creates an [AppSettingsState] with the given parameters.
   const AppSettingsState({
     this.themeMode = AppThemeMode.system,
     this.measurementUnit = MeasurementUnit.metric,
@@ -221,7 +218,6 @@ final class AppSettingsState extends Equatable {
     );
   }
 
-  /// Serializes an [AppSettingsState] into a JSON map.
   Map<String, dynamic> toJson() {
     return {
       'themeMode': themeMode.name,
@@ -258,6 +254,5 @@ extension AppSettingsX on AppSettingsState {
     return currentWeightKg / (heightInMeters * heightInMeters);
   }
 
-  /// Maps a BMI value to a structured category.
   BmiCategory getBmiCategory(double bmi) => BmiCategory.fromBmi(bmi);
 }

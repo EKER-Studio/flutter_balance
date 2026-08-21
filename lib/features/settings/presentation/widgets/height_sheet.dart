@@ -14,11 +14,8 @@ import 'package:balance/l10n/app_localizations.dart';
 class HeightSheet extends StatefulWidget {
   /// The currently stored height in cm, or `null` if not set yet.
   final double? currentValue;
-
-  /// The active measurement unit used for the input fields.
   final MeasurementUnit measurementUnit;
 
-  /// Creates a [HeightSheet] pre-filled with [currentValue].
   const HeightSheet({
     super.key,
     required this.currentValue,

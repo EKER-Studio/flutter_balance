@@ -1,5 +1,3 @@
-// Help settings group with crash log sharing and app version tiles.
-
 import 'package:flutter/material.dart';
 import 'package:balance/core/utils/analytics.dart';
 import 'package:balance/l10n/app_localizations.dart';
@@ -8,13 +6,9 @@ import 'custom_settings_tile.dart';
 
 /// A widget that displays the help settings group with the crash log sharing and app version tiles.
 class HelpSection extends StatefulWidget {
-  /// Localized strings for the [HelpSection] widget.
   final AppLocalizations l10n;
-
-  /// Callback invoked when the send crash log tile is tapped, allowing the user to share crash logs.
   final VoidCallback onCrashLogTap;
 
-  /// Creates a [HelpSection] with the given dependencies.
   const HelpSection({
     super.key,
     required this.l10n,

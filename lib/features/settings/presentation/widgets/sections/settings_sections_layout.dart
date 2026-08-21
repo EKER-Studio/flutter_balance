@@ -11,52 +11,22 @@ import 'package:balance/l10n/app_localizations.dart';
 
 /// A responsive layout section that arranges settings sections in two columns on wide viewports or a single column on mobile.
 class SettingsSectionsLayout extends StatelessWidget {
-  /// The current app settings state.
   final AppSettingsState state;
-
-  /// Resolves to whether biometric authentication is available on device.
   final Future<bool> isBiometricAvailable;
-
-  /// Callback to show the height configuration dialog.
   final VoidCallback onHeightTap;
-
-  /// Callback to show the target weight dialog.
   final VoidCallback onTargetWeightTap;
-
-  /// Callback to show the theme selection dialog.
   final VoidCallback onThemeTap;
-
-  /// Callback to show the unit selection dialog.
   final VoidCallback onUnitTap;
-
-  /// Callback when notification toggle value changes.
   final ValueChanged<bool> onNotificationsChanged;
-
-  /// Callback to pick the reminder notification time.
   final VoidCallback onNotificationTimeTap;
-
-  /// Callback when health sync toggle value changes.
   final ValueChanged<bool> onHealthSyncChanged;
-
-  /// Callback to trigger Health Connect installation on Android.
   final VoidCallback onInstallHealthConnect;
-
-  /// Callback when biometric lock toggle value changes.
   final ValueChanged<bool> onBiometricChanged;
-
-  /// Callback to initiate CSV import.
   final VoidCallback onImportTap;
-
-  /// Callback to initiate CSV export.
   final VoidCallback onExportTap;
-
-  /// Callback to show wipe database confirmation dialog.
   final VoidCallback onWipeTap;
-
-  /// Callback to send crash logs.
   final VoidCallback onCrashLogTap;
 
-  /// Creates a [SettingsSectionsLayout] widget.
   const SettingsSectionsLayout({
     super.key,
     required this.state,

@@ -1,6 +1,3 @@
-// Main settings screen composing profile, application, integrations, security,
-// data and help sections.
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -29,7 +26,6 @@ import 'package:balance/features/settings/presentation/widgets/sections/settings
 /// measurement unit, daily reminder, biometric lock, and managing CSV import/export/wipe functionality.
 /// On wide layouts, the sections are arranged in a two-column grid.
 class SettingsScreen extends StatefulWidget {
-  /// Creates a [SettingsScreen].
   const SettingsScreen({super.key});
 
   @override

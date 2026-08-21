@@ -5,10 +5,8 @@ import 'package:balance/l10n/app_localizations.dart';
 
 /// A dialog prompting the user to install Google Health Connect from Google Play.
 class HealthConnectInstallDialog extends StatelessWidget {
-  /// Creates a [HealthConnectInstallDialog] widget.
   const HealthConnectInstallDialog({super.key, this.onStoreClicked});
 
-  /// Shows the dialog.
   static Future<void> show(BuildContext context) async {
     AppAnalytics.logSettingsHealthConnectInstallDialogOpened();
     bool storeClicked = false;
@@ -22,7 +20,6 @@ class HealthConnectInstallDialog extends StatelessWidget {
     }
   }
 
-  /// Optional callback invoked when the user selects the store action.
   final VoidCallback? onStoreClicked;
 
   @override

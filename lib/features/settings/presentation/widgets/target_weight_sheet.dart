@@ -14,11 +14,8 @@ import 'package:balance/l10n/app_localizations.dart';
 class TargetWeightSheet extends StatefulWidget {
   /// The currently stored target weight in kg, or `null` if not set yet.
   final double? currentValueKg;
-
-  /// The active measurement unit used for labels and field values.
   final MeasurementUnit measurementUnit;
 
-  /// Creates a [TargetWeightSheet] with the current value and active unit.
   const TargetWeightSheet({
     super.key,
     required this.currentValueKg,

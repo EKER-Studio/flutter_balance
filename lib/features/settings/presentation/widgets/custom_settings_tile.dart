@@ -6,38 +6,15 @@ import 'package:flutter/material.dart';
 /// and an optional trailing chevron. Supports semantic grouping for screen readers,
 /// error styling, and focused state highlighting.
 class CustomSettingsTile extends StatefulWidget {
-  /// The leading icon for this settings item.
   final IconData icon;
-
-  /// The primary title text for this settings item.
   final String title;
-
-  /// An optional supporting subtitle text.
   final String? subtitle;
-
-  /// An optional current value string displayed before the chevron.
   final String? valueText;
-
-  /// An optional category or section label prefix for accessibility readers.
   final String? sectionLabel;
-
-  /// Callback invoked when the user taps on this tile.
   final VoidCallback? onTap;
-
-  /// Whether this tile is in an error state.
   final bool isError;
-
-  /// Whether to display the trailing chevron icon.
   final bool showChevron;
 
-  /// Creates a [CustomSettingsTile].
-  ///
-  /// [icon] and [title] are required.
-  /// [subtitle] and [valueText] provide additional context.
-  /// [sectionLabel] is read by accessibility tools.
-  /// [onTap] makes the tile interactive.
-  /// [isError] applies error-themed colors.
-  /// [showChevron] controls the trailing arrow.
   const CustomSettingsTile({
     super.key,
     required this.icon,
