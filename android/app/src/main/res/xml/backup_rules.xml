@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<full-backup-content>
+    <!-- Exclude local encrypted database files and secure storage keys for Android 6.0 - 11 -->
+    <!-- to prevent corruption when hardware Keystore keys are not transferred. -->
+    <exclude domain="database" />
+    <exclude domain="sharedpref" />
+    <exclude domain="file" />
+</full-backup-content>
