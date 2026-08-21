@@ -1,5 +1,3 @@
-// lib/features/settings/presentation/widgets/custom_settings_tile.dart
-
 import 'package:flutter/material.dart';
 
 /// A reusable, accessible settings row widget.

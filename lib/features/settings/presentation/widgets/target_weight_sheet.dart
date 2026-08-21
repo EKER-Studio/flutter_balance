@@ -1,5 +1,3 @@
-// lib/features/settings/presentation/widgets/target_weight_sheet.dart
-
 import 'package:flutter/material.dart';
 import 'package:balance/core/models/measurement_unit.dart';
 import 'package:balance/core/utils/analytics.dart';

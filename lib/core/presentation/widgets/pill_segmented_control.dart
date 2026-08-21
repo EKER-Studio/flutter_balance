@@ -1,5 +1,3 @@
-// lib/core/presentation/widgets/pill_segmented_control.dart
-
 import 'package:flutter/material.dart';
 
 /// A segment specification for [PillSegmentedControl].

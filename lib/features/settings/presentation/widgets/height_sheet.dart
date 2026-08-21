@@ -1,5 +1,3 @@
-// lib/features/settings/presentation/widgets/height_sheet.dart
-
 import 'package:flutter/material.dart';
 import 'package:balance/core/models/measurement_unit.dart';
 import 'package:balance/core/utils/analytics.dart';
