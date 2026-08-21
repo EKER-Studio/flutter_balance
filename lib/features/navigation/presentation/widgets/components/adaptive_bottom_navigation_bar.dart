@@ -3,13 +3,9 @@ import 'package:balance/l10n/app_localizations.dart';
 
 /// An adaptive bottom navigation bar used in portrait mode.
 class AdaptiveBottomNavigationBar extends StatelessWidget {
-  /// Currently selected tab index.
   final int selectedIndex;
-
-  /// Callback when a tab destination is selected.
   final ValueChanged<int> onDestinationSelected;
 
-  /// Creates an [AdaptiveBottomNavigationBar] widget.
   const AdaptiveBottomNavigationBar({
     super.key,
     required this.selectedIndex,

@@ -1,4 +1,3 @@
-// Root scaffold hosting the app's four-tab navigation shell.
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -22,7 +21,6 @@ import 'package:balance/features/weight/presentation/bloc/weight_event.dart';
 /// to the navigation bar/rail semantics via `onDestinationSelected`;
 /// `home`-style navigation from the Today screen jumps to the Settings tab.
 class MainNavigationScreen extends StatefulWidget {
-  /// Creates [MainNavigationScreen].
   const MainNavigationScreen({super.key});
 
   @override
@@ -49,7 +47,6 @@ class _MainNavigationScreenState extends State<MainNavigationScreen>
     super.dispose();
   }
 
-  /// Switches the active tab to [index].
   void _onTabSelected(int index) {
     if (index >= 0 && index < _tabNames.length) {
       final tabName = _tabNames[index];

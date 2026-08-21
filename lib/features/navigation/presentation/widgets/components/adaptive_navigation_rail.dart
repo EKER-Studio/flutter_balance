@@ -3,13 +3,9 @@ import 'package:balance/l10n/app_localizations.dart';
 
 /// An adaptive navigation rail used in landscape mode.
 class AdaptiveNavigationRail extends StatelessWidget {
-  /// Currently selected tab index.
   final int selectedIndex;
-
-  /// Callback when a tab is selected.
   final ValueChanged<int> onDestinationSelected;
 
-  /// Creates an [AdaptiveNavigationRail] widget.
   const AdaptiveNavigationRail({
     super.key,
     required this.selectedIndex,
