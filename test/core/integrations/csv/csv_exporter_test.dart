@@ -112,7 +112,6 @@ void main() {
       expect(content, contains('ID,Date,Weight (kg),Note'));
       expect(content, contains('1,2026-08-01 08:00,75.0,Test export file'));
 
-      // Cleanup
       if (await file.exists()) {
         await file.delete();
       }

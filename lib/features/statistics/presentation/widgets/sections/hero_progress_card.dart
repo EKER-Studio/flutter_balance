@@ -47,7 +47,6 @@ class HeroProgressCard extends StatelessWidget {
     final formattedValue =
         '$sign${totalChangeDisplay.toStringAsFixed(1)} $unitLabel';
 
-    // Weekly pace text
     final paceDisplay = weeklyPace != null
         ? (unit == MeasurementUnit.imperial
               ? kgToLbs(weeklyPace!)

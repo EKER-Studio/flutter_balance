@@ -318,10 +318,8 @@ Data;Waga
         ),
       ];
 
-      // Export
       final csvContent = CsvExporter.generateCsv(originalEntries);
 
-      // Import
       final result = await CsvImporter.parse(csvContent);
       final importedEntries = result.validEntries;
 

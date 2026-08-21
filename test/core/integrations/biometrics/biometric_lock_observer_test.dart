@@ -34,15 +34,12 @@ void main() {
         verifyDatabaseIntegrity: () async => (reopened: false),
       );
 
-      // Verify initialization does not throw
       expect(observer, isNotNull);
 
-      // Emit stream update
       lockStreamController.add(true);
       await pumpEventQueue();
       expect(lockStateEmitted, isFalse);
 
-      // Dispose cleanly
       observer.removeThisObserver();
     });
 
@@ -75,7 +72,6 @@ void main() {
           verifyDatabaseIntegrity: () async => (reopened: false),
         );
 
-        // Trigger resumed state
         observer.didChangeAppLifecycleState(AppLifecycleState.resumed);
         await pumpEventQueue();
 
