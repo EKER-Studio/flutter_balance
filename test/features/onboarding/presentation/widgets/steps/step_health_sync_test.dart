@@ -156,8 +156,6 @@ void main() {
 
       expect(bloc.state.isHealthSyncEnabled, isTrue);
       expect(tester.widget<SwitchListTile>(switchFinder).value, isTrue);
-
-      // addTearDown(bloc.close);
     });
 
     testWidgets('shows inline warning when permission request is denied', (
@@ -184,8 +182,6 @@ void main() {
       );
       expect(bloc.state.isHealthSyncEnabled, isFalse);
       expect(tester.widget<SwitchListTile>(switchFinder).value, isFalse);
-
-      // addTearDown(bloc.close);
     });
 
     testWidgets('clears the denial warning once sync is later enabled', (
@@ -224,12 +220,8 @@ void main() {
         find.text('Health data permissions are required to sync weight.'),
         findsNothing,
       );
-
-      // addTearDown(bloc.close);
     });
 
-    // TEMPORARY DIAGNOSTIC: reflects the debug bypass of the availability
-    // gate in AppSettingsBloc; restore together with the gate.
     testWidgets(
       'shows inline warning when permission request is denied even if the '
       'API check reports unavailable',
@@ -253,8 +245,6 @@ void main() {
           find.text('Health data permissions are required to sync weight.'),
           findsOneWidget,
         );
-
-        // addTearDown(bloc.close);
       },
     );
   });
