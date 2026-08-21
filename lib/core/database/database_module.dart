@@ -147,9 +147,6 @@ class DatabaseModule {
     }
   }
 
-  /// Opens the Isar instance for [directoryPath] with automatic compaction.
-  ///
-  /// Also registers the encrypted schema.
   static Future<Isar> _openIsar(String directoryPath) {
     return Isar.open(
       [WeightEntryModelSchema],

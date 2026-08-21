@@ -36,7 +36,6 @@ typedef CsvImportAnalysis = ({
 /// - Anomaly filtering: rejects future timestamps (> now + 24 h), historic
 ///   outliers (< 2000-01-01), and notes longer than 500 characters are truncated.
 class CsvImporter {
-  /// The attempted standard date formats in order of precedence.
   static final List<DateFormat> _dateFormats = [
     DateFormat('yyyy-MM-dd HH:mm'),
     DateFormat('yyyy-MM-dd'),
@@ -129,7 +128,6 @@ class CsvImporter {
     return Isolate.run(() => _parseSync(csvContent));
   }
 
-  /// Parses [csvContent] synchronously within the background isolate.
   static CsvImportAnalysis _parseSync(String csvContent) {
     // Strip UTF-8 BOM if present.
     if (csvContent.startsWith('\uFEFF')) {
@@ -380,7 +378,6 @@ class CsvImporter {
     );
   }
 
-  /// Tests whether [raw] represents an empty value or placeholder symbol.
   static bool _isPlaceholderOrEmpty(String raw) {
     final trimmed = raw.trim();
     if (trimmed.isEmpty ||
@@ -394,7 +391,6 @@ class CsvImporter {
     return false;
   }
 
-  /// Sanitizes and parses a weight string, returning null if invalid or outside limits.
   static double? _cleanAndParseWeight(String raw) {
     if (_isPlaceholderOrEmpty(raw)) return null;
 
@@ -413,7 +409,6 @@ class CsvImporter {
     return weight;
   }
 
-  /// Parses 12-hour (with AM/PM) or 24-hour time strings.
   static ({int hour, int minute})? _parseTime(String raw) {
     final trimmed = raw.trim();
     final match = RegExp(
@@ -442,7 +437,6 @@ class CsvImporter {
     return (hour: hour, minute: minute);
   }
 
-  /// Parses date strings supporting standard formats, ISO-8601, and Polish/English month names.
   static DateTime? _parseDate(String raw) {
     final trimmed = raw.trim();
     if (trimmed.isEmpty) return null;
@@ -517,7 +511,6 @@ class CsvImporter {
     return null;
   }
 
-  /// Finds column indices for date, time, weight, and note in the header fields.
   static Map<String, int?> _findColumnIndices(List<String> header) {
     final indices = <String, int?>{};
     for (int i = 0; i < header.length; i++) {

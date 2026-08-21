@@ -1,5 +1,3 @@
-// Universal helper functions for safe date and time pickers.
-
 import 'package:flutter/material.dart';
 
 /// Displays a platform-safe time picker dialog resilient to landscape layout overflows.

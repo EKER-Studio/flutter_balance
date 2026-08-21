@@ -65,9 +65,8 @@ class AppSnackBar {
         backgroundColor: backgroundColor,
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        // Margin bottom 16 is typically enough, combined with floating behavior
-        // flutter handles FAB/BottomNav avoidance automatically when using
-        // SnackBarBehavior.floating if using a standard Scaffold.
+        // Bottom margin of 16 is sufficient; SnackBarBehavior.floating handles
+        // FAB/BottomNav avoidance automatically.
         margin: const EdgeInsets.only(bottom: 16, left: 16, right: 16),
         action: action,
         content: Row(

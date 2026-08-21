@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 
-/// A top app bar for main navigation screens.
-///
 /// A reusable Material 3 top app bar for main navigation screens.
 ///
 /// Displays a unified 64dp toolbar with the primary weight scale branding icon,
@@ -13,7 +11,6 @@ class AppTopBar extends StatelessWidget {
   /// An optional list of action widgets displayed on the right.
   final List<Widget>? actions;
 
-  /// Creates an [AppTopBar] widget.
   const AppTopBar({super.key, required this.title, this.actions});
 
   @override

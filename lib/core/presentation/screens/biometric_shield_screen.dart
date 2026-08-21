@@ -25,14 +25,12 @@ import 'package:balance/features/settings/presentation/bloc/app_settings_state.d
 /// permanent lockout, or missing passcode) offer a lock-recovery dialog that
 /// lets the user disable the biometric lock entirely.
 class BiometricShieldScreen extends StatefulWidget {
-  /// Creates a [BiometricShieldScreen].
   const BiometricShieldScreen({super.key});
 
   @override
   State<BiometricShieldScreen> createState() => _BiometricShieldScreenState();
 }
 
-/// The locked state behind the biometric shield, showing the unlock prompt.
 class _BiometricShieldScreenState extends State<BiometricShieldScreen> {
   bool _isUnlocking = false;
 

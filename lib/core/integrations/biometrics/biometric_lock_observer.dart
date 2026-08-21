@@ -15,37 +15,27 @@ import 'package:balance/core/integrations/biometrics/biometric_service.dart';
 /// streams — and the shield then runs the biometric authentication flow to
 /// unlock the app.
 class BiometricLockObserver with WidgetsBindingObserver {
-  /// A callback returning whether biometric lock is enabled.
   final bool Function() isBiometricLockEnabled;
 
-  /// An optional callback returning whether the app is currently locked.
   final bool Function()? isAppLocked;
 
-  /// A callback emitted when the lock state changes.
-  ///
-  /// Passes `true` if locked, and `false` if unlocked.
+  /// Passes `true` if locked, `false` if unlocked.
   final ValueChanged<bool> onLockStateChanged;
 
-  /// An optional stream emitting changes to the biometric lock enabled setting.
   final Stream<bool>? lockEnabledStream;
 
-  /// A callback that resolves the localized reason shown in the biometric auth prompt.
+  /// Resolves the localized reason shown in the biometric auth prompt.
   final String Function() localizedReason;
 
-  /// An optional callback invoked when the database had to be reopened.
-  ///
-  /// This occurs after app resumption, so consumers can re-subscribe to Isar streams.
+  /// Invoked after app resumption when the database was reopened, so consumers can re-subscribe to Isar streams.
   final Future<void> Function()? onDatabaseReopened;
 
-  /// A callback to verify database integrity on resumption.
   final Future<({bool reopened})> Function() verifyDatabaseIntegrity;
 
   bool _isLockEnabled = false;
   bool _disposed = false;
   StreamSubscription<bool>? _subscription;
 
-  /// Creates a [BiometricLockObserver] and registers it as a WidgetsBinding observer.
-  ///
   /// [localizedReason] is resolved lazily at authentication time so it always
   /// reflects the active locale.
   BiometricLockObserver({
@@ -76,7 +66,6 @@ class BiometricLockObserver with WidgetsBindingObserver {
     }
   }
 
-  /// Re-checks the Isar instance after the app resumes and invokes [onDatabaseReopened] if it had to be re-opened.
   Future<void> _verifyDatabaseIntegrity() async {
     try {
       final result = await verifyDatabaseIntegrity();
@@ -94,9 +83,6 @@ class BiometricLockObserver with WidgetsBindingObserver {
     }
   }
 
-  /// Locks the app when it is backgrounded and biometric lock is enabled.
-  ///
-  /// Does not lock if an authentication dialog is active or the app is already locked.
   Future<void> _checkBiometricLock() async {
     if (!_isLockEnabled) return;
 
@@ -114,8 +100,6 @@ class BiometricLockObserver with WidgetsBindingObserver {
     onLockStateChanged(true);
   }
 
-  /// Disposes this observer and cancels the settings stream subscription.
-  ///
   /// Safe to call multiple times — subsequent calls are no-ops.
   void dispose() {
     if (_disposed) return;
@@ -125,8 +109,6 @@ class BiometricLockObserver with WidgetsBindingObserver {
     WidgetsBinding.instance.removeObserver(this);
   }
 
-  /// Removes this observer and cancels the settings stream subscription.
-  ///
   /// Convenience alias for [dispose].
   void removeThisObserver() => dispose();
 }

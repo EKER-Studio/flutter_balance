@@ -4,13 +4,9 @@ import 'package:firebase_analytics/firebase_analytics.dart';
 /// Contract for telemetry event and screen view dispatching.
 abstract interface class AnalyticsService {
   /// Sets whether Firebase Analytics is available and operational.
-  ///
-  /// @param available Flag declaring if Firebase has been initialized.
   void setAvailable(bool available);
 
   /// Enables or disables analytics collection (e.g. for debug or privacy preference).
-  ///
-  /// @param enabled Flag indicating whether data collection should be active.
   Future<void> setAnalyticsCollectionEnabled(bool enabled);
 
   /// Sets the unique identifier for the current user.
@@ -20,20 +16,13 @@ abstract interface class AnalyticsService {
 
   /// Sets a custom user property.
   ///
-  /// @param name The name of the property.
   /// @param value The value of the property, or `null` to clear.
   Future<void> setUserProperty({required String name, required String? value});
 
   /// Logs a custom screen view event.
-  ///
-  /// @param screenName The human-readable name of the screen.
-  /// @param screenClass Optional class name representing the screen widget.
   Future<void> logScreenView({required String screenName, String? screenClass});
 
   /// Logs a generic custom telemetry event with optional parameters.
-  ///
-  /// @param name The event identifier string.
-  /// @param parameters Optional map of parameter key-value pairs.
   Future<void> logEvent({
     required String name,
     Map<String, Object>? parameters,

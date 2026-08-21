@@ -112,10 +112,8 @@ class NativeHealthService implements HealthService {
   /// The single shared instance of [NativeHealthService].
   static final NativeHealthService instance = NativeHealthService();
 
-  /// The data type used for every weight interaction.
   static const HealthDataType _weightType = HealthDataType.WEIGHT;
 
-  /// The unit used for every weight interaction.
   static const HealthDataUnit _weightUnit = HealthDataUnit.KILOGRAM;
 
   /// The data types corresponding 1-to-1 with [_readWriteAccess].
@@ -124,7 +122,6 @@ class NativeHealthService implements HealthService {
     HealthDataType.WEIGHT,
   ];
 
-  /// The read and write access requested for weight records.
   static const List<HealthDataAccess> _readWriteAccess = [
     HealthDataAccess.READ,
     HealthDataAccess.WRITE,
@@ -159,7 +156,6 @@ class NativeHealthService implements HealthService {
     'https://play.google.com/store/apps/details?id=$_healthConnectPackageId',
   );
 
-  /// The underlying `health` plugin instance.
   final Health _health;
 
   /// A platform detector for testing.

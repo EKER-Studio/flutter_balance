@@ -44,7 +44,6 @@ class App extends StatefulWidget {
   State<App> createState() => _AppState();
 }
 
-/// State for the root [App] widget; owns service initialization and DI wiring.
 class _AppState extends State<App> {
   late AppLocalizations _l10n;
   late Future<WeightRepository> _initFuture;
@@ -221,20 +220,14 @@ class _AppState extends State<App> {
   }
 }
 
-/// A widget that registers the [BiometricLockObserver] once the [WeightBloc]
-/// provider is in scope.
-///
 /// Lives below the BlocProvider so the observer can resolve the weight BLoC
 /// dynamically through its own context instead of capturing a direct instance
 /// reference, which could go stale if the provider is ever recreated.
 class _ObserverRegistrar extends StatefulWidget {
-  /// Resolves the localized biometric authentication prompt reason.
   final String Function() localizedReason;
 
-  /// The subtree rendered below the app-level providers.
   final Widget child;
 
-  /// Creates an [_ObserverRegistrar] with [localizedReason] and [child].
   const _ObserverRegistrar({
     required this.localizedReason,
     required this.child,
@@ -244,13 +237,9 @@ class _ObserverRegistrar extends StatefulWidget {
   State<_ObserverRegistrar> createState() => _ObserverRegistrarState();
 }
 
-/// State owning the [BiometricLockObserver] lifecycle and initial lock state.
 class _ObserverRegistrarState extends State<_ObserverRegistrar> {
   BiometricLockObserver? _observer;
 
-  /// Wires the [BiometricLockObserver], locks the app immediately when the
-  /// biometric lock is enabled, and re-subscribes the weight BLoC if an
-  /// authentication reopens the database.
   @override
   void initState() {
     super.initState();
@@ -278,7 +267,6 @@ class _ObserverRegistrarState extends State<_ObserverRegistrar> {
     );
   }
 
-  /// Removes the registered biometric observer and drops the reference.
   @override
   void dispose() {
     try {
@@ -293,19 +281,13 @@ class _ObserverRegistrarState extends State<_ObserverRegistrar> {
   Widget build(BuildContext context) => widget.child;
 }
 
-/// A widget that dispatches [SyncHealthEntries] when the app returns to the
-/// foreground and health sync is enabled.
-///
 /// Lives below the BlocProvider so the observer can resolve the weight and
 /// settings BLoCs dynamically through its own context instead of capturing
 /// direct instance references, which could go stale if the providers are ever
-/// recreated. Entries recorded in Apple Health / Health Connect while the app
-/// was backgrounded are thereby pulled in without any user action.
+/// recreated.
 class _HealthSyncLifecycleObserver extends StatefulWidget {
-  /// The subtree rendered below the app-level providers.
   final Widget child;
 
-  /// Creates a [_HealthSyncLifecycleObserver] wrapping [child].
   const _HealthSyncLifecycleObserver({required this.child});
 
   @override
@@ -313,26 +295,21 @@ class _HealthSyncLifecycleObserver extends StatefulWidget {
       _HealthSyncLifecycleObserverState();
 }
 
-/// State owning the WidgetsBindingObserver registration for foreground sync.
 class _HealthSyncLifecycleObserverState
     extends State<_HealthSyncLifecycleObserver>
     with WidgetsBindingObserver {
-  /// Registers with [WidgetsBinding] to observe app lifecycle changes.
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
   }
 
-  /// Unregisters from [WidgetsBinding] before disposal.
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
 
-  /// Pulls in health entries recorded while backgrounded when the app resumes
-  /// with health sync enabled.
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state != AppLifecycleState.resumed || !mounted) return;
@@ -353,24 +330,17 @@ class _HealthSyncLifecycleObserverState
 /// A widget that synchronizes the active locale with services that live
 /// outside the widget tree.
 class _LocalizationSync extends StatefulWidget {
-  /// Child rendered below the [AppLocalizations] scope.
   final Widget child;
 
-  /// Invoked with the active [AppLocalizations] whenever it is resolved or
-  /// the locale changes.
   final void Function(AppLocalizations l10n) onLocalized;
 
-  /// Creates a [_LocalizationSync] forwarding localized texts to [onLocalized].
   const _LocalizationSync({required this.child, required this.onLocalized});
 
   @override
   State<_LocalizationSync> createState() => _LocalizationSyncState();
 }
 
-/// State that forwards each locale change to [_LocalizationSync.onLocalized].
 class _LocalizationSyncState extends State<_LocalizationSync> {
-  /// Forwards the resolved [AppLocalizations] to [_LocalizationSync.onLocalized]
-  /// on the first build and whenever the locale changes.
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();

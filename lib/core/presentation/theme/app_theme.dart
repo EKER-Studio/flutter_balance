@@ -168,7 +168,6 @@ abstract final class AppTheme {
     ),
   );
 
-  /// The light theme [ThemeData].
   static ThemeData get lightTheme => ThemeData(
     useMaterial3: true,
     colorScheme: lightColorScheme,
@@ -267,7 +266,6 @@ abstract final class AppTheme {
     ),
   );
 
-  /// The dark theme [ThemeData].
   static ThemeData get darkTheme => ThemeData(
     useMaterial3: true,
     colorScheme: darkColorScheme,

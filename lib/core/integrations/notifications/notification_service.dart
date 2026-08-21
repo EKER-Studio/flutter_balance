@@ -19,17 +19,14 @@ class NotificationService {
   /// The single shared instance of [NotificationService].
   static final NotificationService instance = NotificationService._();
 
-  /// The unique identifier for the daily weight reminder notification.
   static const int _dailyReminderId = 0;
 
   /// The Android notification channel ID for daily weight reminders.
   static const String _channelId = 'daily_weight_reminders_v2';
 
-  /// The underlying plugin instance for local notifications.
   final FlutterLocalNotificationsPlugin _plugin =
       FlutterLocalNotificationsPlugin();
 
-  /// Whether the notification service has been initialized.
   bool _initialized = false;
 
   /// The display name for the Android notification channel.
@@ -39,10 +36,8 @@ class NotificationService {
   String _channelDescription =
       'Reminds you to record your daily weight measurement.';
 
-  /// The title text for the daily weight reminder notification.
   String _title = 'Time to weigh in!';
 
-  /// The body text for the daily weight reminder notification.
   String _body = "Don't forget to log your weight today.";
 
   /// Updates the localized texts used for scheduled reminder notifications.
@@ -93,11 +88,9 @@ class NotificationService {
     try {
       tz_data.initializeTimeZones();
 
-      // Fetch the device's actual local timezone string (e.g. "Europe/Warsaw")
       final String timeZoneName = await FlutterTimezone.getLocalTimezone();
       tz.setLocalLocation(tz.getLocation(timeZoneName));
 
-      // Create the Android notification channel explicitly.
       final androidChannel = AndroidNotificationChannel(
         _channelId,
         _channelName,

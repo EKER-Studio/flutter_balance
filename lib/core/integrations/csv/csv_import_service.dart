@@ -9,10 +9,8 @@ export 'package:balance/core/integrations/csv/csv_importer.dart'
 
 /// Thrown when the selected CSV file exceeds [CsvImportService.maxFileSizeBytes].
 class FileTooLargeException implements Exception {
-  /// The maximum allowed file size in bytes.
   final int maxBytes;
 
-  /// Creates a [FileTooLargeException] with the given [maxBytes] limit.
   const FileTooLargeException({required this.maxBytes});
 
   @override

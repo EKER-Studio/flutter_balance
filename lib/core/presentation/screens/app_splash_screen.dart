@@ -5,12 +5,8 @@ import 'package:balance/l10n/app_localizations.dart';
 
 /// The in-app splash screen shown during startup initialization.
 ///
-/// A Flutter-based splash screen that visually mimics the native splash screen.
-///
-/// It is displayed immediately after the Dart VM starts, while the application
-/// finishes asynchronous initializations (like database setup).
-/// Being a Flutter widget, it correctly responds to the app's internal theme
-/// preferences (dark/light) regardless of the host OS theme.
+/// Visually mimics the native splash screen and responds to the app's internal
+/// theme (dark/light) regardless of the host OS theme.
 class AppSplashScreen extends StatefulWidget {
   /// Creates an [AppSplashScreen] displayed while the app initializes.
   const AppSplashScreen({super.key});

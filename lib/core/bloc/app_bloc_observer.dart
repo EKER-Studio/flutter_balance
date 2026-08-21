@@ -4,7 +4,6 @@ import 'package:balance/core/utils/crash_reporter.dart';
 /// Global [BlocObserver] that automatically intercepts all unhandled BLoC errors
 /// and forwards them to [AppCrashReporter] (Firebase Crashlytics and local log).
 class AppBlocObserver extends BlocObserver {
-  /// Creates an [AppBlocObserver] instance.
   const AppBlocObserver();
 
   @override

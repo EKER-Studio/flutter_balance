@@ -40,7 +40,6 @@ enum BiometricAuthResult {
 class BiometricService {
   BiometricService._();
 
-  /// The single shared instance of [BiometricService].
   static final BiometricService instance = BiometricService._();
 
   final LocalAuthentication _authentication = LocalAuthentication();
@@ -55,7 +54,6 @@ class BiometricService {
   StreamController<void> _authenticationSuccessController =
       StreamController<void>.broadcast();
 
-  /// Resets the internal state for test isolation.
   @visibleForTesting
   static void resetForTesting() {
     if (!instance._authenticationSuccessController.isClosed) {
@@ -66,24 +64,20 @@ class BiometricService {
     instance._lastAuthCompletionTime = null;
   }
 
-  /// Closes the authentication success stream controller.
   Future<void> dispose() async {
     if (!_authenticationSuccessController.isClosed) {
       await _authenticationSuccessController.close();
     }
   }
 
-  /// Broadcasts an authentication success event to [authenticationSuccesses].
   void _notifyAuthenticationSuccess() {
     if (!_authenticationSuccessController.isClosed) {
       _authenticationSuccessController.add(null);
     }
   }
 
-  /// Checks whether the device has active biometric hardware and enrolled credentials.
-  ///
-  /// Returns `true` if the device supports biometric sensors and at least one
-  /// credential is enrolled; catches hardware or platform exceptions and returns `false`.
+  /// Whether the device has biometric hardware and at least one enrolled credential.
+  /// Returns `false` on any hardware or platform exception.
   Future<bool> isAvailable() async {
     try {
       final canCheck = await _authentication.canCheckBiometrics;
@@ -107,10 +101,8 @@ class BiometricService {
     }
   }
 
-  /// Checks whether biometric authentication is fully supported on the device.
-  ///
-  /// Returns `true` if biometrics are both available and supported by OS
-  /// hardware abstractions; catches platform exceptions and returns `false`.
+  /// Whether biometric authentication is fully supported by the OS.
+  /// Returns `false` on any platform exception.
   Future<bool> isSupported() async {
     try {
       final deviceSupported = await _authentication.isDeviceSupported();
