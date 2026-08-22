@@ -136,7 +136,7 @@ class _StepBiometricLockState extends State<StepBiometricLock> {
                   color: theme.colorScheme.surfaceContainerLow,
                   borderRadius: BorderRadius.circular(16.0),
                   clipBehavior: Clip.antiAlias,
-                  child: Container(
+                  child: DecoratedBox(
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(16.0),
                       border: Border.all(

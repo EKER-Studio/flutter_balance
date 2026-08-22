@@ -97,9 +97,9 @@ void main() {
 
       final borderContainer = find.byWidgetPredicate(
         (widget) =>
-            widget is Container &&
+            widget is DecoratedBox &&
             widget.decoration is BoxDecoration &&
-            (widget.decoration! as BoxDecoration).border != null,
+            (widget.decoration as BoxDecoration).border != null,
       );
       expect(borderContainer, findsNothing);
 

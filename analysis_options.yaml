@@ -51,3 +51,9 @@ linter:
     - depend_on_referenced_packages
     - no_leading_underscores_for_local_identifiers
     - use_super_parameters
+
+    # Flutter Performance & UI Polish
+    - sized_box_for_whitespace
+    - sized_box_shrink_expand
+    - use_colored_box
+    - use_decorated_box

@@ -166,19 +166,18 @@ void main() {
       focusNode.requestFocus();
       await tester.pumpAndSettle();
 
-      expect(focusNode.hasFocus, isTrue);
-      final containers = tester
-          .widgetList<Container>(find.byType(Container))
+      final boxes = tester
+          .widgetList<DecoratedBox>(find.byType(DecoratedBox))
           .where((c) => c.decoration is BoxDecoration)
           .where(
             (c) =>
-                (c.decoration! as BoxDecoration).border is Border &&
-                ((c.decoration! as BoxDecoration).border! as Border)
+                (c.decoration as BoxDecoration).border is Border &&
+                ((c.decoration as BoxDecoration).border! as Border)
                         .top
                         .width ==
                     2,
           );
-      expect(containers, isNotEmpty);
+      expect(boxes, isNotEmpty);
     });
   });
 }

@@ -131,7 +131,7 @@ class CustomSettingsTileState extends State<CustomSettingsTile> {
     );
 
     if (_isFocused) {
-      return Container(
+      return DecoratedBox(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(16),
           border: Border.all(color: colorScheme.primary, width: 2),
