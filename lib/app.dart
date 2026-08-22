@@ -185,12 +185,21 @@ class _AppState extends State<App> {
               FirebaseAnalyticsObserver(analytics: AppAnalytics.instance!),
           ],
           builder: (context, child) {
-            return Stack(
-              children: [
-                ?child,
-                if (settingsState.isLocked)
-                  const Positioned.fill(child: BiometricShieldScreen()),
-              ],
+            final mediaQuery = MediaQuery.of(context);
+            return MediaQuery(
+              data: mediaQuery.copyWith(
+                textScaler: mediaQuery.textScaler.clamp(
+                  minScaleFactor: 0.85,
+                  maxScaleFactor: 1.35,
+                ),
+              ),
+              child: Stack(
+                children: [
+                  ?child,
+                  if (settingsState.isLocked)
+                    const Positioned.fill(child: BiometricShieldScreen()),
+                ],
+              ),
             );
           },
           home: widget.repositoryOverride != null
