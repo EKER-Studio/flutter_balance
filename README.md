@@ -1,6 +1,44 @@
-# Balance
+<p align="center">
+  <img src="assets/icon/app_icon.png" width="120" alt="Balance Logo" />
+</p>
 
-A local-first weight tracking application built with Flutter using Clean Architecture and BLoC.
+<h1 align="center">Balance</h1>
+
+<p align="center">
+  <strong>A local-first weight tracking application built with Flutter using Clean Architecture and BLoC.</strong>
+</p>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/Flutter-3.44-02569B?logo=flutter" alt="Flutter" />
+  <img src="https://img.shields.io/badge/Architecture-Clean%20%2F%20Feature--First-blue" alt="Architecture" />
+  <img src="https://img.shields.io/badge/State-BLoC-blueviolet" alt="State Management" />
+  <img src="https://img.shields.io/badge/Storage-Isar%20NoSQL-green" alt="Storage" />
+  <img src="https://img.shields.io/badge/Platforms-iOS%20%7C%20Android-black" alt="Platforms" />
+</p>
+
+---
+
+## Screenshots
+
+### Core Experience (Light & Dark)
+
+| Today Dashboard (Light) | Add Measurement (Dark) | Statistics Overview (Light) | Trend & BMI Analysis (Dark) |
+| :---: | :---: | :---: | :---: |
+| <img src=".github/assets/02_today/01_dashboard_light.png" width="220" alt="Today Dashboard Light" /> | <img src=".github/assets/02_today/02_add_measurement_dark.png" width="220" alt="Add Measurement Dark" /> | <img src=".github/assets/04_statistics/01_overview_light.png" width="220" alt="Statistics Overview Light" /> | <img src=".github/assets/04_statistics/02_bmi_chart_dark.png" width="220" alt="Statistics Trends Dark" /> |
+
+### Calendar & Settings
+
+| Calendar Goals (Light) | Add Measurement Sheet (Light) | Calendar Month (Dark) | Settings (Light) | CSV Import Preview (Dark) |
+| :---: | :---: | :---: | :---: | :---: |
+| <img src=".github/assets/03_calendar/01_month_view_light.png" width="180" alt="Calendar Light" /> | <img src=".github/assets/03_calendar/02_add_measurement_sheet_light.png" width="180" alt="Calendar Sheet Light" /> | <img src=".github/assets/03_calendar/03_month_view_dark.png" width="180" alt="Calendar Dark" /> | <img src=".github/assets/05_settings/01_preferences_light.png" width="180" alt="Settings Light" /> | <img src=".github/assets/05_settings/02_csv_import_preview_dark.png" width="180" alt="CSV Import Dark" /> |
+
+### Onboarding & Splash
+
+| Splash Screen (Light) | Onboarding Welcome (Light) | CSV History Import (Light) | Splash Screen (Dark) |
+| :---: | :---: | :---: | :---: |
+| <img src=".github/assets/00_splash/splash_light.png" width="180" alt="Splash Light" /> | <img src=".github/assets/01_onboarding/01_welcome_light.png" width="180" alt="Onboarding Welcome Light" /> | <img src=".github/assets/01_onboarding/02_csv_import_light.png" width="180" alt="CSV Import Step Light" /> | <img src=".github/assets/00_splash/splash_dark.png" width="180" alt="Splash Dark" /> |
+
+---
 
 ## Architecture
 
@@ -139,7 +177,7 @@ dart run flutter_native_splash:create
 
 ## Testing
 
-Run full verification suite (over 500+ tests):
+Run full verification suite (over 970+ tests):
 
 ```bash
 ./scripts/before_push.sh
