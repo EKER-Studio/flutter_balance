@@ -21,7 +21,6 @@
   "biometricLockoutBody": "Biometrics are no longer available or enrolled on this device. Turn off the biometric lock to regain access to your data, or keep it locked.",
   "keepLocked": "Keep locked",
   "disableLock": "Turn off lock",
-  "database": "Database",
   "importCsv": "Import data from CSV",
   "exportCsv": "Export data to CSV",
   "exportSuccess": "Export completed successfully.",
@@ -128,7 +127,6 @@
   "deleteEntryTooltip": "Delete entry",
   "deleteEntryTitle": "Delete entry",
   "deleteEntryMessage": "This will permanently delete this entry.",
-  "skippedRows": "Skipped {count} rows",
   "csvImportStepTitle": "Your Past History",
   "csvImportStepSubtitle": "Coming from another app? Import your CSV file to continue without losing data.",
   "csvImportTileTitle": "Import CSV file",
@@ -206,7 +204,6 @@
   "biometricStepTitle": "Biometric Protection",
   "biometricStepOptionalTitle": "Biometric Protection",
   "biometricStepSubtitle": "Secure your measurements from prying eyes and unlock the app instantly using your face or fingerprint.",
-  "skip": "Skip",
   "next": "Next",
   "previousStepTooltip": "Previous Step",
   "metricUnitOption": "Metric (kg, cm)",
@@ -322,9 +319,6 @@
   },
   "@reminderTimeSet": {
     "description": "Confirmation message shown after the daily weight reminder time has been set."
-  },
-  "@skippedRows": {
-    "description": "Summary of how many CSV rows were skipped during import because they were invalid."
   },
   "@chartSemanticsTitle": {
     "description": "Accessibility label for the weight history chart, describing the displayed period and the latest recorded weight."
