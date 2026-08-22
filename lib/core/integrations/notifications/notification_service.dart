@@ -3,6 +3,7 @@ import 'dart:isolate';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_timezone/flutter_timezone.dart';
+import 'package:balance/core/config/app_environment.dart';
 import 'package:balance/core/utils/analytics.dart';
 import 'package:balance/core/utils/crash_reporter.dart';
 import 'package:timezone/data/latest.dart' as tz_data;
@@ -22,7 +23,7 @@ class NotificationService {
   static const int _dailyReminderId = 0;
 
   /// The Android notification channel ID for daily weight reminders.
-  static const String _channelId = 'daily_weight_reminders_v2';
+  String get _channelId => AppEnvironment.current.notificationChannelId;
 
   final FlutterLocalNotificationsPlugin _plugin =
       FlutterLocalNotificationsPlugin();
