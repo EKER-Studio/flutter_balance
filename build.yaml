@@ -1,0 +1,7 @@
+targets:
+  $default:
+    builders:
+      isar_community_generator:isar_community_generator:
+        generate_for:
+          - lib/features/**/data/models/**.dart
+
