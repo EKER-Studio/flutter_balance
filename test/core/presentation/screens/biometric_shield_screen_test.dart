@@ -53,7 +53,7 @@ void main() {
     );
   }
 
-  setupMockChannel({
+  void setupMockChannel({
     required bool canCheckBiometrics,
     required bool isDeviceSupported,
     required bool authenticateResult,

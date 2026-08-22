@@ -28,8 +28,26 @@ analyzer:
 
 linter:
   rules:
+    # Error Prevention & Async Safety
     - cancel_subscriptions
     - avoid_print
-    - use_super_parameters
+    - avoid_empty_else
+    - avoid_relative_lib_imports
+    - avoid_shadowing_type_parameters
+    - avoid_types_as_parameter_names
+    - await_only_futures
+    - empty_catches
+    - hash_and_equals
+    - no_duplicate_case_values
+    - null_closures
+    - use_build_context_synchronously
+    - use_rethrow_when_possible
+    - valid_regexps
+
+    # Clean Code & Return Type Safety
+    - always_declare_return_types
+    - avoid_returning_null_for_void
+    - curly_braces_in_flow_control_structures
     - depend_on_referenced_packages
     - no_leading_underscores_for_local_identifiers
+    - use_super_parameters
