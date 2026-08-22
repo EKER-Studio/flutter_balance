@@ -16,3 +16,11 @@
 
 # Play Store Split Install (optional, used by Flutter for deferred components)
 -dontwarn com.google.android.play.core.**
+
+# Isar Database (JNI and generated bindings)
+-keep class io.isar.** { *; }
+-dontwarn io.isar.**
+
+# Health Connect / AndroidX Health
+-keep class androidx.health.** { *; }
+-dontwarn androidx.health.**
