@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:balance/l10n/app_localizations.dart';
-import 'package:balance/features/settings/presentation/widgets/height_sheet.dart';
+import 'package:balance/features/settings/presentation/widgets/components/height_sheet.dart';
 import 'package:balance/core/models/measurement_unit.dart';
 
 void main() {

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:balance/features/settings/presentation/widgets/custom_settings_tile.dart';
+import 'package:balance/features/settings/presentation/widgets/components/custom_settings_tile.dart';
 
 void main() {
   group('CustomSettingsTile', () {

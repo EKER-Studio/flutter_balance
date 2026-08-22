@@ -19,9 +19,9 @@ import 'package:balance/features/settings/presentation/bloc/app_settings_event.d
 import 'package:balance/features/settings/presentation/widgets/components/health_connect_install_dialog.dart';
 import 'package:balance/features/settings/presentation/widgets/components/theme_selection_dialog.dart';
 import 'package:balance/features/settings/presentation/widgets/components/unit_selection_dialog.dart';
-import 'package:balance/features/settings/presentation/widgets/height_sheet.dart';
-import 'package:balance/features/settings/presentation/widgets/target_weight_sheet.dart';
-import 'package:balance/features/settings/presentation/widgets/wipe_data_dialog.dart';
+import 'package:balance/features/settings/presentation/widgets/components/height_sheet.dart';
+import 'package:balance/features/settings/presentation/widgets/components/target_weight_sheet.dart';
+import 'package:balance/features/settings/presentation/widgets/components/wipe_data_dialog.dart';
 import 'package:balance/features/weight/domain/entities/weight_entry.dart';
 import 'package:balance/features/weight/domain/weight_error_type.dart';
 import 'package:balance/features/weight/presentation/bloc/weight_bloc.dart';

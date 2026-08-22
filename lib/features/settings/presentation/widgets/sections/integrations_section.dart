@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:balance/l10n/app_localizations.dart';
 import 'package:balance/core/presentation/utils/health_service_platform_localizer.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_state.dart';
-import 'custom_settings_tile.dart';
-import 'custom_settings_toggle.dart';
+import 'package:balance/features/settings/presentation/widgets/components/custom_settings_tile.dart';
+import 'package:balance/features/settings/presentation/widgets/components/custom_settings_toggle.dart';
 
 /// A widget that displays the integrations settings group with the health sync switch.
 class IntegrationsSection extends StatelessWidget {

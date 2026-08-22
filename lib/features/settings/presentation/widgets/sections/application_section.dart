@@ -4,8 +4,8 @@ import 'package:balance/core/utils/analytics.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_state.dart';
 import 'package:balance/features/weight/presentation/utils/measurement_unit_localizer.dart';
 import 'package:balance/l10n/app_localizations.dart';
-import 'custom_settings_tile.dart';
-import 'custom_settings_toggle.dart';
+import 'package:balance/features/settings/presentation/widgets/components/custom_settings_tile.dart';
+import 'package:balance/features/settings/presentation/widgets/components/custom_settings_toggle.dart';
 
 /// A widget that represents the application settings group.
 class ApplicationSection extends StatelessWidget {

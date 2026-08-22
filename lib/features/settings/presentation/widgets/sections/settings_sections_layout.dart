@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_state.dart';
-import 'package:balance/features/settings/presentation/widgets/application_section.dart';
-import 'package:balance/features/settings/presentation/widgets/data_section.dart';
-import 'package:balance/features/settings/presentation/widgets/help_section.dart';
-import 'package:balance/features/settings/presentation/widgets/integrations_section.dart';
-import 'package:balance/features/settings/presentation/widgets/profile_section.dart';
-import 'package:balance/features/settings/presentation/widgets/section_header.dart';
-import 'package:balance/features/settings/presentation/widgets/security_section.dart';
+import 'package:balance/features/settings/presentation/widgets/sections/application_section.dart';
+import 'package:balance/features/settings/presentation/widgets/sections/data_section.dart';
+import 'package:balance/features/settings/presentation/widgets/sections/help_section.dart';
+import 'package:balance/features/settings/presentation/widgets/sections/integrations_section.dart';
+import 'package:balance/features/settings/presentation/widgets/sections/profile_section.dart';
+import 'package:balance/features/settings/presentation/widgets/components/section_header.dart';
+import 'package:balance/features/settings/presentation/widgets/sections/security_section.dart';
 import 'package:balance/l10n/app_localizations.dart';
 
 /// A responsive layout section that arranges settings sections in two columns on wide viewports or a single column on mobile.

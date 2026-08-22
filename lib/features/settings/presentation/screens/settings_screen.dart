@@ -16,7 +16,7 @@ import 'package:balance/features/weight/presentation/bloc/weight_state.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_bloc.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_event.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_state.dart';
-import 'package:balance/features/settings/presentation/widgets/csv_import_preview_dialog.dart';
+import 'package:balance/features/settings/presentation/widgets/components/csv_import_preview_dialog.dart';
 import 'package:balance/features/settings/presentation/widgets/sections/settings_data_coordinator.dart';
 import 'package:balance/features/settings/presentation/widgets/sections/settings_sections_layout.dart';
 

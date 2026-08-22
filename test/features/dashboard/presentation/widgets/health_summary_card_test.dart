@@ -9,7 +9,7 @@ import 'package:balance/features/dashboard/presentation/widgets/sections/health_
 import 'package:balance/l10n/app_localizations.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_bloc.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_event.dart';
-import 'package:balance/features/settings/presentation/widgets/target_weight_sheet.dart';
+import 'package:balance/features/settings/presentation/widgets/components/target_weight_sheet.dart';
 import 'package:balance/features/weight/presentation/widgets/bmi_legend_dialog.dart';
 
 class MockHydratedStorage extends Mock implements HydratedStorage {}

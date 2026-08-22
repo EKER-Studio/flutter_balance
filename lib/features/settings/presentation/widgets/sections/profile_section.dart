@@ -3,7 +3,7 @@ import 'package:balance/core/utils/analytics.dart';
 import 'package:balance/core/utils/unit_converter.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_state.dart';
 import 'package:balance/l10n/app_localizations.dart';
-import 'custom_settings_tile.dart';
+import 'package:balance/features/settings/presentation/widgets/components/custom_settings_tile.dart';
 
 /// A widget that displays the profile settings group with height and target weight tiles.
 class ProfileSection extends StatelessWidget {

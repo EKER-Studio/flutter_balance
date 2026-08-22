@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:balance/core/utils/analytics.dart';
 import 'package:balance/l10n/app_localizations.dart';
-import 'custom_settings_tile.dart';
+import 'package:balance/features/settings/presentation/widgets/components/custom_settings_tile.dart';
 
 /// A widget that displays the data settings group with CSV import, export, and wipe controls.
 class DataSection extends StatelessWidget {

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:balance/core/utils/analytics.dart';
 import 'package:balance/l10n/app_localizations.dart';
 import 'package:package_info_plus/package_info_plus.dart';
-import 'custom_settings_tile.dart';
+import 'package:balance/features/settings/presentation/widgets/components/custom_settings_tile.dart';
 
 /// A widget that displays the help settings group with the crash log sharing and app version tiles.
 class HelpSection extends StatefulWidget {

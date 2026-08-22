@@ -6,14 +6,14 @@ import 'package:package_info_plus/package_info_plus.dart';
 import 'package:balance/core/models/measurement_unit.dart';
 import 'package:balance/l10n/app_localizations.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_state.dart';
-import 'package:balance/features/settings/presentation/widgets/application_section.dart';
-import 'package:balance/features/settings/presentation/widgets/custom_settings_toggle.dart';
-import 'package:balance/features/settings/presentation/widgets/data_section.dart';
-import 'package:balance/features/settings/presentation/widgets/help_section.dart';
-import 'package:balance/features/settings/presentation/widgets/integrations_section.dart';
-import 'package:balance/features/settings/presentation/widgets/profile_section.dart';
-import 'package:balance/features/settings/presentation/widgets/section_header.dart';
-import 'package:balance/features/settings/presentation/widgets/security_section.dart';
+import 'package:balance/features/settings/presentation/widgets/sections/application_section.dart';
+import 'package:balance/features/settings/presentation/widgets/components/custom_settings_toggle.dart';
+import 'package:balance/features/settings/presentation/widgets/sections/data_section.dart';
+import 'package:balance/features/settings/presentation/widgets/sections/help_section.dart';
+import 'package:balance/features/settings/presentation/widgets/sections/integrations_section.dart';
+import 'package:balance/features/settings/presentation/widgets/sections/profile_section.dart';
+import 'package:balance/features/settings/presentation/widgets/components/section_header.dart';
+import 'package:balance/features/settings/presentation/widgets/sections/security_section.dart';
 
 void main() {
   Future<void> pumpWithL10n(

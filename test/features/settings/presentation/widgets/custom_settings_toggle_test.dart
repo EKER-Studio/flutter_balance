@@ -2,7 +2,7 @@ import 'dart:ui' show Tristate;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:balance/features/settings/presentation/widgets/custom_settings_toggle.dart';
+import 'package:balance/features/settings/presentation/widgets/components/custom_settings_toggle.dart';
 
 void main() {
   Widget buildTestWidget({
