@@ -59,7 +59,7 @@ void main() {
 
     test('round-trips unicode text', () {
       final key = makeKey(42);
-      final text = 'héllo wörld 日本語';
+      const text = 'héllo wörld 日本語';
       final cipherText = FieldCipher.encrypt(text, key);
       expect(FieldCipher.decrypt(cipherText, key), text);
     });

@@ -37,8 +37,7 @@ class DatabaseModule {
 
   static const String _encryptionKeyKey = 'isar_encryption_key';
 
-  static final FlutterSecureStorage _secureStorage =
-      const FlutterSecureStorage();
+  static const FlutterSecureStorage _secureStorage = FlutterSecureStorage();
 
   /// Retrieves or generates a 256-bit AES encryption key from secure storage.
   static Future<Uint8List> getEncryptionKey() async {

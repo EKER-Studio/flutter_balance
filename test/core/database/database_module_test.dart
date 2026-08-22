@@ -199,7 +199,7 @@ void main() {
       () async {
         if (!await _guardIsarAvailable()) return;
 
-        final dbName = 'test_integration_db';
+        const dbName = 'test_integration_db';
 
         final isar = await Isar.open(
           [WeightEntryModelSchema],

@@ -172,9 +172,7 @@ void main() {
           .where(
             (c) =>
                 (c.decoration as BoxDecoration).border is Border &&
-                ((c.decoration as BoxDecoration).border! as Border)
-                        .top
-                        .width ==
+                ((c.decoration as BoxDecoration).border! as Border).top.width ==
                     2,
           );
       expect(boxes, isNotEmpty);

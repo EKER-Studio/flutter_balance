@@ -125,7 +125,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                         MediaQuery.of(context).orientation ==
                         Orientation.landscape;
                     final maxContentWidth = isLandscape ? 900.0 : 600.0;
-                    final horizontalPadding = 16.0;
+                    const horizontalPadding = 16.0;
 
                     if (state is WeightInitial || state is WeightLoading) {
                       return Align(

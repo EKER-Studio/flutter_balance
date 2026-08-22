@@ -79,19 +79,19 @@ void main() {
 
     group('zero and negative height bounds', () {
       test('BMI returns 0.0 when height is exactly 0', () {
-        final zeroHeightState = const AppSettingsState(height: 0.0);
+        const zeroHeightState = AppSettingsState(height: 0.0);
         final bmi = zeroHeightState.calculateBmi(70.0);
         expect(bmi, equals(0.0));
       });
 
       test('BMI returns 0.0 when height is negative (-50cm)', () {
-        final negativeHeightState = const AppSettingsState(height: -50.0);
+        const negativeHeightState = AppSettingsState(height: -50.0);
         final bmi = negativeHeightState.calculateBmi(70.0);
         expect(bmi, equals(0.0));
       });
 
       test('BMI returns 0.0 when height is very small positive (0.001cm)', () {
-        final smallHeightState = const AppSettingsState(height: 0.001);
+        const smallHeightState = AppSettingsState(height: 0.001);
         final bmi = smallHeightState.calculateBmi(70.0);
         // With height = 0.001cm = 0.00001m, BMI = 70 / 1e-10 = 7e11.
         // Very large but finite; mathematically valid.
@@ -100,12 +100,12 @@ void main() {
       });
 
       test('BMI does not throw on zero height', () {
-        final zeroHeightState = const AppSettingsState(height: 0.0);
+        const zeroHeightState = AppSettingsState(height: 0.0);
         expect(() => zeroHeightState.calculateBmi(70.0), returnsNormally);
       });
 
       test('BMI does not throw on negative height', () {
-        final negativeHeightState = const AppSettingsState(height: -100.0);
+        const negativeHeightState = AppSettingsState(height: -100.0);
         expect(() => negativeHeightState.calculateBmi(70.0), returnsNormally);
       });
     });
@@ -147,7 +147,7 @@ void main() {
 
       test('BMI from zero height returns underweight (not obese)', () {
         // After fix: zero height returns BMI = 0.0, which is underweight
-        final zeroHeightState = const AppSettingsState(height: 0.0);
+        const zeroHeightState = AppSettingsState(height: 0.0);
         final bmi = zeroHeightState.calculateBmi(70.0);
         final category = zeroHeightState.getBmiCategory(bmi);
         expect(bmi, equals(0.0));
@@ -155,7 +155,7 @@ void main() {
       });
 
       test('BMI from negative height returns underweight (not obese)', () {
-        final negativeHeightState = const AppSettingsState(height: -50.0);
+        const negativeHeightState = AppSettingsState(height: -50.0);
         final bmi = negativeHeightState.calculateBmi(70.0);
         final category = negativeHeightState.getBmiCategory(bmi);
         expect(bmi, equals(0.0));
@@ -166,8 +166,8 @@ void main() {
     group('height configuration impact on BMI', () {
       test('BMI is inversely proportional to height squared', () {
         // Double the height should quarter the BMI
-        final state170 = const AppSettingsState(height: 170.0);
-        final state340 = const AppSettingsState(height: 340.0);
+        const state170 = AppSettingsState(height: 170.0);
+        const state340 = AppSettingsState(height: 340.0);
         final bmi170 = state170.calculateBmi(70.0);
         final bmi340 = state340.calculateBmi(70.0);
         expect(bmi340, closeTo(bmi170 / 4, 0.01));
@@ -176,7 +176,7 @@ void main() {
       test('Same BMI at different height/weight combinations', () {
         // 70kg at 175cm: 70 / 3.0625 = 22.857
         // 100kg at 202.37cm: 100 / 4.0954 = 24.42
-        final state2 = const AppSettingsState(height: 200.0);
+        const state2 = AppSettingsState(height: 200.0);
         final bmi2 = state2.calculateBmi(90.0);
         // 90 / 4 = 22.5
         expect(bmi2, closeTo(22.5, 0.01));
@@ -221,7 +221,7 @@ void main() {
 
     test('Target weight in lbs is correctly derived from kg target', () {
       // If user sets target = 75kg, imperial should show 165.3 lbs
-      final targetKg = 75.0;
+      const targetKg = 75.0;
       final targetLbs = kgToLbs(targetKg);
       expect(targetLbs, closeTo(165.35, 0.01));
     });
@@ -266,29 +266,29 @@ void main() {
 
   group('Edge case: null target weight handling', () {
     test('State with no target weight is valid', () {
-      final state = const AppSettingsState();
+      const state = AppSettingsState();
       expect(state.targetWeight, isNull);
     });
 
     test('State with target weight set is valid', () {
-      final state = const AppSettingsState(targetWeight: 75.0);
+      const state = AppSettingsState(targetWeight: 75.0);
       expect(state.targetWeight, equals(75.0));
     });
 
     test('copyWith preserves target weight when sentinel not used', () {
-      final original = const AppSettingsState(targetWeight: 80.0);
+      const original = AppSettingsState(targetWeight: 80.0);
       final copied = original.copyWith(height: 175.0);
       expect(copied.targetWeight, equals(80.0));
     });
 
     test('copyWith can clear target weight to null', () {
-      final original = const AppSettingsState(targetWeight: 80.0);
+      const original = AppSettingsState(targetWeight: 80.0);
       final copied = original.copyWith(targetWeight: null);
       expect(copied.targetWeight, isNull);
     });
 
     test('copyWith can set target weight from null', () {
-      final original = const AppSettingsState();
+      const original = AppSettingsState();
       final copied = original.copyWith(targetWeight: 75.0);
       expect(copied.targetWeight, equals(75.0));
     });

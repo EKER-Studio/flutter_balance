@@ -11,7 +11,7 @@ void main() {
     });
 
     test('defines all tonal surface roles', () {
-      final scheme = AppTheme.lightColorScheme;
+      const scheme = AppTheme.lightColorScheme;
       expect(scheme.surface, isNot(scheme.onSurface));
       expect(scheme.surfaceContainerLowest, isNotNull);
       expect(scheme.surfaceContainerHighest, isNotNull);
@@ -191,7 +191,7 @@ void main() {
 
   group('AppTheme.textTheme', () {
     test('uses Roboto across the type scale', () {
-      final text = AppTheme.textTheme;
+      const text = AppTheme.textTheme;
       expect(text.displayLarge?.fontFamily, 'Roboto');
       expect(text.headlineMedium?.fontFamily, 'Roboto');
       expect(text.titleLarge?.fontFamily, 'Roboto');

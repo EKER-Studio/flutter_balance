@@ -44,12 +44,25 @@ linter:
     - use_rethrow_when_possible
     - valid_regexps
 
-    # Clean Code & Return Type Safety
+    # Clean Code & Const Optimization
     - always_declare_return_types
     - avoid_returning_null_for_void
     - curly_braces_in_flow_control_structures
     - depend_on_referenced_packages
     - no_leading_underscores_for_local_identifiers
+    - prefer_conditional_assignment
+    - prefer_const_declarations
+    - prefer_if_null_operators
+    - prefer_is_empty
+    - prefer_is_not_empty
+    - prefer_iterable_whereType
+    - prefer_null_aware_operators
+    - prefer_spread_collections
+    - unnecessary_null_aware_assignments
+    - unnecessary_null_in_if_null_operators
+    - unnecessary_nullable_for_final_variable_declarations
+    - unnecessary_string_escapes
+    - unnecessary_string_interpolations
     - use_super_parameters
 
     # Flutter Performance & UI Polish

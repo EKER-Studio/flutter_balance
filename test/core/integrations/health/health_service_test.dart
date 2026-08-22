@@ -801,7 +801,7 @@ void main() {
     });
 
     test('passes exact weight value and timestamp to the plugin', () async {
-      final weight = 93.7;
+      const weight = 93.7;
       final timestamp = DateTime(2026, 6, 15, 14, 22, 33);
       when(
         () => health.writeHealthData(
@@ -911,7 +911,7 @@ void main() {
     });
 
     test('passes exact weight and timestamp for lookup and deletion', () async {
-      final weight = 88.3;
+      const weight = 88.3;
       final timestamp = DateTime(2026, 3, 20, 11, 5, 10);
       when(
         () => health.getHealthDataFromTypes(

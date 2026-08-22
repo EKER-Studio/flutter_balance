@@ -821,7 +821,7 @@ void main() {
     );
 
     test('toJson serializes all fields correctly', () {
-      final state = const AppSettingsState(
+      const state = AppSettingsState(
         themeMode: AppThemeMode.dark,
         measurementUnit: MeasurementUnit.imperial,
         height: 175.5,
@@ -845,7 +845,7 @@ void main() {
     test(
       'toJson serializes targetWeight and biometric lock fields correctly',
       () {
-        final state = const AppSettingsState(
+        const state = AppSettingsState(
           targetWeight: 65.0,
           isBiometricLockEnabled: true,
           isLocked: true,
@@ -860,7 +860,7 @@ void main() {
     );
 
     test('toJson serializes defaults correctly', () {
-      final state = const AppSettingsState();
+      const state = AppSettingsState();
 
       final json = state.toJson();
 
