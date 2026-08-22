@@ -1,10 +1,10 @@
 import 'dart:isolate';
-import 'dart:ui';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_timezone/flutter_timezone.dart';
 import 'package:balance/core/config/app_environment.dart';
+import 'package:balance/core/presentation/theme/app_theme.dart';
 import 'package:balance/core/utils/analytics.dart';
 import 'package:balance/core/utils/crash_reporter.dart';
 import 'package:timezone/data/latest.dart' as tz_data;
@@ -216,7 +216,7 @@ class NotificationService {
             importance: Importance.max,
             priority: Priority.high,
             icon: '@drawable/ic_notification',
-            color: const Color(0xFF2563EB),
+            color: AppTheme.primaryColor,
           ),
           iOS: const DarwinNotificationDetails(
             presentAlert: true,
