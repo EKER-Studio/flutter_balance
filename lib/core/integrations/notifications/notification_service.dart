@@ -1,4 +1,5 @@
 import 'dart:isolate';
+import 'dart:ui';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -215,6 +216,7 @@ class NotificationService {
             importance: Importance.max,
             priority: Priority.high,
             icon: '@drawable/ic_notification',
+            color: const Color(0xFF2563EB),
           ),
           iOS: const DarwinNotificationDetails(
             presentAlert: true,
