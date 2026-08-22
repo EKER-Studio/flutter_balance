@@ -40,7 +40,6 @@
   "heightCmLabel": "Wzrost (cm)",
   "heightHint": "np. 177",
   "targetWeightDialogTitle": "Waga docelowa",
-  "removeTargetWeight": "Usuń cel",
   "clearField": "Wyczyść pole",
   "targetWeightOptionalTitle": "Twój wymarzony cel",
   "weightInKgLabel": "Waga (kg)",
@@ -59,8 +58,6 @@
   "dataWipedSuccess": "Wszystkie dane zostały wyczyszczone. Uruchom aplikację ponownie.",
   "errorWipingData": "Błąd podczas czyszczenia danych: {error}",
   "importNoDataFound": "Nie znaleziono poprawnych wpisów wagi w zaimportowanym pliku.",
-  "importSuccess": "Zaimportowano {count} wpisów.",
-  "importError": "Błąd importu: {error}",
   "notificationReminderTitle": "Czas na ważenie!",
   "notificationReminderBody": "Pamiętaj o dodaniu dzisiejszego pomiaru wagi.",
   "notificationChannelName": "Codzienne przypomnienia o ważeniu",
@@ -114,7 +111,6 @@
   "healthSyncDescIOS": "Synchronizuj dane wagi z Apple Health",
   "healthSyncDescOther": "Synchronizuj dane wagi z aplikacjami zdrowia",
   "healthSyncUnavailable": "Niedostępne na tym urządzeniu",
-  "healthSyncDisabledInfo": "Synchronizacja została wyłączona w aplikacji Balance. Aby całkowicie cofnąć uprawnienia dostępowe w systemie, przejdź do Ustawień systemowych (Apple Health / Health Connect).",
   "healthPermissionDenied": "Brak uprawnień do danych zdrowotnych",
   "healthConnectRequiredTitle": "Wymagana aplikacja Health Connect",
   "healthConnectRequiredSubtitle": "Pobierz oficjalną aplikację Google Health Connect ze Sklepu Play, aby włączyć synchronizację.",
@@ -140,13 +136,11 @@
   "csvFormatHintExample": "ID, Date, Time (opt), Weight (kg), Note\n(lub: Data; Czas; Waga (kg))",
   "csvImportLoading": "Przetwarzanie pliku CSV...",
   "csvImportSuccess": "Zaimportowano {count} wpisów",
-  "csvImportContinueButton": "Dalej",
   "csvImportError": "Nie udało się odczytać tego pliku. Upewnij się, że to poprawny plik CSV z kolumnami daty i wagi.",
   "csvImportFileTooLarge": "Plik jest za duży (maks. 5 MB)",
   "csvImportInvalidFormat": "Nie znaleziono kolumn z wagą i datą",
   "csvImportNoEntries": "Nie znaleziono poprawnych pomiarów w tym pliku",
   "csvPreviewTitle": "Podgląd importu",
-  "csvPreviewFoundCount": "{count, plural, one{Znaleziono {count} pomiar} few{Znaleziono {count} pomiary} many{Znaleziono {count} pomiarów} other{Znaleziono {count} pomiaru}}",
   "csvPreviewDateRange": "Zakres: {from} – {to}",
   "csvPreviewSkippedRows": "{count, plural, zero{Nie pominięto żadnych wierszy} one{Pominięto {count} nieprawidłowy wiersz} few{Pominięto {count} nieprawidłowe wiersze} many{Pominięto {count} nieprawidłowych wierszy} other{Pominięto {count} nieprawidłowego wiersza}}",
   "csvPreviewConfirm": "Zatwierdź import",
@@ -158,7 +152,6 @@
   "tabCalendar": "Kalendarz",
   "tabStats": "Statystyki",
   "tabSettings": "Ustawienia",
-  "singleEntry": "1 pomiar",
   "multipleEntries": "{count, plural, few{{count} pomiary} many{{count} pomiarów} other{{count} pomiarów}}",
   "loggingStreak": "Seria ważenia",
   "streakDays": "{count, plural, =0{0 dni} one{{count} dzień} few{{count} dni} many{{count} dni} other{{count} dni}}",
@@ -179,9 +172,6 @@
   "entriesFromDate": "Pomiary z {date}",
   "databaseErrorTitle": "Błąd odczytu bazy danych",
   "databaseErrorDefaultMessage": "Nie udało się załadować historii pomiarów z lokalnej bazy danych. Spróbuj ponowić próbę.",
-  "noEntriesLabel": "Brak pomiarów",
-  "futureDateSuffix": "Przyszła data",
-  "selectedSuffix": "zaznaczony",
   "todayTabTitle": "Dzisiaj",
   "todayAtTime": "Dzisiaj, {time}",
   "lastMeasurementLabel": "Ostatni pomiar",
@@ -244,10 +234,6 @@
   "initErrorRetryLabel": "Ponów próbę uruchomienia aplikacji",
   "initErrorRetryHint": "Stuknij dwukrotnie, aby ponowić próbę inicjalizacji bazy danych i usług",
   "retryStartup": "Spróbuj ponownie",
-  "heightSetTo": "Ustawiłeś wzrost na {height} cm",
-  "targetWeightSetTo": "Ustawiłeś wagę docelową na {weight} {unit}",
-  "unitChangedTo": "Jednostka zmieniona na {unit}",
-  "themeChangedTo": "Motyw zmieniony na {theme}",
   "heightNotSetLabel": "brak podanego wzrostu",
   "doubleTapToOpenCalendarHint": "Dotknij dwukrotnie, aby otworzyć kalendarz",
   "doubleTapToChangeTimeHint": "Dotknij dwukrotnie, aby zmienić godzinę",
@@ -323,36 +309,5 @@
   },
   "goalProgressSemantics": "Cel: {target}. {detail}. Stuknij dwukrotnie, aby edytować wagę docelową.",
   "bmiCategorySemantics": "BMI {value}, {category}. Stuknij dwukrotnie, aby zobaczyć legendę BMI.",
-  "csvImportSuccessSubtitle": "Dane będą dostępne od razu po zakończeniu onboardingu",
-  "@heightSetTo": {
-    "placeholders": {
-      "height": {
-        "type": "String"
-      }
-    }
-  },
-  "@targetWeightSetTo": {
-    "placeholders": {
-      "weight": {
-        "type": "String"
-      },
-      "unit": {
-        "type": "String"
-      }
-    }
-  },
-  "@unitChangedTo": {
-    "placeholders": {
-      "unit": {
-        "type": "String"
-      }
-    }
-  },
-  "@themeChangedTo": {
-    "placeholders": {
-      "theme": {
-        "type": "String"
-      }
-    }
-  }
+  "csvImportSuccessSubtitle": "Dane będą dostępne od razu po zakończeniu onboardingu"
 }

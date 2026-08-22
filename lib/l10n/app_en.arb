@@ -40,7 +40,6 @@
   "heightCmLabel": "Height (cm)",
   "heightHint": "e.g. 177",
   "targetWeightDialogTitle": "Target weight",
-  "removeTargetWeight": "Remove goal",
   "clearField": "Clear field",
   "targetWeightOptionalTitle": "Your Dream Goal",
   "weightInKgLabel": "Weight (kg)",
@@ -59,8 +58,6 @@
   "dataWipedSuccess": "All data has been wiped. Restart the app.",
   "errorWipingData": "Error wiping data: {error}",
   "importNoDataFound": "No valid weight entries found in the imported file.",
-  "importSuccess": "Imported {count} entries.",
-  "importError": "Import error: {error}",
   "notificationReminderTitle": "Time to weigh in!",
   "notificationReminderBody": "Don't forget to log your weight today.",
   "notificationChannelName": "Daily Weight Reminders",
@@ -115,7 +112,6 @@
   "healthSyncDescIOS": "Sync weight data with Apple Health",
   "healthSyncDescOther": "Sync weight data with health apps",
   "healthSyncUnavailable": "Unavailable on this device",
-  "healthSyncDisabledInfo": "Sync has been turned off in the Balance app. To fully revoke system-level access, go to system settings (Apple Health / Health Connect).",
   "healthPermissionDenied": "Health data permissions are required to sync weight.",
   "healthConnectRequiredTitle": "Health Connect App Required",
   "healthConnectRequiredSubtitle": "Download the official Google Health Connect app from the Play Store to enable sync.",
@@ -141,13 +137,11 @@
   "csvFormatHintExample": "ID, Date, Time (opt), Weight (kg), Note\n(or: Data; Czas; Waga (kg))",
   "csvImportLoading": "Processing CSV file...",
   "csvImportSuccess": "Imported {count} entries",
-  "csvImportContinueButton": "Next",
   "csvImportError": "We couldn't read this file. Make sure it is a valid CSV file with date and weight columns.",
   "csvImportFileTooLarge": "File is too large (max 5 MB)",
   "csvImportInvalidFormat": "No date and weight columns found",
   "csvImportNoEntries": "No valid measurements found in this file",
   "csvPreviewTitle": "Import Preview",
-  "csvPreviewFoundCount": "{count, plural, one{Found {count} measurement} other{Found {count} measurements}}",
   "csvPreviewDateRange": "Range: {from} – {to}",
   "csvPreviewSkippedRows": "{count, plural, zero{No rows skipped} one{Skipped {count} invalid row} other{Skipped {count} invalid rows}}",
   "csvPreviewConfirm": "Confirm import",
@@ -159,7 +153,6 @@
   "tabCalendar": "Calendar",
   "tabStats": "Statistics",
   "tabSettings": "Settings",
-  "singleEntry": "1 measurement",
   "multipleEntries": "{count} measurements",
   "loggingStreak": "Logging Streak",
   "streakDays": "{count, plural, =0{0 days} one{{count} day} other{{count} days}}",
@@ -180,9 +173,6 @@
   "entriesFromDate": "Entries from {date}",
   "databaseErrorTitle": "Database read error",
   "databaseErrorDefaultMessage": "Failed to load weight history from the local database. Please try again.",
-  "noEntriesLabel": "No measurements",
-  "futureDateSuffix": "Future date",
-  "selectedSuffix": "selected",
   "todayTabTitle": "Today",
   "todayAtTime": "Today, {time}",
   "lastMeasurementLabel": "Last measurement",
@@ -250,10 +240,6 @@
   "initErrorRetryLabel": "Retry starting the application",
   "initErrorRetryHint": "Double tap to attempt re-initializing database and services",
   "retryStartup": "Retry Startup",
-  "heightSetTo": "Height set to {height} cm",
-  "targetWeightSetTo": "Target weight set to {weight} {unit}",
-  "unitChangedTo": "Unit changed to {unit}",
-  "themeChangedTo": "Theme changed to {theme}",
   "@stepOf": {
     "description": "Onboarding step indicator showing the current step and the total number of steps.",
     "placeholders": {
@@ -326,9 +312,6 @@
   "@errorWipingData": {
     "description": "Error message shown when clearing all app data fails."
   },
-  "@importSuccess": {
-    "description": "Confirmation message shown after successfully importing weight entries from a CSV file."
-  },
   "@csvImportSuccess": {
     "description": "Confirmation shown after the user imports their weight history from a CSV file during onboarding.",
     "placeholders": {
@@ -336,9 +319,6 @@
         "type": "int"
       }
     }
-  },
-  "@importError": {
-    "description": "Error message shown when importing weight entries from a CSV file fails."
   },
   "@reminderTimeSet": {
     "description": "Confirmation message shown after the daily weight reminder time has been set."
@@ -388,37 +368,6 @@
     }
   },
   "csvImportSuccessSubtitle": "Data will be available immediately after finishing the onboarding process",
-  "@heightSetTo": {
-    "placeholders": {
-      "height": {
-        "type": "String"
-      }
-    }
-  },
-  "@targetWeightSetTo": {
-    "placeholders": {
-      "weight": {
-        "type": "String"
-      },
-      "unit": {
-        "type": "String"
-      }
-    }
-  },
-  "@unitChangedTo": {
-    "placeholders": {
-      "unit": {
-        "type": "String"
-      }
-    }
-  },
-  "@themeChangedTo": {
-    "placeholders": {
-      "theme": {
-        "type": "String"
-      }
-    }
-  },
   "@heightRangeHint": {
     "placeholders": {
       "min": {
