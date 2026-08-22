@@ -10,11 +10,6 @@
 include: package:flutter_lints/flutter.yaml
 
 analyzer:
-  # Exclude generated Isar schema files from analysis. The isar_community
-  # generator (v3.3.2) emits calls to @experimental index-manipulation APIs
-  # that produce spurious warnings in hand-written code analysis runs.
-  # These files are never edited by hand and are regenerated on every
-  # `build_runner` invocation, so suppressing them here is safe.
   exclude:
     - "**/*.g.dart"
     # Flutter generated
@@ -30,3 +25,11 @@ analyzer:
     - windows/**
     - macos/**
     - linux/**
+
+linter:
+  rules:
+    - cancel_subscriptions
+    - avoid_print
+    - use_super_parameters
+    - depend_on_referenced_packages
+    - no_leading_underscores_for_local_identifiers
