@@ -205,6 +205,39 @@ class DatabaseModule {
     }
   }
 
+  /// Creates a point-in-time snapshot backup of the current database before risky
+  /// bulk operations (e.g. CSV import).
+  ///
+  /// Backs up to `balance_v1_pre_import.isar.bak`. If the database file does not
+  /// exist yet (e.g. fresh installation), this is a safe no-op.
+  static Future<String?> createPreImportSnapshot([
+    String? directoryPath,
+  ]) async {
+    try {
+      final path =
+          directoryPath ?? (await getApplicationDocumentsDirectory()).path;
+      final dbFile = File('$path/$dbName.isar');
+      if (await dbFile.exists()) {
+        final backupPath = '$path/${dbName}_pre_import.isar.bak';
+        await dbFile.copy(backupPath);
+        if (kDebugMode) {
+          debugPrint(
+            '[DatabaseModule] Pre-import snapshot created at $backupPath',
+          );
+        }
+        return backupPath;
+      }
+    } catch (e, stack) {
+      AppCrashReporter.recordError(
+        e,
+        stack,
+        reason: '[DatabaseModule] Failed to create pre-import snapshot',
+        fatal: false,
+      );
+    }
+    return null;
+  }
+
   /// Backs up corrupted or incompatible database files to a timestamped backup file.
   ///
   /// Removes the old database file to allow clean recovery.

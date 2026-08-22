@@ -12,6 +12,7 @@ import 'package:balance/features/weight/presentation/bloc/weight_event.dart';
 import 'package:balance/features/weight/presentation/bloc/weight_state.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_bloc.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_event.dart';
+import 'package:balance/core/database/database_module.dart';
 import 'package:balance/core/integrations/health/health_service.dart';
 import 'package:balance/core/utils/analytics.dart';
 import 'package:balance/core/utils/crash_reporter.dart';
@@ -730,6 +731,7 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
   ) async {
     final currentEntries = _entriesFromState(state);
     try {
+      await DatabaseModule.createPreImportSnapshot();
       final count = await repository.bulkImportEntries(event.validEntries);
 
       if (_isHealthSyncEnabled && event.validEntries.isNotEmpty) {

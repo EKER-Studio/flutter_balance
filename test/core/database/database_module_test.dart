@@ -128,12 +128,55 @@ void main() {
 
         await DatabaseModule.backupCorruptedDatabase(tempDir.path);
 
-        expect(File(otherPath).existsSync(), isTrue);
+        final otherFile = File(otherPath);
+        expect(otherFile.existsSync(), isTrue);
         expect(File(dbPath).existsSync(), isFalse);
         expect(
           tempDir.listSync().where((e) => e.path.endsWith('.bak')),
           hasLength(1),
         );
+      });
+    });
+
+    group('createPreImportSnapshot', () {
+      late Directory tempDir;
+
+      setUp(() {
+        tempDir = Directory.systemTemp.createTempSync('isar_snapshot_test_');
+      });
+
+      tearDown(() {
+        if (tempDir.existsSync()) {
+          tempDir.deleteSync(recursive: true);
+        }
+      });
+
+      test(
+        'creates a pre-import snapshot copy without deleting original db',
+        () async {
+          final dbPath = '${tempDir.path}/${DatabaseModule.dbName}.isar';
+          File(dbPath).writeAsBytesSync([10, 20, 30]);
+
+          final snapshotPath = await DatabaseModule.createPreImportSnapshot(
+            tempDir.path,
+          );
+
+          expect(snapshotPath, isNotNull);
+          expect(
+            snapshotPath,
+            endsWith('${DatabaseModule.dbName}_pre_import.isar.bak'),
+          );
+          expect(File(dbPath).existsSync(), isTrue);
+          expect(File(snapshotPath!).existsSync(), isTrue);
+          expect(File(snapshotPath).readAsBytesSync(), equals([10, 20, 30]));
+        },
+      );
+
+      test('returns null gracefully when no database file exists', () async {
+        final snapshotPath = await DatabaseModule.createPreImportSnapshot(
+          tempDir.path,
+        );
+        expect(snapshotPath, isNull);
       });
     });
   });
