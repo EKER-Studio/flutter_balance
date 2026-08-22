@@ -60,8 +60,7 @@ log_success "Localization classes generated successfully."
 # ------------------------------------------------------------------------------
 log_step "3" "Regenerating code declarations (Build Runner)..."
 # ------------------------------------------------------------------------------
-# Deletes conflicting outputs automatically to prevent compilation deadlocks
-dart run build_runner build > /dev/null
+dart run build_runner build
 log_success "Code generation completed."
 
 # ------------------------------------------------------------------------------
