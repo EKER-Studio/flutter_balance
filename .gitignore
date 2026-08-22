@@ -6,7 +6,9 @@
 
 # Firebase configuration files (injected via CI secrets)
 android/app/google-services.json
-ios/Runner/GoogleService-Info.plist
+android/app/src/*/google-services.json
+ios/Runner/GoogleService-Info*.plist
+ios/config/**/*.plist
 lib/firebase_options.dart
 
 # Miscellaneous
