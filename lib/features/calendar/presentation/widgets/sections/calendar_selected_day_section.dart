@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:balance/core/models/measurement_unit.dart';
 import 'package:balance/core/utils/unit_converter.dart';
-import 'package:balance/features/calendar/presentation/widgets/calendar_day_empty_card.dart';
-import 'package:balance/features/calendar/presentation/widgets/calendar_day_entries_card.dart';
+import 'package:balance/features/calendar/presentation/widgets/components/calendar_day_empty_card.dart';
+import 'package:balance/features/calendar/presentation/widgets/components/calendar_day_entries_card.dart';
 import 'package:balance/features/weight/domain/entities/weight_entry.dart';
 import 'package:balance/l10n/app_localizations.dart';
 

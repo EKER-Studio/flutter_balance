@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:balance/core/utils/analytics.dart';
-import 'package:balance/features/calendar/presentation/widgets/calendar_grid.dart';
-import 'package:balance/features/calendar/presentation/widgets/calendar_month_header.dart';
-import 'package:balance/features/calendar/presentation/widgets/calendar_weekday_header.dart';
+import 'package:balance/features/calendar/presentation/widgets/components/calendar_grid.dart';
+import 'package:balance/features/calendar/presentation/widgets/components/calendar_month_header.dart';
+import 'package:balance/features/calendar/presentation/widgets/components/calendar_weekday_header.dart';
 import 'package:balance/features/weight/domain/entities/weight_entry.dart';
 
 /// A card section hosting the monthly navigation header, weekday names, and interactive calendar grid.

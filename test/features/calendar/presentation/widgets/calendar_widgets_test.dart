@@ -10,16 +10,16 @@ import 'package:balance/features/weight/presentation/bloc/weight_bloc.dart';
 import 'package:balance/core/integrations/health/health_service.dart';
 import 'package:balance/features/weight/presentation/bloc/weight_event.dart';
 import 'package:balance/features/calendar/presentation/screens/calendar_screen.dart';
-import 'package:balance/features/calendar/presentation/widgets/calendar_day_cell.dart';
-import 'package:balance/features/calendar/presentation/widgets/calendar_day_empty_card.dart';
-import 'package:balance/features/calendar/presentation/widgets/calendar_day_entries_card.dart';
+import 'package:balance/features/calendar/presentation/widgets/components/calendar_day_cell.dart';
+import 'package:balance/features/calendar/presentation/widgets/components/calendar_day_empty_card.dart';
+import 'package:balance/features/calendar/presentation/widgets/components/calendar_day_entries_card.dart';
 import 'package:balance/features/weight/presentation/widgets/add_weight_sheet.dart';
 
-import 'package:balance/features/calendar/presentation/widgets/calendar_error_card.dart';
-import 'package:balance/features/calendar/presentation/widgets/calendar_grid.dart';
-import 'package:balance/features/calendar/presentation/widgets/calendar_month_header.dart';
-import 'package:balance/features/calendar/presentation/widgets/calendar_shimmer_skeleton.dart';
-import 'package:balance/features/calendar/presentation/widgets/calendar_weekday_header.dart';
+import 'package:balance/features/calendar/presentation/widgets/components/calendar_error_card.dart';
+import 'package:balance/features/calendar/presentation/widgets/components/calendar_grid.dart';
+import 'package:balance/features/calendar/presentation/widgets/components/calendar_month_header.dart';
+import 'package:balance/features/calendar/presentation/widgets/components/calendar_shimmer_skeleton.dart';
+import 'package:balance/features/calendar/presentation/widgets/components/calendar_weekday_header.dart';
 import 'package:balance/l10n/app_localizations.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_bloc.dart';
 

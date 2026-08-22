@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:balance/l10n/app_localizations.dart';
-import 'package:balance/features/calendar/presentation/widgets/calendar_error_card.dart';
+import 'package:balance/features/calendar/presentation/widgets/components/calendar_error_card.dart';
 import 'package:balance/features/weight/presentation/bloc/weight_bloc.dart';
 import 'package:balance/features/weight/presentation/bloc/weight_event.dart';
 

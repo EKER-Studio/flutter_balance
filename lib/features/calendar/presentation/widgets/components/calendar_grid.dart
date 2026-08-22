@@ -2,7 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:balance/features/weight/domain/entities/weight_entry.dart';
-import 'package:balance/features/calendar/presentation/widgets/calendar_day_cell.dart';
+import 'package:balance/features/calendar/presentation/widgets/components/calendar_day_cell.dart';
 
 /// The callback signature used when a calendar day is selected.
 typedef OnCalendarDaySelected =

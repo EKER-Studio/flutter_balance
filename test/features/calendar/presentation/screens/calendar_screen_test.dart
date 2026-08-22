@@ -9,7 +9,7 @@ import 'package:balance/features/weight/domain/repositories/weight_repository.da
 import 'package:balance/features/weight/presentation/bloc/weight_bloc.dart';
 import 'package:balance/features/weight/presentation/bloc/weight_state.dart';
 import 'package:balance/features/calendar/presentation/screens/calendar_screen.dart';
-import 'package:balance/features/calendar/presentation/widgets/calendar_error_card.dart';
+import 'package:balance/features/calendar/presentation/widgets/components/calendar_error_card.dart';
 import 'package:balance/features/weight/domain/weight_error_type.dart';
 import 'package:balance/features/weight/presentation/widgets/add_weight_sheet.dart';
 import 'package:balance/l10n/app_localizations.dart';
