@@ -61,7 +61,7 @@ For every public class/method, add a doc comment following the language's standa
 - If a fix is not obvious after 2 attempts, stop and report the exact error instead of applying a workaround.
 
 ### Formatting & Style
-- Follow the official style guide / formatter for the language in use (e.g. `dart format .`).
+- Follow the official style guide / formatter for the language in use (e.g. `dart format lib test`).
 - Ensure all generated files are correctly linked/imported per the framework's conventions (e.g. `part 'filename.g.dart';` for Dart build_runner output).
 
 ---
@@ -70,9 +70,11 @@ For every public class/method, add a doc comment following the language's standa
 *(Replace this whole section when starting a new project with a different stack.)*
 
 ### Build & Generation Commands
+- Format code: `dart format lib test`
 - Install dependencies: `flutter pub get`
 - Run build runner: `dart run build_runner build`
 - Watch build runner: `dart run build_runner watch`
+- Generate localizations: `flutter gen-l10n`
 - Generate app icons: `dart run flutter_launcher_icons`
 - Generate native splash screen: `dart run flutter_native_splash:create`
 - Code analysis: `flutter analyze`
@@ -97,9 +99,14 @@ Before considering any feature involving streams, timers, or animations complete
 - All Isar dynamic query streams are properly closed or managed via BLoC lifecycle.
 
 ### Mandatory Verification Pipeline
-After any modification within the `lib/**` directory, you MUST execute the following pipeline in strict order:
-1. `dart run build_runner build`
-2. `flutter analyze`
-3. `flutter test`
+After any modification within `lib/**`, `test/**`, or project configuration files, you MUST execute the following pipeline in strict order:
+1. `dart format lib test`
+2. `dart run build_runner build`
+3. `flutter analyze`
+4. `flutter test`
 
-A task is NOT considered complete until all steps pass with zero errors and zero failing tests, AND the Lifecycle & Resource Disposal Checklist above has been explicitly verified. Fix any arising issues autonomously, subject to the Guardrails above.
+### Mandatory Autonomous Commit
+A task is NOT considered complete until:
+1. All 4 verification pipeline steps pass with zero errors, zero failing tests, and clean formatting.
+2. The Lifecycle & Resource Disposal Checklist above has been explicitly verified.
+3. **The change is COMMITTED to git without asking the user for permission** (`git add <files> && git commit -m '<type>(<scope>): <atomic description>'`). Do NOT stop after running tests without committing the resulting green state! Fix any arising issues autonomously before committing.
