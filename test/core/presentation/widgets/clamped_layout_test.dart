@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:balance/core/presentation/core/clamped_layout.dart';
+import 'package:balance/core/presentation/widgets/clamped_layout.dart';
 
 void main() {
   Widget buildLayout({EdgeInsetsGeometry? padding, Widget? child}) {

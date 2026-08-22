@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:balance/core/models/measurement_unit.dart';
-import 'package:balance/core/presentation/core/clamped_layout.dart';
+import 'package:balance/core/presentation/widgets/clamped_layout.dart';
 import 'package:balance/core/utils/analytics.dart';
 import 'package:balance/core/utils/unit_converter.dart';
 import 'package:balance/features/onboarding/presentation/widgets/components/imperial_height_input.dart';

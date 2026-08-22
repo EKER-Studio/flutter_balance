@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:balance/core/presentation/core/clamped_layout.dart';
+import 'package:balance/core/presentation/widgets/clamped_layout.dart';
 import 'package:balance/features/onboarding/presentation/widgets/components/welcome_feature_card.dart';
 import 'package:balance/l10n/app_localizations.dart';
 

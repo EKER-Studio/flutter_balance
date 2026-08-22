@@ -3,7 +3,7 @@ import 'package:balance/core/models/measurement_unit.dart';
 import 'package:balance/core/utils/analytics.dart';
 import 'package:balance/core/utils/unit_converter.dart';
 import 'package:balance/l10n/app_localizations.dart';
-import 'package:balance/core/presentation/core/clamped_layout.dart';
+import 'package:balance/core/presentation/widgets/clamped_layout.dart';
 
 /// Form widget for Step 4 of the onboarding wizard: setting an optional
 /// target weight with a live view of the remaining delta to reach it.

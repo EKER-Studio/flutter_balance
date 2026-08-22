@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:balance/core/integrations/csv/csv_import_service.dart';
-import 'package:balance/core/presentation/core/clamped_layout.dart';
+import 'package:balance/core/presentation/widgets/clamped_layout.dart';
 import 'package:balance/core/utils/analytics.dart';
 import 'package:balance/core/utils/crash_reporter.dart';
 import 'package:balance/features/onboarding/presentation/widgets/components/csv_import_error_view.dart';
