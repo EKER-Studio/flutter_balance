@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:balance/features/dashboard/presentation/widgets/today_shimmer_skeleton.dart';
+import 'package:balance/features/dashboard/presentation/widgets/sections/today_shimmer_skeleton.dart';
 import 'package:balance/l10n/app_localizations.dart';
 import 'package:balance/core/presentation/screens/app_splash_screen.dart';
 

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:balance/features/statistics/presentation/widgets/statistics_shimmer_skeleton.dart';
+import 'package:balance/features/statistics/presentation/widgets/sections/statistics_shimmer_skeleton.dart';
 
 void main() {
   testWidgets('renders skeleton cards mirroring the statistics layout', (

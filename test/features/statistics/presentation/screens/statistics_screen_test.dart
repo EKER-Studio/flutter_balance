@@ -17,7 +17,7 @@ import 'package:balance/l10n/app_localizations.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_bloc.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_event.dart';
 import 'package:balance/features/statistics/presentation/screens/statistics_screen.dart';
-import 'package:balance/features/statistics/presentation/widgets/bmi_chart_card.dart';
+import 'package:balance/features/statistics/presentation/widgets/sections/bmi_chart_card.dart';
 
 class MockWeightRepository extends Mock implements WeightRepository {}
 
