@@ -629,8 +629,10 @@ Line two"
       expect(entries[0].note, 'Line one\nLine two');
     });
 
-    test('parses hierarchical Polish date groups with time and weight units', () async {
-      const csvContent = '''
+    test(
+      'parses hierarchical Polish date groups with time and weight units',
+      () async {
+        const csvContent = '''
 Czas,Ciężar,Zmiana,BMI,Tkanka tłuszczowa,Masa mięśni szkieletowych,Masa kostna,Woda w organizmie
 "sie 24, 2026",,,,,,,
 09:42,87.0 kg,1.0 kg,27.8,--,--,--,--
@@ -644,20 +646,21 @@ Czas,Ciężar,Zmiana,BMI,Tkanka tłuszczowa,Masa mięśni szkieletowych,Masa kos
 12:09,91.0 kg,--,29,--,--,--,--
 ''';
 
-      final result = await CsvImporter.parse(csvContent);
-      final entries = result.validEntries;
+        final result = await CsvImporter.parse(csvContent);
+        final entries = result.validEntries;
 
-      expect(entries.length, 5);
-      expect(entries[0].weightKg, 87.0);
-      expect(entries[0].dateTime, DateTime(2026, 8, 24, 9, 42));
-      expect(entries[1].weightKg, 86.0);
-      expect(entries[1].dateTime, DateTime(2026, 8, 23, 11, 0));
-      expect(entries[2].weightKg, 86.7);
-      expect(entries[2].dateTime, DateTime(2026, 7, 31, 8, 40));
-      expect(entries[3].weightKg, 88.5);
-      expect(entries[3].dateTime, DateTime(2026, 6, 30, 11, 32));
-      expect(entries[4].weightKg, 91.0);
-      expect(entries[4].dateTime, DateTime(2026, 5, 30, 12, 9));
-    });
+        expect(entries.length, 5);
+        expect(entries[0].weightKg, 87.0);
+        expect(entries[0].dateTime, DateTime(2026, 8, 24, 9, 42));
+        expect(entries[1].weightKg, 86.0);
+        expect(entries[1].dateTime, DateTime(2026, 8, 23, 11, 0));
+        expect(entries[2].weightKg, 86.7);
+        expect(entries[2].dateTime, DateTime(2026, 7, 31, 8, 40));
+        expect(entries[3].weightKg, 88.5);
+        expect(entries[3].dateTime, DateTime(2026, 6, 30, 11, 32));
+        expect(entries[4].weightKg, 91.0);
+        expect(entries[4].dateTime, DateTime(2026, 5, 30, 12, 9));
+      },
+    );
   });
 }

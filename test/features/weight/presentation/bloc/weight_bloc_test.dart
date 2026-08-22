@@ -1256,11 +1256,8 @@ void main() {
         );
         return WeightBloc(repository: repository);
       },
-      seed: () => const WeightLoaded(
-        entries: [],
-        filteredEntries: [],
-        heightCm: 180,
-      ),
+      seed: () =>
+          const WeightLoaded(entries: [], filteredEntries: [], heightCm: 180),
       act: (bloc) => bloc.add(
         ConfirmCsvImport(
           validEntries: [
@@ -1273,8 +1270,11 @@ void main() {
         isA<WeightImportSuccess>()
             .having((s) => s.importedCount, 'importedCount', 2)
             .having((s) => s.entries.length, 'entries.length', 2),
-        isA<WeightLoaded>()
-            .having((s) => s.entries.length, 'entries.length', 2),
+        isA<WeightLoaded>().having(
+          (s) => s.entries.length,
+          'entries.length',
+          2,
+        ),
       ],
     );
   });
