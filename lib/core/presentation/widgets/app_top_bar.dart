@@ -23,8 +23,9 @@ class AppTopBar extends StatelessWidget {
       elevation: 0,
       scrolledUnderElevation: 0,
       backgroundColor: colorScheme.surface,
-      floating: true,
-      snap: true,
+      floating: false,
+      pinned: false,
+      snap: false,
       titleSpacing: 16,
       title: Text(
         title,
