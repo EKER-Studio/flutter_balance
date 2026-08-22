@@ -11,7 +11,7 @@ import 'package:balance/features/weight/presentation/bloc/weight_state.dart';
 import 'package:balance/features/calendar/presentation/screens/calendar_screen.dart';
 import 'package:balance/features/calendar/presentation/widgets/components/calendar_error_card.dart';
 import 'package:balance/features/weight/domain/weight_error_type.dart';
-import 'package:balance/features/weight/presentation/widgets/add_weight_sheet.dart';
+import 'package:balance/features/weight/presentation/widgets/components/add_weight_sheet.dart';
 import 'package:balance/l10n/app_localizations.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_event.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_bloc.dart';

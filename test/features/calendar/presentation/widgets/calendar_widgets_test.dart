@@ -13,7 +13,7 @@ import 'package:balance/features/calendar/presentation/screens/calendar_screen.d
 import 'package:balance/features/calendar/presentation/widgets/components/calendar_day_cell.dart';
 import 'package:balance/features/calendar/presentation/widgets/components/calendar_day_empty_card.dart';
 import 'package:balance/features/calendar/presentation/widgets/components/calendar_day_entries_card.dart';
-import 'package:balance/features/weight/presentation/widgets/add_weight_sheet.dart';
+import 'package:balance/features/weight/presentation/widgets/components/add_weight_sheet.dart';
 
 import 'package:balance/features/calendar/presentation/widgets/components/calendar_error_card.dart';
 import 'package:balance/features/calendar/presentation/widgets/components/calendar_grid.dart';

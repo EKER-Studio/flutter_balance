@@ -12,7 +12,7 @@ import 'package:balance/features/settings/presentation/bloc/app_settings_state.d
 import 'package:balance/features/settings/presentation/bloc/bmi_category.dart';
 import 'package:balance/features/settings/presentation/widgets/components/target_weight_sheet.dart';
 import 'package:balance/features/weight/presentation/utils/bmi_category_localizer.dart';
-import 'package:balance/features/weight/presentation/widgets/bmi_legend_dialog.dart';
+import 'package:balance/features/weight/presentation/widgets/components/bmi_legend_dialog.dart';
 import 'package:balance/l10n/app_localizations.dart';
 
 /// An integrated summary card displaying the latest weight, BMI, and goal progress.

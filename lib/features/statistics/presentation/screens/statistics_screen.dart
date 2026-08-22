@@ -12,7 +12,7 @@ import 'package:balance/features/weight/domain/entities/weight_entry.dart';
 import 'package:balance/features/weight/presentation/bloc/weight_bloc.dart';
 import 'package:balance/features/weight/presentation/bloc/weight_event.dart';
 import 'package:balance/features/weight/presentation/bloc/weight_state.dart';
-import 'package:balance/features/weight/presentation/widgets/add_weight_sheet.dart';
+import 'package:balance/features/weight/presentation/widgets/components/add_weight_sheet.dart';
 import 'package:balance/l10n/app_localizations.dart';
 
 /// A consolidated statistics screen combining all health metrics into data-dense composite cards.

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:balance/features/weight/presentation/widgets/bmi_legend_dialog.dart';
+import 'package:balance/features/weight/presentation/widgets/components/bmi_legend_dialog.dart';
 import 'package:balance/l10n/app_localizations.dart';
 
 void main() {

@@ -5,7 +5,7 @@ import 'package:balance/features/statistics/presentation/widgets/components/bmi_
 import 'package:balance/features/statistics/presentation/widgets/components/bmi_period_filters.dart';
 import 'package:balance/features/weight/domain/entities/weight_entry.dart';
 import 'package:balance/features/weight/domain/time_period.dart';
-import 'package:balance/features/weight/presentation/widgets/bmi_legend_dialog.dart';
+import 'package:balance/features/weight/presentation/widgets/components/bmi_legend_dialog.dart';
 import 'package:balance/l10n/app_localizations.dart';
 
 /// A composite card section displaying BMI history with headers, period tabs, and chart styles.
