@@ -418,8 +418,8 @@ class CsvImporter {
 
     if (match == null) return null;
 
-    var hour = int.parse(match.group(1)!);
-    final minute = int.parse(match.group(2)!);
+    var hour = int.tryParse(match.group(1) ?? '') ?? 0;
+    final minute = int.tryParse(match.group(2) ?? '') ?? 0;
     final amPm = match.group(4)?.toLowerCase();
 
     if (amPm != null) {
@@ -459,18 +459,18 @@ class CsvImporter {
     ).firstMatch(trimmed);
 
     if (mdyMatch != null) {
-      final monthStr = mdyMatch.group(1)!.toLowerCase();
+      final monthStr = (mdyMatch.group(1) ?? '').toLowerCase();
       final month = _monthMap[monthStr];
-      final day = int.tryParse(mdyMatch.group(2)!);
-      final year = int.tryParse(mdyMatch.group(3)!);
+      final day = int.tryParse(mdyMatch.group(2) ?? '');
+      final year = int.tryParse(mdyMatch.group(3) ?? '');
 
       if (month != null && day != null && year != null) {
         if (day >= 1 && day <= 31 && year >= 1900 && year <= 2200) {
           var hour = 0;
           var minute = 0;
           if (mdyMatch.group(4) != null && mdyMatch.group(5) != null) {
-            hour = int.parse(mdyMatch.group(4)!);
-            minute = int.parse(mdyMatch.group(5)!);
+            hour = int.tryParse(mdyMatch.group(4) ?? '') ?? 0;
+            minute = int.tryParse(mdyMatch.group(5) ?? '') ?? 0;
             final amPm = mdyMatch.group(7)?.toLowerCase();
             if (amPm == 'pm' && hour < 12) hour += 12;
             if (amPm == 'am' && hour == 12) hour = 0;
@@ -487,18 +487,18 @@ class CsvImporter {
     ).firstMatch(trimmed);
 
     if (dmyMatch != null) {
-      final day = int.tryParse(dmyMatch.group(1)!);
-      final monthStr = dmyMatch.group(2)!.toLowerCase();
+      final day = int.tryParse(dmyMatch.group(1) ?? '');
+      final monthStr = (dmyMatch.group(2) ?? '').toLowerCase();
       final month = _monthMap[monthStr];
-      final year = int.tryParse(dmyMatch.group(3)!);
+      final year = int.tryParse(dmyMatch.group(3) ?? '');
 
       if (month != null && day != null && year != null) {
         if (day >= 1 && day <= 31 && year >= 1900 && year <= 2200) {
           var hour = 0;
           var minute = 0;
           if (dmyMatch.group(4) != null && dmyMatch.group(5) != null) {
-            hour = int.parse(dmyMatch.group(4)!);
-            minute = int.parse(dmyMatch.group(5)!);
+            hour = int.tryParse(dmyMatch.group(4) ?? '') ?? 0;
+            minute = int.tryParse(dmyMatch.group(5) ?? '') ?? 0;
             final amPm = dmyMatch.group(7)?.toLowerCase();
             if (amPm == 'pm' && hour < 12) hour += 12;
             if (amPm == 'am' && hour == 12) hour = 0;
