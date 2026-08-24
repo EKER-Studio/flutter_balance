@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
+import 'package:injectable/injectable.dart';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:balance/core/integrations/csv/csv_import_service.dart';
 import 'package:balance/core/integrations/csv/csv_importer.dart';
@@ -32,6 +33,7 @@ import 'package:balance/core/utils/crash_reporter.dart';
 /// bloc.add(AddWeight(weightKg: 75.4, note: 'Morning'));
 /// bloc.add(ChangeChartFilter(TimePeriod.month));
 /// ```
+@injectable
 class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
   final WeightRepository repository;
 

@@ -1,4 +1,5 @@
 import 'package:hydrated_bloc/hydrated_bloc.dart';
+import 'package:injectable/injectable.dart';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:balance/core/integrations/health/health_service.dart';
 import 'package:balance/core/integrations/notifications/notification_service.dart';
@@ -8,6 +9,7 @@ import 'package:balance/features/settings/presentation/bloc/app_settings_state.d
 /// A BLoC responsible for managing persistent app settings.
 ///
 /// All settings are persisted across app restarts via `HydratedBloc`.
+@lazySingleton
 class AppSettingsBloc extends HydratedBloc<AppSettingsEvent, AppSettingsState> {
   final NotificationService _notificationService;
   final HealthService _healthService;
