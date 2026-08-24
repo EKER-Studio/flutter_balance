@@ -2,6 +2,7 @@ import 'dart:math' as math;
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:balance/core/presentation/theme/app_chart_theme.dart';
 import 'package:balance/core/utils/analytics.dart';
 import 'package:balance/features/weight/domain/entities/weight_entry.dart';
 import 'package:balance/features/weight/domain/time_period.dart';
@@ -54,16 +55,11 @@ class BmiLineChart extends StatelessWidget {
           maxX: math.max(0, sortedEntries.length - 1).toDouble(),
           minY: minY,
           maxY: maxY,
-          gridData: FlGridData(
-            show: true,
-            drawVerticalLine: false,
+          gridData: AppChartTheme.gridData(
+            colorScheme: cs,
             horizontalInterval: 2,
-            getDrawingHorizontalLine: (value) => FlLine(
-              color: cs.surfaceContainerHighest,
-              strokeWidth: 1,
-              dashArray: [5, 5],
-            ),
           ),
+          borderData: AppChartTheme.borderData(),
           titlesData: FlTitlesData(
             rightTitles: const AxisTitles(
               sideTitles: SideTitles(showTitles: false),
@@ -95,7 +91,6 @@ class BmiLineChart extends StatelessWidget {
               ),
             ),
           ),
-          borderData: FlBorderData(show: false),
           lineTouchData: LineTouchData(
             touchCallback: (FlTouchEvent event, LineTouchResponse? response) {
               if (event is FlTapUpEvent &&
@@ -162,14 +157,7 @@ class BmiLineChart extends StatelessWidget {
               ),
               belowBarData: BarAreaData(
                 show: true,
-                gradient: LinearGradient(
-                  colors: [
-                    cs.primary.withValues(alpha: 0.2),
-                    cs.primary.withValues(alpha: 0.0),
-                  ],
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                ),
+                gradient: AppChartTheme.belowBarGradient(cs.primary),
               ),
             ),
           ],

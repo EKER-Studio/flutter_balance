@@ -2,6 +2,7 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:balance/core/models/measurement_unit.dart';
+import 'package:balance/core/presentation/theme/app_chart_theme.dart';
 import 'package:balance/core/utils/unit_converter.dart';
 import 'package:balance/features/weight/domain/entities/weight_entry.dart';
 import 'package:balance/features/weight/domain/time_period.dart';
@@ -68,18 +69,11 @@ class WeightChartCanvas extends StatelessWidget {
             LineChartData(
               minY: minY,
               maxY: maxY,
-              gridData: FlGridData(
-                show: true,
-                drawVerticalLine: false,
-                getDrawingHorizontalLine: (value) {
-                  return FlLine(
-                    color: colorScheme.surfaceContainerHighest.withValues(
-                      alpha: 0.5,
-                    ),
-                    strokeWidth: 1,
-                  );
-                },
+              gridData: AppChartTheme.gridData(
+                colorScheme: colorScheme,
+                horizontalInterval: 1,
               ),
+              borderData: AppChartTheme.borderData(),
               titlesData: FlTitlesData(
                 show: true,
                 rightTitles: const AxisTitles(
@@ -123,7 +117,6 @@ class WeightChartCanvas extends StatelessWidget {
                   ),
                 ),
               ),
-              borderData: FlBorderData(show: false),
               extraLinesData: targetY != null
                   ? ExtraLinesData(
                       horizontalLines: [
@@ -170,13 +163,8 @@ class WeightChartCanvas extends StatelessWidget {
                   ),
                   belowBarData: BarAreaData(
                     show: true,
-                    gradient: LinearGradient(
-                      colors: [
-                        colorScheme.primary.withValues(alpha: 0.2),
-                        colorScheme.primary.withValues(alpha: 0.0),
-                      ],
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
+                    gradient: AppChartTheme.belowBarGradient(
+                      colorScheme.primary,
                     ),
                   ),
                 ),
