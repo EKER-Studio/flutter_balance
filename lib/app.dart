@@ -4,6 +4,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
+import 'package:go_router/go_router.dart';
 import 'package:health/health.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:balance/core/database/database_module.dart';
@@ -11,30 +12,31 @@ import 'package:balance/core/integrations/biometrics/biometric_lock_observer.dar
 import 'package:balance/core/integrations/biometrics/biometric_service.dart';
 import 'package:balance/core/integrations/health/health_service.dart';
 import 'package:balance/core/integrations/notifications/notification_service.dart';
+import 'package:balance/core/presentation/navigation/app_router.dart';
+import 'package:balance/core/presentation/navigation/app_routes.dart';
+import 'package:balance/core/presentation/screens/app_initialization_error_screen.dart';
+import 'package:balance/core/presentation/screens/app_splash_screen.dart';
+import 'package:balance/core/presentation/screens/biometric_shield_screen.dart';
+import 'package:balance/core/presentation/theme/app_theme.dart';
 import 'package:balance/core/utils/analytics.dart';
 import 'package:balance/core/utils/crash_reporter.dart';
+import 'package:balance/features/settings/presentation/bloc/app_settings_bloc.dart';
+import 'package:balance/features/settings/presentation/bloc/app_settings_event.dart';
+import 'package:balance/features/settings/presentation/bloc/app_settings_state.dart';
+import 'package:balance/features/settings/presentation/bloc/app_theme_mode.dart';
 import 'package:balance/features/weight/data/repositories/isar_weight_repository.dart';
 import 'package:balance/features/weight/domain/repositories/weight_repository.dart';
 import 'package:balance/features/weight/presentation/bloc/weight_bloc.dart';
 import 'package:balance/features/weight/presentation/bloc/weight_event.dart';
 import 'package:balance/l10n/app_localizations.dart';
-import 'package:balance/features/settings/presentation/bloc/app_settings_bloc.dart';
-import 'package:balance/features/settings/presentation/bloc/app_settings_event.dart';
-import 'package:balance/features/settings/presentation/bloc/app_settings_state.dart';
-import 'package:balance/features/settings/presentation/bloc/app_theme_mode.dart';
-import 'package:balance/core/presentation/screens/app_initialization_error_screen.dart';
-import 'package:balance/core/presentation/screens/app_splash_screen.dart';
-import 'package:balance/core/presentation/screens/biometric_shield_screen.dart';
-import 'package:balance/features/navigation/presentation/screens/main_navigation_screen.dart';
-import 'package:balance/features/onboarding/presentation/screens/onboarding_wizard_screen.dart';
-import 'package:balance/core/presentation/theme/app_theme.dart';
 
-/// Root widget of the Balance application.
+/// The root widget of the application, configuring global theme, localization,
+/// dependency injection, and reactive [GoRouter] navigation.
 class App extends StatefulWidget {
-  /// Optional repository override for testing.
+  /// An optional repository override for widget tests.
   final WeightRepository? repositoryOverride;
 
-  /// Optional health backend override for testing.
+  /// An optional health service override for widget tests.
   final HealthService? healthServiceOverride;
 
   /// Creates the root [App] widget with optional test overrides.
@@ -47,9 +49,8 @@ class App extends StatefulWidget {
 class _AppState extends State<App> {
   late AppLocalizations _l10n;
   late Future<WeightRepository> _initFuture;
+  GoRouter? _router;
 
-  /// Starts the asynchronous app initialization and keeps its future for the
-  /// build phase.
   @override
   void initState() {
     super.initState();
@@ -78,9 +79,6 @@ class _AppState extends State<App> {
       await NotificationService.instance.initialize();
 
       // 3. Health — the plugin requires configure() before any other API call.
-      // A failure (e.g. device_info channel error on devices without health
-      // platform support) must not block app startup; every HealthService call
-      // already degrades gracefully, so the plugin is simply left unconfigured.
       try {
         await Health().configure();
       } catch (e, stack) {
@@ -92,9 +90,7 @@ class _AppState extends State<App> {
         );
       }
 
-      // 4. Biometrics — canAuthenticate() also covers OS PIN/pattern/password
-      // fallback, not just enrolled biometric hardware (see
-      // BiometricService.authenticate, which already supports it).
+      // 4. Biometrics — canAuthenticate() also covers OS PIN/pattern/password fallback.
       final isBiometricSupported = await BiometricService.instance
           .canAuthenticate();
       if (mounted) {
@@ -105,33 +101,45 @@ class _AppState extends State<App> {
 
       return repository;
     } finally {
-      // Drop the native splash screen regardless of outcome so Flutter can render
-      // the fake splash, the error screen, or the app.
+      // Drop the native splash screen regardless of outcome.
       WidgetsBinding.instance.addPostFrameCallback((_) {
         FlutterNativeSplash.remove();
       });
     }
   }
 
+  void _ensureRouter(AppSettingsBloc settingsBloc) {
+    _router ??= createAppRouter(
+      settingsBloc: settingsBloc,
+      initialLocation: AppRoutes.today,
+      observers: [
+        if (AppAnalytics.instance != null)
+          FirebaseAnalyticsObserver(analytics: AppAnalytics.instance!),
+      ],
+    );
+    NotificationService.instance.onNotificationTapped = (payload) {
+      _router?.go(payload);
+    };
+  }
+
   /// Builds the provider stack that wires [repository] into the widget tree
-  /// and resolves the root screen from [settingsState].
+  /// and resolves the router content.
   Widget _buildAppContent(
     WeightRepository repository,
     AppSettingsState settingsState,
+    AppSettingsBloc settingsBloc,
   ) {
+    _ensureRouter(settingsBloc);
+
     return RepositoryProvider.value(
       value: repository,
       child: BlocProvider(
         create: (context) {
-          final settingsBloc = context.read<AppSettingsBloc>();
           final bloc = WeightBloc(
             repository: context.read<WeightRepository>(),
             appSettingsBloc: settingsBloc,
             healthService: widget.healthServiceOverride,
           )..add(const SubscribeToWeightChanges());
-          // Pull in records recorded in Apple Health / Health Connect (e.g.
-          // by a smart scale) since the last session when the user already
-          // enabled health sync; the pull itself is gated inside the BLoC.
           if (settingsBloc.state.isHealthSyncEnabled) {
             bloc.add(const SyncHealthEntries());
           }
@@ -150,9 +158,16 @@ class _AppState extends State<App> {
                   channelDescription: l10n.notificationChannelDescription,
                 );
               },
-              child: !settingsState.isOnboardingCompleted
-                  ? const OnboardingWizardScreen()
-                  : const MainNavigationScreen(),
+              child: BlocListener<AppSettingsBloc, AppSettingsState>(
+                listenWhen: (previous, current) =>
+                    previous.isLocked != current.isLocked ||
+                    previous.isOnboardingCompleted !=
+                        current.isOnboardingCompleted,
+                listener: (context, state) {
+                  _router?.refresh();
+                },
+                child: Router.withConfig(config: _router!),
+              ),
             ),
           ),
         ),
@@ -164,6 +179,8 @@ class _AppState extends State<App> {
   /// biometric shield overlay, and the appropriate root screen.
   @override
   Widget build(BuildContext context) {
+    final settingsBloc = context.read<AppSettingsBloc>();
+
     return BlocBuilder<AppSettingsBloc, AppSettingsState>(
       builder: (context, settingsState) {
         final themeMode = switch (settingsState.themeMode) {
@@ -203,7 +220,11 @@ class _AppState extends State<App> {
             );
           },
           home: widget.repositoryOverride != null
-              ? _buildAppContent(widget.repositoryOverride!, settingsState)
+              ? _buildAppContent(
+                  widget.repositoryOverride!,
+                  settingsState,
+                  settingsBloc,
+                )
               : FutureBuilder<WeightRepository>(
                   future: _initFuture,
                   builder: (context, snapshot) {
@@ -219,7 +240,11 @@ class _AppState extends State<App> {
                         },
                       );
                     } else {
-                      return _buildAppContent(snapshot.data!, settingsState);
+                      return _buildAppContent(
+                        snapshot.data!,
+                        settingsState,
+                        settingsBloc,
+                      );
                     }
                   },
                 ),
