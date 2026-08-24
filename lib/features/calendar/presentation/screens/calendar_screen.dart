@@ -24,7 +24,10 @@ import 'package:balance/l10n/app_localizations.dart';
 /// layouts place the calendar card and detail section side by side.
 /// Serves as the second tab in the main navigation.
 class CalendarScreen extends StatefulWidget {
-  const CalendarScreen({super.key});
+  /// Optional date to focus and select when the screen opens.
+  final DateTime? initialDate;
+
+  const CalendarScreen({super.key, this.initialDate});
 
   @override
   State<CalendarScreen> createState() => _CalendarScreenState();
@@ -38,15 +41,18 @@ class _CalendarScreenState extends State<CalendarScreen> {
   @override
   void initState() {
     super.initState();
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    _selectedDate = widget.initialDate ?? today;
+    _focusedMonth = DateTime(_selectedDate.year, _selectedDate.month, 1);
+    AppAnalytics.logCalendarScreenViewed();
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted &&
           context.read<AppSettingsBloc>().state.isHealthSyncEnabled) {
         context.read<WeightBloc>().add(const SyncHealthEntries());
       }
     });
-    final now = DateTime.now();
-    _focusedMonth = DateTime(now.year, now.month, 1);
-    _selectedDate = now;
   }
 
   /// Shifts the focused month one month back.
