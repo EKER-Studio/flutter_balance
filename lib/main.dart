@@ -11,6 +11,8 @@ import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:balance/app.dart';
 import 'package:balance/core/bloc/app_bloc_observer.dart';
+import 'package:balance/core/config/app_environment.dart';
+import 'package:balance/core/di/injection.dart';
 import 'package:balance/core/utils/analytics.dart';
 import 'package:balance/core/utils/crash_reporter.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_bloc.dart';
@@ -91,9 +93,17 @@ Future<void> main() async {
       storageDirectory: storageDirectory,
     );
 
-    final settingsBloc = AppSettingsBloc();
+    // Initialize GetIt dependency injection container.
+    await configureDependencies(environment: AppEnvironment.current.name);
 
-    runApp(BlocProvider(create: (_) => settingsBloc, child: const App()));
+    final settingsBloc = getIt<AppSettingsBloc>();
+
+    runApp(
+      BlocProvider<AppSettingsBloc>.value(
+        value: settingsBloc,
+        child: const App(),
+      ),
+    );
   } catch (error, stackTrace) {
     AppCrashReporter.recordError(
       error,

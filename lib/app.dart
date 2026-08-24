@@ -8,6 +8,7 @@ import 'package:go_router/go_router.dart';
 import 'package:health/health.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:balance/core/database/database_module.dart';
+import 'package:balance/core/di/injection.dart';
 import 'package:balance/core/integrations/biometrics/biometric_lock_observer.dart';
 import 'package:balance/core/integrations/biometrics/biometric_service.dart';
 import 'package:balance/core/integrations/health/health_service.dart';
@@ -67,16 +68,28 @@ class _AppState extends State<App> {
         return widget.repositoryOverride!;
       }
 
-      // 1. Initialize Isar
-      final isar = await DatabaseModule.initialize();
-      final repository = IsarWeightRepository(
-        isar: isar,
-        unlockSignal: BiometricService.instance.authenticationSuccesses,
-      );
+      final WeightRepository repository;
+      final NotificationService notificationService;
+      final BiometricService biometricService;
+
+      if (getIt.isRegistered<WeightRepository>()) {
+        repository = getIt<WeightRepository>();
+        notificationService = getIt<NotificationService>();
+        biometricService = getIt<BiometricService>();
+      } else {
+        // Fallback for tests when configureDependencies was not invoked
+        final isar = await DatabaseModule.initialize();
+        biometricService = BiometricService.instance;
+        repository = IsarWeightRepository(
+          isar: isar,
+          unlockSignal: biometricService.authenticationSuccesses,
+        );
+        notificationService = NotificationService.instance;
+      }
 
       // 2. Notifications — initialize the plugin and timezone database so
       // reminders can be scheduled with the device's local time zone.
-      await NotificationService.instance.initialize();
+      await notificationService.initialize();
 
       // 3. Health — the plugin requires configure() before any other API call.
       try {
@@ -91,8 +104,7 @@ class _AppState extends State<App> {
       }
 
       // 4. Biometrics — canAuthenticate() also covers OS PIN/pattern/password fallback.
-      final isBiometricSupported = await BiometricService.instance
-          .canAuthenticate();
+      final isBiometricSupported = await biometricService.canAuthenticate();
       if (mounted) {
         context.read<AppSettingsBloc>().add(
           UpdateBiometricSupport(isBiometricSupported),
@@ -135,11 +147,16 @@ class _AppState extends State<App> {
       value: repository,
       child: BlocProvider(
         create: (context) {
-          final bloc = WeightBloc(
-            repository: context.read<WeightRepository>(),
-            appSettingsBloc: settingsBloc,
-            healthService: widget.healthServiceOverride,
-          )..add(const SubscribeToWeightChanges());
+          final bloc =
+              getIt.isRegistered<WeightBloc>() &&
+                  widget.healthServiceOverride == null
+              ? getIt<WeightBloc>()
+              : WeightBloc(
+                  repository: context.read<WeightRepository>(),
+                  appSettingsBloc: settingsBloc,
+                  healthService: widget.healthServiceOverride,
+                );
+          bloc.add(const SubscribeToWeightChanges());
           if (settingsBloc.state.isHealthSyncEnabled) {
             bloc.add(const SyncHealthEntries());
           }
