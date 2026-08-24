@@ -63,6 +63,13 @@ app.*.map.json
 /android/app/profile
 /android/app/release
 
+# Flutter generated platform files
+**/Flutter/ephemeral/
+**/Flutter/GeneratedPluginRegistrant.*
+**/generated_plugin_registrant.*
+**/generated_plugins.cmake
+**/generated_plugins.dart
+
 # Native dynamic libraries downloaded during testing
 *.dylib
 *.so
@@ -73,3 +80,8 @@ app.*.map.json
 
 # Visual Studio Code settings folder
 .vscode/
+
+# Isar local database & testing artifacts
+*.isar
+*.isar.lock
+default.isar
