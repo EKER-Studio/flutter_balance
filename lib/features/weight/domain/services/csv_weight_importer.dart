@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:balance/core/database/database_module.dart';
 import 'package:balance/core/integrations/csv/csv_import_service.dart';
 import 'package:balance/core/integrations/csv/csv_importer.dart';
 import 'package:balance/core/utils/crash_reporter.dart';
@@ -71,9 +70,8 @@ class CsvWeightImporter {
     }
   }
 
-  /// Commits confirmed entries to the database after capturing a rollback snapshot.
+  /// Commits confirmed entries to the database via repository bulk import.
   Future<int> confirmImport(List<WeightEntry> entries) async {
-    await DatabaseModule.createPreImportSnapshot();
     return repository.bulkImportEntries(entries);
   }
 }

@@ -3,10 +3,26 @@ import 'dart:async';
 import 'package:balance/core/integrations/health/health_service.dart';
 import 'package:balance/core/utils/analytics.dart';
 import 'package:balance/core/utils/crash_reporter.dart';
-import 'package:balance/features/settings/presentation/bloc/app_settings_bloc.dart';
-import 'package:balance/features/settings/presentation/bloc/app_settings_event.dart';
 import 'package:balance/features/weight/domain/entities/weight_entry.dart';
 import 'package:balance/features/weight/domain/repositories/weight_repository.dart';
+
+/// Summary statistics emitted upon successful completion of a health sync cycle.
+class HealthSyncResult {
+  /// The UTC timestamp when synchronization completed.
+  final DateTime syncTimestamp;
+
+  /// Number of entries fetched from the remote health store.
+  final int remoteCount;
+
+  /// Number of local records pushed to the remote health store.
+  final int pushedLocalCount;
+
+  const HealthSyncResult({
+    required this.syncTimestamp,
+    required this.remoteCount,
+    required this.pushedLocalCount,
+  });
+}
 
 /// Coordinates two-way synchronization between the local [WeightRepository] and
 /// the platform health service (Apple Health / Health Connect).
@@ -25,8 +41,7 @@ class HealthSyncCoordinator {
   /// Scoped to [startDate] or [lastSyncTime] minus a 1-day overlap window to
   /// ensure delayed remote syncs or clock skews are reconciled. Deduplication
   /// is performed against the local repository using a ±60 s / ±0.05 kg tolerance.
-  Future<void> sync({
-    required AppSettingsBloc settingsBloc,
+  Future<HealthSyncResult?> sync({
     DateTime? startDate,
     DateTime? lastSyncTime,
   }) async {
@@ -62,15 +77,18 @@ class HealthSyncCoordinator {
 
       if (missingRemoteEntries.isNotEmpty) {
         unawaited(
-          Future.forEach(
-            missingRemoteEntries,
-            (entry) => mirrorWrite(entry),
-          ),
+          Future.forEach(missingRemoteEntries, (entry) => mirrorWrite(entry)),
         );
       }
 
-      settingsBloc.add(UpdateLastHealthSyncTimestamp(DateTime.now().toUtc()));
+      final syncTimestamp = DateTime.now().toUtc();
       AppAnalytics.logHealthSyncSuccess(
+        remoteCount: remoteEntries.length,
+        pushedLocalCount: missingRemoteEntries.length,
+      );
+
+      return HealthSyncResult(
+        syncTimestamp: syncTimestamp,
         remoteCount: remoteEntries.length,
         pushedLocalCount: missingRemoteEntries.length,
       );
@@ -82,6 +100,7 @@ class HealthSyncCoordinator {
         reason: '[HealthSyncCoordinator] Health sync background failure',
         fatal: false,
       );
+      return null;
     }
   }
 

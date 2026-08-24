@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:isar_community/isar.dart';
+import 'package:balance/core/database/database_module.dart';
 import 'package:balance/core/utils/field_cipher.dart';
 import 'package:balance/features/weight/data/models/weight_entry_model.dart';
 import 'package:balance/features/weight/domain/entities/weight_entry.dart';
@@ -425,6 +426,7 @@ class IsarWeightRepository implements WeightRepository {
     if (entries.isEmpty) return 0;
 
     try {
+      await DatabaseModule.createPreImportSnapshot();
       final key = await _getOrLoadKey(isWrite: true);
 
       // Step 1 — Determine the date window covered by the import batch.

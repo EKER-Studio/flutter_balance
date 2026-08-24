@@ -8,6 +8,7 @@ import 'package:balance/features/weight/domain/weight_error_type.dart';
 import 'package:balance/features/weight/presentation/bloc/weight_event.dart';
 import 'package:balance/features/weight/presentation/bloc/weight_state.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_bloc.dart';
+import 'package:balance/features/settings/presentation/bloc/app_settings_event.dart';
 import 'package:balance/core/integrations/health/health_service.dart';
 import 'package:balance/core/utils/analytics.dart';
 import 'package:balance/core/utils/crash_reporter.dart';
@@ -398,11 +399,13 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
   ) async {
     if (!_isHealthSyncEnabled || _settingsBloc == null) return;
     AppAnalytics.logHealthSyncStarted();
-    await _healthSyncCoordinator.sync(
-      settingsBloc: _settingsBloc,
+    final result = await _healthSyncCoordinator.sync(
       startDate: event.startDate,
       lastSyncTime: _settingsBloc.state.lastHealthSyncTimestamp,
     );
+    if (result != null) {
+      _settingsBloc.add(UpdateLastHealthSyncTimestamp(result.syncTimestamp));
+    }
   }
 
   void _onChangeChartFilter(
