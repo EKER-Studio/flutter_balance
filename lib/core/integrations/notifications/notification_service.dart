@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_timezone/flutter_timezone.dart';
 import 'package:balance/core/config/app_environment.dart';
+import 'package:balance/core/presentation/navigation/app_routes.dart';
 import 'package:balance/core/presentation/theme/app_theme.dart';
 import 'package:balance/core/utils/analytics.dart';
 import 'package:balance/core/utils/crash_reporter.dart';
@@ -22,6 +23,9 @@ class NotificationService {
   static final NotificationService instance = NotificationService._();
 
   static const int _dailyReminderId = 0;
+
+  /// Optional callback invoked when the user taps on a delivered local notification.
+  void Function(String payload)? onNotificationTapped;
 
   /// The Android notification channel ID for daily weight reminders.
   String get _channelId => AppEnvironment.current.notificationChannelId;
@@ -120,6 +124,12 @@ class NotificationService {
           iOS: darwinSettings,
           macOS: darwinSettings,
         ),
+        onDidReceiveNotificationResponse: (response) {
+          final payload = response.payload;
+          if (payload != null && payload.isNotEmpty) {
+            onNotificationTapped?.call(payload);
+          }
+        },
       );
 
       // Request standard notification permission on Android 13+ (POST_NOTIFICATIONS).
@@ -230,6 +240,7 @@ class NotificationService {
         title: _title,
         body: _body,
         matchDateTimeComponents: DateTimeComponents.time,
+        payload: AppRoutes.todayWithAddAction(),
       );
 
       AppAnalytics.logNotificationScheduled(
