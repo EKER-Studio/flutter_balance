@@ -83,6 +83,7 @@ lib/
 - **Dependency Inversion**: Domain defines repository contracts; data layer provides concrete implementations.
 - **State Management**: `flutter_bloc` with `hydrated_bloc` for persistent application configuration.
 - **Dependency Injection**: `get_it` + `injectable` for compile-time service configuration and modular locator container.
+- **Routing & Navigation**: `go_router` with `StatefulShellRoute.indexedStack` preserving individual tab navigation history, deep linking (`/today?action=add`, `/calendar?date=YYYY-MM-DD`), and reactive auth/onboarding redirection guards.
 
 ## Tech Stack
 
@@ -91,6 +92,7 @@ lib/
 | **Framework** | Flutter 3.44 | Cross-platform UI framework |
 | **State Management** | flutter_bloc, hydrated_bloc | BLoC pattern with automated JSON hydration |
 | **Dependency Injection** | get_it, injectable | Service locator and compile-time dependency injection |
+| **Routing & Navigation** | go_router | Declarative routing, stateful nested shells, deep linking, and reactive guards |
 | **Database** | isar_community | High-performance local NoSQL database |
 | **Charts** | fl_chart | Interactive weight history visualizations |
 | **Biometrics** | local_auth | Native biometric authentication (Face ID, Touch ID, fingerprint) |
@@ -116,6 +118,7 @@ lib/
 - **Unit System**: Seamless switching between Metric (kg, cm) and Imperial (lb, ft/in).
 
 ### Settings, Onboarding & Security
+- **Declarative Navigation & Deep Linking**: Powered by `go_router` 14.x with persistent `StatefulShellRoute` multi-tab state preservation, URI query parsing (`/today?action=add`, `/calendar?date=YYYY-MM-DD`), and reactive auth/onboarding redirection guards.
 - **8-Step Onboarding**: A comprehensive wizard guiding users through unit selection, initial logging, CSV imports, and permission setups.
 - **Theme Options**: Light, Dark, or System mode.
 - **Target Tracking**: Configurable target weight goals.

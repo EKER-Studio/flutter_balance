@@ -86,6 +86,7 @@ This is a Local-First, AI-Native boilerplate utilizing Clean Architecture under 
 - **Data Layer** (`lib/features/<feature>/data/`): Repository implementations and local storage handlers utilizing `isar_community`.
 - **Presentation Layer** (`lib/features/<feature>/presentation/`): UI (`StatelessWidget`/`StatefulWidget`) and state management via BLoC (`flutter_bloc`).
 - **DI:** `get_it` + `injectable` for automated compile-time dependency injection and service locator container configured in `lib/core/di/`.
+- **Routing & Navigation:** `go_router` utilizing `StatefulShellRoute.indexedStack` for persistent multi-tab state preservation, deep linking, and reactive redirection guards (`AppRoutes`).
 - **State Management:** BLoC (flutter_bloc) strictly.
 - **Data Flow:** UI (`BlocBuilder`/`BlocListener`) -> BLoC (`Bloc`) -> Repository Interface (domain) -> Repository Impl (data) -> Local DB (`isar_community`).
 - **Reactivity:** Handled purely via Isar streams. BLoCs listen to Isar collections and emit states accordingly.
