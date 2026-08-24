@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:balance/core/utils/analytics.dart';
 import 'package:balance/features/calendar/presentation/screens/calendar_screen.dart';
 import 'package:balance/features/dashboard/presentation/screens/today_screen.dart';
@@ -13,14 +14,13 @@ import 'package:balance/features/weight/presentation/bloc/weight_event.dart';
 
 /// Main container screen featuring adaptive navigation (NavigationBar in portrait, NavigationRail in landscape).
 ///
-/// The destinations are ordered Today, Calendar, Statistics, and Settings and
-/// match the screen list order, so the selected index directly selects the
-/// visible child of the [IndexedStack] — swapping tabs without losing per-tab
-/// state. Tab switching, focus traversal, and keyboard handling are delegated
-/// to the navigation bar/rail semantics via `onDestinationSelected`;
-/// `home`-style navigation from the Today screen jumps to the Settings tab.
+/// Supports integration with [StatefulNavigationShell] from `go_router` for deep linking
+/// and preserved tab back-stacks, while maintaining fallback support for standalone widget tests.
 class MainNavigationScreen extends StatefulWidget {
-  const MainNavigationScreen({super.key});
+  /// Optional navigation shell provided by [StatefulShellRoute].
+  final StatefulNavigationShell? navigationShell;
+
+  const MainNavigationScreen({super.key, this.navigationShell});
 
   @override
   State<MainNavigationScreen> createState() => _MainNavigationScreenState();
@@ -32,6 +32,9 @@ class _MainNavigationScreenState extends State<MainNavigationScreen>
   int _currentIndex = 0;
 
   static const _tabNames = ['today', 'calendar', 'stats', 'settings'];
+
+  int get _activeTabIndex =>
+      widget.navigationShell?.currentIndex ?? _currentIndex;
 
   @override
   void initState() {
@@ -61,9 +64,17 @@ class _MainNavigationScreenState extends State<MainNavigationScreen>
           AppAnalytics.logSettingsScreenViewed();
       }
     }
-    setState(() {
-      _currentIndex = index;
-    });
+
+    if (widget.navigationShell != null) {
+      widget.navigationShell!.goBranch(
+        index,
+        initialLocation: index == widget.navigationShell!.currentIndex,
+      );
+    } else {
+      setState(() {
+        _currentIndex = index;
+      });
+    }
   }
 
   @override
@@ -79,18 +90,23 @@ class _MainNavigationScreenState extends State<MainNavigationScreen>
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
+    final selectedIndex = _activeTabIndex;
 
-    final screens = [
-      TodayScreen(onNavigateToSettings: () => _onTabSelected(3)),
-      const CalendarScreen(),
-      const StatisticsScreen(),
-      const SettingsScreen(),
-    ];
+    final Widget body;
+    if (widget.navigationShell != null) {
+      body = widget.navigationShell!;
+    } else {
+      final screens = [
+        TodayScreen(onNavigateToSettings: () => _onTabSelected(3)),
+        const CalendarScreen(),
+        const StatisticsScreen(),
+        const SettingsScreen(),
+      ];
+      body = IndexedStack(index: _currentIndex, children: screens);
+    }
 
     final isLandscape =
         MediaQuery.orientationOf(context) == Orientation.landscape;
-
-    final body = IndexedStack(index: _currentIndex, children: screens);
 
     if (isLandscape) {
       return Scaffold(
@@ -98,7 +114,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen>
           child: Row(
             children: [
               AdaptiveNavigationRail(
-                selectedIndex: _currentIndex,
+                selectedIndex: selectedIndex,
                 onDestinationSelected: _onTabSelected,
               ),
               VerticalDivider(
@@ -116,7 +132,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen>
     return Scaffold(
       body: body,
       bottomNavigationBar: AdaptiveBottomNavigationBar(
-        selectedIndex: _currentIndex,
+        selectedIndex: selectedIndex,
         onDestinationSelected: _onTabSelected,
       ),
     );
