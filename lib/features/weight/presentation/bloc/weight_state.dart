@@ -1,4 +1,7 @@
+export 'package:balance/features/weight/domain/csv_error_type.dart';
+
 import 'package:balance/core/integrations/csv/csv_importer.dart';
+import 'package:balance/features/weight/domain/csv_error_type.dart';
 import 'package:balance/features/weight/domain/entities/weight_entry.dart';
 import 'package:balance/features/weight/domain/weight_error_type.dart';
 import 'package:balance/features/weight/presentation/bloc/weight_event.dart';
@@ -62,18 +65,6 @@ final class WeightError extends WeightState {
     required super.entries,
     required super.filteredEntries,
   });
-}
-
-/// Categorizes failures specific to CSV file analysis.
-enum CsvErrorType {
-  /// The selected file exceeds the 5 MB size limit.
-  fileTooLarge,
-
-  /// No valid date and weight columns were found in the file.
-  invalidFormat,
-
-  /// The file parsed successfully but contained no valid measurements.
-  noEntries,
 }
 
 /// Transient state emitted while the CSV file is being parsed on the isolate.
