@@ -85,7 +85,7 @@ This is a Local-First, AI-Native boilerplate utilizing Clean Architecture under 
 - **Domain Layer** (`lib/features/<feature>/domain/`): Pure Dart logic — entities, repository interfaces, use cases. NO Flutter or BLoC imports allowed here.
 - **Data Layer** (`lib/features/<feature>/data/`): Repository implementations and local storage handlers utilizing `isar_community`.
 - **Presentation Layer** (`lib/features/<feature>/presentation/`): UI (`StatelessWidget`/`StatefulWidget`) and state management via BLoC (`flutter_bloc`).
-- **DI:** Manual dependency injection at app startup (`main.dart`) passed down via widget constructors and BLoC providers.
+- **DI:** `get_it` + `injectable` for automated compile-time dependency injection and service locator container configured in `lib/core/di/`.
 - **State Management:** BLoC (flutter_bloc) strictly.
 - **Data Flow:** UI (`BlocBuilder`/`BlocListener`) -> BLoC (`Bloc`) -> Repository Interface (domain) -> Repository Impl (data) -> Local DB (`isar_community`).
 - **Reactivity:** Handled purely via Isar streams. BLoCs listen to Isar collections and emit states accordingly.

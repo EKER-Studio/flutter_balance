@@ -82,7 +82,7 @@ lib/
 - **Feature-First**: Strict vertical slicing. Features (`calendar`, `dashboard`, `settings`, etc.) encapsulate their own presentation boundaries, while core business logic remains in the `weight` domain.
 - **Dependency Inversion**: Domain defines repository contracts; data layer provides concrete implementations.
 - **State Management**: `flutter_bloc` with `hydrated_bloc` for persistent application configuration.
-- **Dependency Injection**: Manual DI in `main.dart` — dependencies instantiated explicitly and passed down via widget constructors and BLoC providers.
+- **Dependency Injection**: `get_it` + `injectable` for compile-time service configuration and modular locator container.
 
 ## Tech Stack
 
@@ -90,7 +90,7 @@ lib/
 |----------|---------|---------|
 | **Framework** | Flutter 3.44 | Cross-platform UI framework |
 | **State Management** | flutter_bloc, hydrated_bloc | BLoC pattern with automated JSON hydration |
-| **Dependency Injection** | Manual DI | Dependencies wired explicitly in `main.dart`, passed via constructors and BLoC providers |
+| **Dependency Injection** | get_it, injectable | Service locator and compile-time dependency injection |
 | **Database** | isar_community | High-performance local NoSQL database |
 | **Charts** | fl_chart | Interactive weight history visualizations |
 | **Biometrics** | local_auth | Native biometric authentication (Face ID, Touch ID, fingerprint) |
@@ -177,7 +177,7 @@ dart run flutter_native_splash:create
 
 ## Testing
 
-Run full verification suite (over 970+ tests):
+Run full verification suite (over 1010+ tests):
 
 ```bash
 ./scripts/before_push.sh
