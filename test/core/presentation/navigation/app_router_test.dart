@@ -14,6 +14,7 @@ import 'package:balance/features/weight/presentation/bloc/weight_state.dart';
 import 'package:balance/l10n/app_localizations.dart';
 
 class MockAppSettingsBloc extends Mock implements AppSettingsBloc {}
+
 class MockWeightBloc extends Mock implements WeightBloc {}
 
 void main() {
@@ -43,28 +44,30 @@ void main() {
   }
 
   group('AppRouter integration tests', () {
-    testWidgets('routes to OnboardingWizardScreen when onboarding is incomplete', (tester) async {
+    testWidgets(
+      'routes to OnboardingWizardScreen when onboarding is incomplete',
+      (tester) async {
+        when(
+          () => mockSettingsBloc.state,
+        ).thenReturn(const AppSettingsState(isOnboardingCompleted: false));
+
+        final router = createAppRouter(
+          settingsBloc: mockSettingsBloc,
+          initialLocation: AppRoutes.today,
+        );
+
+        await tester.pumpWidget(buildTestableApp(router));
+        await tester.pumpAndSettle();
+
+        expect(find.byType(OnboardingWizardScreen), findsOneWidget);
+      },
+    );
+
+    testWidgets('routes to BiometricShieldScreen when app is locked', (
+      tester,
+    ) async {
       when(() => mockSettingsBloc.state).thenReturn(
-        const AppSettingsState(isOnboardingCompleted: false),
-      );
-
-      final router = createAppRouter(
-        settingsBloc: mockSettingsBloc,
-        initialLocation: AppRoutes.today,
-      );
-
-      await tester.pumpWidget(buildTestableApp(router));
-      await tester.pumpAndSettle();
-
-      expect(find.byType(OnboardingWizardScreen), findsOneWidget);
-    });
-
-    testWidgets('routes to BiometricShieldScreen when app is locked', (tester) async {
-      when(() => mockSettingsBloc.state).thenReturn(
-        const AppSettingsState(
-          isOnboardingCompleted: true,
-          isLocked: true,
-        ),
+        const AppSettingsState(isOnboardingCompleted: true, isLocked: true),
       );
 
       final router = createAppRouter(
