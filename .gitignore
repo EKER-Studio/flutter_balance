@@ -11,6 +11,9 @@ ios/Runner/GoogleService-Info*.plist
 ios/config/**/*.plist
 lib/firebase_options.dart
 
+# Local planning & temporary notes
+PLAN_*.md
+
 # Miscellaneous
 *.class
 *.log
@@ -70,6 +73,3 @@ app.*.map.json
 
 # Visual Studio Code settings folder
 .vscode/
-
-# Custom files
-COMMENT_CLEANUP_LOG.md
