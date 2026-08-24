@@ -2,9 +2,10 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:balance/core/presentation/widgets/clamped_layout.dart';
+import 'package:balance/core/presentation/navigation/app_routes.dart';
 import 'package:balance/core/presentation/utils/app_snackbar.dart';
 import 'package:balance/core/presentation/widgets/app_top_bar.dart';
+import 'package:balance/core/presentation/widgets/clamped_layout.dart';
 import 'package:balance/core/utils/analytics.dart';
 import 'package:balance/features/dashboard/presentation/widgets/sections/today_view_body.dart';
 import 'package:balance/features/weight/domain/entities/weight_entry.dart';
@@ -17,11 +18,34 @@ import 'package:balance/features/weight/presentation/widgets/components/add_weig
 import 'package:balance/l10n/app_localizations.dart';
 
 /// A screen displaying the daily summary, BMI, goal progress, and weight trend.
-class TodayScreen extends StatelessWidget {
+class TodayScreen extends StatefulWidget {
   /// An optional callback to navigate to settings when the profile icon is pressed.
   final VoidCallback? onNavigateToSettings;
 
-  const TodayScreen({super.key, this.onNavigateToSettings});
+  /// Optional deep link action key (e.g. 'add' from notification / URL).
+  final String? initialAction;
+
+  const TodayScreen({super.key, this.onNavigateToSettings, this.initialAction});
+
+  @override
+  State<TodayScreen> createState() => _TodayScreenState();
+}
+
+class _TodayScreenState extends State<TodayScreen> {
+  bool _hasExecutedInitialAction = false;
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.initialAction == AppRouteParams.actionAdd) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted && !_hasExecutedInitialAction) {
+          _hasExecutedInitialAction = true;
+          _showAddWeightSheet(context, source: 'deep_link');
+        }
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
