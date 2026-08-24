@@ -1,22 +1,18 @@
 import 'dart:async';
-import 'dart:convert';
-import 'dart:io';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:injectable/injectable.dart';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
-import 'package:balance/core/integrations/csv/csv_import_service.dart';
-import 'package:balance/core/integrations/csv/csv_importer.dart';
 import 'package:balance/features/weight/domain/entities/weight_entry.dart';
 import 'package:balance/features/weight/domain/repositories/weight_repository.dart';
 import 'package:balance/features/weight/domain/weight_error_type.dart';
 import 'package:balance/features/weight/presentation/bloc/weight_event.dart';
 import 'package:balance/features/weight/presentation/bloc/weight_state.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_bloc.dart';
-import 'package:balance/features/settings/presentation/bloc/app_settings_event.dart';
-import 'package:balance/core/database/database_module.dart';
 import 'package:balance/core/integrations/health/health_service.dart';
 import 'package:balance/core/utils/analytics.dart';
 import 'package:balance/core/utils/crash_reporter.dart';
+import 'package:balance/features/weight/domain/services/csv_weight_importer.dart';
+import 'package:balance/features/weight/domain/services/health_sync_coordinator.dart';
 
 /// A BLoC managing weight entries and user height.
 ///
@@ -44,6 +40,9 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
   /// The backend used for every HealthKit / Health Connect interaction.
   final HealthService _healthService;
 
+  late final HealthSyncCoordinator _healthSyncCoordinator;
+  late final CsvWeightImporter _csvWeightImporter;
+
   List<WeightEntry>? _memoEntries;
   TimePeriod _memoPeriod = TimePeriod.week;
   List<WeightEntry> _memoResult = const [];
@@ -52,9 +51,20 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
     required this.repository,
     AppSettingsBloc? appSettingsBloc,
     HealthService? healthService,
+    HealthSyncCoordinator? healthSyncCoordinator,
+    CsvWeightImporter? csvWeightImporter,
   }) : _settingsBloc = appSettingsBloc,
        _healthService = healthService ?? NativeHealthService.instance,
        super(const WeightInitial()) {
+    _healthSyncCoordinator =
+        healthSyncCoordinator ??
+        HealthSyncCoordinator(
+          healthService: _healthService,
+          repository: repository,
+        );
+    _csvWeightImporter =
+        csvWeightImporter ?? CsvWeightImporter(repository: repository);
+
     on<SubscribeToWeightChanges>(
       _onSubscribeToWeightChanges,
       transformer: restartable(),
@@ -369,124 +379,30 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
   /// Mirrors a locally persisted [entry] to the health platform on a
   /// best-effort basis; failures are logged and reported to Crashlytics but never propagated.
   Future<void> _mirrorWriteToHealth(WeightEntry entry) async {
-    try {
-      await _healthService.writeWeight(
-        weightKg: entry.weightKg,
-        timestamp: entry.dateTime,
-      );
-    } catch (e, stack) {
-      AppCrashReporter.recordError(
-        e,
-        stack,
-        reason: '[WeightBloc] Health mirror write failed',
-        fatal: false,
-      );
-    }
+    if (!_isHealthSyncEnabled) return;
+    await _healthSyncCoordinator.mirrorWrite(entry);
   }
 
   /// Mirrors a local deletion of [entry] to the health platform on a
   /// best-effort basis; failures are logged and reported to Crashlytics but never propagated.
   Future<void> _mirrorDeleteToHealth(WeightEntry entry) async {
-    try {
-      await _healthService.deleteWeight(
-        weightKg: entry.weightKg,
-        timestamp: entry.dateTime,
-      );
-    } catch (e, stack) {
-      AppCrashReporter.recordError(
-        e,
-        stack,
-        reason: '[WeightBloc] Health mirror delete failed',
-        fatal: false,
-      );
-    }
+    if (!_isHealthSyncEnabled) return;
+    await _healthSyncCoordinator.mirrorDelete(entry.weightKg, entry.dateTime);
   }
 
   /// Pulls weight history from the health platform and merges records that do
   /// not already exist locally, emitting a refreshed [WeightLoaded] state.
-  ///
-  /// The sync window spans [SyncHealthEntries.startDate] (defaulting to the
-  /// deep past so historical records are never missed) through the current
-  /// instant. Each remote record is
-  /// deduplicated against the local database: it is imported only when no
-  /// local entry matches its weight and its timestamp truncated to seconds in
-  /// UTC (see [_isLocalDuplicate]). This also filters out entries that were
-  /// previously mirrored to the health platform via [_mirrorWriteToHealth],
-  /// which breaks the write -> sync -> write ping-pong loop.
-  ///
-  /// Local-first: the database is the single source of truth. Remote records
-  /// are merged in but never overwrite or delete local data, and the import
-  /// itself never triggers mirror writes, so a sync pass cannot re-enter
-  /// itself. The pull aborts silently (no state change) when health sync is
-  /// disabled, the platform errors out, or there are no new records.
   Future<void> _onSyncHealthEntries(
     SyncHealthEntries event,
     Emitter<WeightState> emit,
   ) async {
     if (!_isHealthSyncEnabled || _settingsBloc == null) return;
     AppAnalytics.logHealthSyncStarted();
-    try {
-      final end = DateTime.now();
-      final lastSync = _settingsBloc.state.lastHealthSyncTimestamp;
-      final start =
-          event.startDate ??
-          (lastSync?.subtract(const Duration(days: 1)) ??
-              end.subtract(const Duration(days: 30)));
-
-      final remoteEntries = await _healthService.fetchWeightHistory(
-        start: start,
-        end: end,
-      );
-
-      if (remoteEntries.isNotEmpty) {
-        await repository.syncRemoteEntries(remoteEntries);
-      }
-
-      // Two-way sync: also push local records within the same fetch window
-      // that are missing from the health platform (e.g. entries added
-      // locally while offline, or before health sync was first enabled).
-      // Scoped to [start, end] — the same window used for the pull above —
-      // so that local history *outside* this window is never treated as
-      // "missing" just because it wasn't part of this incremental fetch.
-      final localEntries = (await repository.getAllEntries())
-          .where((e) => e.dateTime.isAfter(start) && e.dateTime.isBefore(end))
-          .toList();
-      final missingRemoteEntries = localEntries.where((local) {
-        final lUtc = local.dateTime.toUtc();
-        return !remoteEntries.any((remote) {
-          final rUtc = remote.dateTime.toUtc();
-          return (remote.weightKg - local.weightKg).abs() <= 0.05 &&
-              rUtc.difference(lUtc).inSeconds.abs() <= 60;
-        });
-      }).toList();
-
-      if (missingRemoteEntries.isNotEmpty) {
-        unawaited(
-          Future.forEach(
-            missingRemoteEntries,
-            (entry) => _mirrorWriteToHealth(entry),
-          ),
-        );
-      }
-
-      _settingsBloc.add(UpdateLastHealthSyncTimestamp(DateTime.now().toUtc()));
-      AppAnalytics.logHealthSyncSuccess(
-        remoteCount: remoteEntries.length,
-        pushedLocalCount: missingRemoteEntries.length,
-      );
-
-      // Note: No need to explicitly emit here if we rely on watchAllEntries to emit WeightLoaded.
-      // But we will emit to be safe in case of no changes, just to complete the bloc cycle cleanly if we wanted.
-    } catch (e, stack) {
-      AppAnalytics.logHealthSyncFailed(e.toString());
-      AppCrashReporter.recordError(
-        e,
-        stack,
-        reason: '[WeightBloc] Health sync background failure',
-        fatal: false,
-      );
-      // Never transition WeightBloc to WeightError on sync failure.
-    }
+    await _healthSyncCoordinator.sync(
+      settingsBloc: _settingsBloc,
+      startDate: event.startDate,
+      lastSyncTime: _settingsBloc.state.lastHealthSyncTimestamp,
+    );
   }
 
   void _onChangeChartFilter(
@@ -630,9 +546,6 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
 
   /// Reads and parses a CSV file on a background isolate without writing to the
   /// database (dry-run analysis).
-  ///
-  /// Emits [CsvAnalysisInProgress] while parsing, then [CsvAnalysisReady] on
-  /// success, or [CsvAnalysisError] on failure.
   Future<void> _onAnalyzeCsvFile(
     AnalyzeCsvFile event,
     Emitter<WeightState> emit,
@@ -647,81 +560,28 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
       ),
     );
 
-    try {
-      final file = File(event.filePath);
-      if (file.lengthSync() > CsvImportService.maxFileSizeBytes) {
+    final outcome = await _csvWeightImporter.analyzeFile(event.filePath);
+    switch (outcome) {
+      case CsvAnalysisSuccess(:final analysis):
+        emit(
+          CsvAnalysisReady(
+            heightCm: state.heightCm,
+            timePeriod: state.timePeriod,
+            entries: currentEntries,
+            filteredEntries: _filterEntries(currentEntries, state.timePeriod),
+            analysis: analysis,
+          ),
+        );
+      case CsvAnalysisFailure(:final errorType):
         emit(
           CsvAnalysisError(
-            errorType: CsvErrorType.fileTooLarge,
+            errorType: errorType,
             heightCm: state.heightCm,
             timePeriod: state.timePeriod,
             entries: currentEntries,
             filteredEntries: _filterEntries(currentEntries, state.timePeriod),
           ),
         );
-        return;
-      }
-
-      final bytes = await file.readAsBytes();
-      var content = utf8.decode(bytes, allowMalformed: true);
-      if (content.startsWith('\uFEFF')) content = content.substring(1);
-
-      final analysis = await CsvImporter.parse(content);
-
-      if (analysis.validEntries.isEmpty) {
-        emit(
-          CsvAnalysisError(
-            errorType: CsvErrorType.noEntries,
-            heightCm: state.heightCm,
-            timePeriod: state.timePeriod,
-            entries: currentEntries,
-            filteredEntries: _filterEntries(currentEntries, state.timePeriod),
-          ),
-        );
-        return;
-      }
-
-      emit(
-        CsvAnalysisReady(
-          heightCm: state.heightCm,
-          timePeriod: state.timePeriod,
-          entries: currentEntries,
-          filteredEntries: _filterEntries(currentEntries, state.timePeriod),
-          analysis: analysis,
-        ),
-      );
-    } on FormatException catch (e, stack) {
-      AppCrashReporter.recordError(
-        e,
-        stack,
-        reason: '[WeightBloc] CSV FormatException during AnalyzeCsvFile',
-        fatal: false,
-      );
-      emit(
-        CsvAnalysisError(
-          errorType: CsvErrorType.invalidFormat,
-          heightCm: state.heightCm,
-          timePeriod: state.timePeriod,
-          entries: currentEntries,
-          filteredEntries: _filterEntries(currentEntries, state.timePeriod),
-        ),
-      );
-    } catch (e, stack) {
-      AppCrashReporter.recordError(
-        e,
-        stack,
-        reason: '[WeightBloc] AnalyzeCsvFile error',
-        fatal: false,
-      );
-      emit(
-        CsvAnalysisError(
-          errorType: CsvErrorType.invalidFormat,
-          heightCm: state.heightCm,
-          timePeriod: state.timePeriod,
-          entries: currentEntries,
-          filteredEntries: _filterEntries(currentEntries, state.timePeriod),
-        ),
-      );
     }
   }
 
@@ -733,8 +593,7 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
   ) async {
     final currentEntries = _entriesFromState(state);
     try {
-      await DatabaseModule.createPreImportSnapshot();
-      final count = await repository.bulkImportEntries(event.validEntries);
+      final count = await _csvWeightImporter.confirmImport(event.validEntries);
 
       if (_isHealthSyncEnabled && event.validEntries.isNotEmpty) {
         unawaited(
