@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:balance/l10n/app_localizations.dart';
-import 'package:balance/features/settings/presentation/bloc/bmi_category.dart';
+import 'package:balance/features/weight/domain/bmi_category.dart';
 
 /// A set of localized display helpers for [BmiCategory].
 extension BmiCategoryX on BmiCategory {
