@@ -164,7 +164,7 @@ class CalendarDayEntriesCard extends StatelessWidget {
                                           height: 7,
                                           decoration: BoxDecoration(
                                             color: meetsGoal
-                                                ? const Color(0xFF4CAF50)
+                                                ? const Color(0xFF3CB043)
                                                 : cs.primary,
                                             shape: BoxShape.circle,
                                           ),
@@ -176,8 +176,9 @@ class CalendarDayEntriesCard extends StatelessWidget {
                                               .textTheme
                                               .bodyMedium
                                               ?.copyWith(
-                                                color: cs.onSurfaceVariant,
+                                                color: const Color(0xFFA0A5B5),
                                                 fontWeight: FontWeight.w500,
+                                                fontSize: 13,
                                               ),
                                         ),
                                         if (entry.note != null &&
@@ -191,14 +192,14 @@ class CalendarDayEntriesCard extends StatelessWidget {
                                         ],
                                       ],
                                     ),
-                                    const SizedBox(height: 2),
+                                    const SizedBox(height: 4),
                                     Text(
                                       '${displayWeight.toStringAsFixed(1)} $unitLabel',
                                       style: Theme.of(context)
                                           .textTheme
                                           .headlineMedium
                                           ?.copyWith(
-                                            fontWeight: FontWeight.bold,
+                                            fontWeight: FontWeight.w800,
                                             color: cs.onSurface,
                                             fontSize: 32,
                                             letterSpacing: -0.5,
@@ -208,7 +209,7 @@ class CalendarDayEntriesCard extends StatelessWidget {
                                 ),
                               ),
                               Padding(
-                                padding: const EdgeInsets.only(right: 20),
+                                padding: const EdgeInsets.only(right: 36),
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.end,
                                   mainAxisSize: MainAxisSize.min,
@@ -239,7 +240,7 @@ class CalendarDayEntriesCard extends StatelessWidget {
                                             alpha: 0.15,
                                           ),
                                           borderRadius: BorderRadius.circular(
-                                            12,
+                                            10,
                                           ),
                                           border: Border.all(
                                             color: categoryColor,
@@ -280,17 +281,17 @@ class CalendarDayEntriesCard extends StatelessWidget {
                           ),
                           if (entry.note != null &&
                               entry.note!.trim().isNotEmpty) ...[
-                            const SizedBox(height: 10),
+                            const SizedBox(height: 12),
                             Container(
                               width: double.infinity,
                               padding: const EdgeInsets.symmetric(
                                 horizontal: 12,
-                                vertical: 8,
+                                vertical: 9,
                               ),
                               decoration: BoxDecoration(
-                                color: cs.surfaceContainerHighest.withValues(
-                                  alpha: 0.35,
-                                ),
+                                color: const Color(
+                                  0xFF252830,
+                                ).withValues(alpha: 0.6),
                                 borderRadius: BorderRadius.circular(10),
                               ),
                               child: Column(
@@ -299,12 +300,10 @@ class CalendarDayEntriesCard extends StatelessWidget {
                                   Row(
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
-                                      Icon(
+                                      const Icon(
                                         Icons.description,
-                                        size: 13,
-                                        color: cs.onSurfaceVariant.withValues(
-                                          alpha: 0.8,
-                                        ),
+                                        size: 12,
+                                        color: Color(0xFFA0A5B5),
                                       ),
                                       const SizedBox(width: 5),
                                       Text(
@@ -314,15 +313,14 @@ class CalendarDayEntriesCard extends StatelessWidget {
                                             .labelSmall
                                             ?.copyWith(
                                               fontWeight: FontWeight.w700,
-                                              color: cs.onSurfaceVariant
-                                                  .withValues(alpha: 0.8),
+                                              color: const Color(0xFFA0A5B5),
                                               letterSpacing: 0.5,
                                               fontSize: 11,
                                             ),
                                       ),
                                     ],
                                   ),
-                                  const SizedBox(height: 4),
+                                  const SizedBox(height: 5),
                                   Text(
                                     entry.note!.trim(),
                                     style: Theme.of(context)
@@ -333,7 +331,7 @@ class CalendarDayEntriesCard extends StatelessWidget {
                                             alpha: 0.9,
                                           ),
                                           fontSize: 13,
-                                          height: 1.3,
+                                          height: 1.35,
                                         ),
                                   ),
                                 ],
@@ -344,70 +342,85 @@ class CalendarDayEntriesCard extends StatelessWidget {
                       ),
                     ),
                     Positioned(
-                      top: 8,
-                      right: 4,
-                      child: PopupMenuButton<String>(
-                        padding: EdgeInsets.zero,
-                        iconSize: 20,
-                        icon: Icon(
-                          Icons.more_vert,
-                          color: cs.onSurfaceVariant.withValues(alpha: 0.6),
-                          size: 20,
+                      top: 10,
+                      right: 10,
+                      child: Container(
+                        width: 30,
+                        height: 30,
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF252830),
+                          borderRadius: BorderRadius.circular(9.5),
+                          border: Border.all(
+                            color: const Color(0xFF262933),
+                            width: 1.0,
+                          ),
                         ),
-                        tooltip: l10n.moreOptions,
-                        onSelected: (value) {
-                          if (value == 'edit') {
-                            AppAnalytics.logCalendarEntryClicked(
-                              entryId: entry.id,
-                              hasNote: entry.note != null,
-                            );
-                            AppAnalytics.logDialogEditWeightOpened(entry.id);
-                            final weightBloc = context.read<WeightBloc>();
-                            showModalBottomSheet<void>(
-                              context: context,
-                              isScrollControlled: true,
-                              builder: (sheetCtx) => BlocProvider.value(
-                                value: weightBloc,
-                                child: AddWeightSheet(existingEntry: entry),
+                        child: PopupMenuButton<String>(
+                          padding: EdgeInsets.zero,
+                          constraints: const BoxConstraints(),
+                          iconSize: 16,
+                          icon: const Icon(
+                            Icons.more_vert,
+                            color: Color(0xFFA0A5B5),
+                            size: 16,
+                          ),
+                          tooltip: l10n.moreOptions,
+                          onSelected: (value) {
+                            if (value == 'edit') {
+                              AppAnalytics.logCalendarEntryClicked(
+                                entryId: entry.id,
+                                hasNote: entry.note != null,
+                              );
+                              AppAnalytics.logDialogEditWeightOpened(entry.id);
+                              final weightBloc = context.read<WeightBloc>();
+                              showModalBottomSheet<void>(
+                                context: context,
+                                isScrollControlled: true,
+                                builder: (sheetCtx) => BlocProvider.value(
+                                  value: weightBloc,
+                                  child: AddWeightSheet(existingEntry: entry),
+                                ),
+                              );
+                            } else if (value == 'delete') {
+                              _confirmDelete(context, entry.id);
+                            }
+                          },
+                          itemBuilder: (context) => [
+                            PopupMenuItem<String>(
+                              value: 'edit',
+                              child: Row(
+                                children: [
+                                  Icon(
+                                    Icons.edit_outlined,
+                                    size: 18,
+                                    color: cs.onSurface,
+                                  ),
+                                  const SizedBox(width: 12),
+                                  Text(l10n.edit),
+                                ],
                               ),
-                            );
-                          } else if (value == 'delete') {
-                            _confirmDelete(context, entry.id);
-                          }
-                        },
-                        itemBuilder: (context) => [
-                          PopupMenuItem<String>(
-                            value: 'edit',
-                            child: Row(
-                              children: [
-                                Icon(
-                                  Icons.edit_outlined,
-                                  size: 18,
-                                  color: cs.onSurface,
-                                ),
-                                const SizedBox(width: 12),
-                                Text(l10n.edit),
-                              ],
                             ),
-                          ),
-                          PopupMenuItem<String>(
-                            value: 'delete',
-                            child: Row(
-                              children: [
-                                Icon(
-                                  Icons.delete_outline,
-                                  size: 18,
-                                  color: Colors.red.shade400,
-                                ),
-                                const SizedBox(width: 12),
-                                Text(
-                                  l10n.delete,
-                                  style: TextStyle(color: Colors.red.shade400),
-                                ),
-                              ],
+                            PopupMenuItem<String>(
+                              value: 'delete',
+                              child: Row(
+                                children: [
+                                  Icon(
+                                    Icons.delete_outline,
+                                    size: 18,
+                                    color: Colors.red.shade400,
+                                  ),
+                                  const SizedBox(width: 12),
+                                  Text(
+                                    l10n.delete,
+                                    style: TextStyle(
+                                      color: Colors.red.shade400,
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
                   ],
