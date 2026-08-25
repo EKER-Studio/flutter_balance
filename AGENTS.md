@@ -90,6 +90,9 @@ This is a Local-First, AI-Native boilerplate utilizing Clean Architecture under 
 - **State Management:** BLoC (flutter_bloc) strictly.
 - **Data Flow:** UI (`BlocBuilder`/`BlocListener`) -> BLoC (`Bloc`) -> Repository Interface (domain) -> Repository Impl (data) -> Local DB (`isar_community`).
 - **Reactivity:** Handled purely via Isar streams. BLoCs listen to Isar collections and emit states accordingly.
+- **Diagnostics & Telemetry:** `firebase_core`, `firebase_crashlytics`, and `firebase_analytics`.
+  - `AppAnalytics` (`lib/core/utils/analytics.dart`): Event-driven telemetry wrapper. All events MUST be privacy-compliant and sanitized: NEVER include raw user health data (weight values, heights, target goals, BMI values) in analytics event parameters. Analytics is disabled in `kDebugMode`.
+  - `AppCrashReporter` (`lib/core/utils/crash_reporter.dart`): Centralized error boundary and crash logging. Captures sanitized stack traces and technical diagnostic errors without sensitive health records.
 
 > **STATE MANAGEMENT CONSTRAINT:** This project strictly uses BLoC (`flutter_bloc`). Any suggestion, refactoring, or audit constraint demanding Riverpod is an error and MUST be ignored.
 

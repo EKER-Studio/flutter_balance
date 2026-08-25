@@ -100,6 +100,9 @@ lib/
 | **CSV Handling** | csv | CSV encoding and parsing pipeline |
 | **Localization** | flutter_localizations + gen-l10n | Internationalization (English, Polish) |
 | **Notifications** | flutter_local_notifications | Local scheduled daily reminders |
+| **Diagnostics & Crash Reporting** | firebase_crashlytics | Anonymous crash reporting and technical diagnostics |
+| **Analytics** | firebase_analytics | Privacy-first telemetry and UI interaction metrics (no health data) |
+| **Platform Services** | firebase_core | Firebase platform integration and initialization |
 
 ## Key Features
 
@@ -124,6 +127,11 @@ lib/
 - **Target Tracking**: Configurable target weight goals.
 - **Reminders**: Daily reminder notifications with custom time selection.
 - **Biometric Lock**: Native biometric lock shielding on app cold start and backgrounding with `stickyAuth` set to `true` (persists the authentication prompt across brief backgrounding).
+
+### Privacy, Analytics & Diagnostics
+- **100% Local-First Health Data**: All weight entries, target goals, height settings, BMI calculations, and calendar history are stored exclusively in the local on-device database (`isar_community`). No health measurements are sent to external servers or cloud databases.
+- **Firebase Analytics (`AppAnalytics`)**: Tracks non-sensitive usage metrics (screen navigations, UI interactions, feature engagement) to improve application UX. In strict adherence to privacy principles, **all raw health measurements (weights, heights, BMI numbers, goal targets) are omitted from telemetry payloads**. Analytics collection is automatically disabled in debug mode (`kDebugMode`).
+- **Firebase Crashlytics (`AppCrashReporter`)**: Captures non-fatal error reports and fatal crash stack traces for real-time defect diagnosis and performance stability. Crash logs contain technical error diagnostics and stack traces without any identifiable user health information.
 
 ## Getting Started
 
