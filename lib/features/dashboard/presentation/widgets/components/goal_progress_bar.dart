@@ -66,7 +66,7 @@ class GoalProgressBar extends StatelessWidget {
 
       goalTargetStr = '${displayTarget.toStringAsFixed(1)} $unitLabel';
       goalDetailStr = isAchieved
-          ? '🏆 ${l10n.goalAchieved}'
+          ? l10n.goalAchieved
           : l10n.remainingWeightLabel(
               '${displayDifference.toStringAsFixed(1)} $unitLabel',
             );

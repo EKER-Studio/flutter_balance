@@ -1,16 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:balance/core/utils/analytics.dart';
-import 'package:balance/features/statistics/presentation/widgets/components/habit_metric_item.dart';
+import 'package:balance/features/statistics/presentation/widgets/components/weight_detail_row.dart';
 import 'package:balance/l10n/app_localizations.dart';
 
-/// A card section displaying the current logging streak and monthly compliance percentage.
+/// A card section displaying logging streak metrics and compliance percentage
+/// in a 3-row layout identical to [WeightRangeCard].
 class HabitsActivityCard extends StatelessWidget {
+  /// Current consecutive logging streak in days.
   final int streak;
+
+  /// Best (longest) consecutive logging streak in days.
+  final int bestStreak;
+
+  /// Overall logging compliance percentage.
   final int compliancePct;
 
   const HabitsActivityCard({
     super.key,
     required this.streak,
+    required this.bestStreak,
     required this.compliancePct,
   });
 
@@ -22,7 +30,9 @@ class HabitsActivityCard extends StatelessWidget {
     return Semantics(
       container: true,
       label:
-          '${l10n.loggingStreak}: ${l10n.streakDays(streak)}, ${l10n.monthlyCompliance}: $compliancePct%',
+          '${l10n.currentStreak}: ${l10n.streakDays(streak)}, '
+          '${l10n.bestStreak}: ${l10n.streakDays(bestStreak)}, '
+          '${l10n.monthlyCompliance}: $compliancePct%',
       child: Card(
         margin: EdgeInsets.zero,
         elevation: 0,
@@ -35,29 +45,37 @@ class HabitsActivityCard extends StatelessWidget {
           },
           child: Padding(
             padding: const EdgeInsets.all(20),
-            child: Row(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Expanded(
-                  child: HabitMetricItem(
-                    icon: Icons.local_fire_department,
-                    iconColor: cs.primary,
-                    label: l10n.loggingStreak,
-                    value: l10n.streakDays(streak),
-                  ),
+                WeightDetailRow(
+                  icon: Icons.local_fire_department_outlined,
+                  iconColor: cs.primary,
+                  label: l10n.currentStreak,
+                  value: l10n.streakDays(streak),
+                  date: '',
                 ),
-                Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 16),
-                  height: 36,
-                  width: 1,
-                  color: cs.outlineVariant.withValues(alpha: 0.5),
+                const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 8),
+                  child: Divider(height: 1, thickness: 0.5),
                 ),
-                Expanded(
-                  child: HabitMetricItem(
-                    icon: Icons.insights,
-                    iconColor: cs.primary,
-                    label: l10n.monthlyCompliance,
-                    value: '$compliancePct%',
-                  ),
+                WeightDetailRow(
+                  icon: Icons.workspace_premium_outlined,
+                  iconColor: cs.primary,
+                  label: l10n.bestStreak,
+                  value: l10n.streakDays(bestStreak),
+                  date: '',
+                ),
+                const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 8),
+                  child: Divider(height: 1, thickness: 0.5),
+                ),
+                WeightDetailRow(
+                  icon: Icons.auto_graph_outlined,
+                  iconColor: cs.primary,
+                  label: l10n.monthlyCompliance,
+                  value: '$compliancePct%',
+                  date: l10n.allEntriesLabel,
                 ),
               ],
             ),

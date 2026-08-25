@@ -175,6 +175,8 @@
   "tabSettings": "Settings",
   "multipleEntries": "{count} measurements",
   "loggingStreak": "Logging Streak",
+  "currentStreak": "Current streak",
+  "bestStreak": "Best streak",
   "streakDays": "{count, plural, =0{0 days} one{{count} day} other{{count} days}}",
   "weeklyPaceBadge": "⚡ {value}/week",
   "previousMonth": "Previous month",

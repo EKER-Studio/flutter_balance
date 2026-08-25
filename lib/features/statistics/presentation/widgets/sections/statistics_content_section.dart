@@ -32,6 +32,7 @@ class StatisticsContentSection extends StatelessWidget {
   Widget build(BuildContext context) {
     final now = DateTime.now();
     final streak = _calculateStreak(entries, now);
+    final bestStreak = _calculateBestStreak(entries);
     final compliancePct = _calculateTotalCompliance(entries, now);
     final weeklyPace = _calculateWeeklyPace(entries);
     final isTablet = MediaQuery.sizeOf(context).shortestSide >= 600;
@@ -46,6 +47,7 @@ class StatisticsContentSection extends StatelessWidget {
 
     final habitsCard = HabitsActivityCard(
       streak: streak,
+      bestStreak: bestStreak,
       compliancePct: compliancePct,
     );
 
@@ -162,5 +164,34 @@ class StatisticsContentSection extends StatelessWidget {
         .toSet()
         .length;
     return ((loggedDays / totalDays) * 100).round().clamp(0, 100);
+  }
+
+  static int _calculateBestStreak(List<WeightEntry> entries) {
+    if (entries.isEmpty) return 0;
+
+    final dates =
+        entries
+            .map(
+              (e) =>
+                  DateTime(e.dateTime.year, e.dateTime.month, e.dateTime.day),
+            )
+            .toSet()
+            .toList()
+          ..sort((a, b) => a.compareTo(b));
+
+    int best = 1;
+    int current = 1;
+
+    for (var i = 1; i < dates.length; i++) {
+      final diff = dates[i].difference(dates[i - 1]).inDays;
+      if (diff == 1) {
+        current++;
+        if (current > best) best = current;
+      } else if (diff > 1) {
+        current = 1;
+      }
+    }
+
+    return best;
   }
 }

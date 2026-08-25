@@ -57,7 +57,7 @@ class HeroProgressCard extends StatelessWidget {
 
     if (targetWeight != null) {
       if (latestEntry.weightKg <= targetWeight!) {
-        statusBadge = '🏆 ${l10n.goalAchieved}';
+        statusBadge = l10n.goalAchieved;
         goalProgressPct = 100.0;
       } else {
         final distKg = latestEntry.weightKg - targetWeight!;
@@ -107,18 +107,22 @@ class HeroProgressCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Icon(Icons.stars_outlined, size: 24, color: cs.primary),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: Text(
-                        l10n.totalProgress,
-                        style: Theme.of(context).textTheme.titleMedium
-                            ?.copyWith(
-                              color: cs.onSurface,
-                              fontWeight: FontWeight.w600,
-                            ),
-                      ),
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.stars_outlined, size: 24, color: cs.primary),
+                        const SizedBox(width: 8),
+                        Text(
+                          l10n.totalProgress,
+                          style: Theme.of(context).textTheme.titleMedium
+                              ?.copyWith(
+                                color: cs.onSurface,
+                                fontWeight: FontWeight.w600,
+                              ),
+                        ),
+                      ],
                     ),
                     if (statusBadge != null)
                       Flexible(
@@ -154,8 +158,8 @@ class HeroProgressCard extends StatelessWidget {
                       formattedValue,
                       style: Theme.of(context).textTheme.headlineLarge
                           ?.copyWith(
-                            color: cs.onSurface,
-                            fontWeight: FontWeight.bold,
+                            color: cs.primary,
+                            fontWeight: FontWeight.w800,
                           ),
                     ),
                     const SizedBox(width: 8),

@@ -45,12 +45,13 @@ class WeightDetailRow extends StatelessWidget {
                         fontWeight: FontWeight.w500,
                       ),
                     ),
-                    Text(
-                      date,
-                      style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                        color: cs.onSurfaceVariant,
+                    if (date.isNotEmpty)
+                      Text(
+                        date,
+                        style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                          color: cs.onSurfaceVariant,
+                        ),
                       ),
-                    ),
                   ],
                 ),
               ),
@@ -58,7 +59,7 @@ class WeightDetailRow extends StatelessWidget {
                 value,
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
                   color: cs.onSurface,
-                  fontWeight: FontWeight.bold,
+                  fontWeight: FontWeight.w700,
                 ),
               ),
             ],

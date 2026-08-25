@@ -187,7 +187,7 @@ void main() {
       buildSubject(settingsBloc: settingsBloc, weightBloc: weightBloc),
     );
 
-    expect(find.text('3 dni'), findsOneWidget);
+    expect(find.text('3 dni'), findsNWidgets(2));
   });
 
   testWidgets(
@@ -221,7 +221,7 @@ void main() {
         buildSubject(settingsBloc: settingsBloc, weightBloc: weightBloc),
       );
 
-      expect(find.text('2 dni'), findsOneWidget);
+      expect(find.text('2 dni'), findsNWidgets(2));
     },
   );
 
@@ -252,7 +252,7 @@ void main() {
       buildSubject(settingsBloc: settingsBloc, weightBloc: weightBloc),
     );
 
-    expect(find.text('1 dzień'), findsOneWidget);
+    expect(find.text('1 dzień'), findsNWidgets(2));
   });
 
   testWidgets('StatisticsScreen computes total compliance over all days', (
