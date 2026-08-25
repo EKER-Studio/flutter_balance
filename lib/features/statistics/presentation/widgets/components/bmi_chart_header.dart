@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:balance/features/weight/domain/bmi_category.dart';
+import 'package:balance/features/statistics/presentation/widgets/components/bmi_delta_chip.dart';
 import 'package:balance/features/weight/domain/entities/weight_entry.dart';
-import 'package:balance/features/weight/presentation/utils/bmi_category_localizer.dart';
 import 'package:balance/l10n/app_localizations.dart';
 
-/// A presentational header for the BMI card displaying the section title, category chip, and legend trigger.
+/// A presentational header for the BMI card displaying the section title, delta trend chip, and legend trigger.
 class BmiChartHeader extends StatelessWidget {
   final List<WeightEntry> entries;
   final double? heightCm;
@@ -50,69 +49,57 @@ class BmiChartHeader extends StatelessWidget {
       );
     }
 
-    final sorted = [...entries]
-      ..sort((a, b) => b.dateTime.compareTo(a.dateTime));
-    final hMeters = heightCm! / 100.0;
-    final bmi = sorted.first.weightKg / (hMeters * hMeters);
-    final category = BmiCategory.fromBmi(bmi);
-    final categoryLabel = category.localizedName(l10n);
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-
-    return Semantics(
-      button: true,
-      label: l10n.bmiCategorySemantics(bmi.toStringAsFixed(1), categoryLabel),
-      excludeSemantics: true,
-      child: InkWell(
-        onTap: onLegendTap,
-        borderRadius: BorderRadius.circular(12),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 4.0),
-          child: Row(
-            children: [
-              Icon(Icons.monitor_weight_outlined, size: 20, color: cs.primary),
-              const SizedBox(width: 8),
-              Text(
-                l10n.bmi,
-                style: textTheme.titleMedium?.copyWith(
-                  color: cs.onSurface,
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const Spacer(),
-              Container(
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Flexible(
+          child: Semantics(
+            button: true,
+            label: l10n.bmiLegendTitle,
+            child: InkWell(
+              onTap: onLegendTap,
+              borderRadius: BorderRadius.circular(8),
+              child: Padding(
                 padding: const EdgeInsets.symmetric(
-                  horizontal: 10,
-                  vertical: 4,
-                ),
-                decoration: BoxDecoration(
-                  color: category.chipBackgroundColor(),
-                  borderRadius: BorderRadius.circular(20),
+                  vertical: 4.0,
+                  horizontal: 2.0,
                 ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Icon(
-                      Icons.info_outline_rounded,
-                      size: 15,
-                      color: category.chipContentColor(isDark: isDark),
+                      Icons.monitor_weight_outlined,
+                      size: 20,
+                      color: cs.primary,
+                    ),
+                    const SizedBox(width: 8),
+                    Flexible(
+                      child: Text(
+                        l10n.bmi,
+                        overflow: TextOverflow.ellipsis,
+                        style: textTheme.titleMedium?.copyWith(
+                          color: cs.onSurface,
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                     ),
                     const SizedBox(width: 4),
-                    Text(
-                      categoryLabel,
-                      style: TextStyle(
-                        color: category.chipContentColor(isDark: isDark),
-                        fontSize: 13,
-                        fontWeight: FontWeight.w600,
-                      ),
+                    Icon(
+                      Icons.info_outline_rounded,
+                      size: 16,
+                      color: cs.onSurfaceVariant,
                     ),
                   ],
                 ),
               ),
-            ],
+            ),
           ),
         ),
-      ),
+        const SizedBox(width: 12),
+        BmiDeltaChip(entries: entries, heightCm: heightCm!),
+      ],
     );
   }
 }

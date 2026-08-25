@@ -88,7 +88,7 @@ void main() {
   });
 
   group('with height and chart data', () {
-    testWidgets('renders the line chart with a category chip', (tester) async {
+    testWidgets('renders the line chart with a delta chip', (tester) async {
       await tester.pumpWidget(
         buildSubject(
           entries: [
@@ -101,26 +101,26 @@ void main() {
       );
 
       expect(find.byType(LineChart), findsOneWidget);
-      // BMI = 73 / 1.75^2 = 23.8 -> Normal
-      expect(find.text('Normal'), findsOneWidget);
+      // Delta BMI = (73 - 75) / 1.75^2 = -2 / 3.0625 = -0.65 -> -0.7
+      expect(find.text('-0.7'), findsOneWidget);
     });
 
-    testWidgets('shows underweight category for a low BMI', (tester) async {
+    testWidgets('shows positive delta for increasing BMI', (tester) async {
       await tester.pumpWidget(
         buildSubject(
           entries: [
             entry(weightKg: 50, daysAgo: 5),
-            entry(weightKg: 49, daysAgo: 0),
+            entry(weightKg: 52, daysAgo: 0),
           ],
           heightCm: 175,
         ),
       );
 
-      // BMI = 49 / 1.75^2 = 16.0
-      expect(find.text('Underweight'), findsOneWidget);
+      // Delta BMI = (52 - 50) / 1.75^2 = 2 / 3.0625 = +0.65 -> +0.7
+      expect(find.text('+0.7'), findsOneWidget);
     });
 
-    testWidgets('shows overweight category for a high BMI', (tester) async {
+    testWidgets('shows zero delta for unchanging BMI', (tester) async {
       await tester.pumpWidget(
         buildSubject(
           entries: [
@@ -131,26 +131,10 @@ void main() {
         ),
       );
 
-      // BMI = 85 / 1.75^2 = 27.8
-      expect(find.text('Overweight'), findsOneWidget);
+      expect(find.text('0.0'), findsOneWidget);
     });
 
-    testWidgets('shows obese category for a very high BMI', (tester) async {
-      await tester.pumpWidget(
-        buildSubject(
-          entries: [
-            entry(weightKg: 100, daysAgo: 5),
-            entry(weightKg: 102, daysAgo: 0),
-          ],
-          heightCm: 175,
-        ),
-      );
-
-      // BMI = 102 / 1.75^2 = 33.3
-      expect(find.text('Obesity class I'), findsOneWidget);
-    });
-
-    testWidgets('renders the category chip in dark mode', (tester) async {
+    testWidgets('renders the delta chip in dark mode', (tester) async {
       await tester.pumpWidget(
         buildSubject(
           entries: [
@@ -162,7 +146,7 @@ void main() {
         ),
       );
 
-      expect(find.text('Normal'), findsOneWidget);
+      expect(find.text('-0.3'), findsOneWidget);
       expect(find.byType(LineChart), findsOneWidget);
     });
 

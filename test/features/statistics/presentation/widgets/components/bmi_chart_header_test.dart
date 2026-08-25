@@ -48,19 +48,29 @@ void main() {
       },
     );
 
-    testWidgets('renders computed BMI value and localized category chip', (
+    testWidgets('renders computed BMI delta chip and opens legend on tap', (
       tester,
     ) async {
+      var legendTapped = false;
       final entries = [
         WeightEntry(id: 1, weightKg: 75.0, dateTime: DateTime(2026, 5, 20)),
+        WeightEntry(id: 2, weightKg: 72.0, dateTime: DateTime(2026, 5, 25)),
       ];
 
       await tester.pumpWidget(
-        buildTestWidget(entries: entries, heightCm: 180.0),
+        buildTestWidget(
+          entries: entries,
+          heightCm: 180.0,
+          onLegendTap: () => legendTapped = true,
+        ),
       );
       await tester.pumpAndSettle();
 
-      expect(find.text('Normal'), findsOneWidget);
+      expect(find.text('-0.9'), findsOneWidget);
+      expect(find.text('BMI'), findsOneWidget);
+
+      await tester.tap(find.text('BMI'));
+      expect(legendTapped, isTrue);
     });
   });
 }
