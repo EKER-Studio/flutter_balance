@@ -235,6 +235,7 @@ void main() {
 
       expect(find.text('72.5 kg'), findsOneWidget);
       expect(find.textContaining('Morning weight'), findsOneWidget);
+      expect(find.byIcon(Icons.notes), findsOneWidget);
       expect(find.byIcon(Icons.delete_outline), findsOneWidget);
       expect(find.byIcon(Icons.add), findsOneWidget);
       expect(find.byIcon(Icons.schedule), findsOneWidget);
@@ -495,6 +496,59 @@ void main() {
     await tester.tapAt(const Offset(10, 10));
     await tester.pumpAndSettle();
   });
+
+  testWidgets(
+    'CalendarDayEntriesCard tapping entry card opens AddWeightSheet in edit mode',
+    (tester) async {
+      final entry = WeightEntry(
+        id: 1,
+        weightKg: 72.5,
+        dateTime: DateTime(2026, 7, 15, 8, 30),
+        note: 'Initial note',
+      );
+
+      await tester.pumpWidget(
+        MultiBlocProvider(
+          providers: [
+            BlocProvider(create: (_) => AppSettingsBloc()),
+            BlocProvider(
+              create: (context) => WeightBloc(
+                repository: repository,
+                healthService: healthService,
+              ),
+            ),
+          ],
+          child: MaterialApp(
+            locale: const Locale('en'),
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            home: Scaffold(
+              body: CalendarDayEntriesCard(
+                selectedDate: DateTime(2026, 7, 15),
+                entries: [entry],
+              ),
+            ),
+          ),
+        ),
+      );
+
+      await tester.tap(find.text('72.5 kg'));
+      await tester.pumpAndSettle();
+
+      expect(find.byType(AddWeightSheet), findsOneWidget);
+      expect(find.text('Edit measurement'), findsOneWidget);
+      expect(
+        find.descendant(
+          of: find.byType(AddWeightSheet),
+          matching: find.text('Initial note'),
+        ),
+        findsOneWidget,
+      );
+
+      await tester.tapAt(const Offset(10, 10));
+      await tester.pumpAndSettle();
+    },
+  );
 
   testWidgets(
     'CalendarDayEntriesCard delete confirms before dispatching DeleteWeight',

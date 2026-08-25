@@ -31,6 +31,14 @@ final class AddWeight extends WeightEvent {
   const AddWeight({required this.weightKg, this.note, this.dateTime});
 }
 
+/// An event that updates an existing weight measurement in the repository.
+final class UpdateWeight extends WeightEvent {
+  /// The updated weight entry containing a persisted ID.
+  final WeightEntry entry;
+
+  const UpdateWeight(this.entry);
+}
+
 /// An event that removes the entry with the given [id].
 final class DeleteWeight extends WeightEvent {
   final int id;

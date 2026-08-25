@@ -67,6 +67,8 @@
   "highest": "Highest",
   "weightRangeSemanticsPrefix": "Weight range: ",
   "addWeight": "Add measurement",
+  "editWeight": "Edit measurement",
+  "editMeasurementTooltip": "Edit measurement",
   "measurementDate": "Measurement date",
   "measurementTime": "Measurement time",
   "futureDateError": "Date and time cannot be in the future",

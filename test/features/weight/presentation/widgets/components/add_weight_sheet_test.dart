@@ -4,6 +4,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:balance/features/weight/domain/entities/weight_entry.dart';
 import 'package:balance/features/weight/presentation/bloc/weight_bloc.dart';
 import 'package:balance/features/weight/presentation/bloc/weight_event.dart';
 import 'package:balance/features/weight/presentation/bloc/weight_state.dart';
@@ -22,6 +23,11 @@ void main() {
 
   setUpAll(() {
     registerFallbackValue(const AddWeight(weightKg: 70.0));
+    registerFallbackValue(
+      UpdateWeight(
+        WeightEntry(id: 1, weightKg: 70.0, dateTime: DateTime(2026)),
+      ),
+    );
   });
 
   setUp(() {
@@ -316,6 +322,66 @@ void main() {
             (e) => e.weightKg,
             'weightKg',
             closeTo(72.57, 0.01),
+          ),
+        ),
+      ),
+    ).called(1);
+  });
+
+  testWidgets('renders edit title and pre-fills fields in edit mode', (
+    tester,
+  ) async {
+    final entry = WeightEntry(
+      id: 42,
+      weightKg: 85.5,
+      dateTime: DateTime(2026, 7, 20, 14, 30),
+      note: 'After gym',
+    );
+
+    await tester.pumpWidget(
+      createTestWidget(AddWeightSheet(existingEntry: entry)),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Edit measurement'), findsOneWidget);
+    expect(find.text('85.5'), findsOneWidget);
+    expect(find.text('After gym'), findsOneWidget);
+  });
+
+  testWidgets('dispatches UpdateWeight on save when editing existing entry', (
+    tester,
+  ) async {
+    final entry = WeightEntry(
+      id: 42,
+      weightKg: 85.5,
+      dateTime: DateTime(2026, 7, 20, 14, 30),
+      note: 'After gym',
+    );
+
+    await tester.pumpWidget(
+      createTestWidget(AddWeightSheet(existingEntry: entry)),
+    );
+    await tester.pumpAndSettle();
+
+    final weightField = find.byType(TextField).at(0);
+    await tester.enterText(weightField, '86.0');
+    final noteField = find.byType(TextField).at(1);
+    await tester.enterText(noteField, 'New note');
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Save'));
+    await tester.pumpAndSettle();
+
+    verify(
+      () => weightBloc.add(
+        any(
+          that: isA<UpdateWeight>().having(
+            (e) => e.entry,
+            'entry',
+            isA<WeightEntry>()
+                .having((x) => x.id, 'id', 42)
+                .having((x) => x.weightKg, 'weightKg', 86.0)
+                .having((x) => x.note, 'note', 'New note'),
           ),
         ),
       ),

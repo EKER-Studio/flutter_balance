@@ -72,6 +72,7 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
     );
     on<UpdateUserHeight>(_onUpdateUserHeight);
     on<AddWeight>(_onAddWeight, transformer: droppable());
+    on<UpdateWeight>(_onUpdateWeight, transformer: droppable());
     on<DeleteWeight>(_onDeleteWeight, transformer: sequential());
     on<ChangeChartFilter>(_onChangeChartFilter, transformer: restartable());
     on<RefreshWeightData>(_onRefreshWeightData, transformer: droppable());
@@ -324,6 +325,57 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
       emit(
         WeightError(
           errorType: WeightErrorType.addEntryFailed,
+          heightCm: heightCm,
+          timePeriod: state.timePeriod,
+          entries: entries,
+          filteredEntries: _filterEntries(entries, state.timePeriod),
+        ),
+      );
+    }
+  }
+
+  /// Updates an existing [WeightEntry] in the repository.
+  ///
+  /// Local-first: the update is committed to the local repository before any
+  /// platform interaction, and only then mirrored to the health platform as
+  /// an unawaited, best-effort write when health sync is enabled (see
+  /// [_mirrorWriteToHealth]); mirror failures never fail the local update, and
+  /// no platform call is made when sync is off.
+  Future<void> _onUpdateWeight(
+    UpdateWeight event,
+    Emitter<WeightState> emit,
+  ) async {
+    final heightCm = state.heightCm;
+    final entries = _entriesFromState(state);
+
+    if (heightCm == null || heightCm <= 0) {
+      emit(
+        WeightError(
+          errorType: WeightErrorType.heightNotSet,
+          heightCm: heightCm,
+          timePeriod: state.timePeriod,
+          entries: entries,
+          filteredEntries: _filterEntries(entries, state.timePeriod),
+        ),
+      );
+      return;
+    }
+
+    try {
+      await repository.addEntry(event.entry);
+      if (_isHealthSyncEnabled) {
+        unawaited(_mirrorWriteToHealth(event.entry));
+      }
+    } catch (e, stack) {
+      AppCrashReporter.recordError(
+        e,
+        stack,
+        reason: '[WeightBloc] Failed to update entry',
+        fatal: false,
+      );
+      emit(
+        WeightError(
+          errorType: WeightErrorType.writeFailed,
           heightCm: heightCm,
           timePeriod: state.timePeriod,
           entries: entries,

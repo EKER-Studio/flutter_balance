@@ -12,16 +12,19 @@ import 'package:balance/features/weight/presentation/widgets/components/date_tim
 import 'package:balance/features/weight/presentation/widgets/components/weight_input_field.dart';
 import 'package:balance/l10n/app_localizations.dart';
 
-/// A modal bottom sheet form for adding a new weight measurement.
+/// A modal bottom sheet form for adding or editing a weight measurement.
 ///
 /// Validates the weight against [WeightEntry.minWeightKg] and
 /// [WeightEntry.maxWeightKg], converts imperial input to kilograms, and
-/// dispatches [AddWeight] to [WeightBloc] on save.
+/// dispatches [AddWeight] or [UpdateWeight] to [WeightBloc] on save.
 class AddWeightSheet extends StatefulWidget {
   /// The optional initial date/time for the measurement.
   final DateTime? initialDate;
 
-  const AddWeightSheet({super.key, this.initialDate});
+  /// The existing entry to edit, if in edit mode.
+  final WeightEntry? existingEntry;
+
+  const AddWeightSheet({super.key, this.initialDate, this.existingEntry});
 
   @override
   State<AddWeightSheet> createState() => _AddWeightSheetState();
@@ -39,17 +42,29 @@ class _AddWeightSheetState extends State<AddWeightSheet>
   String? _weightError;
   Orientation? _lastOrientation;
 
+  bool get _isEditing => widget.existingEntry != null;
+
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
+    final existing = widget.existingEntry;
     final now = DateTime.now();
-    final initial = widget.initialDate ?? now;
+    final initial = existing?.dateTime ?? widget.initialDate ?? now;
 
     _selectedDate = DateTime(initial.year, initial.month, initial.day);
 
-    // Default to the current time unless a specific time was provided.
-    if (widget.initialDate != null &&
+    if (existing != null) {
+      _selectedTime = TimeOfDay.fromDateTime(existing.dateTime);
+      if (existing.note != null && existing.note!.isNotEmpty) {
+        _noteController.text = existing.note!;
+      }
+      final unit = context.read<AppSettingsBloc>().state.measurementUnit;
+      final displayWeight = unit == MeasurementUnit.imperial
+          ? kgToLbs(existing.weightKg)
+          : existing.weightKg;
+      _weightController.text = displayWeight.toStringAsFixed(1);
+    } else if (widget.initialDate != null &&
         (initial.hour != 0 || initial.minute != 0)) {
       _selectedTime = TimeOfDay.fromDateTime(initial);
     } else {
@@ -178,7 +193,7 @@ class _AddWeightSheetState extends State<AddWeightSheet>
                 ),
               ),
               Text(
-                l10n.addWeight,
+                _isEditing ? l10n.editWeight : l10n.addWeight,
                 style: textTheme.titleLarge?.copyWith(
                   fontWeight: FontWeight.bold,
                   color: colorScheme.onSurface,
@@ -308,19 +323,38 @@ class _AddWeightSheetState extends State<AddWeightSheet>
         ? null
         : _noteController.text.trim();
 
-    final isPastDate = _combinedDateTime.isBefore(
-      DateTime.now().subtract(const Duration(minutes: 5)),
-    );
+    if (_isEditing) {
+      final existing = widget.existingEntry!;
+      final dateModified = _combinedDateTime != existing.dateTime;
+      AppAnalytics.logDialogEditWeightSaved(
+        weightKg: weightKg,
+        hasNote: note != null,
+        dateModified: dateModified,
+      );
 
-    AppAnalytics.logDialogAddWeightSaved(
-      weightKg: weightKg,
-      hasNote: note != null,
-      isPastDate: isPastDate,
-    );
+      final updatedEntry = WeightEntry(
+        id: existing.id,
+        weightKg: weightKg,
+        dateTime: _combinedDateTime,
+        note: note,
+      );
 
-    context.read<WeightBloc>().add(
-      AddWeight(weightKg: weightKg, note: note, dateTime: _combinedDateTime),
-    );
+      context.read<WeightBloc>().add(UpdateWeight(updatedEntry));
+    } else {
+      final isPastDate = _combinedDateTime.isBefore(
+        DateTime.now().subtract(const Duration(minutes: 5)),
+      );
+
+      AppAnalytics.logDialogAddWeightSaved(
+        weightKg: weightKg,
+        hasNote: note != null,
+        isPastDate: isPastDate,
+      );
+
+      context.read<WeightBloc>().add(
+        AddWeight(weightKg: weightKg, note: note, dateTime: _combinedDateTime),
+      );
+    }
 
     Navigator.of(context).pop();
   }

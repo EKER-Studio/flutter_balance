@@ -67,6 +67,8 @@
   "highest": "Najwyższa",
   "weightRangeSemanticsPrefix": "Zakres wagi: ",
   "addWeight": "Dodaj pomiar",
+  "editWeight": "Edytuj pomiar",
+  "editMeasurementTooltip": "Edytuj pomiar",
   "measurementDate": "Data pomiaru",
   "measurementTime": "Godzina pomiaru",
   "futureDateError": "Data i godzina nie mogą być w przyszłości",

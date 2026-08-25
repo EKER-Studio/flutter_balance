@@ -332,6 +332,74 @@ void main() {
     );
 
     blocTest<WeightBloc, WeightState>(
+      'calls repository.addEntry with updated entry on UpdateWeight when height is set',
+      build: () => WeightBloc(repository: repository),
+      seed: () =>
+          const WeightLoaded(entries: [], filteredEntries: [], heightCm: 170),
+      act: (bloc) => bloc.add(
+        UpdateWeight(
+          WeightEntry(
+            id: 1,
+            weightKg: 74,
+            dateTime: DateTime(2026, 7, 15, 9),
+            note: 'Updated note',
+          ),
+        ),
+      ),
+      verify: (_) {
+        final captured = verify(
+          () => repository.addEntry(captureAny()),
+        ).captured;
+        final entry = captured.single as WeightEntry;
+        expect(entry.id, 1);
+        expect(entry.weightKg, 74);
+        expect(entry.note, 'Updated note');
+      },
+    );
+
+    blocTest<WeightBloc, WeightState>(
+      'emits WeightError on UpdateWeight when height is not set',
+      build: () => WeightBloc(repository: repository),
+      seed: () => const WeightInitial(),
+      act: (bloc) => bloc.add(
+        UpdateWeight(
+          WeightEntry(id: 1, weightKg: 74, dateTime: DateTime(2026, 7, 15, 9)),
+        ),
+      ),
+      expect: () => [
+        isA<WeightError>().having(
+          (s) => s.errorType,
+          'errorType',
+          WeightErrorType.heightNotSet,
+        ),
+      ],
+    );
+
+    blocTest<WeightBloc, WeightState>(
+      'emits WeightError when repository.addEntry fails on UpdateWeight',
+      build: () {
+        when(
+          () => repository.addEntry(any()),
+        ).thenThrow(Exception('Write failed'));
+        return WeightBloc(repository: repository);
+      },
+      seed: () =>
+          const WeightLoaded(entries: [], filteredEntries: [], heightCm: 170),
+      act: (bloc) => bloc.add(
+        UpdateWeight(
+          WeightEntry(id: 1, weightKg: 74, dateTime: DateTime(2026, 7, 15, 9)),
+        ),
+      ),
+      expect: () => [
+        isA<WeightError>().having(
+          (s) => s.errorType,
+          'errorType',
+          WeightErrorType.writeFailed,
+        ),
+      ],
+    );
+
+    blocTest<WeightBloc, WeightState>(
       'emits WeightError when repository.deleteEntry fails',
       build: () {
         when(
@@ -620,6 +688,36 @@ void main() {
             () => healthService.writeWeight(
               weightKg: 72,
               timestamp: any(named: 'timestamp'),
+            ),
+          ).called(1);
+          verify(() => repository.addEntry(any())).called(1);
+        },
+      );
+
+      blocTest<WeightBloc, WeightState>(
+        'mirrors updated weight entry to HealthService when UpdateWeight is '
+        'dispatched and sync is enabled',
+        build: () => WeightBloc(
+          repository: repository,
+          appSettingsBloc: buildSettingsBloc(),
+          healthService: healthService,
+        ),
+        seed: () =>
+            const WeightLoaded(entries: [], filteredEntries: [], heightCm: 170),
+        act: (bloc) => bloc.add(
+          UpdateWeight(
+            WeightEntry(
+              id: 1,
+              weightKg: 73,
+              dateTime: DateTime(2026, 7, 15, 10),
+            ),
+          ),
+        ),
+        verify: (_) {
+          verify(
+            () => healthService.writeWeight(
+              weightKg: 73,
+              timestamp: DateTime(2026, 7, 15, 10),
             ),
           ).called(1);
           verify(() => repository.addEntry(any())).called(1);
