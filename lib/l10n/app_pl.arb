@@ -229,7 +229,7 @@
   "next": "Dalej",
   "previousStepTooltip": "Poprzedni krok",
   "metricUnitOption": "Metryczne (kg, cm)",
-  "imperialUnitOption": "Imperialne (lbs, ft-in)",
+  "imperialUnitOption": "Imperialne (lb, ft/in)",
   "onboardingWelcomeTitle": "Witaj w Balance",
   "onboardingWelcomeSubtitle": "Skonfigurujmy Twoje konto w kilku prostych krokach.",
   "onboardingWelcomeStart": "Rozpocznij",

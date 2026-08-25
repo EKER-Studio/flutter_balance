@@ -226,7 +226,7 @@ void main() {
         find.byKey(const Key('height_cm_input')),
         'not a number',
       );
-      await tester.tap(find.text('Imperial (lbs, ft-in)'));
+      await tester.tap(find.text('Imperial (lb, ft/in)'));
       await tester.pumpAndSettle();
 
       final feet = tester.widget<TextField>(

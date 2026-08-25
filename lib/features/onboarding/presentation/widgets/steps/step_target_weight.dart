@@ -193,7 +193,7 @@ class _StepTargetWeightState extends State<StepTargetWeight> {
     return ClampedLayout(
       padding: EdgeInsets.symmetric(
         horizontal: 24.0,
-        vertical: isLandscape ? 8.0 : 24.0,
+        vertical: isLandscape ? 12.0 : 24.0,
       ),
       child: SingleChildScrollView(
         physics: const BouncingScrollPhysics(),
@@ -201,6 +201,7 @@ class _StepTargetWeightState extends State<StepTargetWeight> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
+            SizedBox(height: isLandscape ? 4.0 : 0.0),
             Text(
               l10n.targetWeightOptionalTitle,
               style: theme.textTheme.headlineSmall?.copyWith(

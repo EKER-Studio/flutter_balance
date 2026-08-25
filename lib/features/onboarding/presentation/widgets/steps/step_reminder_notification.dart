@@ -78,7 +78,7 @@ class _StepReminderNotificationState extends State<StepReminderNotification> {
     return ClampedLayout(
       padding: EdgeInsets.symmetric(
         horizontal: 24.0,
-        vertical: isLandscape ? 8.0 : 24.0,
+        vertical: isLandscape ? 12.0 : 24.0,
       ),
       child: BlocBuilder<AppSettingsBloc, AppSettingsState>(
         builder: (context, settingsState) {
@@ -92,6 +92,7 @@ class _StepReminderNotificationState extends State<StepReminderNotification> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
+                SizedBox(height: isLandscape ? 4.0 : 0.0),
                 Text(
                   l10n.dailyReminderStepOptionalTitle,
                   style: theme.textTheme.headlineSmall?.copyWith(

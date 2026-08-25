@@ -129,7 +129,7 @@ class _StepCsvImportState extends State<StepCsvImport> {
     return ClampedLayout(
       padding: EdgeInsets.symmetric(
         horizontal: 24.0,
-        vertical: isLandscape ? 8.0 : 24.0,
+        vertical: isLandscape ? 12.0 : 24.0,
       ),
       child: switch (_status) {
         _CsvImportStatus.idle => CsvImportIdleView(

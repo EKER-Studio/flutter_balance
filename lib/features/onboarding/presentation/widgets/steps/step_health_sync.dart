@@ -52,7 +52,7 @@ class _StepHealthSyncState extends State<StepHealthSync> {
     return ClampedLayout(
       padding: EdgeInsets.symmetric(
         horizontal: 24.0,
-        vertical: isLandscape ? 8.0 : 24.0,
+        vertical: isLandscape ? 12.0 : 24.0,
       ),
       child: BlocListener<AppSettingsBloc, AppSettingsState>(
         // Edge-triggered on the transient denial flag: the bloc resets the
@@ -94,6 +94,7 @@ class _StepHealthSyncState extends State<StepHealthSync> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
+                    SizedBox(height: isLandscape ? 4.0 : 0.0),
                     Text(
                       l10n.healthSyncStepOptionalTitle,
                       style: theme.textTheme.headlineSmall?.copyWith(

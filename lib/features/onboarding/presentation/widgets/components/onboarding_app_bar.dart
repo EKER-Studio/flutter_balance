@@ -29,12 +29,9 @@ class OnboardingAppBar extends StatelessWidget implements PreferredSizeWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context);
-    final isLandscape =
-        MediaQuery.sizeOf(context).height < 500 ||
-        MediaQuery.orientationOf(context) == Orientation.landscape;
 
     return AppBar(
-      toolbarHeight: isLandscape ? 40.0 : 48.0,
+      toolbarHeight: 48.0,
       leading: IconButton(
         icon: const Icon(Icons.arrow_back),
         tooltip: l10n.previousStepTooltip,
