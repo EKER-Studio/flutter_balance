@@ -44,6 +44,7 @@
   "weightInLbLabel": "Waga (lb)",
   "weightHint": "np. 75,5",
   "noteLabel": "Notatka (opcjonalnie)",
+  "note": "Notatka",
   "theme": "Motyw",
   "system": "Systemowy",
   "light": "Jasny",

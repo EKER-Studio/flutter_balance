@@ -258,34 +258,46 @@ class CalendarDayEntriesCard extends StatelessWidget {
                             width: double.infinity,
                             padding: const EdgeInsets.symmetric(
                               horizontal: 12,
-                              vertical: 8,
+                              vertical: 10,
                             ),
                             decoration: BoxDecoration(
                               color: cs.surfaceContainerHighest.withValues(
                                 alpha: 0.5,
                               ),
                               borderRadius: BorderRadius.circular(10),
+                              border: Border.all(
+                                color: cs.outlineVariant.withValues(alpha: 0.5),
+                              ),
                             ),
-                            child: Row(
+                            child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Padding(
-                                  padding: const EdgeInsets.only(top: 2),
-                                  child: Icon(
-                                    Icons.notes,
-                                    size: 16,
-                                    color: cs.onSurfaceVariant,
-                                  ),
+                                Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Icon(
+                                      Icons.notes,
+                                      size: 14,
+                                      color: cs.onSurfaceVariant,
+                                    ),
+                                    const SizedBox(width: 6),
+                                    Text(
+                                      l10n.note,
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .labelSmall
+                                          ?.copyWith(
+                                            fontWeight: FontWeight.w600,
+                                            color: cs.onSurfaceVariant,
+                                          ),
+                                    ),
+                                  ],
                                 ),
-                                const SizedBox(width: 8),
-                                Expanded(
-                                  child: Text(
-                                    entry.note!.trim(),
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .bodyMedium
-                                        ?.copyWith(color: cs.onSurface),
-                                  ),
+                                const SizedBox(height: 6),
+                                Text(
+                                  entry.note!.trim(),
+                                  style: Theme.of(context).textTheme.bodyMedium
+                                      ?.copyWith(color: cs.onSurface),
                                 ),
                               ],
                             ),

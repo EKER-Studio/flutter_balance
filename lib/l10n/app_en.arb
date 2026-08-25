@@ -44,6 +44,7 @@
   "weightInLbLabel": "Weight in lb",
   "weightHint": "e.g. 75.5",
   "noteLabel": "Note (optional)",
+  "note": "Note",
   "theme": "Theme",
   "system": "System",
   "light": "Light",
