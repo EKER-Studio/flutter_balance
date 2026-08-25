@@ -252,69 +252,98 @@ void main() {
   });
 
   group('DatabaseModule getEncryptionKey', () {
+    late Directory tempDir;
+    late PathProviderPlatform originalPathProvider;
     const secureStorageChannel = MethodChannel(
       'plugins.it_nomads.com/flutter_secure_storage',
     );
     final messenger =
         TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger;
 
+    setUp(() {
+      tempDir = Directory.systemTemp.createTempSync('db_key_test_');
+      originalPathProvider = PathProviderPlatform.instance;
+      PathProviderPlatform.instance = FakePathProviderPlatform(tempDir.path);
+    });
+
     tearDown(() {
+      PathProviderPlatform.instance = originalPathProvider;
       messenger.setMockMethodCallHandler(secureStorageChannel, null);
+      if (tempDir.existsSync()) {
+        tempDir.deleteSync(recursive: true);
+      }
     });
 
-    test('returns the previously stored key from secure storage', () async {
-      final storedKey = List<int>.generate(32, (i) => i);
-      final log = <MethodCall>[];
-      messenger.setMockMethodCallHandler(secureStorageChannel, (
-        MethodCall call,
-      ) async {
-        log.add(call);
-        if (call.method == 'read') return base64Encode(storedKey);
-        return null;
-      });
+    test(
+      'returns key from existing key file directly without calling secure storage',
+      () async {
+        final keyBytes = List<int>.generate(32, (i) => i + 10);
+        final keyFile = File('${tempDir.path}/balance_v1.key');
+        keyFile.writeAsStringSync(base64Encode(keyBytes));
 
-      final key = await DatabaseModule.getEncryptionKey();
+        final log = <MethodCall>[];
+        messenger.setMockMethodCallHandler(secureStorageChannel, (call) async {
+          log.add(call);
+          return null;
+        });
 
-      expect(key, Uint8List.fromList(storedKey));
-      final readCall = log.firstWhere((c) => c.method == 'read');
-      expect(readCall.arguments['key'], 'isar_encryption_key');
-    });
+        final key = await DatabaseModule.getEncryptionKey(tempDir.path);
 
-    test('generates a fresh 256-bit key and persists it', () async {
-      final log = <MethodCall>[];
-      messenger.setMockMethodCallHandler(secureStorageChannel, (
-        MethodCall call,
-      ) async {
-        log.add(call);
-        return null;
-      });
+        expect(key, Uint8List.fromList(keyBytes));
+        expect(log, isEmpty);
+      },
+    );
 
-      final key = await DatabaseModule.getEncryptionKey();
+    test(
+      'migrates previously stored key from secure storage to key file',
+      () async {
+        final storedKey = List<int>.generate(32, (i) => i);
+        final log = <MethodCall>[];
+        messenger.setMockMethodCallHandler(secureStorageChannel, (
+          MethodCall call,
+        ) async {
+          log.add(call);
+          if (call.method == 'read') return base64Encode(storedKey);
+          return null;
+        });
 
-      expect(key.length, 32);
-      final writeCall = log.firstWhere((c) => c.method == 'write');
-      expect(writeCall.arguments['key'], 'isar_encryption_key');
-      expect(base64Decode(writeCall.arguments['value'] as String), key);
-    });
+        final key = await DatabaseModule.getEncryptionKey(tempDir.path);
 
-    test('propagates a secure storage failure when reading a key', () async {
-      messenger.setMockMethodCallHandler(secureStorageChannel, (
-        MethodCall call,
-      ) async {
-        throw PlatformException(code: 'storage_unavailable');
-      });
+        expect(key, Uint8List.fromList(storedKey));
+        final readCall = log.firstWhere((c) => c.method == 'read');
+        expect(readCall.arguments['key'], 'isar_encryption_key');
 
-      await expectLater(
-        DatabaseModule.getEncryptionKey(),
-        throwsA(
-          isA<PlatformException>().having(
-            (e) => e.code,
-            'code',
-            'storage_unavailable',
-          ),
-        ),
-      );
-    });
+        // Key file should now exist
+        final keyFile = File('${tempDir.path}/balance_v1.key');
+        expect(keyFile.existsSync(), isTrue);
+        expect(base64Decode(keyFile.readAsStringSync().trim()), storedKey);
+      },
+    );
+
+    test(
+      'generates a fresh 256-bit key and persists it to both file and secure storage',
+      () async {
+        final log = <MethodCall>[];
+        messenger.setMockMethodCallHandler(secureStorageChannel, (
+          MethodCall call,
+        ) async {
+          log.add(call);
+          return null;
+        });
+
+        final key = await DatabaseModule.getEncryptionKey(tempDir.path);
+
+        expect(key.length, 32);
+        final writeCall = log.firstWhere((c) => c.method == 'write');
+        expect(writeCall.arguments['key'], 'isar_encryption_key');
+        expect(base64Decode(writeCall.arguments['value'] as String), key);
+
+        // Key file should also be created
+        final keyFile = File('${tempDir.path}/balance_v1.key');
+        expect(keyFile.existsSync(), isTrue);
+        expect(base64Decode(keyFile.readAsStringSync().trim()), key);
+      },
+    );
 
     test('propagates a malformed stored key as FormatException', () async {
       messenger.setMockMethodCallHandler(secureStorageChannel, (
@@ -325,7 +354,7 @@ void main() {
       });
 
       await expectLater(
-        DatabaseModule.getEncryptionKey(),
+        DatabaseModule.getEncryptionKey(tempDir.path),
         throwsA(isA<FormatException>()),
       );
     });

@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <full-backup-content>
-    <!-- Exclude local encrypted database files and secure storage keys for Android 6.0 - 11 -->
-    <!-- to prevent corruption when hardware Keystore keys are not transferred. -->
-    <exclude domain="database" />
-    <exclude domain="sharedpref" />
-    <exclude domain="file" />
+    <!-- Include app data files, database, and preferences for Android 6.0 - 11 -->
+    <include domain="file" path="app_flutter" />
+    <include domain="database" path="." />
+    <include domain="sharedpref" path="." />
+    <!-- Exclude active Isar lock file and hardware-bound Keystore shared preference -->
+    <exclude domain="file" path="app_flutter/balance_v1.isar.lock" />
+    <exclude domain="sharedpref" path="FlutterSecureStorage.xml" />
 </full-backup-content>

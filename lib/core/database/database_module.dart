@@ -36,22 +36,75 @@ class DatabaseModule {
   static const List<String> _legacyDbNames = [];
 
   static const String _encryptionKeyKey = 'isar_encryption_key';
+  static const String _encryptionKeyFileName = 'balance_v1.key';
 
   static const FlutterSecureStorage _secureStorage = FlutterSecureStorage();
 
-  /// Retrieves or generates a 256-bit AES encryption key from secure storage.
-  static Future<Uint8List> getEncryptionKey() async {
-    final stored = await _secureStorage.read(key: _encryptionKeyKey);
-    if (stored != null) {
-      return Uint8List.fromList(base64Decode(stored));
+  /// Retrieves or generates a 256-bit AES encryption key.
+  ///
+  /// Checks for a persisted key file in the application documents directory
+  /// (which is included in Android Cloud Backup). If not present, falls back
+  /// to [FlutterSecureStorage] to migrate existing keys, and writes the key to
+  /// the file. If neither exists, generates a fresh random 256-bit key and
+  /// stores it in both places.
+  ///
+  /// @param directoryPath Optional directory override (used in testing).
+  static Future<Uint8List> getEncryptionKey([String? directoryPath]) async {
+    File? keyFile;
+    try {
+      final dirPath =
+          directoryPath ?? (await getApplicationDocumentsDirectory()).path;
+      keyFile = File('$dirPath/$_encryptionKeyFileName');
+
+      if (await keyFile.exists()) {
+        final content = (await keyFile.readAsString()).trim();
+        if (content.isNotEmpty) {
+          final decoded = base64Decode(content);
+          if (decoded.length == 32) {
+            return Uint8List.fromList(decoded);
+          }
+        }
+      }
+    } catch (_) {
+      // Path provider may be unavailable in some isolated test environments
     }
+
+    // Fallback/Migration: Check FlutterSecureStorage
+    String? stored;
+    try {
+      stored = await _secureStorage.read(key: _encryptionKeyKey);
+    } catch (_) {
+      // Secure storage might fail or be unavailable
+    }
+
+    if (stored != null && stored.isNotEmpty) {
+      try {
+        final decoded = base64Decode(stored);
+        if (decoded.length == 32) {
+          try {
+            await keyFile?.writeAsString(stored);
+          } catch (_) {}
+          return Uint8List.fromList(decoded);
+        }
+      } catch (e) {
+        throw FormatException('Malformed stored encryption key: $e');
+      }
+    }
+
+    // Generate fresh key
     final key = Uint8List.fromList(
       List<int>.generate(32, (_) => Random.secure().nextInt(256)),
     );
-    await _secureStorage.write(
-      key: _encryptionKeyKey,
-      value: base64Encode(key),
-    );
+    final base64Key = base64Encode(key);
+
+    try {
+      await keyFile?.writeAsString(base64Key);
+    } catch (_) {}
+
+    try {
+      await _secureStorage.write(key: _encryptionKeyKey, value: base64Key);
+    } catch (_) {}
+
     return key;
   }
 

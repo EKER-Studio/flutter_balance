@@ -168,12 +168,29 @@ class IsarWeightRepository implements WeightRepository {
           '[IsarWeightRepository] Error reading key from secureStorage: ${e.runtimeType}',
         );
       }
+      throw WeightRepositoryException(
+        type: isWrite
+            ? WeightErrorType.writeFailed
+            : WeightErrorType.readFailed,
+        message: 'Failed to read encryption key from secure storage',
+      );
     }
 
     if (stored != null && stored.isNotEmpty) {
-      final key = Uint8List.fromList(base64Decode(stored));
-      _encryptionKey = key;
-      return key;
+      try {
+        final key = Uint8List.fromList(base64Decode(stored));
+        if (key.length == 32) {
+          _encryptionKey = key;
+          return key;
+        }
+      } catch (e) {
+        throw WeightRepositoryException(
+          type: isWrite
+              ? WeightErrorType.writeFailed
+              : WeightErrorType.readFailed,
+          message: 'Malformed encryption key: $e',
+        );
+      }
     }
 
     throw WeightRepositoryException(
