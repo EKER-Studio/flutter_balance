@@ -87,7 +87,7 @@ class HabitsActivityCard extends StatelessWidget {
                   iconColor: cs.primary,
                   label: l10n.bestStreak,
                   value: l10n.streakDays(bestStreak),
-                  date: l10n.bestStreakSubtitle,
+                  date: l10n.currentStreakSubtitle,
                 ),
                 const Padding(
                   padding: EdgeInsets.symmetric(vertical: 8),
