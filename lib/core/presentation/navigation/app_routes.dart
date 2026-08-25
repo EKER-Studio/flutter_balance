@@ -1,5 +1,3 @@
-import 'package:meta/meta.dart';
-
 /// Centralized route paths, query parameter names, and deep-link URI builders.
 abstract final class AppRoutes {
   /// Startup splash screen while initializing Isar and platform plugins.
@@ -37,7 +35,6 @@ abstract final class AppRoutes {
   ///
   /// Reserved for upcoming deep link integration with interactive app widgets
   /// and scheduled system reminder notifications.
-  @experimental
   static String calendarForDate(DateTime date) {
     final year = date.year.toString().padLeft(4, '0');
     final month = date.month.toString().padLeft(2, '0');
