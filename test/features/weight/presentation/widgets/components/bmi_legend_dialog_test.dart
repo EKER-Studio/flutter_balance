@@ -260,4 +260,34 @@ void main() {
     expect(find.text('Your result'), findsOneWidget);
     expect(find.byIcon(Icons.check), findsOneWidget);
   });
+
+  testWidgets('scrolls smoothly in landscape mode without overflow', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(800, 360);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(() {
+      tester.view.resetPhysicalSize();
+      tester.view.resetDevicePixelRatio();
+    });
+
+    await pumpDialog(
+      tester,
+      state: const AppSettingsState(
+        height: 177.0,
+        measurementUnit: MeasurementUnit.metric,
+      ),
+    );
+
+    expect(find.byType(SingleChildScrollView), findsOneWidget);
+    expect(find.text('OK'), findsOneWidget);
+
+    await tester.drag(
+      find.byType(SingleChildScrollView),
+      const Offset(0, -300),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Healthy weight range'), findsOneWidget);
+  });
 }

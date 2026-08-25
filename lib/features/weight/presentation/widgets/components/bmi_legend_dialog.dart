@@ -132,59 +132,63 @@ class BmiLegendDialog extends StatelessWidget {
       );
     }
 
+    final maxHeight = MediaQuery.sizeOf(context).height * 0.7;
+
     return AlertDialog(
-      scrollable: true,
-      insetPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
+      scrollable: false,
+      insetPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
       title: Text(l10n.bmiLegendTitle),
-      content: SizedBox(
-        width: 320,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            BmiLegendItem(
-              category: BmiCategory.underweight,
-              range: '< 18.5',
-              isDark: isDark,
-              isCurrent: userCategory == BmiCategory.underweight,
-            ),
-            const SizedBox(height: 2),
-            BmiLegendItem(
-              category: BmiCategory.normal,
-              range: '18.5 – 24.9',
-              isDark: isDark,
-              isCurrent: userCategory == BmiCategory.normal,
-            ),
-            const SizedBox(height: 2),
-            BmiLegendItem(
-              category: BmiCategory.overweight,
-              range: '25.0 – 29.9',
-              isDark: isDark,
-              isCurrent: userCategory == BmiCategory.overweight,
-            ),
-            const SizedBox(height: 2),
-            BmiLegendItem(
-              category: BmiCategory.obeseClass1,
-              range: '30.0 – 34.9',
-              isDark: isDark,
-              isCurrent: userCategory == BmiCategory.obeseClass1,
-            ),
-            const SizedBox(height: 2),
-            BmiLegendItem(
-              category: BmiCategory.obeseClass2,
-              range: '35.0 – 39.9',
-              isDark: isDark,
-              isCurrent: userCategory == BmiCategory.obeseClass2,
-            ),
-            const SizedBox(height: 2),
-            BmiLegendItem(
-              category: BmiCategory.obeseClass3,
-              range: '≥ 40.0',
-              isDark: isDark,
-              isCurrent: userCategory == BmiCategory.obeseClass3,
-            ),
-            ?healthyWeightWidget,
-          ],
+      content: ConstrainedBox(
+        constraints: BoxConstraints(maxWidth: 340, maxHeight: maxHeight),
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              BmiLegendItem(
+                category: BmiCategory.underweight,
+                range: '< 18.5',
+                isDark: isDark,
+                isCurrent: userCategory == BmiCategory.underweight,
+              ),
+              const SizedBox(height: 2),
+              BmiLegendItem(
+                category: BmiCategory.normal,
+                range: '18.5 – 24.9',
+                isDark: isDark,
+                isCurrent: userCategory == BmiCategory.normal,
+              ),
+              const SizedBox(height: 2),
+              BmiLegendItem(
+                category: BmiCategory.overweight,
+                range: '25.0 – 29.9',
+                isDark: isDark,
+                isCurrent: userCategory == BmiCategory.overweight,
+              ),
+              const SizedBox(height: 2),
+              BmiLegendItem(
+                category: BmiCategory.obeseClass1,
+                range: '30.0 – 34.9',
+                isDark: isDark,
+                isCurrent: userCategory == BmiCategory.obeseClass1,
+              ),
+              const SizedBox(height: 2),
+              BmiLegendItem(
+                category: BmiCategory.obeseClass2,
+                range: '35.0 – 39.9',
+                isDark: isDark,
+                isCurrent: userCategory == BmiCategory.obeseClass2,
+              ),
+              const SizedBox(height: 2),
+              BmiLegendItem(
+                category: BmiCategory.obeseClass3,
+                range: '≥ 40.0',
+                isDark: isDark,
+                isCurrent: userCategory == BmiCategory.obeseClass3,
+              ),
+              ?healthyWeightWidget,
+            ],
+          ),
         ),
       ),
       actions: [
