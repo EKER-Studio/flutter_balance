@@ -91,7 +91,6 @@ class DatabaseModule {
       }
     }
 
-    // Generate fresh key
     final key = Uint8List.fromList(
       List<int>.generate(32, (_) => Random.secure().nextInt(256)),
     );

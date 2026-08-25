@@ -53,7 +53,6 @@ class _CalendarShimmerSkeletonState extends State<CalendarShimmerSkeleton>
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                // Top Calendar Card Skeleton
                 Card(
                   elevation: 0,
                   margin: EdgeInsets.zero,
@@ -65,7 +64,6 @@ class _CalendarShimmerSkeletonState extends State<CalendarShimmerSkeleton>
                     padding: const EdgeInsets.all(16),
                     child: Column(
                       children: [
-                        // Month Header Skeleton
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
@@ -96,7 +94,6 @@ class _CalendarShimmerSkeletonState extends State<CalendarShimmerSkeleton>
                           ],
                         ),
                         const SizedBox(height: 16),
-                        // Weekday Headers Skeleton
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceAround,
                           children: List.generate(
@@ -112,7 +109,6 @@ class _CalendarShimmerSkeletonState extends State<CalendarShimmerSkeleton>
                           ),
                         ),
                         const SizedBox(height: 16),
-                        // Grid 7x5 Skeleton
                         GridView.builder(
                           physics: const NeverScrollableScrollPhysics(),
                           shrinkWrap: true,
@@ -142,7 +138,6 @@ class _CalendarShimmerSkeletonState extends State<CalendarShimmerSkeleton>
                   ),
                 ),
                 const SizedBox(height: 20),
-                // Day Title Skeleton
                 Padding(
                   padding: const EdgeInsets.only(left: 8, bottom: 8),
                   child: Container(
@@ -154,7 +149,6 @@ class _CalendarShimmerSkeletonState extends State<CalendarShimmerSkeleton>
                     ),
                   ),
                 ),
-                // Lower Card Skeleton
                 Card(
                   elevation: 0,
                   margin: EdgeInsets.zero,

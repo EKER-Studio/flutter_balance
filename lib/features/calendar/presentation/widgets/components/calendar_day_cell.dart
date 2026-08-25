@@ -83,7 +83,6 @@ class CalendarDayCell extends StatelessWidget {
 
     final isDark = theme.brightness == Brightness.dark;
 
-    // Colors used for goal-aware indicators.
     final green = isDark ? Colors.green.shade300 : Colors.green.shade700;
     final blue = colorScheme.primary;
 
