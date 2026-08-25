@@ -30,7 +30,7 @@ class AppTopBar extends StatelessWidget {
       title: Text(
         title,
         style: textTheme.headlineMedium?.copyWith(
-          color: colorScheme.onSurface,
+          color: colorScheme.primary,
           fontWeight: FontWeight.w700,
         ),
       ),
