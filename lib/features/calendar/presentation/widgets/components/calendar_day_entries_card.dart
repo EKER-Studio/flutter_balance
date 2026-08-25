@@ -169,15 +169,28 @@ class CalendarDayEntriesCard extends StatelessWidget {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text(
-                                    '${displayWeight.toStringAsFixed(1)} $unitLabel',
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .titleLarge
-                                        ?.copyWith(
-                                          fontWeight: FontWeight.bold,
-                                          color: cs.onSurface,
+                                  Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Text(
+                                        '${displayWeight.toStringAsFixed(1)} $unitLabel',
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .titleLarge
+                                            ?.copyWith(
+                                              fontWeight: FontWeight.bold,
+                                              color: cs.onSurface,
+                                            ),
+                                      ),
+                                      const SizedBox(width: 4),
+                                      Icon(
+                                        Icons.edit_outlined,
+                                        size: 14,
+                                        color: cs.onSurfaceVariant.withValues(
+                                          alpha: 0.7,
                                         ),
+                                      ),
+                                    ],
                                   ),
                                   Row(
                                     children: [
@@ -228,9 +241,11 @@ class CalendarDayEntriesCard extends StatelessWidget {
                             ),
                             const SizedBox(width: 8),
                             IconButton(
-                              icon: const Icon(Icons.delete_outline, size: 20),
+                              icon: Icon(
+                                Icons.delete_outline,
+                                color: cs.onSurfaceVariant,
+                              ),
                               tooltip: l10n.deleteMeasurementTooltip,
-                              color: cs.onSurfaceVariant,
                               onPressed: () =>
                                   _confirmDelete(context, entry.id),
                             ),
@@ -254,10 +269,13 @@ class CalendarDayEntriesCard extends StatelessWidget {
                             child: Row(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Icon(
-                                  Icons.notes,
-                                  size: 16,
-                                  color: cs.onSurfaceVariant,
+                                Padding(
+                                  padding: const EdgeInsets.only(top: 2),
+                                  child: Icon(
+                                    Icons.notes,
+                                    size: 16,
+                                    color: cs.onSurfaceVariant,
+                                  ),
                                 ),
                                 const SizedBox(width: 8),
                                 Expanded(
