@@ -41,41 +41,45 @@ class BmiLegendDialog extends StatelessWidget {
       final displayMin = isImperial ? kgToLbs(minWeightKg) : minWeightKg;
       final displayMax = isImperial ? kgToLbs(maxWeightKg) : maxWeightKg;
 
-      healthyWeightWidget = Container(
-        margin: const EdgeInsets.only(top: 16),
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-        decoration: BoxDecoration(
-          color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
-          borderRadius: BorderRadius.circular(8),
-          border: Border.all(
-            color: colorScheme.outlineVariant.withValues(alpha: 0.5),
+      final greenColor = isDark ? Colors.green.shade400 : Colors.green.shade700;
+
+      healthyWeightWidget = MergeSemantics(
+        child: Container(
+          margin: const EdgeInsets.only(top: 12),
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+          decoration: BoxDecoration(
+            color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(
+              color: colorScheme.outlineVariant.withValues(alpha: 0.5),
+            ),
           ),
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Expanded(
-              child: Text(
-                l10n.healthyWeightRange,
-                style: textTheme.bodySmall?.copyWith(
-                  fontWeight: FontWeight.w600,
-                  color: colorScheme.onSurface,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Expanded(
+                child: Text(
+                  l10n.healthyWeightRange,
+                  style: textTheme.bodyMedium?.copyWith(
+                    fontWeight: FontWeight.w600,
+                    color: colorScheme.onSurface,
+                  ),
                 ),
               ),
-            ),
-            const SizedBox(width: 8),
-            Text(
-              l10n.healthyWeightRangeValue(
-                displayMin.toStringAsFixed(1),
-                displayMax.toStringAsFixed(1),
-                unitLabel,
+              const SizedBox(width: 8),
+              Text(
+                l10n.healthyWeightRangeValue(
+                  displayMin.toStringAsFixed(1),
+                  displayMax.toStringAsFixed(1),
+                  unitLabel,
+                ),
+                style: textTheme.titleSmall?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: greenColor,
+                ),
               ),
-              style: textTheme.bodySmall?.copyWith(
-                fontWeight: FontWeight.bold,
-                color: Colors.green.shade400,
-              ),
-            ),
-          ],
+            ],
+          ),
         ),
       );
     }
@@ -95,31 +99,31 @@ class BmiLegendDialog extends StatelessWidget {
               range: '< 18.5',
               isDark: isDark,
             ),
-            const SizedBox(height: 10),
+            const SizedBox(height: 2),
             BmiLegendItem(
               category: BmiCategory.normal,
               range: '18.5 – 24.9',
               isDark: isDark,
             ),
-            const SizedBox(height: 10),
+            const SizedBox(height: 2),
             BmiLegendItem(
               category: BmiCategory.overweight,
               range: '25.0 – 29.9',
               isDark: isDark,
             ),
-            const SizedBox(height: 10),
+            const SizedBox(height: 2),
             BmiLegendItem(
               category: BmiCategory.obeseClass1,
               range: '30.0 – 34.9',
               isDark: isDark,
             ),
-            const SizedBox(height: 10),
+            const SizedBox(height: 2),
             BmiLegendItem(
               category: BmiCategory.obeseClass2,
               range: '35.0 – 39.9',
               isDark: isDark,
             ),
-            const SizedBox(height: 10),
+            const SizedBox(height: 2),
             BmiLegendItem(
               category: BmiCategory.obeseClass3,
               range: '≥ 40.0',

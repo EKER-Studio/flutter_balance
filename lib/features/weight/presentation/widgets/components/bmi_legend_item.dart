@@ -30,17 +30,17 @@ class BmiLegendItem extends StatelessWidget {
           AppAnalytics.logDialogBmiLegendCategoryTapped(category.name);
         },
         child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 2),
+          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
           child: Row(
             children: [
               ExcludeSemantics(
                 child: Container(
-                  width: 16,
-                  height: 16,
+                  width: 18,
+                  height: 18,
                   decoration: BoxDecoration(
                     color: bgColor,
                     border: Border.all(color: textColor, width: 2),
-                    borderRadius: BorderRadius.circular(4),
+                    borderRadius: BorderRadius.circular(5),
                   ),
                 ),
               ),
@@ -58,6 +58,7 @@ class BmiLegendItem extends StatelessWidget {
                 range,
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                   color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  fontWeight: FontWeight.w500,
                 ),
               ),
             ],

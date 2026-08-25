@@ -88,14 +88,14 @@ void main() {
         )
         .where(
           (c) =>
-              c.constraints?.maxWidth == 16 && c.constraints?.maxHeight == 16,
+              c.constraints?.maxWidth == 18 && c.constraints?.maxHeight == 18,
         )
         .toList();
     expect(swatches, hasLength(6));
 
     for (final swatch in swatches) {
       final decoration = swatch.decoration! as BoxDecoration;
-      expect(decoration.borderRadius, BorderRadius.circular(4));
+      expect(decoration.borderRadius, BorderRadius.circular(5));
       expect(decoration.border, isNotNull);
     }
   });
