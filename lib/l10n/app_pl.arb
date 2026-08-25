@@ -69,6 +69,15 @@
   "weightRangeSemanticsPrefix": "Zakres wagi: ",
   "addWeight": "Dodaj pomiar",
   "editWeight": "Edytuj pomiar",
+  "edit": "Edytuj",
+  "delete": "Usuń",
+  "moreOptions": "Więcej opcji",
+  "measurementCountPill": "{count, plural, one{{count} pomiar} few{{count} pomiary} many{{count} pomiarów} other{{count} pomiarów}}",
+  "@measurementCountPill": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
   "editMeasurementTooltip": "Edytuj pomiar",
   "measurementDate": "Data pomiaru",
   "measurementTime": "Godzina pomiaru",

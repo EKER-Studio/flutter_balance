@@ -54,34 +54,30 @@ class CalendarDayCell extends StatelessWidget {
     if (isFuture) {
       textColor = colorScheme.onSurface.withValues(alpha: 0.25);
     } else if (isSelected) {
-      textColor = colorScheme.onPrimary;
+      textColor = colorScheme.onSurface;
     } else if (isToday) {
       textColor = colorScheme.primary;
     } else {
       textColor = colorScheme.onSurface;
     }
 
-    BoxDecoration? cellDecoration;
-    if (isSelected) {
-      cellDecoration = BoxDecoration(
-        color: colorScheme.primary,
-        shape: BoxShape.circle,
-      );
-    } else if (isToday) {
-      cellDecoration = BoxDecoration(
-        shape: BoxShape.circle,
-        border: Border.all(
-          color: colorScheme.primary.withValues(alpha: 0.5),
-          width: 1.5,
-        ),
-      );
-    }
+    final cellDecoration = isSelected
+        ? BoxDecoration(
+            color: colorScheme.primary.withValues(alpha: 0.15),
+            shape: BoxShape.circle,
+            border: Border.all(color: colorScheme.primary, width: 1.5),
+          )
+        : null;
 
     final dateFormatted = DateFormat.yMMMd(
       Localizations.localeOf(context).toString(),
     ).format(date);
     final semanticLabel =
         '$dateFormatted, ${entries.length} measurements${isGoalAchieved ? ', goal achieved' : ''}';
+
+    final dotColor = isGoalAchieved
+        ? const Color(0xFF4CAF50)
+        : colorScheme.primary;
 
     return Semantics(
       button: !isFuture,
@@ -118,24 +114,12 @@ class CalendarDayCell extends StatelessWidget {
                     height: 4,
                     child: entries.isNotEmpty
                         ? ExcludeSemantics(
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: List.generate(
-                                entries.length.clamp(1, 3),
-                                (index) => Container(
-                                  width: 4,
-                                  height: 4,
-                                  margin: const EdgeInsets.symmetric(
-                                    horizontal: 1,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color: isSelected
-                                        ? colorScheme.onPrimary
-                                        : colorScheme.primary,
-                                    shape: BoxShape.circle,
-                                  ),
-                                ),
+                            child: Container(
+                              width: 4,
+                              height: 4,
+                              decoration: BoxDecoration(
+                                color: dotColor,
+                                shape: BoxShape.circle,
                               ),
                             ),
                           )
@@ -143,25 +127,6 @@ class CalendarDayCell extends StatelessWidget {
                   ),
                 ],
               ),
-              if (isGoalAchieved && !isFuture)
-                Positioned(
-                  top: 0,
-                  right: 0,
-                  child: ExcludeSemantics(
-                    child: Container(
-                      padding: const EdgeInsets.all(1.5),
-                      decoration: const BoxDecoration(
-                        color: Color(0xFF4CAF50),
-                        shape: BoxShape.circle,
-                      ),
-                      child: const Icon(
-                        Icons.star,
-                        size: 11,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
-                ),
             ],
           ),
         ),

@@ -69,6 +69,15 @@
   "weightRangeSemanticsPrefix": "Weight range: ",
   "addWeight": "Add measurement",
   "editWeight": "Edit measurement",
+  "edit": "Edit",
+  "delete": "Delete",
+  "moreOptions": "More options",
+  "measurementCountPill": "{count, plural, one{{count} measurement} other{{count} measurements}}",
+  "@measurementCountPill": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
   "editMeasurementTooltip": "Edit measurement",
   "measurementDate": "Measurement date",
   "measurementTime": "Measurement time",

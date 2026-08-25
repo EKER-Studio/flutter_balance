@@ -49,24 +49,30 @@ class CalendarDayEntriesCard extends StatelessWidget {
     final isGoalAchievedOnDay =
         targetWeight != null && entries.any((e) => e.weightKg <= targetWeight!);
 
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         if (isGoalAchievedOnDay) ...[
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
             decoration: BoxDecoration(
-              color: Colors.green.withValues(alpha: 0.15),
+              color: Colors.green.withValues(alpha: 0.12),
               borderRadius: BorderRadius.circular(16),
+              border: Border.all(
+                color: Colors.green.withValues(alpha: 0.4),
+                width: 1,
+              ),
             ),
             child: Row(
               children: [
                 ExcludeSemantics(
                   child: Icon(
-                    Icons.stars,
-                    color: Theme.of(context).brightness == Brightness.light
-                        ? Colors.green.shade800
-                        : Colors.green.shade300,
+                    Icons.military_tech_outlined,
+                    color: isDark
+                        ? Colors.green.shade300
+                        : Colors.green.shade800,
                     size: 22,
                   ),
                 ),
@@ -76,9 +82,9 @@ class CalendarDayEntriesCard extends StatelessWidget {
                     l10n.goalAchievedOnDayBanner,
                     style: Theme.of(context).textTheme.labelMedium?.copyWith(
                       fontWeight: FontWeight.bold,
-                      color: Theme.of(context).brightness == Brightness.light
-                          ? Colors.green.shade800
-                          : Colors.green.shade300,
+                      color: isDark
+                          ? Colors.green.shade300
+                          : Colors.green.shade800,
                     ),
                   ),
                 ),
@@ -111,6 +117,8 @@ class CalendarDayEntriesCard extends StatelessWidget {
                 : double.nan;
             final category = bmi.isFinite ? BmiCategory.fromBmi(bmi) : null;
             final categoryText = category?.localizedName(l10n) ?? '';
+            final categoryColor =
+                category?.chipContentColor(isDark: isDark) ?? cs.primary;
 
             return Semantics(
               container: true,
@@ -122,190 +130,275 @@ class CalendarDayEntriesCard extends StatelessWidget {
                 color: cs.surfaceContainerLow,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(16),
+                  side: BorderSide(
+                    color: index == 0
+                        ? cs.primary.withValues(alpha: 0.8)
+                        : cs.outlineVariant.withValues(alpha: 0.2),
+                    width: index == 0 ? 1.5 : 1.0,
+                  ),
                 ),
-                child: InkWell(
-                  borderRadius: BorderRadius.circular(16),
-                  onTap: () {
-                    AppAnalytics.logCalendarEntryClicked(
-                      entryId: entry.id,
-                      hasNote: entry.note != null,
-                    );
-                    AppAnalytics.logDialogEditWeightOpened(entry.id);
-                    final weightBloc = context.read<WeightBloc>();
-                    showModalBottomSheet<void>(
-                      context: context,
-                      isScrollControlled: true,
-                      builder: (sheetCtx) => BlocProvider.value(
-                        value: weightBloc,
-                        child: AddWeightSheet(existingEntry: entry),
+                child: Stack(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 14,
                       ),
-                    );
-                  },
-                  child: Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            CircleAvatar(
-                              radius: 24,
-                              backgroundColor: meetsGoal
-                                  ? Colors.green.withValues(alpha: 0.15)
-                                  : cs.secondaryContainer,
-                              child: Icon(
-                                meetsGoal ? Icons.star : Icons.monitor_weight,
-                                size: 24,
-                                color: meetsGoal
-                                    ? (Theme.of(context).brightness ==
-                                              Brightness.light
-                                          ? Colors.green.shade800
-                                          : Colors.green.shade300)
-                                    : cs.onSecondaryContainer,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Container(
+                                    width: 7,
+                                    height: 7,
+                                    decoration: BoxDecoration(
+                                      color: meetsGoal
+                                          ? const Color(0xFF4CAF50)
+                                          : cs.primary,
+                                      shape: BoxShape.circle,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 6),
+                                  Text(
+                                    timeStr,
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .bodyMedium
+                                        ?.copyWith(
+                                          color: cs.onSurfaceVariant,
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                  ),
+                                  if (entry.note != null &&
+                                      entry.note!.trim().isNotEmpty) ...[
+                                    const SizedBox(width: 6),
+                                    Icon(
+                                      Icons.description_outlined,
+                                      size: 14,
+                                      color: cs.primary,
+                                    ),
+                                  ],
+                                ],
                               ),
-                            ),
-                            const SizedBox(width: 16),
-                            Expanded(
+                              Padding(
+                                padding: const EdgeInsets.only(right: 24),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.end,
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    if (bmi.isFinite)
+                                      Text(
+                                        l10n.bmiValueLabel(
+                                          bmi.toStringAsFixed(1),
+                                        ),
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .titleSmall
+                                            ?.copyWith(
+                                              fontWeight: FontWeight.bold,
+                                              color: cs.primary,
+                                            ),
+                                      ),
+                                    if (categoryText.isNotEmpty) ...[
+                                      const SizedBox(height: 3),
+                                      Container(
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 8,
+                                          vertical: 2,
+                                        ),
+                                        decoration: BoxDecoration(
+                                          color: categoryColor.withValues(
+                                            alpha: 0.15,
+                                          ),
+                                          borderRadius: BorderRadius.circular(
+                                            12,
+                                          ),
+                                          border: Border.all(
+                                            color: categoryColor,
+                                            width: 1,
+                                          ),
+                                        ),
+                                        child: Row(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            Container(
+                                              width: 5,
+                                              height: 5,
+                                              decoration: BoxDecoration(
+                                                color: categoryColor,
+                                                shape: BoxShape.circle,
+                                              ),
+                                            ),
+                                            const SizedBox(width: 4),
+                                            Text(
+                                              categoryText,
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .labelSmall
+                                                  ?.copyWith(
+                                                    color: categoryColor,
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 6),
+                          Text(
+                            '${displayWeight.toStringAsFixed(1)} $unitLabel',
+                            style: Theme.of(context).textTheme.headlineMedium
+                                ?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                  color: cs.onSurface,
+                                  fontSize: 32,
+                                  letterSpacing: -0.5,
+                                ),
+                          ),
+                          if (entry.note != null &&
+                              entry.note!.trim().isNotEmpty) ...[
+                            const SizedBox(height: 10),
+                            Container(
+                              width: double.infinity,
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 8,
+                              ),
+                              decoration: BoxDecoration(
+                                color: cs.surfaceContainerHighest.withValues(
+                                  alpha: 0.35,
+                                ),
+                                borderRadius: BorderRadius.circular(10),
+                              ),
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Row(
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
+                                      Icon(
+                                        Icons.description,
+                                        size: 13,
+                                        color: cs.onSurfaceVariant.withValues(
+                                          alpha: 0.8,
+                                        ),
+                                      ),
+                                      const SizedBox(width: 5),
                                       Text(
-                                        '${displayWeight.toStringAsFixed(1)} $unitLabel',
+                                        l10n.note.toUpperCase(),
                                         style: Theme.of(context)
                                             .textTheme
-                                            .titleLarge
+                                            .labelSmall
                                             ?.copyWith(
-                                              fontWeight: FontWeight.bold,
-                                              color: cs.onSurface,
+                                              fontWeight: FontWeight.w700,
+                                              color: cs.onSurfaceVariant
+                                                  .withValues(alpha: 0.8),
+                                              letterSpacing: 0.5,
+                                              fontSize: 11,
                                             ),
-                                      ),
-                                      const SizedBox(width: 4),
-                                      Icon(
-                                        Icons.edit_outlined,
-                                        size: 14,
-                                        color: cs.onSurfaceVariant.withValues(
-                                          alpha: 0.7,
-                                        ),
                                       ),
                                     ],
                                   ),
-                                  Row(
-                                    children: [
-                                      Icon(
-                                        Icons.schedule,
-                                        size: 16,
-                                        color: cs.onSurfaceVariant,
-                                      ),
-                                      const SizedBox(width: 4),
-                                      Text(
-                                        timeStr,
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .bodyMedium
-                                            ?.copyWith(
-                                              color: cs.onSurfaceVariant,
-                                            ),
-                                      ),
-                                    ],
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    entry.note!.trim(),
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .bodyMedium
+                                        ?.copyWith(
+                                          color: cs.onSurfaceVariant.withValues(
+                                            alpha: 0.9,
+                                          ),
+                                          fontSize: 13,
+                                          height: 1.3,
+                                        ),
                                   ),
                                 ],
                               ),
                             ),
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.end,
+                          ],
+                        ],
+                      ),
+                    ),
+                    Positioned(
+                      top: 8,
+                      right: 4,
+                      child: PopupMenuButton<String>(
+                        padding: EdgeInsets.zero,
+                        iconSize: 20,
+                        icon: Icon(
+                          Icons.more_vert,
+                          color: cs.onSurfaceVariant.withValues(alpha: 0.6),
+                          size: 20,
+                        ),
+                        tooltip: l10n.moreOptions,
+                        onSelected: (value) {
+                          if (value == 'edit') {
+                            AppAnalytics.logCalendarEntryClicked(
+                              entryId: entry.id,
+                              hasNote: entry.note != null,
+                            );
+                            AppAnalytics.logDialogEditWeightOpened(entry.id);
+                            final weightBloc = context.read<WeightBloc>();
+                            showModalBottomSheet<void>(
+                              context: context,
+                              isScrollControlled: true,
+                              builder: (sheetCtx) => BlocProvider.value(
+                                value: weightBloc,
+                                child: AddWeightSheet(existingEntry: entry),
+                              ),
+                            );
+                          } else if (value == 'delete') {
+                            _confirmDelete(context, entry.id);
+                          }
+                        },
+                        itemBuilder: (context) => [
+                          PopupMenuItem<String>(
+                            value: 'edit',
+                            child: Row(
                               children: [
-                                Text(
-                                  bmi.isFinite
-                                      ? l10n.bmiValueLabel(
-                                          bmi.toStringAsFixed(1),
-                                        )
-                                      : '',
-                                  style: Theme.of(context).textTheme.titleMedium
-                                      ?.copyWith(
-                                        fontWeight: FontWeight.bold,
-                                        color: cs.primary,
-                                      ),
+                                Icon(
+                                  Icons.edit_outlined,
+                                  size: 18,
+                                  color: cs.onSurface,
                                 ),
-                                if (categoryText.isNotEmpty)
-                                  Text(
-                                    categoryText,
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .labelMedium
-                                        ?.copyWith(color: cs.onSurfaceVariant),
-                                  ),
+                                const SizedBox(width: 12),
+                                Text(l10n.edit),
                               ],
                             ),
-                            const SizedBox(width: 8),
-                            IconButton(
-                              icon: Icon(
-                                Icons.delete_outline,
-                                color: cs.onSurfaceVariant,
-                              ),
-                              tooltip: l10n.deleteMeasurementTooltip,
-                              onPressed: () =>
-                                  _confirmDelete(context, entry.id),
-                            ),
-                          ],
-                        ),
-                        if (entry.note != null &&
-                            entry.note!.trim().isNotEmpty) ...[
-                          const SizedBox(height: 12),
-                          Container(
-                            width: double.infinity,
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 12,
-                              vertical: 10,
-                            ),
-                            decoration: BoxDecoration(
-                              color: cs.surfaceContainerHighest.withValues(
-                                alpha: 0.5,
-                              ),
-                              borderRadius: BorderRadius.circular(10),
-                              border: Border.all(
-                                color: cs.outlineVariant.withValues(alpha: 0.5),
-                              ),
-                            ),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
+                          ),
+                          PopupMenuItem<String>(
+                            value: 'delete',
+                            child: Row(
                               children: [
-                                Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Icon(
-                                      Icons.notes,
-                                      size: 14,
-                                      color: cs.onSurfaceVariant,
-                                    ),
-                                    const SizedBox(width: 6),
-                                    Text(
-                                      l10n.note,
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .labelSmall
-                                          ?.copyWith(
-                                            fontWeight: FontWeight.w600,
-                                            color: cs.onSurfaceVariant,
-                                          ),
-                                    ),
-                                  ],
+                                Icon(
+                                  Icons.delete_outline,
+                                  size: 18,
+                                  color: Colors.red.shade400,
                                 ),
-                                const SizedBox(height: 6),
+                                const SizedBox(width: 12),
                                 Text(
-                                  entry.note!.trim(),
-                                  style: Theme.of(context).textTheme.bodyMedium
-                                      ?.copyWith(color: cs.onSurface),
+                                  l10n.delete,
+                                  style: TextStyle(color: Colors.red.shade400),
                                 ),
                               ],
                             ),
                           ),
                         ],
-                      ],
+                      ),
                     ),
-                  ),
+                  ],
                 ),
               ),
             );

@@ -138,26 +138,38 @@ void main() {
     },
   );
 
-  testWidgets(
-    'CalendarDayCell renders star badge when isGoalAchieved is true',
-    (tester) async {
-      await tester.pumpWidget(
-        createTestWidget(
-          CalendarDayCell(
-            date: DateTime(2026, 7, 15),
-            dayNumber: 15,
-            entries: const [],
-            isToday: false,
-            isSelected: false,
-            isGoalAchieved: true,
-            onTap: () {},
-          ),
+  testWidgets('CalendarDayCell renders green dot when isGoalAchieved is true', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      createTestWidget(
+        CalendarDayCell(
+          date: DateTime(2026, 7, 15),
+          dayNumber: 15,
+          entries: [
+            WeightEntry(id: 1, weightKg: 70.0, dateTime: DateTime(2026, 7, 15)),
+          ],
+          isToday: false,
+          isSelected: false,
+          isGoalAchieved: true,
+          onTap: () {},
         ),
-      );
+      ),
+    );
 
-      expect(find.byIcon(Icons.star), findsOneWidget);
-    },
-  );
+    final dotContainer = tester
+        .widgetList<Container>(
+          find.descendant(
+            of: find.byType(CalendarDayCell),
+            matching: find.byType(Container),
+          ),
+        )
+        .firstWhere(
+          (c) => c.constraints?.maxWidth == 4 && c.constraints?.maxHeight == 4,
+        );
+    final decoration = dotContainer.decoration as BoxDecoration;
+    expect(decoration.color, const Color(0xFF4CAF50));
+  });
 
   testWidgets(
     'CalendarDayEmptyCard renders empty state UI in Polish and English',
@@ -235,13 +247,10 @@ void main() {
 
       expect(find.text('72.5 kg'), findsOneWidget);
       expect(find.textContaining('Morning weight'), findsOneWidget);
-      expect(find.byIcon(Icons.notes), findsOneWidget);
-      expect(find.byIcon(Icons.delete_outline), findsOneWidget);
+      expect(find.text('NOTATKA'), findsOneWidget);
+      expect(find.byIcon(Icons.more_vert), findsOneWidget);
       expect(find.byIcon(Icons.add), findsOneWidget);
-      expect(find.byIcon(Icons.schedule), findsOneWidget);
       expect(find.textContaining('08:30'), findsOneWidget);
-      expect(find.byType(CircleAvatar), findsOneWidget);
-      expect(find.byIcon(Icons.monitor_weight), findsOneWidget);
     },
   );
 
@@ -273,8 +282,7 @@ void main() {
       );
 
       expect(find.textContaining('Cel wagi został osiągnięty'), findsOneWidget);
-      expect(find.byIcon(Icons.star), findsOneWidget);
-      expect(find.byIcon(Icons.monitor_weight), findsOneWidget);
+      expect(find.byIcon(Icons.military_tech_outlined), findsOneWidget);
     },
   );
 
@@ -498,7 +506,7 @@ void main() {
   });
 
   testWidgets(
-    'CalendarDayEntriesCard tapping entry card opens AddWeightSheet in edit mode',
+    'CalendarDayEntriesCard opening popup menu and selecting edit opens AddWeightSheet',
     (tester) async {
       final entry = WeightEntry(
         id: 1,
@@ -532,7 +540,13 @@ void main() {
         ),
       );
 
-      await tester.tap(find.text('72.5 kg'));
+      await tester.tap(find.byIcon(Icons.more_vert));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Edit'), findsOneWidget);
+      expect(find.text('Delete'), findsOneWidget);
+
+      await tester.tap(find.text('Edit'));
       await tester.pumpAndSettle();
 
       expect(find.byType(AddWeightSheet), findsOneWidget);
@@ -585,7 +599,10 @@ void main() {
         ),
       );
 
-      await tester.tap(find.byIcon(Icons.delete_outline));
+      await tester.tap(find.byIcon(Icons.more_vert));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('Delete'));
       await tester.pumpAndSettle();
 
       expect(find.text('Delete entry'), findsWidgets);
@@ -637,7 +654,10 @@ void main() {
         ),
       );
 
-      await tester.tap(find.byIcon(Icons.delete_outline));
+      await tester.tap(find.byIcon(Icons.more_vert));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('Delete'));
       await tester.pumpAndSettle();
 
       await tester.tap(find.widgetWithText(TextButton, 'Cancel'));
