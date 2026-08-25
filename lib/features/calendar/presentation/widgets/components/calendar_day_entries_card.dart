@@ -151,43 +151,64 @@ class CalendarDayEntriesCard extends StatelessWidget {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Container(
-                                    width: 7,
-                                    height: 7,
-                                    decoration: BoxDecoration(
-                                      color: meetsGoal
-                                          ? const Color(0xFF4CAF50)
-                                          : cs.primary,
-                                      shape: BoxShape.circle,
-                                    ),
-                                  ),
-                                  const SizedBox(width: 6),
-                                  Text(
-                                    timeStr,
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .bodyMedium
-                                        ?.copyWith(
-                                          color: cs.onSurfaceVariant,
-                                          fontWeight: FontWeight.w500,
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Container(
+                                          width: 7,
+                                          height: 7,
+                                          decoration: BoxDecoration(
+                                            color: meetsGoal
+                                                ? const Color(0xFF4CAF50)
+                                                : cs.primary,
+                                            shape: BoxShape.circle,
+                                          ),
                                         ),
-                                  ),
-                                  if (entry.note != null &&
-                                      entry.note!.trim().isNotEmpty) ...[
-                                    const SizedBox(width: 6),
-                                    Icon(
-                                      Icons.description_outlined,
-                                      size: 14,
-                                      color: cs.primary,
+                                        const SizedBox(width: 6),
+                                        Text(
+                                          timeStr,
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .bodyMedium
+                                              ?.copyWith(
+                                                color: cs.onSurfaceVariant,
+                                                fontWeight: FontWeight.w500,
+                                              ),
+                                        ),
+                                        if (entry.note != null &&
+                                            entry.note!.trim().isNotEmpty) ...[
+                                          const SizedBox(width: 6),
+                                          Icon(
+                                            Icons.description_outlined,
+                                            size: 14,
+                                            color: cs.primary,
+                                          ),
+                                        ],
+                                      ],
+                                    ),
+                                    const SizedBox(height: 2),
+                                    Text(
+                                      '${displayWeight.toStringAsFixed(1)} $unitLabel',
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .headlineMedium
+                                          ?.copyWith(
+                                            fontWeight: FontWeight.bold,
+                                            color: cs.onSurface,
+                                            fontSize: 32,
+                                            letterSpacing: -0.5,
+                                          ),
                                     ),
                                   ],
-                                ],
+                                ),
                               ),
                               Padding(
-                                padding: const EdgeInsets.only(right: 24),
+                                padding: const EdgeInsets.only(right: 20),
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.end,
                                   mainAxisSize: MainAxisSize.min,
@@ -203,14 +224,15 @@ class CalendarDayEntriesCard extends StatelessWidget {
                                             ?.copyWith(
                                               fontWeight: FontWeight.bold,
                                               color: cs.primary,
+                                              fontSize: 15,
                                             ),
                                       ),
                                     if (categoryText.isNotEmpty) ...[
-                                      const SizedBox(height: 3),
+                                      const SizedBox(height: 6),
                                       Container(
                                         padding: const EdgeInsets.symmetric(
                                           horizontal: 8,
-                                          vertical: 2,
+                                          vertical: 3,
                                         ),
                                         decoration: BoxDecoration(
                                           color: categoryColor.withValues(
@@ -244,6 +266,7 @@ class CalendarDayEntriesCard extends StatelessWidget {
                                                   ?.copyWith(
                                                     color: categoryColor,
                                                     fontWeight: FontWeight.bold,
+                                                    fontSize: 11,
                                                   ),
                                             ),
                                           ],
@@ -254,17 +277,6 @@ class CalendarDayEntriesCard extends StatelessWidget {
                                 ),
                               ),
                             ],
-                          ),
-                          const SizedBox(height: 6),
-                          Text(
-                            '${displayWeight.toStringAsFixed(1)} $unitLabel',
-                            style: Theme.of(context).textTheme.headlineMedium
-                                ?.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                  color: cs.onSurface,
-                                  fontSize: 32,
-                                  letterSpacing: -0.5,
-                                ),
                           ),
                           if (entry.note != null &&
                               entry.note!.trim().isNotEmpty) ...[
