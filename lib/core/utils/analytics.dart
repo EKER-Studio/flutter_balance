@@ -709,22 +709,17 @@ class AppAnalytics {
   }
 
   /// Logs saving a new user height value in settings.
-  ///
-  /// @param heightCm The new height in centimeters.
   static Future<void> logSettingsHeightSaved() {
     return logEvent(name: 'settings_height_saved');
   }
 
   /// Logs tapping the target weight tile in settings.
-  ///
-  /// @param currentTargetKg The existing target weight in kg or null.
   static Future<void> logSettingsTargetWeightTileClicked() {
     return logEvent(name: 'settings_target_weight_tile_clicked');
   }
 
   /// Logs opening the target weight dialog in settings.
   ///
-  /// @param currentTargetKg The pre-filled target weight.
   /// @param unit The active measurement unit.
   static Future<void> logSettingsTargetWeightDialogOpened({
     required String unit,
@@ -751,8 +746,6 @@ class AppAnalytics {
   }
 
   /// Logs saving a new target goal weight in settings.
-  ///
-  /// @param targetWeightKg Target weight in kilograms.
   static Future<void> logSettingsTargetWeightSaved() {
     return logEvent(name: 'settings_target_weight_saved');
   }
@@ -1111,7 +1104,6 @@ class AppAnalytics {
 
   /// Logs saving a measurement in the add weight dialog.
   ///
-  /// @param weightKg Recorded body weight in kilograms.
   /// @param hasNote Whether an accompanying note was included.
   /// @param isPastDate Whether the measurement date is set to a past timestamp.
   static Future<void> logDialogAddWeightSaved({
@@ -1190,7 +1182,6 @@ class AppAnalytics {
 
   /// Logs saving changes to an entry in the edit weight dialog.
   ///
-  /// @param weightKg Updated weight in kilograms.
   /// @param hasNote Whether a note is present.
   /// @param dateModified Whether the entry's timestamp was changed.
   static Future<void> logDialogEditWeightSaved({

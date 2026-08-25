@@ -21,7 +21,7 @@ void main() {
     expect(find.text('Balance'), findsOneWidget);
     expect(find.textContaining('100% Local-First'), findsOneWidget);
     expect(
-      find.textContaining('1. Information Collection & Storage'),
+      find.textContaining('1. Local-First & Zero Account Model'),
       findsOneWidget,
     );
 
@@ -43,7 +43,7 @@ void main() {
     expect(find.text('Balance'), findsOneWidget);
     expect(find.textContaining('100% Local-First'), findsOneWidget);
     expect(
-      find.textContaining('1. Przechowywanie danych i pomiarów'),
+      find.textContaining('1. Architektura Local-First i brak konta'),
       findsOneWidget,
     );
 

@@ -30,17 +30,6 @@ abstract final class AppRoutes {
   /// Constructs a deep link URI targeting the today screen with the add measurement dialog open.
   static String todayWithAddAction() =>
       '$today?${AppRouteParams.action}=${AppRouteParams.actionAdd}';
-
-  /// Constructs a deep link URI targeting a specific date on the calendar tab.
-  ///
-  /// Reserved for upcoming deep link integration with interactive app widgets
-  /// and scheduled system reminder notifications.
-  static String calendarForDate(DateTime date) {
-    final year = date.year.toString().padLeft(4, '0');
-    final month = date.month.toString().padLeft(2, '0');
-    final day = date.day.toString().padLeft(2, '0');
-    return '$calendar?${AppRouteParams.date}=$year-$month-$day';
-  }
 }
 
 /// Constant keys and standard values for route query parameters.

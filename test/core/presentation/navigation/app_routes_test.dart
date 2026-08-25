@@ -17,13 +17,5 @@ void main() {
     test('todayWithAddAction constructs valid URI', () {
       expect(AppRoutes.todayWithAddAction(), equals('/today?action=add'));
     });
-
-    test('calendarForDate constructs formatted date URI', () {
-      final date = DateTime(2026, 8, 24);
-      expect(
-        AppRoutes.calendarForDate(date),
-        equals('/calendar?date=2026-08-24'),
-      );
-    });
   });
 }
