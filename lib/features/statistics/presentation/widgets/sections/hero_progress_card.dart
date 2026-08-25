@@ -177,12 +177,21 @@ class HeroProgressCard extends StatelessWidget {
                   textBaseline: TextBaseline.alphabetic,
                   children: [
                     Text(
-                      formattedValue,
+                      '$sign${totalChangeDisplay.toStringAsFixed(1)}',
                       style: Theme.of(context).textTheme.headlineLarge
                           ?.copyWith(
                             color: cs.primary,
                             fontWeight: FontWeight.w800,
+                            letterSpacing: -0.5,
                           ),
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      unitLabel,
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        color: cs.onSurfaceVariant,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                     const SizedBox(width: 8),
                     Expanded(

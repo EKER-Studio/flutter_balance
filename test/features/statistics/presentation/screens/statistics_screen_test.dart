@@ -123,8 +123,8 @@ void main() {
       expect(find.textContaining('74.0'), findsOneWidget);
       // Check highest weight (80.0 kg)
       expect(find.textContaining('80.0'), findsOneWidget);
-      // Check total progress banner (-6.0 kg)
-      expect(find.textContaining('-6.0 kg'), findsOneWidget);
+      // Check total progress banner (-6.0)
+      expect(find.text('-6.0'), findsOneWidget);
     },
   );
 
@@ -388,7 +388,7 @@ void main() {
       );
 
       expect(find.textContaining('74.0'), findsOneWidget);
-      expect(find.textContaining('-6.0 kg'), findsOneWidget);
+      expect(find.text('-6.0'), findsOneWidget);
     },
   );
 
