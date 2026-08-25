@@ -124,7 +124,7 @@ void main() {
     await tester.pumpAndSettle();
 
     await tester.tap(
-      find.ancestor(of: find.text('22.2 BMI'), matching: find.byType(InkWell)),
+      find.ancestor(of: find.text('BMI 22.2'), matching: find.byType(InkWell)),
     );
     await tester.pumpAndSettle();
 

@@ -269,7 +269,7 @@ void main() {
     await tester.pumpWidget(createTestWidget(const TodayScreen()));
     await tester.pumpAndSettle();
 
-    expect(find.text('25.1 BMI', skipOffstage: false), findsOneWidget);
+    expect(find.text('BMI 25.1', skipOffstage: false), findsOneWidget);
     expect(find.text('Weight trend', skipOffstage: false), findsOneWidget);
     expect(find.text('Last measurement', skipOffstage: false), findsOneWidget);
     expect(
@@ -794,7 +794,7 @@ void main() {
       await tester.pumpAndSettle();
 
       // The BMI badge is intentionally hidden in landscape phone viewports.
-      expect(find.text('25.1 BMI', skipOffstage: false), findsNothing);
+      expect(find.text('BMI 25.1', skipOffstage: false), findsNothing);
       expect(find.text('Weight trend', skipOffstage: false), findsOneWidget);
       expect(
         find.text('Last measurement', skipOffstage: false),

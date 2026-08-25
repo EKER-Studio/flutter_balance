@@ -23,15 +23,7 @@ class BmiBadge extends StatelessWidget {
     final textTheme = Theme.of(context).textTheme;
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
-    final bgColor = category != null
-        ? category!.chipBackgroundColor()
-        : colorScheme.primary.withValues(alpha: 0.1);
-
-    final borderColor = category != null
-        ? category!.chipContentColor(isDark: isDark).withValues(alpha: 0.3)
-        : colorScheme.primary.withValues(alpha: 0.2);
-
-    final contentColor = category != null
+    final categoryColor = category != null
         ? category!.chipContentColor(isDark: isDark)
         : colorScheme.primary;
 
@@ -41,56 +33,63 @@ class BmiBadge extends StatelessWidget {
       button: true,
       label: l10n.bmiCategorySemantics(bmi.toStringAsFixed(1), categoryLabel),
       excludeSemantics: true,
-      child: Ink(
-        decoration: BoxDecoration(
-          color: bgColor,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: borderColor),
-        ),
+      child: Material(
+        color: Colors.transparent,
         child: InkWell(
           onTap: onTap,
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(10),
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.end,
               mainAxisSize: MainAxisSize.min,
               children: [
-                if (category != null)
-                  Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        category == BmiCategory.normal
-                            ? Icons.check_circle
-                            : Icons.info,
-                        size: 14,
-                        color: contentColor,
-                      ),
-                      const SizedBox(width: 4),
-                      Flexible(
-                        child: Text(
-                          category!.localizedName(l10n),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: textTheme.labelMedium?.copyWith(
-                            color: contentColor,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                const SizedBox(height: 4),
                 Text(
-                  l10n.bmiValueShortLabel(bmi.toStringAsFixed(1)),
+                  l10n.bmiValueLabel(bmi.toStringAsFixed(1)),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: textTheme.titleMedium?.copyWith(
-                    color: contentColor,
-                    fontWeight: FontWeight.w700,
+                  style: textTheme.titleSmall?.copyWith(
+                    color: colorScheme.primary,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 15,
                   ),
                 ),
+                if (category != null) ...[
+                  const SizedBox(height: 6),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 3,
+                    ),
+                    decoration: BoxDecoration(
+                      color: categoryColor.withValues(alpha: 0.15),
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(color: categoryColor, width: 1.2),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Container(
+                          width: 5,
+                          height: 5,
+                          decoration: BoxDecoration(
+                            color: categoryColor,
+                            shape: BoxShape.circle,
+                          ),
+                        ),
+                        const SizedBox(width: 4),
+                        Text(
+                          categoryLabel,
+                          style: textTheme.labelSmall?.copyWith(
+                            color: categoryColor,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 12,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
               ],
             ),
           ),
