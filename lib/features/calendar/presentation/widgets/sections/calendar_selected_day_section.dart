@@ -59,7 +59,7 @@ class CalendarSelectedDaySection extends StatelessWidget {
               child: Text(
                 l10n.measurementCountPill(dayEntries.length),
                 style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  color: Theme.of(context).colorScheme.primary,
                   fontWeight: FontWeight.bold,
                   fontSize: 11,
                 ),
