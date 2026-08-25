@@ -52,7 +52,6 @@ class PrivacyPolicyScreen extends StatelessWidget {
         child: ListView(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
           children: [
-            // Header Banner Card
             Card(
               margin: EdgeInsets.zero,
               elevation: 0,
@@ -127,7 +126,6 @@ class PrivacyPolicyScreen extends StatelessWidget {
             ),
             const SizedBox(height: 16),
 
-            // Section 1: Information Storage
             _PrivacySectionCard(
               icon: Icons.sd_storage_outlined,
               title: isPolish
@@ -139,7 +137,6 @@ class PrivacyPolicyScreen extends StatelessWidget {
             ),
             const SizedBox(height: 12),
 
-            // Section 2: Health Connect
             _PrivacySectionCard(
               icon: Icons.sync_outlined,
               title: isPolish
@@ -151,7 +148,6 @@ class PrivacyPolicyScreen extends StatelessWidget {
             ),
             const SizedBox(height: 12),
 
-            // Section 3: Crash Reporting
             _PrivacySectionCard(
               icon: Icons.bug_report_outlined,
               title: isPolish
@@ -163,7 +159,6 @@ class PrivacyPolicyScreen extends StatelessWidget {
             ),
             const SizedBox(height: 12),
 
-            // Section 4: Data Sharing
             _PrivacySectionCard(
               icon: Icons.lock_outline,
               title: isPolish
@@ -175,7 +170,6 @@ class PrivacyPolicyScreen extends StatelessWidget {
             ),
             const SizedBox(height: 12),
 
-            // Section 5: Medical Disclaimer
             _PrivacySectionCard(
               icon: Icons.health_and_safety_outlined,
               title: isPolish
@@ -187,7 +181,6 @@ class PrivacyPolicyScreen extends StatelessWidget {
             ),
             const SizedBox(height: 12),
 
-            // Section 6: Children's Privacy
             _PrivacySectionCard(
               icon: Icons.family_restroom_outlined,
               title: isPolish
@@ -199,7 +192,6 @@ class PrivacyPolicyScreen extends StatelessWidget {
             ),
             const SizedBox(height: 12),
 
-            // Section 7: Contact Us Card
             Card(
               margin: EdgeInsets.zero,
               elevation: 0,
