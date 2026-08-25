@@ -24,6 +24,9 @@ abstract final class AppRoutes {
   /// Preferences, units, reminders, health sync, and backup settings tab.
   static const String settings = '/settings';
 
+  /// Native privacy policy document screen.
+  static const String privacyPolicy = '/privacy-policy';
+
   /// Constructs a deep link URI targeting the today screen with the add measurement dialog open.
   static String todayWithAddAction() =>
       '$today?${AppRouteParams.action}=${AppRouteParams.actionAdd}';

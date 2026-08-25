@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:go_router/go_router.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:share_plus/share_plus.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 import 'package:balance/core/integrations/biometrics/biometric_service.dart';
 import 'package:balance/core/integrations/csv/csv_exporter.dart';
 import 'package:balance/core/models/measurement_unit.dart';
+import 'package:balance/core/presentation/navigation/app_routes.dart';
 import 'package:balance/core/presentation/utils/app_snackbar.dart';
 import 'package:balance/core/presentation/utils/picker_helpers.dart';
 import 'package:balance/core/utils/analytics.dart';
@@ -19,6 +20,7 @@ import 'package:balance/features/settings/presentation/bloc/app_settings_state.d
 import 'package:balance/features/settings/presentation/widgets/components/health_connect_install_dialog.dart';
 import 'package:balance/features/settings/presentation/widgets/components/theme_selection_dialog.dart';
 import 'package:balance/features/settings/presentation/widgets/components/unit_selection_dialog.dart';
+import 'package:balance/features/settings/presentation/screens/privacy_policy_screen.dart';
 import 'package:balance/features/settings/presentation/widgets/components/height_sheet.dart';
 import 'package:balance/features/settings/presentation/widgets/components/target_weight_sheet.dart';
 import 'package:balance/features/settings/presentation/widgets/components/wipe_data_dialog.dart';
@@ -265,32 +267,15 @@ class SettingsDataCoordinator {
     }
   }
 
-  /// Opens the Privacy Policy URL in an in-app browser view.
-  static Future<void> openPrivacyPolicy(BuildContext context) async {
-    final l10n = AppLocalizations.of(context);
+  /// Opens the native, offline-accessible Privacy Policy screen.
+  static void openPrivacyPolicy(BuildContext context) {
     AppAnalytics.logSettingsPrivacyPolicyClicked();
-    final uri = Uri.parse(
-      'https://piotrekert90.github.io/eker-studio/privacy-policy',
-    );
     try {
-      final launched = await launchUrl(uri, mode: LaunchMode.inAppBrowserView);
-      if (!launched) {
-        await launchUrl(uri, mode: LaunchMode.externalApplication);
-      }
-    } catch (e, stack) {
-      AppCrashReporter.recordError(
-        e,
-        stack,
-        reason: 'Failed to launch privacy policy URL',
-        fatal: false,
+      context.push(AppRoutes.privacyPolicy);
+    } catch (_) {
+      Navigator.of(context).push(
+        MaterialPageRoute<void>(builder: (_) => const PrivacyPolicyScreen()),
       );
-      if (context.mounted) {
-        AppSnackBar.show(
-          context,
-          message: l10n.privacyPolicyOpenError,
-          type: SnackBarType.error,
-        );
-      }
     }
   }
 

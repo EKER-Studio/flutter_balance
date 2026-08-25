@@ -9,6 +9,7 @@ import 'package:balance/features/dashboard/presentation/screens/today_screen.dar
 import 'package:balance/features/navigation/presentation/screens/main_navigation_screen.dart';
 import 'package:balance/features/onboarding/presentation/screens/onboarding_wizard_screen.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_bloc.dart';
+import 'package:balance/features/settings/presentation/screens/privacy_policy_screen.dart';
 import 'package:balance/features/settings/presentation/screens/settings_screen.dart';
 import 'package:balance/features/statistics/presentation/screens/statistics_screen.dart';
 
@@ -83,6 +84,11 @@ GoRouter createAppRouter({
         path: AppRoutes.shield,
         parentNavigatorKey: rootNavigatorKey,
         builder: (context, state) => const BiometricShieldScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.privacyPolicy,
+        parentNavigatorKey: rootNavigatorKey,
+        builder: (context, state) => const PrivacyPolicyScreen(),
       ),
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) {

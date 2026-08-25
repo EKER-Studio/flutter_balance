@@ -23,6 +23,7 @@ import 'package:balance/features/weight/domain/weight_error_type.dart';
 import 'package:balance/l10n/app_localizations.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_bloc.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_event.dart';
+import 'package:balance/features/settings/presentation/screens/privacy_policy_screen.dart';
 import 'package:balance/features/weight/presentation/bloc/weight_state.dart';
 import 'package:balance/features/settings/presentation/screens/settings_screen.dart';
 import 'package:balance/features/settings/presentation/bloc/app_theme_mode.dart';
@@ -1436,26 +1437,10 @@ void main() {
       expect(find.text('Privacy Policy'), findsOneWidget);
     });
 
-    testWidgets('tapping privacy policy tile launches privacy policy url', (
+    testWidgets('tapping privacy policy tile opens PrivacyPolicyScreen', (
       tester,
     ) async {
       useWideSurface(tester);
-      String? launchedUrl;
-      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
-          .setMockMethodCallHandler(
-            const MethodChannel('plugins.flutter.io/url_launcher'),
-            (call) async {
-              launchedUrl = call.arguments['url'] as String?;
-              return true;
-            },
-          );
-      addTearDown(() {
-        TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
-            .setMockMethodCallHandler(
-              const MethodChannel('plugins.flutter.io/url_launcher'),
-              null,
-            );
-      });
 
       await tester.pumpWidget(createTestWidget());
       await tester.pumpAndSettle();
@@ -1465,38 +1450,8 @@ void main() {
       await tester.tap(find.text('Privacy Policy'));
       await tester.pumpAndSettle();
 
-      expect(
-        launchedUrl,
-        'https://piotrekert90.github.io/eker-studio/privacy-policy',
-      );
-    });
-
-    testWidgets('shows error snackbar when launching privacy policy fails', (
-      tester,
-    ) async {
-      useWideSurface(tester);
-      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
-          .setMockMethodCallHandler(
-            const MethodChannel('plugins.flutter.io/url_launcher'),
-            (call) async => throw PlatformException(code: 'launch_failed'),
-          );
-      addTearDown(() {
-        TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
-            .setMockMethodCallHandler(
-              const MethodChannel('plugins.flutter.io/url_launcher'),
-              null,
-            );
-      });
-
-      await tester.pumpWidget(createTestWidget());
-      await tester.pumpAndSettle();
-
-      await tester.ensureVisible(find.text('Privacy Policy'));
-      await tester.pumpAndSettle();
-      await tester.tap(find.text('Privacy Policy'));
-      await tester.pumpAndSettle();
-
-      expect(find.text('Could not open privacy policy.'), findsOneWidget);
+      expect(find.byType(PrivacyPolicyScreen), findsOneWidget);
+      expect(find.text('Balance'), findsOneWidget);
     });
   });
 
