@@ -80,9 +80,11 @@ class GoalProgressBar extends StatelessWidget {
 
     final differenceKg = hasTarget ? currentWeightKg - target : null;
     final isAchieved = differenceKg != null && differenceKg <= 0;
-    final accentColor = isAchieved
-        ? const Color(0xFF3CB043)
-        : colorScheme.primary;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final achievedColor = isDark
+        ? Colors.green.shade300
+        : Colors.green.shade700;
+    final accentColor = isAchieved ? achievedColor : colorScheme.primary;
 
     return Semantics(
       button: true,
@@ -134,7 +136,7 @@ class GoalProgressBar extends StatelessWidget {
                       textAlign: TextAlign.end,
                       style: textTheme.labelMedium?.copyWith(
                         color: isAchieved
-                            ? const Color(0xFF3CB043)
+                            ? achievedColor
                             : hasTarget
                             ? colorScheme.onSurfaceVariant
                             : colorScheme.primary,
@@ -151,7 +153,7 @@ class GoalProgressBar extends StatelessWidget {
                 height: 8,
                 decoration: BoxDecoration(
                   color: isAchieved
-                      ? const Color(0xFF3CB043).withValues(alpha: 0.15)
+                      ? achievedColor.withValues(alpha: 0.15)
                       : colorScheme.surfaceContainerHighest,
                   borderRadius: BorderRadius.circular(4),
                 ),

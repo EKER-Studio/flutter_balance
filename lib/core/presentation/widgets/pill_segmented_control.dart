@@ -64,7 +64,7 @@ class PillSegmentedControl<T> extends StatelessWidget {
     this.expand = true,
     this.itemPadding = const EdgeInsets.symmetric(
       horizontal: 16.0,
-      vertical: 8.0,
+      vertical: 6.0,
     ),
     this.outerPadding = const EdgeInsets.all(4.0),
   });
@@ -87,28 +87,28 @@ class PillSegmentedControl<T> extends StatelessWidget {
           curve: Curves.easeInOut,
           decoration: BoxDecoration(
             color: isSelected ? cs.primary : Colors.transparent,
-            borderRadius: BorderRadius.circular(12.0),
+            borderRadius: BorderRadius.circular(10.0),
           ),
           child: Material(
             color: Colors.transparent,
             child: InkWell(
               key: segment.key,
-              borderRadius: BorderRadius.circular(12.0),
+              borderRadius: BorderRadius.circular(10.0),
               onTap: () => onValueChanged(segment.value),
               child: ConstrainedBox(
                 constraints: const BoxConstraints(
-                  minHeight: 48.0,
-                  minWidth: 48.0,
+                  minHeight: 38.0,
+                  minWidth: 44.0,
                 ),
                 child: Padding(
                   padding: itemPadding,
                   child: Center(
                     child: Text(
                       segment.label,
-                      style: theme.textTheme.labelLarge?.copyWith(
+                      style: theme.textTheme.labelMedium?.copyWith(
                         color: isSelected ? cs.onPrimary : cs.onSurfaceVariant,
                         fontWeight: isSelected
-                            ? FontWeight.w600
+                            ? FontWeight.bold
                             : FontWeight.w500,
                       ),
                       maxLines: 1,
