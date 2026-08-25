@@ -13,7 +13,7 @@ import 'package:balance/features/weight/presentation/widgets/components/bmi_lege
 import 'package:balance/l10n/app_localizations.dart';
 
 /// A dialog that explains the WHO BMI categories, their colors, and healthy weight range.
-class BmiLegendDialog extends StatelessWidget {
+class BmiLegendDialog extends StatefulWidget {
   final double? latestWeightKg;
   final double? heightCm;
   final BmiCategory? currentCategory;
@@ -24,6 +24,25 @@ class BmiLegendDialog extends StatelessWidget {
     this.heightCm,
     this.currentCategory,
   });
+
+  @override
+  State<BmiLegendDialog> createState() => _BmiLegendDialogState();
+}
+
+class _BmiLegendDialogState extends State<BmiLegendDialog> {
+  late final ScrollController _scrollController;
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController = ScrollController();
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -55,13 +74,13 @@ class BmiLegendDialog extends StatelessWidget {
     }
 
     final resolvedHeightCm =
-        heightCm ?? settingsState?.height ?? weightState?.heightCm;
+        widget.heightCm ?? settingsState?.height ?? weightState?.heightCm;
     final unit = settingsState?.measurementUnit ?? MeasurementUnit.metric;
     final isImperial = unit == MeasurementUnit.imperial;
     final unitLabel = isImperial ? 'lb' : 'kg';
 
     final resolvedWeightKg =
-        latestWeightKg ??
+        widget.latestWeightKg ??
         (weightState != null && weightState.entries.isNotEmpty
             ? (weightState.entries.toList()
                     ..sort((a, b) => b.dateTime.compareTo(a.dateTime)))
@@ -69,7 +88,7 @@ class BmiLegendDialog extends StatelessWidget {
                   .weightKg
             : null);
 
-    BmiCategory? userCategory = currentCategory;
+    BmiCategory? userCategory = widget.currentCategory;
     if (userCategory == null &&
         resolvedHeightCm != null &&
         resolvedHeightCm > 0 &&
@@ -140,54 +159,64 @@ class BmiLegendDialog extends StatelessWidget {
       title: Text(l10n.bmiLegendTitle),
       content: ConstrainedBox(
         constraints: BoxConstraints(maxWidth: 340, maxHeight: maxHeight),
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              BmiLegendItem(
-                category: BmiCategory.underweight,
-                range: '< 18.5',
-                isDark: isDark,
-                isCurrent: userCategory == BmiCategory.underweight,
+        child: Scrollbar(
+          controller: _scrollController,
+          thumbVisibility: true,
+          radius: const Radius.circular(4),
+          thickness: 4,
+          child: SingleChildScrollView(
+            controller: _scrollController,
+            child: Padding(
+              padding: const EdgeInsets.only(right: 6),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  BmiLegendItem(
+                    category: BmiCategory.underweight,
+                    range: '< 18.5',
+                    isDark: isDark,
+                    isCurrent: userCategory == BmiCategory.underweight,
+                  ),
+                  const SizedBox(height: 2),
+                  BmiLegendItem(
+                    category: BmiCategory.normal,
+                    range: '18.5 – 24.9',
+                    isDark: isDark,
+                    isCurrent: userCategory == BmiCategory.normal,
+                  ),
+                  const SizedBox(height: 2),
+                  BmiLegendItem(
+                    category: BmiCategory.overweight,
+                    range: '25.0 – 29.9',
+                    isDark: isDark,
+                    isCurrent: userCategory == BmiCategory.overweight,
+                  ),
+                  const SizedBox(height: 2),
+                  BmiLegendItem(
+                    category: BmiCategory.obeseClass1,
+                    range: '30.0 – 34.9',
+                    isDark: isDark,
+                    isCurrent: userCategory == BmiCategory.obeseClass1,
+                  ),
+                  const SizedBox(height: 2),
+                  BmiLegendItem(
+                    category: BmiCategory.obeseClass2,
+                    range: '35.0 – 39.9',
+                    isDark: isDark,
+                    isCurrent: userCategory == BmiCategory.obeseClass2,
+                  ),
+                  const SizedBox(height: 2),
+                  BmiLegendItem(
+                    category: BmiCategory.obeseClass3,
+                    range: '≥ 40.0',
+                    isDark: isDark,
+                    isCurrent: userCategory == BmiCategory.obeseClass3,
+                  ),
+                  ?healthyWeightWidget,
+                ],
               ),
-              const SizedBox(height: 2),
-              BmiLegendItem(
-                category: BmiCategory.normal,
-                range: '18.5 – 24.9',
-                isDark: isDark,
-                isCurrent: userCategory == BmiCategory.normal,
-              ),
-              const SizedBox(height: 2),
-              BmiLegendItem(
-                category: BmiCategory.overweight,
-                range: '25.0 – 29.9',
-                isDark: isDark,
-                isCurrent: userCategory == BmiCategory.overweight,
-              ),
-              const SizedBox(height: 2),
-              BmiLegendItem(
-                category: BmiCategory.obeseClass1,
-                range: '30.0 – 34.9',
-                isDark: isDark,
-                isCurrent: userCategory == BmiCategory.obeseClass1,
-              ),
-              const SizedBox(height: 2),
-              BmiLegendItem(
-                category: BmiCategory.obeseClass2,
-                range: '35.0 – 39.9',
-                isDark: isDark,
-                isCurrent: userCategory == BmiCategory.obeseClass2,
-              ),
-              const SizedBox(height: 2),
-              BmiLegendItem(
-                category: BmiCategory.obeseClass3,
-                range: '≥ 40.0',
-                isDark: isDark,
-                isCurrent: userCategory == BmiCategory.obeseClass3,
-              ),
-              ?healthyWeightWidget,
-            ],
+            ),
           ),
         ),
       ),

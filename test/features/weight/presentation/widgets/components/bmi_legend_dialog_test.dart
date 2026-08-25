@@ -279,6 +279,7 @@ void main() {
       ),
     );
 
+    expect(find.byType(Scrollbar), findsOneWidget);
     expect(find.byType(SingleChildScrollView), findsOneWidget);
     expect(find.text('OK'), findsOneWidget);
 
