@@ -15,6 +15,7 @@ import 'package:balance/core/utils/crash_reporter.dart';
 import 'package:balance/core/utils/unit_converter.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_bloc.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_event.dart';
+import 'package:balance/features/settings/presentation/bloc/app_settings_state.dart';
 import 'package:balance/features/settings/presentation/widgets/components/health_connect_install_dialog.dart';
 import 'package:balance/features/settings/presentation/widgets/components/theme_selection_dialog.dart';
 import 'package:balance/features/settings/presentation/widgets/components/unit_selection_dialog.dart';
@@ -404,9 +405,29 @@ class SettingsDataCoordinator {
   /// Shows the BMI category legend and reference ranges dialog.
   static void showBmiLegendDialog(BuildContext context) {
     AppAnalytics.logDialogBmiLegendOpened();
+    WeightState? weightState;
+    try {
+      weightState = context.read<WeightBloc>().state;
+    } catch (_) {}
+
+    AppSettingsState? settingsState;
+    try {
+      settingsState = context.read<AppSettingsBloc>().state;
+    } catch (_) {}
+
+    final entries = weightState?.entries ?? const [];
+    final latestWeightKg = entries.isNotEmpty
+        ? (entries.toList()..sort((a, b) => b.dateTime.compareTo(a.dateTime)))
+              .first
+              .weightKg
+        : null;
+
     showDialog<void>(
       context: context,
-      builder: (context) => const BmiLegendDialog(),
+      builder: (context) => BmiLegendDialog(
+        latestWeightKg: latestWeightKg,
+        heightCm: settingsState?.height,
+      ),
     );
   }
 }

@@ -149,7 +149,10 @@ class HealthSummaryCard extends StatelessWidget {
     AppAnalytics.logDialogBmiLegendOpened();
     showDialog<void>(
       context: context,
-      builder: (context) => const BmiLegendDialog(),
+      builder: (context) => BmiLegendDialog(
+        latestWeightKg: latestWeightKg,
+        currentCategory: BmiCategory.fromBmi(bmi),
+      ),
     );
   }
 

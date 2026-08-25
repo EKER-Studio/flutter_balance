@@ -418,7 +418,8 @@ class CalendarDayEntriesCard extends StatelessWidget {
     AppAnalytics.logDialogBmiLegendOpened();
     showDialog<void>(
       context: context,
-      builder: (context) => const BmiLegendDialog(),
+      builder: (context) =>
+          BmiLegendDialog(currentCategory: BmiCategory.fromBmi(bmi)),
     );
   }
 }

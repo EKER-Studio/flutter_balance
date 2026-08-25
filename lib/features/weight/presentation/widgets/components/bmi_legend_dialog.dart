@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:balance/core/di/injection.dart';
 import 'package:balance/core/models/measurement_unit.dart';
 import 'package:balance/core/utils/analytics.dart';
 import 'package:balance/core/utils/unit_converter.dart';
@@ -13,7 +14,16 @@ import 'package:balance/l10n/app_localizations.dart';
 
 /// A dialog that explains the WHO BMI categories, their colors, and healthy weight range.
 class BmiLegendDialog extends StatelessWidget {
-  const BmiLegendDialog({super.key});
+  final double? latestWeightKg;
+  final double? heightCm;
+  final BmiCategory? currentCategory;
+
+  const BmiLegendDialog({
+    super.key,
+    this.latestWeightKg,
+    this.heightCm,
+    this.currentCategory,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -26,38 +36,53 @@ class BmiLegendDialog extends StatelessWidget {
     try {
       settingsState = context.read<AppSettingsBloc>().state;
     } catch (_) {
-      settingsState = null;
+      try {
+        if (getIt.isRegistered<AppSettingsBloc>()) {
+          settingsState = getIt<AppSettingsBloc>().state;
+        }
+      } catch (_) {}
     }
 
     WeightState? weightState;
     try {
       weightState = context.read<WeightBloc>().state;
     } catch (_) {
-      weightState = null;
+      try {
+        if (getIt.isRegistered<WeightBloc>()) {
+          weightState = getIt<WeightBloc>().state;
+        }
+      } catch (_) {}
     }
 
-    final heightCm = settingsState?.height;
+    final resolvedHeightCm =
+        heightCm ?? settingsState?.height ?? weightState?.heightCm;
     final unit = settingsState?.measurementUnit ?? MeasurementUnit.metric;
     final isImperial = unit == MeasurementUnit.imperial;
     final unitLabel = isImperial ? 'lb' : 'kg';
 
-    final latestEntry =
-        weightState is WeightLoaded && weightState.entries.isNotEmpty
-        ? (weightState.entries.toList()
-                ..sort((a, b) => b.dateTime.compareTo(a.dateTime)))
-              .firstOrNull
-        : null;
+    final resolvedWeightKg =
+        latestWeightKg ??
+        (weightState != null && weightState.entries.isNotEmpty
+            ? (weightState.entries.toList()
+                    ..sort((a, b) => b.dateTime.compareTo(a.dateTime)))
+                  .first
+                  .weightKg
+            : null);
 
-    BmiCategory? userCategory;
-    if (heightCm != null && heightCm > 0 && latestEntry != null) {
-      final heightM = heightCm / 100.0;
-      final bmi = latestEntry.weightKg / (heightM * heightM);
+    BmiCategory? userCategory = currentCategory;
+    if (userCategory == null &&
+        resolvedHeightCm != null &&
+        resolvedHeightCm > 0 &&
+        resolvedWeightKg != null &&
+        resolvedWeightKg > 0) {
+      final heightM = resolvedHeightCm / 100.0;
+      final bmi = resolvedWeightKg / (heightM * heightM);
       userCategory = BmiCategory.fromBmi(bmi);
     }
 
     Widget? healthyWeightWidget;
-    if (heightCm != null && heightCm > 0) {
-      final heightM = heightCm / 100.0;
+    if (resolvedHeightCm != null && resolvedHeightCm > 0) {
+      final heightM = resolvedHeightCm / 100.0;
       final minWeightKg = 18.5 * heightM * heightM;
       final maxWeightKg = 24.9 * heightM * heightM;
 

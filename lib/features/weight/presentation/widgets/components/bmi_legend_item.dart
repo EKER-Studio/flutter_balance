@@ -23,26 +23,24 @@ class BmiLegendItem extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
     final label = category.localizedName(l10n);
     final bgColor = category.chipBackgroundColor();
     final textColor = category.chipContentColor(isDark: isDark);
 
     final decoration = isCurrent
         ? BoxDecoration(
-            color: isDark
-                ? colorScheme.surfaceContainerHighest.withValues(alpha: 0.65)
-                : colorScheme.surfaceContainerHigh,
-            borderRadius: BorderRadius.circular(8),
-            border: Border.all(
-              color: textColor.withValues(alpha: 0.5),
-              width: 1.0,
+            color: category.chipBackgroundColor().withValues(
+              alpha: isDark ? 0.35 : 0.22,
             ),
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(color: textColor, width: 1.5),
           )
         : null;
 
     return MergeSemantics(
       child: InkWell(
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(10),
         onTap: () {
           AppAnalytics.logDialogBmiLegendCategoryTapped(category.name);
         },
@@ -60,59 +58,64 @@ class BmiLegendItem extends StatelessWidget {
                     border: Border.all(color: textColor, width: 2),
                     borderRadius: BorderRadius.circular(5),
                   ),
+                  child: isCurrent
+                      ? Center(
+                          child: Icon(Icons.check, size: 12, color: textColor),
+                        )
+                      : null,
                 ),
               ),
               const SizedBox(width: 10),
               Expanded(
-                child: Text.rich(
-                  TextSpan(
-                    text: label,
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      fontWeight: isCurrent ? FontWeight.bold : FontWeight.w600,
-                      color: colorScheme.onSurface,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      label,
+                      style: textTheme.bodyMedium?.copyWith(
+                        fontWeight: isCurrent
+                            ? FontWeight.bold
+                            : FontWeight.w600,
+                        color: isCurrent ? textColor : colorScheme.onSurface,
+                      ),
+                      overflow: TextOverflow.ellipsis,
                     ),
-                    children: [
-                      if (isCurrent) ...[
-                        const TextSpan(text: ' '),
-                        WidgetSpan(
-                          alignment: PlaceholderAlignment.middle,
-                          child: Container(
+                    if (isCurrent) ...[
+                      const SizedBox(height: 2),
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Container(
                             padding: const EdgeInsets.symmetric(
                               horizontal: 6,
-                              vertical: 1,
+                              vertical: 1.5,
                             ),
                             decoration: BoxDecoration(
-                              color: bgColor,
-                              borderRadius: BorderRadius.circular(4),
-                              border: Border.all(
-                                color: textColor.withValues(alpha: 0.4),
-                                width: 0.5,
-                              ),
+                              color: textColor,
+                              borderRadius: BorderRadius.circular(10),
                             ),
                             child: Text(
                               l10n.yourResult,
-                              style: Theme.of(context).textTheme.labelSmall
-                                  ?.copyWith(
-                                    color: textColor,
-                                    fontSize: 10,
-                                    fontWeight: FontWeight.bold,
-                                  ),
+                              style: textTheme.labelSmall?.copyWith(
+                                color: isDark ? Colors.black87 : Colors.white,
+                                fontSize: 9.5,
+                                fontWeight: FontWeight.bold,
+                                letterSpacing: 0.2,
+                              ),
                             ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ],
-                  ),
-                  overflow: TextOverflow.ellipsis,
+                  ],
                 ),
               ),
               const SizedBox(width: 8),
               Text(
                 range,
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: isCurrent
-                      ? colorScheme.onSurface
-                      : colorScheme.onSurfaceVariant,
+                style: textTheme.bodyMedium?.copyWith(
+                  color: isCurrent ? textColor : colorScheme.onSurfaceVariant,
                   fontWeight: isCurrent ? FontWeight.bold : FontWeight.w500,
                 ),
               ),

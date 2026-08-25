@@ -71,6 +71,15 @@ class BmiChartCard extends StatelessWidget {
   void _showLegendDialog(BuildContext context) {
     AppAnalytics.logStatisticsBmiLegendTapped();
     AppAnalytics.logDialogBmiLegendOpened();
-    showDialog<void>(context: context, builder: (_) => const BmiLegendDialog());
+    final latestWeightKg = entries.isNotEmpty
+        ? (entries.toList()..sort((a, b) => b.dateTime.compareTo(a.dateTime)))
+              .first
+              .weightKg
+        : null;
+    showDialog<void>(
+      context: context,
+      builder: (_) =>
+          BmiLegendDialog(latestWeightKg: latestWeightKg, heightCm: heightCm),
+    );
   }
 }
