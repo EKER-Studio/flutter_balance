@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:balance/core/models/measurement_unit.dart';
+import 'package:balance/core/utils/analytics.dart';
 import 'package:balance/features/dashboard/presentation/widgets/components/chart_period_filters.dart';
 import 'package:balance/features/dashboard/presentation/widgets/components/weight_delta_chip.dart';
 import 'package:balance/features/dashboard/presentation/widgets/components/weight_line_chart.dart';
 import 'package:balance/features/weight/domain/entities/weight_entry.dart';
 import 'package:balance/features/weight/domain/time_period.dart';
+import 'package:balance/features/weight/presentation/widgets/components/bmi_legend_dialog.dart';
 import 'package:balance/l10n/app_localizations.dart';
 
 /// A card section displaying the weight trend line chart, period filter, and delta chip.
@@ -76,6 +78,7 @@ class WeightTrendChartCard extends StatelessWidget {
                 WeightDeltaChip(
                   entries: entries,
                   measurementUnit: measurementUnit,
+                  onTap: () => _openBmiLegendDialog(context),
                 ),
               ],
             ),
@@ -105,6 +108,14 @@ class WeightTrendChartCard extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+
+  void _openBmiLegendDialog(BuildContext context) {
+    AppAnalytics.logDialogBmiLegendOpened();
+    showDialog<void>(
+      context: context,
+      builder: (context) => const BmiLegendDialog(),
     );
   }
 }

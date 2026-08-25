@@ -53,50 +53,26 @@ class BmiChartHeader extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Flexible(
-          child: Semantics(
-            button: true,
-            label: l10n.bmiLegendTitle,
-            child: InkWell(
-              onTap: onLegendTap,
-              borderRadius: BorderRadius.circular(8),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(
-                  vertical: 4.0,
-                  horizontal: 2.0,
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(
-                      Icons.monitor_weight_outlined,
-                      size: 24,
-                      color: cs.primary,
-                    ),
-                    const SizedBox(width: 8),
-                    Flexible(
-                      child: Text(
-                        l10n.bmi,
-                        overflow: TextOverflow.ellipsis,
-                        style: textTheme.titleMedium?.copyWith(
-                          color: cs.onSurface,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 6),
-                    Icon(
-                      Icons.info_outline_rounded,
-                      size: 16,
-                      color: cs.onSurfaceVariant,
-                    ),
-                  ],
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(Icons.monitor_weight_outlined, size: 24, color: cs.primary),
+              const SizedBox(width: 8),
+              Flexible(
+                child: Text(
+                  l10n.bmi,
+                  overflow: TextOverflow.ellipsis,
+                  style: textTheme.titleMedium?.copyWith(
+                    color: cs.onSurface,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
               ),
-            ),
+            ],
           ),
         ),
         const SizedBox(width: 12),
-        BmiDeltaChip(entries: entries, heightCm: heightCm!),
+        BmiDeltaChip(entries: entries, heightCm: heightCm!, onTap: onLegendTap),
       ],
     );
   }

@@ -66,10 +66,7 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      expect(find.text('-0.9'), findsOneWidget);
-      expect(find.text('BMI'), findsOneWidget);
-
-      await tester.tap(find.text('BMI'));
+      await tester.tap(find.text('-0.9'));
       expect(legendTapped, isTrue);
     });
   });

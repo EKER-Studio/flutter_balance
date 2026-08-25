@@ -163,7 +163,7 @@ void main() {
         ),
       );
 
-      await tester.tap(find.text('BMI'));
+      await tester.tap(find.text('-0.3'));
       await tester.pumpAndSettle();
 
       expect(find.text('BMI Categories'), findsOneWidget);

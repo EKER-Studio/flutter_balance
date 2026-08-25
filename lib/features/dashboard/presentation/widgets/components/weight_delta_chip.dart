@@ -13,10 +13,14 @@ class WeightDeltaChip extends StatelessWidget {
   /// The unit used to format the displayed delta.
   final MeasurementUnit measurementUnit;
 
+  /// An optional callback invoked when the chip is tapped.
+  final VoidCallback? onTap;
+
   const WeightDeltaChip({
     super.key,
     required this.entries,
     required this.measurementUnit,
+    this.onTap,
   });
 
   @override
@@ -60,34 +64,42 @@ class WeightDeltaChip extends StatelessWidget {
     final formattedDelta = '$formattedValue $unitLabel';
 
     return Semantics(
+      button: onTap != null,
       container: true,
       label: 'Weight change: $formattedDelta',
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-        decoration: BoxDecoration(
-          color: backgroundColor,
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onTap,
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(
-            color: foregroundColor.withValues(alpha: 0.35),
-            width: 1.0,
-          ),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            ExcludeSemantics(
-              child: Icon(icon, size: 16, color: foregroundColor),
-            ),
-            const SizedBox(width: 4),
-            Text(
-              formattedDelta,
-              style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                color: foregroundColor,
-                fontSize: 12,
-                fontWeight: FontWeight.bold,
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+            decoration: BoxDecoration(
+              color: backgroundColor,
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(
+                color: foregroundColor.withValues(alpha: 0.35),
+                width: 1.0,
               ),
             ),
-          ],
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                ExcludeSemantics(
+                  child: Icon(icon, size: 16, color: foregroundColor),
+                ),
+                const SizedBox(width: 4),
+                Text(
+                  formattedDelta,
+                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                    color: foregroundColor,
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
+          ),
         ),
       ),
     );
