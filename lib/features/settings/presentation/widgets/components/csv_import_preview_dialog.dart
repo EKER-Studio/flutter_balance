@@ -45,8 +45,8 @@ class CsvImportPreviewDialog extends StatelessWidget {
     final textTheme = Theme.of(context).textTheme;
     final colorScheme = Theme.of(context).colorScheme;
 
-    final dateFormat = DateFormat.yMMMd(
-      Localizations.localeOf(context).languageCode,
+    final dateFormat = DateFormat.yMMMMd(
+      Localizations.localeOf(context).toString(),
     );
 
     final String? dateRangeText;
