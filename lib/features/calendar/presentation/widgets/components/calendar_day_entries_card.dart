@@ -209,7 +209,7 @@ class CalendarDayEntriesCard extends StatelessWidget {
                                 ),
                               ),
                               Padding(
-                                padding: const EdgeInsets.only(right: 36),
+                                padding: const EdgeInsets.only(right: 38),
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.end,
                                   mainAxisSize: MainAxisSize.min,
@@ -342,8 +342,8 @@ class CalendarDayEntriesCard extends StatelessWidget {
                       ),
                     ),
                     Positioned(
-                      top: 10,
-                      right: 10,
+                      top: 14,
+                      right: 16,
                       child: Container(
                         width: 30,
                         height: 30,
