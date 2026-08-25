@@ -185,8 +185,26 @@ void main() {
           snack.backgroundColor,
           AppTheme.darkColorScheme.secondaryContainer,
         );
+
+        final appBar = AppTheme.darkTheme.appBarTheme;
+        expect(appBar.elevation, 0);
+        expect(appBar.systemOverlayStyle?.statusBarColor, Colors.transparent);
+        expect(
+          appBar.systemOverlayStyle?.systemNavigationBarColor,
+          Colors.transparent,
+        );
       },
     );
+
+    test('configures light theme appBarTheme with transparent overlays', () {
+      final appBar = AppTheme.lightTheme.appBarTheme;
+      expect(appBar.elevation, 0);
+      expect(appBar.systemOverlayStyle?.statusBarColor, Colors.transparent);
+      expect(
+        appBar.systemOverlayStyle?.systemNavigationBarColor,
+        Colors.transparent,
+      );
+    });
   });
 
   group('AppTheme.textTheme', () {

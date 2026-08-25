@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 /// Material 3 theme definitions for the Balance (Serene Metric) design system.
 abstract final class AppTheme {
@@ -173,6 +174,18 @@ abstract final class AppTheme {
     colorScheme: lightColorScheme,
     scaffoldBackgroundColor: lightColorScheme.surface,
     textTheme: textTheme,
+    appBarTheme: AppBarTheme(
+      elevation: 0,
+      scrolledUnderElevation: 0,
+      backgroundColor: lightColorScheme.surface,
+      systemOverlayStyle: const SystemUiOverlayStyle(
+        statusBarColor: Colors.transparent,
+        statusBarIconBrightness: Brightness.dark,
+        statusBarBrightness: Brightness.light,
+        systemNavigationBarColor: Colors.transparent,
+        systemNavigationBarIconBrightness: Brightness.dark,
+      ),
+    ),
     cardTheme: CardThemeData(
       elevation: 0,
       color: lightColorScheme.surfaceContainerLow,
@@ -271,6 +284,18 @@ abstract final class AppTheme {
     colorScheme: darkColorScheme,
     scaffoldBackgroundColor: darkColorScheme.surface,
     textTheme: textTheme,
+    appBarTheme: AppBarTheme(
+      elevation: 0,
+      scrolledUnderElevation: 0,
+      backgroundColor: darkColorScheme.surface,
+      systemOverlayStyle: const SystemUiOverlayStyle(
+        statusBarColor: Colors.transparent,
+        statusBarIconBrightness: Brightness.light,
+        statusBarBrightness: Brightness.dark,
+        systemNavigationBarColor: Colors.transparent,
+        systemNavigationBarIconBrightness: Brightness.light,
+      ),
+    ),
     cardTheme: CardThemeData(
       elevation: 0,
       color: darkColorScheme.surfaceContainerLow,
