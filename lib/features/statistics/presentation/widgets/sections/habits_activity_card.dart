@@ -48,9 +48,28 @@ class HabitsActivityCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                Row(
+                  children: [
+                    Icon(Icons.insights_outlined, size: 24, color: cs.primary),
+                    const SizedBox(width: 8),
+                    Flexible(
+                      child: Text(
+                        l10n.loggingStreak,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: Theme.of(context).textTheme.titleMedium
+                            ?.copyWith(
+                              color: cs.onSurface,
+                              fontWeight: FontWeight.w600,
+                            ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16),
                 WeightDetailRow(
                   icon: Icons.local_fire_department_outlined,
-                  iconColor: cs.primary,
+                  iconColor: cs.error,
                   label: l10n.currentStreak,
                   value: l10n.streakDays(streak),
                   date: '',
@@ -72,7 +91,7 @@ class HabitsActivityCard extends StatelessWidget {
                 ),
                 WeightDetailRow(
                   icon: Icons.auto_graph_outlined,
-                  iconColor: cs.primary,
+                  iconColor: cs.secondary,
                   label: l10n.monthlyCompliance,
                   value: '$compliancePct%',
                   date: l10n.allEntriesLabel,

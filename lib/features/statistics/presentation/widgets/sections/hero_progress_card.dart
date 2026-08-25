@@ -110,6 +110,7 @@ class HeroProgressCard extends StatelessWidget {
                   children: [
                     Expanded(
                       child: Row(
+                        mainAxisSize: MainAxisSize.min,
                         children: [
                           Icon(
                             Icons.track_changes_outlined,
@@ -132,46 +133,42 @@ class HeroProgressCard extends StatelessWidget {
                         ],
                       ),
                     ),
-                    if (statusBadge != null) const SizedBox(width: 8),
-                    if (statusBadge != null)
-                      Flexible(
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 6,
-                          ),
-                          decoration: BoxDecoration(
-                            color: badgeBg,
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              if (isSuccessBadge)
-                                Icon(
-                                  targetWeight != null
-                                      ? Icons.check_circle_outline
-                                      : Icons.verified_outlined,
-                                  size: 16,
-                                  color: badgeFg,
-                                ),
-                              if (isSuccessBadge) const SizedBox(width: 4),
-                              Flexible(
-                                child: Text(
-                                  statusBadge,
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: Theme.of(context).textTheme.labelMedium
-                                      ?.copyWith(
-                                        color: badgeFg,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                ),
+                    if (statusBadge != null) ...[
+                      const SizedBox(width: 8),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 6,
+                        ),
+                        decoration: BoxDecoration(
+                          color: badgeBg,
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            if (isSuccessBadge) ...[
+                              Icon(
+                                targetWeight != null
+                                    ? Icons.check_circle_outline
+                                    : Icons.verified_outlined,
+                                size: 16,
+                                color: badgeFg,
                               ),
+                              const SizedBox(width: 4),
                             ],
-                          ),
+                            Text(
+                              statusBadge,
+                              style: Theme.of(context).textTheme.labelMedium
+                                  ?.copyWith(
+                                    color: badgeFg,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                            ),
+                          ],
                         ),
                       ),
+                    ],
                   ],
                 ),
                 const SizedBox(height: 16),
