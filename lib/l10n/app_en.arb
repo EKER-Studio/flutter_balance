@@ -94,7 +94,18 @@
   "bmiCategoryUnderweight": "Underweight",
   "bmiCategoryNormal": "Normal",
   "bmiCategoryOverweight": "Overweight",
-  "bmiCategoryObese": "Obese",
+  "bmiCategoryObeseClass1": "Obesity class I",
+  "bmiCategoryObeseClass2": "Obesity class II",
+  "bmiCategoryObeseClass3": "Obesity class III",
+  "healthyWeightRange": "Healthy weight range",
+  "healthyWeightRangeValue": "{min} – {max} {unit}",
+  "@healthyWeightRangeValue": {
+    "placeholders": {
+      "min": { "type": "String" },
+      "max": { "type": "String" },
+      "unit": { "type": "String" }
+    }
+  },
   "biometricAuthReason": "Authenticate to access Balance",
   "appLocked": "App Locked",
   "unlock": "Unlock",

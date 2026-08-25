@@ -91,7 +91,7 @@ void main() {
         expect(state.getBmiCategory(17.0), BmiCategory.underweight);
         expect(state.getBmiCategory(22.0), BmiCategory.normal);
         expect(state.getBmiCategory(27.0), BmiCategory.overweight);
-        expect(state.getBmiCategory(31.0), BmiCategory.obese);
+        expect(state.getBmiCategory(31.0), BmiCategory.obeseClass1);
       });
     });
 

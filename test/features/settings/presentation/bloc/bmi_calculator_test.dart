@@ -135,14 +135,20 @@ void main() {
         expect(state.getBmiCategory(29.99), BmiCategory.overweight);
       });
 
-      test('BMI exactly 30.0 returns obese', () {
-        expect(state.getBmiCategory(30.0), BmiCategory.obese);
+      test('BMI exactly 30.0 returns obese class 1', () {
+        expect(state.getBmiCategory(30.0), BmiCategory.obeseClass1);
+        expect(state.getBmiCategory(34.99), BmiCategory.obeseClass1);
       });
 
-      test('BMI above 30 returns obese', () {
-        expect(state.getBmiCategory(35.0), BmiCategory.obese);
-        expect(state.getBmiCategory(50.0), BmiCategory.obese);
-        expect(state.getBmiCategory(100.0), BmiCategory.obese);
+      test('BMI between 35 and 40 returns obese class 2', () {
+        expect(state.getBmiCategory(35.0), BmiCategory.obeseClass2);
+        expect(state.getBmiCategory(39.99), BmiCategory.obeseClass2);
+      });
+
+      test('BMI at or above 40 returns obese class 3', () {
+        expect(state.getBmiCategory(40.0), BmiCategory.obeseClass3);
+        expect(state.getBmiCategory(50.0), BmiCategory.obeseClass3);
+        expect(state.getBmiCategory(100.0), BmiCategory.obeseClass3);
       });
 
       test('BMI from zero height returns underweight (not obese)', () {

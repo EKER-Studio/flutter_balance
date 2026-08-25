@@ -49,15 +49,15 @@ void main() {
     ) async {
       await tester.pumpWidget(
         buildTestWidget(
-          category: BmiCategory.obese,
-          range: '≥ 30.0',
+          category: BmiCategory.obeseClass1,
+          range: '30.0 – 34.9',
           isDark: true,
         ),
       );
       await tester.pumpAndSettle();
 
-      expect(find.text('Obese'), findsOneWidget);
-      expect(find.text('≥ 30.0'), findsOneWidget);
+      expect(find.text('Obesity class I'), findsOneWidget);
+      expect(find.text('30.0 – 34.9'), findsOneWidget);
     });
   });
 }

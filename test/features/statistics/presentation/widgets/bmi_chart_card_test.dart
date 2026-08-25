@@ -147,7 +147,7 @@ void main() {
       );
 
       // BMI = 102 / 1.75^2 = 33.3
-      expect(find.text('Obese'), findsOneWidget);
+      expect(find.text('Obesity class I'), findsOneWidget);
     });
 
     testWidgets('renders the category chip in dark mode', (tester) async {
@@ -183,7 +183,7 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('BMI Categories'), findsOneWidget);
-      expect(find.text('≥ 30.0'), findsOneWidget);
+      expect(find.text('≥ 40.0'), findsOneWidget);
     });
 
     testWidgets('shows a tooltip with the weight value while the chart is '

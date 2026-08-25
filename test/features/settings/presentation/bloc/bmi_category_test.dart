@@ -10,7 +10,9 @@ void main() {
           BmiCategory.underweight,
           BmiCategory.normal,
           BmiCategory.overweight,
-          BmiCategory.obese,
+          BmiCategory.obeseClass1,
+          BmiCategory.obeseClass2,
+          BmiCategory.obeseClass3,
         ]),
       );
     });
@@ -40,11 +42,28 @@ void main() {
         },
       );
 
-      test('categorizes obese correctly for values >= 30.0', () {
-        expect(BmiCategory.fromBmi(30.0), equals(BmiCategory.obese));
-        expect(BmiCategory.fromBmi(32.5), equals(BmiCategory.obese));
-        expect(BmiCategory.fromBmi(45.0), equals(BmiCategory.obese));
-        expect(BmiCategory.fromBmi(100.0), equals(BmiCategory.obese));
+      test(
+        'categorizes obese class 1 correctly for values >= 30.0 and < 35.0',
+        () {
+          expect(BmiCategory.fromBmi(30.0), equals(BmiCategory.obeseClass1));
+          expect(BmiCategory.fromBmi(32.5), equals(BmiCategory.obeseClass1));
+          expect(BmiCategory.fromBmi(34.9), equals(BmiCategory.obeseClass1));
+        },
+      );
+
+      test(
+        'categorizes obese class 2 correctly for values >= 35.0 and < 40.0',
+        () {
+          expect(BmiCategory.fromBmi(35.0), equals(BmiCategory.obeseClass2));
+          expect(BmiCategory.fromBmi(37.5), equals(BmiCategory.obeseClass2));
+          expect(BmiCategory.fromBmi(39.9), equals(BmiCategory.obeseClass2));
+        },
+      );
+
+      test('categorizes obese class 3 correctly for values >= 40.0', () {
+        expect(BmiCategory.fromBmi(40.0), equals(BmiCategory.obeseClass3));
+        expect(BmiCategory.fromBmi(45.0), equals(BmiCategory.obeseClass3));
+        expect(BmiCategory.fromBmi(100.0), equals(BmiCategory.obeseClass3));
       });
     });
   });

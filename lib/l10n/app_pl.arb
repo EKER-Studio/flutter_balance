@@ -94,7 +94,18 @@
   "bmiCategoryUnderweight": "Niedowaga",
   "bmiCategoryNormal": "Norma",
   "bmiCategoryOverweight": "Nadwaga",
-  "bmiCategoryObese": "Otyłość",
+  "bmiCategoryObeseClass1": "Otyłość I st.",
+  "bmiCategoryObeseClass2": "Otyłość II st.",
+  "bmiCategoryObeseClass3": "Otyłość III st.",
+  "healthyWeightRange": "Prawidłowa waga",
+  "healthyWeightRangeValue": "{min} – {max} {unit}",
+  "@healthyWeightRangeValue": {
+    "placeholders": {
+      "min": { "type": "String" },
+      "max": { "type": "String" },
+      "unit": { "type": "String" }
+    }
+  },
   "biometricAuthReason": "Potwierdź tożsamość, aby uzyskać dostęp do aplikacji",
   "appLocked": "Aplikacja zablokowana",
   "unlock": "Odblokuj",

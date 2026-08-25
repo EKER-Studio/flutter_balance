@@ -1,22 +1,49 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:mocktail/mocktail.dart';
+import 'package:bloc_test/bloc_test.dart';
+import 'package:balance/core/models/measurement_unit.dart';
+import 'package:balance/features/settings/presentation/bloc/app_settings_bloc.dart';
+import 'package:balance/features/settings/presentation/bloc/app_settings_event.dart';
+import 'package:balance/features/settings/presentation/bloc/app_settings_state.dart';
 import 'package:balance/features/weight/presentation/widgets/components/bmi_legend_dialog.dart';
 import 'package:balance/l10n/app_localizations.dart';
 
+class MockAppSettingsBloc extends MockBloc<AppSettingsEvent, AppSettingsState>
+    implements AppSettingsBloc {}
+
 void main() {
-  Future<void> pumpDialog(WidgetTester tester) async {
+  late MockAppSettingsBloc mockSettingsBloc;
+
+  setUp(() {
+    mockSettingsBloc = MockAppSettingsBloc();
+    when(() => mockSettingsBloc.state).thenReturn(const AppSettingsState());
+  });
+
+  Future<void> pumpDialog(
+    WidgetTester tester, {
+    AppSettingsState? state,
+  }) async {
+    if (state != null) {
+      when(() => mockSettingsBloc.state).thenReturn(state);
+    }
+
     await tester.pumpWidget(
-      MaterialApp(
-        localizationsDelegates: AppLocalizations.localizationsDelegates,
-        home: Builder(
-          builder: (context) => Scaffold(
-            body: Center(
-              child: TextButton(
-                onPressed: () => showDialog<void>(
-                  context: context,
-                  builder: (_) => const BmiLegendDialog(),
+      BlocProvider<AppSettingsBloc>.value(
+        value: mockSettingsBloc,
+        child: MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          home: Builder(
+            builder: (context) => Scaffold(
+              body: Center(
+                child: TextButton(
+                  onPressed: () => showDialog<void>(
+                    context: context,
+                    builder: (_) => const BmiLegendDialog(),
+                  ),
+                  child: const Text('open'),
                 ),
-                child: const Text('open'),
               ),
             ),
           ),
@@ -27,7 +54,7 @@ void main() {
     await tester.pumpAndSettle();
   }
 
-  testWidgets('renders title and all four BMI category legend rows', (
+  testWidgets('renders title and all six BMI category legend rows', (
     tester,
   ) async {
     await pumpDialog(tester);
@@ -41,8 +68,12 @@ void main() {
     expect(find.text('18.5 – 24.9'), findsOneWidget);
     expect(find.text('Overweight'), findsOneWidget);
     expect(find.text('25.0 – 29.9'), findsOneWidget);
-    expect(find.text('Obese'), findsOneWidget);
-    expect(find.text('≥ 30.0'), findsOneWidget);
+    expect(find.text('Obesity class I'), findsOneWidget);
+    expect(find.text('30.0 – 34.9'), findsOneWidget);
+    expect(find.text('Obesity class II'), findsOneWidget);
+    expect(find.text('35.0 – 39.9'), findsOneWidget);
+    expect(find.text('Obesity class III'), findsOneWidget);
+    expect(find.text('≥ 40.0'), findsOneWidget);
   });
 
   testWidgets('renders a colored swatch per legend row', (tester) async {
@@ -60,13 +91,44 @@ void main() {
               c.constraints?.maxWidth == 16 && c.constraints?.maxHeight == 16,
         )
         .toList();
-    expect(swatches, hasLength(4));
+    expect(swatches, hasLength(6));
 
     for (final swatch in swatches) {
       final decoration = swatch.decoration! as BoxDecoration;
       expect(decoration.borderRadius, BorderRadius.circular(4));
       expect(decoration.border, isNotNull);
     }
+  });
+
+  testWidgets('shows healthy weight range when height is configured', (
+    tester,
+  ) async {
+    // Height: 180 cm -> 18.5 * 1.8^2 = 59.9 kg, 24.9 * 1.8^2 = 80.7 kg
+    await pumpDialog(
+      tester,
+      state: const AppSettingsState(
+        height: 180.0,
+        measurementUnit: MeasurementUnit.metric,
+      ),
+    );
+
+    expect(find.text('Healthy weight range'), findsOneWidget);
+    expect(find.text('59.9 – 80.7 kg'), findsOneWidget);
+  });
+
+  testWidgets('shows healthy weight range in lb in imperial mode', (
+    tester,
+  ) async {
+    await pumpDialog(
+      tester,
+      state: const AppSettingsState(
+        height: 180.0,
+        measurementUnit: MeasurementUnit.imperial,
+      ),
+    );
+
+    expect(find.text('Healthy weight range'), findsOneWidget);
+    expect(find.textContaining('lb'), findsOneWidget);
   });
 
   testWidgets('OK button closes the dialog', (tester) async {

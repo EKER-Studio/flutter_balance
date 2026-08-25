@@ -10,7 +10,9 @@ extension BmiCategoryX on BmiCategory {
       BmiCategory.underweight => l10n.bmiCategoryUnderweight,
       BmiCategory.normal => l10n.bmiCategoryNormal,
       BmiCategory.overweight => l10n.bmiCategoryOverweight,
-      BmiCategory.obese => l10n.bmiCategoryObese,
+      BmiCategory.obeseClass1 => l10n.bmiCategoryObeseClass1,
+      BmiCategory.obeseClass2 => l10n.bmiCategoryObeseClass2,
+      BmiCategory.obeseClass3 => l10n.bmiCategoryObeseClass3,
     };
   }
 
@@ -20,7 +22,9 @@ extension BmiCategoryX on BmiCategory {
       BmiCategory.underweight => Colors.blue,
       BmiCategory.normal => Colors.green,
       BmiCategory.overweight => Colors.orange,
-      BmiCategory.obese => Colors.red,
+      BmiCategory.obeseClass1 => Colors.deepOrange,
+      BmiCategory.obeseClass2 => Colors.red,
+      BmiCategory.obeseClass3 => Colors.purple,
     };
   }
 

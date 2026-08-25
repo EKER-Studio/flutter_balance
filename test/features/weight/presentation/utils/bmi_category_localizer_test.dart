@@ -26,8 +26,25 @@ void main() {
       );
     });
 
-    test('maps obese to the localized string', () {
-      expect(BmiCategory.obese.localizedName(l10n), l10n.bmiCategoryObese);
+    test('maps obese class 1 to the localized string', () {
+      expect(
+        BmiCategory.obeseClass1.localizedName(l10n),
+        l10n.bmiCategoryObeseClass1,
+      );
+    });
+
+    test('maps obese class 2 to the localized string', () {
+      expect(
+        BmiCategory.obeseClass2.localizedName(l10n),
+        l10n.bmiCategoryObeseClass2,
+      );
+    });
+
+    test('maps obese class 3 to the localized string', () {
+      expect(
+        BmiCategory.obeseClass3.localizedName(l10n),
+        l10n.bmiCategoryObeseClass3,
+      );
     });
 
     test('returns distinct labels for distinct categories', () {
@@ -59,12 +76,24 @@ void main() {
       expect(BmiCategory.fromBmi(29.9), BmiCategory.overweight);
     });
 
-    test('classifies 30.0 boundary as obese', () {
-      expect(BmiCategory.fromBmi(30.0), BmiCategory.obese);
+    test('classifies 30.0 boundary as obese class 1', () {
+      expect(BmiCategory.fromBmi(30.0), BmiCategory.obeseClass1);
     });
 
-    test('classifies high values as obese', () {
-      expect(BmiCategory.fromBmi(41.7), BmiCategory.obese);
+    test('classifies 34.9 as obese class 1', () {
+      expect(BmiCategory.fromBmi(34.9), BmiCategory.obeseClass1);
+    });
+
+    test('classifies 35.0 boundary as obese class 2', () {
+      expect(BmiCategory.fromBmi(35.0), BmiCategory.obeseClass2);
+    });
+
+    test('classifies 40.0 boundary as obese class 3', () {
+      expect(BmiCategory.fromBmi(40.0), BmiCategory.obeseClass3);
+    });
+
+    test('classifies high values as obese class 3', () {
+      expect(BmiCategory.fromBmi(45.7), BmiCategory.obeseClass3);
     });
 
     test('classifies zero as underweight', () {
