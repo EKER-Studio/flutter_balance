@@ -70,8 +70,8 @@ class AdaptiveBottomNavigationBar extends StatelessWidget {
               selected: selectedIndex == 0,
               label: l10n.todayTabHomeSemanticsLabel,
               child: NavigationDestination(
-                icon: const Icon(Icons.today_outlined),
-                selectedIcon: const Icon(Icons.today, fill: 1),
+                icon: const Icon(Icons.dashboard_outlined),
+                selectedIcon: const Icon(Icons.dashboard),
                 label: l10n.tabToday,
               ),
             ),

@@ -52,12 +52,12 @@ class AdaptiveNavigationRail extends StatelessWidget {
                       icon: Semantics(
                         selected: selectedIndex == 0,
                         label: l10n.todayTabHomeSemanticsLabel,
-                        child: const Icon(Icons.today_outlined),
+                        child: const Icon(Icons.dashboard_outlined),
                       ),
                       selectedIcon: Semantics(
                         selected: selectedIndex == 0,
                         label: l10n.todayTabHomeSemanticsLabel,
-                        child: const Icon(Icons.today, fill: 1),
+                        child: const Icon(Icons.dashboard),
                       ),
                       label: Text(l10n.tabToday),
                     ),
