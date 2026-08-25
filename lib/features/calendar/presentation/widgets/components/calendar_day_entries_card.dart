@@ -243,20 +243,18 @@ class CalendarDayEntriesCard extends StatelessWidget {
                         width: 30,
                         height: 30,
                         decoration: BoxDecoration(
-                          color: const Color(0xFF252830),
+                          color: Colors.transparent,
                           borderRadius: BorderRadius.circular(9.5),
-                          border: Border.all(
-                            color: const Color(0xFF262933),
-                            width: 1.0,
-                          ),
                         ),
                         child: PopupMenuButton<String>(
                           padding: EdgeInsets.zero,
                           constraints: const BoxConstraints(),
                           iconSize: 16,
-                          icon: const Icon(
+                          icon: Icon(
                             Icons.more_vert,
-                            color: Color(0xFFA0A5B5),
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.onSurfaceVariant,
                             size: 16,
                           ),
                           tooltip: l10n.moreOptions,
