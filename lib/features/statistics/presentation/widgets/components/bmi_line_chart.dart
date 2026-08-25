@@ -46,6 +46,10 @@ class BmiLineChart extends StatelessWidget {
     final padding = (range * 0.1).clamp(0.5, double.infinity);
     final minY = (minBmi - padding).floorToDouble().clamp(10.0, 100.0);
     final maxY = (maxBmi + padding).ceilToDouble();
+    final yRange = maxY - minY;
+    final yInterval = yRange <= 4.0
+        ? 1.0
+        : (yRange <= 8.0 ? 2.0 : (yRange / 4.0).ceilToDouble());
 
     return SizedBox(
       height: 190,
@@ -57,7 +61,7 @@ class BmiLineChart extends StatelessWidget {
           maxY: maxY,
           gridData: AppChartTheme.gridData(
             colorScheme: cs,
-            horizontalInterval: 2,
+            horizontalInterval: yInterval,
           ),
           borderData: AppChartTheme.borderData(),
           titlesData: FlTitlesData(
@@ -80,7 +84,7 @@ class BmiLineChart extends StatelessWidget {
               sideTitles: SideTitles(
                 showTitles: true,
                 reservedSize: 35,
-                interval: 2,
+                interval: yInterval,
                 getTitlesWidget: (value, meta) => Text(
                   value.toStringAsFixed(0),
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
