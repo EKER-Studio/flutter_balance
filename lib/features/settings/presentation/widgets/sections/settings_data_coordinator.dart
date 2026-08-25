@@ -1,9 +1,8 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:file_picker/file_picker.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import 'package:balance/core/integrations/biometrics/biometric_service.dart';
 import 'package:balance/core/integrations/csv/csv_exporter.dart';
@@ -11,7 +10,6 @@ import 'package:balance/core/models/measurement_unit.dart';
 import 'package:balance/core/presentation/utils/app_snackbar.dart';
 import 'package:balance/core/presentation/utils/picker_helpers.dart';
 import 'package:balance/core/utils/analytics.dart';
-import 'package:balance/core/utils/crash_log.dart';
 import 'package:balance/core/utils/crash_reporter.dart';
 import 'package:balance/core/utils/unit_converter.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_bloc.dart';
@@ -264,50 +262,29 @@ class SettingsDataCoordinator {
     }
   }
 
-  /// Shares on-device crash logs.
-  static Future<void> sendCrashLog(BuildContext context) async {
+  /// Opens the Privacy Policy URL in an in-app browser view.
+  static Future<void> openPrivacyPolicy(BuildContext context) async {
     final l10n = AppLocalizations.of(context);
-    AppAnalytics.logSettingsShareCrashLogsClicked();
+    AppAnalytics.logSettingsPrivacyPolicyClicked();
+    final uri = Uri.parse(
+      'https://piotrekert90.github.io/eker-studio/privacy-policy',
+    );
     try {
-      final dir = await getApplicationDocumentsDirectory();
-      final file = File('${dir.path}/$crashLogFileName');
-      if (!await file.exists() || await file.length() == 0) {
-        AppAnalytics.logSettingsShareCrashLogsEmptyAlert();
-        if (context.mounted) {
-          AppSnackBar.show(
-            context,
-            message: l10n.crashLogEmpty,
-            type: SnackBarType.warning,
-          );
-        }
-        return;
+      final launched = await launchUrl(uri, mode: LaunchMode.inAppBrowserView);
+      if (!launched) {
+        await launchUrl(uri, mode: LaunchMode.externalApplication);
       }
-
-      if (!context.mounted) return;
-
-      final box = context.findRenderObject() as RenderBox?;
-      final originRect = box != null
-          ? box.localToGlobal(Offset.zero) & box.size
-          : null;
-
-      await Share.shareXFiles(
-        [XFile(file.path)],
-        subject: l10n.sendCrashLog,
-        sharePositionOrigin: originRect,
-      );
-      AppAnalytics.logSettingsShareCrashLogsSuccess();
     } catch (e, stack) {
-      AppAnalytics.logSettingsShareCrashLogsFailed(e.toString());
       AppCrashReporter.recordError(
         e,
         stack,
-        reason: 'Sending crash log failed in Settings',
+        reason: 'Failed to launch privacy policy URL',
         fatal: false,
       );
       if (context.mounted) {
         AppSnackBar.show(
           context,
-          message: l10n.shareCrashLogError(e.toString()),
+          message: l10n.privacyPolicyOpenError,
           type: SnackBarType.error,
         );
       }

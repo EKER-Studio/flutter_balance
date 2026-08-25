@@ -25,7 +25,7 @@ class SettingsSectionsLayout extends StatelessWidget {
   final VoidCallback onImportTap;
   final VoidCallback onExportTap;
   final VoidCallback onWipeTap;
-  final VoidCallback onCrashLogTap;
+  final VoidCallback onPrivacyPolicyTap;
 
   const SettingsSectionsLayout({
     super.key,
@@ -43,7 +43,7 @@ class SettingsSectionsLayout extends StatelessWidget {
     required this.onImportTap,
     required this.onExportTap,
     required this.onWipeTap,
-    required this.onCrashLogTap,
+    required this.onPrivacyPolicyTap,
   });
 
   @override
@@ -105,7 +105,7 @@ class SettingsSectionsLayout extends StatelessWidget {
         final helpHeader = SectionHeader(label: l10n.helpSection);
         final helpSection = HelpSection(
           l10n: l10n,
-          onCrashLogTap: onCrashLogTap,
+          onPrivacyPolicyTap: onPrivacyPolicyTap,
         );
 
         return Padding(

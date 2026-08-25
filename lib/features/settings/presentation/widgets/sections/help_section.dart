@@ -4,15 +4,15 @@ import 'package:balance/l10n/app_localizations.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:balance/features/settings/presentation/widgets/components/custom_settings_tile.dart';
 
-/// A widget that displays the help settings group with the crash log sharing and app version tiles.
+/// A widget that displays the help settings group with the privacy policy and app version tiles.
 class HelpSection extends StatefulWidget {
   final AppLocalizations l10n;
-  final VoidCallback onCrashLogTap;
+  final VoidCallback onPrivacyPolicyTap;
 
   const HelpSection({
     super.key,
     required this.l10n,
-    required this.onCrashLogTap,
+    required this.onPrivacyPolicyTap,
   });
 
   @override
@@ -40,10 +40,10 @@ class HelpSectionState extends State<HelpSection> {
           return Column(
             children: [
               CustomSettingsTile(
-                icon: Icons.bug_report_outlined,
-                title: l10n.sendCrashLog,
+                icon: Icons.privacy_tip_outlined,
+                title: l10n.privacyPolicy,
                 sectionLabel: l10n.helpSection,
-                onTap: widget.onCrashLogTap,
+                onTap: widget.onPrivacyPolicyTap,
               ),
               CustomSettingsTile(
                 icon: Icons.info_outline,

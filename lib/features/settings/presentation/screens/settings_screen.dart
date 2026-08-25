@@ -158,8 +158,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                 SettingsDataCoordinator.showWipeConfirmation(
                                   context,
                                 ),
-                            onCrashLogTap: () =>
-                                SettingsDataCoordinator.sendCrashLog(context),
+                            onPrivacyPolicyTap: () =>
+                                SettingsDataCoordinator.openPrivacyPolicy(
+                                  context,
+                                ),
                           ),
                         ),
                       ),

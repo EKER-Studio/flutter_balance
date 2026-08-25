@@ -185,25 +185,26 @@ void main() {
       );
     });
 
-    testWidgets('renders crash log tile and app version from PackageInfo', (
-      tester,
-    ) async {
-      await pumpWithL10n(
-        tester,
-        Builder(
-          builder: (context) => HelpSection(
-            l10n: AppLocalizations.of(context),
-            onCrashLogTap: () {},
+    testWidgets(
+      'renders privacy policy tile and app version from PackageInfo',
+      (tester) async {
+        await pumpWithL10n(
+          tester,
+          Builder(
+            builder: (context) => HelpSection(
+              l10n: AppLocalizations.of(context),
+              onPrivacyPolicyTap: () {},
+            ),
           ),
-        ),
-      );
+        );
 
-      expect(find.text('Send crash log'), findsOneWidget);
-      expect(find.text('App version'), findsOneWidget);
-      expect(find.text('1.2.3'), findsOneWidget);
-    });
+        expect(find.text('Privacy Policy'), findsOneWidget);
+        expect(find.text('App version'), findsOneWidget);
+        expect(find.text('1.2.3'), findsOneWidget);
+      },
+    );
 
-    testWidgets('invokes the crash log callback on tap', (tester) async {
+    testWidgets('invokes the privacy policy callback on tap', (tester) async {
       var tapped = false;
 
       await pumpWithL10n(
@@ -211,12 +212,12 @@ void main() {
         Builder(
           builder: (context) => HelpSection(
             l10n: AppLocalizations.of(context),
-            onCrashLogTap: () => tapped = true,
+            onPrivacyPolicyTap: () => tapped = true,
           ),
         ),
       );
 
-      await tester.tap(find.text('Send crash log'));
+      await tester.tap(find.text('Privacy Policy'));
       await tester.pump();
 
       expect(tapped, isTrue);

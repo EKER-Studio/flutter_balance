@@ -221,6 +221,7 @@ void main() {
         await AppAnalytics.logSettingsShareCrashLogsEmptyAlert();
         await AppAnalytics.logSettingsShareCrashLogsSuccess();
         await AppAnalytics.logSettingsShareCrashLogsFailed('share error');
+        await AppAnalytics.logSettingsPrivacyPolicyClicked();
 
         // Navigation & Dialogs
         await AppAnalytics.logNavigationTabSwitched(

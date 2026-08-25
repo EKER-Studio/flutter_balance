@@ -995,21 +995,15 @@ void main() {
       await tester.pumpAndSettle();
     });
 
-    testWidgets('crash log empty snackbar in narrow layout', (tester) async {
+    testWidgets('privacy policy tile in narrow layout', (tester) async {
       useNarrowSurface(tester);
       await tester.pumpWidget(createTestWidget());
       await tester.pumpAndSettle();
 
-      await tester.ensureVisible(find.text('Send crash log'));
-      await tester.pumpAndSettle();
-      await tester.runAsync(() async {
-        await tester.tap(find.text('Send crash log'));
-        await tester.pump();
-        await Future<void>.delayed(const Duration(milliseconds: 300));
-      });
+      await tester.ensureVisible(find.text('Privacy Policy'));
       await tester.pumpAndSettle();
 
-      expect(find.text('No crash log available.'), findsOneWidget);
+      expect(find.text('Privacy Policy'), findsOneWidget);
     });
 
     testWidgets('narrow layout biometric toggle works', (tester) async {
@@ -1430,72 +1424,78 @@ void main() {
       expect(find.textContaining('Export error:'), findsOneWidget);
     });
 
-    testWidgets('shows empty crash log snackbar when no log exists', (
-      tester,
-    ) async {
+    testWidgets('renders privacy policy tile in help section', (tester) async {
       useWideSurface(tester);
       await tester.pumpWidget(createTestWidget());
       await tester.pumpAndSettle();
 
-      await tester.ensureVisible(find.text('Send crash log'));
-      await tester.pumpAndSettle();
-      await tester.runAsync(() async {
-        await tester.tap(find.text('Send crash log'));
-        await tester.pump();
-        await Future<void>.delayed(const Duration(milliseconds: 300));
-      });
+      await tester.ensureVisible(find.text('Privacy Policy'));
       await tester.pumpAndSettle();
 
-      expect(find.text('No crash log available.'), findsOneWidget);
+      expect(find.text('Privacy Policy'), findsOneWidget);
     });
 
-    testWidgets('shares the crash log file when present', (tester) async {
-      useWideSurface(tester);
-      File('${tempDir.path}/crash_log.txt')
-        ..createSync(recursive: true)
-        ..writeAsStringSync('stack trace line');
-
-      await tester.pumpWidget(createTestWidget());
-      await tester.pumpAndSettle();
-
-      await tester.ensureVisible(find.text('Send crash log'));
-      await tester.pumpAndSettle();
-      await tester.runAsync(() async {
-        await tester.tap(find.text('Send crash log'));
-        await tester.pump();
-        await Future<void>.delayed(const Duration(milliseconds: 300));
-      });
-      await tester.pumpAndSettle();
-
-      expect(find.text('No crash log available.'), findsNothing);
-    });
-
-    testWidgets('shows error snackbar when sharing the crash log fails', (
+    testWidgets('tapping privacy policy tile launches privacy policy url', (
       tester,
     ) async {
       useWideSurface(tester);
-      File('${tempDir.path}/crash_log.txt')
-        ..createSync(recursive: true)
-        ..writeAsStringSync('stack trace line');
+      String? launchedUrl;
       TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
           .setMockMethodCallHandler(
-            const MethodChannel('dev.fluttercommunity.plus/share'),
-            (call) async => throw PlatformException(code: 'share_failed'),
+            const MethodChannel('plugins.flutter.io/url_launcher'),
+            (call) async {
+              launchedUrl = call.arguments['url'] as String?;
+              return true;
+            },
           );
+      addTearDown(() {
+        TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+            .setMockMethodCallHandler(
+              const MethodChannel('plugins.flutter.io/url_launcher'),
+              null,
+            );
+      });
 
       await tester.pumpWidget(createTestWidget());
       await tester.pumpAndSettle();
 
-      await tester.ensureVisible(find.text('Send crash log'));
+      await tester.ensureVisible(find.text('Privacy Policy'));
       await tester.pumpAndSettle();
-      await tester.runAsync(() async {
-        await tester.tap(find.text('Send crash log'));
-        await tester.pump();
-        await Future<void>.delayed(const Duration(milliseconds: 300));
-      });
+      await tester.tap(find.text('Privacy Policy'));
       await tester.pumpAndSettle();
 
-      expect(find.textContaining('Error sharing crash log:'), findsOneWidget);
+      expect(
+        launchedUrl,
+        'https://piotrekert90.github.io/eker-studio/privacy-policy',
+      );
+    });
+
+    testWidgets('shows error snackbar when launching privacy policy fails', (
+      tester,
+    ) async {
+      useWideSurface(tester);
+      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+          .setMockMethodCallHandler(
+            const MethodChannel('plugins.flutter.io/url_launcher'),
+            (call) async => throw PlatformException(code: 'launch_failed'),
+          );
+      addTearDown(() {
+        TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+            .setMockMethodCallHandler(
+              const MethodChannel('plugins.flutter.io/url_launcher'),
+              null,
+            );
+      });
+
+      await tester.pumpWidget(createTestWidget());
+      await tester.pumpAndSettle();
+
+      await tester.ensureVisible(find.text('Privacy Policy'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Privacy Policy'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Could not open privacy policy.'), findsOneWidget);
     });
   });
 

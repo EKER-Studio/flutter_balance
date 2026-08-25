@@ -1156,6 +1156,11 @@ class AppAnalytics {
     return logEvent(name: 'settings_share_crash_logs_clicked');
   }
 
+  /// Logs clicking the privacy policy tile in settings.
+  static Future<void> logSettingsPrivacyPolicyClicked() {
+    return logEvent(name: 'settings_privacy_policy_clicked');
+  }
+
   // ---------------------------------------------------------------------------
   // NAVIGATION & DIALOG EVENTS
   // ---------------------------------------------------------------------------
