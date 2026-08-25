@@ -293,6 +293,6 @@ class HeroProgressCard extends StatelessWidget {
       return l10n.today;
     }
     final locale = Localizations.localeOf(context).toString();
-    return DateFormat.yMMMd(locale).format(date);
+    return DateFormat.yMMMMd(locale).format(date);
   }
 }
