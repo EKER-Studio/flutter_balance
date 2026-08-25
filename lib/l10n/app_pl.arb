@@ -30,6 +30,7 @@
   "wipeData": "Wyczyść wszystkie dane",
   "privacyPolicy": "Polityka prywatności",
   "privacyPolicyOpenError": "Nie udało się otworzyć polityki prywatności.",
+  "openSourceLicenses": "Licencje open source",
   "cancel": "Anuluj",
   "save": "Zapisz",
   "retry": "Spróbuj ponownie",

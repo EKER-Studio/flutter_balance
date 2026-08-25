@@ -186,7 +186,7 @@ void main() {
     });
 
     testWidgets(
-      'renders privacy policy tile and app version from PackageInfo',
+      'renders privacy policy tile, open source licenses, and app version from PackageInfo',
       (tester) async {
         await pumpWithL10n(
           tester,
@@ -194,11 +194,13 @@ void main() {
             builder: (context) => HelpSection(
               l10n: AppLocalizations.of(context),
               onPrivacyPolicyTap: () {},
+              onLicensesTap: () {},
             ),
           ),
         );
 
         expect(find.text('Privacy Policy'), findsOneWidget);
+        expect(find.text('Open Source Licenses'), findsOneWidget);
         expect(find.text('App version'), findsOneWidget);
         expect(find.text('1.2.3'), findsOneWidget);
       },
@@ -213,11 +215,32 @@ void main() {
           builder: (context) => HelpSection(
             l10n: AppLocalizations.of(context),
             onPrivacyPolicyTap: () => tapped = true,
+            onLicensesTap: () {},
           ),
         ),
       );
 
       await tester.tap(find.text('Privacy Policy'));
+      await tester.pump();
+
+      expect(tapped, isTrue);
+    });
+
+    testWidgets('invokes the licenses callback on tap', (tester) async {
+      var tapped = false;
+
+      await pumpWithL10n(
+        tester,
+        Builder(
+          builder: (context) => HelpSection(
+            l10n: AppLocalizations.of(context),
+            onPrivacyPolicyTap: () {},
+            onLicensesTap: () => tapped = true,
+          ),
+        ),
+      );
+
+      await tester.tap(find.text('Open Source Licenses'));
       await tester.pump();
 
       expect(tapped, isTrue);

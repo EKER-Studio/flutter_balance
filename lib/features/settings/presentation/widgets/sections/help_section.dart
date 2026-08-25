@@ -4,15 +4,17 @@ import 'package:balance/l10n/app_localizations.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:balance/features/settings/presentation/widgets/components/custom_settings_tile.dart';
 
-/// A widget that displays the help settings group with the privacy policy and app version tiles.
+/// A widget that displays the help settings group with the privacy policy, open source licenses, and app version tiles.
 class HelpSection extends StatefulWidget {
   final AppLocalizations l10n;
   final VoidCallback onPrivacyPolicyTap;
+  final VoidCallback onLicensesTap;
 
   const HelpSection({
     super.key,
     required this.l10n,
     required this.onPrivacyPolicyTap,
+    required this.onLicensesTap,
   });
 
   @override
@@ -44,6 +46,12 @@ class HelpSectionState extends State<HelpSection> {
                 title: l10n.privacyPolicy,
                 sectionLabel: l10n.helpSection,
                 onTap: widget.onPrivacyPolicyTap,
+              ),
+              CustomSettingsTile(
+                icon: Icons.article_outlined,
+                title: l10n.openSourceLicenses,
+                sectionLabel: l10n.helpSection,
+                onTap: widget.onLicensesTap,
               ),
               CustomSettingsTile(
                 icon: Icons.info_outline,

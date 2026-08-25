@@ -26,6 +26,7 @@ class SettingsSectionsLayout extends StatelessWidget {
   final VoidCallback onExportTap;
   final VoidCallback onWipeTap;
   final VoidCallback onPrivacyPolicyTap;
+  final VoidCallback onLicensesTap;
 
   const SettingsSectionsLayout({
     super.key,
@@ -44,6 +45,7 @@ class SettingsSectionsLayout extends StatelessWidget {
     required this.onExportTap,
     required this.onWipeTap,
     required this.onPrivacyPolicyTap,
+    required this.onLicensesTap,
   });
 
   @override
@@ -100,6 +102,7 @@ class SettingsSectionsLayout extends StatelessWidget {
     final helpSection = HelpSection(
       l10n: l10n,
       onPrivacyPolicyTap: onPrivacyPolicyTap,
+      onLicensesTap: onLicensesTap,
     );
 
     return Column(

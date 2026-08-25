@@ -30,6 +30,7 @@
   "wipeData": "Wipe All Data",
   "privacyPolicy": "Privacy Policy",
   "privacyPolicyOpenError": "Could not open privacy policy.",
+  "openSourceLicenses": "Open Source Licenses",
   "cancel": "Cancel",
   "save": "Save",
   "retry": "Try again",

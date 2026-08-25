@@ -1166,6 +1166,11 @@ class AppAnalytics {
     return logEvent(name: 'settings_privacy_policy_clicked');
   }
 
+  /// Logs clicking the open source licenses tile in settings.
+  static Future<void> logSettingsOpenSourceLicensesClicked() {
+    return logEvent(name: 'settings_open_source_licenses_clicked');
+  }
+
   // ---------------------------------------------------------------------------
   // NAVIGATION & DIALOG EVENTS
   // ---------------------------------------------------------------------------

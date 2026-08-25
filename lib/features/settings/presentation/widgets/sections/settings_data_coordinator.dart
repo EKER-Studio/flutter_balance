@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -375,5 +376,27 @@ class SettingsDataCoordinator {
     } else {
       AppAnalytics.logSettingsReminderTimePickerCancelled();
     }
+  }
+
+  /// Shows the standard Flutter open-source licenses page.
+  static Future<void> showLicenses(BuildContext context) async {
+    AppAnalytics.logSettingsOpenSourceLicensesClicked();
+    final packageInfo = await PackageInfo.fromPlatform();
+    if (!context.mounted) return;
+
+    showLicensePage(
+      context: context,
+      applicationName: 'Balance',
+      applicationVersion: packageInfo.version,
+      applicationIcon: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 8.0),
+        child: Icon(
+          Icons.monitor_weight_outlined,
+          size: 48,
+          color: Theme.of(context).colorScheme.primary,
+        ),
+      ),
+      applicationLegalese: '© 2026 EKER Studio',
+    );
   }
 }

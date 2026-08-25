@@ -169,6 +169,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                   SettingsDataCoordinator.openPrivacyPolicy(
                                     context,
                                   ),
+                              onLicensesTap: () =>
+                                  SettingsDataCoordinator.showLicenses(context),
                             ),
                           ),
                         ),
