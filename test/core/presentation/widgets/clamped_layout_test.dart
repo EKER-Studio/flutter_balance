@@ -27,13 +27,13 @@ void main() {
     );
     expect(constrained.constraints.maxWidth, 600);
 
-    final center = tester.widget<Center>(
+    final align = tester.widget<Align>(
       find.descendant(
         of: find.byType(ClampedLayout),
-        matching: find.byType(Center),
+        matching: find.byType(Align),
       ),
     );
-    expect(center, isA<Center>());
+    expect(align.alignment, Alignment.topCenter);
     expect(find.byType(SizedBox), findsOneWidget);
   });
 
