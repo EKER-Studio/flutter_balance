@@ -51,7 +51,7 @@ class HabitsActivityCard extends StatelessWidget {
                 Row(
                   children: [
                     Icon(
-                      Icons.local_fire_department_outlined,
+                      Icons.event_repeat_outlined,
                       size: 24,
                       color: cs.primary,
                     ),
