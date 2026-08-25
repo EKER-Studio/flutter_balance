@@ -13,6 +13,7 @@ import 'package:balance/features/calendar/presentation/widgets/components/calend
 import 'package:balance/features/weight/domain/weight_error_type.dart';
 import 'package:balance/features/weight/presentation/widgets/components/add_weight_sheet.dart';
 import 'package:balance/l10n/app_localizations.dart';
+import 'package:balance/core/presentation/widgets/clamped_layout.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_event.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_bloc.dart';
 
@@ -323,6 +324,33 @@ void main() {
         );
 
         expect(find.text('2 pomiary'), findsOneWidget);
+      },
+    );
+
+    testWidgets(
+      'CalendarScreen renders single column clamped to 480 on mobile landscape',
+      (tester) async {
+        tester.view.physicalSize = const Size(800, 360);
+        tester.view.devicePixelRatio = 1.0;
+        addTearDown(tester.view.resetPhysicalSize);
+        addTearDown(tester.view.resetDevicePixelRatio);
+
+        await tester.pumpWidget(
+          buildSubject(
+            const WeightLoaded(
+              entries: [],
+              filteredEntries: [],
+              timePeriod: TimePeriod.week,
+              heightCm: null,
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        final clampedLayoutFinder = find.byType(ClampedLayout);
+        expect(clampedLayoutFinder, findsOneWidget);
+        final clampedLayout = tester.widget<ClampedLayout>(clampedLayoutFinder);
+        expect(clampedLayout.maxWidth, 480);
       },
     );
   });

@@ -125,7 +125,7 @@ class TodayContentSection extends StatelessWidget {
 
         return Center(
           child: ConstrainedBox(
-            constraints: BoxConstraints(maxWidth: isWide ? 1200 : 600),
+            constraints: BoxConstraints(maxWidth: isWide ? 1200 : 480),
             child: cardStack,
           ),
         );

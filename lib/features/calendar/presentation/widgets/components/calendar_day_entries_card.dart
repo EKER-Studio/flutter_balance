@@ -175,7 +175,7 @@ class CalendarDayEntriesCard extends StatelessWidget {
                                           .textTheme
                                           .bodyMedium
                                           ?.copyWith(
-                                            color: const Color(0xFFA0A5B5),
+                                            color: cs.onSurfaceVariant,
                                             fontWeight: FontWeight.w500,
                                             fontSize: 13,
                                           ),
@@ -253,9 +253,9 @@ class CalendarDayEntriesCard extends StatelessWidget {
                                   padding: EdgeInsets.zero,
                                   constraints: const BoxConstraints(),
                                   iconSize: 18,
-                                  icon: const Icon(
+                                  icon: Icon(
                                     Icons.more_vert,
-                                    color: Color(0xFFA0A5B5),
+                                    color: cs.onSurfaceVariant,
                                     size: 18,
                                   ),
                                   tooltip: l10n.moreOptions,

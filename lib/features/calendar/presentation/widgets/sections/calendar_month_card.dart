@@ -41,21 +41,13 @@ class CalendarMonthCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isLandscape =
-        MediaQuery.of(context).orientation == Orientation.landscape;
-
     return Card(
       elevation: 0,
       margin: EdgeInsets.zero,
       color: Theme.of(context).colorScheme.surfaceContainerLow,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: Padding(
-        padding: EdgeInsets.fromLTRB(
-          0,
-          isLandscape ? 16 : 16,
-          0,
-          isLandscape ? 16 : 20,
-        ),
+        padding: const EdgeInsets.fromLTRB(0, 16, 0, 20),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -67,12 +59,12 @@ class CalendarMonthCard extends StatelessWidget {
                 onNextMonth: onNextMonth,
               ),
             ),
-            SizedBox(height: isLandscape ? 12 : 16),
+            const SizedBox(height: 16),
             const Padding(
               padding: EdgeInsets.symmetric(horizontal: 16),
               child: CalendarWeekdayHeader(),
             ),
-            SizedBox(height: isLandscape ? 10 : 12),
+            const SizedBox(height: 12),
             GestureDetector(
               onHorizontalDragEnd: (details) {
                 if (details.primaryVelocity != null) {

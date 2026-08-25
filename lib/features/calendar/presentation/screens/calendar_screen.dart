@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:balance/core/presentation/widgets/app_top_bar.dart';
+import 'package:balance/core/presentation/widgets/clamped_layout.dart';
 import 'package:balance/core/utils/analytics.dart';
 import 'package:balance/features/calendar/presentation/widgets/components/calendar_error_card.dart';
 import 'package:balance/features/calendar/presentation/widgets/components/calendar_shimmer_skeleton.dart';
@@ -20,7 +21,7 @@ import 'package:balance/l10n/app_localizations.dart';
 ///
 /// Months are paged horizontally. Selecting a day filters the loaded entries
 /// to that date, and a detail section shows either the day's measurements or
-/// an empty state. Portrait layouts stack the sections vertically; landscape
+/// an empty state. Mobile layouts stack the sections vertically; tablet
 /// layouts place the calendar card and detail section side by side.
 /// Serves as the second tab in the main navigation.
 class CalendarScreen extends StatefulWidget {
@@ -127,48 +128,29 @@ class _CalendarScreenState extends State<CalendarScreen> {
               sliver: SliverToBoxAdapter(
                 child: BlocBuilder<WeightBloc, WeightState>(
                   builder: (context, state) {
-                    final isLandscape =
-                        MediaQuery.of(context).orientation ==
-                        Orientation.landscape;
-                    final maxContentWidth = isLandscape ? 900.0 : 600.0;
-                    const horizontalPadding = 16.0;
+                    final isTablet =
+                        MediaQuery.sizeOf(context).shortestSide >= 600;
 
                     if (state is WeightInitial || state is WeightLoading) {
-                      return Align(
-                        alignment: Alignment.topCenter,
-                        child: ConstrainedBox(
-                          constraints: BoxConstraints(
-                            maxWidth: maxContentWidth,
-                          ),
-                          child: Padding(
-                            padding: EdgeInsets.symmetric(
-                              horizontal: horizontalPadding,
-                              vertical: 12,
-                            ),
-                            child: const CalendarShimmerSkeleton(),
-                          ),
+                      return ClampedLayout(
+                        maxWidth: isTablet ? 1200 : 480,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 12,
                         ),
+                        child: const CalendarShimmerSkeleton(),
                       );
                     }
 
                     if (state is WeightError) {
-                      return Align(
-                        alignment: Alignment.topCenter,
-                        child: ConstrainedBox(
-                          constraints: BoxConstraints(
-                            maxWidth: maxContentWidth,
-                          ),
-                          child: Padding(
-                            padding: EdgeInsets.symmetric(
-                              horizontal: horizontalPadding,
-                              vertical: 12,
-                            ),
-                            child: CalendarErrorCard(
-                              errorMessage: state.errorType.localizedMessage(
-                                l10n,
-                              ),
-                            ),
-                          ),
+                      return ClampedLayout(
+                        maxWidth: isTablet ? 1200 : 480,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 12,
+                        ),
+                        child: CalendarErrorCard(
+                          errorMessage: state.errorType.localizedMessage(l10n),
                         ),
                       );
                     }
@@ -198,36 +180,30 @@ class _CalendarScreenState extends State<CalendarScreen> {
                       unit: unit,
                     );
 
-                    return Align(
-                      alignment: Alignment.topCenter,
-                      child: ConstrainedBox(
-                        constraints: BoxConstraints(maxWidth: maxContentWidth),
-                        child: Padding(
-                          padding: EdgeInsets.symmetric(
-                            horizontal: horizontalPadding,
-                            vertical: 12,
-                          ),
-                          child: isLandscape
-                              ? Row(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Expanded(flex: 5, child: calendarCard),
-                                    const SizedBox(width: 16),
-                                    Expanded(flex: 5, child: detailSection),
-                                  ],
-                                )
-                              : Column(
-                                  crossAxisAlignment:
-                                      CrossAxisAlignment.stretch,
-                                  children: [
-                                    calendarCard,
-                                    const SizedBox(height: 24),
-                                    detailSection,
-                                    const SizedBox(height: 80),
-                                  ],
-                                ),
-                        ),
+                    return ClampedLayout(
+                      maxWidth: isTablet ? 1200 : 480,
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 12,
                       ),
+                      child: isTablet
+                          ? Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Expanded(flex: 5, child: calendarCard),
+                                const SizedBox(width: 16),
+                                Expanded(flex: 5, child: detailSection),
+                              ],
+                            )
+                          : Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [
+                                calendarCard,
+                                const SizedBox(height: 24),
+                                detailSection,
+                                const SizedBox(height: 80),
+                              ],
+                            ),
                     );
                   },
                 ),

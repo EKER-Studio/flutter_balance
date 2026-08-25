@@ -6,6 +6,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:balance/core/models/measurement_unit.dart';
+import 'package:balance/core/presentation/widgets/clamped_layout.dart';
 import 'package:balance/features/weight/domain/entities/weight_entry.dart';
 import 'package:balance/features/weight/domain/repositories/weight_repository.dart';
 import 'package:balance/features/weight/presentation/bloc/weight_bloc.dart';
@@ -656,6 +657,36 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.textContaining('do celu'), findsOneWidget);
+    },
+  );
+
+  testWidgets(
+    'StatisticsScreen renders single column clamped to 480 on mobile landscape',
+    (tester) async {
+      tester.view.physicalSize = const Size(800, 360);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+
+      final settingsBloc = AppSettingsBloc();
+      final weightBloc = createBloc(
+        const WeightLoaded(
+          entries: [],
+          filteredEntries: [],
+          timePeriod: TimePeriod.week,
+          heightCm: null,
+        ),
+      );
+
+      await tester.pumpWidget(
+        buildSubject(settingsBloc: settingsBloc, weightBloc: weightBloc),
+      );
+      await tester.pumpAndSettle();
+
+      final clampedLayoutFinder = find.byType(ClampedLayout);
+      expect(clampedLayoutFinder, findsOneWidget);
+      final clampedLayout = tester.widget<ClampedLayout>(clampedLayoutFinder);
+      expect(clampedLayout.maxWidth, 480);
     },
   );
 }

@@ -38,14 +38,18 @@ class StatisticsScreen extends StatelessWidget {
               sliver: SliverToBoxAdapter(
                 child: BlocBuilder<WeightBloc, WeightState>(
                   builder: (context, weightState) {
+                    final isTablet =
+                        MediaQuery.sizeOf(context).shortestSide >= 600;
+
                     if (weightState is WeightInitial ||
                         weightState is WeightLoading) {
-                      return const ClampedLayout(
-                        padding: EdgeInsets.symmetric(
+                      return ClampedLayout(
+                        maxWidth: isTablet ? 1200 : 480,
+                        padding: const EdgeInsets.symmetric(
                           horizontal: 16,
                           vertical: 12,
                         ),
-                        child: StatisticsShimmerSkeleton(),
+                        child: const StatisticsShimmerSkeleton(),
                       );
                     }
 
@@ -56,6 +60,7 @@ class StatisticsScreen extends StatelessWidget {
 
                     if (entries.isEmpty) {
                       return ClampedLayout(
+                        maxWidth: isTablet ? 1200 : 480,
                         padding: const EdgeInsets.symmetric(
                           horizontal: 16,
                           vertical: 32,
@@ -77,21 +82,28 @@ class StatisticsScreen extends StatelessWidget {
 
                     return BlocBuilder<AppSettingsBloc, AppSettingsState>(
                       builder: (context, settingsState) {
-                        return StatisticsContentSection(
-                          entries: entries,
-                          filteredEntries: filteredEntries,
-                          timePeriod: weightState.timePeriod,
-                          heightCm: settingsState.height,
-                          targetWeight: settingsState.targetWeight,
-                          unit: settingsState.measurementUnit,
-                          onPeriodChanged: (period) {
-                            AppAnalytics.logStatisticsFilterChanged(
-                              period.name,
-                            );
-                            context.read<WeightBloc>().add(
-                              ChangeChartFilter(period),
-                            );
-                          },
+                        return ClampedLayout(
+                          maxWidth: isTablet ? 1200 : 480,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 12,
+                          ),
+                          child: StatisticsContentSection(
+                            entries: entries,
+                            filteredEntries: filteredEntries,
+                            timePeriod: weightState.timePeriod,
+                            heightCm: settingsState.height,
+                            targetWeight: settingsState.targetWeight,
+                            unit: settingsState.measurementUnit,
+                            onPeriodChanged: (period) {
+                              AppAnalytics.logStatisticsFilterChanged(
+                                period.name,
+                              );
+                              context.read<WeightBloc>().add(
+                                ChangeChartFilter(period),
+                              );
+                            },
+                          ),
                         );
                       },
                     );

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:balance/core/models/measurement_unit.dart';
-import 'package:balance/core/presentation/widgets/clamped_layout.dart';
 import 'package:balance/features/statistics/presentation/widgets/sections/bmi_chart_card.dart';
 import 'package:balance/features/statistics/presentation/widgets/sections/habits_activity_card.dart';
 import 'package:balance/features/statistics/presentation/widgets/sections/hero_progress_card.dart';
@@ -35,70 +34,62 @@ class StatisticsContentSection extends StatelessWidget {
     final streak = _calculateStreak(entries, now);
     final compliancePct = _calculateTotalCompliance(entries, now);
     final weeklyPace = _calculateWeeklyPace(entries);
+    final isTablet = MediaQuery.sizeOf(context).shortestSide >= 600;
+    final isWide = isTablet;
 
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final isWide = constraints.maxWidth >= 600;
-
-        final heroProgressCard = HeroProgressCard(
-          entries: entries,
-          targetWeight: targetWeight,
-          weeklyPace: weeklyPace,
-          unit: unit,
-        );
-
-        final habitsCard = HabitsActivityCard(
-          streak: streak,
-          compliancePct: compliancePct,
-        );
-
-        final rangeCard = WeightRangeCard(entries: entries, unit: unit);
-
-        final bmiCard = BmiChartCard(
-          entries: filteredEntries,
-          heightCm: heightCm,
-          period: timePeriod,
-          onPeriodChanged: onPeriodChanged,
-        );
-
-        return ClampedLayout(
-          maxWidth: isWide ? 1000 : 600,
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-          child: isWide
-              ? Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Expanded(child: heroProgressCard),
-                        const SizedBox(width: 16),
-                        Expanded(child: rangeCard),
-                      ],
-                    ),
-                    const SizedBox(height: 16),
-                    habitsCard,
-                    const SizedBox(height: 16),
-                    bmiCard,
-                    const SizedBox(height: 32),
-                  ],
-                )
-              : Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    heroProgressCard,
-                    const SizedBox(height: 16),
-                    habitsCard,
-                    const SizedBox(height: 16),
-                    rangeCard,
-                    const SizedBox(height: 16),
-                    bmiCard,
-                    const SizedBox(height: 100),
-                  ],
-                ),
-        );
-      },
+    final heroProgressCard = HeroProgressCard(
+      entries: entries,
+      targetWeight: targetWeight,
+      weeklyPace: weeklyPace,
+      unit: unit,
     );
+
+    final habitsCard = HabitsActivityCard(
+      streak: streak,
+      compliancePct: compliancePct,
+    );
+
+    final rangeCard = WeightRangeCard(entries: entries, unit: unit);
+
+    final bmiCard = BmiChartCard(
+      entries: filteredEntries,
+      heightCm: heightCm,
+      period: timePeriod,
+      onPeriodChanged: onPeriodChanged,
+    );
+
+    return isWide
+        ? Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(child: heroProgressCard),
+                  const SizedBox(width: 16),
+                  Expanded(child: rangeCard),
+                ],
+              ),
+              const SizedBox(height: 16),
+              habitsCard,
+              const SizedBox(height: 16),
+              bmiCard,
+              const SizedBox(height: 32),
+            ],
+          )
+        : Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              heroProgressCard,
+              const SizedBox(height: 16),
+              habitsCard,
+              const SizedBox(height: 16),
+              rangeCard,
+              const SizedBox(height: 16),
+              bmiCard,
+              const SizedBox(height: 100),
+            ],
+          );
   }
 
   static double? _calculateWeeklyPace(List<WeightEntry> entries) {

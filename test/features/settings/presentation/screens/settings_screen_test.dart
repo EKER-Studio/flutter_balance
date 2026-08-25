@@ -16,6 +16,7 @@ import 'package:balance/core/integrations/biometrics/biometric_service.dart';
 import 'package:balance/core/integrations/health/health_service.dart';
 import 'package:balance/core/integrations/notifications/notification_service.dart';
 import 'package:balance/features/weight/domain/entities/weight_entry.dart';
+import 'package:balance/core/presentation/widgets/clamped_layout.dart';
 import 'package:balance/features/weight/presentation/bloc/weight_bloc.dart';
 import 'package:balance/features/weight/presentation/bloc/weight_event.dart';
 import 'package:balance/features/weight/domain/weight_error_type.dart';
@@ -1565,5 +1566,23 @@ void main() {
 
       expect(find.textContaining('Error wiping data:'), findsOneWidget);
     });
+
+    testWidgets(
+      'SettingsScreen renders single column clamped to 480 on mobile landscape',
+      (tester) async {
+        tester.view.physicalSize = const Size(800, 360);
+        tester.view.devicePixelRatio = 1.0;
+        addTearDown(tester.view.resetPhysicalSize);
+        addTearDown(tester.view.resetDevicePixelRatio);
+
+        await tester.pumpWidget(createTestWidget());
+        await tester.pumpAndSettle();
+
+        final clampedLayoutFinder = find.byType(ClampedLayout);
+        expect(clampedLayoutFinder, findsOneWidget);
+        final clampedLayout = tester.widget<ClampedLayout>(clampedLayoutFinder);
+        expect(clampedLayout.maxWidth, 480);
+      },
+    );
   });
 }
