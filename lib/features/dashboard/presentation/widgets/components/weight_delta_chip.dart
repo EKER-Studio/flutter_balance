@@ -29,17 +29,16 @@ class WeightDeltaChip extends StatelessWidget {
         : deltaKg;
     final isLoss = delta < 0;
     final isGain = delta > 0;
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     final backgroundColor = isLoss
-        ? Colors.green.withValues(alpha: 0.15)
+        ? const Color(0xFF3CB043).withValues(alpha: 0.15)
         : isGain
-        ? Colors.orange.withValues(alpha: 0.15)
+        ? const Color(0xFFFB923C).withValues(alpha: 0.15)
         : Theme.of(context).colorScheme.surfaceContainerHigh;
     final foregroundColor = isLoss
-        ? (isDark ? Colors.green.shade300 : Colors.green.shade800)
+        ? const Color(0xFF3CB043)
         : isGain
-        ? (isDark ? Colors.orange.shade300 : Colors.orange.shade800)
-        : Theme.of(context).colorScheme.onSurfaceVariant;
+        ? const Color(0xFFFB923C)
+        : const Color(0xFFA0A5B5);
     final icon = isLoss
         ? Icons.trending_down_rounded
         : isGain
