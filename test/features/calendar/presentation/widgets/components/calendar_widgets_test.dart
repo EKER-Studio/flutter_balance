@@ -245,7 +245,8 @@ void main() {
         ),
       );
 
-      expect(find.text('72.5 kg'), findsOneWidget);
+      expect(find.text('72.5'), findsOneWidget);
+      expect(find.text('kg'), findsOneWidget);
       expect(find.textContaining('Morning weight'), findsOneWidget);
       expect(find.text('NOTATKA'), findsNothing);
       expect(find.byIcon(Icons.description_outlined), findsNothing);
@@ -311,7 +312,8 @@ void main() {
       ),
     );
 
-    expect(find.text('154.3 lb'), findsOneWidget);
+    expect(find.text('154.3'), findsOneWidget);
+    expect(find.text('lb'), findsOneWidget);
   });
 
   testWidgets('CalendarGrid delegates day cell selection', (tester) async {

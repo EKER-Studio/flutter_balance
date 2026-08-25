@@ -131,58 +131,66 @@ class CalendarDayEntriesCard extends StatelessWidget {
                 color: cs.surfaceContainerLow,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(16),
+                  side: BorderSide(
+                    color: cs.outlineVariant.withValues(alpha: 0.3),
+                    width: 1.0,
+                  ),
                 ),
-                child: Stack(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 14,
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 14,
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Row(
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
-                                    Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        Container(
-                                          width: 7,
-                                          height: 7,
-                                          decoration: BoxDecoration(
-                                            color: meetsGoal
-                                                ? (isDark
-                                                      ? Colors.green.shade300
-                                                      : Colors.green.shade700)
-                                                : cs.primary,
-                                            shape: BoxShape.circle,
-                                          ),
-                                        ),
-                                        const SizedBox(width: 6),
-                                        Text(
-                                          timeStr,
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .bodyMedium
-                                              ?.copyWith(
-                                                color: const Color(0xFFA0A5B5),
-                                                fontWeight: FontWeight.w500,
-                                                fontSize: 13,
-                                              ),
-                                        ),
-                                      ],
+                                    Container(
+                                      width: 7,
+                                      height: 7,
+                                      decoration: BoxDecoration(
+                                        color: meetsGoal
+                                            ? (isDark
+                                                  ? Colors.green.shade300
+                                                  : Colors.green.shade700)
+                                            : cs.primary,
+                                        shape: BoxShape.circle,
+                                      ),
                                     ),
-                                    const SizedBox(height: 4),
+                                    const SizedBox(width: 6),
                                     Text(
-                                      '${displayWeight.toStringAsFixed(1)} $unitLabel',
+                                      timeStr,
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodyMedium
+                                          ?.copyWith(
+                                            color: const Color(0xFFA0A5B5),
+                                            fontWeight: FontWeight.w500,
+                                            fontSize: 13,
+                                          ),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 4),
+                                Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  crossAxisAlignment:
+                                      CrossAxisAlignment.baseline,
+                                  textBaseline: TextBaseline.alphabetic,
+                                  children: [
+                                    Text(
+                                      displayWeight.toStringAsFixed(1),
                                       style: Theme.of(context)
                                           .textTheme
                                           .headlineMedium
@@ -193,130 +201,132 @@ class CalendarDayEntriesCard extends StatelessWidget {
                                             letterSpacing: -0.5,
                                           ),
                                     ),
+                                    const SizedBox(width: 4),
+                                    Text(
+                                      unitLabel,
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .titleMedium
+                                          ?.copyWith(
+                                            color: cs.onSurfaceVariant,
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                    ),
                                   ],
                                 ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.only(right: 38),
-                                child: bmi.isFinite
-                                    ? BmiBadge(
-                                        bmi: bmi,
-                                        category: category,
-                                        onTap: () => _openBmiLegendDialog(
-                                          context,
-                                          bmi: bmi,
-                                          category: category?.name ?? 'unknown',
+                              ],
+                            ),
+                          ),
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              if (bmi.isFinite)
+                                BmiBadge(
+                                  bmi: bmi,
+                                  category: category,
+                                  onTap: () => _openBmiLegendDialog(
+                                    context,
+                                    bmi: bmi,
+                                    category: category?.name ?? 'unknown',
+                                  ),
+                                ),
+                              const SizedBox(width: 4),
+                              PopupMenuButton<String>(
+                                padding: EdgeInsets.zero,
+                                constraints: const BoxConstraints(),
+                                iconSize: 18,
+                                icon: Icon(
+                                  Icons.more_vert,
+                                  color: cs.onSurfaceVariant,
+                                  size: 18,
+                                ),
+                                tooltip: l10n.moreOptions,
+                                onSelected: (value) {
+                                  if (value == 'edit') {
+                                    AppAnalytics.logCalendarEntryClicked(
+                                      entryId: entry.id,
+                                      hasNote: entry.note != null,
+                                    );
+                                    AppAnalytics.logDialogEditWeightOpened(
+                                      entry.id,
+                                    );
+                                    final weightBloc = context
+                                        .read<WeightBloc>();
+                                    showModalBottomSheet<void>(
+                                      context: context,
+                                      isScrollControlled: true,
+                                      builder: (sheetCtx) => BlocProvider.value(
+                                        value: weightBloc,
+                                        child: AddWeightSheet(
+                                          existingEntry: entry,
                                         ),
-                                      )
-                                    : const SizedBox.shrink(),
-                              ),
-                            ],
-                          ),
-                          if (entry.note != null &&
-                              entry.note!.trim().isNotEmpty) ...[
-                            const SizedBox(height: 12),
-                            Container(
-                              width: double.infinity,
-                              padding: const EdgeInsets.only(left: 10),
-                              decoration: BoxDecoration(
-                                border: Border(
-                                  left: BorderSide(
-                                    width: 2.5,
-                                    color: cs.outline,
+                                      ),
+                                    );
+                                  } else if (value == 'delete') {
+                                    _confirmDelete(context, entry.id);
+                                  }
+                                },
+                                itemBuilder: (context) => [
+                                  PopupMenuItem<String>(
+                                    value: 'edit',
+                                    child: Row(
+                                      children: [
+                                        Icon(
+                                          Icons.edit_outlined,
+                                          size: 18,
+                                          color: cs.onSurface,
+                                        ),
+                                        const SizedBox(width: 12),
+                                        Text(l10n.edit),
+                                      ],
+                                    ),
                                   ),
-                                ),
-                              ),
-                              child: Text(
-                                entry.note!.trim(),
-                                style: Theme.of(context).textTheme.bodyMedium
-                                    ?.copyWith(color: cs.onSurfaceVariant),
-                              ),
-                            ),
-                          ],
-                        ],
-                      ),
-                    ),
-                    Positioned(
-                      top: 14,
-                      right: 16,
-                      child: Container(
-                        width: 30,
-                        height: 30,
-                        decoration: BoxDecoration(
-                          color: Colors.transparent,
-                          borderRadius: BorderRadius.circular(9.5),
-                        ),
-                        child: PopupMenuButton<String>(
-                          padding: EdgeInsets.zero,
-                          constraints: const BoxConstraints(),
-                          iconSize: 16,
-                          icon: Icon(
-                            Icons.more_vert,
-                            color: Theme.of(
-                              context,
-                            ).colorScheme.onSurfaceVariant,
-                            size: 16,
-                          ),
-                          tooltip: l10n.moreOptions,
-                          onSelected: (value) {
-                            if (value == 'edit') {
-                              AppAnalytics.logCalendarEntryClicked(
-                                entryId: entry.id,
-                                hasNote: entry.note != null,
-                              );
-                              AppAnalytics.logDialogEditWeightOpened(entry.id);
-                              final weightBloc = context.read<WeightBloc>();
-                              showModalBottomSheet<void>(
-                                context: context,
-                                isScrollControlled: true,
-                                builder: (sheetCtx) => BlocProvider.value(
-                                  value: weightBloc,
-                                  child: AddWeightSheet(existingEntry: entry),
-                                ),
-                              );
-                            } else if (value == 'delete') {
-                              _confirmDelete(context, entry.id);
-                            }
-                          },
-                          itemBuilder: (context) => [
-                            PopupMenuItem<String>(
-                              value: 'edit',
-                              child: Row(
-                                children: [
-                                  Icon(
-                                    Icons.edit_outlined,
-                                    size: 18,
-                                    color: cs.onSurface,
-                                  ),
-                                  const SizedBox(width: 12),
-                                  Text(l10n.edit),
-                                ],
-                              ),
-                            ),
-                            PopupMenuItem<String>(
-                              value: 'delete',
-                              child: Row(
-                                children: [
-                                  Icon(
-                                    Icons.delete_outline,
-                                    size: 18,
-                                    color: Colors.red.shade400,
-                                  ),
-                                  const SizedBox(width: 12),
-                                  Text(
-                                    l10n.delete,
-                                    style: TextStyle(
-                                      color: Colors.red.shade400,
+                                  PopupMenuItem<String>(
+                                    value: 'delete',
+                                    child: Row(
+                                      children: [
+                                        Icon(
+                                          Icons.delete_outline,
+                                          size: 18,
+                                          color: Colors.red.shade400,
+                                        ),
+                                        const SizedBox(width: 12),
+                                        Text(
+                                          l10n.delete,
+                                          style: TextStyle(
+                                            color: Colors.red.shade400,
+                                          ),
+                                        ),
+                                      ],
                                     ),
                                   ),
                                 ],
                               ),
-                            ),
-                          ],
-                        ),
+                            ],
+                          ),
+                        ],
                       ),
-                    ),
-                  ],
+                      if (entry.note != null &&
+                          entry.note!.trim().isNotEmpty) ...[
+                        const SizedBox(height: 12),
+                        Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.only(left: 10),
+                          decoration: BoxDecoration(
+                            border: Border(
+                              left: BorderSide(width: 2.5, color: cs.outline),
+                            ),
+                          ),
+                          child: Text(
+                            entry.note!.trim(),
+                            style: Theme.of(context).textTheme.bodyMedium
+                                ?.copyWith(color: cs.onSurfaceVariant),
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
                 ),
               ),
             );

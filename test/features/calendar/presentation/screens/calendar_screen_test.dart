@@ -90,7 +90,8 @@ void main() {
         ),
       );
 
-      expect(find.text('72.5 kg'), findsOneWidget);
+      expect(find.text('72.5'), findsOneWidget);
+      expect(find.text('kg'), findsOneWidget);
       expect(find.text('Dodaj kolejny pomiar'), findsOneWidget);
     });
 
@@ -141,7 +142,8 @@ void main() {
         await tester.tap(find.text('${now.day}').first);
         await tester.pumpAndSettle();
 
-        expect(find.text('68.2 kg'), findsWidgets);
+        expect(find.text('68.2'), findsWidgets);
+        expect(find.text('kg'), findsWidgets);
       },
     );
 
@@ -292,9 +294,9 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      await tester.ensureVisible(find.text('70.5 kg'));
+      await tester.ensureVisible(find.text('70.5'));
       await tester.pumpAndSettle();
-      await tester.tap(find.text('70.5 kg'));
+      await tester.tap(find.text('70.5'));
       await tester.pumpAndSettle();
 
       expect(tester.takeException(), isNull);
