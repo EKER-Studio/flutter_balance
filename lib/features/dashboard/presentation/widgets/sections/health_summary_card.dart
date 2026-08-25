@@ -58,10 +58,11 @@ class HealthSummaryCard extends StatelessWidget {
           '${l10n.lastMeasurementLabel}: ${displayWeight.toStringAsFixed(1)} $unitLabel',
           if (category != null)
             '${category.localizedName(l10n)}, ${l10n.bmiValueShortLabel(bmi.toStringAsFixed(1))}',
-          if (targetWeight != null)
-            l10n.goalWeightLabel(
-              '${(weightUnit == MeasurementUnit.imperial ? kgToLbs(targetWeight) : targetWeight).toStringAsFixed(1)} $unitLabel',
-            ),
+          targetWeight != null
+              ? l10n.goalWeightLabel(
+                  '${(weightUnit == MeasurementUnit.imperial ? kgToLbs(targetWeight) : targetWeight).toStringAsFixed(1)} $unitLabel',
+                )
+              : '${l10n.goalWeightLabel(l10n.notSet)}. ${l10n.setGoalAction}',
         ].join('. ');
 
         return Semantics(
@@ -120,21 +121,19 @@ class HealthSummaryCard extends StatelessWidget {
                           ),
                       ],
                     ),
-                    if (targetWeight != null) ...[
-                      const SizedBox(height: 16),
-                      GoalProgressBar(
-                        targetWeightKg: targetWeight,
-                        currentWeightKg: latestWeightKg,
-                        unit: weightUnit,
-                        unitLabel: unitLabel,
-                        onTap: () => _openTargetWeightSheet(
-                          context,
-                          targetWeight,
-                          weightUnit,
-                          latestWeightKg,
-                        ),
+                    const SizedBox(height: 16),
+                    GoalProgressBar(
+                      targetWeightKg: targetWeight,
+                      currentWeightKg: latestWeightKg,
+                      unit: weightUnit,
+                      unitLabel: unitLabel,
+                      onTap: () => _openTargetWeightSheet(
+                        context,
+                        targetWeight,
+                        weightUnit,
+                        latestWeightKg,
                       ),
-                    ],
+                    ),
                   ],
                 ),
               ),
@@ -169,6 +168,8 @@ class HealthSummaryCard extends StatelessWidget {
         targetWeightKg: targetWeightKg,
         currentWeightKg: currentWeightKg,
       );
+    } else {
+      AppAnalytics.logTodaySetGoalTapped();
     }
     final result = await showModalBottomSheet<Object?>(
       context: context,

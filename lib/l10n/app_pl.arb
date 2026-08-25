@@ -305,5 +305,7 @@
   },
   "goalProgressSemantics": "Cel: {target}. {detail}. Stuknij dwukrotnie, aby edytować wagę docelową.",
   "bmiCategorySemantics": "BMI {value}, {category}. Stuknij dwukrotnie, aby zobaczyć legendę BMI.",
-  "csvImportSuccessSubtitle": "Dane będą dostępne od razu po zakończeniu onboardingu"
+  "csvImportSuccessSubtitle": "Dane będą dostępne od razu po zakończeniu onboardingu",
+  "setGoalAction": "Ustaw cel",
+  "setGoalSemantics": "Cel nieustawiony. Stuknij dwukrotnie, aby ustawić wagę docelową."
 }

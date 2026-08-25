@@ -152,7 +152,29 @@ void main() {
 
     expect(bloc.state.targetWeight, isNull);
     expect(find.text('Remaining: 2.0 kg'), findsNothing);
+    expect(find.text('Goal: Not set'), findsOneWidget);
+    expect(find.text('Set goal'), findsOneWidget);
   });
+
+  testWidgets(
+    'renders unset goal prompt and opens sheet on tap when no target set',
+    (tester) async {
+      final bloc = AppSettingsBloc();
+
+      await tester.pumpWidget(
+        createTestWidget(const HealthSummaryCard(latestWeightKg: 72.0), bloc),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.text('Goal: Not set'), findsOneWidget);
+      expect(find.text('Set goal'), findsOneWidget);
+
+      await tester.tap(find.text('Set goal'));
+      await tester.pumpAndSettle();
+
+      expect(find.byType(TargetWeightSheet), findsOneWidget);
+    },
+  );
 
   testWidgets('saves a new metric target weight from the dialog', (
     tester,

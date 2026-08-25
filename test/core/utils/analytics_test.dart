@@ -117,6 +117,7 @@ void main() {
           targetWeightKg: 70.0,
           currentWeightKg: 74.5,
         );
+        await AppAnalytics.logTodaySetGoalTapped();
         await AppAnalytics.logTodayChartPointTouched(
           date: '2026-08-19',
           weightKg: 74.5,

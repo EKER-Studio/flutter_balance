@@ -370,5 +370,7 @@
         "type": "String"
       }
     }
-  }
+  },
+  "setGoalAction": "Set goal",
+  "setGoalSemantics": "Goal not set. Double tap to set target weight."
 }

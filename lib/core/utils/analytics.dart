@@ -540,6 +540,11 @@ class AppAnalytics {
     );
   }
 
+  /// Logs tapping on the goal bar when no target weight is set yet.
+  static Future<void> logTodaySetGoalTapped() {
+    return logEvent(name: 'today_set_goal_tapped');
+  }
+
   /// Logs inspecting an individual data point on the today trend chart.
   ///
   /// @param date The timestamp string of the touched point.
