@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:balance/core/models/measurement_unit.dart';
-import 'package:balance/core/utils/unit_converter.dart';
 import 'package:balance/features/calendar/presentation/widgets/components/calendar_day_empty_card.dart';
 import 'package:balance/features/calendar/presentation/widgets/components/calendar_day_entries_card.dart';
 import 'package:balance/features/weight/domain/entities/weight_entry.dart';
@@ -34,66 +33,35 @@ class CalendarSelectedDaySection extends StatelessWidget {
     final l10n = AppLocalizations.of(context);
     final locale = Localizations.localeOf(context).toString();
     final formattedSelectedDate = DateFormat.MMMMd(locale).format(selectedDate);
-    final isImperial = unit == MeasurementUnit.imperial;
-    final unitLabel = unitLabelFor(unit);
-
-    double averageKg = 0;
-    if (dayEntries.isNotEmpty) {
-      averageKg =
-          dayEntries.fold<double>(0, (sum, e) => sum + e.weightKg) /
-          dayEntries.length;
-    }
-    final displayAverage = isImperial ? kgToLbs(averageKg) : averageKg;
 
     final selectedDayHeader = Padding(
       padding: const EdgeInsets.only(bottom: 12),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Expanded(
-                child: Text(
-                  l10n.entriesFromDate(formattedSelectedDate),
-                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: Theme.of(context).colorScheme.onSurface,
-                  ),
-                ),
+          Expanded(
+            child: Text(
+              l10n.entriesFromDate(formattedSelectedDate),
+              style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: Theme.of(context).colorScheme.onSurface,
               ),
-              if (dayEntries.isNotEmpty) ...[
-                const SizedBox(width: 8),
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: 4,
-                  ),
-                  decoration: BoxDecoration(
-                    color: Theme.of(
-                      context,
-                    ).colorScheme.primary.withValues(alpha: 0.15),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Text(
-                    l10n.measurementCountPill(dayEntries.length),
-                    style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                      color: Theme.of(context).colorScheme.primary,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-              ],
-            ],
+            ),
           ),
-          if (dayEntries.length > 1) ...[
-            const SizedBox(height: 4),
-            Text(
-              '${l10n.multipleEntries(dayEntries.length)} • ${l10n.averageWeight}: ${displayAverage.toStringAsFixed(1)} $unitLabel',
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: Theme.of(
-                  context,
-                ).colorScheme.onSurfaceVariant.withValues(alpha: 0.8),
+          if (dayEntries.isNotEmpty) ...[
+            const SizedBox(width: 8),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+              decoration: BoxDecoration(
+                color: const Color(0xFF1C2D4D),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Text(
+                l10n.measurementCountPill(dayEntries.length),
+                style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                  color: const Color(0xFF5F8BFA),
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
           ],

@@ -15,7 +15,6 @@ import 'package:balance/features/weight/presentation/widgets/components/add_weig
 import 'package:balance/l10n/app_localizations.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_event.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_bloc.dart';
-import 'package:balance/core/models/measurement_unit.dart';
 
 class MockWeightRepository extends Mock implements WeightRepository {}
 
@@ -302,7 +301,7 @@ void main() {
     });
 
     testWidgets(
-      'CalendarScreen shows average for multiple entries on the selected day',
+      'CalendarScreen shows count pill for multiple entries on the selected day',
       (tester) async {
         final now = DateTime.now();
         final entries = [
@@ -321,35 +320,7 @@ void main() {
           ),
         );
 
-        expect(find.text('2 pomiary • Średnia waga: 75.0 kg'), findsOneWidget);
-      },
-    );
-
-    testWidgets(
-      'CalendarScreen shows imperial average for multiple entries on the selected day',
-      (tester) async {
-        final now = DateTime.now();
-        final entries = [
-          WeightEntry(id: 1, weightKg: 70.0, dateTime: now),
-          WeightEntry(id: 2, weightKg: 80.0, dateTime: now),
-        ];
-
-        final settingsBloc = AppSettingsBloc();
-        settingsBloc.add(const UpdateMeasurementUnit(MeasurementUnit.imperial));
-
-        await tester.pumpWidget(
-          buildSubject(
-            WeightLoaded(
-              entries: entries,
-              filteredEntries: entries,
-              timePeriod: TimePeriod.week,
-              heightCm: null,
-            ),
-            settingsBloc: settingsBloc,
-          ),
-        );
-
-        expect(find.text('2 pomiary • Średnia waga: 165.3 lb'), findsOneWidget);
+        expect(find.text('2 pomiary'), findsOneWidget);
       },
     );
   });

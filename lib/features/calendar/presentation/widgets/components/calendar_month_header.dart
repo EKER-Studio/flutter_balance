@@ -49,17 +49,38 @@ class CalendarMonthHeader extends StatelessWidget {
           Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              IconButton(
-                icon: const Icon(Icons.chevron_left),
-                onPressed: onPreviousMonth,
-                tooltip: l10n.previousMonth,
-                color: Theme.of(context).colorScheme.onSurfaceVariant,
+              Container(
+                width: 32,
+                height: 32,
+                decoration: BoxDecoration(
+                  color: const Color(0xFF252830),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: IconButton(
+                  padding: EdgeInsets.zero,
+                  iconSize: 18,
+                  icon: const Icon(Icons.chevron_left),
+                  onPressed: onPreviousMonth,
+                  tooltip: l10n.previousMonth,
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                ),
               ),
-              IconButton(
-                icon: const Icon(Icons.chevron_right),
-                onPressed: onNextMonth,
-                tooltip: l10n.nextMonth,
-                color: Theme.of(context).colorScheme.onSurfaceVariant,
+              const SizedBox(width: 8),
+              Container(
+                width: 32,
+                height: 32,
+                decoration: BoxDecoration(
+                  color: const Color(0xFF252830),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: IconButton(
+                  padding: EdgeInsets.zero,
+                  iconSize: 18,
+                  icon: const Icon(Icons.chevron_right),
+                  onPressed: onNextMonth,
+                  tooltip: l10n.nextMonth,
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                ),
               ),
             ],
           ),
