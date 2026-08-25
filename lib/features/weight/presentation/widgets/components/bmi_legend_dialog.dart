@@ -41,7 +41,7 @@ class BmiLegendDialog extends StatelessWidget {
       final displayMin = isImperial ? kgToLbs(minWeightKg) : minWeightKg;
       final displayMax = isImperial ? kgToLbs(maxWeightKg) : maxWeightKg;
 
-      final greenColor = isDark ? Colors.green.shade400 : Colors.green.shade700;
+      final greenColor = isDark ? Colors.green.shade300 : Colors.green.shade700;
 
       healthyWeightWidget = MergeSemantics(
         child: Container(

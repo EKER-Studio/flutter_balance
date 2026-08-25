@@ -75,8 +75,9 @@ class CalendarDayCell extends StatelessWidget {
     final semanticLabel =
         '$dateFormatted, ${entries.length} measurements${isGoalAchieved ? ', goal achieved' : ''}';
 
+    final isDark = theme.brightness == Brightness.dark;
     final dotColor = isGoalAchieved
-        ? const Color(0xFF4CAF50)
+        ? (isDark ? Colors.green.shade300 : Colors.green.shade700)
         : colorScheme.primary;
 
     return Semantics(
