@@ -231,77 +231,96 @@ class CalendarDayEntriesCard extends StatelessWidget {
                                     category: category?.name ?? 'unknown',
                                   ),
                                 ),
-                              const SizedBox(width: 4),
-                              PopupMenuButton<String>(
-                                padding: EdgeInsets.zero,
-                                constraints: const BoxConstraints(),
-                                iconSize: 18,
-                                icon: Icon(
-                                  Icons.more_vert,
-                                  color: cs.onSurfaceVariant,
-                                  size: 18,
-                                ),
-                                tooltip: l10n.moreOptions,
-                                onSelected: (value) {
-                                  if (value == 'edit') {
-                                    AppAnalytics.logCalendarEntryClicked(
-                                      entryId: entry.id,
-                                      hasNote: entry.note != null,
-                                    );
-                                    AppAnalytics.logDialogEditWeightOpened(
-                                      entry.id,
-                                    );
-                                    final weightBloc = context
-                                        .read<WeightBloc>();
-                                    showModalBottomSheet<void>(
-                                      context: context,
-                                      isScrollControlled: true,
-                                      builder: (sheetCtx) => BlocProvider.value(
-                                        value: weightBloc,
-                                        child: AddWeightSheet(
-                                          existingEntry: entry,
-                                        ),
-                                      ),
-                                    );
-                                  } else if (value == 'delete') {
-                                    _confirmDelete(context, entry.id);
-                                  }
-                                },
-                                itemBuilder: (context) => [
-                                  PopupMenuItem<String>(
-                                    value: 'edit',
-                                    child: Row(
-                                      children: [
-                                        Icon(
-                                          Icons.edit_outlined,
-                                          size: 18,
-                                          color: cs.onSurface,
-                                        ),
-                                        const SizedBox(width: 12),
-                                        Text(l10n.edit),
-                                      ],
-                                    ),
+                              const SizedBox(width: 8),
+                              Container(
+                                width: 36,
+                                height: 36,
+                                decoration: BoxDecoration(
+                                  color: isDark
+                                      ? const Color(0xFF252830)
+                                      : cs.surfaceContainerHigh,
+                                  borderRadius: BorderRadius.circular(10),
+                                  border: Border.all(
+                                    color: isDark
+                                        ? const Color(0xFF262933)
+                                        : cs.outlineVariant.withValues(
+                                            alpha: 0.3,
+                                          ),
+                                    width: 1.0,
                                   ),
-                                  PopupMenuItem<String>(
-                                    value: 'delete',
-                                    child: Row(
-                                      children: [
-                                        Icon(
-                                          Icons.delete_outline,
-                                          size: 18,
-                                          color: Colors.red.shade400,
-                                        ),
-                                        const SizedBox(width: 12),
-                                        Text(
-                                          l10n.delete,
-                                          style: TextStyle(
+                                ),
+                                child: PopupMenuButton<String>(
+                                  padding: EdgeInsets.zero,
+                                  constraints: const BoxConstraints(),
+                                  iconSize: 18,
+                                  icon: const Icon(
+                                    Icons.more_vert,
+                                    color: Color(0xFFA0A5B5),
+                                    size: 18,
+                                  ),
+                                  tooltip: l10n.moreOptions,
+                                  onSelected: (value) {
+                                    if (value == 'edit') {
+                                      AppAnalytics.logCalendarEntryClicked(
+                                        entryId: entry.id,
+                                        hasNote: entry.note != null,
+                                      );
+                                      AppAnalytics.logDialogEditWeightOpened(
+                                        entry.id,
+                                      );
+                                      final weightBloc = context
+                                          .read<WeightBloc>();
+                                      showModalBottomSheet<void>(
+                                        context: context,
+                                        isScrollControlled: true,
+                                        builder: (sheetCtx) =>
+                                            BlocProvider.value(
+                                              value: weightBloc,
+                                              child: AddWeightSheet(
+                                                existingEntry: entry,
+                                              ),
+                                            ),
+                                      );
+                                    } else if (value == 'delete') {
+                                      _confirmDelete(context, entry.id);
+                                    }
+                                  },
+                                  itemBuilder: (context) => [
+                                    PopupMenuItem<String>(
+                                      value: 'edit',
+                                      child: Row(
+                                        children: [
+                                          Icon(
+                                            Icons.edit_outlined,
+                                            size: 18,
+                                            color: cs.onSurface,
+                                          ),
+                                          const SizedBox(width: 12),
+                                          Text(l10n.edit),
+                                        ],
+                                      ),
+                                    ),
+                                    PopupMenuItem<String>(
+                                      value: 'delete',
+                                      child: Row(
+                                        children: [
+                                          Icon(
+                                            Icons.delete_outline,
+                                            size: 18,
                                             color: Colors.red.shade400,
                                           ),
-                                        ),
-                                      ],
+                                          const SizedBox(width: 12),
+                                          Text(
+                                            l10n.delete,
+                                            style: TextStyle(
+                                              color: Colors.red.shade400,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
                                     ),
-                                  ),
-                                ],
+                                  ],
+                                ),
                               ),
                             ],
                           ),
