@@ -41,7 +41,7 @@ class WeightTrendChartCard extends StatelessWidget {
       color: colorScheme.surfaceContainerLow,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -55,7 +55,7 @@ class WeightTrendChartCard extends StatelessWidget {
                     children: [
                       Icon(
                         Icons.show_chart_rounded,
-                        size: 20,
+                        size: 24,
                         color: colorScheme.primary,
                       ),
                       const SizedBox(width: 8),
@@ -65,8 +65,7 @@ class WeightTrendChartCard extends StatelessWidget {
                           overflow: TextOverflow.ellipsis,
                           style: textTheme.titleMedium?.copyWith(
                             color: colorScheme.onSurface,
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
+                            fontWeight: FontWeight.w600,
                           ),
                         ),
                       ),

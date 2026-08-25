@@ -25,14 +25,13 @@ class BmiChartHeader extends StatelessWidget {
     if (heightCm == null || heightCm! <= 0 || entries.isEmpty) {
       return Row(
         children: [
-          Icon(Icons.monitor_weight_outlined, size: 20, color: cs.primary),
+          Icon(Icons.monitor_weight_outlined, size: 24, color: cs.primary),
           const SizedBox(width: 8),
           Text(
             l10n.bmi,
             style: textTheme.titleMedium?.copyWith(
               color: cs.onSurface,
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
+              fontWeight: FontWeight.w600,
             ),
           ),
           const Spacer(),
@@ -70,7 +69,7 @@ class BmiChartHeader extends StatelessWidget {
                   children: [
                     Icon(
                       Icons.monitor_weight_outlined,
-                      size: 20,
+                      size: 24,
                       color: cs.primary,
                     ),
                     const SizedBox(width: 8),
@@ -80,12 +79,11 @@ class BmiChartHeader extends StatelessWidget {
                         overflow: TextOverflow.ellipsis,
                         style: textTheme.titleMedium?.copyWith(
                           color: cs.onSurface,
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
+                          fontWeight: FontWeight.w600,
                         ),
                       ),
                     ),
-                    const SizedBox(width: 4),
+                    const SizedBox(width: 6),
                     Icon(
                       Icons.info_outline_rounded,
                       size: 16,
