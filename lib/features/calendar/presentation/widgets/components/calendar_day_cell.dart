@@ -1,5 +1,3 @@
-// The individual day cell widget displayed in the calendar grid.
-
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:balance/features/weight/domain/entities/weight_entry.dart';

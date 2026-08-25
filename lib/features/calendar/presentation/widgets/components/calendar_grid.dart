@@ -1,5 +1,3 @@
-// The month grid of day cells shown in the calendar screen.
-
 import 'package:flutter/material.dart';
 import 'package:balance/features/weight/domain/entities/weight_entry.dart';
 import 'package:balance/features/calendar/presentation/widgets/components/calendar_day_cell.dart';

@@ -1,5 +1,3 @@
-// The calendar tab: a paged monthly grid paired with a selected-day details section.
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:balance/core/presentation/widgets/app_top_bar.dart';

@@ -1,5 +1,3 @@
-// Month title and previous/next navigation controls for the calendar.
-
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:balance/l10n/app_localizations.dart';

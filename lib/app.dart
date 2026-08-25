@@ -1,6 +1,3 @@
-// Root widget of the Balance application plus the app-level DI, service
-// lifecycle, and localization wiring surrounding it.
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
