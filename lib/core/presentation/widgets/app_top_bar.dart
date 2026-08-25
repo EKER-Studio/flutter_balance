@@ -11,7 +11,18 @@ class AppTopBar extends StatelessWidget {
   /// An optional list of action widgets displayed on the right.
   final List<Widget>? actions;
 
-  const AppTopBar({super.key, required this.title, this.actions});
+  /// Whether the app bar remains visible at the top when content scrolls.
+  ///
+  /// When true, the content clips cleanly under the bar without bleeding
+  /// into the system status bar.
+  final bool pinned;
+
+  const AppTopBar({
+    super.key,
+    required this.title,
+    this.actions,
+    this.pinned = false,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +35,7 @@ class AppTopBar extends StatelessWidget {
       scrolledUnderElevation: 0,
       backgroundColor: colorScheme.surface,
       floating: false,
-      pinned: false,
+      pinned: pinned,
       snap: false,
       titleSpacing: 16,
       title: Text(

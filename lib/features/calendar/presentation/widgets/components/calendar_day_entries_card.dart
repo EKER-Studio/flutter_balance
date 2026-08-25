@@ -188,7 +188,7 @@ class CalendarDayEntriesCard extends StatelessWidget {
                                           .headlineMedium
                                           ?.copyWith(
                                             fontWeight: FontWeight.w800,
-                                            color: cs.onSurface,
+                                            color: cs.primary,
                                             fontSize: 32,
                                             letterSpacing: -0.5,
                                           ),
@@ -222,7 +222,7 @@ class CalendarDayEntriesCard extends StatelessWidget {
                                 border: Border(
                                   left: BorderSide(
                                     width: 2.5,
-                                    color: cs.outlineVariant,
+                                    color: cs.outline,
                                   ),
                                 ),
                               ),

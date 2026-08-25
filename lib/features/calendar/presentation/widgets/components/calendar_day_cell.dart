@@ -152,17 +152,18 @@ class CalendarDayCell extends StatelessWidget {
         child: InkWell(
           onTap: isFuture ? null : onTap,
           customBorder: const CircleBorder(),
-          child: Stack(
-            clipBehavior: Clip.none,
-            alignment: Alignment.center,
-            children: [
-              if (cellDecoration != null)
-                Container(width: 36, height: 36, decoration: cellDecoration),
-              Column(
-                mainAxisSize: MainAxisSize.min,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  ExcludeSemantics(
+          child: FittedBox(
+            fit: BoxFit.scaleDown,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  width: 30,
+                  height: 30,
+                  decoration: cellDecoration,
+                  alignment: Alignment.center,
+                  child: ExcludeSemantics(
                     child: Text(
                       '$dayNumber',
                       style: theme.textTheme.bodyMedium?.copyWith(
@@ -173,12 +174,12 @@ class CalendarDayCell extends StatelessWidget {
                       ),
                     ),
                   ),
-                  if (hasIndicator) const SizedBox(height: 2),
-                  if (hasIndicator)
-                    SizedBox(height: 4, child: Center(child: indicator)),
-                ],
-              ),
-            ],
+                ),
+                if (hasIndicator) const SizedBox(height: 2),
+                if (hasIndicator)
+                  SizedBox(height: 4, child: Center(child: indicator)),
+              ],
+            ),
           ),
         ),
       ),

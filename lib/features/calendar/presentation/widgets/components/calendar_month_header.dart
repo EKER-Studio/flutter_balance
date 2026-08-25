@@ -53,7 +53,7 @@ class CalendarMonthHeader extends StatelessWidget {
                 width: 32,
                 height: 32,
                 decoration: BoxDecoration(
-                  color: const Color(0xFF252830),
+                  color: Theme.of(context).colorScheme.surfaceContainerHigh,
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: IconButton(
@@ -62,7 +62,7 @@ class CalendarMonthHeader extends StatelessWidget {
                   icon: const Icon(Icons.chevron_left),
                   onPressed: onPreviousMonth,
                   tooltip: l10n.previousMonth,
-                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  color: Theme.of(context).colorScheme.onSurface,
                 ),
               ),
               const SizedBox(width: 8),
@@ -70,7 +70,7 @@ class CalendarMonthHeader extends StatelessWidget {
                 width: 32,
                 height: 32,
                 decoration: BoxDecoration(
-                  color: const Color(0xFF252830),
+                  color: Theme.of(context).colorScheme.surfaceContainerHigh,
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: IconButton(
@@ -79,7 +79,7 @@ class CalendarMonthHeader extends StatelessWidget {
                   icon: const Icon(Icons.chevron_right),
                   onPressed: onNextMonth,
                   tooltip: l10n.nextMonth,
-                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  color: Theme.of(context).colorScheme.onSurface,
                 ),
               ),
             ],

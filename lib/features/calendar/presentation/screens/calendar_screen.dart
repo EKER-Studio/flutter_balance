@@ -121,7 +121,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
         child: CustomScrollView(
           physics: const AlwaysScrollableScrollPhysics(),
           slivers: [
-            AppTopBar(title: l10n.tabCalendar),
+            AppTopBar(title: l10n.tabCalendar, pinned: true),
             SliverSafeArea(
               top: false,
               sliver: SliverToBoxAdapter(
