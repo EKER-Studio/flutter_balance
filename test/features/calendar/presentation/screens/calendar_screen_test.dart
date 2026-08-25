@@ -243,7 +243,7 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      expect(find.byIcon(Icons.military_tech_outlined), findsWidgets);
+      expect(find.byIcon(Icons.check_circle_outline), findsWidgets);
       expect(tester.takeException(), isNull);
     });
 

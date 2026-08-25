@@ -284,7 +284,7 @@ void main() {
       );
 
       expect(find.textContaining('Cel wagi został osiągnięty'), findsOneWidget);
-      expect(find.byIcon(Icons.military_tech_outlined), findsOneWidget);
+      expect(find.byIcon(Icons.check_circle_outline), findsOneWidget);
     },
   );
 

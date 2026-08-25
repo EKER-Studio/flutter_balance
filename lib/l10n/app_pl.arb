@@ -177,7 +177,7 @@
   "currentStreak": "Obecna seria",
   "bestStreak": "Najlepsza seria",
   "streakDays": "{count, plural, =0{0 dni} one{{count} dzień} few{{count} dni} many{{count} dni} other{{count} dni}}",
-  "weeklyPaceBadge": "⚡ {value}/tydzień",
+  "weeklyPaceBadge": "{value}/tydzień",
   "previousMonth": "Poprzedni miesiąc",
   "nextMonth": "Następny miesiąc",
   "monthlyCompliance": "Regularność",

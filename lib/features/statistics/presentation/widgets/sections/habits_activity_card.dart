@@ -60,7 +60,7 @@ class HabitsActivityCard extends StatelessWidget {
                   child: Divider(height: 1, thickness: 0.5),
                 ),
                 WeightDetailRow(
-                  icon: Icons.workspace_premium_outlined,
+                  icon: Icons.star_outline,
                   iconColor: cs.primary,
                   label: l10n.bestStreak,
                   value: l10n.streakDays(bestStreak),

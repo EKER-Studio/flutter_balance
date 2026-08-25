@@ -72,7 +72,7 @@ class CalendarDayEntriesCard extends StatelessWidget {
               children: [
                 ExcludeSemantics(
                   child: Icon(
-                    Icons.military_tech_outlined,
+                    Icons.check_circle_outline,
                     color: isDark
                         ? Colors.green.shade300
                         : Colors.green.shade700,

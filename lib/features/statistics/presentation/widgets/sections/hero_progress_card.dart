@@ -74,7 +74,7 @@ class HeroProgressCard extends StatelessWidget {
         );
       }
     } else if (totalChangeKg < 0) {
-      statusBadge = '🎉 ${l10n.greatJob}';
+      statusBadge = l10n.greatJob;
     }
 
     final semanticLabel =
@@ -107,23 +107,32 @@ class HeroProgressCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(Icons.stars_outlined, size: 24, color: cs.primary),
-                        const SizedBox(width: 8),
-                        Text(
-                          l10n.totalProgress,
-                          style: Theme.of(context).textTheme.titleMedium
-                              ?.copyWith(
-                                color: cs.onSurface,
-                                fontWeight: FontWeight.w600,
-                              ),
-                        ),
-                      ],
+                    Expanded(
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.track_changes_outlined,
+                            size: 24,
+                            color: cs.primary,
+                          ),
+                          const SizedBox(width: 8),
+                          Flexible(
+                            child: Text(
+                              l10n.totalProgress,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: Theme.of(context).textTheme.titleMedium
+                                  ?.copyWith(
+                                    color: cs.onSurface,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
+                    if (statusBadge != null) const SizedBox(width: 8),
                     if (statusBadge != null)
                       Flexible(
                         child: Container(
@@ -135,15 +144,31 @@ class HeroProgressCard extends StatelessWidget {
                             color: badgeBg,
                             borderRadius: BorderRadius.circular(20),
                           ),
-                          child: Text(
-                            statusBadge,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: Theme.of(context).textTheme.labelMedium
-                                ?.copyWith(
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              if (isSuccessBadge)
+                                Icon(
+                                  targetWeight != null
+                                      ? Icons.check_circle_outline
+                                      : Icons.verified_outlined,
+                                  size: 16,
                                   color: badgeFg,
-                                  fontWeight: FontWeight.bold,
                                 ),
+                              if (isSuccessBadge) const SizedBox(width: 4),
+                              Flexible(
+                                child: Text(
+                                  statusBadge,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: Theme.of(context).textTheme.labelMedium
+                                      ?.copyWith(
+                                        color: badgeFg,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                       ),
@@ -179,12 +204,28 @@ class HeroProgressCard extends StatelessWidget {
                 ),
                 if (paceBadgeText != null) ...[
                   const SizedBox(height: 8),
-                  Text(
-                    paceBadgeText,
-                    style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                      color: cs.secondary,
-                      fontWeight: FontWeight.w600,
-                    ),
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        Icons.speed_outlined,
+                        size: 16,
+                        color: cs.onSurfaceVariant,
+                      ),
+                      const SizedBox(width: 6),
+                      Flexible(
+                        child: Text(
+                          paceBadgeText,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: Theme.of(context).textTheme.labelMedium
+                              ?.copyWith(
+                                color: cs.onSurfaceVariant,
+                                fontWeight: FontWeight.w600,
+                              ),
+                        ),
+                      ),
+                    ],
                   ),
                 ],
                 if (goalProgressPct != null) ...[
