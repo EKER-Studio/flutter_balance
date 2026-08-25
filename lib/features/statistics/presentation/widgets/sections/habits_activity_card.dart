@@ -50,7 +50,11 @@ class HabitsActivityCard extends StatelessWidget {
               children: [
                 Row(
                   children: [
-                    Icon(Icons.insights_outlined, size: 24, color: cs.primary),
+                    Icon(
+                      Icons.local_fire_department_outlined,
+                      size: 24,
+                      color: cs.primary,
+                    ),
                     const SizedBox(width: 8),
                     Flexible(
                       child: Text(
@@ -72,7 +76,7 @@ class HabitsActivityCard extends StatelessWidget {
                   iconColor: cs.error,
                   label: l10n.currentStreak,
                   value: l10n.streakDays(streak),
-                  date: '',
+                  date: l10n.currentStreakSubtitle,
                 ),
                 const Padding(
                   padding: EdgeInsets.symmetric(vertical: 8),
@@ -83,7 +87,7 @@ class HabitsActivityCard extends StatelessWidget {
                   iconColor: cs.primary,
                   label: l10n.bestStreak,
                   value: l10n.streakDays(bestStreak),
-                  date: '',
+                  date: l10n.bestStreakSubtitle,
                 ),
                 const Padding(
                   padding: EdgeInsets.symmetric(vertical: 8),
