@@ -168,7 +168,7 @@ void main() {
           (c) => c.constraints?.maxWidth == 4 && c.constraints?.maxHeight == 4,
         );
     final decoration = dotContainer.decoration as BoxDecoration;
-    expect(decoration.color, const Color(0xFF4CAF50));
+    expect(decoration.color, Colors.green.shade700);
   });
 
   testWidgets(
