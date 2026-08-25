@@ -17,7 +17,9 @@ class InitialWeightDateTimePicker extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context);
-    final formattedDate = DateFormat.yMMMd().add_jm().format(selectedTimestamp);
+    final formattedDate = DateFormat.yMMMd(
+      l10n.localeName,
+    ).add_jm().format(selectedTimestamp);
 
     return InkWell(
       key: const Key('initial_weight_date_picker'),

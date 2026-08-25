@@ -101,7 +101,7 @@ class _StepHealthSyncState extends State<StepHealthSync> {
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    SizedBox(height: isLandscape ? 4.0 : 8.0),
+                    SizedBox(height: isLandscape ? 2.0 : 8.0),
                     Text(
                       platform == TargetPlatform.iOS
                           ? l10n.healthSyncDescriptionIOS
@@ -110,7 +110,7 @@ class _StepHealthSyncState extends State<StepHealthSync> {
                         color: theme.colorScheme.onSurfaceVariant,
                       ),
                     ),
-                    SizedBox(height: isLandscape ? 8.0 : 20.0),
+                    SizedBox(height: isLandscape ? 6.0 : 20.0),
                     Material(
                       color: theme.colorScheme.surfaceContainerLow,
                       borderRadius: BorderRadius.circular(16.0),
@@ -178,7 +178,7 @@ class _StepHealthSyncState extends State<StepHealthSync> {
                         ),
                       ),
                     ],
-                    SizedBox(height: isLandscape ? 16.0 : 24.0),
+                    SizedBox(height: isLandscape ? 12.0 : 24.0),
                     ConstrainedBox(
                       constraints: const BoxConstraints(minHeight: 48.0),
                       child: FilledButton(

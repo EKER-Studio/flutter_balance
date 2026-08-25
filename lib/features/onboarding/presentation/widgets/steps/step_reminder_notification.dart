@@ -99,14 +99,14 @@ class _StepReminderNotificationState extends State<StepReminderNotification> {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                SizedBox(height: isLandscape ? 4.0 : 8.0),
+                SizedBox(height: isLandscape ? 2.0 : 8.0),
                 Text(
                   l10n.dailyReminderStepSubtitle,
                   style: theme.textTheme.bodyMedium?.copyWith(
                     color: theme.colorScheme.onSurfaceVariant,
                   ),
                 ),
-                SizedBox(height: isLandscape ? 8.0 : 20.0),
+                SizedBox(height: isLandscape ? 6.0 : 20.0),
                 Material(
                   color: theme.colorScheme.surfaceContainerLow,
                   borderRadius: BorderRadius.circular(16.0),
@@ -208,7 +208,7 @@ class _StepReminderNotificationState extends State<StepReminderNotification> {
                     ),
                   ),
                 ],
-                SizedBox(height: isLandscape ? 16.0 : 24.0),
+                SizedBox(height: isLandscape ? 12.0 : 24.0),
                 ConstrainedBox(
                   constraints: const BoxConstraints(minHeight: 48.0),
                   child: FilledButton(
