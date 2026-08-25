@@ -13,11 +13,15 @@ class LatestMeasurementInfo extends StatelessWidget {
   /// The timestamp when the weight measurement was recorded.
   final DateTime? lastUpdated;
 
+  /// The total number of entries recorded on the current day.
+  final int todayEntriesCount;
+
   const LatestMeasurementInfo({
     super.key,
     required this.displayWeight,
     required this.unitLabel,
     this.lastUpdated,
+    this.todayEntriesCount = 1,
   });
 
   @override
@@ -68,11 +72,37 @@ class LatestMeasurementInfo extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 4),
-          Text(
-            _formatTimestamp(context, lastUpdated, l10n),
-            style: textTheme.bodySmall?.copyWith(
-              color: const Color(0xFFA0A5B5),
-            ),
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                _formatTimestamp(context, lastUpdated, l10n),
+                style: textTheme.bodySmall?.copyWith(
+                  color: const Color(0xFFA0A5B5),
+                ),
+              ),
+              if (todayEntriesCount > 1) ...[
+                const SizedBox(width: 8),
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 2,
+                  ),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF1C2D4D),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Text(
+                    l10n.measurementCountPill(todayEntriesCount),
+                    style: textTheme.labelSmall?.copyWith(
+                      color: const Color(0xFF5F8BFA),
+                      fontWeight: FontWeight.bold,
+                      fontSize: 11,
+                    ),
+                  ),
+                ),
+              ],
+            ],
           ),
         ],
       ),

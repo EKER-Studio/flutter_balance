@@ -31,6 +31,9 @@ class TodayContentSection extends StatelessWidget {
   /// An optional callback to retry data subscription.
   final VoidCallback? onRetry;
 
+  /// The total number of entries recorded today.
+  final int todayEntriesCount;
+
   const TodayContentSection({
     super.key,
     required this.latestEntry,
@@ -40,6 +43,7 @@ class TodayContentSection extends StatelessWidget {
     required this.measurementUnit,
     required this.onPeriodChanged,
     this.onRetry,
+    this.todayEntriesCount = 1,
   });
 
   @override
@@ -72,6 +76,7 @@ class TodayContentSection extends StatelessWidget {
                     HealthSummaryCard(
                       latestWeightKg: latestEntry.weightKg,
                       lastUpdated: latestEntry.dateTime,
+                      todayEntriesCount: todayEntriesCount,
                     ),
                     const SizedBox(height: 16),
                     const DailyTipCard(),
@@ -109,6 +114,7 @@ class TodayContentSection extends StatelessWidget {
               HealthSummaryCard(
                 latestWeightKg: latestEntry.weightKg,
                 lastUpdated: latestEntry.dateTime,
+                todayEntriesCount: todayEntriesCount,
               ),
               const SizedBox(height: 16),
               WeightTrendChartCard(

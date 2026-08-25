@@ -23,10 +23,14 @@ class HealthSummaryCard extends StatelessWidget {
   /// An optional date of the latest recorded weight measurement.
   final DateTime? lastUpdated;
 
+  /// The total number of entries recorded today.
+  final int todayEntriesCount;
+
   const HealthSummaryCard({
     super.key,
     required this.latestWeightKg,
     this.lastUpdated,
+    this.todayEntriesCount = 1,
   });
 
   @override
@@ -105,6 +109,7 @@ class HealthSummaryCard extends StatelessWidget {
                                 displayWeight: displayWeight,
                                 unitLabel: unitLabel,
                                 lastUpdated: lastUpdated,
+                                todayEntriesCount: todayEntriesCount,
                               ),
                             ),
                           ),

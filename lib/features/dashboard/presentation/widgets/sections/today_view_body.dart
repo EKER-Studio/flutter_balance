@@ -73,6 +73,16 @@ class TodayViewBody extends StatelessWidget {
         ? currentState.errorType
         : null;
 
+    final now = DateTime.now();
+    final todayEntriesCount = entries
+        .where(
+          (e) =>
+              e.dateTime.year == now.year &&
+              e.dateTime.month == now.month &&
+              e.dateTime.day == now.day,
+        )
+        .length;
+
     return BlocBuilder<AppSettingsBloc, AppSettingsState>(
       builder: (context, settings) {
         return TodayContentSection(
@@ -81,6 +91,7 @@ class TodayViewBody extends StatelessWidget {
           timePeriod: currentState.timePeriod,
           errorType: errorType,
           measurementUnit: settings.measurementUnit,
+          todayEntriesCount: todayEntriesCount,
           onPeriodChanged: (period) {
             AppAnalytics.logTodayDeltaPeriodSelected(period.name);
             context.read<WeightBloc>().add(ChangeChartFilter(period));
