@@ -39,9 +39,18 @@ class WeightLineChart extends StatelessWidget {
         .toList();
     final minWeight = displayWeights.reduce(math.min);
     final maxWeight = displayWeights.reduce(math.max);
-    final minY = _roundDownToHalf(minWeight - 0.5);
-    final maxY = _roundUpToHalf(maxWeight + 0.5);
-    final verticalInterval = _verticalInterval(minY, maxY);
+    final range = maxWeight - minWeight;
+    final padding = (range * 0.1).clamp(0.5, double.infinity);
+    final minY = (minWeight - padding).floorToDouble().clamp(
+      0.0,
+      double.infinity,
+    );
+    final maxY = (maxWeight + padding).ceilToDouble();
+    final yRange = maxY - minY;
+    final verticalInterval = yRange <= 4.0
+        ? 1.0
+        : (yRange <= 8.0 ? 2.0 : (yRange / 4.0).ceilToDouble());
+    final isWholeInterval = verticalInterval >= 1.0;
 
     final l10n = AppLocalizations.of(context);
     return Semantics(
@@ -90,7 +99,9 @@ class WeightLineChart extends StatelessWidget {
                   return Padding(
                     padding: const EdgeInsets.only(right: 6),
                     child: Text(
-                      value.toStringAsFixed(1),
+                      isWholeInterval
+                          ? value.toStringAsFixed(0)
+                          : value.toStringAsFixed(1),
                       textAlign: TextAlign.end,
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
                         color: Theme.of(context).colorScheme.onSurfaceVariant,
@@ -247,10 +258,6 @@ class WeightLineChart extends StatelessWidget {
     return unit == MeasurementUnit.imperial ? kgToLbs(weightKg) : weightKg;
   }
 
-  static double _roundDownToHalf(double value) => (value * 2).floor() / 2;
-
-  static double _roundUpToHalf(double value) => (value * 2).ceil() / 2;
-
   static double _bottomInterval(int length, TimePeriod period) {
     if (length <= 1) {
       return 1;
@@ -261,16 +268,6 @@ class WeightLineChart extends StatelessWidget {
       TimePeriod.year || TimePeriod.all => 5,
     };
     return math.max(1, ((length - 1) / targetIntervals).ceil()).toDouble();
-  }
-
-  static double _verticalInterval(double minY, double maxY) {
-    final rawInterval = (maxY - minY) / 4;
-    for (final interval in [0.5, 1.0, 2.0, 5.0, 10.0]) {
-      if (rawInterval <= interval) {
-        return interval;
-      }
-    }
-    return 10;
   }
 
   String _bottomAxisLabel(
