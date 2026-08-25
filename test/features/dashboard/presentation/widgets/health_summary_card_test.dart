@@ -55,11 +55,13 @@ void main() {
 
     expect(find.textContaining('BMI'), findsAtLeastNWidgets(1));
     expect(find.text('Remaining: 2.0 kg'), findsOneWidget);
+    expect(find.byIcon(Icons.edit_outlined), findsOneWidget);
 
     bloc.add(const TargetWeightChanged(68.0));
     await tester.pumpAndSettle();
 
     expect(find.text('Remaining: 4.0 kg'), findsOneWidget);
+    expect(find.byIcon(Icons.edit_outlined), findsOneWidget);
   });
 
   testWidgets('formats the goal in imperial units', (tester) async {
