@@ -228,10 +228,10 @@ class CalendarDayEntriesCard extends StatelessWidget {
                                             ),
                                       ),
                                     if (categoryText.isNotEmpty) ...[
-                                      const SizedBox(height: 6),
+                                      const SizedBox(height: 8),
                                       Container(
                                         padding: const EdgeInsets.symmetric(
-                                          horizontal: 8,
+                                          horizontal: 10,
                                           vertical: 3,
                                         ),
                                         decoration: BoxDecoration(
@@ -243,7 +243,7 @@ class CalendarDayEntriesCard extends StatelessWidget {
                                           ),
                                           border: Border.all(
                                             color: categoryColor,
-                                            width: 1,
+                                            width: 1.2,
                                           ),
                                         ),
                                         child: Row(
@@ -266,7 +266,7 @@ class CalendarDayEntriesCard extends StatelessWidget {
                                                   ?.copyWith(
                                                     color: categoryColor,
                                                     fontWeight: FontWeight.bold,
-                                                    fontSize: 11,
+                                                    fontSize: 12,
                                                   ),
                                             ),
                                           ],
