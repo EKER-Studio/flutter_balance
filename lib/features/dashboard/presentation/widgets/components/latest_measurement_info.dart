@@ -52,7 +52,7 @@ class LatestMeasurementInfo extends StatelessWidget {
                 style: textTheme.displayLarge?.copyWith(
                   fontWeight: FontWeight.w800,
                   fontSize: 36,
-                  color: colorScheme.onSurface,
+                  color: colorScheme.primary,
                   letterSpacing: -0.5,
                   height: 1.1,
                 ),
