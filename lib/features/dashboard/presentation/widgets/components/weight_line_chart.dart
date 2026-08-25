@@ -93,7 +93,7 @@ class WeightLineChart extends StatelessWidget {
                       value.toStringAsFixed(1),
                       textAlign: TextAlign.end,
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: const Color(0xFFA0A5B5),
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
                         fontSize: 11,
                         fontWeight: FontWeight.w500,
                       ),

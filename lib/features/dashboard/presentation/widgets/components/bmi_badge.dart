@@ -26,6 +26,9 @@ class BmiBadge extends StatelessWidget {
     final categoryColor = category != null
         ? category!.chipContentColor(isDark: isDark)
         : colorScheme.primary;
+    final categoryBackground = category != null
+        ? category!.chipBackgroundColor()
+        : colorScheme.primary.withValues(alpha: 0.15);
 
     final categoryLabel = category?.localizedName(l10n) ?? '';
 
@@ -41,7 +44,7 @@ class BmiBadge extends StatelessWidget {
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
             decoration: BoxDecoration(
-              color: categoryColor.withValues(alpha: 0.15),
+              color: categoryBackground,
               borderRadius: BorderRadius.circular(12),
               border: Border.all(
                 color: categoryColor.withValues(alpha: 0.35),

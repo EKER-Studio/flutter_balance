@@ -36,7 +36,7 @@ class LatestMeasurementInfo extends StatelessWidget {
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             style: textTheme.labelMedium?.copyWith(
-              color: const Color(0xFFA0A5B5),
+              color: colorScheme.onSurfaceVariant,
               letterSpacing: 0.5,
               fontWeight: FontWeight.w500,
             ),
@@ -61,7 +61,7 @@ class LatestMeasurementInfo extends StatelessWidget {
               Text(
                 unitLabel,
                 style: textTheme.titleMedium?.copyWith(
-                  color: const Color(0xFFA0A5B5),
+                  color: colorScheme.onSurfaceVariant,
                   fontWeight: FontWeight.w600,
                 ),
               ),
@@ -71,7 +71,7 @@ class LatestMeasurementInfo extends StatelessWidget {
           Text(
             _formatTimestamp(context, lastUpdated, l10n),
             style: textTheme.bodySmall?.copyWith(
-              color: const Color(0xFFA0A5B5),
+              color: colorScheme.onSurfaceVariant,
             ),
           ),
         ],

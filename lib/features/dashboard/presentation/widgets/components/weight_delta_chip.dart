@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:balance/core/models/measurement_unit.dart';
 import 'package:balance/core/utils/unit_converter.dart';
+import 'package:balance/features/weight/domain/bmi_category.dart';
 import 'package:balance/features/weight/domain/entities/weight_entry.dart';
+import 'package:balance/features/weight/presentation/utils/bmi_category_localizer.dart';
 
 /// A tonal badge summarizing the weight change across the active chart period.
 class WeightDeltaChip extends StatelessWidget {
@@ -30,20 +32,17 @@ class WeightDeltaChip extends StatelessWidget {
     final isLoss = delta < 0;
     final isGain = delta > 0;
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final greenColor = isDark ? Colors.green.shade300 : Colors.green.shade700;
-    final orangeColor = isDark
-        ? Colors.orange.shade300
-        : Colors.orange.shade700;
-    final backgroundColor = isLoss
-        ? Colors.green.withValues(alpha: 0.15)
+    final BmiCategory? bCategory = isLoss
+        ? BmiCategory.normal
         : isGain
-        ? Colors.orange.withValues(alpha: 0.15)
+        ? BmiCategory.overweight
+        : null;
+    final foregroundColor = bCategory != null
+        ? bCategory.chipContentColor(isDark: isDark)
+        : Theme.of(context).colorScheme.onSurfaceVariant;
+    final backgroundColor = bCategory != null
+        ? bCategory.chipBackgroundColor()
         : Theme.of(context).colorScheme.surfaceContainerHigh;
-    final foregroundColor = isLoss
-        ? greenColor
-        : isGain
-        ? orangeColor
-        : Colors.blueGrey.shade300;
     final icon = isLoss
         ? Icons.trending_down_rounded
         : isGain
@@ -57,10 +56,14 @@ class WeightDeltaChip extends StatelessWidget {
       container: true,
       label: 'Weight change: $formattedDelta',
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
         decoration: BoxDecoration(
           color: backgroundColor,
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: foregroundColor.withValues(alpha: 0.35),
+            width: 1.0,
+          ),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
@@ -71,10 +74,10 @@ class WeightDeltaChip extends StatelessWidget {
             const SizedBox(width: 4),
             Text(
               formattedDelta,
-              style: Theme.of(context).textTheme.labelMedium?.copyWith(
+              style: Theme.of(context).textTheme.labelSmall?.copyWith(
                 color: foregroundColor,
-                fontSize: 13,
-                fontWeight: FontWeight.w600,
+                fontSize: 12,
+                fontWeight: FontWeight.bold,
               ),
             ),
           ],
