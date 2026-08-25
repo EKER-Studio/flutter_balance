@@ -1,311 +1,27 @@
 {
   "@@locale": "pl",
-  "appTitle": "Balance",
-  "settingsTitle": "Ustawienia",
-  "settingsSubtitle": "Dostosuj aplikację do swoich potrzeb",
-  "profileSection": "PROFIL",
-  "applicationSection": "APLIKACJA",
-  "securitySection": "BEZPIECZEŃSTWO",
-  "dataSection": "DANE",
-  "helpSection": "POMOC",
-  "integrationsSection": "INTEGRACJE",
-  "appVersion": "Wersja aplikacji",
-  "metricUnit": "Metryczne (kg, cm)",
-  "imperialUnit": "Imperialne (lb, ft/in)",
-  "height": "Wzrost",
-  "targetWeight": "Waga docelowa",
-  "notSet": "Nie ustawiono",
-  "biometricLock": "Ochrona biometryczna",
-  "biometricDesc": "Dodatkowe zabezpieczenie aplikacji",
-  "biometricLockoutTitle": "Blokada biometryczna niedostępna",
-  "biometricLockoutBody": "Dane biometryczne nie są już dostępne lub zapisane na tym urządzeniu. Wyłącz blokadę biometryczną, aby odzyskać dostęp do danych, albo pozostaw ją włączoną.",
-  "keepLocked": "Pozostaw zablokowane",
-  "disableLock": "Wyłącz blokadę",
-  "importCsv": "Importuj dane z CSV",
-  "exportCsv": "Eksportuj dane do CSV",
-  "exportSuccess": "Eksport zakończony sukcesem.",
-  "exportNoData": "Brak wpisów wagi do wyeksportowania.",
-  "exportError": "Błąd eksportu: {error}",
-  "csvExportShareSubject": "Eksport CSV z Balance",
-  "wipeData": "Wyczyść wszystkie dane",
-  "privacyPolicy": "Polityka prywatności",
-  "privacyPolicyOpenError": "Nie udało się otworzyć polityki prywatności.",
-  "openSourceLicenses": "Licencje open source",
-  "yourResult": "Twój wynik",
-  "cancel": "Anuluj",
-  "save": "Zapisz",
-  "retry": "Spróbuj ponownie",
-  "invalidPositiveNumber": "Wprowadź poprawną liczbę dodatnią.",
-  "heightDialogTitle": "Ustaw wzrost",
-  "heightCmLabel": "Wzrost (cm)",
-  "heightHint": "np. 177",
-  "targetWeightDialogTitle": "Waga docelowa",
-  "clearField": "Wyczyść pole",
-  "targetWeightOptionalTitle": "Twój wymarzony cel",
-  "weightInKgLabel": "Waga (kg)",
-  "weightInLbLabel": "Waga (lb)",
-  "weightHint": "np. 75,5",
-  "noteLabel": "Notatka (opcjonalnie)",
-  "note": "Notatka",
-  "theme": "Motyw",
-  "system": "Systemowy",
-  "light": "Jasny",
-  "dark": "Ciemny",
-  "measurementUnit": "Jednostka miary",
-  "biometricsNotAvailable": "Biometria nie jest dostępna na tym urządzeniu",
-  "biometricAuthFailed": "Uwierzytelnienie biometryczne nie powiodło się lub zostało anulowane.",
-  "wipeDataContent": "To trwale usunie wszystkie wpisy wagi i zresetuje ustawienia aplikacji. Tej operacji nie można cofnąć.",
-  "wipeDataButton": "Wyczyść dane",
-  "dataWipedSuccess": "Wszystkie dane zostały wyczyszczone. Uruchom aplikację ponownie.",
-  "errorWipingData": "Błąd podczas czyszczenia danych: {error}",
-  "importNoDataFound": "Nie znaleziono poprawnych wpisów wagi w zaimportowanym pliku.",
-  "notificationReminderTitle": "Czas na ważenie!",
-  "notificationReminderBody": "Pamiętaj o dodaniu dzisiejszego pomiaru wagi.",
-  "notificationChannelName": "Codzienne przypomnienia o ważeniu",
-  "notificationChannelDescription": "Przypomina o codziennym zanotowaniu wagi.",
-  "welcomeTitle": "Witaj w Waga i BMI!",
-  "welcomeSubtitle": "Dodaj pierwszy pomiar, aby zacząć śledzić swoje postępy w drodze do lepszego zdrowia.",
-  "addFirstMeasurement": "Dodaj pierwszy pomiar",
-  "lowest": "Najniższa",
-  "highest": "Najwyższa",
-  "weightRangeSemanticsPrefix": "Zakres wagi: ",
-  "addWeight": "Dodaj pomiar",
-  "editWeight": "Edytuj pomiar",
-  "edit": "Edytuj",
-  "delete": "Usuń",
-  "moreOptions": "Więcej opcji",
-  "measurementCountPill": "{count, plural, one{{count} pomiar} few{{count} pomiary} many{{count} pomiarów} other{{count} pomiarów}}",
-  "@measurementCountPill": {
+  "@bmiCategorySemantics": {
+    "description": "Accessibility label for the BMI badge on the health summary card.",
     "placeholders": {
-      "count": { "type": "int" }
-    }
-  },
-  "editMeasurementTooltip": "Edytuj pomiar",
-  "measurementDate": "Data pomiaru",
-  "measurementTime": "Godzina pomiaru",
-  "futureDateError": "Data i godzina nie mogą być w przyszłości",
-  "weightCannotBeEmpty": "Waga nie może być pusta",
-  "enterValidNumber": "Wprowadź poprawną liczbę",
-  "weightRangeError": "Waga musi być z zakresu od 20 do 300 kg",
-  "heightRangeError": "Wzrost musi mieścić się w przedziale od 50 do 250 cm",
-  "heightRangeHint": "{min} – {max} cm",
-  "appLoadingSemantics": "Aplikacja się ładuje",
-  "bmi": "BMI",
-  "bmiLegendTitle": "Kategorie BMI",
-  "today": "Dzisiaj",
-  "sinceEntryDate": "od {date}",
-  "weightTrend": "Trend wagi",
-  "weightTrendChartSemantics": "{count, plural, one{{count} pomiar} few{{count} pomiary} many{{count} pomiarów} other{{count} pomiarów}}",
-  "goalAchieved": "Cel osiągnięty!",
-  "goalProgress": "Postęp celu",
-  "toTarget": "do celu",
-  "chartEmpty": "Za mało danych, aby wyświetlić wykres.",
-  "week": "Tydzień",
-  "month": "Miesiąc",
-  "year": "Rok",
-  "all": "Wszystkie",
-  "chartTargetLabel": "Cel",
-  "bmiCategoryUnderweight": "Niedowaga",
-  "bmiCategoryNormal": "Norma",
-  "bmiCategoryOverweight": "Nadwaga",
-  "bmiCategoryObeseClass1": "Otyłość I st.",
-  "bmiCategoryObeseClass2": "Otyłość II st.",
-  "bmiCategoryObeseClass3": "Otyłość III st.",
-  "healthyWeightRange": "Prawidłowa waga",
-  "healthyWeightRangeValue": "{min} – {max} {unit}",
-  "@healthyWeightRangeValue": {
-    "placeholders": {
-      "min": { "type": "String" },
-      "max": { "type": "String" },
-      "unit": { "type": "String" }
-    }
-  },
-  "biometricAuthReason": "Potwierdź tożsamość, aby uzyskać dostęp do aplikacji",
-  "appLocked": "Aplikacja zablokowana",
-  "unlock": "Odblokuj",
-  "dailyReminder": "Codzienne przypomnienie",
-  "dailyReminderDesc": "Regularny alert w centrum powiadomień",
-  "reminderTime": "Godzina przypomnienia",
-  "notificationPermissionDenied": "Wymagane są uprawnienia do wysyłania powiadomień.",
-  "healthServiceNameAndroid": "Health Connect",
-  "healthServiceNameIOS": "Apple Health",
-  "healthServiceNameOther": "Usługi zdrowia",
-  "healthSyncDescAndroid": "Synchronizuj dane wagi z Health Connect",
-  "healthSyncDescIOS": "Synchronizuj dane wagi z Apple Health",
-  "healthSyncDescOther": "Synchronizuj dane wagi z aplikacjami zdrowia",
-  "healthSyncUnavailable": "Niedostępne na tym urządzeniu",
-  "healthPermissionDenied": "Brak uprawnień do danych zdrowotnych",
-  "healthConnectRequiredTitle": "Wymagana aplikacja Health Connect",
-  "healthConnectRequiredSubtitle": "Pobierz oficjalną aplikację Google Health Connect ze Sklepu Play, aby włączyć synchronizację.",
-  "installFromPlayStore": "Zainstaluj ze Sklepu Play",
-  "reminderTimeSet": "Codzienne przypomnienie ustawione na {time}",
-  "openSettings": "Ustawienia",
-  "errorStream": "Błąd połączenia z bazą danych.",
-  "errorHeightNotSet": "Najpierw ustaw wzrost.",
-  "errorAddEntryFailed": "Nie udało się dodać pomiaru.",
-  "errorDeleteEntryFailed": "Nie udało się usunąć pomiaru.",
-  "errorReadFailed": "Nie udało się odczytać danych wagi.",
-  "errorWriteFailed": "Nie udało się zapisać danych wagi.",
-  "errorWipeFailed": "Nie udało się wyczyścić danych wagi.",
-  "deleteEntryTooltip": "Usuń wpis",
-  "deleteEntryTitle": "Usuń wpis",
-  "deleteEntryMessage": "Ten wpis zostanie trwale usunięty.",
-  "csvImportStepTitle": "Twoja dotychczasowa historia",
-  "csvImportStepSubtitle": "Przechodzisz z innej aplikacji? Zaimportuj swój plik CSV, aby kontynuować bez utraty danych.",
-  "csvImportTileTitle": "Importuj plik CSV",
-  "csvImportTileSubtitle": "Dodaj historię ze starej aplikacji",
-  "csvFormatHintTitle": "Wymagany format kolumn:",
-  "csvFormatHintExample": "ID, Date, Time (opt), Weight (kg), Note\n(lub: Data; Czas; Waga (kg))",
-  "csvImportLoading": "Przetwarzanie pliku CSV...",
-  "csvImportSuccess": "Zaimportowano {count} wpisów",
-  "csvImportError": "Nie udało się odczytać tego pliku. Upewnij się, że to poprawny plik CSV z kolumnami daty i wagi.",
-  "csvImportFileTooLarge": "Plik jest za duży (maks. 5 MB)",
-  "csvImportInvalidFormat": "Nie znaleziono kolumn z wagą i datą",
-  "csvImportNoEntries": "Nie znaleziono poprawnych pomiarów w tym pliku",
-  "csvPreviewTitle": "Podgląd importu",
-  "csvPreviewDateRange": "Zakres: {from} – {to}",
-  "csvPreviewSkippedRows": "{count, plural, zero{Nie pominięto żadnych wierszy} one{Pominięto {count} nieprawidłowy wiersz} few{Pominięto {count} nieprawidłowe wiersze} many{Pominięto {count} nieprawidłowych wierszy} other{Pominięto {count} nieprawidłowego wiersza}}",
-  "csvPreviewConfirm": "Zatwierdź import",
-  "csvPreviewCancel": "Anuluj",
-  "csvImportComplete": "{count, plural, zero{Brak nowych wpisów do dodania (wszystkie już istnieją)} one{Zaimportowano {count} nowy wpis} few{Zaimportowano {count} nowe wpisy} many{Zaimportowano {count} nowych wpisów} other{Zaimportowano {count} nowego wpisu}}",
-  "chartSemanticsTitle": "Wykres liniowy historii wagi dla okresu {period}. Ostatni zarejestrowany wynik to {weight}.",
-  "chartSemanticsFilter": "filtr",
-  "tabToday": "Dzisiaj",
-  "tabCalendar": "Kalendarz",
-  "tabStats": "Statystyki",
-  "tabSettings": "Ustawienia",
-  "multipleEntries": "{count, plural, few{{count} pomiary} many{{count} pomiarów} other{{count} pomiarów}}",
-  "loggingStreak": "Seria ważenia",
-  "currentStreak": "Obecna seria",
-  "currentStreakSubtitle": "Dni z rzędu",
-  "bestStreak": "Najlepsza seria",
-  "bestStreakSubtitle": "Twój rekord",
-  "streakDays": "{count, plural, =0{0 dni} one{{count} dzień} few{{count} dni} many{{count} dni} other{{count} dni}}",
-  "weeklyPaceBadge": "{value}/tydzień",
-  "previousMonth": "Poprzedni miesiąc",
-  "nextMonth": "Następny miesiąc",
-  "monthlyCompliance": "Regularność",
-  "averageWeight": "Średnia waga",
-  "allEntriesLabel": "Wszystkie wpisy",
-  "weightRangeCardTitle": "Zakres i średnia wagi",
-  "bmiChartNoHeight": "Ustaw wzrost w zakładce Ustawienia, aby zobaczyć wykres BMI.",
-  "totalProgress": "Całkowita zmiana",
-  "noEntriesForDate": "Brak pomiarów w tym dniu",
-  "noEntriesForDateSubtitle": "Nie dodano jeszcze żadnych danych dla wybranej daty. Regularne pomiary pomagają lepiej śledzić postępy.",
-  "goalAchievedOnDayBanner": "Cel wagi został osiągnięty w tym dniu!",
-  "deleteMeasurementTooltip": "Usuń pomiar",
-  "addAnotherMeasurement": "Dodaj kolejny pomiar",
-  "entriesFromDate": "Pomiary z {date}",
-  "databaseErrorTitle": "Błąd odczytu bazy danych",
-  "databaseErrorDefaultMessage": "Nie udało się załadować historii pomiarów z lokalnej bazy danych. Spróbuj ponowić próbę.",
-  "todayTabTitle": "Dzisiaj",
-  "todayAtTime": "Dzisiaj, {time}",
-  "lastMeasurementLabel": "Ostatni pomiar",
-  "goalWeightLabel": "Cel: {weight}",
-  "remainingWeightLabel": "Zostało: {weight}",
-  "dailyTipTitle": "Wskazówka",
-  "dailyTipText": "Waż się o tej samej porze każdego dnia, najlepiej rano, aby uzyskać najbardziej wiarygodne wyniki.",
-  "todayTabHomeSemanticsLabel": "Karta Dzisiaj, strona główna",
-  "bmiValueShortLabel": "{value} BMI",
-  "weekdayShortMonday": "Pon",
-  "weekdayShortTuesday": "Wto",
-  "weekdayShortWednesday": "Śro",
-  "weekdayShortThursday": "Czw",
-  "weekdayShortFriday": "Pią",
-  "weekdayShortSaturday": "Sob",
-  "weekdayShortSunday": "Nie",
-  "bmiValueLabel": "BMI {bmi}",
-  "dailyReminderStepOptionalTitle": "Powiadomienia o ważeniu",
-  "dailyReminderStepSubtitle": "Wyrób w sobie zdrowy nawyk i pozwól nam przypomnieć Ci o codziennym wprowadzaniu wagi.",
-  "healthSyncStepOptionalTitle": "Synchronizacja ze Zdrowiem",
-  "healthSyncDescriptionIOS": "Zapisuj nowe pomiary i odczytuj historię z innych aplikacji sportowych, aby mieć wszystkie dane w jednym miejscu.",
-  "healthSyncDescriptionAndroid": "Zapisuj nowe pomiary i odczytuj historię z innych aplikacji sportowych, aby mieć wszystkie dane w jednym miejscu.",
-  "healthSyncTileSubtitleIOS": "Bezpieczna wymiana danych o wadze",
-  "healthSyncTileSubtitleAndroid": "Bezpieczna wymiana danych o wadze",
-  "biometricStepTitle": "Ochrona biometryczna",
-  "biometricStepOptionalTitle": "Ochrona biometryczna",
-  "biometricStepSubtitle": "Zabezpiecz swoje pomiary przed wglądem innych osób i odblokowuj aplikację błyskawicznie za pomocą twarzy lub odcisku palca.",
-  "ok": "OK",
-  "next": "Dalej",
-  "previousStepTooltip": "Poprzedni krok",
-  "metricUnitOption": "Metryczne (kg, cm)",
-  "imperialUnitOption": "Imperialne (lb, ft/in)",
-  "onboardingWelcomeTitle": "Witaj w Balance",
-  "onboardingWelcomeSubtitle": "Skonfigurujmy Twoje konto w kilku prostych krokach.",
-  "onboardingWelcomeStart": "Rozpocznij",
-  "onboardingWelcomeUnitsHeight": "Jednostki i wzrost",
-  "onboardingWelcomeInitialWeight": "Waga początkowa",
-  "onboardingWelcomeTargetWeight": "Waga docelowa",
-  "onboardingWelcomeHealthSync": "Synchronizacja zdrowia",
-  "onboardingWelcomeDailyReminders": "Codzienne przypomnienia",
-  "onboardingWelcomePrivacy": "Prywatność i bezpieczeństwo",
-  "onboardingUnitsHeightTitle": "Twoje podstawowe dane",
-  "onboardingUnitsHeightSubtitle": "Podaj swój wzrost i wybierz preferowaną jednostkę miary – resztą zajmie się aplikacja.",
-  "feetLabel": "Stopy",
-  "inchesLabel": "Cale",
-  "initialWeightStepTitle": "Twój punkt startowy",
-  "initialWeightStepSubtitle": "Wprowadź swoją aktualną wagę. To Twój pierwszy krok w stronę realizacji celu.",
-  "currentWeightLabel": "Obecna waga",
-  "enterInitialWeightHint": "Wprowadź wagę początkową",
-  "initialWeightRequiredError": "Waga początkowa jest wymagana",
-  "measurementDateTimeLabel": "Data i godzina pomiaru",
-  "targetWeightStepSubtitle": "Do jakiej wagi dążysz? Ustaw swój cel teraz lub zrób to w dowolnym momencie w przyszłości.",
-  "targetWeightOptionalHint": "Opcjonalnie — pozostaw puste, aby ustawić później",
-  "stepOf": "Krok {current} z {total}",
-  "appLockedStatusIconSemantics": "Ikona statusu blokady aplikacji",
-  "initErrorSemantics": "Błąd inicjalizacji. Aplikacja nie mogła się uruchomić z powodu błędu bazy danych.",
-  "initErrorTitle": "Nie udało się uruchomić Balance",
-  "initErrorSubtitle": "Wystąpił nieoczekiwany błąd podczas konfiguracji bazy danych. Spróbuj uruchomić aplikację ponownie lub kliknij Spróbuj ponownie poniżej.",
-  "initErrorRetryLabel": "Ponów próbę uruchomienia aplikacji",
-  "initErrorRetryHint": "Stuknij dwukrotnie, aby ponowić próbę inicjalizacji bazy danych i usług",
-  "retryStartup": "Spróbuj ponownie",
-  "heightNotSetLabel": "brak podanego wzrostu",
-  "doubleTapToOpenCalendarHint": "Dotknij dwukrotnie, aby otworzyć kalendarz",
-  "doubleTapToChangeTimeHint": "Dotknij dwukrotnie, aby zmienić godzinę",
-  "noDataToAnalyze": "Brak danych do analizy",
-  "noDataToAnalyzeSubtitle": "Twoje statystyki pojawią się tutaj po kilku dniach regularnych pomiarów. Dodaj wpisy, aby zacząć śledzić swój postęp.",
-  "greatJob": "Świetna robota!",
-  "@stepOf": {
-    "placeholders": {
-      "current": {
-        "type": "int"
+      "value": {
+        "type": "String"
       },
-      "total": {
-        "type": "int"
-      }
-    }
-  },
-  "@entriesFromDate": {
-    "placeholders": {
-      "date": {
+      "category": {
         "type": "String"
       }
     }
   },
-  "@multipleEntries": {
+  "@bmiChangeSemantics": {
+    "description": "Accessibility label for the BMI delta chip.",
     "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "@todayAtTime": {
-    "placeholders": {
-      "time": {
+      "value": {
         "type": "String"
       }
     }
   },
-  "@goalWeightLabel": {
+  "@bmiValueLabel": {
     "placeholders": {
-      "weight": {
-        "type": "String"
-      }
-    }
-  },
-  "@remainingWeightLabel": {
-    "placeholders": {
-      "weight": {
+      "bmi": {
         "type": "String"
       }
     }
@@ -317,9 +33,10 @@
       }
     }
   },
-  "@bmiValueLabel": {
+  "@couldNotOpenEmailClient": {
+    "description": "Error message shown when the device cannot open the email client for the contact address.",
     "placeholders": {
-      "value": {
+      "email": {
         "type": "String"
       }
     }
@@ -332,9 +49,355 @@
       }
     }
   },
-  "goalProgressSemantics": "Cel: {target}. {detail}. Stuknij dwukrotnie, aby edytować wagę docelową.",
+  "@entriesFromDate": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "@goalProgressSemantics": {
+    "description": "Accessibility label for the goal progress section on the health summary card.",
+    "placeholders": {
+      "target": {
+        "type": "String"
+      },
+      "detail": {
+        "type": "String"
+      }
+    }
+  },
+  "@goalWeightLabel": {
+    "placeholders": {
+      "weight": {
+        "type": "String"
+      }
+    }
+  },
+  "@healthyWeightRangeValue": {
+    "placeholders": {
+      "min": {
+        "type": "String"
+      },
+      "max": {
+        "type": "String"
+      },
+      "unit": {
+        "type": "String"
+      }
+    }
+  },
+  "@heightRangeHint": {
+    "placeholders": {
+      "min": {
+        "type": "String"
+      },
+      "max": {
+        "type": "String"
+      }
+    }
+  },
+  "@measurementCountPill": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@remainingWeightLabel": {
+    "placeholders": {
+      "weight": {
+        "type": "String"
+      }
+    }
+  },
+  "@stepOf": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "@todayAtTime": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "@weeklyPaceBadge": {
+    "description": "Badge showing the weekly weight pace change per week.",
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "@weightChangeSemantics": {
+    "description": "Accessibility label for the weight delta chip.",
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "addAnotherMeasurement": "Dodaj kolejny pomiar",
+  "addFirstMeasurement": "Dodaj pierwszy pomiar",
+  "addWeight": "Dodaj pomiar",
+  "all": "Wszystkie",
+  "allEntriesLabel": "Wszystkie wpisy",
+  "appLoadingSemantics": "Aplikacja się ładuje",
+  "appLocked": "Aplikacja zablokowana",
+  "appLockedStatusIconSemantics": "Ikona statusu blokady aplikacji",
+  "appTitle": "Balance",
+  "appVersion": "Wersja aplikacji",
+  "applicationSection": "APLIKACJA",
+  "averageWeight": "Średnia waga",
+  "bestStreak": "Najlepsza seria",
+  "biometricAuthFailed": "Uwierzytelnienie biometryczne nie powiodło się lub zostało anulowane.",
+  "biometricAuthReason": "Potwierdź tożsamość, aby uzyskać dostęp do aplikacji",
+  "biometricDesc": "Dodatkowe zabezpieczenie aplikacji",
+  "biometricLock": "Ochrona biometryczna",
+  "biometricLockoutBody": "Dane biometryczne nie są już dostępne lub zapisane na tym urządzeniu. Wyłącz blokadę biometryczną, aby odzyskać dostęp do danych, albo pozostaw ją włączoną.",
+  "biometricLockoutTitle": "Blokada biometryczna niedostępna",
+  "biometricStepOptionalTitle": "Ochrona biometryczna",
+  "biometricStepSubtitle": "Zabezpiecz swoje pomiary przed wglądem innych osób i odblokowuj aplikację błyskawicznie za pomocą twarzy lub odcisku palca.",
+  "biometricStepTitle": "Ochrona biometryczna",
+  "biometricsNotAvailable": "Biometria nie jest dostępna na tym urządzeniu",
+  "bmi": "BMI",
+  "bmiCategoryNormal": "Norma",
+  "bmiCategoryObeseClass1": "Otyłość I st.",
+  "bmiCategoryObeseClass2": "Otyłość II st.",
+  "bmiCategoryObeseClass3": "Otyłość III st.",
+  "bmiCategoryOverweight": "Nadwaga",
   "bmiCategorySemantics": "BMI {value}, {category}. Stuknij dwukrotnie, aby zobaczyć legendę BMI.",
+  "bmiCategoryUnderweight": "Niedowaga",
+  "bmiChangeSemantics": "Zmiana BMI: {value}",
+  "bmiChartNoHeight": "Ustaw wzrost w zakładce Ustawienia, aby zobaczyć wykres BMI.",
+  "bmiLegendTitle": "Kategorie BMI",
+  "bmiValueLabel": "BMI {bmi}",
+  "bmiValueShortLabel": "{value} BMI",
+  "cancel": "Anuluj",
+  "chartEmpty": "Za mało danych, aby wyświetlić wykres.",
+  "chartSemanticsFilter": "filtr",
+  "chartSemanticsTitle": "Wykres liniowy historii wagi dla okresu {period}. Ostatni zarejestrowany wynik to {weight}.",
+  "chartTargetLabel": "Cel",
+  "clearField": "Wyczyść pole",
+  "couldNotOpenEmailClient": "Nie można otworzyć klienta poczty dla {email}",
+  "csvExportShareSubject": "Eksport CSV z Balance",
+  "csvFormatHintExample": "ID, Date, Time (opt), Weight (kg), Note\n(lub: Data; Czas; Waga (kg))",
+  "csvFormatHintTitle": "Wymagany format kolumn:",
+  "csvImportComplete": "{count, plural, zero{Brak nowych wpisów do dodania (wszystkie już istnieją)} one{Zaimportowano {count} nowy wpis} few{Zaimportowano {count} nowe wpisy} many{Zaimportowano {count} nowych wpisów} other{Zaimportowano {count} nowego wpisu}}",
+  "csvImportError": "Nie udało się odczytać tego pliku. Upewnij się, że to poprawny plik CSV z kolumnami daty i wagi.",
+  "csvImportFileTooLarge": "Plik jest za duży (maks. 5 MB)",
+  "csvImportInvalidFormat": "Nie znaleziono kolumn z wagą i datą",
+  "csvImportLoading": "Przetwarzanie pliku CSV...",
+  "csvImportNoEntries": "Nie znaleziono poprawnych pomiarów w tym pliku",
+  "csvImportStepSubtitle": "Przechodzisz z innej aplikacji? Zaimportuj swój plik CSV, aby kontynuować bez utraty danych.",
+  "csvImportStepTitle": "Twoja dotychczasowa historia",
+  "csvImportSuccess": "Zaimportowano {count} wpisów",
   "csvImportSuccessSubtitle": "Dane będą dostępne od razu po zakończeniu onboardingu",
+  "csvImportTileSubtitle": "Dodaj historię ze starej aplikacji",
+  "csvImportTileTitle": "Importuj plik CSV",
+  "csvPreviewCancel": "Anuluj",
+  "csvPreviewConfirm": "Zatwierdź import",
+  "csvPreviewDateRange": "Zakres: {from} – {to}",
+  "csvPreviewSkippedRows": "{count, plural, zero{Nie pominięto żadnych wierszy} one{Pominięto {count} nieprawidłowy wiersz} few{Pominięto {count} nieprawidłowe wiersze} many{Pominięto {count} nieprawidłowych wierszy} other{Pominięto {count} nieprawidłowego wiersza}}",
+  "csvPreviewTitle": "Podgląd importu",
+  "currentStreak": "Obecna seria",
+  "currentStreakSubtitle": "Dni z rzędu",
+  "currentWeightLabel": "Obecna waga",
+  "dailyReminder": "Codzienne przypomnienie",
+  "dailyReminderDesc": "Regularny alert w centrum powiadomień",
+  "dailyReminderStepOptionalTitle": "Powiadomienia o ważeniu",
+  "dailyReminderStepSubtitle": "Wyrób w sobie zdrowy nawyk i pozwól nam przypomnieć Ci o codziennym wprowadzaniu wagi.",
+  "dailyTipText": "Waż się o tej samej porze każdego dnia, najlepiej rano, aby uzyskać najbardziej wiarygodne wyniki.",
+  "dailyTipTitle": "Wskazówka",
+  "dark": "Ciemny",
+  "dataSection": "DANE",
+  "dataWipedSuccess": "Wszystkie dane zostały wyczyszczone. Uruchom aplikację ponownie.",
+  "databaseErrorDefaultMessage": "Nie udało się załadować historii pomiarów z lokalnej bazy danych. Spróbuj ponowić próbę.",
+  "databaseErrorTitle": "Błąd odczytu bazy danych",
+  "delete": "Usuń",
+  "deleteEntryMessage": "Ten wpis zostanie trwale usunięty.",
+  "deleteEntryTitle": "Usuń wpis",
+  "deleteEntryTooltip": "Usuń wpis",
+  "disableLock": "Wyłącz blokadę",
+  "doubleTapToChangeTimeHint": "Dotknij dwukrotnie, aby zmienić godzinę",
+  "doubleTapToOpenCalendarHint": "Dotknij dwukrotnie, aby otworzyć kalendarz",
+  "edit": "Edytuj",
+  "editWeight": "Edytuj pomiar",
+  "enterInitialWeightHint": "Wprowadź wagę początkową",
+  "enterValidNumber": "Wprowadź poprawną liczbę",
+  "entriesFromDate": "Pomiary z {date}",
+  "errorAddEntryFailed": "Nie udało się dodać pomiaru.",
+  "errorDeleteEntryFailed": "Nie udało się usunąć pomiaru.",
+  "errorHeightNotSet": "Najpierw ustaw wzrost.",
+  "errorReadFailed": "Nie udało się odczytać danych wagi.",
+  "errorStream": "Błąd połączenia z bazą danych.",
+  "errorWipeFailed": "Nie udało się wyczyścić danych wagi.",
+  "errorWipingData": "Błąd podczas czyszczenia danych: {error}",
+  "errorWriteFailed": "Nie udało się zapisać danych wagi.",
+  "exportCsv": "Eksportuj dane do CSV",
+  "exportError": "Błąd eksportu: {error}",
+  "exportNoData": "Brak wpisów wagi do wyeksportowania.",
+  "exportSuccess": "Eksport zakończony sukcesem.",
+  "feetLabel": "Stopy",
+  "futureDateError": "Data i godzina nie mogą być w przyszłości",
+  "goalAchieved": "Cel osiągnięty!",
+  "goalAchievedOnDayBanner": "Cel wagi został osiągnięty w tym dniu!",
+  "goalProgress": "Postęp celu",
+  "goalProgressSemantics": "Cel: {target}. {detail}. Stuknij dwukrotnie, aby edytować wagę docelową.",
+  "goalWeightLabel": "Cel: {weight}",
+  "greatJob": "Świetna robota!",
+  "healthConnectRequiredSubtitle": "Pobierz oficjalną aplikację Google Health Connect ze Sklepu Play, aby włączyć synchronizację.",
+  "healthConnectRequiredTitle": "Wymagana aplikacja Health Connect",
+  "healthPermissionDenied": "Brak uprawnień do danych zdrowotnych",
+  "healthServiceNameAndroid": "Health Connect",
+  "healthServiceNameIOS": "Apple Health",
+  "healthServiceNameOther": "Usługi zdrowia",
+  "healthSyncDescAndroid": "Synchronizuj dane wagi z Health Connect",
+  "healthSyncDescIOS": "Synchronizuj dane wagi z Apple Health",
+  "healthSyncDescOther": "Synchronizuj dane wagi z aplikacjami zdrowia",
+  "healthSyncDescriptionAndroid": "Zapisuj nowe pomiary i odczytuj historię z innych aplikacji sportowych, aby mieć wszystkie dane w jednym miejscu.",
+  "healthSyncDescriptionIOS": "Zapisuj nowe pomiary i odczytuj historię z innych aplikacji sportowych, aby mieć wszystkie dane w jednym miejscu.",
+  "healthSyncStepOptionalTitle": "Synchronizacja ze Zdrowiem",
+  "healthSyncTileSubtitleAndroid": "Bezpieczna wymiana danych o wadze",
+  "healthSyncTileSubtitleIOS": "Bezpieczna wymiana danych o wadze",
+  "healthSyncUnavailable": "Niedostępne na tym urządzeniu",
+  "healthyWeightRange": "Prawidłowa waga",
+  "healthyWeightRangeValue": "{min} – {max} {unit}",
+  "height": "Wzrost",
+  "heightCmLabel": "Wzrost (cm)",
+  "heightDialogTitle": "Ustaw wzrost",
+  "heightHint": "np. 177",
+  "heightNotSetLabel": "brak podanego wzrostu",
+  "heightRangeError": "Wzrost musi mieścić się w przedziale od 50 do 250 cm",
+  "heightRangeHint": "{min} – {max} cm",
+  "helpSection": "POMOC",
+  "highest": "Najwyższa",
+  "imperialUnit": "Imperialne (lb, ft/in)",
+  "imperialUnitOption": "Imperialne (lb, ft/in)",
+  "importCsv": "Importuj dane z CSV",
+  "importNoDataFound": "Nie znaleziono poprawnych wpisów wagi w zaimportowanym pliku.",
+  "inchesLabel": "Cale",
+  "initErrorRetryHint": "Stuknij dwukrotnie, aby ponowić próbę inicjalizacji bazy danych i usług",
+  "initErrorRetryLabel": "Ponów próbę uruchomienia aplikacji",
+  "initErrorSemantics": "Błąd inicjalizacji. Aplikacja nie mogła się uruchomić z powodu błędu bazy danych.",
+  "initErrorSubtitle": "Wystąpił nieoczekiwany błąd podczas konfiguracji bazy danych. Spróbuj uruchomić aplikację ponownie lub kliknij Spróbuj ponownie poniżej.",
+  "initErrorTitle": "Nie udało się uruchomić Balance",
+  "initialWeightRequiredError": "Waga początkowa jest wymagana",
+  "initialWeightStepSubtitle": "Wprowadź swoją aktualną wagę. To Twój pierwszy krok w stronę realizacji celu.",
+  "initialWeightStepTitle": "Twój punkt startowy",
+  "installFromPlayStore": "Zainstaluj ze Sklepu Play",
+  "integrationsSection": "INTEGRACJE",
+  "invalidPositiveNumber": "Wprowadź poprawną liczbę dodatnią.",
+  "keepLocked": "Pozostaw zablokowane",
+  "lastMeasurementLabel": "Ostatni pomiar",
+  "light": "Jasny",
+  "loggingStreak": "Seria ważenia",
+  "lowest": "Najniższa",
+  "measurementCountPill": "{count, plural, one{{count} pomiar} few{{count} pomiary} many{{count} pomiarów} other{{count} pomiarów}}",
+  "measurementDate": "Data pomiaru",
+  "measurementDateTimeLabel": "Data i godzina pomiaru",
+  "measurementTime": "Godzina pomiaru",
+  "measurementUnit": "Jednostka miary",
+  "metricUnit": "Metryczne (kg, cm)",
+  "metricUnitOption": "Metryczne (kg, cm)",
+  "month": "Miesiąc",
+  "monthlyCompliance": "Regularność",
+  "moreOptions": "Więcej opcji",
+  "next": "Dalej",
+  "nextMonth": "Następny miesiąc",
+  "noDataToAnalyze": "Brak danych do analizy",
+  "noDataToAnalyzeSubtitle": "Twoje statystyki pojawią się tutaj po kilku dniach regularnych pomiarów. Dodaj wpisy, aby zacząć śledzić swój postęp.",
+  "noEntriesForDate": "Brak pomiarów w tym dniu",
+  "noEntriesForDateSubtitle": "Nie dodano jeszcze żadnych danych dla wybranej daty. Regularne pomiary pomagają lepiej śledzić postępy.",
+  "notSet": "Nie ustawiono",
+  "note": "Notatka",
+  "noteLabel": "Notatka (opcjonalnie)",
+  "notificationChannelDescription": "Przypomina o codziennym zanotowaniu wagi.",
+  "notificationChannelName": "Codzienne przypomnienia o ważeniu",
+  "notificationPermissionDenied": "Wymagane są uprawnienia do wysyłania powiadomień.",
+  "notificationReminderBody": "Pamiętaj o dodaniu dzisiejszego pomiaru wagi.",
+  "notificationReminderTitle": "Czas na ważenie!",
+  "ok": "OK",
+  "onboardingUnitsHeightSubtitle": "Podaj swój wzrost i wybierz preferowaną jednostkę miary – resztą zajmie się aplikacja.",
+  "onboardingUnitsHeightTitle": "Twoje podstawowe dane",
+  "onboardingWelcomeDailyReminders": "Codzienne przypomnienia",
+  "onboardingWelcomeHealthSync": "Synchronizacja zdrowia",
+  "onboardingWelcomeInitialWeight": "Waga początkowa",
+  "onboardingWelcomePrivacy": "Prywatność i bezpieczeństwo",
+  "onboardingWelcomeStart": "Rozpocznij",
+  "onboardingWelcomeSubtitle": "Skonfigurujmy Twoje konto w kilku prostych krokach.",
+  "onboardingWelcomeTargetWeight": "Waga docelowa",
+  "onboardingWelcomeTitle": "Witaj w Balance",
+  "onboardingWelcomeUnitsHeight": "Jednostki i wzrost",
+  "openSettings": "Ustawienia",
+  "openSourceLicenses": "Licencje open source",
+  "previousMonth": "Poprzedni miesiąc",
+  "previousStepTooltip": "Poprzedni krok",
+  "privacyPolicy": "Polityka prywatności",
+  "profileSection": "PROFIL",
+  "remainingWeightLabel": "Zostało: {weight}",
+  "reminderTime": "Godzina przypomnienia",
+  "reminderTimeSet": "Codzienne przypomnienie ustawione na {time}",
+  "retry": "Spróbuj ponownie",
+  "retryStartup": "Spróbuj ponownie",
+  "save": "Zapisz",
+  "securitySection": "BEZPIECZEŃSTWO",
   "setGoalAction": "Ustaw cel",
-  "setGoalSemantics": "Cel nieustawiony. Stuknij dwukrotnie, aby ustawić wagę docelową."
+  "setGoalSemantics": "Cel nieustawiony. Stuknij dwukrotnie, aby ustawić wagę docelową.",
+  "settingsSubtitle": "Dostosuj aplikację do swoich potrzeb",
+  "settingsTitle": "Ustawienia",
+  "sinceEntryDate": "od {date}",
+  "stepOf": "Krok {current} z {total}",
+  "streakDays": "{count, plural, =0{0 dni} one{{count} dzień} few{{count} dni} many{{count} dni} other{{count} dni}}",
+  "system": "Systemowy",
+  "tabCalendar": "Kalendarz",
+  "tabSettings": "Ustawienia",
+  "tabStats": "Statystyki",
+  "tabToday": "Dzisiaj",
+  "targetWeight": "Waga docelowa",
+  "targetWeightDialogTitle": "Waga docelowa",
+  "targetWeightOptionalHint": "Opcjonalnie — pozostaw puste, aby ustawić później",
+  "targetWeightOptionalTitle": "Twój wymarzony cel",
+  "targetWeightStepSubtitle": "Do jakiej wagi dążysz? Ustaw swój cel teraz lub zrób to w dowolnym momencie w przyszłości.",
+  "theme": "Motyw",
+  "toTarget": "do celu",
+  "today": "Dzisiaj",
+  "todayAtTime": "Dzisiaj, {time}",
+  "todayTabHomeSemanticsLabel": "Karta Dzisiaj, strona główna",
+  "todayTabTitle": "Dzisiaj",
+  "totalProgress": "Całkowita zmiana",
+  "unlock": "Odblokuj",
+  "week": "Tydzień",
+  "weekdayShortFriday": "Pią",
+  "weekdayShortMonday": "Pon",
+  "weekdayShortSaturday": "Sob",
+  "weekdayShortSunday": "Nie",
+  "weekdayShortThursday": "Czw",
+  "weekdayShortTuesday": "Wto",
+  "weekdayShortWednesday": "Śro",
+  "weeklyPaceBadge": "{value}/tydzień",
+  "weightCannotBeEmpty": "Waga nie może być pusta",
+  "weightChangeSemantics": "Zmiana wagi: {value}",
+  "weightHint": "np. 75,5",
+  "weightInKgLabel": "Waga (kg)",
+  "weightInLbLabel": "Waga (lb)",
+  "weightRangeCardTitle": "Zakres i średnia wagi",
+  "weightRangeError": "Waga musi być z zakresu od 20 do 300 kg",
+  "weightRangeSemanticsPrefix": "Zakres wagi: ",
+  "weightTrend": "Trend wagi",
+  "weightTrendChartSemantics": "{count, plural, one{{count} pomiar} few{{count} pomiary} many{{count} pomiarów} other{{count} pomiarów}}",
+  "welcomeSubtitle": "Dodaj pierwszy pomiar, aby zacząć śledzić swoje postępy w drodze do lepszego zdrowia.",
+  "welcomeTitle": "Witaj w Waga i BMI!",
+  "wipeData": "Wyczyść wszystkie dane",
+  "wipeDataButton": "Wyczyść dane",
+  "wipeDataContent": "To trwale usunie wszystkie wpisy wagi i zresetuje ustawienia aplikacji. Tej operacji nie można cofnąć.",
+  "year": "Rok",
+  "yourResult": "Twój wynik"
 }

@@ -19,7 +19,9 @@ class PrivacyPolicyScreen extends StatelessWidget {
       if (!launched && context.mounted) {
         AppSnackBar.show(
           context,
-          message: 'Could not open email client for contact@ekerstudio.com',
+          message: AppLocalizations.of(
+            context,
+          ).couldNotOpenEmailClient('contact@ekerstudio.com'),
         );
       }
     } catch (e, stack) {
@@ -32,7 +34,9 @@ class PrivacyPolicyScreen extends StatelessWidget {
       if (context.mounted) {
         AppSnackBar.show(
           context,
-          message: 'Could not open email client for contact@ekerstudio.com',
+          message: AppLocalizations.of(
+            context,
+          ).couldNotOpenEmailClient('contact@ekerstudio.com'),
         );
       }
     }

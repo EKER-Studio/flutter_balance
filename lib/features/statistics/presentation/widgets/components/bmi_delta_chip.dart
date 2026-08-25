@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:balance/features/weight/domain/bmi_category.dart';
 import 'package:balance/features/weight/domain/entities/weight_entry.dart';
 import 'package:balance/features/weight/presentation/utils/bmi_category_localizer.dart';
+import 'package:balance/l10n/app_localizations.dart';
 
 /// A tonal badge summarizing the BMI change across the active chart period.
 class BmiDeltaChip extends StatelessWidget {
@@ -72,7 +73,7 @@ class BmiDeltaChip extends StatelessWidget {
     return Semantics(
       button: onTap != null,
       container: true,
-      label: 'BMI change: $formattedDelta',
+      label: AppLocalizations.of(context).bmiChangeSemantics(formattedDelta),
       child: Material(
         color: Colors.transparent,
         child: InkWell(

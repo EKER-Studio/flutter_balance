@@ -1,323 +1,18 @@
 {
   "@@locale": "en",
-  "appTitle": "Balance",
-  "settingsTitle": "Settings",
-  "settingsSubtitle": "Customize the app to your needs",
-  "profileSection": "PROFILE",
-  "applicationSection": "APPLICATION",
-  "securitySection": "SECURITY",
-  "dataSection": "DATA",
-  "helpSection": "HELP",
-  "integrationsSection": "INTEGRATIONS",
-  "appVersion": "App version",
-  "metricUnit": "Metric (kg, cm)",
-  "imperialUnit": "Imperial (lb, ft/in)",
-  "height": "Height",
-  "targetWeight": "Target Weight",
-  "notSet": "Not set",
-  "biometricLock": "Biometric Protection",
-  "biometricDesc": "Additional app security",
-  "biometricLockoutTitle": "Biometric lock unavailable",
-  "biometricLockoutBody": "Biometrics are no longer available or enrolled on this device. Turn off the biometric lock to regain access to your data, or keep it locked.",
-  "keepLocked": "Keep locked",
-  "disableLock": "Turn off lock",
-  "importCsv": "Import data from CSV",
-  "exportCsv": "Export data to CSV",
-  "exportSuccess": "Export completed successfully.",
-  "exportNoData": "No weight entries to export.",
-  "exportError": "Export error: {error}",
-  "csvExportShareSubject": "Balance Export CSV",
-  "wipeData": "Wipe All Data",
-  "privacyPolicy": "Privacy Policy",
-  "privacyPolicyOpenError": "Could not open privacy policy.",
-  "openSourceLicenses": "Open Source Licenses",
-  "yourResult": "Your result",
-  "cancel": "Cancel",
-  "save": "Save",
-  "retry": "Try again",
-  "invalidPositiveNumber": "Please enter a valid positive number.",
-  "heightDialogTitle": "Set Height",
-  "heightCmLabel": "Height (cm)",
-  "heightHint": "e.g. 177",
-  "targetWeightDialogTitle": "Target weight",
-  "clearField": "Clear field",
-  "targetWeightOptionalTitle": "Your Dream Goal",
-  "weightInKgLabel": "Weight (kg)",
-  "weightInLbLabel": "Weight in lb",
-  "weightHint": "e.g. 75.5",
-  "noteLabel": "Note (optional)",
-  "note": "Note",
-  "theme": "Theme",
-  "system": "System",
-  "light": "Light",
-  "dark": "Dark",
-  "measurementUnit": "Measurement Unit",
-  "biometricsNotAvailable": "Biometrics not available on this device",
-  "biometricAuthFailed": "Biometric authentication failed or was canceled.",
-  "wipeDataContent": "This will permanently delete all your weight entries and reset app settings. This action cannot be undone.",
-  "wipeDataButton": "Wipe Data",
-  "dataWipedSuccess": "All data has been wiped. Restart the app.",
-  "errorWipingData": "Error wiping data: {error}",
-  "importNoDataFound": "No valid weight entries found in the imported file.",
-  "notificationReminderTitle": "Time to weigh in!",
-  "notificationReminderBody": "Don't forget to log your weight today.",
-  "notificationChannelName": "Daily Weight Reminders",
-  "notificationChannelDescription": "Reminds you to record your daily weight measurement.",
-  "welcomeTitle": "Welcome to Balance!",
-  "welcomeSubtitle": "Add your first measurement to start tracking your progress towards better health.",
-  "addFirstMeasurement": "Add first measurement",
-  "lowest": "Lowest",
-  "highest": "Highest",
-  "weightRangeSemanticsPrefix": "Weight range: ",
-  "addWeight": "Add measurement",
-  "editWeight": "Edit measurement",
-  "edit": "Edit",
-  "delete": "Delete",
-  "moreOptions": "More options",
-  "measurementCountPill": "{count, plural, one{{count} measurement} other{{count} measurements}}",
-  "@measurementCountPill": {
+  "@bmiCategorySemantics": {
+    "description": "Accessibility label for the BMI badge on the health summary card.",
     "placeholders": {
-      "count": { "type": "int" }
-    }
-  },
-  "editMeasurementTooltip": "Edit measurement",
-  "measurementDate": "Measurement date",
-  "measurementTime": "Measurement time",
-  "futureDateError": "Date and time cannot be in the future",
-  "weightCannotBeEmpty": "Weight cannot be empty",
-  "enterValidNumber": "Enter a valid number",
-  "weightRangeError": "Weight must be between 20 and 300 kg",
-  "heightRangeError": "Height must be between 50 and 250 cm",
-  "heightRangeHint": "{min} – {max} cm",
-  "appLoadingSemantics": "The app is loading",
-  "bmi": "BMI",
-  "bmiLegendTitle": "BMI Categories",
-  "today": "Today",
-  "sinceEntryDate": "since {date}",
-  "weightTrend": "Weight trend",
-  "weightTrendChartSemantics": "{count, plural, one{{count} measurement} other{{count} measurements}}",
-  "goalAchieved": "Goal achieved!",
-  "goalProgress": "Goal progress",
-  "toTarget": "to target",
-  "chartEmpty": "Not enough data to display chart.",
-  "week": "Week",
-  "month": "Month",
-  "year": "Year",
-  "all": "All",
-  "chartTargetLabel": "Target",
-  "bmiCategoryUnderweight": "Underweight",
-  "bmiCategoryNormal": "Normal",
-  "bmiCategoryOverweight": "Overweight",
-  "bmiCategoryObeseClass1": "Obesity class I",
-  "bmiCategoryObeseClass2": "Obesity class II",
-  "bmiCategoryObeseClass3": "Obesity class III",
-  "healthyWeightRange": "Healthy weight range",
-  "healthyWeightRangeValue": "{min} – {max} {unit}",
-  "@healthyWeightRangeValue": {
-    "placeholders": {
-      "min": { "type": "String" },
-      "max": { "type": "String" },
-      "unit": { "type": "String" }
-    }
-  },
-  "biometricAuthReason": "Authenticate to access Balance",
-  "appLocked": "App Locked",
-  "unlock": "Unlock",
-  "ok": "OK",
-  "dailyReminder": "Daily Reminder",
-  "dailyReminderDesc": "Regular alert in your notification center",
-  "reminderTime": "Reminder Time",
-  "notificationPermissionDenied": "Notification permission is required to enable reminders.",
-  "healthServiceNameAndroid": "Health Connect",
-  "healthServiceNameIOS": "Apple Health",
-  "healthServiceNameOther": "Health Services",
-  "healthSyncDescAndroid": "Sync weight data with Health Connect",
-  "healthSyncDescIOS": "Sync weight data with Apple Health",
-  "healthSyncDescOther": "Sync weight data with health apps",
-  "healthSyncUnavailable": "Unavailable on this device",
-  "healthPermissionDenied": "Health data permissions are required to sync weight.",
-  "healthConnectRequiredTitle": "Health Connect App Required",
-  "healthConnectRequiredSubtitle": "Download the official Google Health Connect app from the Play Store to enable sync.",
-  "installFromPlayStore": "Install from Play Store",
-  "reminderTimeSet": "Daily reminder set to {time}",
-  "openSettings": "Settings",
-  "errorStream": "Database stream error.",
-  "errorHeightNotSet": "Set your height first.",
-  "errorAddEntryFailed": "Failed to add weight entry.",
-  "errorDeleteEntryFailed": "Failed to delete weight entry.",
-  "errorReadFailed": "Failed to read weight data.",
-  "errorWriteFailed": "Failed to save weight data.",
-  "errorWipeFailed": "Failed to clear weight data.",
-  "deleteEntryTooltip": "Delete entry",
-  "deleteEntryTitle": "Delete entry",
-  "deleteEntryMessage": "This will permanently delete this entry.",
-  "csvImportStepTitle": "Your Past History",
-  "csvImportStepSubtitle": "Coming from another app? Import your CSV file to continue without losing data.",
-  "csvImportTileTitle": "Import CSV file",
-  "csvImportTileSubtitle": "Add history from your old app",
-  "csvFormatHintTitle": "Required column format:",
-  "csvFormatHintExample": "ID, Date, Time (opt), Weight (kg), Note\n(or: Data; Czas; Waga (kg))",
-  "csvImportLoading": "Processing CSV file...",
-  "csvImportSuccess": "Imported {count} entries",
-  "csvImportError": "We couldn't read this file. Make sure it is a valid CSV file with date and weight columns.",
-  "csvImportFileTooLarge": "File is too large (max 5 MB)",
-  "csvImportInvalidFormat": "No date and weight columns found",
-  "csvImportNoEntries": "No valid measurements found in this file",
-  "csvPreviewTitle": "Import Preview",
-  "csvPreviewDateRange": "Range: {from} – {to}",
-  "csvPreviewSkippedRows": "{count, plural, zero{No rows skipped} one{Skipped {count} invalid row} other{Skipped {count} invalid rows}}",
-  "csvPreviewConfirm": "Confirm import",
-  "csvPreviewCancel": "Cancel",
-  "csvImportComplete": "{count, plural, zero{No new entries imported (all already exist)} one{Imported {count} new entry} other{Imported {count} new entries}}",
-  "chartSemanticsTitle": "Weight history line chart for {period} period. Latest recorded weight is {weight}.",
-  "chartSemanticsFilter": "filter",
-  "tabToday": "Today",
-  "tabCalendar": "Calendar",
-  "tabStats": "Statistics",
-  "tabSettings": "Settings",
-  "multipleEntries": "{count} measurements",
-  "loggingStreak": "Logging Streak",
-  "currentStreak": "Current streak",
-  "currentStreakSubtitle": "Consecutive days",
-  "bestStreak": "Best streak",
-  "bestStreakSubtitle": "Personal record",
-  "streakDays": "{count, plural, =0{0 days} one{{count} day} other{{count} days}}",
-  "weeklyPaceBadge": "{value}/week",
-  "previousMonth": "Previous month",
-  "nextMonth": "Next month",
-  "monthlyCompliance": "Consistency",
-  "averageWeight": "Average Weight",
-  "allEntriesLabel": "All entries",
-  "weightRangeCardTitle": "Weight range and average",
-  "bmiChartNoHeight": "Set your height in Settings to see the BMI chart.",
-  "totalProgress": "Total Progress",
-  "noEntriesForDate": "No measurements recorded for this day",
-  "noEntriesForDateSubtitle": "No data added for the selected date yet. Regular measurements help track progress better.",
-  "goalAchievedOnDayBanner": "Weight goal was achieved on this day!",
-  "deleteMeasurementTooltip": "Delete measurement",
-  "addAnotherMeasurement": "Add another measurement",
-  "entriesFromDate": "Entries from {date}",
-  "databaseErrorTitle": "Database read error",
-  "databaseErrorDefaultMessage": "Failed to load weight history from the local database. Please try again.",
-  "todayTabTitle": "Today",
-  "todayAtTime": "Today, {time}",
-  "lastMeasurementLabel": "Last measurement",
-  "goalWeightLabel": "Goal: {weight}",
-  "remainingWeightLabel": "Remaining: {weight}",
-  "dailyTipTitle": "Tip",
-  "dailyTipText": "Weigh yourself at the same time every day, preferably in the morning, for the most reliable results.",
-  "todayTabHomeSemanticsLabel": "Today tab, home page",
-  "bmiValueShortLabel": "{value} BMI",
-  "weekdayShortMonday": "Mon",
-  "weekdayShortTuesday": "Tue",
-  "weekdayShortWednesday": "Wed",
-  "weekdayShortThursday": "Thu",
-  "weekdayShortFriday": "Fri",
-  "weekdayShortSaturday": "Sat",
-  "weekdayShortSunday": "Sun",
-  "bmiValueLabel": "BMI {bmi}",
-  "heightNotSetLabel": "height not set",
-  "doubleTapToOpenCalendarHint": "Double tap to open calendar",
-  "doubleTapToChangeTimeHint": "Double tap to change time",
-  "noDataToAnalyze": "No data to analyze",
-  "noDataToAnalyzeSubtitle": "Your statistics will appear here after a few days of regular measurements. Add entries to start tracking your progress.",
-  "greatJob": "Great job!",
-  "dailyReminderStepOptionalTitle": "Weight Notifications",
-  "dailyReminderStepSubtitle": "Build a healthy habit and let us remind you to log your weight every day.",
-  "healthSyncStepOptionalTitle": "Health Sync",
-  "healthSyncDescriptionIOS": "Save new measurements and read history from other fitness apps to keep all your data in one place.",
-  "healthSyncDescriptionAndroid": "Save new measurements and read history from other fitness apps to keep all your data in one place.",
-  "healthSyncTileSubtitleIOS": "Secure weight data exchange",
-  "healthSyncTileSubtitleAndroid": "Secure weight data exchange",
-  "biometricStepTitle": "Biometric Protection",
-  "biometricStepOptionalTitle": "Biometric Protection",
-  "biometricStepSubtitle": "Secure your measurements from prying eyes and unlock the app instantly using your face or fingerprint.",
-  "next": "Next",
-  "previousStepTooltip": "Previous Step",
-  "metricUnitOption": "Metric (kg, cm)",
-  "imperialUnitOption": "Imperial (lb, ft/in)",
-  "onboardingWelcomeTitle": "Welcome to Balance",
-  "onboardingWelcomeSubtitle": "Let's set up your account in a few simple steps.",
-  "onboardingWelcomeStart": "Get Started",
-  "onboardingWelcomeUnitsHeight": "Units & Height",
-  "onboardingWelcomeInitialWeight": "Initial Weight",
-  "onboardingWelcomeTargetWeight": "Target Weight",
-  "onboardingWelcomeHealthSync": "Health Sync",
-  "onboardingWelcomeDailyReminders": "Daily Reminders",
-  "onboardingWelcomePrivacy": "Privacy & Security",
-  "onboardingUnitsHeightTitle": "Your Basic Details",
-  "onboardingUnitsHeightSubtitle": "Enter your height and choose your preferred unit – the app will handle the rest.",
-  "feetLabel": "Feet",
-  "inchesLabel": "Inches",
-  "initialWeightStepTitle": "Your Starting Point",
-  "initialWeightStepSubtitle": "Log your current weight. This is your first step towards reaching your goal.",
-  "currentWeightLabel": "Current Weight",
-  "enterInitialWeightHint": "Enter your initial weight",
-  "initialWeightRequiredError": "Initial weight is required",
-  "measurementDateTimeLabel": "Measurement Date & Time",
-  "targetWeightStepSubtitle": "What weight are you aiming for? Set your goal now or do it anytime later.",
-  "targetWeightOptionalHint": "Optional — leave empty to set later",
-  "stepOf": "Step {current} of {total}",
-  "appLockedStatusIconSemantics": "Application locked status icon",
-  "initErrorSemantics": "Initialization Error. App failed to start due to a database or storage error.",
-  "initErrorTitle": "Failed to Start Balance",
-  "initErrorSubtitle": "An unexpected error occurred during database setup. Please try restarting the app or tap retry below.",
-  "initErrorRetryLabel": "Retry starting the application",
-  "initErrorRetryHint": "Double tap to attempt re-initializing database and services",
-  "retryStartup": "Retry Startup",
-  "@stepOf": {
-    "description": "Onboarding step indicator showing the current step and the total number of steps.",
-    "placeholders": {
-      "current": {
-        "type": "int"
+      "value": {
+        "type": "String"
       },
-      "total": {
-        "type": "int"
-      }
-    }
-  },
-  "@entriesFromDate": {
-    "description": "Header label for the list of weight entries recorded on a specific date.",
-    "placeholders": {
-      "date": {
+      "category": {
         "type": "String"
       }
     }
   },
-  "@multipleEntries": {
-    "description": "Label describing the number of weight measurements recorded on a single date.",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "@todayAtTime": {
-    "description": "Label showing that a measurement was recorded today at the given time.",
-    "placeholders": {
-      "time": {
-        "type": "String"
-      }
-    }
-  },
-  "@goalWeightLabel": {
-    "description": "Label showing the user's target weight goal.",
-    "placeholders": {
-      "weight": {
-        "type": "String"
-      }
-    }
-  },
-  "@remainingWeightLabel": {
-    "description": "Label showing the weight still to lose or gain to reach the goal.",
-    "placeholders": {
-      "weight": {
-        "type": "String"
-      }
-    }
-  },
-  "@bmiValueShortLabel": {
-    "description": "Short accessibility label pairing a BMI value with the BMI unit.",
+  "@bmiChangeSemantics": {
+    "description": "Accessibility label for the BMI delta chip.",
     "placeholders": {
       "value": {
         "type": "String"
@@ -331,11 +26,24 @@
       }
     }
   },
-  "@exportError": {
-    "description": "Error message shown when exporting weight entries to a CSV file fails."
+  "@bmiValueShortLabel": {
+    "description": "Short accessibility label pairing a BMI value with the BMI unit.",
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
   },
-  "@errorWipingData": {
-    "description": "Error message shown when clearing all app data fails."
+  "@chartSemanticsTitle": {
+    "description": "Accessibility label for the weight history chart, describing the displayed period and the latest recorded weight."
+  },
+  "@couldNotOpenEmailClient": {
+    "description": "Error message shown when the device cannot open the email client for the contact address.",
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
   },
   "@csvImportSuccess": {
     "description": "Confirmation shown after the user imports their weight history from a CSV file during onboarding.",
@@ -345,27 +53,20 @@
       }
     }
   },
-  "@reminderTimeSet": {
-    "description": "Confirmation message shown after the daily weight reminder time has been set."
-  },
-  "@chartSemanticsTitle": {
-    "description": "Accessibility label for the weight history chart, describing the displayed period and the latest recorded weight."
-  },
-  "@streakDays": {
-    "description": "Label describing the current consecutive-days logging streak."
-  },
-  "@weightTrendChartSemantics": {
-    "description": "Accessibility label describing the number of measurements plotted on the weight trend chart."
-  },
-  "@weeklyPaceBadge": {
-    "description": "Badge showing the weekly weight pace change per week.",
+  "@entriesFromDate": {
+    "description": "Header label for the list of weight entries recorded on a specific date.",
     "placeholders": {
-      "value": {
+      "date": {
         "type": "String"
       }
     }
   },
-  "goalProgressSemantics": "Goal: {target}. {detail}. Double tap to edit target weight.",
+  "@errorWipingData": {
+    "description": "Error message shown when clearing all app data fails."
+  },
+  "@exportError": {
+    "description": "Error message shown when exporting weight entries to a CSV file fails."
+  },
   "@goalProgressSemantics": {
     "description": "Accessibility label for the goal progress section on the health summary card.",
     "placeholders": {
@@ -377,19 +78,27 @@
       }
     }
   },
-  "bmiCategorySemantics": "BMI {value}, {category}. Double tap for BMI legend.",
-  "@bmiCategorySemantics": {
-    "description": "Accessibility label for the BMI badge on the health summary card.",
+  "@goalWeightLabel": {
+    "description": "Label showing the user's target weight goal.",
     "placeholders": {
-      "value": {
-        "type": "String"
-      },
-      "category": {
+      "weight": {
         "type": "String"
       }
     }
   },
-  "csvImportSuccessSubtitle": "Data will be available immediately after finishing the onboarding process",
+  "@healthyWeightRangeValue": {
+    "placeholders": {
+      "min": {
+        "type": "String"
+      },
+      "max": {
+        "type": "String"
+      },
+      "unit": {
+        "type": "String"
+      }
+    }
+  },
   "@heightRangeHint": {
     "placeholders": {
       "min": {
@@ -400,6 +109,319 @@
       }
     }
   },
+  "@measurementCountPill": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@remainingWeightLabel": {
+    "description": "Label showing the weight still to lose or gain to reach the goal.",
+    "placeholders": {
+      "weight": {
+        "type": "String"
+      }
+    }
+  },
+  "@reminderTimeSet": {
+    "description": "Confirmation message shown after the daily weight reminder time has been set."
+  },
+  "@stepOf": {
+    "description": "Onboarding step indicator showing the current step and the total number of steps.",
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "@streakDays": {
+    "description": "Label describing the current consecutive-days logging streak."
+  },
+  "@todayAtTime": {
+    "description": "Label showing that a measurement was recorded today at the given time.",
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "@weeklyPaceBadge": {
+    "description": "Badge showing the weekly weight pace change per week.",
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "@weightChangeSemantics": {
+    "description": "Accessibility label for the weight delta chip.",
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "@weightTrendChartSemantics": {
+    "description": "Accessibility label describing the number of measurements plotted on the weight trend chart."
+  },
+  "addAnotherMeasurement": "Add another measurement",
+  "addFirstMeasurement": "Add first measurement",
+  "addWeight": "Add measurement",
+  "all": "All",
+  "allEntriesLabel": "All entries",
+  "appLoadingSemantics": "The app is loading",
+  "appLocked": "App Locked",
+  "appLockedStatusIconSemantics": "Application locked status icon",
+  "appTitle": "Balance",
+  "appVersion": "App version",
+  "applicationSection": "APPLICATION",
+  "averageWeight": "Average Weight",
+  "bestStreak": "Best streak",
+  "biometricAuthFailed": "Biometric authentication failed or was canceled.",
+  "biometricAuthReason": "Authenticate to access Balance",
+  "biometricDesc": "Additional app security",
+  "biometricLock": "Biometric Protection",
+  "biometricLockoutBody": "Biometrics are no longer available or enrolled on this device. Turn off the biometric lock to regain access to your data, or keep it locked.",
+  "biometricLockoutTitle": "Biometric lock unavailable",
+  "biometricStepOptionalTitle": "Biometric Protection",
+  "biometricStepSubtitle": "Secure your measurements from prying eyes and unlock the app instantly using your face or fingerprint.",
+  "biometricStepTitle": "Biometric Protection",
+  "biometricsNotAvailable": "Biometrics not available on this device",
+  "bmi": "BMI",
+  "bmiCategoryNormal": "Normal",
+  "bmiCategoryObeseClass1": "Obesity class I",
+  "bmiCategoryObeseClass2": "Obesity class II",
+  "bmiCategoryObeseClass3": "Obesity class III",
+  "bmiCategoryOverweight": "Overweight",
+  "bmiCategorySemantics": "BMI {value}, {category}. Double tap for BMI legend.",
+  "bmiCategoryUnderweight": "Underweight",
+  "bmiChangeSemantics": "BMI change: {value}",
+  "bmiChartNoHeight": "Set your height in Settings to see the BMI chart.",
+  "bmiLegendTitle": "BMI Categories",
+  "bmiValueLabel": "BMI {bmi}",
+  "bmiValueShortLabel": "{value} BMI",
+  "cancel": "Cancel",
+  "chartEmpty": "Not enough data to display chart.",
+  "chartSemanticsFilter": "filter",
+  "chartSemanticsTitle": "Weight history line chart for {period} period. Latest recorded weight is {weight}.",
+  "chartTargetLabel": "Target",
+  "clearField": "Clear field",
+  "couldNotOpenEmailClient": "Could not open email client for {email}",
+  "csvExportShareSubject": "Balance Export CSV",
+  "csvFormatHintExample": "ID, Date, Time (opt), Weight (kg), Note\n(or: Data; Czas; Waga (kg))",
+  "csvFormatHintTitle": "Required column format:",
+  "csvImportComplete": "{count, plural, zero{No new entries imported (all already exist)} one{Imported {count} new entry} other{Imported {count} new entries}}",
+  "csvImportError": "We couldn't read this file. Make sure it is a valid CSV file with date and weight columns.",
+  "csvImportFileTooLarge": "File is too large (max 5 MB)",
+  "csvImportInvalidFormat": "No date and weight columns found",
+  "csvImportLoading": "Processing CSV file...",
+  "csvImportNoEntries": "No valid measurements found in this file",
+  "csvImportStepSubtitle": "Coming from another app? Import your CSV file to continue without losing data.",
+  "csvImportStepTitle": "Your Past History",
+  "csvImportSuccess": "Imported {count} entries",
+  "csvImportSuccessSubtitle": "Data will be available immediately after finishing the onboarding process",
+  "csvImportTileSubtitle": "Add history from your old app",
+  "csvImportTileTitle": "Import CSV file",
+  "csvPreviewCancel": "Cancel",
+  "csvPreviewConfirm": "Confirm import",
+  "csvPreviewDateRange": "Range: {from} – {to}",
+  "csvPreviewSkippedRows": "{count, plural, zero{No rows skipped} one{Skipped {count} invalid row} other{Skipped {count} invalid rows}}",
+  "csvPreviewTitle": "Import Preview",
+  "currentStreak": "Current streak",
+  "currentStreakSubtitle": "Consecutive days",
+  "currentWeightLabel": "Current Weight",
+  "dailyReminder": "Daily Reminder",
+  "dailyReminderDesc": "Regular alert in your notification center",
+  "dailyReminderStepOptionalTitle": "Weight Notifications",
+  "dailyReminderStepSubtitle": "Build a healthy habit and let us remind you to log your weight every day.",
+  "dailyTipText": "Weigh yourself at the same time every day, preferably in the morning, for the most reliable results.",
+  "dailyTipTitle": "Tip",
+  "dark": "Dark",
+  "dataSection": "DATA",
+  "dataWipedSuccess": "All data has been wiped. Restart the app.",
+  "databaseErrorDefaultMessage": "Failed to load weight history from the local database. Please try again.",
+  "databaseErrorTitle": "Database read error",
+  "delete": "Delete",
+  "deleteEntryMessage": "This will permanently delete this entry.",
+  "deleteEntryTitle": "Delete entry",
+  "deleteEntryTooltip": "Delete entry",
+  "disableLock": "Turn off lock",
+  "doubleTapToChangeTimeHint": "Double tap to change time",
+  "doubleTapToOpenCalendarHint": "Double tap to open calendar",
+  "edit": "Edit",
+  "editWeight": "Edit measurement",
+  "enterInitialWeightHint": "Enter your initial weight",
+  "enterValidNumber": "Enter a valid number",
+  "entriesFromDate": "Entries from {date}",
+  "errorAddEntryFailed": "Failed to add weight entry.",
+  "errorDeleteEntryFailed": "Failed to delete weight entry.",
+  "errorHeightNotSet": "Set your height first.",
+  "errorReadFailed": "Failed to read weight data.",
+  "errorStream": "Database stream error.",
+  "errorWipeFailed": "Failed to clear weight data.",
+  "errorWipingData": "Error wiping data: {error}",
+  "errorWriteFailed": "Failed to save weight data.",
+  "exportCsv": "Export data to CSV",
+  "exportError": "Export error: {error}",
+  "exportNoData": "No weight entries to export.",
+  "exportSuccess": "Export completed successfully.",
+  "feetLabel": "Feet",
+  "futureDateError": "Date and time cannot be in the future",
+  "goalAchieved": "Goal achieved!",
+  "goalAchievedOnDayBanner": "Weight goal was achieved on this day!",
+  "goalProgress": "Goal progress",
+  "goalProgressSemantics": "Goal: {target}. {detail}. Double tap to edit target weight.",
+  "goalWeightLabel": "Goal: {weight}",
+  "greatJob": "Great job!",
+  "healthConnectRequiredSubtitle": "Download the official Google Health Connect app from the Play Store to enable sync.",
+  "healthConnectRequiredTitle": "Health Connect App Required",
+  "healthPermissionDenied": "Health data permissions are required to sync weight.",
+  "healthServiceNameAndroid": "Health Connect",
+  "healthServiceNameIOS": "Apple Health",
+  "healthServiceNameOther": "Health Services",
+  "healthSyncDescAndroid": "Sync weight data with Health Connect",
+  "healthSyncDescIOS": "Sync weight data with Apple Health",
+  "healthSyncDescOther": "Sync weight data with health apps",
+  "healthSyncDescriptionAndroid": "Save new measurements and read history from other fitness apps to keep all your data in one place.",
+  "healthSyncDescriptionIOS": "Save new measurements and read history from other fitness apps to keep all your data in one place.",
+  "healthSyncStepOptionalTitle": "Health Sync",
+  "healthSyncTileSubtitleAndroid": "Secure weight data exchange",
+  "healthSyncTileSubtitleIOS": "Secure weight data exchange",
+  "healthSyncUnavailable": "Unavailable on this device",
+  "healthyWeightRange": "Healthy weight range",
+  "healthyWeightRangeValue": "{min} – {max} {unit}",
+  "height": "Height",
+  "heightCmLabel": "Height (cm)",
+  "heightDialogTitle": "Set Height",
+  "heightHint": "e.g. 177",
+  "heightNotSetLabel": "height not set",
+  "heightRangeError": "Height must be between 50 and 250 cm",
+  "heightRangeHint": "{min} – {max} cm",
+  "helpSection": "HELP",
+  "highest": "Highest",
+  "imperialUnit": "Imperial (lb, ft/in)",
+  "imperialUnitOption": "Imperial (lb, ft/in)",
+  "importCsv": "Import data from CSV",
+  "importNoDataFound": "No valid weight entries found in the imported file.",
+  "inchesLabel": "Inches",
+  "initErrorRetryHint": "Double tap to attempt re-initializing database and services",
+  "initErrorRetryLabel": "Retry starting the application",
+  "initErrorSemantics": "Initialization Error. App failed to start due to a database or storage error.",
+  "initErrorSubtitle": "An unexpected error occurred during database setup. Please try restarting the app or tap retry below.",
+  "initErrorTitle": "Failed to Start Balance",
+  "initialWeightRequiredError": "Initial weight is required",
+  "initialWeightStepSubtitle": "Log your current weight. This is your first step towards reaching your goal.",
+  "initialWeightStepTitle": "Your Starting Point",
+  "installFromPlayStore": "Install from Play Store",
+  "integrationsSection": "INTEGRATIONS",
+  "invalidPositiveNumber": "Please enter a valid positive number.",
+  "keepLocked": "Keep locked",
+  "lastMeasurementLabel": "Last measurement",
+  "light": "Light",
+  "loggingStreak": "Logging Streak",
+  "lowest": "Lowest",
+  "measurementCountPill": "{count, plural, one{{count} measurement} other{{count} measurements}}",
+  "measurementDate": "Measurement date",
+  "measurementDateTimeLabel": "Measurement Date & Time",
+  "measurementTime": "Measurement time",
+  "measurementUnit": "Measurement Unit",
+  "metricUnit": "Metric (kg, cm)",
+  "metricUnitOption": "Metric (kg, cm)",
+  "month": "Month",
+  "monthlyCompliance": "Consistency",
+  "moreOptions": "More options",
+  "next": "Next",
+  "nextMonth": "Next month",
+  "noDataToAnalyze": "No data to analyze",
+  "noDataToAnalyzeSubtitle": "Your statistics will appear here after a few days of regular measurements. Add entries to start tracking your progress.",
+  "noEntriesForDate": "No measurements recorded for this day",
+  "noEntriesForDateSubtitle": "No data added for the selected date yet. Regular measurements help track progress better.",
+  "notSet": "Not set",
+  "note": "Note",
+  "noteLabel": "Note (optional)",
+  "notificationChannelDescription": "Reminds you to record your daily weight measurement.",
+  "notificationChannelName": "Daily Weight Reminders",
+  "notificationPermissionDenied": "Notification permission is required to enable reminders.",
+  "notificationReminderBody": "Don't forget to log your weight today.",
+  "notificationReminderTitle": "Time to weigh in!",
+  "ok": "OK",
+  "onboardingUnitsHeightSubtitle": "Enter your height and choose your preferred unit – the app will handle the rest.",
+  "onboardingUnitsHeightTitle": "Your Basic Details",
+  "onboardingWelcomeDailyReminders": "Daily Reminders",
+  "onboardingWelcomeHealthSync": "Health Sync",
+  "onboardingWelcomeInitialWeight": "Initial Weight",
+  "onboardingWelcomePrivacy": "Privacy & Security",
+  "onboardingWelcomeStart": "Get Started",
+  "onboardingWelcomeSubtitle": "Let's set up your account in a few simple steps.",
+  "onboardingWelcomeTargetWeight": "Target Weight",
+  "onboardingWelcomeTitle": "Welcome to Balance",
+  "onboardingWelcomeUnitsHeight": "Units & Height",
+  "openSettings": "Settings",
+  "openSourceLicenses": "Open Source Licenses",
+  "previousMonth": "Previous month",
+  "previousStepTooltip": "Previous Step",
+  "privacyPolicy": "Privacy Policy",
+  "profileSection": "PROFILE",
+  "remainingWeightLabel": "Remaining: {weight}",
+  "reminderTime": "Reminder Time",
+  "reminderTimeSet": "Daily reminder set to {time}",
+  "retry": "Try again",
+  "retryStartup": "Retry Startup",
+  "save": "Save",
+  "securitySection": "SECURITY",
   "setGoalAction": "Set goal",
-  "setGoalSemantics": "Goal not set. Double tap to set target weight."
+  "setGoalSemantics": "Goal not set. Double tap to set target weight.",
+  "settingsSubtitle": "Customize the app to your needs",
+  "settingsTitle": "Settings",
+  "sinceEntryDate": "since {date}",
+  "stepOf": "Step {current} of {total}",
+  "streakDays": "{count, plural, =0{0 days} one{{count} day} other{{count} days}}",
+  "system": "System",
+  "tabCalendar": "Calendar",
+  "tabSettings": "Settings",
+  "tabStats": "Statistics",
+  "tabToday": "Today",
+  "targetWeight": "Target Weight",
+  "targetWeightDialogTitle": "Target weight",
+  "targetWeightOptionalHint": "Optional — leave empty to set later",
+  "targetWeightOptionalTitle": "Your Dream Goal",
+  "targetWeightStepSubtitle": "What weight are you aiming for? Set your goal now or do it anytime later.",
+  "theme": "Theme",
+  "toTarget": "to target",
+  "today": "Today",
+  "todayAtTime": "Today, {time}",
+  "todayTabHomeSemanticsLabel": "Today tab, home page",
+  "todayTabTitle": "Today",
+  "totalProgress": "Total Progress",
+  "unlock": "Unlock",
+  "week": "Week",
+  "weekdayShortFriday": "Fri",
+  "weekdayShortMonday": "Mon",
+  "weekdayShortSaturday": "Sat",
+  "weekdayShortSunday": "Sun",
+  "weekdayShortThursday": "Thu",
+  "weekdayShortTuesday": "Tue",
+  "weekdayShortWednesday": "Wed",
+  "weeklyPaceBadge": "{value}/week",
+  "weightCannotBeEmpty": "Weight cannot be empty",
+  "weightChangeSemantics": "Weight change: {value}",
+  "weightHint": "e.g. 75.5",
+  "weightInKgLabel": "Weight (kg)",
+  "weightInLbLabel": "Weight in lb",
+  "weightRangeCardTitle": "Weight range and average",
+  "weightRangeError": "Weight must be between 20 and 300 kg",
+  "weightRangeSemanticsPrefix": "Weight range: ",
+  "weightTrend": "Weight trend",
+  "weightTrendChartSemantics": "{count, plural, one{{count} measurement} other{{count} measurements}}",
+  "welcomeSubtitle": "Add your first measurement to start tracking your progress towards better health.",
+  "welcomeTitle": "Welcome to Balance!",
+  "wipeData": "Wipe All Data",
+  "wipeDataButton": "Wipe Data",
+  "wipeDataContent": "This will permanently delete all your weight entries and reset app settings. This action cannot be undone.",
+  "year": "Year",
+  "yourResult": "Your result"
 }

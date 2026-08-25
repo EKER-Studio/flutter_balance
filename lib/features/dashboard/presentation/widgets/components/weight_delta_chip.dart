@@ -4,6 +4,7 @@ import 'package:balance/core/utils/unit_converter.dart';
 import 'package:balance/features/weight/domain/bmi_category.dart';
 import 'package:balance/features/weight/domain/entities/weight_entry.dart';
 import 'package:balance/features/weight/presentation/utils/bmi_category_localizer.dart';
+import 'package:balance/l10n/app_localizations.dart';
 
 /// A tonal badge summarizing the weight change across the active chart period.
 class WeightDeltaChip extends StatelessWidget {
@@ -66,7 +67,7 @@ class WeightDeltaChip extends StatelessWidget {
     return Semantics(
       button: onTap != null,
       container: true,
-      label: 'Weight change: $formattedDelta',
+      label: AppLocalizations.of(context).weightChangeSemantics(formattedDelta),
       child: Material(
         color: Colors.transparent,
         child: InkWell(
