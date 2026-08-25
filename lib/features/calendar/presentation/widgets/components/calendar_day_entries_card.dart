@@ -14,6 +14,8 @@ import 'package:balance/l10n/app_localizations.dart';
 import 'package:balance/features/weight/domain/bmi_category.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_bloc.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_state.dart';
+import 'package:balance/features/dashboard/presentation/widgets/components/bmi_badge.dart';
+import 'package:balance/features/weight/presentation/widgets/components/bmi_legend_dialog.dart';
 import 'package:balance/features/weight/presentation/utils/bmi_category_localizer.dart';
 
 /// Lists the weight entries for the selected day with per-entry BMI stats, a
@@ -117,8 +119,6 @@ class CalendarDayEntriesCard extends StatelessWidget {
                 : double.nan;
             final category = bmi.isFinite ? BmiCategory.fromBmi(bmi) : null;
             final categoryText = category?.localizedName(l10n) ?? '';
-            final categoryColor =
-                category?.chipContentColor(isDark: isDark) ?? cs.primary;
 
             return Semantics(
               container: true,
@@ -210,72 +210,17 @@ class CalendarDayEntriesCard extends StatelessWidget {
                               ),
                               Padding(
                                 padding: const EdgeInsets.only(right: 38),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.end,
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    if (bmi.isFinite)
-                                      Text(
-                                        l10n.bmiValueLabel(
-                                          bmi.toStringAsFixed(1),
+                                child: bmi.isFinite
+                                    ? BmiBadge(
+                                        bmi: bmi,
+                                        category: category,
+                                        onTap: () => _openBmiLegendDialog(
+                                          context,
+                                          bmi: bmi,
+                                          category: category?.name ?? 'unknown',
                                         ),
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .titleSmall
-                                            ?.copyWith(
-                                              fontWeight: FontWeight.bold,
-                                              color: cs.primary,
-                                              fontSize: 15,
-                                            ),
-                                      ),
-                                    if (categoryText.isNotEmpty) ...[
-                                      const SizedBox(height: 8),
-                                      Container(
-                                        padding: const EdgeInsets.symmetric(
-                                          horizontal: 10,
-                                          vertical: 3,
-                                        ),
-                                        decoration: BoxDecoration(
-                                          color: categoryColor.withValues(
-                                            alpha: 0.15,
-                                          ),
-                                          borderRadius: BorderRadius.circular(
-                                            10,
-                                          ),
-                                          border: Border.all(
-                                            color: categoryColor,
-                                            width: 1.2,
-                                          ),
-                                        ),
-                                        child: Row(
-                                          mainAxisSize: MainAxisSize.min,
-                                          children: [
-                                            Container(
-                                              width: 5,
-                                              height: 5,
-                                              decoration: BoxDecoration(
-                                                color: categoryColor,
-                                                shape: BoxShape.circle,
-                                              ),
-                                            ),
-                                            const SizedBox(width: 4),
-                                            Text(
-                                              categoryText,
-                                              style: Theme.of(context)
-                                                  .textTheme
-                                                  .labelSmall
-                                                  ?.copyWith(
-                                                    color: categoryColor,
-                                                    fontWeight: FontWeight.bold,
-                                                    fontSize: 12,
-                                                  ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ],
-                                  ],
-                                ),
+                                      )
+                                    : const SizedBox.shrink(),
                               ),
                             ],
                           ),
@@ -485,5 +430,18 @@ class CalendarDayEntriesCard extends StatelessWidget {
     } else {
       AppAnalytics.logDialogDeleteWeightCancelled();
     }
+  }
+
+  void _openBmiLegendDialog(
+    BuildContext context, {
+    required double bmi,
+    required String category,
+  }) {
+    AppAnalytics.logTodayBmiBadgeTapped(bmi: bmi, category: category);
+    AppAnalytics.logDialogBmiLegendOpened();
+    showDialog<void>(
+      context: context,
+      builder: (context) => const BmiLegendDialog(),
+    );
   }
 }
