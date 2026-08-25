@@ -30,6 +30,13 @@ class CalendarDayCell extends StatelessWidget {
   /// Whether any entry on this day reached or beat the target weight.
   final bool isGoalAchieved;
 
+  /// The target weight used to compute per-entry status colors.
+  ///
+  /// When provided, each dot is colored individually based on whether
+  /// its entry's weight is <= target weight. When null, all dots fall
+  /// back to the aggregated [isGoalAchieved] flag.
+  final double? targetWeight;
+
   /// Callback invoked when the user taps on this day cell.
   final VoidCallback? onTap;
 
@@ -42,6 +49,7 @@ class CalendarDayCell extends StatelessWidget {
     this.isSelected = false,
     this.isFuture = false,
     this.isGoalAchieved = false,
+    this.targetWeight,
     this.onTap,
   });
 
@@ -76,9 +84,64 @@ class CalendarDayCell extends StatelessWidget {
         '$dateFormatted, ${entries.length} measurements${isGoalAchieved ? ', goal achieved' : ''}';
 
     final isDark = theme.brightness == Brightness.dark;
-    final dotColor = isGoalAchieved
-        ? (isDark ? Colors.green.shade300 : Colors.green.shade700)
-        : colorScheme.primary;
+
+    // Colors used for goal-aware indicators.
+    final green = isDark ? Colors.green.shade300 : Colors.green.shade700;
+    final blue = colorScheme.primary;
+
+    bool isEntryGoalAchieved(WeightEntry e) {
+      if (targetWeight != null) return e.weightKg <= targetWeight!;
+      return isGoalAchieved;
+    }
+
+    final hasGoalEntry = targetWeight != null
+        ? entries.any((e) => e.weightKg <= targetWeight!)
+        : isGoalAchieved;
+
+    Widget buildIndicator() {
+      if (entries.isEmpty) return const SizedBox.shrink();
+      if (entries.length >= 4) {
+        final barColor = hasGoalEntry ? green : blue;
+        return ExcludeSemantics(
+          child: Container(
+            width: 12,
+            height: 3.5,
+            decoration: BoxDecoration(
+              color: barColor,
+              borderRadius: BorderRadius.circular(2),
+            ),
+          ),
+        );
+      }
+      // 1..3 entries: individual dots.
+      List<Widget> dots = entries.take(3).map((e) {
+        final c = isEntryGoalAchieved(e) ? green : blue;
+        return Container(
+          width: 4,
+          height: 4,
+          decoration: BoxDecoration(color: c, shape: BoxShape.circle),
+        );
+      }).toList();
+
+      if (dots.length == 1) {
+        return ExcludeSemantics(child: dots.first);
+      }
+      return ExcludeSemantics(
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            for (int i = 0; i < dots.length; i++) ...[
+              dots[i],
+              if (i != dots.length - 1) const SizedBox(width: 2),
+            ],
+          ],
+        ),
+      );
+    }
+
+    final indicator = buildIndicator();
+    final hasIndicator = entries.isNotEmpty;
 
     return Semantics(
       button: !isFuture,
@@ -110,22 +173,9 @@ class CalendarDayCell extends StatelessWidget {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 2),
-                  SizedBox(
-                    height: 4,
-                    child: entries.isNotEmpty
-                        ? ExcludeSemantics(
-                            child: Container(
-                              width: 4,
-                              height: 4,
-                              decoration: BoxDecoration(
-                                color: dotColor,
-                                shape: BoxShape.circle,
-                              ),
-                            ),
-                          )
-                        : const SizedBox.shrink(),
-                  ),
+                  if (hasIndicator) const SizedBox(height: 2),
+                  if (hasIndicator)
+                    SizedBox(height: 4, child: Center(child: indicator)),
                 ],
               ),
             ],
