@@ -48,7 +48,6 @@ class PrivacyPolicyScreen extends StatelessWidget {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final isDark = theme.brightness == Brightness.dark;
-    final isPolish = l10n.localeName.startsWith('pl');
 
     return Scaffold(
       appBar: AppBar(title: Text(l10n.privacyPolicy), centerTitle: false),
@@ -101,9 +100,7 @@ class PrivacyPolicyScreen extends StatelessWidget {
                               ),
                               const SizedBox(height: 2),
                               Text(
-                                isPolish
-                                    ? 'Polityka prywatności (100% Local-First)'
-                                    : 'Privacy Policy (100% Local-First)',
+                                l10n.privacyPolicyHeaderSubtitle,
                                 style: theme.textTheme.bodySmall?.copyWith(
                                   color: colorScheme.onSurfaceVariant,
                                   fontWeight: FontWeight.w500,
@@ -116,12 +113,10 @@ class PrivacyPolicyScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 12),
                     Text(
-                      isPolish
-                          ? 'Data wejścia w życie: 20 sierpnia 2026\nEKER Studio stworzyło aplikację Balance jako wolne od reklam narzędzie dbające o pełną prywatność Twoich danych.'
-                          : 'Effective date: August 20, 2026\nEKER Studio built the Balance app as an ad-free utility respecting your complete data privacy.',
+                      l10n.privacyPolicyIntro,
                       style: theme.textTheme.bodyMedium?.copyWith(
                         color: colorScheme.onSurfaceVariant,
-                        height: 1.4,
+                        height: 1.45,
                       ),
                     ),
                   ],
@@ -131,68 +126,44 @@ class PrivacyPolicyScreen extends StatelessWidget {
             const SizedBox(height: 16),
 
             _PrivacySectionCard(
-              icon: Icons.sd_storage_outlined,
-              title: isPolish
-                  ? '1. Przechowywanie danych i pomiarów'
-                  : '1. Information Collection & Storage',
-              body: isPolish
-                  ? '• Pomiary zdrowotne: Wszystkie wpisy wagi, wzrost, obliczenia BMI, waga docelowa i notatki w kalendarzu są przechowywane WYŁĄCZNIE LOKALNIE w pamięci Twojego urządzenia. Nie utrzymujemy zewnętrznych serwerów gromadzących Twoje pomiary.\n• Bezpieczeństwo biometryczne: Jeśli włączysz blokadę aplikacji (odcisk palca / Face ID), autoryzacja jest w całości procesowana przez system operacyjny Twojego telefonu. Aplikacja nie przetwarza ani nie zapisuje danych biometrycznych.'
-                  : '• Personal & Health Data: All metrics (weight entries, height, BMI calculations, target goals, calendar logs) are stored EXCLUSIVELY LOCALLY on your device. We do not operate external servers collecting health data.\n• Biometric Security: If biometric lock is enabled (Fingerprint/FaceID), authentication is handled entirely by your device operating system.',
+              icon: Icons.storage_outlined,
+              title: l10n.privacyPolicySection1Title,
+              body: l10n.privacyPolicySection1Body,
             ),
             const SizedBox(height: 12),
 
             _PrivacySectionCard(
               icon: Icons.sync_outlined,
-              title: isPolish
-                  ? '2. Integracja z Google Health Connect'
-                  : '2. Google Health Connect Integration',
-              body: isPolish
-                  ? '• Aplikacja Balance łączy się z Google Health Connect wyłącznie po udzieleniu przez Ciebie wyraźnej zgody.\n• Dane są wykorzystywane ściśle do prezentacji pomiarów w aplikacji.\n• Nigdy nie sprzedajemy ani nie przekazujemy danych z Health Connect podmiotom trzecim, reklamodawcom ani brokerom danych.'
-                  : '• Balance connects with Google Health Connect only after explicit user permission.\n• Data is used strictly to display metrics within the app.\n• We never sell or share Health Connect data with third parties, advertisers, or data brokers.',
+              title: l10n.privacyPolicySection2Title,
+              body: l10n.privacyPolicySection2Body,
             ),
             const SizedBox(height: 12),
 
             _PrivacySectionCard(
               icon: Icons.bug_report_outlined,
-              title: isPolish
-                  ? '3. Raportowanie błędów i diagnostyka'
-                  : '3. Crash Reporting & Diagnostics',
-              body: isPolish
-                  ? '• Aplikacja może gromadzić anonimowe, techniczne logi awarii za pośrednictwem Firebase Crashlytics w celu diagnozowania usterek i poprawy stabilności.\n• Raporty nie zawierają wpisów wagi, wzrostu ani żadnych danych osobowych.'
-                  : '• The app may collect anonymous technical crash logs via Firebase Crashlytics to diagnose defects and improve stability.\n• Logs do not contain personal health entries or identifiable sensitive data.',
+              title: l10n.privacyPolicySection3Title,
+              body: l10n.privacyPolicySection3Body,
             ),
             const SizedBox(height: 12),
 
             _PrivacySectionCard(
               icon: Icons.lock_outline,
-              title: isPolish
-                  ? '4. Dostęp stron trzecich i kopie'
-                  : '4. Third-Party Access & Sharing',
-              body: isPolish
-                  ? '• Nie sprzedajemy, nie handlujemy ani nie udostępniamy Twoich danych osobowych.\n• Wszelkie kopie zapasowe (eksport CSV) są generowane lokalnie i pozostają pod Twoją pełną kontrolą.'
-                  : '• We do not sell, trade, rent, or share personal data with third parties.\n• All backups (e.g. CSV exports) are generated locally under your full control.',
+              title: l10n.privacyPolicySection4Title,
+              body: l10n.privacyPolicySection4Body,
             ),
             const SizedBox(height: 12),
 
             _PrivacySectionCard(
               icon: Icons.health_and_safety_outlined,
-              title: isPolish
-                  ? '5. Zastrzeżenie medyczne'
-                  : '5. Medical Disclaimer',
-              body: isPolish
-                  ? '• Aplikacja Balance ma charakter pomocniczy i informacyjny. Nie jest wyrobem medycznym i nie służy do diagnozowania, leczenia ani zapobiegania chorobom.'
-                  : '• Balance is intended for personal tracking and informational purposes only. It is not a medical device and does not diagnose or treat any medical condition.',
+              title: l10n.privacyPolicySection5Title,
+              body: l10n.privacyPolicySection5Body,
             ),
             const SizedBox(height: 12),
 
             _PrivacySectionCard(
               icon: Icons.family_restroom_outlined,
-              title: isPolish
-                  ? '6. Prywatność dzieci'
-                  : '6. Children\'s Privacy',
-              body: isPolish
-                  ? '• Aplikacja nie jest skierowana do dzieci poniżej 13 roku życia. Nie zbieramy świadomie danych od dzieci.'
-                  : '• Our app is not directed to children under 13. We do not knowingly collect personal data from children.',
+              title: l10n.privacyPolicySection6Title,
+              body: l10n.privacyPolicySection6Body,
             ),
             const SizedBox(height: 12),
 
@@ -217,7 +188,7 @@ class PrivacyPolicyScreen extends StatelessWidget {
                         ),
                         const SizedBox(width: 8),
                         Text(
-                          isPolish ? '7. Kontakt z nami' : '7. Contact Us',
+                          l10n.privacyPolicySection7Title,
                           style: theme.textTheme.titleMedium?.copyWith(
                             fontWeight: FontWeight.bold,
                             color: colorScheme.onSurface,
@@ -227,9 +198,7 @@ class PrivacyPolicyScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      isPolish
-                          ? 'W przypadku pytań lub uwag dotyczących niniejszej Polityki Prywatności, skontaktuj się z nami:'
-                          : 'If you have any questions or suggestions regarding this Privacy Policy, please contact us:',
+                      l10n.privacyPolicySection7Body,
                       style: theme.textTheme.bodyMedium?.copyWith(
                         color: colorScheme.onSurfaceVariant,
                         height: 1.4,
