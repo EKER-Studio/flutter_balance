@@ -758,7 +758,7 @@ void main() {
   });
 
   testWidgets(
-    'renders split two-column layout in landscape orientation (800x400)',
+    'renders single-column layout in landscape phone orientation (800x400)',
     (tester) async {
       tester.view.physicalSize = const Size(800, 400);
       tester.view.devicePixelRatio = 1.0;
@@ -793,8 +793,8 @@ void main() {
       await tester.pumpWidget(createTestWidget(const TodayScreen()));
       await tester.pumpAndSettle();
 
-      // The BMI badge is intentionally hidden in landscape phone viewports.
-      expect(find.text('BMI 25.1', skipOffstage: false), findsNothing);
+      // BmiBadge is always visible whenever BMI is finite (no orientation hiding).
+      expect(find.text('BMI 25.1', skipOffstage: false), findsOneWidget);
       expect(find.text('Weight trend', skipOffstage: false), findsOneWidget);
       expect(
         find.text('Last measurement', skipOffstage: false),

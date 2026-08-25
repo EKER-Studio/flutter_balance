@@ -1,5 +1,3 @@
-// The Today tab: daily weight summary, trend chart, tips, and quick add-weight flow.
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:balance/core/presentation/navigation/app_routes.dart';
@@ -50,10 +48,10 @@ class _TodayScreenState extends State<TodayScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final isLandscape =
-        MediaQuery.orientationOf(context) == Orientation.landscape;
+    final isTablet = MediaQuery.sizeOf(context).shortestSide >= 600;
 
     return Scaffold(
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       body: BlocConsumer<WeightBloc, WeightState>(
         listenWhen: (previous, current) => current is WeightError,
         listener: (context, state) {
@@ -72,7 +70,7 @@ class _TodayScreenState extends State<TodayScreen> {
                   top: false,
                   sliver: SliverToBoxAdapter(
                     child: ClampedLayout(
-                      maxWidth: isLandscape ? 1200 : 600,
+                      maxWidth: isTablet ? 1200 : 600,
                       padding: const EdgeInsets.symmetric(
                         horizontal: 16,
                         vertical: 12,

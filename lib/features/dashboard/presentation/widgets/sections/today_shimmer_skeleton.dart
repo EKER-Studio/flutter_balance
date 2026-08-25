@@ -51,9 +51,8 @@ class _TodayShimmerSkeletonState extends State<TodayShimmerSkeleton>
 
           return LayoutBuilder(
             builder: (context, constraints) {
-              final isLandscape =
-                  MediaQuery.orientationOf(context) == Orientation.landscape;
-              final isWide = constraints.maxWidth >= 600 || isLandscape;
+              final isTablet = MediaQuery.sizeOf(context).shortestSide >= 600;
+              final isWide = isTablet;
 
               if (isWide) {
                 return SingleChildScrollView(

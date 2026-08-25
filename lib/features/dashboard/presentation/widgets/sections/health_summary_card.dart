@@ -50,10 +50,6 @@ class HealthSummaryCard extends StatelessWidget {
 
         final colorScheme = Theme.of(context).colorScheme;
 
-        final isLandscapePhone =
-            MediaQuery.of(context).orientation == Orientation.landscape &&
-            MediaQuery.sizeOf(context).height < 500;
-
         final semanticsLabel = [
           '${l10n.lastMeasurementLabel}: ${displayWeight.toStringAsFixed(1)} $unitLabel',
           if (category != null)
@@ -109,7 +105,7 @@ class HealthSummaryCard extends StatelessWidget {
                             ),
                           ),
                         ),
-                        if (bmi.isFinite && !isLandscapePhone)
+                        if (bmi.isFinite)
                           BmiBadge(
                             bmi: bmi,
                             category: category,

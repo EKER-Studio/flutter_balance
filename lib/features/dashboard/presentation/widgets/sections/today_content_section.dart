@@ -44,12 +44,11 @@ class TodayContentSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isLandscape =
-        MediaQuery.orientationOf(context) == Orientation.landscape;
+    final isTablet = MediaQuery.sizeOf(context).shortestSide >= 600;
 
     return LayoutBuilder(
       builder: (context, constraints) {
-        final isWide = constraints.maxWidth >= 600 || isLandscape;
+        final isWide = isTablet;
 
         final Widget cardStack;
         if (isWide) {
