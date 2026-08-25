@@ -164,13 +164,8 @@ class AppAnalytics {
   }
 
   /// Logs the height specified during the units & height step of onboarding.
-  ///
-  /// @param heightCm The user's height value in centimeters.
-  static Future<void> logOnboardingHeightChanged(double heightCm) {
-    return logEvent(
-      name: 'onboarding_height_changed',
-      parameters: {'height_cm': heightCm},
-    );
+  static Future<void> logOnboardingHeightChanged() {
+    return logEvent(name: 'onboarding_height_changed');
   }
 
   /// Logs a validation error when entering height in onboarding.
@@ -184,12 +179,10 @@ class AppAnalytics {
   }
 
   /// Logs the initial body weight entered during the onboarding wizard.
-  ///
-  /// @param weightKg The initial weight normalized to kilograms.
-  static Future<void> logOnboardingInitialWeightSet(double weightKg) {
+  static Future<void> logOnboardingInitialWeightSet() {
     return logEvent(
       name: 'onboarding_initial_weight_set',
-      parameters: {'weight_kg': weightKg},
+      parameters: {'has_value': true},
     );
   }
 
@@ -214,13 +207,8 @@ class AppAnalytics {
   }
 
   /// Logs selecting a custom date for the initial weight in onboarding.
-  ///
-  /// @param date The formatted date string (YYYY-MM-DD).
-  static Future<void> logOnboardingInitialWeightDateChanged(String date) {
-    return logEvent(
-      name: 'onboarding_initial_weight_date_changed',
-      parameters: {'date': date},
-    );
+  static Future<void> logOnboardingInitialWeightDateChanged() {
+    return logEvent(name: 'onboarding_initial_weight_date_changed');
   }
 
   /// Logs opening the time picker for the initial weight entry in onboarding.
@@ -277,16 +265,10 @@ class AppAnalytics {
   }
 
   /// Logs the target weight goal set during onboarding.
-  ///
-  /// @param targetWeightKg The goal weight in kilograms.
-  /// @param deltaKg Optional difference between target and initial weight.
-  static Future<void> logOnboardingTargetWeightSet({
-    required double targetWeightKg,
-    double? deltaKg,
-  }) {
+  static Future<void> logOnboardingTargetWeightSet() {
     return logEvent(
       name: 'onboarding_target_weight_set',
-      parameters: {'target_weight_kg': targetWeightKg, 'delta_kg': ?deltaKg},
+      parameters: {'has_target': true},
     );
   }
 
@@ -511,33 +493,17 @@ class AppAnalytics {
 
   /// Logs tapping on the BMI badge to open the BMI legend.
   ///
-  /// @param bmi The calculated BMI value.
   /// @param category The classification category name.
-  static Future<void> logTodayBmiBadgeTapped({
-    required double bmi,
-    required String category,
-  }) {
+  static Future<void> logTodayBmiBadgeTapped({required String category}) {
     return logEvent(
       name: 'today_bmi_badge_tapped',
-      parameters: {'bmi': bmi, 'category': category},
+      parameters: {'category': category},
     );
   }
 
   /// Logs tapping on the goal progress bar to edit the target weight.
-  ///
-  /// @param targetWeightKg Target goal weight in kg.
-  /// @param currentWeightKg Current weight in kg.
-  static Future<void> logTodayGoalProgressBarTapped({
-    required double targetWeightKg,
-    required double currentWeightKg,
-  }) {
-    return logEvent(
-      name: 'today_goal_progress_bar_tapped',
-      parameters: {
-        'target_weight_kg': targetWeightKg,
-        'current_weight_kg': currentWeightKg,
-      },
-    );
+  static Future<void> logTodayGoalProgressBarTapped() {
+    return logEvent(name: 'today_goal_progress_bar_tapped');
   }
 
   /// Logs tapping on the goal bar when no target weight is set yet.
@@ -546,17 +512,8 @@ class AppAnalytics {
   }
 
   /// Logs inspecting an individual data point on the today trend chart.
-  ///
-  /// @param date The timestamp string of the touched point.
-  /// @param weightKg The weight value in kilograms.
-  static Future<void> logTodayChartPointTouched({
-    required String date,
-    required double weightKg,
-  }) {
-    return logEvent(
-      name: 'today_chart_point_touched',
-      parameters: {'date': date, 'weight_kg': weightKg},
-    );
+  static Future<void> logTodayChartPointTouched() {
+    return logEvent(name: 'today_chart_point_touched');
   }
 
   /// Logs interacting with the daily tip card.
@@ -600,26 +557,17 @@ class AppAnalytics {
 
   /// Logs selecting a specific day on the calendar grid.
   ///
-  /// @param date Formatted date string (YYYY-MM-DD).
   /// @param hasEntry Whether one or more measurements exist for this date.
-  static Future<void> logCalendarDaySelected({
-    required String date,
-    required bool hasEntry,
-  }) {
+  static Future<void> logCalendarDaySelected({required bool hasEntry}) {
     return logEvent(
       name: 'calendar_day_selected',
-      parameters: {'date': date, 'has_entry': hasEntry},
+      parameters: {'has_entry': hasEntry},
     );
   }
 
   /// Logs clicking the button to add a measurement for the selected calendar date.
-  ///
-  /// @param date Formatted target date string.
-  static Future<void> logCalendarAddMeasurementClicked(String date) {
-    return logEvent(
-      name: 'calendar_add_measurement_clicked',
-      parameters: {'date': date},
-    );
+  static Future<void> logCalendarAddMeasurementClicked() {
+    return logEvent(name: 'calendar_add_measurement_clicked');
   }
 
   /// Logs swiping to change month view on the calendar grid.
@@ -681,31 +629,13 @@ class AppAnalytics {
   }
 
   /// Logs inspecting an individual data point on the chart.
-  ///
-  /// @param date The timestamp string of the touched point.
-  /// @param weightKg The weight value in kilograms.
-  static Future<void> logStatisticsChartPointTouched({
-    required String date,
-    required double weightKg,
-  }) {
-    return logEvent(
-      name: 'statistics_chart_point_touched',
-      parameters: {'date': date, 'weight_kg': weightKg},
-    );
+  static Future<void> logStatisticsChartPointTouched() {
+    return logEvent(name: 'statistics_chart_point_touched');
   }
 
   /// Logs inspecting an individual BMI data point on the statistics BMI chart.
-  ///
-  /// @param date The timestamp string of the touched point.
-  /// @param bmi The calculated BMI value.
-  static Future<void> logStatisticsBmiPointTouched({
-    required String date,
-    required double bmi,
-  }) {
-    return logEvent(
-      name: 'statistics_bmi_point_touched',
-      parameters: {'date': date, 'bmi': bmi},
-    );
+  static Future<void> logStatisticsBmiPointTouched() {
+    return logEvent(name: 'statistics_bmi_point_touched');
   }
 
   /// Logs tapping the BMI legend button from the statistics BMI chart card.
@@ -748,26 +678,18 @@ class AppAnalytics {
   }
 
   /// Logs tapping the height tile in settings.
-  ///
-  /// @param currentHeightCm Current height in cm or null.
-  static Future<void> logSettingsHeightTileClicked(double? currentHeightCm) {
-    return logEvent(
-      name: 'settings_height_tile_clicked',
-      parameters: {'current_height_cm': ?currentHeightCm},
-    );
+  static Future<void> logSettingsHeightTileClicked() {
+    return logEvent(name: 'settings_height_tile_clicked');
   }
 
   /// Logs opening the height editing dialog.
   ///
   /// @param currentHeightCm Pre-filled height value.
   /// @param unit The active measurement unit.
-  static Future<void> logSettingsHeightDialogOpened({
-    double? currentHeightCm,
-    required String unit,
-  }) {
+  static Future<void> logSettingsHeightDialogOpened({required String unit}) {
     return logEvent(
       name: 'settings_height_dialog_opened',
-      parameters: {'current_height_cm': ?currentHeightCm, 'unit': unit},
+      parameters: {'unit': unit},
     );
   }
 
@@ -789,23 +711,15 @@ class AppAnalytics {
   /// Logs saving a new user height value in settings.
   ///
   /// @param heightCm The new height in centimeters.
-  static Future<void> logSettingsHeightSaved(double heightCm) {
-    return logEvent(
-      name: 'settings_height_saved',
-      parameters: {'height_cm': heightCm},
-    );
+  static Future<void> logSettingsHeightSaved() {
+    return logEvent(name: 'settings_height_saved');
   }
 
   /// Logs tapping the target weight tile in settings.
   ///
   /// @param currentTargetKg The existing target weight in kg or null.
-  static Future<void> logSettingsTargetWeightTileClicked(
-    double? currentTargetKg,
-  ) {
-    return logEvent(
-      name: 'settings_target_weight_tile_clicked',
-      parameters: {'current_target_kg': ?currentTargetKg},
-    );
+  static Future<void> logSettingsTargetWeightTileClicked() {
+    return logEvent(name: 'settings_target_weight_tile_clicked');
   }
 
   /// Logs opening the target weight dialog in settings.
@@ -813,12 +727,11 @@ class AppAnalytics {
   /// @param currentTargetKg The pre-filled target weight.
   /// @param unit The active measurement unit.
   static Future<void> logSettingsTargetWeightDialogOpened({
-    double? currentTargetKg,
     required String unit,
   }) {
     return logEvent(
       name: 'settings_target_weight_dialog_opened',
-      parameters: {'current_target_kg': ?currentTargetKg, 'unit': unit},
+      parameters: {'unit': unit},
     );
   }
 
@@ -840,11 +753,8 @@ class AppAnalytics {
   /// Logs saving a new target goal weight in settings.
   ///
   /// @param targetWeightKg Target weight in kilograms.
-  static Future<void> logSettingsTargetWeightSaved(double targetWeightKg) {
-    return logEvent(
-      name: 'settings_target_weight_saved',
-      parameters: {'target_weight_kg': targetWeightKg},
-    );
+  static Future<void> logSettingsTargetWeightSaved() {
+    return logEvent(name: 'settings_target_weight_saved');
   }
 
   /// Logs removing/clearing the target weight in settings.
@@ -1205,17 +1115,12 @@ class AppAnalytics {
   /// @param hasNote Whether an accompanying note was included.
   /// @param isPastDate Whether the measurement date is set to a past timestamp.
   static Future<void> logDialogAddWeightSaved({
-    required double weightKg,
     required bool hasNote,
     required bool isPastDate,
   }) {
     return logEvent(
       name: 'dialog_add_weight_saved',
-      parameters: {
-        'weight_kg': weightKg,
-        'has_note': hasNote,
-        'is_past_date': isPastDate,
-      },
+      parameters: {'has_note': hasNote, 'is_past_date': isPastDate},
     );
   }
 
@@ -1289,17 +1194,12 @@ class AppAnalytics {
   /// @param hasNote Whether a note is present.
   /// @param dateModified Whether the entry's timestamp was changed.
   static Future<void> logDialogEditWeightSaved({
-    required double weightKg,
     required bool hasNote,
     required bool dateModified,
   }) {
     return logEvent(
       name: 'dialog_edit_weight_saved',
-      parameters: {
-        'weight_kg': weightKg,
-        'has_note': hasNote,
-        'date_modified': dateModified,
-      },
+      parameters: {'has_note': hasNote, 'date_modified': dateModified},
     );
   }
 
@@ -1435,15 +1335,11 @@ class AppAnalytics {
 
   /// Logs tapping the main latest weight display on the Today hero summary card.
   ///
-  /// @param weight The displayed weight number.
   /// @param unit The unit symbol ('kg' or 'lb').
-  static Future<void> logTodayLatestWeightTapped({
-    required double weight,
-    required String unit,
-  }) {
+  static Future<void> logTodayLatestWeightTapped({required String unit}) {
     return logEvent(
       name: 'today_latest_weight_tapped',
-      parameters: {'weight': weight, 'unit': unit},
+      parameters: {'unit': unit},
     );
   }
 

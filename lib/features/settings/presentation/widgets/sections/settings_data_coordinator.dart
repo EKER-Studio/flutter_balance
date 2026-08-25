@@ -41,7 +41,6 @@ class SettingsDataCoordinator {
   static Future<void> showHeightSheet(BuildContext context) async {
     final settingsState = context.read<AppSettingsBloc>().state;
     AppAnalytics.logSettingsHeightDialogOpened(
-      currentHeightCm: settingsState.height,
       unit: settingsState.measurementUnit.name,
     );
     final result = await showModalBottomSheet<double>(
@@ -55,7 +54,7 @@ class SettingsDataCoordinator {
 
     if (result == null || !context.mounted) return;
 
-    AppAnalytics.logSettingsHeightSaved(result);
+    AppAnalytics.logSettingsHeightSaved();
     context.read<AppSettingsBloc>().add(UpdateHeight(result));
     context.read<WeightBloc>().add(UpdateUserHeight(result));
   }
@@ -65,7 +64,6 @@ class SettingsDataCoordinator {
     final settingsBloc = context.read<AppSettingsBloc>();
     final settingsState = settingsBloc.state;
     AppAnalytics.logSettingsTargetWeightDialogOpened(
-      currentTargetKg: settingsState.targetWeight,
       unit: settingsState.measurementUnit.name,
     );
 
@@ -87,7 +85,7 @@ class SettingsDataCoordinator {
       final targetKg = settingsState.measurementUnit == MeasurementUnit.imperial
           ? lbsToKg(result)
           : result;
-      AppAnalytics.logSettingsTargetWeightSaved(targetKg);
+      AppAnalytics.logSettingsTargetWeightSaved();
       context.read<AppSettingsBloc>().add(TargetWeightChanged(targetKg));
     }
   }

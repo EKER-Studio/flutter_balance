@@ -60,11 +60,7 @@ class CalendarDayEmptyCard extends StatelessWidget {
               width: double.infinity,
               child: FilledButton.icon(
                 onPressed: () {
-                  final dateStr = selectedDate.toIso8601String().substring(
-                    0,
-                    10,
-                  );
-                  AppAnalytics.logCalendarAddMeasurementClicked(dateStr);
+                  AppAnalytics.logCalendarAddMeasurementClicked();
                   AppAnalytics.logDialogAddWeightOpened('calendar_empty_day');
                   final weightBloc = context.read<WeightBloc>();
                   showModalBottomSheet<void>(

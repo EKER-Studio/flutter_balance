@@ -93,7 +93,6 @@ class HealthSummaryCard extends StatelessWidget {
                               borderRadius: BorderRadius.circular(12),
                               onTap: () {
                                 AppAnalytics.logTodayLatestWeightTapped(
-                                  weight: displayWeight,
                                   unit: unitLabel,
                                 );
                               },
@@ -145,7 +144,7 @@ class HealthSummaryCard extends StatelessWidget {
     required double bmi,
     required String category,
   }) {
-    AppAnalytics.logTodayBmiBadgeTapped(bmi: bmi, category: category);
+    AppAnalytics.logTodayBmiBadgeTapped(category: category);
     AppAnalytics.logDialogBmiLegendOpened();
     showDialog<void>(
       context: context,
@@ -163,10 +162,7 @@ class HealthSummaryCard extends StatelessWidget {
     double currentWeightKg,
   ) async {
     if (targetWeightKg != null) {
-      AppAnalytics.logTodayGoalProgressBarTapped(
-        targetWeightKg: targetWeightKg,
-        currentWeightKg: currentWeightKg,
-      );
+      AppAnalytics.logTodayGoalProgressBarTapped();
     } else {
       AppAnalytics.logTodaySetGoalTapped();
     }
@@ -187,7 +183,7 @@ class HealthSummaryCard extends StatelessWidget {
         final targetKg = unit == MeasurementUnit.imperial
             ? lbsToKg(result)
             : result;
-        AppAnalytics.logSettingsTargetWeightSaved(targetKg);
+        AppAnalytics.logSettingsTargetWeightSaved();
         context.read<AppSettingsBloc>().add(TargetWeightChanged(targetKg));
       }
     }

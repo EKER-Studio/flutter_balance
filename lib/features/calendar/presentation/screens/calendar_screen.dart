@@ -80,7 +80,6 @@ class _CalendarScreenState extends State<CalendarScreen> {
   ///
   /// Moves the focused month if the selected date falls outside the current view.
   void _onDaySelected(DateTime date) {
-    final dateStr = date.toIso8601String().substring(0, 10);
     final weightState = context.read<WeightBloc>().state;
     final entries = weightState is WeightLoaded
         ? weightState.entries
@@ -91,7 +90,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
           e.dateTime.month == date.month &&
           e.dateTime.day == date.day,
     );
-    AppAnalytics.logCalendarDaySelected(date: dateStr, hasEntry: hasEntry);
+    AppAnalytics.logCalendarDaySelected(hasEntry: hasEntry);
     setState(() {
       _selectedDate = date;
       if (date.year != _focusedMonth.year ||

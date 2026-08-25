@@ -98,7 +98,7 @@ class _OnboardingWizardContentState extends State<OnboardingWizardContent> {
 
   void _handleUnitsHeightNext(MeasurementUnit unit, double heightCm) {
     AppAnalytics.logOnboardingUnitSelected(unit.name);
-    AppAnalytics.logOnboardingHeightChanged(heightCm);
+    AppAnalytics.logOnboardingHeightChanged();
     context.read<OnboardingBloc>().add(OnboardingUnitSelected(unit));
 
     final settingsBloc = context.read<AppSettingsBloc>();
@@ -122,7 +122,7 @@ class _OnboardingWizardContentState extends State<OnboardingWizardContent> {
   }
 
   void _handleInitialWeightNext(double weightKg, DateTime timestamp) {
-    AppAnalytics.logOnboardingInitialWeightSet(weightKg);
+    AppAnalytics.logOnboardingInitialWeightSet();
     context.read<OnboardingBloc>().add(
       OnboardingInitialWeightSet(weightKg: weightKg, timestamp: timestamp),
     );
@@ -131,17 +131,7 @@ class _OnboardingWizardContentState extends State<OnboardingWizardContent> {
 
   void _handleTargetWeightNext(double? targetWeightKg) {
     if (targetWeightKg != null) {
-      final initialWeight = context
-          .read<OnboardingBloc>()
-          .state
-          .draftInitialWeight;
-      final deltaKg = initialWeight != null
-          ? (targetWeightKg - initialWeight)
-          : null;
-      AppAnalytics.logOnboardingTargetWeightSet(
-        targetWeightKg: targetWeightKg,
-        deltaKg: deltaKg,
-      );
+      AppAnalytics.logOnboardingTargetWeightSet();
     } else {
       AppAnalytics.logOnboardingTargetWeightSkipped();
     }

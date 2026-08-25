@@ -352,8 +352,7 @@ class CalendarDayEntriesCard extends StatelessWidget {
         const SizedBox(height: 24),
         FilledButton.icon(
           onPressed: () {
-            final dateStr = selectedDate.toIso8601String().substring(0, 10);
-            AppAnalytics.logCalendarAddMeasurementClicked(dateStr);
+            AppAnalytics.logCalendarAddMeasurementClicked();
             AppAnalytics.logDialogAddWeightOpened('calendar');
             final weightBloc = context.read<WeightBloc>();
             showModalBottomSheet<void>(
@@ -412,7 +411,7 @@ class CalendarDayEntriesCard extends StatelessWidget {
     required double bmi,
     required String category,
   }) {
-    AppAnalytics.logTodayBmiBadgeTapped(bmi: bmi, category: category);
+    AppAnalytics.logTodayBmiBadgeTapped(category: category);
     AppAnalytics.logDialogBmiLegendOpened();
     showDialog<void>(
       context: context,

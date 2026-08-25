@@ -47,13 +47,13 @@ void main() {
         );
         await AppAnalytics.logOnboardingUnitSelected('metric');
         await AppAnalytics.logOnboardingUnitsTabTapped('imperial');
-        await AppAnalytics.logOnboardingHeightChanged(180.0);
+        await AppAnalytics.logOnboardingHeightChanged();
         await AppAnalytics.logOnboardingHeightValidationError('range_error');
-        await AppAnalytics.logOnboardingInitialWeightSet(75.5);
+        await AppAnalytics.logOnboardingInitialWeightSet();
         await AppAnalytics.logOnboardingInitialWeightFieldFocused();
         await AppAnalytics.logOnboardingInitialWeightInputChanged(true);
         await AppAnalytics.logOnboardingInitialWeightDatePickerOpened();
-        await AppAnalytics.logOnboardingInitialWeightDateChanged('2026-08-19');
+        await AppAnalytics.logOnboardingInitialWeightDateChanged();
         await AppAnalytics.logOnboardingInitialWeightTimePickerOpened();
         await AppAnalytics.logOnboardingInitialWeightTimeChanged(
           hour: 8,
@@ -66,10 +66,7 @@ void main() {
         await AppAnalytics.logOnboardingTargetWeightValidationError(
           'invalid_number',
         );
-        await AppAnalytics.logOnboardingTargetWeightSet(
-          targetWeightKg: 70.0,
-          deltaKg: -5.5,
-        );
+        await AppAnalytics.logOnboardingTargetWeightSet();
         await AppAnalytics.logOnboardingTargetWeightSkipped();
         await AppAnalytics.logOnboardingCsvPickerOpened();
         await AppAnalytics.logOnboardingCsvPickerCancelled();
@@ -109,19 +106,10 @@ void main() {
         await AppAnalytics.logTodayFirstWeightButtonClicked();
         await AppAnalytics.logTodayEntryTap(entryId: 1, hasNote: true);
         await AppAnalytics.logTodayEntryDelete(1);
-        await AppAnalytics.logTodayBmiBadgeTapped(
-          bmi: 22.5,
-          category: 'normal',
-        );
-        await AppAnalytics.logTodayGoalProgressBarTapped(
-          targetWeightKg: 70.0,
-          currentWeightKg: 74.5,
-        );
+        await AppAnalytics.logTodayBmiBadgeTapped(category: 'normal');
+        await AppAnalytics.logTodayGoalProgressBarTapped();
         await AppAnalytics.logTodaySetGoalTapped();
-        await AppAnalytics.logTodayChartPointTouched(
-          date: '2026-08-19',
-          weightKg: 74.5,
-        );
+        await AppAnalytics.logTodayChartPointTouched();
         await AppAnalytics.logTodayDailyTipTapped();
         await AppAnalytics.logTodayDeltaPeriodSelected('week');
         await AppAnalytics.logTodayPullToRefresh();
@@ -129,25 +117,16 @@ void main() {
         // Calendar
         await AppAnalytics.logCalendarMonthChanged('2026-08');
         await AppAnalytics.logCalendarSwipeMonthChanged('left');
-        await AppAnalytics.logCalendarDaySelected(
-          date: '2026-08-19',
-          hasEntry: true,
-        );
-        await AppAnalytics.logCalendarAddMeasurementClicked('2026-08-19');
+        await AppAnalytics.logCalendarDaySelected(hasEntry: true);
+        await AppAnalytics.logCalendarAddMeasurementClicked();
         await AppAnalytics.logCalendarEntryClicked(entryId: 1, hasNote: true);
         await AppAnalytics.logCalendarEntryDeleted(1);
 
         // Statistics
         await AppAnalytics.logStatisticsAddFirstMeasurementClicked();
         await AppAnalytics.logStatisticsFilterChanged('month');
-        await AppAnalytics.logStatisticsChartPointTouched(
-          date: '2026-08-19',
-          weightKg: 74.5,
-        );
-        await AppAnalytics.logStatisticsBmiPointTouched(
-          date: '2026-08-19',
-          bmi: 22.5,
-        );
+        await AppAnalytics.logStatisticsChartPointTouched();
+        await AppAnalytics.logStatisticsBmiPointTouched();
         await AppAnalytics.logStatisticsBmiLegendTapped();
         await AppAnalytics.logStatisticsHeroProgressCardTapped();
         await AppAnalytics.logStatisticsRangeCardTapped();
@@ -155,24 +134,18 @@ void main() {
         await AppAnalytics.logStatisticsMetricCardInspected('min_weight');
 
         // Settings
-        await AppAnalytics.logSettingsHeightTileClicked(175.0);
-        await AppAnalytics.logSettingsHeightDialogOpened(
-          currentHeightCm: 175.0,
-          unit: 'metric',
-        );
+        await AppAnalytics.logSettingsHeightTileClicked();
+        await AppAnalytics.logSettingsHeightDialogOpened(unit: 'metric');
         await AppAnalytics.logSettingsHeightDialogCancelled();
         await AppAnalytics.logSettingsHeightValidationError('range_error');
-        await AppAnalytics.logSettingsHeightSaved(175.0);
-        await AppAnalytics.logSettingsTargetWeightTileClicked(68.0);
-        await AppAnalytics.logSettingsTargetWeightDialogOpened(
-          currentTargetKg: 68.0,
-          unit: 'metric',
-        );
+        await AppAnalytics.logSettingsHeightSaved();
+        await AppAnalytics.logSettingsTargetWeightTileClicked();
+        await AppAnalytics.logSettingsTargetWeightDialogOpened(unit: 'metric');
         await AppAnalytics.logSettingsTargetWeightValidationError(
           'range_error',
         );
         await AppAnalytics.logSettingsTargetWeightDialogCancelled();
-        await AppAnalytics.logSettingsTargetWeightSaved(68.0);
+        await AppAnalytics.logSettingsTargetWeightSaved();
         await AppAnalytics.logSettingsTargetWeightCleared();
         await AppAnalytics.logSettingsUnitTileClicked('metric');
         await AppAnalytics.logSettingsUnitDialogOpened('metric');
@@ -236,14 +209,12 @@ void main() {
         await AppAnalytics.logDialogAddWeightTimeChanged(hour: 8, minute: 0);
         await AppAnalytics.logDialogAddWeightValidationError('range_error');
         await AppAnalytics.logDialogAddWeightSaved(
-          weightKg: 75.0,
           hasNote: false,
           isPastDate: false,
         );
         await AppAnalytics.logDialogAddWeightCancelled();
         await AppAnalytics.logDialogEditWeightOpened(5);
         await AppAnalytics.logDialogEditWeightSaved(
-          weightKg: 74.0,
           hasNote: true,
           dateModified: false,
         );
@@ -268,7 +239,7 @@ void main() {
         await AppAnalytics.logDialogBmiLegendCategoryTapped('normal');
         await AppAnalytics.logTodayErrorRetryClicked();
         await AppAnalytics.logTodayInlineBannerRetryClicked();
-        await AppAnalytics.logTodayLatestWeightTapped(weight: 75.0, unit: 'kg');
+        await AppAnalytics.logTodayLatestWeightTapped(unit: 'kg');
         await AppAnalytics.logCalendarPullToRefresh();
         await AppAnalytics.logCalendarErrorRetryClicked();
         await AppAnalytics.logStatisticsPullToRefresh();

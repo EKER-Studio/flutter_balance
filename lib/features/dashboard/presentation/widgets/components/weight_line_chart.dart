@@ -123,11 +123,7 @@ class WeightLineChart extends StatelessWidget {
                 final spot = response.lineBarSpots!.first;
                 final index = spot.spotIndex;
                 if (index >= 0 && index < sortedEntries.length) {
-                  final entry = sortedEntries[index];
-                  AppAnalytics.logTodayChartPointTouched(
-                    date: entry.dateTime.toIso8601String(),
-                    weightKg: entry.weightKg,
-                  );
+                  AppAnalytics.logTodayChartPointTouched();
                 }
               }
             },

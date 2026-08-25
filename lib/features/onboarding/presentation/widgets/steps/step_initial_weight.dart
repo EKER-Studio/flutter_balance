@@ -98,9 +98,7 @@ class _StepInitialWeightState extends State<StepInitialWeight> {
     );
 
     if (pickedDate == null || !mounted) return;
-    final formattedDate =
-        '${pickedDate.year.toString().padLeft(4, '0')}-${pickedDate.month.toString().padLeft(2, '0')}-${pickedDate.day.toString().padLeft(2, '0')}';
-    AppAnalytics.logOnboardingInitialWeightDateChanged(formattedDate);
+    AppAnalytics.logOnboardingInitialWeightDateChanged();
 
     AppAnalytics.logOnboardingInitialWeightTimePickerOpened();
     final pickedTime = await showSafeTimePicker(

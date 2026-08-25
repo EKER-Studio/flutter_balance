@@ -327,7 +327,6 @@ class _AddWeightSheetState extends State<AddWeightSheet>
       final existing = widget.existingEntry!;
       final dateModified = _combinedDateTime != existing.dateTime;
       AppAnalytics.logDialogEditWeightSaved(
-        weightKg: weightKg,
         hasNote: note != null,
         dateModified: dateModified,
       );
@@ -346,7 +345,6 @@ class _AddWeightSheetState extends State<AddWeightSheet>
       );
 
       AppAnalytics.logDialogAddWeightSaved(
-        weightKg: weightKg,
         hasNote: note != null,
         isPastDate: isPastDate,
       );

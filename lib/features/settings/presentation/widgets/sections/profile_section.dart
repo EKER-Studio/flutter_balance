@@ -45,7 +45,7 @@ class ProfileSection extends StatelessWidget {
             subtitle: heightValue,
             sectionLabel: l10n.profileSection,
             onTap: () {
-              AppAnalytics.logSettingsHeightTileClicked(state.height);
+              AppAnalytics.logSettingsHeightTileClicked();
               onHeightTap();
             },
           ),
@@ -55,9 +55,7 @@ class ProfileSection extends StatelessWidget {
             subtitle: targetWeightValue,
             sectionLabel: l10n.profileSection,
             onTap: () {
-              AppAnalytics.logSettingsTargetWeightTileClicked(
-                state.targetWeight,
-              );
+              AppAnalytics.logSettingsTargetWeightTileClicked();
               onTargetWeightTap();
             },
           ),

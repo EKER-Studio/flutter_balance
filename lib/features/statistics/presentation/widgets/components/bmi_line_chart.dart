@@ -104,11 +104,7 @@ class BmiLineChart extends StatelessWidget {
                 final spot = response.lineBarSpots!.first;
                 final index = spot.spotIndex;
                 if (index >= 0 && index < sortedEntries.length) {
-                  final entry = sortedEntries[index];
-                  AppAnalytics.logStatisticsBmiPointTouched(
-                    date: entry.dateTime.toIso8601String(),
-                    bmi: spot.y,
-                  );
+                  AppAnalytics.logStatisticsBmiPointTouched();
                 }
               }
             },
