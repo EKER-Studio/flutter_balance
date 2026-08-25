@@ -34,21 +34,32 @@ class HeroProgressCard extends StatelessWidget {
         ? kgToLbs(totalChangeKg)
         : totalChangeKg;
     final unitLabel = unitLabelFor(unit);
-
-    final sign = totalChangeDisplay > 0 ? '+' : '';
-    final formattedValue =
-        '$sign${totalChangeDisplay.toStringAsFixed(1)} $unitLabel';
+    final isTotalLoss = totalChangeDisplay < -0.05;
+    final isTotalGain = totalChangeDisplay > 0.05;
+    final String totalChangeStr;
+    if (isTotalGain) {
+      totalChangeStr = '+${totalChangeDisplay.toStringAsFixed(1)}';
+    } else if (isTotalLoss) {
+      totalChangeStr = totalChangeDisplay.toStringAsFixed(1);
+    } else {
+      totalChangeStr = '0.0';
+    }
+    final formattedValue = '$totalChangeStr $unitLabel';
 
     final paceDisplay = weeklyPace != null
         ? (unit == MeasurementUnit.imperial
               ? kgToLbs(weeklyPace!)
               : weeklyPace!)
         : null;
-    final paceSign = (paceDisplay != null && paceDisplay > 0) ? '+' : '';
-    final paceBadgeText = paceDisplay != null
-        ? l10n.weeklyPaceBadge(
-            '$paceSign${paceDisplay.toStringAsFixed(1)} $unitLabel',
-          )
+    final isPaceLoss = paceDisplay != null && paceDisplay < -0.05;
+    final isPaceGain = paceDisplay != null && paceDisplay > 0.05;
+    final String? paceStr = paceDisplay != null
+        ? (isPaceGain
+              ? '+${paceDisplay.toStringAsFixed(1)}'
+              : (isPaceLoss ? paceDisplay.toStringAsFixed(1) : '0.0'))
+        : null;
+    final paceBadgeText = paceStr != null
+        ? l10n.weeklyPaceBadge('$paceStr $unitLabel')
         : null;
 
     double? goalProgressPct;
@@ -177,7 +188,7 @@ class HeroProgressCard extends StatelessWidget {
                   textBaseline: TextBaseline.alphabetic,
                   children: [
                     Text(
-                      '$sign${totalChangeDisplay.toStringAsFixed(1)}',
+                      totalChangeStr,
                       style: Theme.of(context).textTheme.headlineLarge
                           ?.copyWith(
                             color: cs.primary,

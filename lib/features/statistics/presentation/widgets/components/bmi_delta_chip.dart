@@ -56,8 +56,14 @@ class BmiDeltaChip extends StatelessWidget {
         ? Icons.trending_up_rounded
         : Icons.remove_rounded;
 
-    final prefix = isGain ? '+' : '';
-    final formattedDelta = '$prefix${deltaBmi.toStringAsFixed(1)}';
+    final String formattedDelta;
+    if (isGain) {
+      formattedDelta = '+${deltaBmi.toStringAsFixed(1)}';
+    } else if (isLoss) {
+      formattedDelta = deltaBmi.toStringAsFixed(1);
+    } else {
+      formattedDelta = '0.0';
+    }
 
     return Semantics(
       container: true,

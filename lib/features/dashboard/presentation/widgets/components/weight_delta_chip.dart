@@ -29,8 +29,8 @@ class WeightDeltaChip extends StatelessWidget {
     final delta = measurementUnit == MeasurementUnit.imperial
         ? kgToLbs(deltaKg)
         : deltaKg;
-    final isLoss = delta < 0;
-    final isGain = delta > 0;
+    final isLoss = delta < -0.05;
+    final isGain = delta > 0.05;
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final BmiCategory? bCategory = isLoss
         ? BmiCategory.normal
@@ -49,8 +49,15 @@ class WeightDeltaChip extends StatelessWidget {
         ? Icons.trending_up_rounded
         : Icons.remove_rounded;
     final unitLabel = measurementUnit == MeasurementUnit.imperial ? 'lb' : 'kg';
-    final prefix = isGain ? '+' : '';
-    final formattedDelta = '$prefix${delta.toStringAsFixed(1)} $unitLabel';
+    final String formattedValue;
+    if (isGain) {
+      formattedValue = '+${delta.toStringAsFixed(1)}';
+    } else if (isLoss) {
+      formattedValue = delta.toStringAsFixed(1);
+    } else {
+      formattedValue = '0.0';
+    }
+    final formattedDelta = '$formattedValue $unitLabel';
 
     return Semantics(
       container: true,
