@@ -70,7 +70,7 @@ class _TodayScreenState extends State<TodayScreen> {
                   top: false,
                   sliver: SliverToBoxAdapter(
                     child: ClampedLayout(
-                      maxWidth: isTablet ? 1200 : 600,
+                      maxWidth: isTablet ? 1200 : 480,
                       padding: const EdgeInsets.symmetric(
                         horizontal: 16,
                         vertical: 12,
