@@ -85,8 +85,8 @@ class HeroProgressCard extends StatelessWidget {
         ? Colors.green.withValues(alpha: 0.15)
         : Colors.orange.withValues(alpha: 0.15);
     final badgeFg = isSuccessBadge
-        ? (isDark ? Colors.green.shade300 : Colors.green.shade800)
-        : (isDark ? Colors.orange.shade300 : Colors.orange.shade800);
+        ? (isDark ? Colors.green.shade300 : Colors.green.shade700)
+        : (isDark ? Colors.orange.shade300 : Colors.orange.shade700);
 
     return Semantics(
       container: true,

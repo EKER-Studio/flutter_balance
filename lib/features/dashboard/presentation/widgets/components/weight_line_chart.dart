@@ -167,7 +167,7 @@ class WeightLineChart extends StatelessWidget {
               barWidth: 3,
               isStrokeCapRound: true,
               dotData: FlDotData(
-                show: sortedEntries.length <= 31,
+                show: sortedEntries.length == 1,
                 getDotPainter: (spot, percent, barData, index) {
                   return FlDotCirclePainter(
                     radius: sortedEntries.length <= 14 ? 3.5 : 2.5,
