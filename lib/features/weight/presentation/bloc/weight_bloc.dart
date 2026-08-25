@@ -338,8 +338,8 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
   ///
   /// Local-first: the update is committed to the local repository before any
   /// platform interaction, and only then mirrored to the health platform as
-  /// an unawaited, best-effort write when health sync is enabled (see
-  /// [_mirrorWriteToHealth]); mirror failures never fail the local update, and
+  /// an unawaited, best-effort operation when health sync is enabled (see
+  /// [_mirrorUpdateToHealth]); mirror failures never fail the local update, and
   /// no platform call is made when sync is off.
   Future<void> _onUpdateWeight(
     UpdateWeight event,
@@ -361,10 +361,22 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
       return;
     }
 
+    WeightEntry? oldEntry;
+    for (final entry in entries) {
+      if (entry.id == event.entry.id) {
+        oldEntry = entry;
+        break;
+      }
+    }
+
     try {
       await repository.addEntry(event.entry);
       if (_isHealthSyncEnabled) {
-        unawaited(_mirrorWriteToHealth(event.entry));
+        if (oldEntry != null) {
+          unawaited(_mirrorUpdateToHealth(oldEntry, event.entry));
+        } else {
+          unawaited(_mirrorWriteToHealth(event.entry));
+        }
       }
     } catch (e, stack) {
       AppCrashReporter.recordError(
@@ -441,6 +453,27 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
   Future<void> _mirrorDeleteToHealth(WeightEntry entry) async {
     if (!_isHealthSyncEnabled) return;
     await _healthSyncCoordinator.mirrorDelete(entry.weightKg, entry.dateTime);
+  }
+
+  /// Mirrors an updated [newEntry] to the health platform by removing the
+  /// outdated record [oldEntry] (if weight or timestamp changed) and inserting
+  /// the new measurement. If only the note changed, skips the health platform
+  /// call since health services do not store weight notes.
+  Future<void> _mirrorUpdateToHealth(
+    WeightEntry oldEntry,
+    WeightEntry newEntry,
+  ) async {
+    if (!_isHealthSyncEnabled) return;
+    final isWeightChanged = oldEntry.weightKg != newEntry.weightKg;
+    final isTimeChanged = oldEntry.dateTime != newEntry.dateTime;
+
+    if (isWeightChanged || isTimeChanged) {
+      await _healthSyncCoordinator.mirrorDelete(
+        oldEntry.weightKg,
+        oldEntry.dateTime,
+      );
+      await _healthSyncCoordinator.mirrorWrite(newEntry);
+    }
   }
 
   /// Pulls weight history from the health platform and merges records that do

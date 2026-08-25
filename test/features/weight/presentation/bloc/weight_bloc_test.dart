@@ -695,15 +695,23 @@ void main() {
       );
 
       blocTest<WeightBloc, WeightState>(
-        'mirrors updated weight entry to HealthService when UpdateWeight is '
-        'dispatched and sync is enabled',
+        'mirrors updated weight entry by deleting old point and writing new point when weight changed and sync is enabled',
         build: () => WeightBloc(
           repository: repository,
           appSettingsBloc: buildSettingsBloc(),
           healthService: healthService,
         ),
-        seed: () =>
-            const WeightLoaded(entries: [], filteredEntries: [], heightCm: 170),
+        seed: () => WeightLoaded(
+          entries: [
+            WeightEntry(
+              id: 1,
+              weightKg: 70,
+              dateTime: DateTime(2026, 7, 15, 10),
+            ),
+          ],
+          filteredEntries: const [],
+          heightCm: 170,
+        ),
         act: (bloc) => bloc.add(
           UpdateWeight(
             WeightEntry(
@@ -715,11 +723,107 @@ void main() {
         ),
         verify: (_) {
           verify(
+            () => healthService.deleteWeight(
+              weightKg: 70,
+              timestamp: DateTime(2026, 7, 15, 10),
+            ),
+          ).called(1);
+          verify(
             () => healthService.writeWeight(
               weightKg: 73,
               timestamp: DateTime(2026, 7, 15, 10),
             ),
           ).called(1);
+          verify(() => repository.addEntry(any())).called(1);
+        },
+      );
+
+      blocTest<WeightBloc, WeightState>(
+        'mirrors updated weight entry by deleting old point and writing new point when timestamp changed and sync is enabled',
+        build: () => WeightBloc(
+          repository: repository,
+          appSettingsBloc: buildSettingsBloc(),
+          healthService: healthService,
+        ),
+        seed: () => WeightLoaded(
+          entries: [
+            WeightEntry(
+              id: 1,
+              weightKg: 70,
+              dateTime: DateTime(2026, 7, 15, 10),
+            ),
+          ],
+          filteredEntries: const [],
+          heightCm: 170,
+        ),
+        act: (bloc) => bloc.add(
+          UpdateWeight(
+            WeightEntry(
+              id: 1,
+              weightKg: 70,
+              dateTime: DateTime(2026, 7, 15, 12),
+            ),
+          ),
+        ),
+        verify: (_) {
+          verify(
+            () => healthService.deleteWeight(
+              weightKg: 70,
+              timestamp: DateTime(2026, 7, 15, 10),
+            ),
+          ).called(1);
+          verify(
+            () => healthService.writeWeight(
+              weightKg: 70,
+              timestamp: DateTime(2026, 7, 15, 12),
+            ),
+          ).called(1);
+          verify(() => repository.addEntry(any())).called(1);
+        },
+      );
+
+      blocTest<WeightBloc, WeightState>(
+        'does NOT delete or re-write to HealthService when only the note was updated',
+        build: () => WeightBloc(
+          repository: repository,
+          appSettingsBloc: buildSettingsBloc(),
+          healthService: healthService,
+        ),
+        seed: () => WeightLoaded(
+          entries: [
+            WeightEntry(
+              id: 1,
+              weightKg: 70,
+              dateTime: DateTime(2026, 7, 15, 10),
+              note: 'Old note',
+            ),
+          ],
+          filteredEntries: const [],
+          heightCm: 170,
+        ),
+        act: (bloc) => bloc.add(
+          UpdateWeight(
+            WeightEntry(
+              id: 1,
+              weightKg: 70,
+              dateTime: DateTime(2026, 7, 15, 10),
+              note: 'New updated note',
+            ),
+          ),
+        ),
+        verify: (_) {
+          verifyNever(
+            () => healthService.deleteWeight(
+              weightKg: any(named: 'weightKg'),
+              timestamp: any(named: 'timestamp'),
+            ),
+          );
+          verifyNever(
+            () => healthService.writeWeight(
+              weightKg: any(named: 'weightKg'),
+              timestamp: any(named: 'timestamp'),
+            ),
+          );
           verify(() => repository.addEntry(any())).called(1);
         },
       );
