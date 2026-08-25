@@ -60,10 +60,11 @@ class CalendarDayEntriesCard extends StatelessWidget {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
             decoration: BoxDecoration(
-              color: Colors.green.withValues(alpha: 0.12),
+              color: Colors.green.withValues(alpha: 0.15),
               borderRadius: BorderRadius.circular(16),
               border: Border.all(
-                color: Colors.green.withValues(alpha: 0.4),
+                color: (isDark ? Colors.green.shade300 : Colors.green.shade700)
+                    .withValues(alpha: 0.4),
                 width: 1,
               ),
             ),
@@ -74,7 +75,7 @@ class CalendarDayEntriesCard extends StatelessWidget {
                     Icons.military_tech_outlined,
                     color: isDark
                         ? Colors.green.shade300
-                        : Colors.green.shade800,
+                        : Colors.green.shade700,
                     size: 22,
                   ),
                 ),
@@ -86,7 +87,7 @@ class CalendarDayEntriesCard extends StatelessWidget {
                       fontWeight: FontWeight.bold,
                       color: isDark
                           ? Colors.green.shade300
-                          : Colors.green.shade800,
+                          : Colors.green.shade700,
                     ),
                   ),
                 ),
@@ -133,7 +134,7 @@ class CalendarDayEntriesCard extends StatelessWidget {
                   side: BorderSide(
                     color: index == 0
                         ? cs.primary.withValues(alpha: 0.8)
-                        : cs.outlineVariant.withValues(alpha: 0.2),
+                        : cs.outlineVariant.withValues(alpha: 0.3),
                     width: index == 0 ? 1.5 : 1.0,
                   ),
                 ),
@@ -164,7 +165,9 @@ class CalendarDayEntriesCard extends StatelessWidget {
                                           height: 7,
                                           decoration: BoxDecoration(
                                             color: meetsGoal
-                                                ? const Color(0xFF3CB043)
+                                                ? (isDark
+                                                      ? Colors.green.shade300
+                                                      : Colors.green.shade700)
                                                 : cs.primary,
                                             shape: BoxShape.circle,
                                           ),
