@@ -31,6 +31,7 @@
   "privacyPolicy": "Privacy Policy",
   "privacyPolicyOpenError": "Could not open privacy policy.",
   "openSourceLicenses": "Open Source Licenses",
+  "yourResult": "Your result",
   "cancel": "Cancel",
   "save": "Save",
   "retry": "Try again",

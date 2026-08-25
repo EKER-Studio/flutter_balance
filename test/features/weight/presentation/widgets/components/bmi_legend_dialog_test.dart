@@ -7,11 +7,18 @@ import 'package:balance/core/models/measurement_unit.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_bloc.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_event.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_state.dart';
+import 'package:balance/features/weight/domain/entities/weight_entry.dart';
+import 'package:balance/features/weight/presentation/bloc/weight_bloc.dart';
+import 'package:balance/features/weight/presentation/bloc/weight_event.dart';
+import 'package:balance/features/weight/presentation/bloc/weight_state.dart';
 import 'package:balance/features/weight/presentation/widgets/components/bmi_legend_dialog.dart';
 import 'package:balance/l10n/app_localizations.dart';
 
 class MockAppSettingsBloc extends MockBloc<AppSettingsEvent, AppSettingsState>
     implements AppSettingsBloc {}
+
+class MockWeightBloc extends MockBloc<WeightEvent, WeightState>
+    implements WeightBloc {}
 
 void main() {
   late MockAppSettingsBloc mockSettingsBloc;
@@ -139,5 +146,55 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.byType(BmiLegendDialog), findsNothing);
+  });
+
+  testWidgets('highlights user current BMI category with your result badge', (
+    tester,
+  ) async {
+    final mockWeightBloc = MockWeightBloc();
+    when(() => mockWeightBloc.state).thenReturn(
+      WeightLoaded(
+        entries: [
+          WeightEntry(id: 1, weightKg: 86.5, dateTime: DateTime(2026, 8, 25)),
+        ],
+        filteredEntries: [],
+      ),
+    );
+
+    when(() => mockSettingsBloc.state).thenReturn(
+      const AppSettingsState(
+        height: 177.0,
+        measurementUnit: MeasurementUnit.metric,
+      ),
+    );
+
+    await tester.pumpWidget(
+      MultiBlocProvider(
+        providers: [
+          BlocProvider<AppSettingsBloc>.value(value: mockSettingsBloc),
+          BlocProvider<WeightBloc>.value(value: mockWeightBloc),
+        ],
+        child: MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          home: Builder(
+            builder: (context) => Scaffold(
+              body: Center(
+                child: TextButton(
+                  onPressed: () => showDialog<void>(
+                    context: context,
+                    builder: (_) => const BmiLegendDialog(),
+                  ),
+                  child: const Text('open'),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+    await tester.tap(find.text('open'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Your result'), findsOneWidget);
   });
 }

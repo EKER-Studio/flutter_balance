@@ -165,6 +165,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                   SettingsDataCoordinator.showWipeConfirmation(
                                     context,
                                   ),
+                              onBmiCategoriesTap: () =>
+                                  SettingsDataCoordinator.showBmiLegendDialog(
+                                    context,
+                                  ),
                               onPrivacyPolicyTap: () =>
                                   SettingsDataCoordinator.openPrivacyPolicy(
                                     context,

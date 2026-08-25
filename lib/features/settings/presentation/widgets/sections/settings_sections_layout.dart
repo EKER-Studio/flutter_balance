@@ -27,6 +27,7 @@ class SettingsSectionsLayout extends StatelessWidget {
   final VoidCallback onWipeTap;
   final VoidCallback onPrivacyPolicyTap;
   final VoidCallback onLicensesTap;
+  final VoidCallback onBmiCategoriesTap;
 
   const SettingsSectionsLayout({
     super.key,
@@ -46,6 +47,7 @@ class SettingsSectionsLayout extends StatelessWidget {
     required this.onWipeTap,
     required this.onPrivacyPolicyTap,
     required this.onLicensesTap,
+    required this.onBmiCategoriesTap,
   });
 
   @override
@@ -101,6 +103,7 @@ class SettingsSectionsLayout extends StatelessWidget {
     final helpHeader = SectionHeader(label: l10n.helpSection);
     final helpSection = HelpSection(
       l10n: l10n,
+      onBmiCategoriesTap: onBmiCategoriesTap,
       onPrivacyPolicyTap: onPrivacyPolicyTap,
       onLicensesTap: onLicensesTap,
     );

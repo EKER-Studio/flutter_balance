@@ -186,25 +186,48 @@ void main() {
     });
 
     testWidgets(
-      'renders privacy policy tile, open source licenses, and app version from PackageInfo',
+      'renders BMI categories tile, privacy policy tile, open source licenses, and app version from PackageInfo',
       (tester) async {
         await pumpWithL10n(
           tester,
           Builder(
             builder: (context) => HelpSection(
               l10n: AppLocalizations.of(context),
+              onBmiCategoriesTap: () {},
               onPrivacyPolicyTap: () {},
               onLicensesTap: () {},
             ),
           ),
         );
 
+        expect(find.text('BMI Categories'), findsOneWidget);
         expect(find.text('Privacy Policy'), findsOneWidget);
         expect(find.text('Open Source Licenses'), findsOneWidget);
         expect(find.text('App version'), findsOneWidget);
         expect(find.text('1.2.3'), findsOneWidget);
       },
     );
+
+    testWidgets('invokes the BMI categories callback on tap', (tester) async {
+      var tapped = false;
+
+      await pumpWithL10n(
+        tester,
+        Builder(
+          builder: (context) => HelpSection(
+            l10n: AppLocalizations.of(context),
+            onBmiCategoriesTap: () => tapped = true,
+            onPrivacyPolicyTap: () {},
+            onLicensesTap: () {},
+          ),
+        ),
+      );
+
+      await tester.tap(find.text('BMI Categories'));
+      await tester.pump();
+
+      expect(tapped, isTrue);
+    });
 
     testWidgets('invokes the privacy policy callback on tap', (tester) async {
       var tapped = false;
@@ -214,6 +237,7 @@ void main() {
         Builder(
           builder: (context) => HelpSection(
             l10n: AppLocalizations.of(context),
+            onBmiCategoriesTap: () {},
             onPrivacyPolicyTap: () => tapped = true,
             onLicensesTap: () {},
           ),
@@ -234,6 +258,7 @@ void main() {
         Builder(
           builder: (context) => HelpSection(
             l10n: AppLocalizations.of(context),
+            onBmiCategoriesTap: () {},
             onPrivacyPolicyTap: () {},
             onLicensesTap: () => tapped = true,
           ),

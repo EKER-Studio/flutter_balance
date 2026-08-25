@@ -22,6 +22,7 @@ import 'package:balance/features/settings/presentation/widgets/components/height
 import 'package:balance/features/settings/presentation/widgets/components/target_weight_sheet.dart';
 import 'package:balance/features/settings/presentation/widgets/components/wipe_data_dialog.dart';
 import 'package:balance/features/weight/domain/entities/weight_entry.dart';
+import 'package:balance/features/weight/presentation/widgets/components/bmi_legend_dialog.dart';
 import 'package:balance/features/weight/domain/weight_error_type.dart';
 import 'package:balance/features/weight/presentation/bloc/weight_bloc.dart';
 import 'package:balance/features/weight/presentation/bloc/weight_event.dart';
@@ -397,6 +398,15 @@ class SettingsDataCoordinator {
         ),
       ),
       applicationLegalese: '© 2026 EKER Studio',
+    );
+  }
+
+  /// Shows the BMI category legend and reference ranges dialog.
+  static void showBmiLegendDialog(BuildContext context) {
+    AppAnalytics.logDialogBmiLegendOpened();
+    showDialog<void>(
+      context: context,
+      builder: (context) => const BmiLegendDialog(),
     );
   }
 }
