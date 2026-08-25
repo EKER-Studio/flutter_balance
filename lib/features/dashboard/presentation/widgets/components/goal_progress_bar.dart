@@ -66,7 +66,7 @@ class GoalProgressBar extends StatelessWidget {
 
       goalTargetStr = '${displayTarget.toStringAsFixed(1)} $unitLabel';
       goalDetailStr = isAchieved
-          ? l10n.goalAchieved
+          ? '🏆 ${l10n.goalAchieved}'
           : l10n.remainingWeightLabel(
               '${displayDifference.toStringAsFixed(1)} $unitLabel',
             );
@@ -77,6 +77,12 @@ class GoalProgressBar extends StatelessWidget {
       goalDetailStr = l10n.setGoalAction;
       semanticsLabel = l10n.setGoalSemantics;
     }
+
+    final differenceKg = hasTarget ? currentWeightKg - target : null;
+    final isAchieved = differenceKg != null && differenceKg <= 0;
+    final accentColor = isAchieved
+        ? const Color(0xFF3CB043)
+        : colorScheme.primary;
 
     return Semantics(
       button: true,
@@ -127,12 +133,14 @@ class GoalProgressBar extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                       textAlign: TextAlign.end,
                       style: textTheme.labelMedium?.copyWith(
-                        color: hasTarget
+                        color: isAchieved
+                            ? const Color(0xFF3CB043)
+                            : hasTarget
                             ? colorScheme.onSurfaceVariant
                             : colorScheme.primary,
-                        fontWeight: hasTarget
-                            ? FontWeight.w500
-                            : FontWeight.w600,
+                        fontWeight: isAchieved || !hasTarget
+                            ? FontWeight.bold
+                            : FontWeight.w500,
                       ),
                     ),
                   ),
@@ -142,7 +150,9 @@ class GoalProgressBar extends StatelessWidget {
               Container(
                 height: 8,
                 decoration: BoxDecoration(
-                  color: colorScheme.surfaceContainerHighest,
+                  color: isAchieved
+                      ? const Color(0xFF3CB043).withValues(alpha: 0.15)
+                      : colorScheme.surfaceContainerHighest,
                   borderRadius: BorderRadius.circular(4),
                 ),
                 child: progress > 0
@@ -151,7 +161,7 @@ class GoalProgressBar extends StatelessWidget {
                         widthFactor: progress,
                         child: Container(
                           decoration: BoxDecoration(
-                            color: colorScheme.primary,
+                            color: accentColor,
                             borderRadius: BorderRadius.circular(4),
                           ),
                         ),

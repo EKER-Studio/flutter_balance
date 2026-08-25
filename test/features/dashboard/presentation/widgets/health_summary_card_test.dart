@@ -90,7 +90,7 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      expect(find.text('Goal achieved!'), findsOneWidget);
+      expect(find.textContaining('Goal achieved!'), findsOneWidget);
     },
   );
 
