@@ -247,7 +247,8 @@ void main() {
 
       expect(find.text('72.5 kg'), findsOneWidget);
       expect(find.textContaining('Morning weight'), findsOneWidget);
-      expect(find.text('NOTATKA'), findsOneWidget);
+      expect(find.text('NOTATKA'), findsNothing);
+      expect(find.byIcon(Icons.description_outlined), findsNothing);
       expect(find.byIcon(Icons.more_vert), findsOneWidget);
       expect(find.byIcon(Icons.add), findsOneWidget);
       expect(find.textContaining('08:30'), findsOneWidget);
@@ -428,10 +429,7 @@ void main() {
       ),
     );
 
-    expect(
-      find.text('Weight goal was achieved on this day! 🏆'),
-      findsOneWidget,
-    );
+    expect(find.text('Weight goal was achieved on this day!'), findsOneWidget);
   });
 
   testWidgets(

@@ -187,7 +187,7 @@
   "totalProgress": "Total Progress",
   "noEntriesForDate": "No measurements recorded for this day",
   "noEntriesForDateSubtitle": "No data added for the selected date yet. Regular measurements help track progress better.",
-  "goalAchievedOnDayBanner": "Weight goal was achieved on this day! 🏆",
+  "goalAchievedOnDayBanner": "Weight goal was achieved on this day!",
   "deleteMeasurementTooltip": "Delete measurement",
   "addAnotherMeasurement": "Add another measurement",
   "entriesFromDate": "Entries from {date}",

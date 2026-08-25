@@ -131,12 +131,6 @@ class CalendarDayEntriesCard extends StatelessWidget {
                 color: cs.surfaceContainerLow,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(16),
-                  side: BorderSide(
-                    color: index == 0
-                        ? cs.primary.withValues(alpha: 0.8)
-                        : cs.outlineVariant.withValues(alpha: 0.3),
-                    width: index == 0 ? 1.5 : 1.0,
-                  ),
                 ),
                 child: Stack(
                   children: [
@@ -184,15 +178,6 @@ class CalendarDayEntriesCard extends StatelessWidget {
                                                 fontSize: 13,
                                               ),
                                         ),
-                                        if (entry.note != null &&
-                                            entry.note!.trim().isNotEmpty) ...[
-                                          const SizedBox(width: 6),
-                                          Icon(
-                                            Icons.description_outlined,
-                                            size: 14,
-                                            color: cs.primary,
-                                          ),
-                                        ],
                                       ],
                                     ),
                                     const SizedBox(height: 4),
@@ -232,57 +217,19 @@ class CalendarDayEntriesCard extends StatelessWidget {
                             const SizedBox(height: 12),
                             Container(
                               width: double.infinity,
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 12,
-                                vertical: 9,
-                              ),
+                              padding: const EdgeInsets.only(left: 10),
                               decoration: BoxDecoration(
-                                color: const Color(
-                                  0xFF252830,
-                                ).withValues(alpha: 0.6),
-                                borderRadius: BorderRadius.circular(10),
+                                border: Border(
+                                  left: BorderSide(
+                                    width: 2.5,
+                                    color: cs.outlineVariant,
+                                  ),
+                                ),
                               ),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      const Icon(
-                                        Icons.description,
-                                        size: 12,
-                                        color: Color(0xFFA0A5B5),
-                                      ),
-                                      const SizedBox(width: 5),
-                                      Text(
-                                        l10n.note.toUpperCase(),
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .labelSmall
-                                            ?.copyWith(
-                                              fontWeight: FontWeight.w700,
-                                              color: const Color(0xFFA0A5B5),
-                                              letterSpacing: 0.5,
-                                              fontSize: 11,
-                                            ),
-                                      ),
-                                    ],
-                                  ),
-                                  const SizedBox(height: 5),
-                                  Text(
-                                    entry.note!.trim(),
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .bodyMedium
-                                        ?.copyWith(
-                                          color: cs.onSurfaceVariant.withValues(
-                                            alpha: 0.9,
-                                          ),
-                                          fontSize: 13,
-                                          height: 1.35,
-                                        ),
-                                  ),
-                                ],
+                              child: Text(
+                                entry.note!.trim(),
+                                style: Theme.of(context).textTheme.bodyMedium
+                                    ?.copyWith(color: cs.onSurfaceVariant),
                               ),
                             ),
                           ],

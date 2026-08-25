@@ -186,7 +186,7 @@
   "totalProgress": "Całkowita zmiana",
   "noEntriesForDate": "Brak pomiarów w tym dniu",
   "noEntriesForDateSubtitle": "Nie dodano jeszcze żadnych danych dla wybranej daty. Regularne pomiary pomagają lepiej śledzić postępy.",
-  "goalAchievedOnDayBanner": "Cel wagi został osiągnięty w tym dniu! 🏆",
+  "goalAchievedOnDayBanner": "Cel wagi został osiągnięty w tym dniu!",
   "deleteMeasurementTooltip": "Usuń pomiar",
   "addAnotherMeasurement": "Dodaj kolejny pomiar",
   "entriesFromDate": "Pomiary z {date}",
