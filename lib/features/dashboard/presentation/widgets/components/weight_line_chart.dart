@@ -84,15 +84,19 @@ class WeightLineChart extends StatelessWidget {
             leftTitles: AxisTitles(
               sideTitles: SideTitles(
                 showTitles: true,
-                reservedSize: 42,
+                reservedSize: 46,
                 interval: verticalInterval,
                 getTitlesWidget: (value, meta) {
-                  return Text(
-                    value.toStringAsFixed(1),
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: colorScheme.onSurfaceVariant,
-                      fontFamily: 'Roboto',
-                      fontSize: 12,
+                  return Padding(
+                    padding: const EdgeInsets.only(right: 6),
+                    child: Text(
+                      value.toStringAsFixed(1),
+                      textAlign: TextAlign.end,
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: const Color(0xFFA0A5B5),
+                        fontSize: 11,
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
                   );
                 },
@@ -158,17 +162,17 @@ class WeightLineChart extends StatelessWidget {
                   FlSpot(index.toDouble(), displayWeights[index]),
               ],
               isCurved: true,
-              curveSmoothness: 0.4,
+              curveSmoothness: 0.35,
               color: colorScheme.primary,
               barWidth: 3,
               isStrokeCapRound: true,
               dotData: FlDotData(
-                show: sortedEntries.length == 1,
+                show: sortedEntries.length <= 31,
                 getDotPainter: (spot, percent, barData, index) {
                   return FlDotCirclePainter(
-                    radius: 4,
+                    radius: sortedEntries.length <= 14 ? 3.5 : 2.5,
                     color: colorScheme.primary,
-                    strokeWidth: 2,
+                    strokeWidth: 1.5,
                     strokeColor: colorScheme.surface,
                   );
                 },
