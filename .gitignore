@@ -91,3 +91,4 @@ default.isar
 # Security & Diagnostic artifacts
 *.key
 crash_log.txt
+/.i18n_audit/
