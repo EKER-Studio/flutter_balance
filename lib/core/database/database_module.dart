@@ -33,7 +33,10 @@ class DatabaseModule {
   ///
   /// These are kept only so any existing files can be quarantined instead of
   /// being left as silently-orphaned files.
-  static const List<String> _legacyDbNames = [];
+  static const List<String> _legacyDbNames = [
+    'pure_weight_v1',
+    'pure_weight_v2',
+  ];
 
   static const String _encryptionKeyKey = 'isar_encryption_key';
   static const String _encryptionKeyFileName = 'balance_v1.key';

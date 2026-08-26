@@ -475,7 +475,7 @@ void main() {
   });
 
   group('DatabaseModule quarantineLegacyDatabaseForTesting', () {
-    test('is a no-op when no legacy database names are registered', () async {
+    test('is a no-op when no legacy database files exist on disk', () async {
       final tempDir = Directory.systemTemp.createTempSync('isar_legacy_');
       addTearDown(() {
         if (tempDir.existsSync()) {
@@ -486,6 +486,33 @@ void main() {
       await DatabaseModule.quarantineLegacyDatabaseForTesting(tempDir.path);
 
       expect(tempDir.listSync(), isEmpty);
+    });
+
+    test('quarantines existing legacy database files to .legacy.bak', () async {
+      final tempDir = Directory.systemTemp.createTempSync('isar_legacy_');
+      addTearDown(() {
+        if (tempDir.existsSync()) {
+          tempDir.deleteSync(recursive: true);
+        }
+      });
+
+      final legacy1 = File('${tempDir.path}/pure_weight_v1.isar');
+      final legacy2 = File('${tempDir.path}/pure_weight_v2.isar');
+      await legacy1.writeAsString('legacy-v1-content');
+      await legacy2.writeAsString('legacy-v2-content');
+
+      await DatabaseModule.quarantineLegacyDatabaseForTesting(tempDir.path);
+
+      expect(legacy1.existsSync(), isFalse);
+      expect(legacy2.existsSync(), isFalse);
+      expect(
+        File('${tempDir.path}/pure_weight_v1.legacy.bak').existsSync(),
+        isTrue,
+      );
+      expect(
+        File('${tempDir.path}/pure_weight_v2.legacy.bak').existsSync(),
+        isTrue,
+      );
     });
   });
 
