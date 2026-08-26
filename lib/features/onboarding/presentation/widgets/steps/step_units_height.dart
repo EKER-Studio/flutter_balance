@@ -209,6 +209,7 @@ class _StepUnitsHeightState extends State<StepUnitsHeight> {
       title: l10n.onboardingUnitsHeightTitle,
       subtitle: l10n.onboardingUnitsHeightSubtitle,
       content: Column(
+        mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           OnboardingUnitSelector(

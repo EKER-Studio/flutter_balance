@@ -107,22 +107,24 @@ class _StepBiometricLockState extends State<StepBiometricLock> {
         return OnboardingStepLayout(
           title: l10n.biometricStepOptionalTitle,
           subtitle: l10n.biometricStepSubtitle,
-          content: Material(
-            color: theme.colorScheme.surfaceContainerLow,
-            borderRadius: BorderRadius.circular(16.0),
-            clipBehavior: Clip.antiAlias,
-            child: DecoratedBox(
-              decoration: BoxDecoration(
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Material(
+                color: theme.colorScheme.surfaceContainerLow,
                 borderRadius: BorderRadius.circular(16.0),
-                border: Border.all(
-                  color: theme.colorScheme.outlineVariant.withValues(
-                    alpha: 0.3,
+                clipBehavior: Clip.antiAlias,
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(16.0),
+                    border: Border.all(
+                      color: theme.colorScheme.outlineVariant.withValues(
+                        alpha: 0.3,
+                      ),
+                    ),
                   ),
-                ),
-              ),
-              child: Column(
-                children: [
-                  SwitchListTile(
+                  child: SwitchListTile(
                     key: const Key('biometric_step_switch'),
                     value: enabled,
                     onChanged: _isAvailable
@@ -146,9 +148,9 @@ class _StepBiometricLockState extends State<StepBiometricLock> {
                           : theme.colorScheme.onSurfaceVariant,
                     ),
                   ),
-                ],
+                ),
               ),
-            ),
+            ],
           ),
           footer: FilledButton(
             key: const Key('biometric_step_next_button'),

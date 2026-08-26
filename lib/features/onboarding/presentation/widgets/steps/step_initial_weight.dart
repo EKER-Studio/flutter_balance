@@ -202,6 +202,7 @@ class _StepInitialWeightState extends State<StepInitialWeight> {
       title: l10n.initialWeightStepTitle,
       subtitle: l10n.initialWeightStepSubtitle,
       content: Column(
+        mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           TextField(

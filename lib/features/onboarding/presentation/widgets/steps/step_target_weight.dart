@@ -191,6 +191,7 @@ class _StepTargetWeightState extends State<StepTargetWeight> {
       title: l10n.targetWeightOptionalTitle,
       subtitle: l10n.targetWeightStepSubtitle,
       content: Column(
+        mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           TextField(

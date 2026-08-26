@@ -82,6 +82,7 @@ class _StepReminderNotificationState extends State<StepReminderNotification> {
           title: l10n.dailyReminderStepOptionalTitle,
           subtitle: l10n.dailyReminderStepSubtitle,
           content: Column(
+            mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Material(

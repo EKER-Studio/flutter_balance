@@ -73,6 +73,7 @@ class _StepHealthSyncState extends State<StepHealthSync> {
                   ? l10n.healthSyncDescriptionIOS
                   : l10n.healthSyncDescriptionAndroid,
               content: Column(
+                mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   Material(

@@ -24,6 +24,7 @@ class CsvImportIdleView extends StatelessWidget {
       title: l10n.csvImportStepTitle,
       subtitle: l10n.csvImportStepSubtitle,
       content: Column(
+        mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Material(
