@@ -84,4 +84,10 @@ app.*.map.json
 # Isar local database & testing artifacts
 *.isar
 *.isar.lock
+*.isar.bak
+*.bak
 default.isar
+
+# Security & Diagnostic artifacts
+*.key
+crash_log.txt

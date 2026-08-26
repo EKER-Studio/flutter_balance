@@ -9,7 +9,7 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/Flutter-3.44-02569B?logo=flutter" alt="Flutter" />
+  <img src="https://img.shields.io/badge/Flutter-3.47.1-02569B?logo=flutter" alt="Flutter" />
   <img src="https://img.shields.io/badge/Architecture-Clean%20%2F%20Feature--First-blue" alt="Architecture" />
   <img src="https://img.shields.io/badge/State-BLoC-blueviolet" alt="State Management" />
   <img src="https://img.shields.io/badge/Storage-Isar%20NoSQL-green" alt="Storage" />
@@ -89,7 +89,7 @@ lib/
 
 | Category | Package | Purpose |
 |----------|---------|---------|
-| **Framework** | Flutter 3.44 | Cross-platform UI framework |
+| **Framework** | Flutter 3.47.1 | Cross-platform UI framework |
 | **State Management** | flutter_bloc, hydrated_bloc | BLoC pattern with automated JSON hydration |
 | **Dependency Injection** | get_it, injectable | Service locator and compile-time dependency injection |
 | **Routing & Navigation** | go_router | Declarative routing, stateful nested shells, deep linking, and reactive guards |
@@ -144,7 +144,7 @@ lib/
 
 ```bash
 flutter pub get
-dart run build_runner build
+dart run build_runner build --delete-conflicting-outputs
 ```
 
 ### Run
