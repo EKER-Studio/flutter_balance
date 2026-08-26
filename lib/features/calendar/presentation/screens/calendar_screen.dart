@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:balance/core/presentation/widgets/app_top_bar.dart';
 import 'package:balance/core/presentation/widgets/clamped_layout.dart';
+import 'package:balance/core/presentation/theme/app_layout_tokens.dart';
 import 'package:balance/core/utils/analytics.dart';
 import 'package:balance/features/calendar/presentation/widgets/components/calendar_error_card.dart';
 import 'package:balance/features/calendar/presentation/widgets/components/calendar_shimmer_skeleton.dart';
@@ -125,12 +126,11 @@ class _CalendarScreenState extends State<CalendarScreen> {
               sliver: SliverToBoxAdapter(
                 child: BlocBuilder<WeightBloc, WeightState>(
                   builder: (context, state) {
-                    final isTablet =
-                        MediaQuery.sizeOf(context).shortestSide >= 600;
+                    final isTablet = context.isTablet;
 
                     if (state is WeightInitial || state is WeightLoading) {
                       return ClampedLayout(
-                        maxWidth: isTablet ? 1200 : 480,
+                        maxWidth: context.standardContentMaxWidth,
                         padding: const EdgeInsets.symmetric(
                           horizontal: 16,
                           vertical: 12,
@@ -141,7 +141,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
 
                     if (state is WeightError) {
                       return ClampedLayout(
-                        maxWidth: isTablet ? 1200 : 480,
+                        maxWidth: context.standardContentMaxWidth,
                         padding: const EdgeInsets.symmetric(
                           horizontal: 16,
                           vertical: 12,
@@ -178,7 +178,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                     );
 
                     return ClampedLayout(
-                      maxWidth: isTablet ? 1200 : 480,
+                      maxWidth: context.standardContentMaxWidth,
                       padding: const EdgeInsets.symmetric(
                         horizontal: 16,
                         vertical: 12,

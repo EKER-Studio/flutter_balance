@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:balance/core/presentation/theme/app_layout_tokens.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_state.dart';
 import 'package:balance/features/settings/presentation/widgets/sections/application_section.dart';
 import 'package:balance/features/settings/presentation/widgets/sections/data_section.dart';
@@ -53,8 +54,7 @@ class SettingsSectionsLayout extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final isTablet = MediaQuery.sizeOf(context).shortestSide >= 600;
-    final isWide = isTablet;
+    final isWide = context.isTablet;
 
     final profileHeader = SectionHeader(label: l10n.profileSection);
     final profileSection = ProfileSection(

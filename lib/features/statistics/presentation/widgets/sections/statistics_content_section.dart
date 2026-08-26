@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:balance/core/presentation/theme/app_layout_tokens.dart';
 import 'package:balance/core/models/measurement_unit.dart';
 import 'package:balance/features/statistics/presentation/widgets/sections/bmi_chart_card.dart';
 import 'package:balance/features/statistics/presentation/widgets/sections/habits_activity_card.dart';
@@ -35,8 +36,7 @@ class StatisticsContentSection extends StatelessWidget {
     final bestStreak = _calculateBestStreak(entries);
     final compliancePct = _calculateTotalCompliance(entries, now);
     final weeklyPace = _calculateWeeklyPace(entries);
-    final isTablet = MediaQuery.sizeOf(context).shortestSide >= 600;
-    final isWide = isTablet;
+    final isWide = context.isTablet;
 
     final heroProgressCard = HeroProgressCard(
       entries: entries,

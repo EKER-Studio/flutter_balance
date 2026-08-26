@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:balance/core/presentation/theme/app_layout_tokens.dart';
 
 /// Reusable Material 3 shimmer loading skeleton widget for the Today screen layout.
 class TodayShimmerSkeleton extends StatefulWidget {
@@ -51,8 +52,7 @@ class _TodayShimmerSkeletonState extends State<TodayShimmerSkeleton>
 
           return LayoutBuilder(
             builder: (context, constraints) {
-              final isTablet = MediaQuery.sizeOf(context).shortestSide >= 600;
-              final isWide = isTablet;
+              final isWide = context.isTablet;
 
               if (isWide) {
                 return SingleChildScrollView(

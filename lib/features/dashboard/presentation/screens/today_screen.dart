@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:balance/core/presentation/navigation/app_routes.dart';
 import 'package:balance/core/presentation/utils/app_snackbar.dart';
+import 'package:balance/core/presentation/theme/app_layout_tokens.dart';
 import 'package:balance/core/presentation/widgets/app_top_bar.dart';
 import 'package:balance/core/presentation/widgets/clamped_layout.dart';
 import 'package:balance/core/utils/analytics.dart';
@@ -48,7 +49,6 @@ class _TodayScreenState extends State<TodayScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final isTablet = MediaQuery.sizeOf(context).shortestSide >= 600;
 
     return Scaffold(
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
@@ -70,7 +70,7 @@ class _TodayScreenState extends State<TodayScreen> {
                   top: false,
                   sliver: SliverToBoxAdapter(
                     child: ClampedLayout(
-                      maxWidth: isTablet ? 1200 : 480,
+                      maxWidth: context.standardContentMaxWidth,
                       padding: const EdgeInsets.symmetric(
                         horizontal: 16,
                         vertical: 12,

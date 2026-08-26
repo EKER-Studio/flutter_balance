@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:balance/core/presentation/widgets/clamped_layout.dart';
+import 'package:balance/core/presentation/theme/app_layout_tokens.dart';
 import 'package:balance/core/presentation/widgets/app_top_bar.dart';
 import 'package:balance/core/presentation/widgets/state_message_card.dart';
 import 'package:balance/core/utils/analytics.dart';
@@ -38,13 +39,10 @@ class StatisticsScreen extends StatelessWidget {
               sliver: SliverToBoxAdapter(
                 child: BlocBuilder<WeightBloc, WeightState>(
                   builder: (context, weightState) {
-                    final isTablet =
-                        MediaQuery.sizeOf(context).shortestSide >= 600;
-
                     if (weightState is WeightInitial ||
                         weightState is WeightLoading) {
                       return ClampedLayout(
-                        maxWidth: isTablet ? 1200 : 480,
+                        maxWidth: context.standardContentMaxWidth,
                         padding: const EdgeInsets.symmetric(
                           horizontal: 16,
                           vertical: 12,
@@ -60,7 +58,7 @@ class StatisticsScreen extends StatelessWidget {
 
                     if (entries.isEmpty) {
                       return ClampedLayout(
-                        maxWidth: isTablet ? 1200 : 480,
+                        maxWidth: context.standardContentMaxWidth,
                         padding: const EdgeInsets.symmetric(
                           horizontal: 16,
                           vertical: 32,
@@ -83,7 +81,7 @@ class StatisticsScreen extends StatelessWidget {
                     return BlocBuilder<AppSettingsBloc, AppSettingsState>(
                       builder: (context, settingsState) {
                         return ClampedLayout(
-                          maxWidth: isTablet ? 1200 : 480,
+                          maxWidth: context.standardContentMaxWidth,
                           padding: const EdgeInsets.symmetric(
                             horizontal: 16,
                             vertical: 12,

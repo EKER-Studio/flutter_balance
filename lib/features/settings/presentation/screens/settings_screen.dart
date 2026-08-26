@@ -5,6 +5,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:balance/core/integrations/biometrics/biometric_service.dart';
 import 'package:balance/core/integrations/health/health_service.dart';
 import 'package:balance/core/presentation/utils/app_snackbar.dart';
+import 'package:balance/core/presentation/theme/app_layout_tokens.dart';
 import 'package:balance/core/presentation/widgets/app_top_bar.dart';
 import 'package:balance/core/presentation/widgets/clamped_layout.dart';
 import 'package:balance/core/utils/analytics.dart';
@@ -94,8 +95,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
               child: BlocBuilder<AppSettingsBloc, AppSettingsState>(
                 builder: (context, state) {
                   final l10n = AppLocalizations.of(context);
-                  final isTablet =
-                      MediaQuery.sizeOf(context).shortestSide >= 600;
 
                   return CustomScrollView(
                     slivers: [
@@ -104,7 +103,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         top: false,
                         sliver: SliverToBoxAdapter(
                           child: ClampedLayout(
-                            maxWidth: isTablet ? 1200 : 480,
+                            maxWidth: context.standardContentMaxWidth,
                             padding: const EdgeInsets.fromLTRB(16, 12, 16, 32),
                             child: SettingsSectionsLayout(
                               state: state,

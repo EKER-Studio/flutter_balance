@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:balance/core/models/measurement_unit.dart';
+import 'package:balance/core/presentation/theme/app_layout_tokens.dart';
 import 'package:balance/features/dashboard/presentation/widgets/components/inline_error_banner.dart';
 import 'package:balance/features/dashboard/presentation/widgets/sections/daily_tip_card.dart';
 import 'package:balance/features/dashboard/presentation/widgets/sections/health_summary_card.dart';
@@ -44,7 +45,7 @@ class TodayContentSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isTablet = MediaQuery.sizeOf(context).shortestSide >= 600;
+    final isTablet = context.isTablet;
 
     return LayoutBuilder(
       builder: (context, constraints) {
@@ -125,7 +126,9 @@ class TodayContentSection extends StatelessWidget {
 
         return Center(
           child: ConstrainedBox(
-            constraints: BoxConstraints(maxWidth: isWide ? 1200 : 480),
+            constraints: BoxConstraints(
+              maxWidth: context.standardContentMaxWidth,
+            ),
             child: cardStack,
           ),
         );
