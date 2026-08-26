@@ -101,6 +101,7 @@ class _TodayScreenState extends State<TodayScreen> {
                   return const SizedBox.shrink();
                 }
                 return FloatingActionButton(
+                  tooltip: l10n.addWeight,
                   onPressed: () {
                     AppAnalytics.logTodayAddWeightFabClicked();
                     _showAddWeightSheet(context, source: 'fab');
