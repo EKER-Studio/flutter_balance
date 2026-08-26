@@ -20,11 +20,11 @@ analyzer:
     - "build/ios/**"
     # Android
     - "android/**"
-    - ios/**
-    - web/**
-    - windows/**
-    - macos/**
-    - linux/**
+    - "ios/**"
+    - "web/**"
+    - "windows/**"
+    - "macos/**"
+    - "linux/**"
 
 linter:
   rules:
