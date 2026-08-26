@@ -34,9 +34,9 @@
 
 ### Onboarding & Splash
 
-| Splash Screen (Light) | Onboarding Welcome (Light) | CSV History Import (Light) | Splash Screen (Dark) |
-| :---: | :---: | :---: | :---: |
-| <img src=".github/assets/00_splash/splash_light.png" width="180" alt="Splash Light" /> | <img src=".github/assets/01_onboarding/01_welcome_light.png" width="180" alt="Onboarding Welcome Light" /> | <img src=".github/assets/01_onboarding/02_csv_import_light.png" width="180" alt="CSV Import Step Light" /> | <img src=".github/assets/00_splash/splash_dark.png" width="180" alt="Splash Dark" /> |
+| Splash Screen (Light) | Onboarding Welcome (Light) |                                         CSV History Import (Light)                                         | Splash Screen (Dark) |
+| :---: | :---: |:----------------------------------------------------------------------------------------------------------:| :---: |
+| <img src=".github/assets/00_splash/splash_light.png" width="180" alt="Splash Light" /> | <img src=".github/assets/01_onboarding/01_welcome_light.png" width="180" alt="Onboarding Welcome Light" /> | <img src=".github/assets/01_onboarding/03_csv_import_light.png" width="180" alt="CSV Import Step Light" /> | <img src=".github/assets/00_splash/splash_dark.png" width="180" alt="Splash Dark" /> |
 
 ---
 
