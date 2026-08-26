@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:balance/core/integrations/csv/csv_import_service.dart';
-import 'package:balance/core/presentation/widgets/clamped_layout.dart';
+import 'package:balance/features/onboarding/presentation/widgets/components/onboarding_step_layout.dart';
 import 'package:balance/core/utils/analytics.dart';
 import 'package:balance/core/utils/crash_reporter.dart';
 import 'package:balance/features/onboarding/presentation/widgets/components/csv_import_error_view.dart';
@@ -126,32 +126,32 @@ class _StepCsvImportState extends State<StepCsvImport> {
         ? l10n.importNoDataFound
         : l10n.csvImportError;
 
-    return ClampedLayout(
-      padding: EdgeInsets.symmetric(
-        horizontal: 24.0,
-        vertical: isLandscape ? 12.0 : 24.0,
+    return switch (_status) {
+      _CsvImportStatus.idle => CsvImportIdleView(
+        onPickFile: _handlePickFile,
+        onSkipped: widget.onSkipped,
+        isLandscape: isLandscape,
       ),
-      child: switch (_status) {
-        _CsvImportStatus.idle => CsvImportIdleView(
-          onPickFile: _handlePickFile,
-          onSkipped: widget.onSkipped,
-          isLandscape: isLandscape,
-        ),
-        _CsvImportStatus.loading => const CsvImportLoadingView(),
-        _CsvImportStatus.success => CsvImportSuccessView(
-          count: _entries.length,
-          onContinue: () => widget.onFileImported(_entries),
-          isLandscape: isLandscape,
-        ),
-        _CsvImportStatus.error => CsvImportErrorView(
-          message: errorMessage,
-          onRetry: () {
-            AppAnalytics.logOnboardingCsvRetryClicked();
-            _handlePickFile();
-          },
-          isLandscape: isLandscape,
-        ),
-      },
-    );
+      _CsvImportStatus.loading => OnboardingStepLayout(
+        title: l10n.csvImportStepTitle,
+        subtitle: l10n.csvImportStepSubtitle,
+        centerContent: true,
+        content: const CsvImportLoadingView(),
+        footer: const SizedBox.shrink(),
+      ),
+      _CsvImportStatus.success => CsvImportSuccessView(
+        count: _entries.length,
+        onContinue: () => widget.onFileImported(_entries),
+        isLandscape: isLandscape,
+      ),
+      _CsvImportStatus.error => CsvImportErrorView(
+        message: errorMessage,
+        onRetry: () {
+          AppAnalytics.logOnboardingCsvRetryClicked();
+          _handlePickFile();
+        },
+        isLandscape: isLandscape,
+      ),
+    };
   }
 }

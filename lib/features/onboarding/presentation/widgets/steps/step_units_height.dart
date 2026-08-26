@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:balance/core/models/measurement_unit.dart';
-import 'package:balance/core/presentation/widgets/clamped_layout.dart';
+import 'package:balance/features/onboarding/presentation/widgets/components/onboarding_step_layout.dart';
 import 'package:balance/core/utils/analytics.dart';
 import 'package:balance/core/utils/unit_converter.dart';
 import 'package:balance/features/onboarding/presentation/widgets/components/imperial_height_input.dart';
@@ -200,80 +200,51 @@ class _StepUnitsHeightState extends State<StepUnitsHeight> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context);
     final isLandscape =
         MediaQuery.sizeOf(context).height < 500 ||
         MediaQuery.orientationOf(context) == Orientation.landscape;
 
-    return ClampedLayout(
-      padding: EdgeInsets.symmetric(
-        horizontal: 24.0,
-        vertical: isLandscape ? 12.0 : 24.0,
+    return OnboardingStepLayout(
+      title: l10n.onboardingUnitsHeightTitle,
+      subtitle: l10n.onboardingUnitsHeightSubtitle,
+      content: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          OnboardingUnitSelector(
+            selectedUnit: _selectedUnit,
+            onUnitChanged: _onUnitChanged,
+          ),
+          SizedBox(height: isLandscape ? 8.0 : 20.0),
+          if (_selectedUnit == MeasurementUnit.metric)
+            MetricHeightInput(
+              controller: _cmController,
+              focusNode: _cmFocusNode,
+              errorText: _cmErrorText,
+              onChanged: (_) {
+                if (_cmErrorText != null) {
+                  setState(() => _cmErrorText = null);
+                }
+              },
+              onSubmitted: _handleNext,
+            )
+          else
+            ImperialHeightInput(
+              feetController: _feetController,
+              feetFocusNode: _feetFocusNode,
+              inchesController: _inchesController,
+              inchesFocusNode: _inchesFocusNode,
+              errorText: _imperialErrorText,
+              onChanged: () {
+                if (_imperialErrorText != null) {
+                  setState(() => _imperialErrorText = null);
+                }
+              },
+              onSubmitted: _handleNext,
+            ),
+        ],
       ),
-      child: SingleChildScrollView(
-        physics: const BouncingScrollPhysics(),
-        keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            SizedBox(height: isLandscape ? 4.0 : 0.0),
-            Text(
-              l10n.onboardingUnitsHeightTitle,
-              style: theme.textTheme.headlineSmall?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            SizedBox(height: isLandscape ? 4.0 : 8.0),
-            Text(
-              l10n.onboardingUnitsHeightSubtitle,
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant,
-              ),
-            ),
-            SizedBox(height: isLandscape ? 8.0 : 20.0),
-            OnboardingUnitSelector(
-              selectedUnit: _selectedUnit,
-              onUnitChanged: _onUnitChanged,
-            ),
-            SizedBox(height: isLandscape ? 8.0 : 20.0),
-            if (_selectedUnit == MeasurementUnit.metric)
-              MetricHeightInput(
-                controller: _cmController,
-                focusNode: _cmFocusNode,
-                errorText: _cmErrorText,
-                onChanged: (_) {
-                  if (_cmErrorText != null) {
-                    setState(() => _cmErrorText = null);
-                  }
-                },
-                onSubmitted: _handleNext,
-              )
-            else
-              ImperialHeightInput(
-                feetController: _feetController,
-                feetFocusNode: _feetFocusNode,
-                inchesController: _inchesController,
-                inchesFocusNode: _inchesFocusNode,
-                errorText: _imperialErrorText,
-                onChanged: () {
-                  if (_imperialErrorText != null) {
-                    setState(() => _imperialErrorText = null);
-                  }
-                },
-                onSubmitted: _handleNext,
-              ),
-            SizedBox(height: isLandscape ? 16.0 : 24.0),
-            ConstrainedBox(
-              constraints: const BoxConstraints(minHeight: 48.0),
-              child: FilledButton(
-                onPressed: _handleNext,
-                child: Text(l10n.next),
-              ),
-            ),
-          ],
-        ),
-      ),
+      footer: FilledButton(onPressed: _handleNext, child: Text(l10n.next)),
     );
   }
 }

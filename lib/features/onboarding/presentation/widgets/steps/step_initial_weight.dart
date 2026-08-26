@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:balance/core/models/measurement_unit.dart';
-import 'package:balance/core/presentation/widgets/clamped_layout.dart';
+import 'package:balance/features/onboarding/presentation/widgets/components/onboarding_step_layout.dart';
 import 'package:balance/core/presentation/utils/picker_helpers.dart';
 import 'package:balance/core/utils/analytics.dart';
 import 'package:balance/core/utils/unit_converter.dart';
@@ -198,76 +198,49 @@ class _StepInitialWeightState extends State<StepInitialWeight> {
       borderSide: BorderSide(color: theme.colorScheme.error, width: 2),
     );
 
-    return ClampedLayout(
-      padding: EdgeInsets.symmetric(
-        horizontal: 24.0,
-        vertical: isLandscape ? 12.0 : 24.0,
+    return OnboardingStepLayout(
+      title: l10n.initialWeightStepTitle,
+      subtitle: l10n.initialWeightStepSubtitle,
+      content: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          TextField(
+            key: const Key('initial_weight_input'),
+            controller: _weightController,
+            focusNode: _focusNode,
+            keyboardType: const TextInputType.numberWithOptions(decimal: true),
+            decoration: InputDecoration(
+              labelText: '${l10n.currentWeightLabel} ($unitSuffix)',
+              suffixText: unitSuffix,
+              enabledBorder: isError ? errorOutline : null,
+              focusedBorder: isError ? errorOutline : null,
+            ),
+            onChanged: _validate,
+            onSubmitted: (_) {
+              if (isNextEnabled) _handleNext();
+            },
+          ),
+          const SizedBox(height: 8),
+          Text(
+            isError ? _errorText! : l10n.enterInitialWeightHint,
+            style: TextStyle(
+              color: isError
+                  ? theme.colorScheme.error
+                  : theme.colorScheme.onSurfaceVariant,
+              fontSize: 12,
+              fontWeight: isError ? FontWeight.w500 : FontWeight.w400,
+            ),
+          ),
+          SizedBox(height: isLandscape ? 8.0 : 16.0),
+          InitialWeightDateTimePicker(
+            selectedTimestamp: _selectedTimestamp,
+            onTap: _pickDateTime,
+          ),
+        ],
       ),
-      child: SingleChildScrollView(
-        physics: const BouncingScrollPhysics(),
-        keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            SizedBox(height: isLandscape ? 4.0 : 0.0),
-            Text(
-              l10n.initialWeightStepTitle,
-              style: theme.textTheme.headlineSmall?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            SizedBox(height: isLandscape ? 4.0 : 8.0),
-            Text(
-              l10n.initialWeightStepSubtitle,
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant,
-              ),
-            ),
-            SizedBox(height: isLandscape ? 8.0 : 20.0),
-            TextField(
-              key: const Key('initial_weight_input'),
-              controller: _weightController,
-              focusNode: _focusNode,
-              keyboardType: const TextInputType.numberWithOptions(
-                decimal: true,
-              ),
-              decoration: InputDecoration(
-                labelText: '${l10n.currentWeightLabel} ($unitSuffix)',
-                suffixText: unitSuffix,
-                enabledBorder: isError ? errorOutline : null,
-                focusedBorder: isError ? errorOutline : null,
-              ),
-              onChanged: _validate,
-              onSubmitted: (_) {
-                if (isNextEnabled) _handleNext();
-              },
-            ),
-            const SizedBox(height: 8),
-            Text(
-              isError ? _errorText! : l10n.enterInitialWeightHint,
-              style: TextStyle(
-                color: isError
-                    ? theme.colorScheme.error
-                    : theme.colorScheme.onSurfaceVariant,
-                fontSize: 12,
-                fontWeight: isError ? FontWeight.w500 : FontWeight.w400,
-              ),
-            ),
-            SizedBox(height: isLandscape ? 8.0 : 16.0),
-            InitialWeightDateTimePicker(
-              selectedTimestamp: _selectedTimestamp,
-              onTap: _pickDateTime,
-            ),
-            SizedBox(height: isLandscape ? 16.0 : 24.0),
-            ConstrainedBox(
-              constraints: const BoxConstraints(minHeight: 48.0),
-              child: FilledButton(
-                onPressed: isNextEnabled ? _handleNext : null,
-                child: Text(l10n.next),
-              ),
-            ),
-          ],
-        ),
+      footer: FilledButton(
+        onPressed: isNextEnabled ? _handleNext : null,
+        child: Text(l10n.next),
       ),
     );
   }

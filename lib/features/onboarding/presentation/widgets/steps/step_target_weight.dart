@@ -3,7 +3,7 @@ import 'package:balance/core/models/measurement_unit.dart';
 import 'package:balance/core/utils/analytics.dart';
 import 'package:balance/core/utils/unit_converter.dart';
 import 'package:balance/l10n/app_localizations.dart';
-import 'package:balance/core/presentation/widgets/clamped_layout.dart';
+import 'package:balance/features/onboarding/presentation/widgets/components/onboarding_step_layout.dart';
 
 /// Form widget for Step 4 of the onboarding wizard: setting an optional
 /// target weight with a live view of the remaining delta to reach it.
@@ -177,9 +177,6 @@ class _StepTargetWeightState extends State<StepTargetWeight> {
     final l10n = AppLocalizations.of(context);
     final isImperial = widget.unit == MeasurementUnit.imperial;
     final unitSuffix = isImperial ? 'lbs' : 'kg';
-    final isLandscape =
-        MediaQuery.sizeOf(context).height < 500 ||
-        MediaQuery.orientationOf(context) == Orientation.landscape;
 
     final isError = _errorText != null;
     final isNextEnabled = !isError;
@@ -190,83 +187,56 @@ class _StepTargetWeightState extends State<StepTargetWeight> {
       borderSide: BorderSide(color: theme.colorScheme.error, width: 2),
     );
 
-    return ClampedLayout(
-      padding: EdgeInsets.symmetric(
-        horizontal: 24.0,
-        vertical: isLandscape ? 12.0 : 24.0,
-      ),
-      child: SingleChildScrollView(
-        physics: const BouncingScrollPhysics(),
-        keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            SizedBox(height: isLandscape ? 4.0 : 0.0),
-            Text(
-              l10n.targetWeightOptionalTitle,
-              style: theme.textTheme.headlineSmall?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+    return OnboardingStepLayout(
+      title: l10n.targetWeightOptionalTitle,
+      subtitle: l10n.targetWeightStepSubtitle,
+      content: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          TextField(
+            key: const Key('target_weight_input'),
+            controller: _weightController,
+            focusNode: _focusNode,
+            keyboardType: const TextInputType.numberWithOptions(decimal: true),
+            decoration: InputDecoration(
+              labelText: '${l10n.targetWeightDialogTitle} ($unitSuffix)',
+              suffixText: unitSuffix,
+              enabledBorder: isError ? errorOutline : null,
+              focusedBorder: isError ? errorOutline : null,
             ),
-            SizedBox(height: isLandscape ? 4.0 : 8.0),
-            Text(
-              l10n.targetWeightStepSubtitle,
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant,
-              ),
+            onChanged: _validate,
+            onSubmitted: (_) {
+              if (isNextEnabled) _handleNext();
+            },
+          ),
+          const SizedBox(height: 8),
+          Text(
+            isError ? _errorText! : l10n.targetWeightOptionalHint,
+            style: TextStyle(
+              color: isError
+                  ? theme.colorScheme.error
+                  : theme.colorScheme.onSurfaceVariant,
+              fontSize: 12,
+              fontWeight: isError ? FontWeight.w500 : FontWeight.w400,
             ),
-            SizedBox(height: isLandscape ? 8.0 : 20.0),
-            TextField(
-              key: const Key('target_weight_input'),
-              controller: _weightController,
-              focusNode: _focusNode,
-              keyboardType: const TextInputType.numberWithOptions(
-                decimal: true,
-              ),
-              decoration: InputDecoration(
-                labelText: '${l10n.targetWeightDialogTitle} ($unitSuffix)',
-                suffixText: unitSuffix,
-                enabledBorder: isError ? errorOutline : null,
-                focusedBorder: isError ? errorOutline : null,
-              ),
-              onChanged: _validate,
-              onSubmitted: (_) {
-                if (isNextEnabled) _handleNext();
-              },
-            ),
+          ),
+          if (deltaText != null) ...[
             const SizedBox(height: 8),
             Text(
-              isError ? _errorText! : l10n.targetWeightOptionalHint,
+              key: const Key('target_delta_text'),
+              deltaText,
               style: TextStyle(
-                color: isError
-                    ? theme.colorScheme.error
-                    : theme.colorScheme.onSurfaceVariant,
-                fontSize: 12,
-                fontWeight: isError ? FontWeight.w500 : FontWeight.w400,
-              ),
-            ),
-            if (deltaText != null) ...[
-              const SizedBox(height: 8),
-              Text(
-                key: const Key('target_delta_text'),
-                deltaText,
-                style: TextStyle(
-                  color: theme.colorScheme.primary,
-                  fontSize: 13,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ],
-            SizedBox(height: isLandscape ? 16.0 : 24.0),
-            ConstrainedBox(
-              constraints: const BoxConstraints(minHeight: 48.0),
-              child: FilledButton(
-                onPressed: isNextEnabled ? _handleNext : null,
-                child: Text(l10n.next),
+                color: theme.colorScheme.primary,
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
               ),
             ),
           ],
-        ),
+        ],
+      ),
+      footer: FilledButton(
+        onPressed: isNextEnabled ? _handleNext : null,
+        child: Text(l10n.next),
       ),
     );
   }
