@@ -1074,6 +1074,11 @@ class AppAnalytics {
     return logEvent(name: 'settings_open_source_licenses_clicked');
   }
 
+  /// Logs clicking the View on GitHub tile in settings.
+  static Future<void> logSettingsViewOnGitHubClicked() {
+    return logEvent(name: 'settings_view_on_github_clicked');
+  }
+
   // ---------------------------------------------------------------------------
   // NAVIGATION & DIALOG EVENTS
   // ---------------------------------------------------------------------------

@@ -203,6 +203,7 @@ void main() {
         expect(find.text('BMI Categories'), findsOneWidget);
         expect(find.text('Privacy Policy'), findsOneWidget);
         expect(find.text('Open Source Licenses'), findsOneWidget);
+        expect(find.text('View on GitHub'), findsOneWidget);
         expect(find.text('App version'), findsOneWidget);
         expect(find.text('1.2.3'), findsOneWidget);
       },

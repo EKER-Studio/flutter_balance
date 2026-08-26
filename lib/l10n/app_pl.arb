@@ -411,6 +411,7 @@
   "weightTrendChartSemantics": "{count, plural, one{{count} pomiar} few{{count} pomiary} many{{count} pomiarów} other{{count} pomiarów}}",
   "welcomeSubtitle": "Dodaj pierwszy pomiar, aby zacząć śledzić swoje postępy w drodze do lepszego zdrowia.",
   "welcomeTitle": "Witaj w Waga i BMI!",
+  "viewOnGitHub": "Zobacz na GitHubie",
   "wipeData": "Wyczyść wszystkie dane",
   "wipeDataButton": "Wyczyść dane",
   "wipeDataContent": "To trwale usunie wszystkie wpisy wagi i zresetuje ustawienia aplikacji. Tej operacji nie można cofnąć.",

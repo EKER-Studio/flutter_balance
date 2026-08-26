@@ -435,6 +435,7 @@
   "weightTrendChartSemantics": "{count, plural, one{{count} measurement} other{{count} measurements}}",
   "welcomeSubtitle": "Add your first measurement to start tracking your progress towards better health.",
   "welcomeTitle": "Welcome to Balance!",
+  "viewOnGitHub": "View on GitHub",
   "wipeData": "Wipe All Data",
   "wipeDataButton": "Wipe Data",
   "wipeDataContent": "This will permanently delete all your weight entries and reset app settings. This action cannot be undone.",
