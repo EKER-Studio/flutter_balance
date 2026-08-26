@@ -69,6 +69,7 @@ void main() {
     final field = tester.widget<TextField>(find.byType(TextField));
     expect(field.controller!.text, '75.5');
     expect(find.text('Weight (kg)'), findsOneWidget);
+    expect(find.text('Optional — leave empty to set later'), findsOneWidget);
   });
 
   testWidgets('uses the lb label in imperial mode', (tester) async {

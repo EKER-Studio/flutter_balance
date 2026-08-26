@@ -135,6 +135,8 @@ class _TargetWeightSheetState extends State<TargetWeightSheet> {
                       ? l10n.weightInLbLabel
                       : l10n.weightInKgLabel,
                   hintText: l10n.weightHint,
+                  helperText: l10n.targetWeightOptionalHint,
+                  helperMaxLines: 2,
                   border: const OutlineInputBorder(),
                   errorText: _errorText,
                   errorMaxLines: 2,
