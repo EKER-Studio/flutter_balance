@@ -34,6 +34,7 @@ class OnboardingStepLayout extends StatelessWidget {
   final EdgeInsetsGeometry? padding;
 
   /// Whether to vertically center the [content] inside the available middle space.
+  /// Defaults to `false` (aligned to the top with standard header spacing).
   final bool centerContent;
 
   const OnboardingStepLayout({
@@ -102,11 +103,16 @@ class OnboardingStepLayout extends StatelessWidget {
                           ),
                         ),
                       ],
-                      SizedBox(height: isLandscape ? 8.0 : 20.0),
+                      SizedBox(height: isLandscape ? 8.0 : 24.0),
 
                       // 2. Middle Content Area
                       Expanded(
-                        child: centerContent ? Center(child: content) : content,
+                        child: Align(
+                          alignment: centerContent
+                              ? Alignment.center
+                              : Alignment.topCenter,
+                          child: content,
+                        ),
                       ),
 
                       SizedBox(height: isLandscape ? 12.0 : 24.0),
