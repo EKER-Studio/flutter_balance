@@ -79,4 +79,33 @@ jobs:
         run: flutter analyze
 
       - name: Run unit and widget tests
-        run: flutter test --exclude-tags golden
+        run: flutter test --coverage --exclude-tags golden
+
+      - name: Generate Coverage Job Summary
+        if: always()
+        run: |
+          if [ -f "coverage/lcov.info" ]; then
+            sed -i.bak '/SF:.*\.g\.dart/,/end_of_record/d' coverage/lcov.info || true
+            sed -i.bak '/SF:.*app_localizations.*\.dart/,/end_of_record/d' coverage/lcov.info || true
+            rm -f coverage/lcov.info.bak
+
+            TOTAL_LF=$(grep '^LF:' coverage/lcov.info | awk -F: '{s+=$2} END {print s}')
+            TOTAL_LH=$(grep '^LH:' coverage/lcov.info | awk -F: '{s+=$2} END {print s}')
+
+            if [ -n "$TOTAL_LF" ] && [ "$TOTAL_LF" -gt 0 ]; then
+              PCT=$(awk "BEGIN {printf \"%.2f\", ($TOTAL_LH / $TOTAL_LF) * 100}")
+              echo "### 📊 Test Coverage Summary" >> $GITHUB_STEP_SUMMARY
+              echo "| Metric | Value |" >> $GITHUB_STEP_SUMMARY
+              echo "| :--- | :--- |" >> $GITHUB_STEP_SUMMARY
+              echo "| **Line Coverage** | \`$PCT%\` |" >> $GITHUB_STEP_SUMMARY
+              echo "| **Lines Hit / Total** | \`$TOTAL_LH\` / \`$TOTAL_LF\` |" >> $GITHUB_STEP_SUMMARY
+            fi
+          fi
+
+      - name: Upload coverage artifact
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: lcov-coverage-report
+          path: coverage/lcov.info
+          retention-days: 14
