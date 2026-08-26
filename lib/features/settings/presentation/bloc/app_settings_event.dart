@@ -102,6 +102,4 @@ final class UpdateLastHealthSyncTimestamp extends AppSettingsEvent {
   final DateTime timestamp;
 
   const UpdateLastHealthSyncTimestamp(this.timestamp);
-
-  List<Object?> get props => [timestamp];
 }

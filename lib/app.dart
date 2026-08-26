@@ -127,7 +127,21 @@ class _AppState extends State<App> {
       ],
     );
     NotificationService.instance.onNotificationTapped = (payload) {
-      _router?.go(payload);
+      if (payload.isEmpty) {
+        _router?.go(AppRoutes.today);
+        return;
+      }
+      try {
+        _router?.go(payload);
+      } catch (e, stack) {
+        AppCrashReporter.recordError(
+          e,
+          stack,
+          reason: 'Failed to navigate to notification payload: $payload',
+          fatal: false,
+        );
+        _router?.go(AppRoutes.today);
+      }
     };
   }
 

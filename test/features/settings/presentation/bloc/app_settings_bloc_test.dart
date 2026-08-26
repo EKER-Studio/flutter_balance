@@ -6,7 +6,7 @@ import 'package:mocktail/mocktail.dart';
 import 'package:balance/core/integrations/notifications/notification_service.dart';
 import 'package:balance/core/integrations/health/health_service.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_bloc.dart';
-import 'package:balance/features/settings/presentation/bloc/bmi_category.dart';
+import 'package:balance/features/weight/domain/bmi_category.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_event.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_state.dart';
 import 'package:balance/features/settings/presentation/bloc/app_theme_mode.dart';
