@@ -564,17 +564,34 @@ class IsarWeightRepository implements WeightRepository {
 
   @override
   Future<int> syncRemoteEntries(List<WeightEntry> remoteEntries) async {
+    if (remoteEntries.isEmpty) {
+      return 0;
+    }
+
     try {
       final key = await _getOrLoadKey(isWrite: true);
 
-      final existingModels = await liveIsar.weightEntryModels.where().findAll();
-      final existingPayloads = existingModels
-          .map((m) => (m.id, m.dateTime, m.encryptedWeight, m.encryptedNote))
-          .toList();
-      final localEntries = await compute(_decryptPayloads, (
-        existingPayloads,
-        key,
-      ));
+      var minDate = remoteEntries.first.dateTime;
+      var maxDate = remoteEntries.first.dateTime;
+      for (final e in remoteEntries) {
+        if (e.dateTime.isBefore(minDate)) minDate = e.dateTime;
+        if (e.dateTime.isAfter(maxDate)) maxDate = e.dateTime;
+      }
+      final windowStart = minDate.subtract(const Duration(seconds: 60));
+      final windowEnd = maxDate.add(const Duration(seconds: 60));
+
+      final existingModels = await liveIsar.weightEntryModels
+          .filter()
+          .dateTimeBetween(windowStart, windowEnd)
+          .findAll();
+
+      List<WeightEntry> localEntries = [];
+      if (existingModels.isNotEmpty) {
+        final existingPayloads = existingModels
+            .map((m) => (m.id, m.dateTime, m.encryptedWeight, m.encryptedNote))
+            .toList();
+        localEntries = await compute(_decryptPayloads, (existingPayloads, key));
+      }
 
       final newEntries = <WeightEntry>[];
       for (final remote in remoteEntries) {
