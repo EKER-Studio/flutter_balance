@@ -689,4 +689,36 @@ void main() {
       expect(clampedLayout.maxWidth, 480);
     },
   );
+
+  testWidgets(
+    'StatisticsScreen renders multi-column layout on tablet landscape',
+    (tester) async {
+      tester.view.physicalSize = const Size(960, 600);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+
+      final settingsBloc = AppSettingsBloc();
+      final now = DateTime.now();
+      final entries = [WeightEntry(id: 1, weightKg: 75.0, dateTime: now)];
+      final weightBloc = createBloc(
+        WeightLoaded(
+          entries: entries,
+          filteredEntries: entries,
+          timePeriod: TimePeriod.week,
+          heightCm: null,
+        ),
+      );
+
+      await tester.pumpWidget(
+        buildSubject(settingsBloc: settingsBloc, weightBloc: weightBloc),
+      );
+      await tester.pumpAndSettle();
+
+      final clampedLayoutFinder = find.byType(ClampedLayout);
+      expect(clampedLayoutFinder, findsOneWidget);
+      final clampedLayout = tester.widget<ClampedLayout>(clampedLayoutFinder);
+      expect(clampedLayout.maxWidth, 1200);
+    },
+  );
 }

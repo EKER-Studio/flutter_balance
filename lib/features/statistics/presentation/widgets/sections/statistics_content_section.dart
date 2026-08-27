@@ -64,16 +64,16 @@ class StatisticsContentSection extends StatelessWidget {
         ? Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
+              heroProgressCard,
+              const SizedBox(height: 16),
               Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Expanded(child: heroProgressCard),
+                  Expanded(child: habitsCard),
                   const SizedBox(width: 16),
                   Expanded(child: rangeCard),
                 ],
               ),
-              const SizedBox(height: 16),
-              habitsCard,
               const SizedBox(height: 16),
               bmiCard,
               const SizedBox(height: 32),

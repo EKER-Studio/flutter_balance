@@ -157,7 +157,6 @@ void main() {
         await tester.tap(find.text('OK'));
         await tester.pumpAndSettle();
 
-        expect(find.textContaining('reminder set to'), findsOneWidget);
         expect(settingsBloc.state.notificationTime, const (hour: 8, minute: 0));
       },
     );

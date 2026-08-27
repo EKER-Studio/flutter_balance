@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:balance/core/presentation/utils/app_snackbar.dart';
 import 'package:balance/core/presentation/utils/picker_helpers.dart';
 import 'package:balance/core/utils/analytics.dart';
 import 'package:balance/l10n/app_localizations.dart';
@@ -31,7 +30,6 @@ class StepReminderNotification extends StatefulWidget {
 class _StepReminderNotificationState extends State<StepReminderNotification> {
   /// Opens the time picker and dispatches the selected time to [AppSettingsBloc].
   Future<void> _handleTimePicker(BuildContext context) async {
-    final l10n = AppLocalizations.of(context);
     final recordTime = context.read<AppSettingsBloc>().state.notificationTime;
     final initialTime = TimeOfDay(
       hour: recordTime.hour,
@@ -51,12 +49,6 @@ class _StepReminderNotificationState extends State<StepReminderNotification> {
       );
       context.read<AppSettingsBloc>().add(
         UpdateNotificationTime((hour: picked.hour, minute: picked.minute)),
-      );
-
-      AppSnackBar.show(
-        context,
-        message: l10n.reminderTimeSet(picked.format(context)),
-        type: SnackBarType.info,
       );
     }
   }
