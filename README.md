@@ -110,12 +110,13 @@ lib/
 | **Dependency Injection** | get_it, injectable | Service locator and compile-time dependency injection |
 | **Routing & Navigation** | go_router | Declarative routing, stateful nested shells, deep linking, and reactive guards |
 | **Database** | isar_community | High-performance local NoSQL database |
+| **Security & Encryption** | encrypt, crypto, flutter_secure_storage | AES-256 local encryption and hardware-backed Keystore/Keychain key isolation |
 | **Charts** | fl_chart | Interactive weight history visualizations |
 | **Biometrics** | local_auth | Native biometric authentication (Face ID, Touch ID, fingerprint) |
 | **Health** | health | Integration with Apple HealthKit & Android Health Connect |
-| **CSV Handling** | csv | CSV encoding and parsing pipeline |
+| **CSV Handling** | csv, file_picker | CSV encoding, streaming parser, and native Storage Access Framework file picker |
 | **Localization** | flutter_localizations + gen-l10n | Internationalization (English, Polish) |
-| **Notifications** | flutter_local_notifications | Local scheduled daily reminders |
+| **Notifications** | flutter_local_notifications, timezone | Local scheduled daily reminders & timezone resolution |
 | **Diagnostics & Crash Reporting** | firebase_crashlytics | Anonymous crash reporting and technical diagnostics |
 | **Analytics** | firebase_analytics | Privacy-first telemetry and UI interaction metrics (no health data) |
 | **Platform Services** | firebase_core | Firebase platform integration and initialization |
@@ -155,8 +156,8 @@ lib/
 
 ### Prerequisites
 
-- Flutter SDK >= 3.12
-- Xcode (iOS) / Android Studio (Android)
+- Dart SDK >= 3.12 (Flutter >= 3.47.1)
+- Android Studio Ladybug+ (Android API 26–35) / Xcode 15+ (iOS)
 
 ### Setup
 
