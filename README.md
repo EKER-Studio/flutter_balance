@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="assets/icon/app_icon.png" width="120" alt="Balance Logo" />
+  <img src=".github/balance-feature-graphic.png" alt="Balance — Smart BMI & Weight Tracker" width="100%" />
 </p>
 
 <h1 align="center">Balance</h1>
