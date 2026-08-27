@@ -130,6 +130,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen>
     }
 
     return Scaffold(
+      extendBodyBehindAppBar: true,
       body: body,
       bottomNavigationBar: AdaptiveBottomNavigationBar(
         selectedIndex: selectedIndex,

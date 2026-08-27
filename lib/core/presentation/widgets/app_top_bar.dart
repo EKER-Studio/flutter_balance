@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:balance/core/presentation/theme/app_layout_tokens.dart';
 
 /// A reusable Material 3 top app bar for main navigation screens.
 ///
@@ -37,7 +38,7 @@ class AppTopBar extends StatelessWidget {
       floating: false,
       pinned: pinned,
       snap: false,
-      titleSpacing: 16,
+      titleSpacing: context.contentHorizontalPadding,
       title: Text(
         title,
         style: textTheme.headlineMedium?.copyWith(
