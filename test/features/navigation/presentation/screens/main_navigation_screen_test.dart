@@ -117,25 +117,20 @@ void main() {
         await tester.pumpWidget(buildSubject());
         await tester.pumpAndSettle();
 
-        // Default active tab is Today
         expect(find.byType(TodayScreen), findsOneWidget);
 
-        // Tap Calendar tab
         await tester.tap(find.text('Calendar'));
         await tester.pumpAndSettle();
         expect(find.byType(CalendarScreen), findsOneWidget);
 
-        // Tap Statistics tab
         await tester.tap(find.text('Statistics'));
         await tester.pumpAndSettle();
         expect(find.byType(StatisticsScreen), findsOneWidget);
 
-        // Tap Settings tab
         await tester.tap(find.text('Settings'));
         await tester.pumpAndSettle();
         expect(find.byType(SettingsScreen), findsOneWidget);
 
-        // Tap Today tab back
         await tester.tap(find.widgetWithText(NavigationDestination, 'Today'));
         await tester.pumpAndSettle();
         expect(find.byType(TodayScreen), findsOneWidget);
@@ -193,25 +188,20 @@ void main() {
         await tester.pumpWidget(buildSubject());
         await tester.pumpAndSettle();
 
-        // Default active tab is Today
         expect(find.byType(TodayScreen), findsOneWidget);
 
-        // Tap Calendar tab
         await tester.tap(find.text('Calendar'));
         await tester.pumpAndSettle();
         expect(find.byType(CalendarScreen), findsOneWidget);
 
-        // Tap Statistics tab
         await tester.tap(find.text('Statistics'));
         await tester.pumpAndSettle();
         expect(find.byType(StatisticsScreen), findsOneWidget);
 
-        // Tap Settings tab
         await tester.tap(find.text('Settings'));
         await tester.pumpAndSettle();
         expect(find.byType(SettingsScreen), findsOneWidget);
 
-        // Tap Today tab back
         await tester.tap(find.text('Today').first);
         await tester.pumpAndSettle();
         expect(find.byType(TodayScreen), findsOneWidget);
