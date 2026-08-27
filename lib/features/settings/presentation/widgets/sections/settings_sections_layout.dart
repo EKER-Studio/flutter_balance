@@ -54,7 +54,7 @@ class SettingsSectionsLayout extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final isWide = context.isTablet;
+    final isWide = context.isMultiColumn;
 
     final profileHeader = SectionHeader(label: l10n.profileSection);
     final profileSection = ProfileSection(

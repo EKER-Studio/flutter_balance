@@ -104,7 +104,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         sliver: SliverToBoxAdapter(
                           child: ClampedLayout(
                             maxWidth: context.standardContentMaxWidth,
-                            padding: const EdgeInsets.fromLTRB(16, 12, 16, 32),
+                            padding: EdgeInsets.fromLTRB(
+                              context.contentHorizontalPadding,
+                              12,
+                              context.contentHorizontalPadding,
+                              32,
+                            ),
                             child: SettingsSectionsLayout(
                               state: state,
                               isBiometricAvailable: _isBiometricAvailable,

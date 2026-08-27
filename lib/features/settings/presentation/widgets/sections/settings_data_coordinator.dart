@@ -371,6 +371,7 @@ class SettingsDataCoordinator {
 
     showLicensePage(
       context: context,
+      useRootNavigator: true,
       applicationName: 'Balance',
       applicationVersion: packageInfo.version,
       applicationIcon: Padding(
