@@ -119,11 +119,8 @@ void main() {
         buildSubject(settingsBloc: settingsBloc, weightBloc: weightBloc),
       );
 
-      // Check lowest weight (74.0 kg)
       expect(find.textContaining('74.0'), findsOneWidget);
-      // Check highest weight (80.0 kg)
       expect(find.textContaining('80.0'), findsOneWidget);
-      // Check total progress banner (-6.0)
       expect(find.text('-6.0'), findsOneWidget);
     },
   );
