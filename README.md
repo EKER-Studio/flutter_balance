@@ -28,9 +28,9 @@
 
 ### Splash & Onboarding Flow
 
-| Splash (Light) | Welcome (Light) | CSV Import (Light) | Starting Weight (Dark) | Daily Reminders (Dark) | Splash (Dark) |
-| :---: | :---: | :---: | :---: | :---: | :---: |
-| <img src=".github/assets/00_splash/splash_light.png" width="160" alt="Splash Screen Light" /> | <img src=".github/assets/01_onboarding/01_welcome_light.png" width="160" alt="Onboarding Welcome Light" /> | <img src=".github/assets/01_onboarding/03_csv_import_light.png" width="160" alt="CSV Import Step Light" /> | <img src=".github/assets/01_onboarding/04_starting_point_dark.png" width="160" alt="Starting Weight Step Dark" /> | <img src=".github/assets/01_onboarding/06_notifications_dark.png" width="160" alt="Notifications Setup Dark" /> | <img src=".github/assets/00_splash/splash_dark.png" width="160" alt="Splash Screen Dark" /> |
+| Splash (Dark) | Welcome (Light) | CSV Import (Light) | Starting Weight (Dark) | Daily Reminders (Dark) |
+| :---: | :---: | :---: | :---: | :---: |
+| <img src=".github/assets/00_splash/splash_dark.png" width="180" alt="Splash Screen Dark" /> | <img src=".github/assets/01_onboarding/01_welcome_light.png" width="180" alt="Onboarding Welcome Light" /> | <img src=".github/assets/01_onboarding/03_csv_import_light.png" width="180" alt="CSV Import Step Light" /> | <img src=".github/assets/01_onboarding/04_starting_point_dark.png" width="180" alt="Starting Weight Step Dark" /> | <img src=".github/assets/01_onboarding/06_notifications_dark.png" width="180" alt="Notifications Setup Dark" /> |
 
 ### Today Dashboard & Analytics
 
