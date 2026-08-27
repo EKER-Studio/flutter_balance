@@ -49,7 +49,7 @@ Running a single test file (Section 2.3, step 5) produces small output — read 
 
 1. **Domain** (highest priority) — use cases, business logic, entities with logic, value objects
 2. **Data** — repository implementations, data sources, mappers/DTO ↔ Entity
-3. **Presentation** — Riverpod notifiers/providers (state, side effects, error handling)
+3. **Presentation** — State management (BLoC/Cubit states & events, Riverpod notifiers/providers)
 
 Out of scope unless explicitly requested: widget tests, integration tests, e2e tests.
 
@@ -58,8 +58,9 @@ Skip: generated files (`*.g.dart`, `*.freezed.dart`, `*.gr.dart`), pure config f
 ## 4. Stack Detection (auto-detect, never assume)
 
 Before starting, check `pubspec.yaml` and existing tests to determine:
-- the mocking library in use (mocktail / mockito / other) — follow whatever the project already uses; if there are no tests yet, propose `mocktail` (plays well with Riverpod) and ask for confirmation
-- the Riverpod testing approach in use (`ProviderContainer` + `overrides`, or custom project helpers)
+- the state management framework in use (BLoC / Cubit, Riverpod, etc.)
+- the mocking library in use (mocktail / mockito / other) — follow whatever the project already uses; if there are no tests yet, propose `mocktail` and ask for confirmation
+- the state testing approach in use (`blocTest` from `bloc_test` for BLoC/Cubit, `ProviderContainer` + `overrides` for Riverpod, or custom helpers)
 - whether `test/` mirrors the `lib/` structure
 - the existing naming convention for test files (`*_test.dart`) and test descriptions (`test('...')`, `group('...')`)
 
@@ -100,8 +101,9 @@ Record the reasoning behind each decision in the progress file's Notes column �
 - Repositories: mock data sources (local/remote), test exception mapping (e.g. `IsarException` → a domain `Failure`), cache/fallback logic if present.
 - Mappers: table-driven (parametrized) tests for DTO → Entity and back, including nullable/optional fields.
 
-**Presentation (Riverpod)**
-- Notifiers/providers: test via `ProviderContainer` with `overrides` on dependencies; assert the **sequence** of states (`loading → data/error`), not just the final one.
+**Presentation (BLoC / Cubit / Riverpod)**
+- **BLoC / Cubit**: test via `blocTest` (from `bloc_test`); assert emitted state sequence (`expect: () => [...]`), verify seed states, and check event handlers.
+- **Riverpod**: test via `ProviderContainer` with `overrides` on dependencies; assert the **sequence** of states (`loading → data/error`), not just the final one.
 - Verify side effects (use case calls) with `verify()` on mocks.
 - Don't test UI details here — that's widget-test scope, out of bounds for this round.
 
