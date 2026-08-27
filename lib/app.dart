@@ -203,8 +203,6 @@ class _AppState extends State<App> {
     );
   }
 
-  /// Builds the [MaterialApp] with the resolved theme, locale support,
-  /// biometric shield overlay, and the appropriate root screen.
   @override
   Widget build(BuildContext context) {
     final settingsBloc = context.read<AppSettingsBloc>();

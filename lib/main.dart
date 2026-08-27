@@ -94,7 +94,6 @@ Future<void> main() async {
       storageDirectory: storageDirectory,
     );
 
-    // Initialize GetIt dependency injection container.
     await configureDependencies(environment: AppEnvironment.current.name);
 
     final settingsBloc = getIt<AppSettingsBloc>();
