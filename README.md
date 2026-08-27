@@ -120,8 +120,10 @@ lib/
 
 ### Weight Tracking & Analytics
 - Log daily weight measurements with optional text notes.
-- Interactive line charts powered by `fl_chart` with daily entry aggregation.
+- Interactive line charts powered by `fl_chart` with daily entry aggregation and trend insights.
 - Filter data by timeframe (`Week`, `Month`, `Year`, `All`).
+- **Official WHO BMI Classification**: 6-tier BMI categories (Underweight, Normal, Overweight, Obese Class I/II/III) with dynamic category badges.
+- **Healthy Weight Range**: Automatic calculation and visual guidance for target healthy weight boundaries.
 - Summary metrics: BMI calculation, BMI category badge, target weight progress, and remaining weight delta.
 - Automated BMI calculation from configured height.
 
@@ -200,7 +202,7 @@ dart run flutter_native_splash:create
 
 ## Testing
 
-Run full verification suite (over 1010+ tests):
+Run full verification suite (over 1047+ tests):
 
 ```bash
 ./scripts/before_push.sh
@@ -232,6 +234,16 @@ ID,Date,Weight (kg),Note
 **iOS**: Include `NSFaceIDUsageDescription` in `ios/Runner/Info.plist`.
 
 **Android**: Declare `<uses-permission android:name="android.permission.USE_BIOMETRIC" />` in `android/app/src/main/AndroidManifest.xml`.
+
+## AI-Native Engineering & Developer Resources (#built_in_public)
+
+As part of our commitment to building in public and advancing agentic workflows, this repository includes battle-tested, token-budget-safe audit frameworks and prompts in the [`prompts/`](prompts/) directory:
+
+- **[BLoC Architecture Deep Audit](prompts/flutter_architect_deep_bloc_audit.md)**: Exhaustive 12-dimension technical and architectural audit framework tailored for Flutter + BLoC + Isar apps.
+- **[Riverpod Architecture Deep Audit](prompts/flutter_architect_deep_riverpod_audit.md)**: Complete 12-dimension audit framework for Flutter + Riverpod 3.x + Isar apps.
+- **[Unit Test Auditor Framework](prompts/flutter_unit_test_audit_framework_en.md)**: Iterative, bounded-context audit and test generation framework for Flutter unit tests.
+- **[i18n / L10n Localization Audit](prompts/flutter_i18n_l10n_audit_en.md)**: Chunked, stateful localization auditor for `.arb` + `flutter gen-l10n` toolchains.
+- **[Comments & DartDoc Cleanup Prompt](prompts/flutter_comments_dartdoc_cleanup_prompt_en.md)**: Memory-safe, file-by-file comment translation and documentation refactoring prompt.
 
 ## License
 
