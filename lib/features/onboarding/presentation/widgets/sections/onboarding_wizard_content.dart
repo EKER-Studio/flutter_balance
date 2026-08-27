@@ -67,6 +67,7 @@ class _OnboardingWizardContentState extends State<OnboardingWizardContent> {
 
   void _goToNextStep({bool isSkipped = false}) {
     FocusManager.instance.primaryFocus?.unfocus();
+    ScaffoldMessenger.of(context).hideCurrentSnackBar();
     final bloc = context.read<OnboardingBloc>();
     final currentIndex = bloc.state.currentStepIndex;
     final stepName = _stepNames[currentIndex];
@@ -179,6 +180,7 @@ class _OnboardingWizardContentState extends State<OnboardingWizardContent> {
 
   void _handleStepRewind() {
     FocusManager.instance.primaryFocus?.unfocus();
+    ScaffoldMessenger.of(context).hideCurrentSnackBar();
     final currentIndex = context.read<OnboardingBloc>().state.currentStepIndex;
     if (currentIndex > 0) {
       AppAnalytics.logOnboardingStepBackClicked(

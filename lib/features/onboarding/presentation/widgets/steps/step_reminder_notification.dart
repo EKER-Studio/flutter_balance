@@ -190,7 +190,10 @@ class _StepReminderNotificationState extends State<StepReminderNotification> {
           ),
           footer: FilledButton(
             key: const Key('notification_step_next_button'),
-            onPressed: widget.onNext,
+            onPressed: () {
+              ScaffoldMessenger.of(context).hideCurrentSnackBar();
+              widget.onNext();
+            },
             child: Text(l10n.next),
           ),
         );
