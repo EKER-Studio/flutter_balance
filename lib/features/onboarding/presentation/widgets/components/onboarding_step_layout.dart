@@ -64,6 +64,7 @@ class OnboardingStepLayout extends StatelessWidget {
         );
 
     return ClampedLayout(
+      maxWidth: 520,
       padding: EdgeInsets.zero,
       child: LayoutBuilder(
         builder: (context, constraints) {
