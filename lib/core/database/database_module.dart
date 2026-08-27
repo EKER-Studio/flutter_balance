@@ -126,7 +126,6 @@ class DatabaseModule {
       return existingInstance;
     }
 
-    // Ensure 256-bit AES key is generated and persisted in secure storage.
     await getEncryptionKey();
 
     // One-time migration guard: move any legacy database file out of the

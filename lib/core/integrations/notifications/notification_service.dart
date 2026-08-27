@@ -16,7 +16,6 @@ import 'package:timezone/timezone.dart' as tz;
 /// Must be initialized via [initialize] during app startup before invoking
 /// any scheduling APIs.
 class NotificationService {
-  /// A private constructor to enforce the singleton pattern.
   NotificationService._();
 
   /// The single shared instance of [NotificationService].

@@ -45,7 +45,6 @@ class _TrackingPermissionHandler extends PermissionHandlerPlatform {
   }
 }
 
-// Register the PlatformDetector mock.
 class MockPlatformDetector extends Mock implements PlatformDetector {}
 
 /// Mocked `url_launcher` method channel recording every launch request.

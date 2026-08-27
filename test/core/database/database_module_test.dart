@@ -313,7 +313,6 @@ void main() {
         final readCall = log.firstWhere((c) => c.method == 'read');
         expect(readCall.arguments['key'], 'isar_encryption_key');
 
-        // Key file should now exist
         final keyFile = File('${tempDir.path}/balance_v1.key');
         expect(keyFile.existsSync(), isTrue);
         expect(base64Decode(keyFile.readAsStringSync().trim()), storedKey);
@@ -338,7 +337,6 @@ void main() {
         expect(writeCall.arguments['key'], 'isar_encryption_key');
         expect(base64Decode(writeCall.arguments['value'] as String), key);
 
-        // Key file should also be created
         final keyFile = File('${tempDir.path}/balance_v1.key');
         expect(keyFile.existsSync(), isTrue);
         expect(base64Decode(keyFile.readAsStringSync().trim()), key);

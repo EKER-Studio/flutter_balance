@@ -277,7 +277,6 @@ class CsvImporter {
         }
       }
 
-      // Parse and validate weight.
       final weightRaw = wagaCol < fields.length ? fields[wagaCol] : '';
       final weight = _cleanAndParseWeight(weightRaw);
       if (weight == null) {
