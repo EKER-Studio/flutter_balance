@@ -1,10 +1,10 @@
 # Cursor Rules
 
-The project instructions and conventions are defined in:
+The project instructions and universal standards are defined in:
 
 @AGENTS.md
 
-`AGENTS.md` is the single source of truth for architecture, coding conventions, development workflow, and testing rules. Follow `AGENTS.md` before making any changes.
+`AGENTS.md` (and optional `agents_project.md` if present in the repository root) define the single source of truth for architecture, coding conventions, development workflow, and testing rules. Follow them before making any changes.
 
 ---
 
