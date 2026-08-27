@@ -13,7 +13,6 @@ void main() {
     expect(find.byType(TodayShimmerSkeleton), findsOneWidget);
     expect(find.byType(Card), findsNWidgets(3));
 
-    // Advance animation clock
     await tester.pump(const Duration(milliseconds: 500));
     expect(find.byType(TodayShimmerSkeleton), findsOneWidget);
   });
