@@ -41,7 +41,7 @@ producing incomplete findings silently.
 | Architecture   | Clean Architecture — feature-first (Domain / Data / Presentation) |
 | State Mgmt     | Riverpod 3.x — code generation via `build_runner` |
 | Database       | Isar — local-first persistence                    |
-| Async/React    | Streams, gameplay timers, DB listeners            |
+| Async/React    | Streams, periodic/background timers, DB listeners |
 | Localization   | `flutter_localizations` + `gen-l10n` (ARB files)  |
 | CI/CD          | GitHub Actions + pre-push hooks (`before_push.sh`)|
 | Code Gen       | `build_runner` — Isar schema, Riverpod, l10n      |
@@ -103,7 +103,7 @@ Prioritize findings in this strict order:
 
 - Verify zero imports of `package:flutter`, `material.dart`,
   `widgets.dart`, or Riverpod inside domain entities,
-  models, use cases, or pure services (e.g., `GameEngine`).
+  models, use cases, or pure services (e.g., `CalculationEngine`, `SyncService`).
 - The Domain layer must have no dependencies on any other
   internal layer.
 
@@ -190,7 +190,7 @@ Prioritize findings in this strict order:
 
 **Background/foreground transitions:**
 
-- Identify active gameplay timers or stream listeners
+- Identify active periodic timers, background tasks, or stream listeners
   that fail to pause or cancel on
   `AppLifecycleState.paused` / `.inactive`.
 - Flag missing `WidgetsBindingObserver` implementations
@@ -318,7 +318,7 @@ Prioritize findings in this strict order:
 **Magic numbers & hardcoded values:**
 
 - Flag numeric literals in layout, styling, animation
-  duration, or game logic not referenced to named
+  duration, or business logic not referenced to named
   constants or a centralized design token system.
 
 **Hardcoded user-visible strings:**
@@ -332,7 +332,7 @@ Prioritize findings in this strict order:
 
 - Detect `print()` statements in non-debug code paths.
 - Flag `debugPrint()` or `log()` statements outputting
-  sensitive user data (scores, identifiers, personal info).
+  sensitive user data (health records, identifiers, tokens, personal info).
 
 ---
 
@@ -341,8 +341,8 @@ Prioritize findings in this strict order:
 **Coverage gaps:**
 
 - Identify untested critical business paths:
-  game logic state transitions, data persistence,
-  failure scenarios, and score calculation.
+  business logic state transitions, data persistence,
+  failure scenarios, and calculations.
 - Flag critical Notifiers with zero unit test coverage.
 
 **Unit test quality:**
@@ -371,7 +371,7 @@ Prioritize findings in this strict order:
 - Flag if ALL tests mock the database with zero tests
   exercising a real Isar instance end-to-end.
 - Verify at least one integration test covers the
-  full critical flow: game start → play → persist → retrieve.
+  full critical flow: user input → process/compute → persist → retrieve.
 
 **Flakiness vectors:**
 
@@ -428,7 +428,7 @@ and any assistant context documents against actual implementation:
 **Data exposure via logging:**
 
 - Flag `print`, `debugPrint`, or `log` calls outputting
-  personally identifiable or sensitive gameplay data
+  personally identifiable, health or sensitive business data
   outside of `kDebugMode` guards.
 
 ---

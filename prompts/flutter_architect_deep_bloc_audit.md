@@ -39,11 +39,12 @@ producing incomplete findings silently.
 | Layer          | Technology                                        |
 |----------------|---------------------------------------------------|
 | Architecture   | Clean Architecture — feature-first (Domain / Data / Presentation) |
-| State Mgmt     | BLoC (`flutter_bloc` / `hydrated_bloc`)           || Database       | Isar — local-first persistence                    |
-| Async/React    | Streams, gameplay timers, DB listeners            |
+| State Mgmt     | BLoC (`flutter_bloc` / `hydrated_bloc`)           |
+| Database       | Isar — local-first persistence                    |
+| Async/React    | Streams, periodic/background timers, DB listeners |
 | Localization   | `flutter_localizations` + `gen-l10n` (ARB files)  |
 | CI/CD          | GitHub Actions + pre-push hooks (`before_push.sh`)|
-| Code Gen       | `build_runner` — Isar schema, Riverpod, l10n      |
+| Code Gen       | `build_runner` — Isar schema, injectable, l10n    |
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ## AUDIT ITERATION PROTOCOL
@@ -86,7 +87,7 @@ Prioritize findings in this strict order:
 **Audit `pubspec.yaml` and `l10n.yaml`:**
 
 - Verify code generation configuration for Isar,
-  Riverpod, and l10n is complete and consistent.
+  injectable / BLoC, and l10n is complete and consistent.
 - Detect empty ARB files, malformed JSON, or missing
   locale entries that would crash `flutter gen-l10n`.
 - Confirm the generated localization delegate is wired
@@ -101,14 +102,14 @@ Prioritize findings in this strict order:
 **Domain layer isolation:**
 
 - Verify zero imports of `package:flutter`, `material.dart`,
-  `widgets.dart`, or Riverpod inside domain entities,
-  models, use cases, or pure services (e.g., `GameEngine`).
+  `widgets.dart`, or BLoC inside domain entities,
+  models, use cases, or pure services (e.g., `CalculationEngine`, `SyncService`).
 - The Domain layer must have no dependencies on any other
   internal layer.
 
 **Presentation → Data leakage:**
 
-- Detect any screen, widget, or notifier directly importing
+- Detect any screen, widget, or BLoC/Cubit directly importing
   Isar collection classes, generated schema files
   (`*.g.dart` collection types), or concrete repository
   implementations.
@@ -122,7 +123,7 @@ Prioritize findings in this strict order:
 
 **Repository contract hygiene:**
 
-- Verify notifiers depend only on abstract domain
+- Verify BLoCs and Cubits depend only on abstract domain
   repository interfaces, not concrete implementations.
 - Flag hidden caching layers, undo/restore mechanisms,
   or stateful side-effects inside repositories that violate
@@ -167,11 +168,11 @@ Prioritize findings in this strict order:
 
 **Background/foreground transitions:**
 
-- Identify active gameplay timers or stream listeners
+- Identify active periodic timers, background tasks, or stream listeners
   that fail to pause or cancel on
   `AppLifecycleState.paused` / `.inactive`.
 - Flag missing `WidgetsBindingObserver` implementations
-  in widgets or notifiers managing time-sensitive resources.
+  in widgets or BLoCs managing time-sensitive resources.
 
 **Async context safety:**
 
@@ -251,15 +252,15 @@ Prioritize findings in this strict order:
 
 **Unlistened states:**
 
-- Identify Notifier states emitted but never consumed
+- Identify BLoC/Cubit states emitted but never consumed
   by any widget (UI silently rendering stale/initial state).
-- Flag `AsyncError` states from providers that have no
-  error UI branch in the consuming widget.
+- Flag failure/error BLoC states that have no
+  handling or UI branch in `BlocBuilder` / `BlocListener`.
 
-**Local state bypassing providers:**
+**Local state bypassing BLoC:**
 
 - Detect `setState` calls mutating data that belongs
-  in a Notifier, causing desync between UI and state layer.
+  in a BLoC/Cubit, causing desync between UI and state layer.
 
 **Dead methods and unreferenced exports:**
 
@@ -295,7 +296,7 @@ Prioritize findings in this strict order:
 **Magic numbers & hardcoded values:**
 
 - Flag numeric literals in layout, styling, animation
-  duration, or game logic not referenced to named
+  duration, or business logic not referenced to named
   constants or a centralized design token system.
 
 **Hardcoded user-visible strings:**
@@ -309,7 +310,7 @@ Prioritize findings in this strict order:
 
 - Detect `print()` statements in non-debug code paths.
 - Flag `debugPrint()` or `log()` statements outputting
-  sensitive user data (scores, identifiers, personal info).
+  sensitive user data (health records, identifiers, tokens, personal info).
 
 ---
 
@@ -318,9 +319,9 @@ Prioritize findings in this strict order:
 **Coverage gaps:**
 
 - Identify untested critical business paths:
-  game logic state transitions, data persistence,
-  failure scenarios, and score calculation.
-- Flag critical Notifiers with zero unit test coverage.
+  business logic state transitions, data persistence,
+  failure scenarios, and calculations.
+- Flag critical BLoCs/Cubits with zero unit test coverage (e.g. missing `blocTest`).
 
 **Unit test quality:**
 
@@ -348,7 +349,7 @@ Prioritize findings in this strict order:
 - Flag if ALL tests mock the database with zero tests
   exercising a real Isar instance end-to-end.
 - Verify at least one integration test covers the
-  full critical flow: game start → play → persist → retrieve.
+  full critical flow: user input → process/compute → persist → retrieve.
 
 **Flakiness vectors:**
 
@@ -405,7 +406,7 @@ and any assistant context documents against actual implementation:
 **Data exposure via logging:**
 
 - Flag `print`, `debugPrint`, or `log` calls outputting
-  personally identifiable or sensitive gameplay data
+  personally identifiable, health or sensitive business data
   outside of `kDebugMode` guards.
 
 ---
@@ -429,10 +430,9 @@ and any assistant context documents against actual implementation:
 
 **API deprecation:**
 
-- Identify usage of deprecated Riverpod APIs
-  (e.g., `StateNotifier`, `StateProvider` coexisting
-  with `Notifier` / `AsyncNotifier` in a codebase claiming
-  full Riverpod 3.x migration).
+- Identify usage of deprecated BLoC APIs or patterns
+  (e.g., `mapEventToState` instead of `on<Event>`,
+  missing `emit.forEach` / `emit.onEach` for reactive streams).
 - Flag deprecated Flutter framework APIs
   (e.g., `WillPopScope` instead of `PopScope`).
 
@@ -516,7 +516,7 @@ below, in this exact order.
 |------------------------------|--------|----------|---------|-----|
 | 1. CI/CD & Config            | 🔴/✅  | N        | N       | N   |
 | 2. Architecture Boundaries   | 🔴/✅  | N        | N       | N   |
-| 3. Riverpod Patterns         | 🔴/✅  | N        | N       | N   |
+| 3. BLoC Patterns             | 🔴/✅  | N        | N       | N   |
 | 4. Lifecycle & Memory        | 🔴/✅  | N        | N       | N   |
 | 5. Isar & Data Layer         | 🔴/✅  | N        | N       | N   |
 | 6. Dead Code & Navigation    | 🔴/✅  | N        | N       | N   |
@@ -552,7 +552,7 @@ For each finding use this exact structure:
 
 ## ⚠️ WARNING — Architecture Violations, Anti-Patterns, Tech Debt
 
-> Riverpod misuse · YAGNI violations · missing indices ·
+> BLoC misuse · YAGNI violations · missing indices ·
 > magic numbers · swallowed exceptions · disconnected states ·
 > deprecated APIs · version constraint issues
 

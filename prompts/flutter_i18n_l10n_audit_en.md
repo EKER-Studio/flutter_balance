@@ -35,7 +35,7 @@ You have terminal access. Maintain a persistent on-disk state file, e.g. `.i18n_
 ## Chunk checklist — Category A
 - [x] lib/features/onboarding/  (3 findings — see below)
 - [x] lib/features/settings/    (0 findings)
-- [ ] lib/features/game/
+- [ ] lib/features/dashboard/
 
 ## Findings — Category A
 | # | Priority | File:line | Snippet | Proposed key | Status |
