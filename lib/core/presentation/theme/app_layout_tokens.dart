@@ -12,7 +12,7 @@ abstract final class AppLayoutTokens {
   static const double compactContentMaxWidth = 480.0;
 
   /// The standard content width constraint for single-column tablet viewports.
-  static const double maxSingleColumnContentWidth = 600.0;
+  static const double maxSingleColumnContentWidth = 520.0;
 
   /// The standard content width constraint for expanded multi-column tablet viewports.
   static const double expandedContentMaxWidth = 1200.0;
@@ -29,8 +29,19 @@ extension ContextLayout on BuildContext {
       isTablet &&
       MediaQuery.sizeOf(this).width >= AppLayoutTokens.multiColumnBreakpoint;
 
-  /// Returns standard horizontal padding for content areas (24dp on tablets, 16dp on phones).
-  double get contentHorizontalPadding => isTablet ? 24.0 : 16.0;
+  /// Returns standard horizontal padding for content areas:
+  /// - 16dp on phones
+  /// - 24dp on tablets in multi-column layout (landscape >= 720dp)
+  /// - 40dp on tablets in single-column layout (portrait < 720dp)
+  double get contentHorizontalPadding {
+    if (!isTablet) {
+      return 16.0;
+    }
+    if (isMultiColumn) {
+      return 24.0;
+    }
+    return 40.0;
+  }
 
   /// Returns the standard maximum content width based on whether the device is a tablet.
   double get standardContentMaxWidth {
