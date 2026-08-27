@@ -364,10 +364,8 @@ void main() {
         await tester.tap(nextButton);
         await tester.pumpAndSettle();
 
-        // Should not navigate to step 3
         expect(find.bySemanticsLabel('Step 2 of 7'), findsNothing);
 
-        // Should display the validation error text
         expect(
           find.text('Height must be between 50 and 250 cm'),
           findsOneWidget,
