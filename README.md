@@ -183,19 +183,19 @@ flutter run
 - Native database-level sorting via `.where().sortByDateTimeDesc()` runs directly inside Isar query streams.
 
 ### State Management
-- **`WeightBloc`**: Controls weight entries and chart period filtering.
-  - Events: `SubscribeToWeightChanges`, `UpdateUserHeight`, `AddWeight`, `DeleteWeight`, `ChangeChartFilter`, `RefreshWeightData`
+- **`WeightBloc`**: Controls weight entries, chart period filtering, and platform sync pipelines.
+  - Events: `SubscribeToWeightChanges`, `AddWeight`, `DeleteWeight`, `ChangeChartFilter`, `RefreshWeightData`, `SyncHealthEntries`, `ImportCsvEntries`
   - States: `WeightInitial`, `WeightLoading`, `WeightLoaded`, `WeightError`
-- **`AppSettingsBloc`**: Manages user configuration via `HydratedBloc`.
-  - Events: `UpdateTheme`, `UpdateMeasurementUnit`, `UpdateHeight`, `TargetWeightChanged`, `UpdateBiometricLock`, `ToggleNotifications`, `UpdateNotificationTime`, `SetLocked`, etc.
-  - State: `AppSettingsState` (persisted to storage).
+- **`AppSettingsBloc`**: Manages persistent user preferences via `HydratedBloc`.
+  - Events: `UpdateTheme`, `UpdateMeasurementUnit`, `UpdateHeight`, `TargetWeightChanged`, `UpdateBiometricLock`, `ToggleNotifications`, `UpdateNotificationTime`, `ToggleHealthSync`, `SetLocked`, `ClearAllData`
+  - State: `AppSettingsState` (hydrated and encrypted on-device).
 
 ### Code Generation
 
-Generate code for Isar schema models:
+Generate code for Isar schema models and dependency injection:
 
 ```bash
-dart run build_runner build
+dart run build_runner build --delete-conflicting-outputs
 ```
 
 Regenerate the app icon (light, dark, monochrome, and adaptive variants) and the native splash screen after updating the source images in `assets/icon/`:
@@ -208,13 +208,22 @@ dart run flutter_launcher_icons
 dart run flutter_native_splash:create
 ```
 
-## Testing
+## Testing & Quality Assurance
 
-Run full verification suite (over 1047+ tests):
+Run the comprehensive 7-phase quality and verification pipeline before freezing or pushing code:
 
 ```bash
 ./scripts/before_push.sh
 ```
+
+The script automatically executes and validates:
+1. `flutter pub get` — Resolves workspace dependencies
+2. `flutter gen-l10n` — Regenerates localization classes
+3. `dart run build_runner build` — Regenerates Isar and Injectable code
+4. `dart format --set-exit-if-changed lib test` — Strict formatting verification
+5. `flutter analyze` — Static linter verification (0 warnings/errors)
+6. `flutter test` — Comprehensive automated test suite (over 1047+ passing tests)
+7. `flutter build apk --debug` — Android compilation integrity check
 
 Or execute unit/widget tests directly:
 
