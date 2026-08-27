@@ -3,31 +3,10 @@
 The project instructions and universal standards are defined in:
 
 @AGENTS.md
+@agents_project.md
 
-`AGENTS.md` (and optional `agents_project.md` if present in the repository root) define the single source of truth for architecture, coding conventions, development workflow, and testing rules. Follow them before making any changes.
+`AGENTS.md` (and the optional `agents_project.md` if present in the repository root) define the single
+source of truth for architecture, coding conventions, development workflow, resource disposal, verification
+pipeline, and testing rules. Follow them before making any changes.
 
----
-
-## Quick Reference (Stack & Architecture)
-
-- **Project:** balance (Local-First weight tracking app)
-- **Framework:** Flutter & Dart (production-ready, modern syntax)
-- **Architecture:** Clean Architecture with Feature-First structure (`lib/features/<feature>/domain|data|presentation`)
-- **State Management:** BLoC (`flutter_bloc`) strictly (**Riverpod is forbidden**)
-- **Dependency Injection:** `get_it` + `injectable` (configured in `lib/core/di/`)
-- **Routing & Navigation:** `go_router` (`StatefulShellRoute.indexedStack`, `AppRoutes`)
-- **Local Database:** `isar_community` with reactive streams
-- **Documentation:** Strict doc comments on all public classes/methods in English
-- **Language:** All comments, code documentation, and logic descriptions in English
-
-## Key Constraints & Resource Lifecycle
-- **Stream Subscriptions:** Always cancel `StreamSubscription` in `close()` or BLoC's `onClose`.
-- **Controllers & Timers:** Properly dispose all `Timer` and `AnimationController` instances.
-- **Database Streams:** Manage Isar dynamic query streams via BLoC lifecycle.
-
-## Mandatory Verification Pipeline
-Run the following commands in order after code/config modifications:
-1. `dart format lib test`
-2. `dart run build_runner build`
-3. `flutter analyze`
-4. `flutter test`
+Do not introduce Cursor-specific overrides unless explicitly required.
