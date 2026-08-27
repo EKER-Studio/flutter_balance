@@ -141,14 +141,17 @@ lib/
 
 ### Settings, Onboarding & Security
 - **Declarative Navigation & Deep Linking**: Powered by `go_router` 14.x with persistent `StatefulShellRoute` multi-tab state preservation, URI query parsing (`/today?action=add`, `/calendar?date=YYYY-MM-DD`), and reactive auth/onboarding redirection guards.
+- **Android 15 Edge-to-Edge & Display Cutouts**: Full compliance with Android 15 (API 35) edge-to-edge drawing, transparent system bars (`enableEdgeToEdge`), camera cutout/notch adaptation (`shortEdges`), and responsive `SafeArea` boundary guards.
+- **Predictive Back & Per-App Language**: Modern predictive back gesture support (`PopScope`) and native per-app language configuration (`locales_config.xml`) for Android 13+.
 - **8-Step Onboarding**: A comprehensive wizard guiding users through unit selection, initial logging, CSV imports, and permission setups.
-- **Theme Options**: Light, Dark, or System mode.
-- **Target Tracking**: Configurable target weight goals.
-- **Reminders**: Daily reminder notifications with custom time selection.
+- **Theme Options**: Light, Dark, or System mode with Material 3 dynamic styling.
+- **Target Tracking**: Configurable target weight goals with dynamic milestone progress.
+- **Reminders**: Daily reminder notifications with custom time selection and timezone persistence.
 - **Biometric Lock**: Native biometric lock shielding on app cold start and backgrounding with `stickyAuth` set to `true` (persists the authentication prompt across brief backgrounding).
 
 ### Privacy, Analytics & Diagnostics
 - **100% Local-First Health Data**: All weight entries, target goals, height settings, BMI calculations, and calendar history are stored exclusively in the local on-device database (`isar_community`). No health measurements are sent to external servers or cloud databases.
+- **Hardware-Isolated AES-256 Encryption**: Security keys are anchored in hardware-backed Android Keystore / iOS Keychain via `flutter_secure_storage`.
 - **Firebase Analytics (`AppAnalytics`)**: Tracks non-sensitive usage metrics (screen navigations, UI interactions, feature engagement) to improve application UX. In strict adherence to privacy principles, **all raw health measurements (weights, heights, BMI numbers, goal targets) are omitted from telemetry payloads**. Analytics collection is automatically disabled in debug mode (`kDebugMode`).
 - **Firebase Crashlytics (`AppCrashReporter`)**: Captures non-fatal error reports and fatal crash stack traces for real-time defect diagnosis and performance stability. Crash logs contain technical error diagnostics and stack traces without any identifiable user health information.
 
