@@ -46,6 +46,14 @@ Dart, JSDoc for TypeScript, etc.):
 - Never use `print` / `debugPrint` for logging — use the project's structured logger, if one exists. Its API
   is documented in `agents_project.md`.
 
+## Code Quality
+- Use `const` constructors and widgets wherever the value is compile-time constant — avoids unnecessary
+  rebuilds.
+- Keep the UI/presentation layer thin: widgets render state and forward user events; business logic and
+  decisions belong below the UI layer, whatever the project's architecture calls that layer.
+- Never silently swallow exceptions in async code (empty `catch` blocks) — at minimum log the error, or
+  rethrow it.
+
 ## Resource Lifecycle & Disposal
 Before considering any feature involving streams, timers, animations, platform connections (Bluetooth,
 sockets, etc.), or any other disposable resource complete, verify that every such resource is released along
@@ -108,6 +116,8 @@ drop one of them.
 ## Guardrails
 - NEVER delete, skip, or weaken a test to make the verification pipeline pass. Fix the underlying code
   instead.
+- New or changed business logic must be accompanied by corresponding tests — an unchanged, still-passing
+  test suite is not sufficient on its own.
 - NEVER add lint-suppression comments (e.g. `// ignore:`) or disable analyzer/linter rules to silence errors,
   unless explicitly instructed.
 - If a fix is not obvious after 2 attempts, stop and report the exact error instead of applying a workaround.
