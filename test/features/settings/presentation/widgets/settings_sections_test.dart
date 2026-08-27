@@ -271,6 +271,22 @@ void main() {
 
       expect(tapped, isTrue);
     });
+
+    testWidgets('renders view on github tile', (tester) async {
+      await pumpWithL10n(
+        tester,
+        Builder(
+          builder: (context) => HelpSection(
+            l10n: AppLocalizations.of(context),
+            onBmiCategoriesTap: () {},
+            onPrivacyPolicyTap: () {},
+            onLicensesTap: () {},
+          ),
+        ),
+      );
+
+      expect(find.text('View on GitHub'), findsOneWidget);
+    });
   });
 
   group('ProfileSection', () {

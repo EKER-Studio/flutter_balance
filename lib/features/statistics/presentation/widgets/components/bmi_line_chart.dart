@@ -24,6 +24,7 @@ class BmiLineChart extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context);
 
     final sortedEntries = [...entries]
       ..sort((a, b) => a.dateTime.compareTo(b.dateTime));
@@ -128,7 +129,7 @@ class BmiLineChart extends StatelessWidget {
               getTooltipColor: (_) => cs.secondaryContainer,
               getTooltipItems: (touchedSpots) => touchedSpots.map((spot) {
                 return LineTooltipItem(
-                  'BMI ${spot.y.toStringAsFixed(1)}',
+                  l10n.bmiValueLabel(spot.y.toStringAsFixed(1)),
                   TextStyle(
                     color: cs.onSecondaryContainer,
                     fontWeight: FontWeight.bold,

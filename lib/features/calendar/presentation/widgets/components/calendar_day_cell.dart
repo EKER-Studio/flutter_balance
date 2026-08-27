@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:balance/features/weight/domain/entities/weight_entry.dart';
+import 'package:balance/l10n/app_localizations.dart';
 
 /// A single day cell within the calendar grid.
 ///
@@ -75,11 +76,13 @@ class CalendarDayCell extends StatelessWidget {
           )
         : null;
 
+    final l10n = AppLocalizations.of(context);
     final dateFormatted = DateFormat.yMMMd(
       Localizations.localeOf(context).toString(),
     ).format(date);
-    final semanticLabel =
-        '$dateFormatted, ${entries.length} measurements${isGoalAchieved ? ', goal achieved' : ''}';
+    final semanticLabel = isGoalAchieved
+        ? l10n.calendarDaySemanticsGoalAchieved(dateFormatted, entries.length)
+        : l10n.calendarDaySemantics(dateFormatted, entries.length);
 
     final isDark = theme.brightness == Brightness.dark;
 

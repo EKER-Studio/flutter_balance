@@ -129,10 +129,19 @@ void main() {
             isSelected: true,
             onTap: () => tapped = true,
           ),
+          locale: const Locale('en'),
         ),
       );
 
       expect(find.text('15'), findsOneWidget);
+      expect(
+        find.byWidgetPredicate(
+          (w) =>
+              w is Semantics &&
+              w.properties.label == 'Jul 15, 2026, no measurements',
+        ),
+        findsOneWidget,
+      );
       await tester.tap(find.text('15'));
       expect(tapped, isTrue);
     },
@@ -154,7 +163,17 @@ void main() {
           isGoalAchieved: true,
           onTap: () {},
         ),
+        locale: const Locale('en'),
       ),
+    );
+
+    expect(
+      find.byWidgetPredicate(
+        (w) =>
+            w is Semantics &&
+            w.properties.label == 'Jul 15, 2026, 1 measurement, goal achieved',
+      ),
+      findsOneWidget,
     );
 
     final dotContainer = tester

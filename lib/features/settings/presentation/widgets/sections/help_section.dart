@@ -41,8 +41,7 @@ class HelpSectionState extends State<HelpSection> {
       if (!launched && context.mounted) {
         AppSnackBar.show(
           context,
-          message:
-              'Could not open https://github.com/EKER-Studio/flutter_balance',
+          message: widget.l10n.couldNotOpenUrl(uri.toString()),
         );
       }
     } catch (e, stack) {
@@ -55,8 +54,7 @@ class HelpSectionState extends State<HelpSection> {
       if (context.mounted) {
         AppSnackBar.show(
           context,
-          message:
-              'Could not open https://github.com/EKER-Studio/flutter_balance',
+          message: widget.l10n.couldNotOpenUrl(uri.toString()),
         );
       }
     }

@@ -34,6 +34,28 @@
       }
     }
   },
+  "@calendarDaySemantics": {
+    "description": "Accessibility label for a calendar day cell with measurement count.",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@calendarDaySemanticsGoalAchieved": {
+    "description": "Accessibility label for a calendar day cell when target goal is achieved on that day.",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "@chartSemanticsTitle": {
     "description": "Accessibility label for the weight history chart, describing the displayed period and the latest recorded weight."
   },
@@ -41,6 +63,14 @@
     "description": "Error message shown when the device cannot open the email client for the contact address.",
     "placeholders": {
       "email": {
+        "type": "String"
+      }
+    }
+  },
+  "@couldNotOpenUrl": {
+    "description": "Error message shown when the device cannot open a web link.",
+    "placeholders": {
+      "url": {
         "type": "String"
       }
     }
@@ -124,9 +154,6 @@
       }
     }
   },
-  "@reminderTimeSet": {
-    "description": "Confirmation message shown after the daily weight reminder time has been set."
-  },
   "@stepOf": {
     "description": "Onboarding step indicator showing the current step and the total number of steps.",
     "placeholders": {
@@ -204,6 +231,8 @@
   "bmiLegendTitle": "BMI Categories",
   "bmiValueLabel": "BMI {bmi}",
   "bmiValueShortLabel": "{value} BMI",
+  "calendarDaySemantics": "{count, plural, =0{{date}, no measurements} one{{date}, 1 measurement} other{{date}, {count} measurements}}",
+  "calendarDaySemanticsGoalAchieved": "{count, plural, one{{date}, 1 measurement, goal achieved} other{{date}, {count} measurements, goal achieved}}",
   "cancel": "Cancel",
   "chartEmpty": "Not enough data to display chart.",
   "chartSemanticsFilter": "filter",
@@ -211,6 +240,7 @@
   "chartTargetLabel": "Target",
   "clearField": "Clear field",
   "couldNotOpenEmailClient": "Could not open email client for {email}",
+  "couldNotOpenUrl": "Could not open {url}",
   "csvExportShareSubject": "Balance Export CSV",
   "csvFormatHintExample": "ID, Date, Time (opt), Weight (kg), Note\n(or: Data; Czas; Waga (kg))",
   "csvFormatHintTitle": "Required column format:",
@@ -384,7 +414,6 @@
   "profileSection": "PROFILE",
   "remainingWeightLabel": "Remaining: {weight}",
   "reminderTime": "Reminder Time",
-  "reminderTimeSet": "Daily reminder set to {time}",
   "retry": "Try again",
   "retryStartup": "Retry Startup",
   "save": "Save",
