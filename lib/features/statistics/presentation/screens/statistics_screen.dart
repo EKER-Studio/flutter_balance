@@ -82,8 +82,8 @@ class StatisticsScreen extends StatelessWidget {
                       builder: (context, settingsState) {
                         return ClampedLayout(
                           maxWidth: context.standardContentMaxWidth,
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 16,
+                          padding: EdgeInsets.symmetric(
+                            horizontal: context.contentHorizontalPadding,
                             vertical: 12,
                           ),
                           child: StatisticsContentSection(

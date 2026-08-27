@@ -117,35 +117,32 @@ class HeroProgressCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(
+                Wrap(
+                  alignment: WrapAlignment.spaceBetween,
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  spacing: 8,
+                  runSpacing: 8,
                   children: [
-                    Expanded(
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(
-                            Icons.track_changes_outlined,
-                            size: 24,
-                            color: cs.primary,
-                          ),
-                          const SizedBox(width: 8),
-                          Flexible(
-                            child: Text(
-                              l10n.totalProgress,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: Theme.of(context).textTheme.titleMedium
-                                  ?.copyWith(
-                                    color: cs.onSurface,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                            ),
-                          ),
-                        ],
-                      ),
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          Icons.track_changes_outlined,
+                          size: 24,
+                          color: cs.primary,
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          l10n.totalProgress,
+                          style: Theme.of(context).textTheme.titleMedium
+                              ?.copyWith(
+                                color: cs.onSurface,
+                                fontWeight: FontWeight.w600,
+                              ),
+                        ),
+                      ],
                     ),
-                    if (statusBadge != null) ...[
-                      const SizedBox(width: 8),
+                    if (statusBadge != null)
                       Container(
                         padding: const EdgeInsets.symmetric(
                           horizontal: 12,
@@ -179,7 +176,6 @@ class HeroProgressCard extends StatelessWidget {
                           ],
                         ),
                       ),
-                    ],
                   ],
                 ),
                 const SizedBox(height: 16),

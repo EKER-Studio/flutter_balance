@@ -36,7 +36,7 @@ class StatisticsContentSection extends StatelessWidget {
     final bestStreak = _calculateBestStreak(entries);
     final compliancePct = _calculateTotalCompliance(entries, now);
     final weeklyPace = _calculateWeeklyPace(entries);
-    final isWide = context.isTablet;
+    final isWide = context.isMultiColumn;
 
     final heroProgressCard = HeroProgressCard(
       entries: entries,
