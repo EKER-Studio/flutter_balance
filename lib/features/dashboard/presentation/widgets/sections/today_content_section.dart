@@ -45,11 +45,9 @@ class TodayContentSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isTablet = context.isTablet;
-
     return LayoutBuilder(
       builder: (context, constraints) {
-        final isWide = isTablet;
+        final isWide = context.isMultiColumn;
 
         final Widget cardStack;
         if (isWide) {

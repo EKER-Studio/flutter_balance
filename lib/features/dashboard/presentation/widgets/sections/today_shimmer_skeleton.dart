@@ -52,7 +52,7 @@ class _TodayShimmerSkeletonState extends State<TodayShimmerSkeleton>
 
           return LayoutBuilder(
             builder: (context, constraints) {
-              final isWide = context.isTablet;
+              final isWide = context.isMultiColumn;
 
               if (isWide) {
                 return SingleChildScrollView(

@@ -71,8 +71,8 @@ class _TodayScreenState extends State<TodayScreen> {
                   sliver: SliverToBoxAdapter(
                     child: ClampedLayout(
                       maxWidth: context.standardContentMaxWidth,
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 16,
+                      padding: EdgeInsets.symmetric(
+                        horizontal: context.contentHorizontalPadding,
                         vertical: 12,
                       ),
                       child: TodayViewBody(
