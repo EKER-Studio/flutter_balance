@@ -162,58 +162,63 @@ class _BiometricShieldScreenState extends State<BiometricShieldScreen> {
       builder: (context, state) {
         return Scaffold(
           backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-          body: Center(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 24),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Semantics(
-                    label: l10n.appLockedStatusIconSemantics,
-                    image: true,
-                    child: Icon(
-                      Icons.lock_outline,
-                      size: 80,
-                      color: Theme.of(context).colorScheme.primary,
-                    ),
-                  ),
-                  const SizedBox(height: 24),
-                  Semantics(
-                    header: true,
-                    child: Text(
-                      l10n.appLocked,
-                      style: Theme.of(context).textTheme.headlineSmall,
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  Text(
-                    l10n.biometricAuthReason,
-                    textAlign: TextAlign.center,
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: Theme.of(context).colorScheme.onSurfaceVariant,
-                    ),
-                  ),
-                  const SizedBox(height: 32),
-                  Semantics(
-                    button: true,
-                    enabled: !_isUnlocking,
-                    label: l10n.unlock,
-                    hint: l10n.biometricAuthReason,
-                    child: FilledButton.icon(
-                      style: FilledButton.styleFrom(
-                        minimumSize: const Size(0, 48),
+          body: SafeArea(
+            child: Center(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 32,
+                  vertical: 24,
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Semantics(
+                      label: l10n.appLockedStatusIconSemantics,
+                      image: true,
+                      child: Icon(
+                        Icons.lock_outline,
+                        size: 80,
+                        color: Theme.of(context).colorScheme.primary,
                       ),
-                      onPressed: _isUnlocking
-                          ? null
-                          : () {
-                              AppAnalytics.logBiometricShieldUnlockTapped();
-                              _handleUnlock(context, bloc);
-                            },
-                      icon: const Icon(Icons.fingerprint),
-                      label: Text(l10n.unlock),
                     ),
-                  ),
-                ],
+                    const SizedBox(height: 24),
+                    Semantics(
+                      header: true,
+                      child: Text(
+                        l10n.appLocked,
+                        style: Theme.of(context).textTheme.headlineSmall,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    Text(
+                      l10n.biometricAuthReason,
+                      textAlign: TextAlign.center,
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                    const SizedBox(height: 32),
+                    Semantics(
+                      button: true,
+                      enabled: !_isUnlocking,
+                      label: l10n.unlock,
+                      hint: l10n.biometricAuthReason,
+                      child: FilledButton.icon(
+                        style: FilledButton.styleFrom(
+                          minimumSize: const Size(0, 48),
+                        ),
+                        onPressed: _isUnlocking
+                            ? null
+                            : () {
+                                AppAnalytics.logBiometricShieldUnlockTapped();
+                                _handleUnlock(context, bloc);
+                              },
+                        icon: const Icon(Icons.fingerprint),
+                        label: Text(l10n.unlock),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
