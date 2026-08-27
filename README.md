@@ -58,34 +58,38 @@ Clean Architecture strictly organized under a **Feature-First** (vertical slice)
 
 ```
 lib/
-├── app.dart                      # Root application widget
-├── main.dart                     # App entry point & database initialization
-├── core/                         # Cross-cutting concerns
-│   ├── database/                 # Database module & recovery logic
-│   ├── integrations/             # Native platform & 3rd-party services
-│   │   ├── biometrics/           # Local authentication & lock observer
-│   │   ├── csv/                  # CSV import/export pipelines
-│   │   ├── health/               # Apple HealthKit & Android Health Connect
-│   │   └── notifications/        # Scheduled daily local reminders
-│   ├── models/                   # Core models (MeasurementUnit)
-│   └── utils/                    # Shared utilities (FieldCipher, UnitConverter)
-├── features/                     # Feature modules
-│   ├── calendar/                 # Calendar view and historical day entries
-│   ├── dashboard/                # Today's overview, BMI, and quick-add
-│   ├── navigation/               # Main bottom navigation scaffold
+├── app.dart                      # Root application widget (MaterialApp, theme, locale & providers)
+├── main.dart                     # App entry point, splash preservation & crash reporting
+├── firebase_options.dart         # Auto-configured Firebase credentials per platform
+├── core/                         # Cross-cutting concerns & infrastructure
+│   ├── config/                   # AppEnvironment (dev, prod configurations)
+│   ├── database/                 # Database module & Isar initialization
+│   ├── di/                       # Dependency injection setup via GetIt & Injectable
+│   ├── errors/                   # Unified app error types & exception handlers
+│   ├── integrations/             # Native platform & 3rd-party integration services
+│   │   ├── biometrics/           # Local authentication (Face ID/Fingerprint) & lock observer
+│   │   ├── csv/                  # CSV parser, validation & import/export pipelines
+│   │   ├── health/               # Apple HealthKit & Android Health Connect sync service
+│   │   └── notifications/        # Local scheduled notifications & timezone management
+│   ├── models/                   # Core shared models (MeasurementUnit)
+│   ├── presentation/             # Global app UI & shared design system
+│   │   ├── navigation/           # AppRoutes and route definitions
+│   │   ├── screens/              # AppSplashScreen, AppInitializationErrorScreen, BiometricShieldScreen
+│   │   ├── theme/                # AppTheme (Light & Dark Material 3 tokens) & AppColors
+│   │   └── widgets/              # Reusable components (AppTopBar, ClampedLayout)
+│   └── utils/                    # Shared utilities (AppAnalytics, AppCrashReporter, AppBlocObserver)
+├── features/                     # Feature modules (Feature-First architecture)
+│   ├── calendar/                 # Calendar monthly view, day history & entry sheet
+│   ├── dashboard/                # Today's overview, BMI gauge & quick-add weight cards
+│   ├── navigation/               # Main navigation scaffold (BottomBar & NavigationRail)
 │   ├── onboarding/               # 8-step initial setup wizard
-│   ├── settings/                 # User preferences & configuration
-│   ├── statistics/               # Analytical charts and history trends
-│   └── weight/                   # Core weight tracking domain & data
-│       ├── data/                 # WeightEntryModel (Isar) & Repositories
-│       ├── domain/               # Entities, Domain Contracts, Error Types
-│       └── presentation/         # Shared WeightBloc & Events
-├── l10n/                         # Localization ARB assets (app_en.arb, app_pl.arb)
-└── presentation/                 # Global UI & App-level components
-    ├── core/                     # ClampedLayout responsive wrapper
-    ├── screens/                  # AppSplash, InitializationError, BiometricShield
-    ├── theme/                    # AppTheme (Light & Dark Material 3)
-    └── widgets/                  # Shared global widgets (AppTopBar, StateMessageCard)
+│   ├── settings/                 # User preferences, reminders, backup, wipe data & privacy policy
+│   ├── statistics/               # Analytical charts, BMI trend cards & period filters
+│   └── weight/                   # Core weight tracking domain, data & state
+│       ├── data/                 # WeightEntryModel (Isar schema) & IsarWeightRepository
+│       ├── domain/               # WeightEntry entities, repository contracts & health sync coordinator
+│       └── presentation/         # Shared WeightBloc, events, states & AddWeightSheet
+└── l10n/                         # Localization ARB assets (app_en.arb, app_pl.arb)
 ```
 
 ### Design Principles
