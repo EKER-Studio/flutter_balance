@@ -126,13 +126,13 @@ class _CalendarScreenState extends State<CalendarScreen> {
               sliver: SliverToBoxAdapter(
                 child: BlocBuilder<WeightBloc, WeightState>(
                   builder: (context, state) {
-                    final isTablet = context.isTablet;
+                    final isMultiColumn = context.isMultiColumn;
 
                     if (state is WeightInitial || state is WeightLoading) {
                       return ClampedLayout(
                         maxWidth: context.standardContentMaxWidth,
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 16,
+                        padding: EdgeInsets.symmetric(
+                          horizontal: context.contentHorizontalPadding,
                           vertical: 12,
                         ),
                         child: const CalendarShimmerSkeleton(),
@@ -142,8 +142,8 @@ class _CalendarScreenState extends State<CalendarScreen> {
                     if (state is WeightError) {
                       return ClampedLayout(
                         maxWidth: context.standardContentMaxWidth,
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 16,
+                        padding: EdgeInsets.symmetric(
+                          horizontal: context.contentHorizontalPadding,
                           vertical: 12,
                         ),
                         child: CalendarErrorCard(
@@ -179,11 +179,11 @@ class _CalendarScreenState extends State<CalendarScreen> {
 
                     return ClampedLayout(
                       maxWidth: context.standardContentMaxWidth,
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 16,
+                      padding: EdgeInsets.symmetric(
+                        horizontal: context.contentHorizontalPadding,
                         vertical: 12,
                       ),
-                      child: isTablet
+                      child: isMultiColumn
                           ? Row(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [

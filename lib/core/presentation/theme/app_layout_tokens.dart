@@ -24,8 +24,9 @@ extension ContextLayout on BuildContext {
   bool get isTablet =>
       MediaQuery.sizeOf(this).shortestSide >= AppLayoutTokens.tabletBreakpoint;
 
-  /// Returns `true` when the current viewport width supports multi-column layouts.
+  /// Returns `true` when the current viewport supports multi-column tablet layouts.
   bool get isMultiColumn =>
+      isTablet &&
       MediaQuery.sizeOf(this).width >= AppLayoutTokens.multiColumnBreakpoint;
 
   /// Returns standard horizontal padding for content areas (24dp on tablets, 16dp on phones).
