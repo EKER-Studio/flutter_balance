@@ -1,5 +1,6 @@
 export 'package:balance/features/weight/domain/csv_error_type.dart';
 
+import 'package:equatable/equatable.dart';
 import 'package:balance/core/integrations/csv/csv_importer.dart';
 import 'package:balance/features/weight/domain/csv_error_type.dart';
 import 'package:balance/features/weight/domain/entities/weight_entry.dart';
@@ -7,7 +8,7 @@ import 'package:balance/features/weight/domain/weight_error_type.dart';
 import 'package:balance/features/weight/presentation/bloc/weight_event.dart';
 
 /// The possible states of [WeightBloc].
-sealed class WeightState {
+sealed class WeightState extends Equatable {
   final double? heightCm;
   final TimePeriod timePeriod;
   final List<WeightEntry> entries;
@@ -19,6 +20,9 @@ sealed class WeightState {
     this.entries = const [],
     this.filteredEntries = const [],
   });
+
+  @override
+  List<Object?> get props => [heightCm, timePeriod, entries, filteredEntries];
 }
 
 /// The initial state before any subscription or interaction.
@@ -65,6 +69,9 @@ final class WeightError extends WeightState {
     required super.entries,
     required super.filteredEntries,
   });
+
+  @override
+  List<Object?> get props => [...super.props, errorType];
 }
 
 /// Transient state emitted while the CSV file is being parsed on the isolate.
@@ -89,6 +96,9 @@ final class CsvAnalysisReady extends WeightState {
     required super.filteredEntries,
     required this.analysis,
   });
+
+  @override
+  List<Object?> get props => [...super.props, analysis];
 }
 
 /// Transient success state emitted immediately after a confirmed CSV import,
@@ -104,6 +114,9 @@ final class WeightImportSuccess extends WeightState {
     required super.entries,
     required super.filteredEntries,
   });
+
+  @override
+  List<Object?> get props => [...super.props, importedCount];
 }
 
 /// Error state specific to CSV file analysis; never replaces [WeightError].
@@ -117,4 +130,7 @@ final class CsvAnalysisError extends WeightState {
     required super.entries,
     required super.filteredEntries,
   });
+
+  @override
+  List<Object?> get props => [...super.props, errorType];
 }

@@ -197,6 +197,13 @@ void main() {
 
     blocTest<WeightBloc, WeightState>(
       'imports new entries and emits WeightLoaded on successful import',
+      setUp: () {
+        when(() => repository.getAllEntries()).thenAnswer(
+          (_) async => [
+            WeightEntry(id: 1, weightKg: 80.0, dateTime: DateTime(2026, 1, 1)),
+          ],
+        );
+      },
       build: () => WeightBloc(
         repository: repository,
         appSettingsBloc: buildSettingsBloc(isHealthSyncEnabled: false),
@@ -210,7 +217,9 @@ void main() {
         ]),
       ),
       expect: () => [
-        isA<WeightLoaded>().having((s) => s.heightCm, 'heightCm', 170),
+        isA<WeightLoaded>()
+            .having((s) => s.heightCm, 'heightCm', 170)
+            .having((s) => s.entries.length, 'entries.length', 1),
       ],
       verify: (_) {
         verify(() => repository.bulkImportEntries(any())).called(1);
