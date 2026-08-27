@@ -1,3 +1,7 @@
+# R8 Full Mode Optimizations & Class Repackaging for Google Play
+-repackageclasses ''
+-allowaccessmodification
+
 # Flutter Local Notifications Plugin
 -keep class com.dexterous.flutterlocalnotifications.** { *; }
 -keep class com.dexterous.flutterlocalnotifications.ActionBroadcastReceiver { *; }
