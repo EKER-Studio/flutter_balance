@@ -48,7 +48,6 @@ class CalendarGrid extends StatelessWidget {
     final startingOffset = firstDayOfMonth.weekday - 1;
     final totalCells = startingOffset + daysInMonth;
 
-    // Group entries for this month by day
     final Map<int, List<WeightEntry>> entriesByDay = {};
     for (final e in entries) {
       if (e.dateTime.year == focusedMonth.year &&

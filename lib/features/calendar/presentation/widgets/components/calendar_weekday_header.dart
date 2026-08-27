@@ -15,7 +15,6 @@ class CalendarWeekdayHeader extends StatelessWidget {
     final weekDays = List.generate(7, (i) => mondayBase.add(Duration(days: i)));
 
     String capitalize3(String s) {
-      // Capitalizes the first letter of a three-character abbreviation.
       if (s.length < 3) return s.toUpperCase();
       final sub = s.substring(0, 3);
       return sub[0].toUpperCase() + sub.substring(1);
