@@ -1,0 +1,10 @@
+# Cline Rules
+
+Before making any change, read and follow `AGENTS.md` in the repository root — it is the single source of
+truth for architecture, coding conventions, development workflow, resource disposal, verification pipeline,
+and testing rules.
+
+If `agents_project.md` also exists in the repository root, read and follow it too — it documents this
+project's specific stack, architecture, and commands.
+
+Do not introduce Cline-specific overrides unless explicitly required.
