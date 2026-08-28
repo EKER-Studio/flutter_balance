@@ -1,0 +1,5 @@
+# Generated code — large and repetitive; excluded from search/indexing but still
+# readable if a file is opened or referenced directly.
+**/*.g.dart
+**/*.freezed.dart
+**/*.mocks.dart

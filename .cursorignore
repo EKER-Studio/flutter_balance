@@ -1,0 +1,20 @@
+# Build & tool output — never useful as AI context
+build/
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+coverage/
+
+# Platform build output
+ios/Pods/
+ios/.symlinks/
+android/.gradle/
+android/app/build/
+android/local.properties
+macos/Pods/
+**/ephemeral/
+
+# Secrets — never index or expose to AI
+.env
+*.env
+android/key.properties

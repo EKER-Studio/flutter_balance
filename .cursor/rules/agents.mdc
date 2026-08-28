@@ -1,0 +1,7 @@
+---
+description: Global project guidelines — AGENTS.md and agents_project.md are the source of truth
+alwaysApply: true
+---
+
+Follow the rules defined in `AGENTS.md`, and in `agents_project.md` if present in the repository root,
+before making any changes. Do not introduce Cursor-specific overrides unless explicitly required.
