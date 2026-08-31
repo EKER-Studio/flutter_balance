@@ -72,6 +72,7 @@ void main() {
         BlocProvider<AppSettingsBloc>.value(value: settingsBloc),
       ],
       child: MaterialApp(
+        locale: const Locale('en'),
         localizationsDelegates: const [
           AppLocalizations.delegate,
           GlobalMaterialLocalizations.delegate,
