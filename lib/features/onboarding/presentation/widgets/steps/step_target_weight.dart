@@ -2,23 +2,20 @@ import 'package:flutter/material.dart';
 import 'package:balance/core/models/measurement_unit.dart';
 import 'package:balance/core/utils/analytics.dart';
 import 'package:balance/core/utils/unit_converter.dart';
+import 'package:balance/features/settings/presentation/bloc/weight_goal_mode.dart';
+import 'package:balance/features/settings/presentation/utils/weight_goal_mode_localizer.dart';
 import 'package:balance/l10n/app_localizations.dart';
 import 'package:balance/features/onboarding/presentation/widgets/components/onboarding_step_layout.dart';
 
 /// Form widget for Step 4 of the onboarding wizard: setting an optional
-/// target weight with a live view of the remaining delta to reach it.
-///
-/// Skipping is allowed: an empty field passes `null` through [onNext], which
-/// the wizard screen forwards to `AppSettingsBloc` as a cleared target
-/// weight. Valid input is non-empty and within 0-500 of the active unit (kg
-/// or lbs, converted internally); invalid values disable the Next button and
-/// show an inline error. When a valid target and the previous step's initial
-/// weight are present, a delta line shows how far the target is, or a goal
-/// achieved notice when it is already met.
+/// target weight with a goal mode (lose, maintain, gain) and a live view
+/// of the remaining delta to reach it.
 class StepTargetWeight extends StatefulWidget {
   final MeasurementUnit unit;
 
   final double? initialTargetWeightKg;
+
+  final WeightGoalMode initialGoalMode;
 
   /// Initial weight in kg logged in the previous step, used to display the
   /// remaining delta to the entered target (e.g. "-5.0 kg to target").
@@ -26,13 +23,14 @@ class StepTargetWeight extends StatefulWidget {
 
   /// Callback invoked when the user submits or skips this step.
   ///
-  /// Passes the target weight in kg, or `null` if no target weight is set.
-  final void Function(double? targetWeightKg) onNext;
+  /// Passes the target weight in kg (or `null` if omitted) and the selected goal mode.
+  final void Function(double? targetWeightKg, WeightGoalMode goalMode) onNext;
 
   const StepTargetWeight({
     super.key,
     required this.unit,
     this.initialTargetWeightKg,
+    this.initialGoalMode = WeightGoalMode.lose,
     this.initialWeightKg,
     required this.onNext,
   });
@@ -44,11 +42,13 @@ class StepTargetWeight extends StatefulWidget {
 class _StepTargetWeightState extends State<StepTargetWeight> {
   late final TextEditingController _weightController;
   final FocusNode _focusNode = FocusNode();
+  late WeightGoalMode _selectedMode;
   String? _errorText;
 
   @override
   void initState() {
     super.initState();
+    _selectedMode = widget.initialGoalMode;
 
     // Request focus after the step's frame renders so the keyboard opens
     // exactly when the step becomes visible, never while it is offstage.
@@ -86,8 +86,8 @@ class _StepTargetWeightState extends State<StepTargetWeight> {
     setState(() {});
   }
 
-  /// Formats the remaining delta (initial weight minus target) in the active
-  /// unit, or returns `null` when no initial weight or valid target is set.
+  /// Formats the remaining delta in the active unit according to the selected
+  /// goal mode, or returns `null` when no initial weight or valid target is set.
   String? _buildDeltaText(AppLocalizations l10n) {
     final initialWeight = widget.initialWeightKg;
     if (initialWeight == null || initialWeight <= 0) return null;
@@ -95,18 +95,38 @@ class _StepTargetWeightState extends State<StepTargetWeight> {
     final targetKg = _parseTargetWeightKg();
     if (targetKg == null) return null;
 
-    if (initialWeight <= targetKg) {
-      // During initial setup/onboarding, suppress trophy notice to avoid
-      // confusion for users aiming for weight gain or setting baseline target.
-      return null;
-    }
+    final isImperial = widget.unit == MeasurementUnit.imperial;
+    final unitSuffix = isImperial ? 'lbs' : 'kg';
 
-    final distKg = initialWeight - targetKg;
-    final formatted = widget.unit == MeasurementUnit.imperial
-        ? kgToLbs(distKg).toStringAsFixed(1)
-        : distKg.toStringAsFixed(1);
-    final unitSuffix = widget.unit == MeasurementUnit.imperial ? 'lbs' : 'kg';
-    return '$formatted $unitSuffix ${l10n.toTarget}';
+    switch (_selectedMode) {
+      case WeightGoalMode.lose:
+        if (initialWeight <= targetKg) return null;
+        final distKg = initialWeight - targetKg;
+        final formatted = isImperial
+            ? kgToLbs(distKg).toStringAsFixed(1)
+            : distKg.toStringAsFixed(1);
+        return '$formatted $unitSuffix ${l10n.toTarget}';
+
+      case WeightGoalMode.gain:
+        if (initialWeight >= targetKg) return null;
+        final distKg = targetKg - initialWeight;
+        final formatted = isImperial
+            ? kgToLbs(distKg).toStringAsFixed(1)
+            : distKg.toStringAsFixed(1);
+        return '+$formatted $unitSuffix ${l10n.toTarget}';
+
+      case WeightGoalMode.maintain:
+        final distKg = (initialWeight - targetKg).abs();
+        final thresholdKg = isImperial ? lbsToKg(2.2) : 1.0;
+        if (distKg <= thresholdKg) {
+          return l10n.goalModeMaintainDesc;
+        }
+        final formatted = isImperial
+            ? kgToLbs(distKg).toStringAsFixed(1)
+            : distKg.toStringAsFixed(1);
+        final sign = initialWeight > targetKg ? '+' : '-';
+        return '$sign$formatted $unitSuffix ${l10n.toTarget}';
+    }
   }
 
   /// Parses the target weight input into kilograms, or `null` when empty or
@@ -165,10 +185,10 @@ class _StepTargetWeightState extends State<StepTargetWeight> {
   }
 
   /// Invokes [StepTargetWeight.onNext] with the parsed target weight (or
-  /// `null` when the field was left empty).
+  /// `null` when the field was left empty) and selected goal mode.
   void _handleNext() {
     final weightKg = _parseTargetWeightKg();
-    widget.onNext(weightKg);
+    widget.onNext(weightKg, _selectedMode);
   }
 
   @override
@@ -194,6 +214,40 @@ class _StepTargetWeightState extends State<StepTargetWeight> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
+          SegmentedButton<WeightGoalMode>(
+            segments: [
+              ButtonSegment<WeightGoalMode>(
+                value: WeightGoalMode.lose,
+                label: Text(l10n.goalModeLose),
+                icon: const Icon(Icons.trending_down),
+              ),
+              ButtonSegment<WeightGoalMode>(
+                value: WeightGoalMode.maintain,
+                label: Text(l10n.goalModeMaintain),
+                icon: const Icon(Icons.horizontal_rule),
+              ),
+              ButtonSegment<WeightGoalMode>(
+                value: WeightGoalMode.gain,
+                label: Text(l10n.goalModeGain),
+                icon: const Icon(Icons.trending_up),
+              ),
+            ],
+            selected: {_selectedMode},
+            onSelectionChanged: (Set<WeightGoalMode> newSelection) {
+              setState(() {
+                _selectedMode = newSelection.first;
+              });
+            },
+          ),
+          const SizedBox(height: 8),
+          Text(
+            _selectedMode.localizedDescription(context),
+            style: TextStyle(
+              fontSize: 12,
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
+          ),
+          const SizedBox(height: 16),
           TextField(
             key: const Key('target_weight_input'),
             controller: _weightController,

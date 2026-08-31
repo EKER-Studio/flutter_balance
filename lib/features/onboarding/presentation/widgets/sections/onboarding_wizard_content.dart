@@ -17,6 +17,7 @@ import 'package:balance/features/onboarding/presentation/widgets/steps/step_welc
 import 'package:balance/core/utils/analytics.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_bloc.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_event.dart';
+import 'package:balance/features/settings/presentation/bloc/weight_goal_mode.dart';
 import 'package:balance/features/weight/domain/entities/weight_entry.dart';
 import 'package:balance/features/weight/presentation/bloc/weight_bloc.dart';
 import 'package:balance/features/weight/presentation/bloc/weight_event.dart';
@@ -130,7 +131,10 @@ class _OnboardingWizardContentState extends State<OnboardingWizardContent> {
     _goToNextStep();
   }
 
-  void _handleTargetWeightNext(double? targetWeightKg) {
+  void _handleTargetWeightNext(
+    double? targetWeightKg,
+    WeightGoalMode goalMode,
+  ) {
     if (targetWeightKg != null) {
       AppAnalytics.logOnboardingTargetWeightSet();
     } else {
@@ -139,7 +143,9 @@ class _OnboardingWizardContentState extends State<OnboardingWizardContent> {
     context.read<OnboardingBloc>().add(
       OnboardingTargetWeightSet(targetWeightKg),
     );
-    context.read<AppSettingsBloc>().add(TargetWeightChanged(targetWeightKg));
+    final settingsBloc = context.read<AppSettingsBloc>();
+    settingsBloc.add(TargetWeightChanged(targetWeightKg));
+    settingsBloc.add(UpdateWeightGoalMode(goalMode));
     _goToNextStep(isSkipped: targetWeightKg == null);
   }
 
@@ -238,6 +244,10 @@ class _OnboardingWizardContentState extends State<OnboardingWizardContent> {
             StepTargetWeight(
               unit: state.selectedUnit,
               initialTargetWeightKg: state.draftTargetWeight,
+              initialGoalMode: context
+                  .read<AppSettingsBloc>()
+                  .state
+                  .weightGoalMode,
               initialWeightKg: state.draftInitialWeight,
               onNext: _handleTargetWeightNext,
             ),

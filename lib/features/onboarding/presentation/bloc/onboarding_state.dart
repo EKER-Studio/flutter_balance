@@ -46,14 +46,26 @@ final class OnboardingState extends Equatable {
     this.isBiometricEnabled = false,
   });
 
-  /// Latest chronological entry from [importedCsvEntries], or `null` when
-  /// nothing was imported.
+  /// Latest chronological entry from [importedCsvEntries], prioritizing today's
+  /// latest measurement if present, or `null` when nothing was imported.
   ///
   /// Used both to pre-fill the initial-weight step and to exclude that entry
   /// from the bulk import on completion (it is persisted separately via
   /// [draftInitialWeight]).
   WeightEntry? get latestImportedEntry {
     if (importedCsvEntries.isEmpty) return null;
+    final now = DateTime.now();
+    final todayEntries = importedCsvEntries.where(
+      (e) =>
+          e.dateTime.year == now.year &&
+          e.dateTime.month == now.month &&
+          e.dateTime.day == now.day,
+    );
+    if (todayEntries.isNotEmpty) {
+      return todayEntries.reduce(
+        (a, b) => a.dateTime.isAfter(b.dateTime) ? a : b,
+      );
+    }
     return importedCsvEntries.reduce(
       (a, b) => a.dateTime.isAfter(b.dateTime) ? a : b,
     );

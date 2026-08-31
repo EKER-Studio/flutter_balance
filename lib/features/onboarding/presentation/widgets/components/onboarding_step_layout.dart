@@ -68,6 +68,61 @@ class OnboardingStepLayout extends StatelessWidget {
       padding: EdgeInsets.zero,
       child: LayoutBuilder(
         builder: (context, constraints) {
+          if (isLandscape) {
+            return SingleChildScrollView(
+              physics: const BouncingScrollPhysics(),
+              keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+              child: Padding(
+                padding: effectivePadding,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    // 1. Header (Title & Subtitle)
+                    if (titleWidget != null)
+                      titleWidget!
+                    else if (title != null) ...[
+                      const SizedBox(height: 4.0),
+                      Text(
+                        title!,
+                        style: theme.textTheme.headlineSmall?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                    if (subtitleWidget != null)
+                      subtitleWidget!
+                    else if (subtitle != null) ...[
+                      const SizedBox(height: 4.0),
+                      Text(
+                        subtitle!,
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          color: theme.colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                    ],
+                    const SizedBox(height: 8.0),
+
+                    // 2. Middle Content Area
+                    Align(
+                      alignment: centerContent
+                          ? Alignment.center
+                          : Alignment.topCenter,
+                      child: content,
+                    ),
+
+                    const SizedBox(height: 12.0),
+
+                    // 3. Bottom Footer Action
+                    ConstrainedBox(
+                      constraints: const BoxConstraints(minHeight: 48.0),
+                      child: footer,
+                    ),
+                  ],
+                ),
+              ),
+            );
+          }
+
           return SingleChildScrollView(
             physics: const BouncingScrollPhysics(),
             keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
@@ -83,20 +138,17 @@ class OnboardingStepLayout extends StatelessWidget {
                       if (titleWidget != null)
                         titleWidget!
                       else if (title != null) ...[
-                        SizedBox(height: isLandscape ? 4.0 : 0.0),
                         Text(
                           title!,
-                          style:
-                              (isLandscape
-                                      ? theme.textTheme.headlineSmall
-                                      : theme.textTheme.headlineSmall)
-                                  ?.copyWith(fontWeight: FontWeight.bold),
+                          style: theme.textTheme.headlineSmall?.copyWith(
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ],
                       if (subtitleWidget != null)
                         subtitleWidget!
                       else if (subtitle != null) ...[
-                        SizedBox(height: isLandscape ? 4.0 : 8.0),
+                        const SizedBox(height: 8.0),
                         Text(
                           subtitle!,
                           style: theme.textTheme.bodyMedium?.copyWith(
@@ -104,7 +156,7 @@ class OnboardingStepLayout extends StatelessWidget {
                           ),
                         ),
                       ],
-                      SizedBox(height: isLandscape ? 8.0 : 24.0),
+                      const SizedBox(height: 24.0),
 
                       // 2. Middle Content Area
                       Expanded(
@@ -116,7 +168,7 @@ class OnboardingStepLayout extends StatelessWidget {
                         ),
                       ),
 
-                      SizedBox(height: isLandscape ? 12.0 : 24.0),
+                      const SizedBox(height: 24.0),
 
                       // 3. Bottom Footer Action
                       ConstrainedBox(
