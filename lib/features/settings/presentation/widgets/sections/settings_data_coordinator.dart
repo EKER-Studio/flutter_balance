@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:file_picker/file_picker.dart';
@@ -7,6 +8,7 @@ import 'package:share_plus/share_plus.dart';
 
 import 'package:balance/core/integrations/biometrics/biometric_service.dart';
 import 'package:balance/core/integrations/csv/csv_exporter.dart';
+import 'package:balance/core/integrations/widgets/widget_sync_service.dart';
 import 'package:balance/core/models/measurement_unit.dart';
 import 'package:balance/core/presentation/navigation/app_routes.dart';
 import 'package:balance/core/presentation/utils/app_snackbar.dart';
@@ -212,6 +214,7 @@ class SettingsDataCoordinator {
         AppAnalytics.logSettingsWipeFailed(outcome.errorType.name);
       } else {
         AppAnalytics.logSettingsWipeSuccess();
+        unawaited(WidgetSyncService.instance.clearWidgetData());
       }
       AppSnackBar.show(
         context,

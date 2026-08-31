@@ -10,6 +10,7 @@ import 'package:balance/core/integrations/biometrics/biometric_lock_observer.dar
 import 'package:balance/core/integrations/biometrics/biometric_service.dart';
 import 'package:balance/core/integrations/health/health_service.dart';
 import 'package:balance/core/integrations/notifications/notification_service.dart';
+import 'package:balance/core/integrations/widgets/widget_sync_service.dart';
 import 'package:balance/core/presentation/navigation/app_router.dart';
 import 'package:balance/core/presentation/navigation/app_routes.dart';
 import 'package:balance/core/presentation/screens/app_initialization_error_screen.dart';
@@ -26,6 +27,7 @@ import 'package:balance/features/weight/data/repositories/isar_weight_repository
 import 'package:balance/features/weight/domain/repositories/weight_repository.dart';
 import 'package:balance/features/weight/presentation/bloc/weight_bloc.dart';
 import 'package:balance/features/weight/presentation/bloc/weight_event.dart';
+import 'package:balance/features/weight/presentation/bloc/weight_state.dart';
 import 'package:balance/l10n/app_localizations.dart';
 
 /// The root widget of the application, configuring global theme, localization,
@@ -108,6 +110,9 @@ class _AppState extends State<App> {
         );
       }
 
+      // 5. Widget Sync — initialize native widget bridge.
+      await WidgetSyncService.instance.initialize();
+
       return repository;
     } finally {
       // Drop the native splash screen regardless of outcome.
@@ -186,14 +191,46 @@ class _AppState extends State<App> {
                   channelDescription: l10n.notificationChannelDescription,
                 );
               },
-              child: BlocListener<AppSettingsBloc, AppSettingsState>(
-                listenWhen: (previous, current) =>
-                    previous.isLocked != current.isLocked ||
-                    previous.isOnboardingCompleted !=
-                        current.isOnboardingCompleted,
-                listener: (context, state) {
-                  _router?.refresh();
-                },
+              child: MultiBlocListener(
+                listeners: [
+                  BlocListener<AppSettingsBloc, AppSettingsState>(
+                    listenWhen: (previous, current) =>
+                        previous.isLocked != current.isLocked ||
+                        previous.isOnboardingCompleted !=
+                            current.isOnboardingCompleted,
+                    listener: (context, state) {
+                      _router?.refresh();
+                    },
+                  ),
+                  BlocListener<WeightBloc, WeightState>(
+                    listener: (context, weightState) {
+                      final settingsState = context
+                          .read<AppSettingsBloc>()
+                          .state;
+                      WidgetSyncService.instance.updateWidgetData(
+                        entries: weightState.entries,
+                        targetWeight: settingsState.targetWeight,
+                        goalMode: settingsState.weightGoalMode,
+                        unit: settingsState.measurementUnit,
+                      );
+                    },
+                  ),
+                  BlocListener<AppSettingsBloc, AppSettingsState>(
+                    listenWhen: (previous, current) =>
+                        previous.targetWeight != current.targetWeight ||
+                        previous.measurementUnit != current.measurementUnit ||
+                        previous.weightGoalMode != current.weightGoalMode,
+                    listener: (context, settingsState) {
+                      final weightState = context.read<WeightBloc>().state;
+                      WidgetSyncService.instance.updateWidgetData(
+                        entries: weightState.entries,
+                        targetWeight: settingsState.targetWeight,
+                        goalMode: settingsState.weightGoalMode,
+                        unit: settingsState.measurementUnit,
+                      );
+                    },
+                  ),
+                ],
                 child: Router.withConfig(config: _router!),
               ),
             ),
