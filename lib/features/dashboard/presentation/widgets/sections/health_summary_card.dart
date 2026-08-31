@@ -10,6 +10,7 @@ import 'package:balance/features/weight/domain/bmi_category.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_bloc.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_event.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_state.dart';
+import 'package:balance/features/settings/presentation/bloc/weight_goal_mode.dart';
 import 'package:balance/features/settings/presentation/widgets/components/target_weight_sheet.dart';
 import 'package:balance/features/weight/presentation/utils/bmi_category_localizer.dart';
 import 'package:balance/features/weight/presentation/widgets/components/bmi_legend_dialog.dart';
@@ -131,11 +132,13 @@ class HealthSummaryCard extends StatelessWidget {
                       currentWeightKg: latestWeightKg,
                       unit: weightUnit,
                       unitLabel: unitLabel,
+                      goalMode: state.weightGoalMode,
                       onTap: () => _openTargetWeightSheet(
                         context,
                         targetWeight,
                         weightUnit,
                         latestWeightKg,
+                        state.weightGoalMode,
                       ),
                     ),
                   ],
@@ -169,6 +172,7 @@ class HealthSummaryCard extends StatelessWidget {
     double? targetWeightKg,
     MeasurementUnit unit,
     double currentWeightKg,
+    WeightGoalMode goalMode,
   ) async {
     if (targetWeightKg != null) {
       AppAnalytics.logTodayGoalProgressBarTapped();
@@ -181,6 +185,7 @@ class HealthSummaryCard extends StatelessWidget {
       builder: (sheetCtx) => TargetWeightSheet(
         currentValueKg: targetWeightKg,
         measurementUnit: unit,
+        initialGoalMode: goalMode,
       ),
     );
 
@@ -188,6 +193,14 @@ class HealthSummaryCard extends StatelessWidget {
       if (result == 'clear') {
         AppAnalytics.logSettingsTargetWeightCleared();
         context.read<AppSettingsBloc>().add(const TargetWeightChanged(null));
+      } else if (result is ({double weight, WeightGoalMode mode})) {
+        final targetKg = unit == MeasurementUnit.imperial
+            ? lbsToKg(result.weight)
+            : result.weight;
+        AppAnalytics.logSettingsTargetWeightSaved();
+        context.read<AppSettingsBloc>().add(
+          TargetWeightChanged(targetKg, result.mode),
+        );
       } else if (result is double) {
         final targetKg = unit == MeasurementUnit.imperial
             ? lbsToKg(result)

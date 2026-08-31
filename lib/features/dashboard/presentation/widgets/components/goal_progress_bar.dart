@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:balance/core/models/measurement_unit.dart';
 import 'package:balance/core/utils/unit_converter.dart';
+import 'package:balance/features/settings/presentation/bloc/weight_goal_mode.dart';
 import 'package:balance/l10n/app_localizations.dart';
 
 /// A presentational widget displaying progress toward a user-defined target weight,
@@ -18,6 +19,9 @@ class GoalProgressBar extends StatelessWidget {
   /// The measurement unit label (e.g. 'kg' or 'lb').
   final String unitLabel;
 
+  /// The active weight goal mode (lose, maintain, or gain).
+  final WeightGoalMode goalMode;
+
   /// An optional callback invoked when the progress bar is tapped.
   final VoidCallback? onTap;
 
@@ -27,6 +31,7 @@ class GoalProgressBar extends StatelessWidget {
     required this.currentWeightKg,
     required this.unit,
     required this.unitLabel,
+    this.goalMode = WeightGoalMode.lose,
     this.onTap,
   });
 
@@ -42,6 +47,7 @@ class GoalProgressBar extends StatelessWidget {
     final String goalTargetStr;
     final String goalDetailStr;
     final double progress;
+    final bool isAchieved;
     final String semanticsLabel;
 
     if (hasTarget) {
@@ -49,37 +55,84 @@ class GoalProgressBar extends StatelessWidget {
           ? kgToLbs(target)
           : target;
 
-      final differenceKg = currentWeightKg - target;
-      final isAchieved = differenceKg <= 0;
+      final double displayDifference;
 
-      final displayDifference = unit == MeasurementUnit.imperial
-          ? kgToLbs(differenceKg.abs())
-          : differenceKg.abs();
+      switch (goalMode) {
+        case WeightGoalMode.lose:
+          final differenceKg = currentWeightKg - target;
+          isAchieved = differenceKg <= 0;
+          displayDifference = unit == MeasurementUnit.imperial
+              ? kgToLbs(differenceKg.abs())
+              : differenceKg.abs();
+          final maxDifference = unit == MeasurementUnit.imperial ? 40.0 : 20.0;
+          double calcProgress = 1.0;
+          if (!isAchieved) {
+            calcProgress =
+                1.0 - (displayDifference / maxDifference).clamp(0.0, 1.0);
+          }
+          progress = calcProgress.clamp(0.05, 1.0);
+          goalDetailStr = isAchieved
+              ? l10n.goalAchieved
+              : l10n.remainingWeightLabel(
+                  '${displayDifference.toStringAsFixed(1)} $unitLabel',
+                );
 
-      final maxDifference = unit == MeasurementUnit.imperial ? 40.0 : 20.0;
-      double calcProgress = 1.0;
-      if (!isAchieved) {
-        calcProgress =
-            1.0 - (displayDifference / maxDifference).clamp(0.0, 1.0);
+        case WeightGoalMode.gain:
+          final differenceKg = target - currentWeightKg;
+          isAchieved = differenceKg <= 0;
+          displayDifference = unit == MeasurementUnit.imperial
+              ? kgToLbs(differenceKg.abs())
+              : differenceKg.abs();
+          final maxDifference = unit == MeasurementUnit.imperial ? 40.0 : 20.0;
+          double calcProgress = 1.0;
+          if (!isAchieved) {
+            calcProgress =
+                1.0 - (displayDifference / maxDifference).clamp(0.0, 1.0);
+          }
+          progress = calcProgress.clamp(0.05, 1.0);
+          goalDetailStr = isAchieved
+              ? l10n.goalAchieved
+              : l10n.remainingWeightLabel(
+                  '${displayDifference.toStringAsFixed(1)} $unitLabel',
+                );
+
+        case WeightGoalMode.maintain:
+          final differenceKg = (currentWeightKg - target).abs();
+          final thresholdKg = unit == MeasurementUnit.imperial
+              ? lbsToKg(2.2)
+              : 1.0;
+          isAchieved = differenceKg <= thresholdKg;
+          displayDifference = unit == MeasurementUnit.imperial
+              ? kgToLbs(differenceKg)
+              : differenceKg;
+          final maxDifference = unit == MeasurementUnit.imperial ? 10.0 : 5.0;
+          double calcProgress = 1.0;
+          if (!isAchieved) {
+            calcProgress =
+                1.0 - (displayDifference / maxDifference).clamp(0.0, 1.0);
+          }
+          progress = isAchieved ? 1.0 : calcProgress.clamp(0.05, 1.0);
+          final rangeDisplay = unit == MeasurementUnit.imperial
+              ? '2.0 lb'
+              : '1.0 kg';
+          final sign = currentWeightKg >= target ? '+' : '-';
+          goalDetailStr = isAchieved
+              ? l10n.goalWeightMaintained(rangeDisplay)
+              : l10n.goalWeightDeviation(
+                  '$sign${displayDifference.toStringAsFixed(1)} $unitLabel',
+                );
       }
-      progress = calcProgress.clamp(0.05, 1.0);
 
       goalTargetStr = '${displayTarget.toStringAsFixed(1)} $unitLabel';
-      goalDetailStr = isAchieved
-          ? l10n.goalAchieved
-          : l10n.remainingWeightLabel(
-              '${displayDifference.toStringAsFixed(1)} $unitLabel',
-            );
       semanticsLabel = l10n.goalProgressSemantics(goalTargetStr, goalDetailStr);
     } else {
+      isAchieved = false;
       progress = 0.0;
       goalTargetStr = l10n.notSet;
       goalDetailStr = l10n.setGoalAction;
       semanticsLabel = l10n.setGoalSemantics;
     }
 
-    final differenceKg = hasTarget ? currentWeightKg - target : null;
-    final isAchieved = differenceKg != null && differenceKg <= 0;
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final achievedColor = isDark
         ? Colors.green.shade300
