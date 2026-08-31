@@ -418,5 +418,8 @@
   "wipeDataButton": "Wyczyść dane",
   "wipeDataContent": "To trwale usunie wszystkie wpisy wagi i zresetuje ustawienia aplikacji. Tej operacji nie można cofnąć.",
   "year": "Rok",
-  "yourResult": "Twój wynik"
+  "yourResult": "Twój wynik",
+  "movingAverage7d": "Średnia 7-dniowa",
+  "movingAverage7dLegend": "Śr. 7-dniowa",
+  "weightLegend": "Waga"
 }

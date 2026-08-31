@@ -52,6 +52,14 @@ class WeightLineChart extends StatelessWidget {
         : (yRange <= 8.0 ? 2.0 : (yRange / 4.0).ceilToDouble());
     final isWholeInterval = verticalInterval >= 1.0;
 
+    final showMovingAverage = sortedEntries.length >= 3;
+    final smaWeights = showMovingAverage
+        ? calculate7DayMovingAverage(sortedEntries)
+        : const <double>[];
+    final displaySmaWeights = showMovingAverage
+        ? smaWeights.map((w) => _displayWeight(w, measurementUnit)).toList()
+        : const <double>[];
+
     final l10n = AppLocalizations.of(context);
     return Semantics(
       container: true,
@@ -148,13 +156,19 @@ class WeightLineChart extends StatelessWidget {
               getTooltipColor: (spot) => colorScheme.secondaryContainer,
               getTooltipItems: (spots) {
                 return spots.map((spot) {
+                  final isSmaBar = showMovingAverage && spot.barIndex == 0;
                   final weight = measurementUnit == MeasurementUnit.imperial
                       ? lbsToKg(spot.y)
                       : spot.y;
+                  final prefix = isSmaBar
+                      ? '${l10n.movingAverage7dLegend}: '
+                      : '';
                   return LineTooltipItem(
-                    formatWeight(weight, measurementUnit),
+                    '$prefix${formatWeight(weight, measurementUnit)}',
                     TextStyle(
-                      color: colorScheme.onSecondaryContainer,
+                      color: isSmaBar
+                          ? colorScheme.tertiary
+                          : colorScheme.onSecondaryContainer,
                       fontWeight: FontWeight.w700,
                     ),
                   );
@@ -163,6 +177,20 @@ class WeightLineChart extends StatelessWidget {
             ),
           ),
           lineBarsData: [
+            if (showMovingAverage)
+              LineChartBarData(
+                spots: [
+                  for (var index = 0; index < sortedEntries.length; index++)
+                    FlSpot(index.toDouble(), displaySmaWeights[index]),
+                ],
+                isCurved: true,
+                curveSmoothness: 0.35,
+                color: colorScheme.tertiary,
+                barWidth: 2,
+                dashArray: [6, 4],
+                isStrokeCapRound: true,
+                dotData: const FlDotData(show: false),
+              ),
             LineChartBarData(
               spots: [
                 for (var index = 0; index < sortedEntries.length; index++)
@@ -294,4 +322,39 @@ class WeightLineChart extends StatelessWidget {
 
   String _monthLabel(BuildContext context, DateTime date) =>
       DateFormat.MMM(Localizations.localeOf(context).toString()).format(date);
+
+  /// Computes the 7-day Simple Moving Average (SMA) for each entry in [sortedEntries].
+  ///
+  /// For each entry, calculates the arithmetic mean of all measurements within
+  /// the inclusive 7-calendar-day window `[entry.dateTime - 6 days, entry.dateTime]`.
+  static List<double> calculate7DayMovingAverage(
+    List<WeightEntry> sortedEntries,
+  ) {
+    if (sortedEntries.isEmpty) return const [];
+    final result = <double>[];
+    for (var i = 0; i < sortedEntries.length; i++) {
+      final current = sortedEntries[i];
+      final windowStart = DateTime(
+        current.dateTime.year,
+        current.dateTime.month,
+        current.dateTime.day,
+      ).subtract(const Duration(days: 6));
+
+      var sum = 0.0;
+      var count = 0;
+      for (var j = 0; j <= i; j++) {
+        final candidateDate = DateTime(
+          sortedEntries[j].dateTime.year,
+          sortedEntries[j].dateTime.month,
+          sortedEntries[j].dateTime.day,
+        );
+        if (!candidateDate.isBefore(windowStart)) {
+          sum += sortedEntries[j].weightKg;
+          count++;
+        }
+      }
+      result.add(count > 0 ? sum / count : current.weightKg);
+    }
+    return result;
+  }
 }

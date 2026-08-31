@@ -15,6 +15,7 @@ import 'package:balance/features/weight/presentation/widgets/components/add_weig
 import 'package:balance/features/dashboard/presentation/widgets/sections/today_shimmer_skeleton.dart';
 import 'package:balance/l10n/app_localizations.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_bloc.dart';
+import 'package:balance/features/dashboard/presentation/widgets/components/weight_line_chart.dart';
 import 'package:fl_chart/fl_chart.dart';
 
 class MockHydratedStorage extends Mock implements HydratedStorage {}
@@ -846,4 +847,88 @@ void main() {
       expect(tester.takeException(), isNull);
     },
   );
+
+  group('7-day Moving Average (SMA) Tests', () {
+    test('calculate7DayMovingAverage returns empty list on empty input', () {
+      expect(WeightLineChart.calculate7DayMovingAverage(const []), isEmpty);
+    });
+
+    test(
+      'calculate7DayMovingAverage returns single weight for single entry',
+      () {
+        final entries = [
+          WeightEntry(id: 1, weightKg: 80.0, dateTime: DateTime(2026, 8, 1)),
+        ];
+        final sma = WeightLineChart.calculate7DayMovingAverage(entries);
+        expect(sma, [80.0]);
+      },
+    );
+
+    test(
+      'calculate7DayMovingAverage correctly calculates 7-day rolling average',
+      () {
+        final entries = [
+          WeightEntry(id: 1, weightKg: 70.0, dateTime: DateTime(2026, 8, 1)),
+          WeightEntry(id: 2, weightKg: 71.0, dateTime: DateTime(2026, 8, 2)),
+          WeightEntry(id: 3, weightKg: 72.0, dateTime: DateTime(2026, 8, 3)),
+          WeightEntry(id: 4, weightKg: 73.0, dateTime: DateTime(2026, 8, 4)),
+          WeightEntry(id: 5, weightKg: 74.0, dateTime: DateTime(2026, 8, 5)),
+          WeightEntry(id: 6, weightKg: 75.0, dateTime: DateTime(2026, 8, 6)),
+          WeightEntry(id: 7, weightKg: 76.0, dateTime: DateTime(2026, 8, 7)),
+          WeightEntry(id: 8, weightKg: 77.0, dateTime: DateTime(2026, 8, 8)),
+        ];
+        final sma = WeightLineChart.calculate7DayMovingAverage(entries);
+        expect(sma.length, 8);
+        // Day 1: 70.0
+        expect(sma[0], 70.0);
+        // Day 2: (70+71)/2 = 70.5
+        expect(sma[1], 70.5);
+        // Day 7: (70+71+72+73+74+75+76)/7 = 73.0
+        expect(sma[6], 73.0);
+        // Day 8: (71+72+73+74+75+76+77)/7 = 74.0
+        expect(sma[7], 74.0);
+      },
+    );
+
+    testWidgets(
+      'renders 7-day moving average legend when 3 or more entries exist',
+      (tester) async {
+        tester.view.physicalSize = const Size(800, 3000);
+        tester.view.devicePixelRatio = 1.0;
+        addTearDown(tester.view.resetPhysicalSize);
+        addTearDown(tester.view.resetDevicePixelRatio);
+
+        final entries = [
+          WeightEntry(id: 1, weightKg: 70.0, dateTime: DateTime(2026, 8, 1)),
+          WeightEntry(id: 2, weightKg: 71.0, dateTime: DateTime(2026, 8, 2)),
+          WeightEntry(id: 3, weightKg: 72.0, dateTime: DateTime(2026, 8, 3)),
+        ];
+
+        when(() => weightBloc.state).thenReturn(
+          WeightLoaded(
+            entries: entries,
+            filteredEntries: entries,
+            timePeriod: TimePeriod.week,
+            heightCm: 175.0,
+          ),
+        );
+        when(() => weightBloc.stream).thenAnswer(
+          (_) => Stream.value(
+            WeightLoaded(
+              entries: entries,
+              filteredEntries: entries,
+              timePeriod: TimePeriod.week,
+              heightCm: 175.0,
+            ),
+          ),
+        );
+
+        await tester.pumpWidget(createTestWidget(const TodayScreen()));
+        await tester.pumpAndSettle();
+
+        expect(find.text('7-day avg', skipOffstage: false), findsOneWidget);
+        expect(find.text('Weight', skipOffstage: false), findsOneWidget);
+      },
+    );
+  });
 }
