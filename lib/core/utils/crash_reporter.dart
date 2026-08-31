@@ -37,8 +37,11 @@ class AppCrashReporter {
           reason: reason,
           fatal: fatal,
         );
-      } catch (_) {
+      } catch (e) {
         // Crash reporting must never throw or disrupt application execution.
+        if (kDebugMode) {
+          debugPrint('[AppCrashReporter] Crashlytics recordError failed: $e');
+        }
       }
     }
 
@@ -73,8 +76,11 @@ class AppCrashReporter {
       }
 
       await file.writeAsString(entry, mode: FileMode.append, flush: true);
-    } catch (_) {
+    } catch (e) {
       // Local logging must never throw.
+      if (kDebugMode) {
+        debugPrint('[AppCrashReporter] writeCrashLog failed: $e');
+      }
     }
   }
 
@@ -88,6 +94,10 @@ class AppCrashReporter {
           ? ''
           : tail.substring(firstEntryStart + 2);
       await file.writeAsString(kept, flush: true);
-    } catch (_) {}
+    } catch (e) {
+      if (kDebugMode) {
+        debugPrint('[AppCrashReporter] _trimCrashLog failed: $e');
+      }
+    }
   }
 }

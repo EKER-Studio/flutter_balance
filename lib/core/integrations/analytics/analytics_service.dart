@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:balance/core/utils/crash_reporter.dart';
 
 /// Contract for telemetry event and screen view dispatching.
 abstract interface class AnalyticsService {
@@ -58,7 +59,14 @@ class FirebaseAnalyticsService implements AnalyticsService {
     if (!_isFirebaseAvailable) return;
     try {
       await FirebaseAnalytics.instance.setAnalyticsCollectionEnabled(enabled);
-    } catch (_) {}
+    } catch (e, stack) {
+      AppCrashReporter.recordError(
+        e,
+        stack,
+        reason: 'Analytics setAnalyticsCollectionEnabled failed',
+        fatal: false,
+      );
+    }
   }
 
   @override
@@ -66,7 +74,14 @@ class FirebaseAnalyticsService implements AnalyticsService {
     if (!_isFirebaseAvailable) return;
     try {
       await FirebaseAnalytics.instance.setUserId(id: id);
-    } catch (_) {}
+    } catch (e, stack) {
+      AppCrashReporter.recordError(
+        e,
+        stack,
+        reason: 'Analytics setUserId failed',
+        fatal: false,
+      );
+    }
   }
 
   @override
@@ -80,7 +95,14 @@ class FirebaseAnalyticsService implements AnalyticsService {
         name: name,
         value: value,
       );
-    } catch (_) {}
+    } catch (e, stack) {
+      AppCrashReporter.recordError(
+        e,
+        stack,
+        reason: 'Analytics setUserProperty failed: $name',
+        fatal: false,
+      );
+    }
   }
 
   @override
@@ -99,7 +121,14 @@ class FirebaseAnalyticsService implements AnalyticsService {
         screenName: screenName,
         screenClass: screenClass,
       );
-    } catch (_) {}
+    } catch (e, stack) {
+      AppCrashReporter.recordError(
+        e,
+        stack,
+        reason: 'Analytics logScreenView failed: $screenName',
+        fatal: false,
+      );
+    }
   }
 
   @override
@@ -116,6 +145,13 @@ class FirebaseAnalyticsService implements AnalyticsService {
         name: name,
         parameters: parameters,
       );
-    } catch (_) {}
+    } catch (e, stack) {
+      AppCrashReporter.recordError(
+        e,
+        stack,
+        reason: 'Analytics logEvent failed: $name',
+        fatal: false,
+      );
+    }
   }
 }
