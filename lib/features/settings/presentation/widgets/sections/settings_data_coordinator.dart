@@ -18,6 +18,7 @@ import 'package:balance/features/settings/presentation/bloc/app_settings_bloc.da
 import 'package:balance/features/settings/presentation/bloc/app_settings_event.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_state.dart';
 import 'package:balance/features/settings/presentation/widgets/components/health_connect_install_dialog.dart';
+import 'package:balance/features/settings/presentation/widgets/components/pace_window_selection_dialog.dart';
 import 'package:balance/features/settings/presentation/widgets/components/theme_selection_dialog.dart';
 import 'package:balance/features/settings/presentation/widgets/components/unit_selection_dialog.dart';
 import 'package:balance/features/settings/presentation/screens/privacy_policy_screen.dart';
@@ -112,6 +113,19 @@ class SettingsDataCoordinator {
       onSelected: (unit) {
         AppAnalytics.logSettingsUnitChanged(unit.name);
         context.read<AppSettingsBloc>().add(UpdateMeasurementUnit(unit));
+      },
+    );
+  }
+
+  /// Shows the weekly pace calculation window selection dialog.
+  static void showPaceWindowSelection(BuildContext context) {
+    final state = context.read<AppSettingsBloc>().state;
+    PaceWindowSelectionDialog.show(
+      context,
+      currentDays: state.weeklyPaceWindowDays,
+      onSelected: (days) {
+        AppAnalytics.logSettingsPaceWindowChanged(days);
+        context.read<AppSettingsBloc>().add(UpdateWeeklyPaceWindow(days));
       },
     );
   }

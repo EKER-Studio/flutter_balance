@@ -129,6 +129,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                   SettingsDataCoordinator.showUnitSelection(
                                     context,
                                   ),
+                              onPaceWindowTap: () =>
+                                  SettingsDataCoordinator.showPaceWindowSelection(
+                                    context,
+                                  ),
                               onNotificationsChanged: (v) {
                                 AppAnalytics.logSettingsReminderToggled(
                                   enabled: v,

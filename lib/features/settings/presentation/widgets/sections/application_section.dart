@@ -15,6 +15,7 @@ class ApplicationSection extends StatelessWidget {
   final VoidCallback onUnitTap;
   final ValueChanged<bool> onNotificationsChanged;
   final VoidCallback onNotificationTimeTap;
+  final VoidCallback onPaceWindowTap;
 
   const ApplicationSection({
     super.key,
@@ -24,6 +25,7 @@ class ApplicationSection extends StatelessWidget {
     required this.onUnitTap,
     required this.onNotificationsChanged,
     required this.onNotificationTimeTap,
+    required this.onPaceWindowTap,
   });
 
   @override
@@ -64,6 +66,13 @@ class ApplicationSection extends StatelessWidget {
               AppAnalytics.logSettingsThemeTileClicked(state.themeMode.name);
               onThemeTap();
             },
+          ),
+          CustomSettingsTile(
+            icon: Icons.speed_outlined,
+            title: l10n.paceWindow,
+            subtitle: l10n.paceWindowDays(state.weeklyPaceWindowDays),
+            sectionLabel: l10n.applicationSection,
+            onTap: onPaceWindowTap,
           ),
           CustomSettingsToggle(
             icon: Icons.notifications_outlined,

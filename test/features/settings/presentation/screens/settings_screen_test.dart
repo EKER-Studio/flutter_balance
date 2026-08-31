@@ -255,6 +255,31 @@ void main() {
     expect(find.text('Imperial (lb, ft/in)'), findsOneWidget);
   });
 
+  testWidgets(
+    'shows pace window selection dialog on pace window tap and updates state',
+    (tester) async {
+      await tester.pumpWidget(createTestWidget());
+      await tester.pumpAndSettle();
+
+      await tester.ensureVisible(find.text('Pace calculation window'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Pace calculation window'), findsOneWidget);
+      expect(find.text('Last 30 days'), findsOneWidget);
+
+      await tester.tap(find.text('Pace calculation window'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Last 30 days (default)'), findsOneWidget);
+      expect(find.text('Last 60 days'), findsOneWidget);
+
+      await tester.tap(find.text('Last 60 days'));
+      await tester.pumpAndSettle();
+
+      expect(settingsBloc.state.weeklyPaceWindowDays, 60);
+    },
+  );
+
   testWidgets('shows target weight dialog on target weight tap', (
     tester,
   ) async {

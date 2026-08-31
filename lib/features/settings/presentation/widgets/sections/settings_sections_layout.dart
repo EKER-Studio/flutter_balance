@@ -18,6 +18,7 @@ class SettingsSectionsLayout extends StatelessWidget {
   final VoidCallback onTargetWeightTap;
   final VoidCallback onThemeTap;
   final VoidCallback onUnitTap;
+  final VoidCallback onPaceWindowTap;
   final ValueChanged<bool> onNotificationsChanged;
   final VoidCallback onNotificationTimeTap;
   final ValueChanged<bool> onHealthSyncChanged;
@@ -38,6 +39,7 @@ class SettingsSectionsLayout extends StatelessWidget {
     required this.onTargetWeightTap,
     required this.onThemeTap,
     required this.onUnitTap,
+    required this.onPaceWindowTap,
     required this.onNotificationsChanged,
     required this.onNotificationTimeTap,
     required this.onHealthSyncChanged,
@@ -70,6 +72,7 @@ class SettingsSectionsLayout extends StatelessWidget {
       l10n: l10n,
       onThemeTap: onThemeTap,
       onUnitTap: onUnitTap,
+      onPaceWindowTap: onPaceWindowTap,
       onNotificationsChanged: onNotificationsChanged,
       onNotificationTimeTap: onNotificationTimeTap,
     );

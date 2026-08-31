@@ -50,6 +50,7 @@ void main() {
             l10n: AppLocalizations.of(context),
             onThemeTap: () {},
             onUnitTap: () {},
+            onPaceWindowTap: () {},
             onNotificationsChanged: (_) {},
             onNotificationTimeTap: () {},
           ),
@@ -60,6 +61,8 @@ void main() {
       expect(find.text('Metric (kg, cm)'), findsOneWidget);
       expect(find.text('Theme'), findsOneWidget);
       expect(find.text('System'), findsOneWidget);
+      expect(find.text('Pace calculation window'), findsOneWidget);
+      expect(find.text('Last 30 days'), findsOneWidget);
       expect(find.text('Daily Reminder'), findsOneWidget);
       // Reminder time tile hidden while notifications are disabled.
       expect(find.text('Reminder Time'), findsNothing);
@@ -80,6 +83,7 @@ void main() {
             l10n: AppLocalizations.of(context),
             onThemeTap: () {},
             onUnitTap: () {},
+            onPaceWindowTap: () {},
             onNotificationsChanged: (_) {},
             onNotificationTimeTap: () {},
           ),
@@ -93,6 +97,7 @@ void main() {
     testWidgets('invokes tile callbacks on tap', (tester) async {
       var unitTapped = false;
       var themeTapped = false;
+      var paceWindowTapped = false;
       var timeTapped = false;
       bool? notificationsChanged;
 
@@ -107,6 +112,7 @@ void main() {
             l10n: AppLocalizations.of(context),
             onThemeTap: () => themeTapped = true,
             onUnitTap: () => unitTapped = true,
+            onPaceWindowTap: () => paceWindowTapped = true,
             onNotificationsChanged: (v) => notificationsChanged = v,
             onNotificationTimeTap: () => timeTapped = true,
           ),
@@ -115,12 +121,14 @@ void main() {
 
       await tester.tap(find.text('Measurement Unit'));
       await tester.tap(find.text('Theme'));
+      await tester.tap(find.text('Pace calculation window'));
       await tester.tap(find.byType(Switch));
       await tester.tap(find.text('Reminder Time'));
       await tester.pump();
 
       expect(unitTapped, isTrue);
       expect(themeTapped, isTrue);
+      expect(paceWindowTapped, isTrue);
       expect(timeTapped, isTrue);
       // The switch starts ON, so tapping it reports the new value `false`.
       expect(notificationsChanged, isFalse);
