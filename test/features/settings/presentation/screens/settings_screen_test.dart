@@ -864,12 +864,12 @@ void main() {
       await tester.enterText(find.byType(TextField), '80');
       await tester.tap(find.text('Save'));
       await tester.pumpAndSettle();
-      await pumpUntilFound(tester, find.text('80.0 kg'));
+      await pumpUntilFound(tester, find.textContaining('80.0 kg'));
 
       expect(settingsBloc.state.targetWeight, 80.0);
-      expect(find.text('80.0 kg'), findsOneWidget);
+      expect(find.textContaining('80.0 kg'), findsOneWidget);
 
-      await tester.tap(find.text('80.0 kg'));
+      await tester.tap(find.textContaining('80.0 kg'));
       await tester.pumpAndSettle();
       await tester.enterText(find.byType(TextField), '');
       await tester.tap(find.text('Save'));

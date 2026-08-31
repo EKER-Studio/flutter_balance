@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:bloc_test/bloc_test.dart';
 import 'package:balance/core/models/measurement_unit.dart';
+import 'package:balance/features/settings/presentation/bloc/weight_goal_mode.dart';
 import 'package:balance/l10n/app_localizations.dart';
 import 'package:balance/features/settings/presentation/widgets/components/target_weight_sheet.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_bloc.dart';
@@ -23,10 +24,15 @@ void main() {
   Future<dynamic> openDialog(
     WidgetTester tester, {
     double? currentValue,
+    WeightGoalMode currentMode = WeightGoalMode.lose,
     MeasurementUnit unit = MeasurementUnit.metric,
   }) async {
     when(() => mockSettingsBloc.state).thenReturn(
-      AppSettingsState(targetWeight: currentValue, measurementUnit: unit),
+      AppSettingsState(
+        targetWeight: currentValue,
+        weightGoalMode: currentMode,
+        measurementUnit: unit,
+      ),
     );
 
     dynamic result;
@@ -45,11 +51,12 @@ void main() {
                       isScrollControlled: true,
                       builder: (_) => TargetWeightSheet(
                         currentValueKg: currentValue,
+                        initialGoalMode: currentMode,
                         measurementUnit: unit,
                       ),
                     );
                   },
-                  child: const Text('open'),
+                  child: const Text('Open'),
                 ),
               ),
             ),
@@ -57,7 +64,7 @@ void main() {
         ),
       ),
     );
-    await tester.tap(find.text('open'));
+    await tester.tap(find.text('Open'));
     await tester.pumpAndSettle();
     return () => result;
   }
@@ -85,7 +92,7 @@ void main() {
     await tester.tap(find.text('Save'));
     await tester.pumpAndSettle();
 
-    expect(getResult(), 80.5);
+    expect(getResult(), (weight: 80.5, mode: WeightGoalMode.lose));
   });
 
   testWidgets('saves a valid imperial weight as entered', (tester) async {
@@ -95,7 +102,7 @@ void main() {
     await tester.tap(find.text('Save'));
     await tester.pumpAndSettle();
 
-    expect(getResult(), 170.0);
+    expect(getResult(), (weight: 170.0, mode: WeightGoalMode.lose));
   });
 
   testWidgets('clears the target weight when the field is empty', (
@@ -185,6 +192,19 @@ void main() {
     await tester.testTextInput.receiveAction(TextInputAction.done);
     await tester.pumpAndSettle();
 
-    expect(getResult(), 88.5);
+    expect(getResult(), (weight: 88.5, mode: WeightGoalMode.lose));
+  });
+
+  testWidgets('allows selecting gain goal mode', (tester) async {
+    final getResult = await openDialog(tester);
+
+    await tester.tap(find.text('Gain weight'));
+    await tester.pumpAndSettle();
+
+    await tester.enterText(find.byType(TextField), '95.0');
+    await tester.tap(find.text('Save'));
+    await tester.pumpAndSettle();
+
+    expect(getResult(), (weight: 95.0, mode: WeightGoalMode.gain));
   });
 }

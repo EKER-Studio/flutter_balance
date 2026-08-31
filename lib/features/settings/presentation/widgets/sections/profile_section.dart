@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:balance/core/utils/analytics.dart';
 import 'package:balance/core/utils/unit_converter.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_state.dart';
+import 'package:balance/features/settings/presentation/utils/weight_goal_mode_localizer.dart';
 import 'package:balance/l10n/app_localizations.dart';
 import 'package:balance/features/settings/presentation/widgets/components/custom_settings_tile.dart';
 
@@ -29,7 +30,7 @@ class ProfileSection extends StatelessWidget {
         : l10n.heightNotSetLabel;
 
     final targetWeightValue = state.targetWeight != null
-        ? formatWeight(state.targetWeight!, state.measurementUnit)
+        ? '${state.weightGoalMode.localizedName(context)} • ${formatWeight(state.targetWeight!, state.measurementUnit)}'
         : l10n.notSet;
 
     return Card(

@@ -2,24 +2,24 @@ import 'package:flutter/material.dart';
 import 'package:balance/core/models/measurement_unit.dart';
 import 'package:balance/core/utils/analytics.dart';
 import 'package:balance/core/utils/unit_converter.dart';
+import 'package:balance/features/settings/presentation/bloc/weight_goal_mode.dart';
+import 'package:balance/features/settings/presentation/utils/weight_goal_mode_localizer.dart';
 import 'package:balance/features/weight/domain/entities/weight_entry.dart';
 import 'package:balance/l10n/app_localizations.dart';
 
 /// A widget that provides a modal bottom sheet for setting or updating the
-/// target weight.
-///
-/// Validates the value against [WeightEntry.minWeightKg] and
-/// [WeightEntry.maxWeightKg], converts imperial input to kilograms, and pops
-/// the parsed weight (or the string `clear` to remove the target) on save.
+/// target weight and goal mode (lose, maintain, gain).
 class TargetWeightSheet extends StatefulWidget {
   /// The currently stored target weight in kg, or `null` if not set yet.
   final double? currentValueKg;
   final MeasurementUnit measurementUnit;
+  final WeightGoalMode initialGoalMode;
 
   const TargetWeightSheet({
     super.key,
     required this.currentValueKg,
     required this.measurementUnit,
+    this.initialGoalMode = WeightGoalMode.lose,
   });
 
   @override
@@ -29,11 +29,13 @@ class TargetWeightSheet extends StatefulWidget {
 /// The state owning the target weight controller and save flow.
 class _TargetWeightSheetState extends State<TargetWeightSheet> {
   late final TextEditingController _controller;
+  late WeightGoalMode _selectedMode;
   String? _errorText;
 
   @override
   void initState() {
     super.initState();
+    _selectedMode = widget.initialGoalMode;
     final initialValue = widget.currentValueKg != null
         ? (widget.measurementUnit == MeasurementUnit.imperial
               ? kgToLbs(widget.currentValueKg!)
@@ -84,7 +86,7 @@ class _TargetWeightSheetState extends State<TargetWeightSheet> {
       return;
     }
 
-    Navigator.of(context).pop(parsedWeight);
+    Navigator.of(context).pop((weight: parsedWeight, mode: _selectedMode));
   }
 
   @override
@@ -121,7 +123,40 @@ class _TargetWeightSheetState extends State<TargetWeightSheet> {
                   color: colorScheme.onSurface,
                 ),
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 16),
+              SegmentedButton<WeightGoalMode>(
+                segments: [
+                  ButtonSegment(
+                    value: WeightGoalMode.lose,
+                    label: Text(l10n.goalModeLose),
+                    icon: const Icon(Icons.trending_down, size: 18),
+                  ),
+                  ButtonSegment(
+                    value: WeightGoalMode.maintain,
+                    label: Text(l10n.goalModeMaintain),
+                    icon: const Icon(Icons.horizontal_rule, size: 18),
+                  ),
+                  ButtonSegment(
+                    value: WeightGoalMode.gain,
+                    label: Text(l10n.goalModeGain),
+                    icon: const Icon(Icons.trending_up, size: 18),
+                  ),
+                ],
+                selected: {_selectedMode},
+                onSelectionChanged: (newSelection) {
+                  setState(() {
+                    _selectedMode = newSelection.first;
+                  });
+                },
+              ),
+              const SizedBox(height: 10),
+              Text(
+                _selectedMode.localizedDescription(context),
+                style: textTheme.bodySmall?.copyWith(
+                  color: colorScheme.onSurfaceVariant,
+                ),
+              ),
+              const SizedBox(height: 18),
               TextField(
                 controller: _controller,
                 autofocus: false,

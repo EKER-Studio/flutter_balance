@@ -39,21 +39,23 @@ class FirstDayOfWeekSelectionDialog extends StatelessWidget {
     return SimpleDialog(
       title: Text(l10n.firstDayOfWeek),
       children: [
-        Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            for (final mode in FirstDayOfWeek.values)
-              RadioListTile<FirstDayOfWeek>(
-                title: Text(mode.localizedName(l10n)),
-                value: mode,
-                groupValue: currentFirstDay,
-                onChanged: (value) {
-                  if (value != null) {
-                    onSelected(value);
-                  }
-                },
-              ),
-          ],
+        RadioGroup<FirstDayOfWeek>(
+          groupValue: currentFirstDay,
+          onChanged: (value) {
+            if (value != null) {
+              onSelected(value);
+            }
+          },
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              for (final mode in FirstDayOfWeek.values)
+                RadioListTile<FirstDayOfWeek>(
+                  title: Text(mode.localizedName(l10n)),
+                  value: mode,
+                ),
+            ],
+          ),
         ),
       ],
     );

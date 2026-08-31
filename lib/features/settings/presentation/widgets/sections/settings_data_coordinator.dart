@@ -21,6 +21,7 @@ import 'package:balance/features/settings/presentation/widgets/components/health
 import 'package:balance/features/settings/presentation/widgets/components/pace_window_selection_dialog.dart';
 import 'package:balance/features/settings/presentation/widgets/components/theme_selection_dialog.dart';
 import 'package:balance/features/settings/presentation/widgets/components/first_day_of_week_selection_dialog.dart';
+import 'package:balance/features/settings/presentation/bloc/weight_goal_mode.dart';
 import 'package:balance/features/settings/presentation/widgets/components/unit_selection_dialog.dart';
 import 'package:balance/features/settings/presentation/screens/privacy_policy_screen.dart';
 import 'package:balance/features/settings/presentation/widgets/components/height_sheet.dart';
@@ -75,6 +76,7 @@ class SettingsDataCoordinator {
       builder: (sheetCtx) => TargetWeightSheet(
         currentValueKg: settingsState.targetWeight,
         measurementUnit: settingsState.measurementUnit,
+        initialGoalMode: settingsState.weightGoalMode,
       ),
     );
 
@@ -83,6 +85,14 @@ class SettingsDataCoordinator {
     if (result == 'clear') {
       AppAnalytics.logSettingsTargetWeightCleared();
       context.read<AppSettingsBloc>().add(const TargetWeightChanged(null));
+    } else if (result is ({double weight, WeightGoalMode mode})) {
+      final targetKg = settingsState.measurementUnit == MeasurementUnit.imperial
+          ? lbsToKg(result.weight)
+          : result.weight;
+      AppAnalytics.logSettingsTargetWeightSaved();
+      context.read<AppSettingsBloc>().add(
+        TargetWeightChanged(targetKg, result.mode),
+      );
     } else if (result is double) {
       final targetKg = settingsState.measurementUnit == MeasurementUnit.imperial
           ? lbsToKg(result)
