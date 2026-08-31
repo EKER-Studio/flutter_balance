@@ -46,10 +46,15 @@ Local-First, AI-Native boilerplate utilizing Clean Architecture under a Feature-
 - All Isar dynamic query streams properly closed or managed via BLoC lifecycle.
 
 ### Mandatory Verification Pipeline (concrete commands)
-1. `dart format lib test`
-2. `dart run build_runner build`
-3. `flutter analyze`
-4. `flutter test`
+Implements `AGENTS.md` → Mandatory Verification Pipeline (7 steps):
+1. `flutter pub get` — install/refresh dependencies (if `pubspec.yaml` changed)
+2. `flutter gen-l10n` — regenerate localization (if `l10n.yaml` present)
+3. `dart run build_runner build --delete-conflicting-outputs` — regenerate generated code (if `build_runner` configured)
+4. `dart format lib test` — format
+5. `flutter analyze` — static analysis
+6. `dart run custom_lint` — state-management lints (**not configured in this project — skipped**)
+7. `flutter test --exclude-tags golden` — tests (golden tests excluded by tag; coverage excludes `.g.dart` and `l10n`)
 
-Once all 4 steps are green and the Resource Lifecycle checklist above is verified, commit per `AGENTS.md` →
+Canonical local script is `tool/before_push.sh` (if present) / CI `/.github/workflows/ci.yml` which follow the same ordering.
+Once all applicable steps are green and the Resource Lifecycle checklist above is verified, commit per `AGENTS.md` →
 Git & Version Control (autonomous commit is enabled for this repo, since this file exists).
