@@ -658,6 +658,25 @@ class AppAnalytics {
     return logEvent(name: 'statistics_habits_card_tapped');
   }
 
+  /// Logs tapping the Milestones & Achievements card in statistics.
+  static Future<void> logStatisticsMilestonesCardTapped() {
+    return logEvent(name: 'statistics_milestones_card_tapped');
+  }
+
+  /// Logs inspecting an individual milestone detail dialog.
+  ///
+  /// @param milestoneType The type name of the inspected milestone.
+  /// @param isUnlocked Whether the milestone is currently unlocked.
+  static Future<void> logStatisticsMilestoneDetailTapped({
+    required String milestoneType,
+    required bool isUnlocked,
+  }) {
+    return logEvent(
+      name: 'statistics_milestone_detail_tapped',
+      parameters: {'milestone_type': milestoneType, 'is_unlocked': isUnlocked},
+    );
+  }
+
   /// Logs interacting with one of the Bento statistics cards.
   ///
   /// @param metricType The category of the metric (e.g. 'min', 'max', 'avg', 'velocity').
