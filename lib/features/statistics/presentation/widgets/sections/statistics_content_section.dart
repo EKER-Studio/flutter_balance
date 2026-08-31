@@ -16,7 +16,9 @@ class StatisticsContentSection extends StatelessWidget {
   final double? heightCm;
   final double? targetWeight;
   final MeasurementUnit unit;
+  final int weeklyPaceWindowDays;
   final ValueChanged<TimePeriod> onPeriodChanged;
+  final VoidCallback? onPaceWindowTap;
 
   const StatisticsContentSection({
     super.key,
@@ -26,7 +28,9 @@ class StatisticsContentSection extends StatelessWidget {
     required this.heightCm,
     required this.targetWeight,
     required this.unit,
+    this.weeklyPaceWindowDays = 30,
     required this.onPeriodChanged,
+    this.onPaceWindowTap,
   });
 
   @override
@@ -35,7 +39,11 @@ class StatisticsContentSection extends StatelessWidget {
     final streak = _calculateStreak(entries, now);
     final bestStreak = _calculateBestStreak(entries);
     final compliancePct = _calculateTotalCompliance(entries, now);
-    final weeklyPace = _calculateWeeklyPace(entries);
+    final weeklyPace = calculateWeeklyPace(
+      entries,
+      windowDays: weeklyPaceWindowDays,
+      now: now,
+    );
     final isWide = context.isMultiColumn;
 
     final heroProgressCard = HeroProgressCard(
@@ -43,6 +51,8 @@ class StatisticsContentSection extends StatelessWidget {
       targetWeight: targetWeight,
       weeklyPace: weeklyPace,
       unit: unit,
+      paceWindowDays: weeklyPaceWindowDays,
+      onPaceWindowTap: onPaceWindowTap,
     );
 
     final habitsCard = HabitsActivityCard(
@@ -94,15 +104,24 @@ class StatisticsContentSection extends StatelessWidget {
           );
   }
 
-  static double? _calculateWeeklyPace(List<WeightEntry> entries) {
+  /// Computes the average weekly pace (weight change per 7 days) over the given [windowDays].
+  ///
+  /// Filters entries within `[now - windowDays, now]`.
+  /// Returns `null` if fewer than 2 entries exist in that window.
+  static double? calculateWeeklyPace(
+    List<WeightEntry> entries, {
+    int windowDays = 30,
+    DateTime? now,
+  }) {
     if (entries.length < 2) return null;
 
-    final sorted = entries.reversed.toList(); // Ascending date
-    final now = DateTime.now();
-    final monthAgo = now.subtract(const Duration(days: 30));
+    final sorted = entries.toList()
+      ..sort((a, b) => a.dateTime.compareTo(b.dateTime));
+    final referenceDate = now ?? DateTime.now();
+    final windowStart = referenceDate.subtract(Duration(days: windowDays));
 
     final recentEntries = sorted
-        .where((e) => e.dateTime.isAfter(monthAgo))
+        .where((e) => !e.dateTime.isBefore(windowStart))
         .toList();
     if (recentEntries.length < 2) return null;
 

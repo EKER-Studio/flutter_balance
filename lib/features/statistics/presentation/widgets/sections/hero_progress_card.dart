@@ -12,6 +12,8 @@ class HeroProgressCard extends StatelessWidget {
   final double? targetWeight;
   final double? weeklyPace;
   final MeasurementUnit unit;
+  final int paceWindowDays;
+  final VoidCallback? onPaceWindowTap;
 
   const HeroProgressCard({
     super.key,
@@ -19,6 +21,8 @@ class HeroProgressCard extends StatelessWidget {
     required this.targetWeight,
     required this.weeklyPace,
     required this.unit,
+    this.paceWindowDays = 30,
+    this.onPaceWindowTap,
   });
 
   @override
@@ -217,28 +221,46 @@ class HeroProgressCard extends StatelessWidget {
                 ),
                 if (paceBadgeText != null) ...[
                   const SizedBox(height: 8),
-                  Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        Icons.speed_outlined,
-                        size: 16,
-                        color: cs.onSurfaceVariant,
+                  InkWell(
+                    onTap: onPaceWindowTap,
+                    borderRadius: BorderRadius.circular(8),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 4,
+                        vertical: 2,
                       ),
-                      const SizedBox(width: 6),
-                      Flexible(
-                        child: Text(
-                          paceBadgeText,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: Theme.of(context).textTheme.labelMedium
-                              ?.copyWith(
-                                color: cs.onSurfaceVariant,
-                                fontWeight: FontWeight.w600,
-                              ),
-                        ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            Icons.speed_outlined,
+                            size: 16,
+                            color: cs.onSurfaceVariant,
+                          ),
+                          const SizedBox(width: 6),
+                          Flexible(
+                            child: Text(
+                              '$paceBadgeText (${l10n.paceWindowDays(paceWindowDays)})',
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: Theme.of(context).textTheme.labelMedium
+                                  ?.copyWith(
+                                    color: cs.onSurfaceVariant,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                            ),
+                          ),
+                          if (onPaceWindowTap != null) ...[
+                            const SizedBox(width: 4),
+                            Icon(
+                              Icons.edit_outlined,
+                              size: 13,
+                              color: cs.onSurfaceVariant.withValues(alpha: 0.7),
+                            ),
+                          ],
+                        ],
                       ),
-                    ],
+                    ),
                   ),
                 ],
                 if (goalProgressPct != null) ...[

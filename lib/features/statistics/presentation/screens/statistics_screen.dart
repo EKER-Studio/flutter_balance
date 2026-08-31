@@ -6,7 +6,9 @@ import 'package:balance/core/presentation/widgets/app_top_bar.dart';
 import 'package:balance/core/presentation/widgets/state_message_card.dart';
 import 'package:balance/core/utils/analytics.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_bloc.dart';
+import 'package:balance/features/settings/presentation/bloc/app_settings_event.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_state.dart';
+import 'package:balance/features/settings/presentation/widgets/components/pace_window_selection_dialog.dart';
 import 'package:balance/features/statistics/presentation/widgets/sections/statistics_content_section.dart';
 import 'package:balance/features/statistics/presentation/widgets/sections/statistics_shimmer_skeleton.dart';
 import 'package:balance/features/weight/domain/entities/weight_entry.dart';
@@ -93,6 +95,22 @@ class StatisticsScreen extends StatelessWidget {
                             heightCm: settingsState.height,
                             targetWeight: settingsState.targetWeight,
                             unit: settingsState.measurementUnit,
+                            weeklyPaceWindowDays:
+                                settingsState.weeklyPaceWindowDays,
+                            onPaceWindowTap: () {
+                              PaceWindowSelectionDialog.show(
+                                context,
+                                currentDays: settingsState.weeklyPaceWindowDays,
+                                onSelected: (days) {
+                                  AppAnalytics.logSettingsPaceWindowChanged(
+                                    days,
+                                  );
+                                  context.read<AppSettingsBloc>().add(
+                                    UpdateWeeklyPaceWindow(days),
+                                  );
+                                },
+                              );
+                            },
                             onPeriodChanged: (period) {
                               AppAnalytics.logStatisticsFilterChanged(
                                 period.name,
