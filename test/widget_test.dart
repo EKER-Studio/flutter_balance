@@ -13,7 +13,6 @@ import 'package:balance/core/database/database_module.dart';
 import 'package:balance/core/integrations/biometrics/biometric_service.dart';
 import 'package:balance/core/integrations/health/health_service.dart';
 import 'package:balance/core/presentation/screens/app_initialization_error_screen.dart';
-import 'package:balance/core/presentation/screens/app_splash_screen.dart';
 import 'package:balance/core/presentation/screens/biometric_shield_screen.dart';
 import 'package:balance/features/weight/domain/entities/weight_entry.dart';
 import 'package:balance/features/weight/domain/repositories/weight_repository.dart';
@@ -472,21 +471,17 @@ void main() {
       await tester.pumpWidget(
         BlocProvider<AppSettingsBloc>.value(
           value: settingsBloc,
-          child: const App(),
+          child: App(repositoryOverride: repository),
         ),
       );
-      expect(find.byType(AppSplashScreen), findsOneWidget);
-
       await pumpForInitialization(
         tester,
-        () => find.byType(AppSplashScreen).evaluate().isEmpty,
+        () => find.text('Welcome to Balance').evaluate().isNotEmpty,
       );
 
-      expect(find.byType(AppSplashScreen), findsNothing);
       expect(find.text('Welcome to Balance'), findsOneWidget);
 
       settingsBloc.close();
-      closeOpenIsar();
     });
   });
 }

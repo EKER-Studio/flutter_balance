@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
@@ -23,7 +25,6 @@ import 'package:balance/features/settings/presentation/bloc/app_settings_bloc.da
 import 'package:balance/features/settings/presentation/bloc/app_settings_event.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_state.dart';
 import 'package:balance/features/settings/presentation/bloc/app_theme_mode.dart';
-import 'package:balance/features/weight/data/repositories/isar_weight_repository.dart';
 import 'package:balance/features/weight/domain/repositories/weight_repository.dart';
 import 'package:balance/features/weight/presentation/bloc/weight_bloc.dart';
 import 'package:balance/features/weight/presentation/bloc/weight_event.dart';
@@ -60,66 +61,72 @@ class _AppState extends State<App> {
   /// Bootstraps the core services (database, notifications, health platform,
   /// biometrics) and returns the ready [WeightRepository] once all
   /// initialization has finished.
-  Future<WeightRepository> _initializeApp() async {
-    try {
-      if (widget.repositoryOverride != null) {
-        // Fast-path initialization for tests.
-        return widget.repositoryOverride!;
-      }
-
-      final WeightRepository repository;
-      final NotificationService notificationService;
-      final BiometricService biometricService;
-
-      if (getIt.isRegistered<WeightRepository>()) {
-        repository = getIt<WeightRepository>();
-        notificationService = getIt<NotificationService>();
-        biometricService = getIt<BiometricService>();
-      } else {
-        // Fallback for tests when configureDependencies was not invoked
-        final isar = await DatabaseModule.initialize();
-        biometricService = BiometricService.instance;
-        repository = IsarWeightRepository(
-          isar: isar,
-          unlockSignal: biometricService.authenticationSuccesses,
-        );
-        notificationService = NotificationService.instance;
-      }
-
-      // 2. Notifications — initialize the plugin and timezone database so
-      // reminders can be scheduled with the device's local time zone.
-      await notificationService.initialize();
-
-      // 3. Health — the plugin requires configure() before any other API call.
-      try {
-        await Health().configure();
-      } catch (e, stack) {
-        AppCrashReporter.recordError(
-          e,
-          stack,
-          reason: 'Health().configure() startup degradation',
-          fatal: false,
-        );
-      }
-
-      // 4. Biometrics — canAuthenticate() also covers OS PIN/pattern/password fallback.
-      final isBiometricSupported = await biometricService.canAuthenticate();
-      if (mounted) {
-        context.read<AppSettingsBloc>().add(
-          UpdateBiometricSupport(isBiometricSupported),
-        );
-      }
-
-      // 5. Widget Sync — initialize native widget bridge.
-      await WidgetSyncService.instance.initialize();
-
-      return repository;
-    } finally {
-      // Drop the native splash screen regardless of outcome.
+  Future<WeightRepository> _initializeApp() {
+    if (widget.repositoryOverride != null) {
+      final future = Future.value(widget.repositoryOverride!);
       WidgetsBinding.instance.addPostFrameCallback((_) {
         FlutterNativeSplash.remove();
       });
+      return future;
     }
+    if (!getIt.isRegistered<WeightRepository>()) {
+      // Defer error delivery to next frame so FutureBuilder attaches
+      // its error handler before the Future completes with error.
+      final completer = Completer<WeightRepository>();
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        FlutterNativeSplash.remove();
+        completer.completeError(
+          StateError(
+            'WeightRepository not registered in getIt. '
+            'Ensure configureDependencies() is called before runApp, '
+            'or pass repositoryOverride for tests.',
+          ),
+        );
+      });
+      return completer.future;
+    }
+    final future = _initializeAppAsync();
+    future.whenComplete(() {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        FlutterNativeSplash.remove();
+      });
+    });
+    return future;
+  }
+
+  Future<WeightRepository> _initializeAppAsync() async {
+    final repository = getIt<WeightRepository>();
+    final notificationService = getIt<NotificationService>();
+    final biometricService = getIt<BiometricService>();
+
+    // 2. Notifications — initialize the plugin and timezone database so
+    // reminders can be scheduled with the device's local time zone.
+    await notificationService.initialize();
+
+    // 3. Health — the plugin requires configure() before any other API call.
+    try {
+      await Health().configure();
+    } catch (e, stack) {
+      AppCrashReporter.recordError(
+        e,
+        stack,
+        reason: 'Health().configure() startup degradation',
+        fatal: false,
+      );
+    }
+
+    // 4. Biometrics — canAuthenticate() also covers OS PIN/pattern/password fallback.
+    final isBiometricSupported = await biometricService.canAuthenticate();
+    if (mounted) {
+      context.read<AppSettingsBloc>().add(
+        UpdateBiometricSupport(isBiometricSupported),
+      );
+    }
+
+    // 5. Widget Sync — initialize native widget bridge.
+    await WidgetSyncService.instance.initialize();
+
+    return repository;
   }
 
   void _ensureRouter(AppSettingsBloc settingsBloc) {
