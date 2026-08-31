@@ -245,10 +245,11 @@ void main() {
 
   testWidgets('shows unit selection dialog on unit tap', (tester) async {
     await tester.pumpWidget(createTestWidget());
-    await tester.pump();
-
-    await tester.drag(find.text('PROFILE'), const Offset(0, -500));
     await tester.pumpAndSettle();
+
+    await tester.ensureVisible(find.text('Metric (kg, cm)'));
+    await tester.pumpAndSettle();
+
     await tester.tap(find.text('Metric (kg, cm)'));
     await tester.pump();
 

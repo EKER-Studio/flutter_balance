@@ -125,6 +125,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                   SettingsDataCoordinator.showThemeSelection(
                                     context,
                                   ),
+                              onFirstDayOfWeekTap: () =>
+                                  SettingsDataCoordinator.showFirstDayOfWeekSelection(
+                                    context,
+                                  ),
                               onUnitTap: () =>
                                   SettingsDataCoordinator.showUnitSelection(
                                     context,

@@ -20,6 +20,7 @@ import 'package:balance/features/settings/presentation/bloc/app_settings_state.d
 import 'package:balance/features/settings/presentation/widgets/components/health_connect_install_dialog.dart';
 import 'package:balance/features/settings/presentation/widgets/components/pace_window_selection_dialog.dart';
 import 'package:balance/features/settings/presentation/widgets/components/theme_selection_dialog.dart';
+import 'package:balance/features/settings/presentation/widgets/components/first_day_of_week_selection_dialog.dart';
 import 'package:balance/features/settings/presentation/widgets/components/unit_selection_dialog.dart';
 import 'package:balance/features/settings/presentation/screens/privacy_policy_screen.dart';
 import 'package:balance/features/settings/presentation/widgets/components/height_sheet.dart';
@@ -100,6 +101,18 @@ class SettingsDataCoordinator {
       onSelected: (mode) {
         AppAnalytics.logSettingsThemeChanged(mode.name);
         context.read<AppSettingsBloc>().add(UpdateTheme(mode));
+      },
+    );
+  }
+
+  /// Shows the first day of week selection dialog.
+  static void showFirstDayOfWeekSelection(BuildContext context) {
+    final state = context.read<AppSettingsBloc>().state;
+    FirstDayOfWeekSelectionDialog.show(
+      context,
+      currentFirstDay: state.firstDayOfWeek,
+      onSelected: (mode) {
+        context.read<AppSettingsBloc>().add(UpdateFirstDayOfWeek(mode));
       },
     );
   }

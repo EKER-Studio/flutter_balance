@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:balance/features/settings/presentation/utils/first_day_of_week_localizer.dart';
 import 'package:balance/core/presentation/utils/app_theme_mode_localizer.dart';
 import 'package:balance/core/utils/analytics.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_state.dart';
@@ -13,6 +14,7 @@ class ApplicationSection extends StatelessWidget {
   final AppLocalizations l10n;
   final VoidCallback onThemeTap;
   final VoidCallback onUnitTap;
+  final VoidCallback onFirstDayOfWeekTap;
   final ValueChanged<bool> onNotificationsChanged;
   final VoidCallback onNotificationTimeTap;
   final VoidCallback onPaceWindowTap;
@@ -23,6 +25,7 @@ class ApplicationSection extends StatelessWidget {
     required this.l10n,
     required this.onThemeTap,
     required this.onUnitTap,
+    required this.onFirstDayOfWeekTap,
     required this.onNotificationsChanged,
     required this.onNotificationTimeTap,
     required this.onPaceWindowTap,
@@ -66,6 +69,13 @@ class ApplicationSection extends StatelessWidget {
               AppAnalytics.logSettingsThemeTileClicked(state.themeMode.name);
               onThemeTap();
             },
+          ),
+          CustomSettingsTile(
+            icon: Icons.calendar_today_outlined,
+            title: l10n.firstDayOfWeek,
+            subtitle: state.firstDayOfWeek.localizedName(l10n),
+            sectionLabel: l10n.applicationSection,
+            onTap: onFirstDayOfWeekTap,
           ),
           CustomSettingsTile(
             icon: Icons.speed_outlined,
