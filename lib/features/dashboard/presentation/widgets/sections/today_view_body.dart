@@ -81,6 +81,7 @@ class TodayViewBody extends StatelessWidget {
           timePeriod: currentState.timePeriod,
           errorType: errorType,
           measurementUnit: settings.measurementUnit,
+          heightCm: settings.height,
           onPeriodChanged: (period) {
             AppAnalytics.logTodayDeltaPeriodSelected(period.name);
             context.read<WeightBloc>().add(ChangeChartFilter(period));

@@ -19,6 +19,11 @@ import 'package:balance/features/settings/presentation/bloc/app_settings_bloc.da
 import 'package:balance/features/settings/presentation/bloc/app_settings_event.dart';
 import 'package:balance/features/statistics/presentation/screens/statistics_screen.dart';
 import 'package:balance/features/statistics/presentation/widgets/sections/bmi_status_card.dart';
+import 'package:balance/features/statistics/presentation/widgets/sections/habits_activity_card.dart';
+import 'package:balance/features/statistics/presentation/widgets/sections/hero_progress_card.dart';
+import 'package:balance/features/statistics/presentation/widgets/sections/milestones_card.dart';
+import 'package:balance/features/statistics/presentation/widgets/sections/period_comparison_card.dart';
+import 'package:balance/features/statistics/presentation/widgets/sections/weight_range_card.dart';
 import 'package:balance/features/statistics/presentation/widgets/sections/statistics_content_section.dart';
 
 class MockWeightRepository extends Mock implements WeightRepository {}
@@ -120,9 +125,12 @@ void main() {
         buildSubject(settingsBloc: settingsBloc, weightBloc: weightBloc),
       );
 
-      expect(find.textContaining('74.0'), findsOneWidget);
-      expect(find.textContaining('80.0'), findsOneWidget);
-      expect(find.text('-6.0'), findsOneWidget);
+      final rangeCard = find.byType(WeightRangeCard);
+      expect(find.descendant(of: rangeCard, matching: find.textContaining('74.0')), findsOneWidget);
+      expect(find.descendant(of: rangeCard, matching: find.textContaining('80.0')), findsOneWidget);
+
+      final heroCard = find.byType(HeroProgressCard);
+      expect(find.descendant(of: heroCard, matching: find.text('-6.0')), findsOneWidget);
     },
   );
 
@@ -385,8 +393,12 @@ void main() {
         buildSubject(settingsBloc: settingsBloc, weightBloc: weightBloc),
       );
 
-      expect(find.textContaining('74.0'), findsOneWidget);
-      expect(find.text('-6.0'), findsOneWidget);
+      final rangeCard = find.byType(WeightRangeCard);
+      expect(find.descendant(of: rangeCard, matching: find.textContaining('74.0')), findsOneWidget);
+      expect(find.descendant(of: rangeCard, matching: find.textContaining('80.0')), findsOneWidget);
+      
+      final heroCard = find.byType(HeroProgressCard);
+      expect(find.descendant(of: heroCard, matching: find.text('-6.0')), findsOneWidget);
     },
   );
 

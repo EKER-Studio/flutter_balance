@@ -21,11 +21,15 @@ class WeightLineChart extends StatelessWidget {
   /// The measurement unit used to convert and format plotted values.
   final MeasurementUnit measurementUnit;
 
+  /// The user's height in centimeters, used for rendering BMI data if provided.
+  final double? heightCm;
+
   const WeightLineChart({
     super.key,
     required this.entries,
     required this.period,
     required this.measurementUnit,
+    this.heightCm,
   });
 
   @override
@@ -60,6 +64,14 @@ class WeightLineChart extends StatelessWidget {
         ? smaWeights.map((w) => _displayWeight(w, measurementUnit)).toList()
         : const <double>[];
 
+    final hasHeight = heightCm != null && heightCm! > 0;
+    double? normalBmiThresholdDisplay;
+    if (hasHeight) {
+      final heightM = heightCm! / 100.0;
+      final thresholdKg = 24.9 * (heightM * heightM);
+      normalBmiThresholdDisplay = _displayWeight(thresholdKg, measurementUnit);
+    }
+
     final l10n = AppLocalizations.of(context);
     return Semantics(
       container: true,
@@ -76,6 +88,28 @@ class WeightLineChart extends StatelessWidget {
             horizontalInterval: verticalInterval,
           ),
           borderData: AppChartTheme.borderData(),
+          extraLinesData: ExtraLinesData(
+            horizontalLines: [
+              if (normalBmiThresholdDisplay != null &&
+                  normalBmiThresholdDisplay <= maxY &&
+                  normalBmiThresholdDisplay >= minY)
+                HorizontalLine(
+                  y: normalBmiThresholdDisplay,
+                  color: colorScheme.tertiary.withValues(alpha: 0.5),
+                  strokeWidth: 1.5,
+                  dashArray: [8, 4],
+                  label: HorizontalLineLabel(
+                    show: true,
+                    alignment: Alignment.topRight,
+                    padding: const EdgeInsets.only(right: 4, bottom: 4),
+                    style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                      color: colorScheme.tertiary,
+                    ),
+                    labelResolver: (_) => l10n.bmiValueShortLabel('24.9'),
+                  ),
+                ),
+            ],
+          ),
           titlesData: FlTitlesData(
             rightTitles: const AxisTitles(
               sideTitles: SideTitles(showTitles: false),
@@ -157,14 +191,25 @@ class WeightLineChart extends StatelessWidget {
               getTooltipItems: (spots) {
                 return spots.map((spot) {
                   final isSmaBar = showMovingAverage && spot.barIndex == 0;
-                  final weight = measurementUnit == MeasurementUnit.imperial
-                      ? lbsToKg(spot.y)
-                      : spot.y;
+                  final weightDisplay = spot.y;
+                  final weightKg = measurementUnit == MeasurementUnit.imperial
+                      ? lbsToKg(weightDisplay)
+                      : weightDisplay;
                   final prefix = isSmaBar
                       ? '${l10n.movingAverage7dLegend}: '
                       : '';
+
+                  String text =
+                      '$prefix${formatWeight(weightKg, measurementUnit)}';
+                  if (!isSmaBar && hasHeight) {
+                    final heightM = heightCm! / 100.0;
+                    final bmi = weightKg / (heightM * heightM);
+                    text +=
+                        '\n${l10n.bmiValueShortLabel(bmi.toStringAsFixed(1))}';
+                  }
+
                   return LineTooltipItem(
-                    '$prefix${formatWeight(weight, measurementUnit)}',
+                    text,
                     TextStyle(
                       color: isSmaBar
                           ? colorScheme.tertiary

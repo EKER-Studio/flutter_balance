@@ -337,7 +337,9 @@ void main() {
 
     await tester.tap(find.byKey(const Key('initial_weight_date_picker')));
     await tester.pumpAndSettle();
-    await tester.tap(find.text('1'));
+    await tester.tap(find.byIcon(Icons.chevron_left));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('15'));
     await tester.pumpAndSettle();
     await tester.tap(find.text('OK'));
     await tester.pumpAndSettle();

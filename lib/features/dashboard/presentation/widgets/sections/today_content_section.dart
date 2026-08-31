@@ -26,6 +26,9 @@ class TodayContentSection extends StatelessWidget {
   /// The user's active measurement unit.
   final MeasurementUnit measurementUnit;
 
+  /// The user's height in centimeters, used for BMI calculation.
+  final double? heightCm;
+
   /// A callback fired when the chart time period is updated.
   final ValueChanged<TimePeriod> onPeriodChanged;
 
@@ -39,6 +42,7 @@ class TodayContentSection extends StatelessWidget {
     required this.timePeriod,
     this.errorType,
     required this.measurementUnit,
+    this.heightCm,
     required this.onPeriodChanged,
     this.onRetry,
   });
@@ -88,6 +92,7 @@ class TodayContentSection extends StatelessWidget {
                       entries: filteredEntries,
                       period: timePeriod,
                       measurementUnit: measurementUnit,
+                      heightCm: heightCm,
                       onPeriodChanged: onPeriodChanged,
                     ),
                     const SizedBox(height: 80),
@@ -113,6 +118,7 @@ class TodayContentSection extends StatelessWidget {
                 entries: filteredEntries,
                 period: timePeriod,
                 measurementUnit: measurementUnit,
+                heightCm: heightCm,
                 onPeriodChanged: onPeriodChanged,
               ),
               const SizedBox(height: 16),

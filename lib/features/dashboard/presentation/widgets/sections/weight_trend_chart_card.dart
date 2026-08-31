@@ -20,6 +20,9 @@ class WeightTrendChartCard extends StatelessWidget {
   /// The measurement unit used to format the plotted values.
   final MeasurementUnit measurementUnit;
 
+  /// The user's height in centimeters, used for rendering BMI data if provided.
+  final double? heightCm;
+
   /// A callback invoked when a new chart period is selected.
   final ValueChanged<TimePeriod> onPeriodChanged;
 
@@ -28,6 +31,7 @@ class WeightTrendChartCard extends StatelessWidget {
     required this.entries,
     required this.period,
     required this.measurementUnit,
+    this.heightCm,
     required this.onPeriodChanged,
   });
 
@@ -103,6 +107,7 @@ class WeightTrendChartCard extends StatelessWidget {
                       entries: entries,
                       period: period,
                       measurementUnit: measurementUnit,
+                      heightCm: heightCm,
                     ),
             ),
             if (entries.length >= 3) ...[
