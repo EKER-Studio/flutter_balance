@@ -150,27 +150,25 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
   /// with [WeightEntry.dateTime] set to noon (12:00) of the day to keep the
   /// X-axis positions stable across re-renders.
   List<WeightEntry> _aggregateByDay(List<WeightEntry> entries) {
-    final Map<String, List<WeightEntry>> grouped = {};
+    final Map<DateTime, List<WeightEntry>> grouped = {};
     for (final e in entries) {
-      final key = '${e.dateTime.year}-${e.dateTime.month}-${e.dateTime.day}';
-      grouped.putIfAbsent(key, () => []).add(e);
+      final dayKey = DateTime(
+        e.dateTime.year,
+        e.dateTime.month,
+        e.dateTime.day,
+      );
+      grouped.putIfAbsent(dayKey, () => []).add(e);
     }
 
     final sortedKeys = grouped.keys.toList()..sort();
-    return sortedKeys.map((key) {
+    return sortedKeys.map((dayKey) {
       // The key is taken from grouped.keys, so the lookup always succeeds.
-      final dayEntries = grouped[key]!;
+      final dayEntries = grouped[dayKey]!;
       final avgWeight =
           dayEntries.map((e) => e.weightKg).reduce((a, b) => a + b) /
           dayEntries.length;
 
-      final representative = dayEntries.first.dateTime;
-      final noonDate = DateTime(
-        representative.year,
-        representative.month,
-        representative.day,
-        12,
-      );
+      final noonDate = DateTime(dayKey.year, dayKey.month, dayKey.day, 12);
       return WeightEntry(
         id: dayEntries.first.id,
         weightKg: (avgWeight * 100).round() / 100,
