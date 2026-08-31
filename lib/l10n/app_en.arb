@@ -580,5 +580,47 @@
   "@firstDayOfWeekMonday": {},
   "firstDayOfWeekSunday": "Sunday",
   "@firstDayOfWeekSunday": {},
+  "goalMode": "Goal type",
+  "@goalMode": {},
+  "goalModeLose": "Lose weight",
+  "@goalModeLose": {},
+  "goalModeMaintain": "Maintain weight",
+  "@goalModeMaintain": {},
+  "goalModeGain": "Gain weight",
+  "@goalModeGain": {},
+  "goalModeLoseDesc": "Focus on gradual weight loss",
+  "@goalModeLoseDesc": {},
+  "goalModeMaintainDesc": "Keep weight stable in a healthy range",
+  "@goalModeMaintainDesc": {},
+  "goalModeGainDesc": "Focus on steady weight gain and mass",
+  "@goalModeGainDesc": {},
+  "goalWeightMaintained": "Weight stable (±{range})",
+  "@goalWeightMaintained": {
+    "placeholders": {
+      "range": {
+        "type": "String"
+      }
+    }
+  },
+  "goalWeightDeviation": "Deviation: {diff}",
+  "@goalWeightDeviation": {
+    "placeholders": {
+      "diff": {
+        "type": "String"
+      }
+    }
+  },
+  "weightGain1kgTitle": "+1 kg gained",
+  "@weightGain1kgTitle": {},
+  "weightGain1kgDesc": "Gained 1 kg towards your mass goal",
+  "@weightGain1kgDesc": {},
+  "weightGain5kgTitle": "+5 kg gained",
+  "@weightGain5kgTitle": {},
+  "weightGain5kgDesc": "Gained 5 kg towards your mass goal",
+  "@weightGain5kgDesc": {},
+  "weightGain10kgTitle": "+10 kg gained",
+  "@weightGain10kgTitle": {},
+  "weightGain10kgDesc": "Gained 10 kg towards your mass goal",
+  "@weightGain10kgDesc": {},
   "yourResult": "Your result"
 }
