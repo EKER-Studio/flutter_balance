@@ -86,7 +86,14 @@ class DatabaseModule {
         if (decoded.length == 32) {
           try {
             await keyFile?.writeAsString(stored);
-          } catch (_) {}
+          } catch (e, stack) {
+            AppCrashReporter.recordError(
+              e,
+              stack,
+              reason: 'Failed to write migrated encryption key to file backup',
+              fatal: false,
+            );
+          }
           return Uint8List.fromList(decoded);
         }
       } catch (e) {
@@ -101,11 +108,26 @@ class DatabaseModule {
 
     try {
       await keyFile?.writeAsString(base64Key);
-    } catch (_) {}
+    } catch (e, stack) {
+      AppCrashReporter.recordError(
+        e,
+        stack,
+        reason: 'Failed to write encryption key to file backup',
+        fatal: false,
+      );
+    }
 
     try {
       await _secureStorage.write(key: _encryptionKeyKey, value: base64Key);
-    } catch (_) {}
+    } catch (e, stack) {
+      AppCrashReporter.recordError(
+        e,
+        stack,
+        reason:
+            'Failed to write encryption key to secure storage — data loss risk if file backup also failed',
+        fatal: false,
+      );
+    }
 
     return key;
   }
