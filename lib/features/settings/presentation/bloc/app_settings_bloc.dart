@@ -45,6 +45,14 @@ class AppSettingsBloc extends HydratedBloc<AppSettingsEvent, AppSettingsState> {
     );
     on<ResetAppSettings>(_onResetAppSettings, transformer: droppable());
     on<UpdateLastHealthSyncTimestamp>(_onUpdateLastHealthSyncTimestamp);
+    on<UpdateWeeklyPaceWindow>(_onUpdateWeeklyPaceWindow);
+  }
+
+  void _onUpdateWeeklyPaceWindow(
+    UpdateWeeklyPaceWindow event,
+    Emitter<AppSettingsState> emit,
+  ) {
+    emit(state.copyWith(weeklyPaceWindowDays: event.windowDays));
   }
 
   void _onUpdateTheme(UpdateTheme event, Emitter<AppSettingsState> emit) {

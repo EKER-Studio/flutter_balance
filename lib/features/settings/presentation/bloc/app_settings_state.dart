@@ -83,6 +83,9 @@ final class AppSettingsState extends Equatable {
   /// The UTC timestamp of the last successful health sync.
   final DateTime? lastHealthSyncTimestamp;
 
+  /// The time window in days used to calculate the weekly weight change pace (default: 30).
+  final int weeklyPaceWindowDays;
+
   const AppSettingsState({
     this.themeMode = AppThemeMode.system,
     this.measurementUnit = MeasurementUnit.metric,
@@ -99,6 +102,7 @@ final class AppSettingsState extends Equatable {
     this.isHealthApiAvailable = true,
     this.healthPermissionDenied = false,
     this.lastHealthSyncTimestamp,
+    this.weeklyPaceWindowDays = 30,
   });
 
   /// Creates a copy of this state with the given fields replaced.
@@ -121,6 +125,7 @@ final class AppSettingsState extends Equatable {
     bool? isHealthApiAvailable,
     bool? healthPermissionDenied,
     DateTime? lastHealthSyncTimestamp,
+    int? weeklyPaceWindowDays,
   }) {
     return AppSettingsState(
       themeMode: themeMode ?? this.themeMode,
@@ -145,6 +150,7 @@ final class AppSettingsState extends Equatable {
           healthPermissionDenied ?? this.healthPermissionDenied,
       lastHealthSyncTimestamp:
           lastHealthSyncTimestamp ?? this.lastHealthSyncTimestamp,
+      weeklyPaceWindowDays: weeklyPaceWindowDays ?? this.weeklyPaceWindowDays,
     );
   }
 
@@ -165,6 +171,7 @@ final class AppSettingsState extends Equatable {
     isHealthApiAvailable,
     healthPermissionDenied,
     lastHealthSyncTimestamp,
+    weeklyPaceWindowDays,
   ];
 
   /// Deserializes an [AppSettingsState] from a JSON map.
@@ -215,6 +222,7 @@ final class AppSettingsState extends Equatable {
       lastHealthSyncTimestamp: json['lastHealthSyncTimestamp'] != null
           ? DateTime.tryParse(json['lastHealthSyncTimestamp'] as String)
           : null,
+      weeklyPaceWindowDays: json['weeklyPaceWindowDays'] as int? ?? 30,
     );
   }
 
@@ -235,6 +243,7 @@ final class AppSettingsState extends Equatable {
       'isHealthSyncEnabled': isHealthSyncEnabled,
       if (lastHealthSyncTimestamp != null)
         'lastHealthSyncTimestamp': lastHealthSyncTimestamp!.toIso8601String(),
+      'weeklyPaceWindowDays': weeklyPaceWindowDays,
     };
   }
 }

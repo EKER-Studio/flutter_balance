@@ -904,6 +904,14 @@ void main() {
       expect(updated.healthPermissionDenied, true);
     });
 
+    blocTest<AppSettingsBloc, AppSettingsState>(
+      'emits updated state on UpdateWeeklyPaceWindow',
+      build: () =>
+          AppSettingsBloc(notificationService: mockNotificationService),
+      act: (bloc) => bloc.add(const UpdateWeeklyPaceWindow(14)),
+      expect: () => [const AppSettingsState(weeklyPaceWindowDays: 14)],
+    );
+
     test('bloc fromJson override restores state from a json map', () {
       final bloc = AppSettingsBloc(
         notificationService: mockNotificationService,
@@ -913,10 +921,12 @@ void main() {
         'themeMode': 'dark',
         'measurementUnit': 'metric',
         'notificationsEnabled': false,
+        'weeklyPaceWindowDays': 60,
       });
 
       expect(restored, isA<AppSettingsState>());
       expect(restored?.themeMode, AppThemeMode.dark);
+      expect(restored?.weeklyPaceWindowDays, 60);
     });
 
     test('bloc toJson override serializes the current state', () {
@@ -928,6 +938,7 @@ void main() {
 
       expect(json, isA<Map<String, dynamic>>());
       expect(json['themeMode'], 'system');
+      expect(json['weeklyPaceWindowDays'], 30);
     });
   });
 }

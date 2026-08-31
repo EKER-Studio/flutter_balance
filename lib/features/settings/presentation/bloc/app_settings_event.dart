@@ -103,3 +103,11 @@ final class UpdateLastHealthSyncTimestamp extends AppSettingsEvent {
 
   const UpdateLastHealthSyncTimestamp(this.timestamp);
 }
+
+/// An event that updates the time window in days used for weekly pace calculations.
+final class UpdateWeeklyPaceWindow extends AppSettingsEvent {
+  /// The pace calculation window in days.
+  final int windowDays;
+
+  const UpdateWeeklyPaceWindow(this.windowDays);
+}
