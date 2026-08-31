@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:balance/core/utils/analytics.dart';
-import 'package:balance/l10n/app_localizations.dart';
+import 'package:balance/features/dashboard/presentation/utils/daily_tip_provider.dart';
 
 /// A card displaying a rotating daily weight-logging tip.
 class DailyTipCard extends StatelessWidget {
@@ -8,13 +8,13 @@ class DailyTipCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
+    final tip = DailyTipProvider.getDailyTip(context);
 
     return Semantics(
       container: true,
-      label: '${l10n.dailyTipTitle}: ${l10n.dailyTipText}',
+      label: '${tip.title}: ${tip.text}',
       child: Card(
         margin: EdgeInsets.zero,
         elevation: 0,
@@ -51,7 +51,7 @@ class DailyTipCard extends StatelessWidget {
                     TextSpan(
                       children: [
                         TextSpan(
-                          text: '${l10n.dailyTipTitle}: ',
+                          text: '${tip.title}: ',
                           style: textTheme.bodyMedium?.copyWith(
                             fontWeight: FontWeight.bold,
                             color: colorScheme.onSurface,
@@ -59,7 +59,7 @@ class DailyTipCard extends StatelessWidget {
                           ),
                         ),
                         TextSpan(
-                          text: l10n.dailyTipText,
+                          text: tip.text,
                           style: textTheme.bodyMedium?.copyWith(
                             color: colorScheme.onSurfaceVariant,
                             fontSize: 14,
