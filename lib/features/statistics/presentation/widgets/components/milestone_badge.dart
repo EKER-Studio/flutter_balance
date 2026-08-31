@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:balance/core/utils/analytics.dart';
 import 'package:balance/features/statistics/domain/entities/milestone.dart';
+import 'package:balance/features/statistics/presentation/utils/milestone_icon_resolver.dart';
 import 'package:balance/features/statistics/presentation/utils/milestone_localizer.dart';
 import 'package:balance/l10n/app_localizations.dart';
 
@@ -63,7 +64,7 @@ class MilestoneBadge extends StatelessWidget {
                       shape: BoxShape.circle,
                     ),
                     child: Icon(
-                      milestone.icon,
+                      iconForMilestone(milestone.type),
                       size: 22,
                       color: isUnlocked
                           ? cs.primary
@@ -156,7 +157,7 @@ class MilestoneBadge extends StatelessWidget {
             shape: BoxShape.circle,
           ),
           child: Icon(
-            milestone.icon,
+            iconForMilestone(milestone.type),
             size: 28,
             color: milestone.isUnlocked
                 ? cs.primary

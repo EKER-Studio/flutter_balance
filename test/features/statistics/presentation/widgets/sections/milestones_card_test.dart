@@ -26,13 +26,11 @@ void main() {
       const milestones = [
         Milestone(
           type: MilestoneType.firstEntry,
-          icon: Icons.flag_outlined,
           isUnlocked: true,
           progress: 1.0,
         ),
         Milestone(
           type: MilestoneType.streak7,
-          icon: Icons.local_fire_department_outlined,
           isUnlocked: false,
           progress: 0.5,
         ),
@@ -52,7 +50,6 @@ void main() {
       final milestones = [
         Milestone(
           type: MilestoneType.firstEntry,
-          icon: Icons.flag_outlined,
           isUnlocked: true,
           progress: 1.0,
           unlockedDate: DateTime(2026, 8, 1),

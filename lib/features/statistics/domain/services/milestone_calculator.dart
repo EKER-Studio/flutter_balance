@@ -1,6 +1,5 @@
 import 'dart:math' as math;
-import 'package:flutter/material.dart';
-import 'package:balance/features/settings/presentation/bloc/weight_goal_mode.dart';
+import 'package:balance/features/weight/domain/weight_goal_mode.dart';
 import 'package:balance/features/statistics/domain/entities/milestone.dart';
 import 'package:balance/features/weight/domain/entities/weight_entry.dart';
 
@@ -229,28 +228,24 @@ class MilestoneCalculator {
     return [
       Milestone(
         type: MilestoneType.firstEntry,
-        icon: Icons.flag_outlined,
         isUnlocked: true,
         progress: 1.0,
         unlockedDate: firstEntry.dateTime,
       ),
       Milestone(
         type: MilestoneType.streak7,
-        icon: Icons.local_fire_department_outlined,
         isUnlocked: maxStreak >= 7,
         progress: (maxStreak / 7.0).clamp(0.0, 1.0),
         unlockedDate: streak7Date,
       ),
       Milestone(
         type: MilestoneType.streak30,
-        icon: Icons.calendar_month_outlined,
         isUnlocked: maxStreak >= 30,
         progress: (maxStreak / 30.0).clamp(0.0, 1.0),
         unlockedDate: streak30Date,
       ),
       Milestone(
         type: MilestoneType.streak100,
-        icon: Icons.workspace_premium_outlined,
         isUnlocked: maxStreak >= 100,
         progress: (maxStreak / 100.0).clamp(0.0, 1.0),
         unlockedDate: streak100Date,
@@ -258,21 +253,18 @@ class MilestoneCalculator {
       if (isGain) ...[
         Milestone(
           type: MilestoneType.weightGain1kg,
-          icon: Icons.trending_up_outlined,
           isUnlocked: maxGain >= 1.0,
           progress: (maxGain / 1.0).clamp(0.0, 1.0),
           unlockedDate: gain1Date,
         ),
         Milestone(
           type: MilestoneType.weightGain5kg,
-          icon: Icons.fitness_center_outlined,
           isUnlocked: maxGain >= 5.0,
           progress: (maxGain / 5.0).clamp(0.0, 1.0),
           unlockedDate: gain5Date,
         ),
         Milestone(
           type: MilestoneType.weightGain10kg,
-          icon: Icons.military_tech_outlined,
           isUnlocked: maxGain >= 10.0,
           progress: (maxGain / 10.0).clamp(0.0, 1.0),
           unlockedDate: gain10Date,
@@ -280,21 +272,18 @@ class MilestoneCalculator {
       ] else ...[
         Milestone(
           type: MilestoneType.weightLoss1kg,
-          icon: Icons.trending_down_outlined,
           isUnlocked: maxLoss >= 1.0,
           progress: (maxLoss / 1.0).clamp(0.0, 1.0),
           unlockedDate: loss1Date,
         ),
         Milestone(
           type: MilestoneType.weightLoss5kg,
-          icon: Icons.fitness_center_outlined,
           isUnlocked: maxLoss >= 5.0,
           progress: (maxLoss / 5.0).clamp(0.0, 1.0),
           unlockedDate: loss5Date,
         ),
         Milestone(
           type: MilestoneType.weightLoss10kg,
-          icon: Icons.military_tech_outlined,
           isUnlocked: maxLoss >= 10.0,
           progress: (maxLoss / 10.0).clamp(0.0, 1.0),
           unlockedDate: loss10Date,
@@ -303,14 +292,12 @@ class MilestoneCalculator {
       if (targetWeight != null) ...[
         Milestone(
           type: MilestoneType.goalHalfway,
-          icon: Icons.timeline_outlined,
           isUnlocked: isHalfway,
           progress: halfwayProgress,
           unlockedDate: halfwayDate,
         ),
         Milestone(
           type: MilestoneType.goalReached,
-          icon: Icons.emoji_events_outlined,
           isUnlocked: isReached,
           progress: reachedProgress,
           unlockedDate: reachedDate,
@@ -319,7 +306,6 @@ class MilestoneCalculator {
       if (heightCm != null && heightCm > 0)
         Milestone(
           type: MilestoneType.healthyBmi,
-          icon: Icons.favorite_outline,
           isUnlocked: isHealthyBmi,
           progress: healthyBmiProgress,
           unlockedDate: healthyBmiDate,
@@ -336,63 +322,53 @@ class MilestoneCalculator {
     return [
       const Milestone(
         type: MilestoneType.firstEntry,
-        icon: Icons.flag_outlined,
         isUnlocked: false,
         progress: 0.0,
       ),
       const Milestone(
         type: MilestoneType.streak7,
-        icon: Icons.local_fire_department_outlined,
         isUnlocked: false,
         progress: 0.0,
       ),
       const Milestone(
         type: MilestoneType.streak30,
-        icon: Icons.calendar_month_outlined,
         isUnlocked: false,
         progress: 0.0,
       ),
       const Milestone(
         type: MilestoneType.streak100,
-        icon: Icons.workspace_premium_outlined,
         isUnlocked: false,
         progress: 0.0,
       ),
       if (isGain) ...[
         const Milestone(
           type: MilestoneType.weightGain1kg,
-          icon: Icons.trending_up_outlined,
           isUnlocked: false,
           progress: 0.0,
         ),
         const Milestone(
           type: MilestoneType.weightGain5kg,
-          icon: Icons.fitness_center_outlined,
           isUnlocked: false,
           progress: 0.0,
         ),
         const Milestone(
           type: MilestoneType.weightGain10kg,
-          icon: Icons.military_tech_outlined,
           isUnlocked: false,
           progress: 0.0,
         ),
       ] else ...[
         const Milestone(
           type: MilestoneType.weightLoss1kg,
-          icon: Icons.trending_down_outlined,
           isUnlocked: false,
           progress: 0.0,
         ),
         const Milestone(
           type: MilestoneType.weightLoss5kg,
-          icon: Icons.fitness_center_outlined,
           isUnlocked: false,
           progress: 0.0,
         ),
         const Milestone(
           type: MilestoneType.weightLoss10kg,
-          icon: Icons.military_tech_outlined,
           isUnlocked: false,
           progress: 0.0,
         ),
@@ -400,13 +376,11 @@ class MilestoneCalculator {
       if (targetWeight != null) ...[
         const Milestone(
           type: MilestoneType.goalHalfway,
-          icon: Icons.timeline_outlined,
           isUnlocked: false,
           progress: 0.0,
         ),
         const Milestone(
           type: MilestoneType.goalReached,
-          icon: Icons.emoji_events_outlined,
           isUnlocked: false,
           progress: 0.0,
         ),
@@ -414,7 +388,6 @@ class MilestoneCalculator {
       if (heightCm != null && heightCm > 0)
         const Milestone(
           type: MilestoneType.healthyBmi,
-          icon: Icons.favorite_outline,
           isUnlocked: false,
           progress: 0.0,
         ),

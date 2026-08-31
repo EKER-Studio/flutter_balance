@@ -1,5 +1,3 @@
-import 'package:flutter/material.dart';
-
 /// The specific milestone or achievement identifier.
 enum MilestoneType {
   firstEntry,
@@ -22,9 +20,6 @@ class Milestone {
   /// The specific type of the milestone.
   final MilestoneType type;
 
-  /// The icon representing the achievement.
-  final IconData icon;
-
   /// Whether the milestone conditions have been fulfilled.
   final bool isUnlocked;
 
@@ -36,7 +31,6 @@ class Milestone {
 
   const Milestone({
     required this.type,
-    required this.icon,
     required this.isUnlocked,
     required this.progress,
     this.unlockedDate,
@@ -44,14 +38,12 @@ class Milestone {
 
   Milestone copyWith({
     MilestoneType? type,
-    IconData? icon,
     bool? isUnlocked,
     double? progress,
     DateTime? unlockedDate,
   }) {
     return Milestone(
       type: type ?? this.type,
-      icon: icon ?? this.icon,
       isUnlocked: isUnlocked ?? this.isUnlocked,
       progress: progress ?? this.progress,
       unlockedDate: unlockedDate ?? this.unlockedDate,
