@@ -12,6 +12,7 @@ import 'package:balance/l10n/app_localizations.dart';
 import 'package:balance/features/weight/domain/bmi_category.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_bloc.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_state.dart';
+import 'package:balance/features/settings/presentation/bloc/weight_goal_mode.dart';
 import 'package:balance/features/dashboard/presentation/widgets/components/bmi_badge.dart';
 import 'package:balance/features/weight/presentation/widgets/components/bmi_legend_dialog.dart';
 import 'package:balance/features/weight/presentation/utils/bmi_category_localizer.dart';
@@ -45,9 +46,23 @@ class CalendarDayEntriesCard extends StatelessWidget {
     final isImperial = unit == MeasurementUnit.imperial;
     final unitLabel = unitLabelFor(unit);
 
+    bool isEntryGoalAchieved(WeightEntry e) {
+      if (targetWeight != null) {
+        switch (appSettingsState.weightGoalMode) {
+          case WeightGoalMode.lose:
+            return e.weightKg <= targetWeight!;
+          case WeightGoalMode.gain:
+            return e.weightKg >= targetWeight!;
+          case WeightGoalMode.maintain:
+            return (e.weightKg - targetWeight!).abs() <= 1.0;
+        }
+      }
+      return false;
+    }
+
     /// Whether at least one entry on this day reaches the target weight.
     final isGoalAchievedOnDay =
-        targetWeight != null && entries.any((e) => e.weightKg <= targetWeight!);
+        targetWeight != null && entries.any(isEntryGoalAchieved);
 
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
@@ -110,8 +125,7 @@ class CalendarDayEntriesCard extends StatelessWidget {
               Localizations.localeOf(context).toString(),
             ).format(entry.dateTime);
 
-            final meetsGoal =
-                targetWeight != null && entry.weightKg <= targetWeight!;
+            final meetsGoal = isEntryGoalAchieved(entry);
 
             final bmi = (heightCm != null && heightCm > 0)
                 ? appSettingsState.calculateBmi(entry.weightKg)

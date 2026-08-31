@@ -4,6 +4,7 @@ import 'package:balance/features/calendar/presentation/widgets/components/calend
 import 'package:balance/features/calendar/presentation/widgets/components/calendar_month_header.dart';
 import 'package:balance/features/calendar/presentation/widgets/components/calendar_weekday_header.dart';
 import 'package:balance/features/settings/presentation/bloc/first_day_of_week.dart';
+import 'package:balance/features/settings/presentation/bloc/weight_goal_mode.dart';
 import 'package:balance/features/weight/domain/entities/weight_entry.dart';
 
 /// A card section hosting the monthly navigation header, weekday names, and interactive calendar grid.
@@ -23,6 +24,9 @@ class CalendarMonthCard extends StatelessWidget {
   /// The preferred first day of the week.
   final FirstDayOfWeek firstDayOfWeek;
 
+  /// The active goal mode.
+  final WeightGoalMode goalMode;
+
   /// Callback when the previous month button is pressed.
   final VoidCallback onPreviousMonth;
 
@@ -39,6 +43,7 @@ class CalendarMonthCard extends StatelessWidget {
     required this.entries,
     required this.targetWeight,
     required this.firstDayOfWeek,
+    this.goalMode = WeightGoalMode.lose,
     required this.onPreviousMonth,
     required this.onNextMonth,
     required this.onDaySelected,
@@ -93,6 +98,7 @@ class CalendarMonthCard extends StatelessWidget {
                     entries: entries,
                     targetWeight: targetWeight,
                     firstDayOfWeek: firstDayOfWeek,
+                    goalMode: goalMode,
                     onDaySelected: (date, _) => onDaySelected(date),
                   ),
                 ),

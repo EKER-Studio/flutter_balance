@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:balance/features/settings/presentation/bloc/weight_goal_mode.dart';
 import 'package:balance/features/weight/domain/entities/weight_entry.dart';
 import 'package:balance/l10n/app_localizations.dart';
 
@@ -36,6 +37,9 @@ class CalendarDayCell extends StatelessWidget {
   /// back to the aggregated [isGoalAchieved] flag.
   final double? targetWeight;
 
+  /// The active goal mode.
+  final WeightGoalMode goalMode;
+
   /// Callback invoked when the user taps on this day cell.
   final VoidCallback? onTap;
 
@@ -49,6 +53,7 @@ class CalendarDayCell extends StatelessWidget {
     this.isFuture = false,
     this.isGoalAchieved = false,
     this.targetWeight,
+    this.goalMode = WeightGoalMode.lose,
     this.onTap,
   });
 
@@ -90,12 +95,21 @@ class CalendarDayCell extends StatelessWidget {
     final blue = colorScheme.primary;
 
     bool isEntryGoalAchieved(WeightEntry e) {
-      if (targetWeight != null) return e.weightKg <= targetWeight!;
+      if (targetWeight != null) {
+        switch (goalMode) {
+          case WeightGoalMode.lose:
+            return e.weightKg <= targetWeight!;
+          case WeightGoalMode.gain:
+            return e.weightKg >= targetWeight!;
+          case WeightGoalMode.maintain:
+            return (e.weightKg - targetWeight!).abs() <= 1.0;
+        }
+      }
       return isGoalAchieved;
     }
 
     final hasGoalEntry = targetWeight != null
-        ? entries.any((e) => e.weightKg <= targetWeight!)
+        ? entries.any(isEntryGoalAchieved)
         : isGoalAchieved;
 
     Widget buildIndicator() {

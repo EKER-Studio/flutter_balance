@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:balance/features/weight/domain/entities/weight_entry.dart';
-import 'package:balance/features/settings/presentation/bloc/first_day_of_week.dart';
 import 'package:balance/features/calendar/presentation/widgets/components/calendar_day_cell.dart';
-
-/// The callback signature used when a calendar day is selected.
-typedef OnCalendarDaySelected =
-    void Function(DateTime date, List<WeightEntry> entries);
+import 'package:balance/features/settings/presentation/bloc/first_day_of_week.dart';
+import 'package:balance/features/settings/presentation/bloc/weight_goal_mode.dart';
+import 'package:balance/features/weight/domain/entities/weight_entry.dart';
 
 /// A fixed 7-column grid of [CalendarDayCell]s for a focused month.
 class CalendarGrid extends StatelessWidget {
@@ -24,8 +21,11 @@ class CalendarGrid extends StatelessWidget {
   /// The preferred first day of the week.
   final FirstDayOfWeek firstDayOfWeek;
 
+  /// The active goal mode.
+  final WeightGoalMode goalMode;
+
   /// The callback triggered when a day cell is tapped.
-  final OnCalendarDaySelected onDaySelected;
+  final void Function(DateTime date, List<WeightEntry> entries) onDaySelected;
 
   const CalendarGrid({
     super.key,
@@ -33,37 +33,31 @@ class CalendarGrid extends StatelessWidget {
     required this.selectedDate,
     required this.entries,
     this.targetWeight,
-    required this.firstDayOfWeek,
+    this.firstDayOfWeek = FirstDayOfWeek.system,
+    this.goalMode = WeightGoalMode.lose,
     required this.onDaySelected,
   });
 
   @override
   Widget build(BuildContext context) {
-    final firstDayOfMonth = DateTime(focusedMonth.year, focusedMonth.month, 1);
     final daysInMonth = DateUtils.getDaysInMonth(
       focusedMonth.year,
       focusedMonth.month,
     );
+    final firstDayOfMonth = DateTime(focusedMonth.year, focusedMonth.month, 1);
 
-    // DateTime.weekday: Mon=1, Sun=7.
-    // Determine the offset based on firstDayOfWeek setting.
     int startingOffset;
     switch (firstDayOfWeek) {
       case FirstDayOfWeek.monday:
-        startingOffset = firstDayOfMonth.weekday - 1; // Mon=0, Sun=6
+        startingOffset = (firstDayOfMonth.weekday - 1) % 7;
       case FirstDayOfWeek.sunday:
-        startingOffset = firstDayOfMonth.weekday % 7; // Sun=0, Mon=1, Sat=6
+        startingOffset = firstDayOfMonth.weekday % 7;
       case FirstDayOfWeek.system:
         final systemFirstDayIndex = MaterialLocalizations.of(
           context,
-        ).firstDayOfWeekIndex; // Sun=0, Mon=1
-        if (systemFirstDayIndex == 1) {
-          // Monday
-          startingOffset = firstDayOfMonth.weekday - 1;
-        } else {
-          // Assume Sunday
-          startingOffset = firstDayOfMonth.weekday % 7;
-        }
+        ).firstDayOfWeekIndex;
+        startingOffset =
+            (firstDayOfMonth.weekday % 7 - systemFirstDayIndex + 7) % 7;
     }
 
     final totalCells = startingOffset + daysInMonth;
@@ -79,6 +73,20 @@ class CalendarGrid extends StatelessWidget {
     final now = DateTime.now();
     final todayEnd = DateTime(now.year, now.month, now.day, 23, 59, 59);
 
+    bool isEntryGoalAchieved(WeightEntry e) {
+      if (targetWeight != null) {
+        switch (goalMode) {
+          case WeightGoalMode.lose:
+            return e.weightKg <= targetWeight!;
+          case WeightGoalMode.gain:
+            return e.weightKg >= targetWeight!;
+          case WeightGoalMode.maintain:
+            return (e.weightKg - targetWeight!).abs() <= 1.0;
+        }
+      }
+      return false;
+    }
+
     return GridView.builder(
       physics: const NeverScrollableScrollPhysics(),
       shrinkWrap: true,
@@ -91,7 +99,6 @@ class CalendarGrid extends StatelessWidget {
       ),
       itemCount: totalCells,
       itemBuilder: (context, index) {
-        // Leave the slots before the month's first weekday empty.
         if (index < startingOffset) {
           return const SizedBox.shrink();
         }
@@ -103,8 +110,7 @@ class CalendarGrid extends StatelessWidget {
         final isSelected = DateUtils.isSameDay(date, selectedDate);
         final isFuture = date.isAfter(todayEnd);
         final isGoalAchieved =
-            targetWeight != null &&
-            dayEntries.any((e) => e.weightKg <= targetWeight!);
+            targetWeight != null && dayEntries.any(isEntryGoalAchieved);
 
         return CalendarDayCell(
           date: date,
@@ -115,6 +121,7 @@ class CalendarGrid extends StatelessWidget {
           isFuture: isFuture,
           isGoalAchieved: isGoalAchieved,
           targetWeight: targetWeight,
+          goalMode: goalMode,
           onTap: isFuture ? null : () => onDaySelected(date, dayEntries),
         );
       },
