@@ -9,6 +9,7 @@ import 'package:balance/features/settings/presentation/bloc/app_settings_bloc.da
 import 'package:balance/features/settings/presentation/bloc/app_settings_event.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_state.dart';
 import 'package:balance/features/settings/presentation/widgets/components/pace_window_selection_dialog.dart';
+import 'package:balance/features/statistics/presentation/utils/summary_share_coordinator.dart';
 import 'package:balance/features/statistics/presentation/widgets/sections/statistics_content_section.dart';
 import 'package:balance/features/statistics/presentation/widgets/sections/statistics_shimmer_skeleton.dart';
 import 'package:balance/features/weight/domain/entities/weight_entry.dart';
@@ -32,102 +33,128 @@ class StatisticsScreen extends StatelessWidget {
           AppAnalytics.logStatisticsPullToRefresh();
           context.read<WeightBloc>().add(const SubscribeToWeightChanges());
         },
-        child: CustomScrollView(
-          physics: const AlwaysScrollableScrollPhysics(),
-          slivers: [
-            AppTopBar(title: l10n.tabStats),
-            SliverSafeArea(
-              top: false,
-              sliver: SliverToBoxAdapter(
-                child: BlocBuilder<WeightBloc, WeightState>(
-                  builder: (context, weightState) {
-                    if (weightState is WeightInitial ||
-                        weightState is WeightLoading) {
-                      return ClampedLayout(
-                        maxWidth: context.standardContentMaxWidth,
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 12,
-                        ),
-                        child: const StatisticsShimmerSkeleton(),
-                      );
-                    }
+        child: BlocBuilder<WeightBloc, WeightState>(
+          builder: (context, weightState) {
+            final entries = _entriesFromState(weightState);
+            final filteredEntries = _filteredEntriesFromState(weightState);
 
-                    final entries = _entriesFromState(weightState);
-                    final filteredEntries = _filteredEntriesFromState(
-                      weightState,
-                    );
-
-                    if (entries.isEmpty) {
-                      return ClampedLayout(
-                        maxWidth: context.standardContentMaxWidth,
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 32,
-                        ),
-                        child: StateMessageCard(
-                          icon: Icons.bar_chart,
-                          iconColor: Theme.of(context).colorScheme.primary,
-                          iconContainerColor: Theme.of(
-                            context,
-                          ).colorScheme.surfaceContainerHigh,
-                          title: l10n.noDataToAnalyze,
-                          subtitle: l10n.noDataToAnalyzeSubtitle,
-                          buttonLabel: l10n.addFirstMeasurement,
-                          buttonIcon: Icons.add,
-                          onButtonPressed: () => _showAddWeightSheet(context),
-                        ),
-                      );
-                    }
-
-                    return BlocBuilder<AppSettingsBloc, AppSettingsState>(
-                      builder: (context, settingsState) {
-                        return ClampedLayout(
-                          maxWidth: context.standardContentMaxWidth,
-                          padding: EdgeInsets.symmetric(
-                            horizontal: context.contentHorizontalPadding,
-                            vertical: 12,
-                          ),
-                          child: StatisticsContentSection(
-                            entries: entries,
-                            filteredEntries: filteredEntries,
-                            timePeriod: weightState.timePeriod,
-                            heightCm: settingsState.height,
-                            targetWeight: settingsState.targetWeight,
-                            unit: settingsState.measurementUnit,
-                            weeklyPaceWindowDays:
-                                settingsState.weeklyPaceWindowDays,
-                            onPaceWindowTap: () {
-                              PaceWindowSelectionDialog.show(
+            return CustomScrollView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              slivers: [
+                AppTopBar(
+                  title: l10n.tabStats,
+                  actions: entries.isNotEmpty
+                      ? [
+                          IconButton(
+                            icon: const Icon(Icons.share_outlined),
+                            tooltip: l10n.shareProgress,
+                            onPressed: () {
+                              final settingsState = context
+                                  .read<AppSettingsBloc>()
+                                  .state;
+                              SummaryShareCoordinator.shareProgress(
                                 context,
-                                currentDays: settingsState.weeklyPaceWindowDays,
-                                onSelected: (days) {
-                                  AppAnalytics.logSettingsPaceWindowChanged(
-                                    days,
-                                  );
-                                  context.read<AppSettingsBloc>().add(
-                                    UpdateWeeklyPaceWindow(days),
+                                entries: entries,
+                                targetWeight: settingsState.targetWeight,
+                                unit: settingsState.measurementUnit,
+                              );
+                            },
+                          ),
+                          const SizedBox(width: 8),
+                        ]
+                      : null,
+                ),
+                SliverSafeArea(
+                  top: false,
+                  sliver: SliverToBoxAdapter(
+                    child: Builder(
+                      builder: (context) {
+                        if (weightState is WeightInitial ||
+                            weightState is WeightLoading) {
+                          return ClampedLayout(
+                            maxWidth: context.standardContentMaxWidth,
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 12,
+                            ),
+                            child: const StatisticsShimmerSkeleton(),
+                          );
+                        }
+
+                        if (entries.isEmpty) {
+                          return ClampedLayout(
+                            maxWidth: context.standardContentMaxWidth,
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 32,
+                            ),
+                            child: StateMessageCard(
+                              icon: Icons.bar_chart,
+                              iconColor: Theme.of(context).colorScheme.primary,
+                              iconContainerColor: Theme.of(
+                                context,
+                              ).colorScheme.surfaceContainerHigh,
+                              title: l10n.noDataToAnalyze,
+                              subtitle: l10n.noDataToAnalyzeSubtitle,
+                              buttonLabel: l10n.addFirstMeasurement,
+                              buttonIcon: Icons.add,
+                              onButtonPressed: () =>
+                                  _showAddWeightSheet(context),
+                            ),
+                          );
+                        }
+
+                        return BlocBuilder<AppSettingsBloc, AppSettingsState>(
+                          builder: (context, settingsState) {
+                            return ClampedLayout(
+                              maxWidth: context.standardContentMaxWidth,
+                              padding: EdgeInsets.symmetric(
+                                horizontal: context.contentHorizontalPadding,
+                                vertical: 12,
+                              ),
+                              child: StatisticsContentSection(
+                                entries: entries,
+                                filteredEntries: filteredEntries,
+                                timePeriod: weightState.timePeriod,
+                                heightCm: settingsState.height,
+                                targetWeight: settingsState.targetWeight,
+                                unit: settingsState.measurementUnit,
+                                weeklyPaceWindowDays:
+                                    settingsState.weeklyPaceWindowDays,
+                                onPaceWindowTap: () {
+                                  PaceWindowSelectionDialog.show(
+                                    context,
+                                    currentDays:
+                                        settingsState.weeklyPaceWindowDays,
+                                    onSelected: (days) {
+                                      AppAnalytics.logSettingsPaceWindowChanged(
+                                        days,
+                                      );
+                                      context.read<AppSettingsBloc>().add(
+                                        UpdateWeeklyPaceWindow(days),
+                                      );
+                                    },
                                   );
                                 },
-                              );
-                            },
-                            onPeriodChanged: (period) {
-                              AppAnalytics.logStatisticsFilterChanged(
-                                period.name,
-                              );
-                              context.read<WeightBloc>().add(
-                                ChangeChartFilter(period),
-                              );
-                            },
-                          ),
+                                onPeriodChanged: (period) {
+                                  AppAnalytics.logStatisticsFilterChanged(
+                                    period.name,
+                                  );
+                                  context.read<WeightBloc>().add(
+                                    ChangeChartFilter(period),
+                                  );
+                                },
+                              ),
+                            );
+                          },
                         );
                       },
-                    );
-                  },
+                    ),
+                  ),
                 ),
-              ),
-            ),
-          ],
+              ],
+            );
+          },
         ),
       ),
     );

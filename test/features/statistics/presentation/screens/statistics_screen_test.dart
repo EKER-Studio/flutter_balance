@@ -780,4 +780,51 @@ void main() {
       expect(pace30, closeTo(-0.78, 0.05));
     });
   });
+
+  group('StatisticsScreen Share Action', () {
+    testWidgets('renders share button in AppTopBar when entries exist', (
+      tester,
+    ) async {
+      final entries = [
+        WeightEntry(id: 1, weightKg: 80.0, dateTime: DateTime.now()),
+      ];
+      final settingsBloc = AppSettingsBloc();
+      final weightBloc = createBloc(
+        WeightLoaded(
+          entries: entries,
+          filteredEntries: entries,
+          timePeriod: TimePeriod.week,
+          heightCm: null,
+        ),
+      );
+
+      await tester.pumpWidget(
+        buildSubject(settingsBloc: settingsBloc, weightBloc: weightBloc),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.byIcon(Icons.share_outlined), findsOneWidget);
+    });
+
+    testWidgets('hides share button in AppTopBar when entries list is empty', (
+      tester,
+    ) async {
+      final settingsBloc = AppSettingsBloc();
+      final weightBloc = createBloc(
+        const WeightLoaded(
+          entries: [],
+          filteredEntries: [],
+          timePeriod: TimePeriod.week,
+          heightCm: null,
+        ),
+      );
+
+      await tester.pumpWidget(
+        buildSubject(settingsBloc: settingsBloc, weightBloc: weightBloc),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.byIcon(Icons.share_outlined), findsNothing);
+    });
+  });
 }
