@@ -1,6 +1,7 @@
 import 'package:equatable/equatable.dart';
 
 import 'package:balance/features/settings/presentation/bloc/app_theme_mode.dart';
+import 'package:balance/features/settings/presentation/bloc/first_day_of_week.dart';
 import 'package:balance/features/weight/domain/bmi_category.dart';
 import 'package:balance/core/models/measurement_unit.dart';
 
@@ -86,8 +87,12 @@ final class AppSettingsState extends Equatable {
   /// The time window in days used to calculate the weekly weight change pace (default: 30).
   final int weeklyPaceWindowDays;
 
+  /// The user's preferred first day of the week for the calendar.
+  final FirstDayOfWeek firstDayOfWeek;
+
   const AppSettingsState({
     this.themeMode = AppThemeMode.system,
+    this.firstDayOfWeek = FirstDayOfWeek.system,
     this.measurementUnit = MeasurementUnit.metric,
     this.height,
     this.notificationsEnabled = false,
@@ -111,6 +116,7 @@ final class AppSettingsState extends Equatable {
   /// (the sentinel default keeps the current value).
   AppSettingsState copyWith({
     AppThemeMode? themeMode,
+    FirstDayOfWeek? firstDayOfWeek,
     MeasurementUnit? measurementUnit,
     Object? height = _heightSentinel,
     bool? notificationsEnabled,
@@ -129,6 +135,7 @@ final class AppSettingsState extends Equatable {
   }) {
     return AppSettingsState(
       themeMode: themeMode ?? this.themeMode,
+      firstDayOfWeek: firstDayOfWeek ?? this.firstDayOfWeek,
       measurementUnit: measurementUnit ?? this.measurementUnit,
       height: height == _heightSentinel ? this.height : height as double?,
       notificationsEnabled: notificationsEnabled ?? this.notificationsEnabled,
@@ -157,6 +164,7 @@ final class AppSettingsState extends Equatable {
   @override
   List<Object?> get props => [
     themeMode,
+    firstDayOfWeek,
     measurementUnit,
     height,
     notificationsEnabled,
@@ -187,6 +195,10 @@ final class AppSettingsState extends Equatable {
       themeMode: AppThemeMode.values.firstWhere(
         (e) => e.name == json['themeMode'],
         orElse: () => AppThemeMode.system,
+      ),
+      firstDayOfWeek: FirstDayOfWeek.values.firstWhere(
+        (e) => e.name == json['firstDayOfWeek'],
+        orElse: () => FirstDayOfWeek.system,
       ),
       measurementUnit: MeasurementUnit.values.firstWhere(
         (e) => e.name == json['measurementUnit'],
@@ -229,6 +241,7 @@ final class AppSettingsState extends Equatable {
   Map<String, dynamic> toJson() {
     return {
       'themeMode': themeMode.name,
+      'firstDayOfWeek': firstDayOfWeek.name,
       'measurementUnit': measurementUnit.name,
       'heightCm': height,
       'notificationsEnabled': notificationsEnabled,

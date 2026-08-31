@@ -12,7 +12,7 @@ class DailyTipProvider {
   static DailyTip getDailyTip(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final tips = _getAllTips(l10n);
-    
+
     // Choose a tip based on the current day of the year
     final now = DateTime.now();
     // A simple deterministic hash based on year and day of year
@@ -20,7 +20,7 @@ class DailyTipProvider {
     final dayOfYear = int.parse(
       "${now.year}${now.month.toString().padLeft(2, '0')}${now.day.toString().padLeft(2, '0')}",
     );
-    
+
     final index = dayOfYear % tips.length;
     return tips[index];
   }

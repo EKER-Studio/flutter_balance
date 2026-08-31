@@ -123,11 +123,20 @@ void main() {
       );
 
       final rangeCard = find.byType(WeightRangeCard);
-      expect(find.descendant(of: rangeCard, matching: find.textContaining('74.0')), findsOneWidget);
-      expect(find.descendant(of: rangeCard, matching: find.textContaining('80.0')), findsOneWidget);
+      expect(
+        find.descendant(of: rangeCard, matching: find.textContaining('74.0')),
+        findsOneWidget,
+      );
+      expect(
+        find.descendant(of: rangeCard, matching: find.textContaining('80.0')),
+        findsOneWidget,
+      );
 
       final heroCard = find.byType(HeroProgressCard);
-      expect(find.descendant(of: heroCard, matching: find.text('-6.0')), findsOneWidget);
+      expect(
+        find.descendant(of: heroCard, matching: find.text('-6.0')),
+        findsOneWidget,
+      );
     },
   );
 
@@ -391,11 +400,20 @@ void main() {
       );
 
       final rangeCard = find.byType(WeightRangeCard);
-      expect(find.descendant(of: rangeCard, matching: find.textContaining('74.0')), findsOneWidget);
-      expect(find.descendant(of: rangeCard, matching: find.textContaining('80.0')), findsOneWidget);
-      
+      expect(
+        find.descendant(of: rangeCard, matching: find.textContaining('74.0')),
+        findsOneWidget,
+      );
+      expect(
+        find.descendant(of: rangeCard, matching: find.textContaining('80.0')),
+        findsOneWidget,
+      );
+
       final heroCard = find.byType(HeroProgressCard);
-      expect(find.descendant(of: heroCard, matching: find.text('-6.0')), findsOneWidget);
+      expect(
+        find.descendant(of: heroCard, matching: find.text('-6.0')),
+        findsOneWidget,
+      );
     },
   );
 

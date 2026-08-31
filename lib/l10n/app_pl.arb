@@ -521,6 +521,9 @@
   "wipeDataContent": "To trwale usunie wszystkie wpisy wagi i zresetuje ustawienia aplikacji. Tej operacji nie można cofnąć.",
   "year": "Rok",
   "yesterday": "Wczoraj",
-
+  "firstDayOfWeek": "Pierwszy dzień tygodnia",
+  "firstDayOfWeekSystem": "Systemowo",
+  "firstDayOfWeekMonday": "Poniedziałek",
+  "firstDayOfWeekSunday": "Niedziela",
   "yourResult": "Twój wynik"
 }

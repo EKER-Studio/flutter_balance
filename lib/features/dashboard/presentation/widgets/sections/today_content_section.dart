@@ -78,7 +78,9 @@ class TodayContentSection extends StatelessWidget {
                     HealthSummaryCard(
                       latestWeightKg: latestEntry.weightKg,
                       lastUpdated: latestEntry.dateTime,
-                      deltaFromYesterday: yesterdayEntry != null ? latestEntry.weightKg - yesterdayEntry!.weightKg : null,
+                      deltaFromYesterday: yesterdayEntry != null
+                          ? latestEntry.weightKg - yesterdayEntry!.weightKg
+                          : null,
                     ),
                     const SizedBox(height: 16),
                     const DailyTipCard(),
@@ -117,7 +119,9 @@ class TodayContentSection extends StatelessWidget {
               HealthSummaryCard(
                 latestWeightKg: latestEntry.weightKg,
                 lastUpdated: latestEntry.dateTime,
-                deltaFromYesterday: yesterdayEntry != null ? latestEntry.weightKg - yesterdayEntry!.weightKg : null,
+                deltaFromYesterday: yesterdayEntry != null
+                    ? latestEntry.weightKg - yesterdayEntry!.weightKg
+                    : null,
               ),
               const SizedBox(height: 16),
               WeightTrendChartCard(

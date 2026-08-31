@@ -106,8 +106,8 @@ class HealthSummaryCard extends StatelessWidget {
                                 lastUpdated: lastUpdated,
                                 deltaFromYesterday: deltaFromYesterday != null
                                     ? (weightUnit == MeasurementUnit.imperial
-                                        ? kgToLbs(deltaFromYesterday!)
-                                        : deltaFromYesterday!)
+                                          ? kgToLbs(deltaFromYesterday!)
+                                          : deltaFromYesterday!)
                                     : null,
                               ),
                             ),

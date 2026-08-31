@@ -222,10 +222,26 @@ class _AddWeightSheetState extends State<AddWeightSheet>
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  _QuickAdjustButton(label: '-0.5', delta: -0.5, onPressed: _applyDelta),
-                  _QuickAdjustButton(label: '-0.1', delta: -0.1, onPressed: _applyDelta),
-                  _QuickAdjustButton(label: '+0.1', delta: 0.1, onPressed: _applyDelta),
-                  _QuickAdjustButton(label: '+0.5', delta: 0.5, onPressed: _applyDelta),
+                  _QuickAdjustButton(
+                    label: '-0.5',
+                    delta: -0.5,
+                    onPressed: _applyDelta,
+                  ),
+                  _QuickAdjustButton(
+                    label: '-0.1',
+                    delta: -0.1,
+                    onPressed: _applyDelta,
+                  ),
+                  _QuickAdjustButton(
+                    label: '+0.1',
+                    delta: 0.1,
+                    onPressed: _applyDelta,
+                  ),
+                  _QuickAdjustButton(
+                    label: '+0.5',
+                    delta: 0.5,
+                    onPressed: _applyDelta,
+                  ),
                 ],
               ),
               const SizedBox(height: 16),
@@ -396,10 +412,7 @@ class _QuickAdjustButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ActionChip(
-      label: Text(
-        label,
-        style: const TextStyle(fontWeight: FontWeight.bold),
-      ),
+      label: Text(label, style: const TextStyle(fontWeight: FontWeight.bold)),
       onPressed: () {
         AppAnalytics.logEvent(
           name: 'add_weight_quick_adjust',

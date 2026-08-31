@@ -114,10 +114,10 @@ class LatestMeasurementInfo extends StatelessWidget {
   Widget _buildDeltaIndicator(BuildContext context, double delta) {
     final l10n = AppLocalizations.of(context);
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    
+
     // We assume a negative delta (weight loss) is positive improvement
     final isImprovement = delta <= 0;
-    
+
     final Color badgeBg = isImprovement
         ? Colors.green.withValues(alpha: 0.15)
         : Colors.orange.withValues(alpha: 0.15);
@@ -137,9 +137,9 @@ class LatestMeasurementInfo extends StatelessWidget {
       child: Text(
         '$sign$valStr $unitLabel vs ${l10n.yesterday.toLowerCase()}',
         style: Theme.of(context).textTheme.labelSmall?.copyWith(
-              color: badgeFg,
-              fontWeight: FontWeight.bold,
-            ),
+          color: badgeFg,
+          fontWeight: FontWeight.bold,
+        ),
       ),
     );
   }

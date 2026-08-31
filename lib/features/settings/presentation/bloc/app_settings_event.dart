@@ -1,4 +1,5 @@
 import 'package:balance/features/settings/presentation/bloc/app_theme_mode.dart';
+import 'package:balance/features/settings/presentation/bloc/first_day_of_week.dart';
 import 'package:balance/core/models/measurement_unit.dart';
 
 /// A base class for all app settings events.
@@ -10,6 +11,12 @@ sealed class AppSettingsEvent {
 final class UpdateTheme extends AppSettingsEvent {
   final AppThemeMode themeMode;
   const UpdateTheme(this.themeMode);
+}
+
+/// An event that updates the preferred first day of the week.
+final class UpdateFirstDayOfWeek extends AppSettingsEvent {
+  final FirstDayOfWeek firstDayOfWeek;
+  const UpdateFirstDayOfWeek(this.firstDayOfWeek);
 }
 
 /// An event that updates the weight measurement unit system.

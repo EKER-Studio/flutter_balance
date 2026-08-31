@@ -26,6 +26,7 @@ class AppSettingsBloc extends HydratedBloc<AppSettingsEvent, AppSettingsState> {
        _healthService = healthService ?? NativeHealthService.instance,
        super(const AppSettingsState()) {
     on<UpdateTheme>(_onUpdateTheme);
+    on<UpdateFirstDayOfWeek>(_onUpdateFirstDayOfWeek);
     on<UpdateMeasurementUnit>(_onUpdateMeasurementUnit);
     on<UpdateHeight>(_onUpdateHeight);
     on<ToggleNotifications>(_onToggleNotifications);
@@ -57,6 +58,13 @@ class AppSettingsBloc extends HydratedBloc<AppSettingsEvent, AppSettingsState> {
 
   void _onUpdateTheme(UpdateTheme event, Emitter<AppSettingsState> emit) {
     emit(state.copyWith(themeMode: event.themeMode));
+  }
+
+  void _onUpdateFirstDayOfWeek(
+    UpdateFirstDayOfWeek event,
+    Emitter<AppSettingsState> emit,
+  ) {
+    emit(state.copyWith(firstDayOfWeek: event.firstDayOfWeek));
   }
 
   void _onUpdateMeasurementUnit(
