@@ -5,11 +5,13 @@
 !.env.example
 
 # Firebase configuration files (injected via CI secrets)
+# NOTE: lib/firebase_options.dart contains Firebase client API keys which are
+# safe to commit per https://firebase.google.com/docs/projects/api-keys
+# (restricted via Firebase Security Rules + App Check). Keys are tracked in VCS.
 android/app/google-services.json
 android/app/src/*/google-services.json
 ios/Runner/GoogleService-Info*.plist
 ios/config/**/*.plist
-lib/firebase_options.dart
 
 # Local planning & temporary notes
 PLAN_*.md
