@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:balance/features/weight/domain/entities/weight_entry.dart';
+import 'package:balance/features/settings/presentation/bloc/first_day_of_week.dart';
 import 'package:balance/features/calendar/presentation/widgets/components/calendar_day_cell.dart';
 
 /// The callback signature used when a calendar day is selected.
@@ -7,10 +8,6 @@ typedef OnCalendarDaySelected =
     void Function(DateTime date, List<WeightEntry> entries);
 
 /// A fixed 7-column grid of [CalendarDayCell]s for a focused month.
-///
-/// Leading slots before the month's first weekday (Monday-first offset) are
-/// left empty, yielding at most 6 rows x 7 columns of square cells. Days
-/// after today render faded and are not selectable.
 class CalendarGrid extends StatelessWidget {
   /// The month and year currently displayed by the grid.
   final DateTime focusedMonth;
@@ -24,6 +21,9 @@ class CalendarGrid extends StatelessWidget {
   /// An optional target weight in kilograms used to compute goal achievement markers.
   final double? targetWeight;
 
+  /// The preferred first day of the week.
+  final FirstDayOfWeek firstDayOfWeek;
+
   /// The callback triggered when a day cell is tapped.
   final OnCalendarDaySelected onDaySelected;
 
@@ -33,6 +33,7 @@ class CalendarGrid extends StatelessWidget {
     required this.selectedDate,
     required this.entries,
     this.targetWeight,
+    required this.firstDayOfWeek,
     required this.onDaySelected,
   });
 
@@ -44,8 +45,27 @@ class CalendarGrid extends StatelessWidget {
       focusedMonth.month,
     );
 
-    // DateTime.weekday: Mon=1, Sun=7. Calculate offset for Monday-first calendar.
-    final startingOffset = firstDayOfMonth.weekday - 1;
+    // DateTime.weekday: Mon=1, Sun=7.
+    // Determine the offset based on firstDayOfWeek setting.
+    int startingOffset;
+    switch (firstDayOfWeek) {
+      case FirstDayOfWeek.monday:
+        startingOffset = firstDayOfMonth.weekday - 1; // Mon=0, Sun=6
+      case FirstDayOfWeek.sunday:
+        startingOffset = firstDayOfMonth.weekday % 7; // Sun=0, Mon=1, Sat=6
+      case FirstDayOfWeek.system:
+        final systemFirstDayIndex = MaterialLocalizations.of(
+          context,
+        ).firstDayOfWeekIndex; // Sun=0, Mon=1
+        if (systemFirstDayIndex == 1) {
+          // Monday
+          startingOffset = firstDayOfMonth.weekday - 1;
+        } else {
+          // Assume Sunday
+          startingOffset = firstDayOfMonth.weekday % 7;
+        }
+    }
+
     final totalCells = startingOffset + daysInMonth;
 
     final Map<int, List<WeightEntry>> entriesByDay = {};

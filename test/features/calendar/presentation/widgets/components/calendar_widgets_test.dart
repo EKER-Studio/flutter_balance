@@ -5,6 +5,7 @@ import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:balance/core/models/measurement_unit.dart';
 import 'package:balance/features/weight/domain/entities/weight_entry.dart';
+import 'package:balance/features/settings/presentation/bloc/first_day_of_week.dart';
 import 'package:balance/features/weight/domain/repositories/weight_repository.dart';
 import 'package:balance/features/weight/presentation/bloc/weight_bloc.dart';
 import 'package:balance/core/integrations/health/health_service.dart';
@@ -123,7 +124,11 @@ void main() {
   });
 
   testWidgets('CalendarWeekdayHeader renders day indicators', (tester) async {
-    await tester.pumpWidget(createTestWidget(const CalendarWeekdayHeader()));
+    await tester.pumpWidget(
+      createTestWidget(
+        const CalendarWeekdayHeader(firstDayOfWeek: FirstDayOfWeek.system),
+      ),
+    );
 
     expect(find.byType(CalendarWeekdayHeader), findsOneWidget);
   });
@@ -358,6 +363,7 @@ void main() {
           focusedMonth: DateTime(2026, 7, 1),
           selectedDate: DateTime(2026, 7, 1),
           entries: const [],
+          firstDayOfWeek: FirstDayOfWeek.system,
           onDaySelected: (date, _) => selectedDateResult = date,
         ),
       ),

@@ -165,6 +165,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                       selectedDate: _selectedDate,
                       entries: entries,
                       targetWeight: targetWeight,
+                      firstDayOfWeek: appSettingsState.firstDayOfWeek,
                       onPreviousMonth: _previousMonth,
                       onNextMonth: _nextMonth,
                       onDaySelected: _onDaySelected,

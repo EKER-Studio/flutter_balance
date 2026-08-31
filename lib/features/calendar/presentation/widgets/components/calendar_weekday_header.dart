@@ -1,18 +1,40 @@
+import 'package:balance/features/settings/presentation/bloc/first_day_of_week.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-/// Renders seven abbreviated weekday labels starting Monday, localized and
-/// capitalized for the current locale.
+/// Renders seven abbreviated weekday labels starting with the configured first day,
+/// localized and capitalized for the current locale.
 class CalendarWeekdayHeader extends StatelessWidget {
-  const CalendarWeekdayHeader({super.key});
+  final FirstDayOfWeek firstDayOfWeek;
+
+  const CalendarWeekdayHeader({super.key, required this.firstDayOfWeek});
 
   @override
   Widget build(BuildContext context) {
     final locale = Localizations.localeOf(context).toString();
     final format = DateFormat.EEEE(locale);
-    // Standard 7 days starting from Monday (e.g. 2026-01-05 was Monday)
-    final mondayBase = DateTime(2026, 1, 5);
-    final weekDays = List.generate(7, (i) => mondayBase.add(Duration(days: i)));
+
+    // 2026-01-05 is Monday, 2026-01-04 is Sunday.
+    DateTime baseDay;
+    switch (firstDayOfWeek) {
+      case FirstDayOfWeek.monday:
+        baseDay = DateTime(2026, 1, 5); // Monday
+      case FirstDayOfWeek.sunday:
+        baseDay = DateTime(2026, 1, 4); // Sunday
+      case FirstDayOfWeek.system:
+        final systemFirstDayIndex = MaterialLocalizations.of(
+          context,
+        ).firstDayOfWeekIndex;
+        if (systemFirstDayIndex == 1) {
+          // Monday
+          baseDay = DateTime(2026, 1, 5);
+        } else {
+          // Sunday
+          baseDay = DateTime(2026, 1, 4);
+        }
+    }
+
+    final weekDays = List.generate(7, (i) => baseDay.add(Duration(days: i)));
 
     String capitalize3(String s) {
       if (s.length < 3) return s.toUpperCase();

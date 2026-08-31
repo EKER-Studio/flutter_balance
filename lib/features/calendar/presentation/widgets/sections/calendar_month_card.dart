@@ -3,6 +3,7 @@ import 'package:balance/core/utils/analytics.dart';
 import 'package:balance/features/calendar/presentation/widgets/components/calendar_grid.dart';
 import 'package:balance/features/calendar/presentation/widgets/components/calendar_month_header.dart';
 import 'package:balance/features/calendar/presentation/widgets/components/calendar_weekday_header.dart';
+import 'package:balance/features/settings/presentation/bloc/first_day_of_week.dart';
 import 'package:balance/features/weight/domain/entities/weight_entry.dart';
 
 /// A card section hosting the monthly navigation header, weekday names, and interactive calendar grid.
@@ -19,6 +20,9 @@ class CalendarMonthCard extends StatelessWidget {
   /// An optional target goal weight in kilograms.
   final double? targetWeight;
 
+  /// The preferred first day of the week.
+  final FirstDayOfWeek firstDayOfWeek;
+
   /// Callback when the previous month button is pressed.
   final VoidCallback onPreviousMonth;
 
@@ -34,6 +38,7 @@ class CalendarMonthCard extends StatelessWidget {
     required this.selectedDate,
     required this.entries,
     required this.targetWeight,
+    required this.firstDayOfWeek,
     required this.onPreviousMonth,
     required this.onNextMonth,
     required this.onDaySelected,
@@ -60,9 +65,9 @@ class CalendarMonthCard extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 16),
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16),
-              child: CalendarWeekdayHeader(),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: CalendarWeekdayHeader(firstDayOfWeek: firstDayOfWeek),
             ),
             const SizedBox(height: 12),
             GestureDetector(
@@ -87,6 +92,7 @@ class CalendarMonthCard extends StatelessWidget {
                     selectedDate: selectedDate,
                     entries: entries,
                     targetWeight: targetWeight,
+                    firstDayOfWeek: firstDayOfWeek,
                     onDaySelected: (date, _) => onDaySelected(date),
                   ),
                 ),
