@@ -677,6 +677,11 @@ class AppAnalytics {
     );
   }
 
+  /// Logs tapping the Period Comparison card in statistics.
+  static Future<void> logStatisticsPeriodComparisonCardTapped() {
+    return logEvent(name: 'statistics_period_comparison_card_tapped');
+  }
+
   /// Logs interacting with one of the Bento statistics cards.
   ///
   /// @param metricType The category of the metric (e.g. 'min', 'max', 'avg', 'velocity').

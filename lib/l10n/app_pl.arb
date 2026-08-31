@@ -447,5 +447,13 @@
   "milestoneGoalReachedTitle": "Cel zrealizowany!",
   "milestoneGoalReachedDesc": "Osiągnięto docelową masę ciała",
   "milestoneHealthyBmiTitle": "Prawidłowe BMI",
-  "milestoneHealthyBmiDesc": "Osiągnięto normę wskaźnika BMI (18.5 – 24.9)"
+  "milestoneHealthyBmiDesc": "Osiągnięto normę wskaźnika BMI (18.5 – 24.9)",
+  "periodComparison": "Porównanie okresów",
+  "thisMonthVsLast": "Bieżący vs poprzedni miesiąc",
+  "currentMonth": "Ten miesiąc",
+  "previousMonthLabel": "Poprzedni miesiąc",
+  "netChange": "Zmiana wagi",
+  "measurementsCount": "{count, plural, one{{count} pomiar} few{{count} pomiary} many{{count} pomiarów} other{{count} pomiaru}}",
+  "totalMeasurements": "Liczba pomiarów",
+  "comparisonNotEnoughData": "Zapisz pomiary w co najmniej dwóch miesiącach, aby zobaczyć trendy porównawcze."
 }

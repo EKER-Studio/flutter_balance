@@ -498,5 +498,13 @@
   "milestoneGoalReachedTitle": "Goal Conquered!",
   "milestoneGoalReachedDesc": "Successfully reached your target weight",
   "milestoneHealthyBmiTitle": "Healthy BMI",
-  "milestoneHealthyBmiDesc": "Entered the normal BMI range (18.5 – 24.9)"
+  "milestoneHealthyBmiDesc": "Entered the normal BMI range (18.5 – 24.9)",
+  "periodComparison": "Period Comparison",
+  "thisMonthVsLast": "This month vs last month",
+  "currentMonth": "This Month",
+  "previousMonthLabel": "Last Month",
+  "netChange": "Net change",
+  "measurementsCount": "{count, plural, one{{count} log} other{{count} logs}}",
+  "totalMeasurements": "Measurements",
+  "comparisonNotEnoughData": "Log measurements across at least two months to see comparison trends."
 }
