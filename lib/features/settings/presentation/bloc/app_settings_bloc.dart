@@ -27,6 +27,7 @@ class AppSettingsBloc extends HydratedBloc<AppSettingsEvent, AppSettingsState> {
        super(const AppSettingsState()) {
     on<UpdateTheme>(_onUpdateTheme);
     on<UpdateFirstDayOfWeek>(_onUpdateFirstDayOfWeek);
+    on<UpdateWeightGoalMode>(_onUpdateWeightGoalMode);
     on<UpdateMeasurementUnit>(_onUpdateMeasurementUnit);
     on<UpdateHeight>(_onUpdateHeight);
     on<ToggleNotifications>(_onToggleNotifications);
@@ -130,14 +131,26 @@ class AppSettingsBloc extends HydratedBloc<AppSettingsEvent, AppSettingsState> {
     }
   }
 
-  /// Updates the target weight to the [TargetWeightChanged.weight] value.
+  void _onUpdateWeightGoalMode(
+    UpdateWeightGoalMode event,
+    Emitter<AppSettingsState> emit,
+  ) {
+    emit(state.copyWith(weightGoalMode: event.goalMode));
+  }
+
+  /// Updates the target weight to the [TargetWeightChanged.weight] value and optionally updates the goal mode.
   ///
   /// Setting the weight to `null` clears the target weight.
   void _onTargetWeightChanged(
     TargetWeightChanged event,
     Emitter<AppSettingsState> emit,
   ) {
-    emit(state.copyWith(targetWeight: event.weight));
+    emit(
+      state.copyWith(
+        targetWeight: event.weight,
+        weightGoalMode: event.mode ?? state.weightGoalMode,
+      ),
+    );
   }
 
   void _onUpdateBiometricLock(

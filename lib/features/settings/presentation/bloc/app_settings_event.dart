@@ -1,5 +1,6 @@
 import 'package:balance/features/settings/presentation/bloc/app_theme_mode.dart';
 import 'package:balance/features/settings/presentation/bloc/first_day_of_week.dart';
+import 'package:balance/features/settings/presentation/bloc/weight_goal_mode.dart';
 import 'package:balance/core/models/measurement_unit.dart';
 
 /// A base class for all app settings events.
@@ -48,12 +49,21 @@ final class UpdateNotificationTime extends AppSettingsEvent {
   const UpdateNotificationTime(this.notificationTime);
 }
 
+/// An event that updates the weight goal mode preference.
+final class UpdateWeightGoalMode extends AppSettingsEvent {
+  final WeightGoalMode goalMode;
+  const UpdateWeightGoalMode(this.goalMode);
+}
+
 /// An event that updates the user's target weight in kg.
 final class TargetWeightChanged extends AppSettingsEvent {
   /// The new target weight in kg (null to clear).
   final double? weight;
 
-  const TargetWeightChanged(this.weight);
+  /// The optional new weight goal mode.
+  final WeightGoalMode? mode;
+
+  const TargetWeightChanged(this.weight, [this.mode]);
 }
 
 /// An event that updates the biometric lock enabled state.

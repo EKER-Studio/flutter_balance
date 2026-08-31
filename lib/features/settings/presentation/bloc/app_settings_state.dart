@@ -2,6 +2,7 @@ import 'package:equatable/equatable.dart';
 
 import 'package:balance/features/settings/presentation/bloc/app_theme_mode.dart';
 import 'package:balance/features/settings/presentation/bloc/first_day_of_week.dart';
+import 'package:balance/features/settings/presentation/bloc/weight_goal_mode.dart';
 import 'package:balance/features/weight/domain/bmi_category.dart';
 import 'package:balance/core/models/measurement_unit.dart';
 
@@ -40,6 +41,9 @@ final class AppSettingsState extends Equatable {
   ///
   /// Set from the profile screen and used for progress calculations.
   final double? targetWeight;
+
+  /// The active goal intent (lose, maintain, or gain weight).
+  final WeightGoalMode weightGoalMode;
 
   /// Whether biometric lock is enabled for app unlock (default: off).
   final bool isBiometricLockEnabled;
@@ -98,6 +102,7 @@ final class AppSettingsState extends Equatable {
     this.notificationsEnabled = false,
     this.notificationTime = const (hour: 8, minute: 0),
     this.targetWeight,
+    this.weightGoalMode = WeightGoalMode.lose,
     this.isBiometricLockEnabled = false,
     this.isLocked = false,
     this.isOnboardingCompleted = false,
@@ -122,6 +127,7 @@ final class AppSettingsState extends Equatable {
     bool? notificationsEnabled,
     ({int hour, int minute})? notificationTime,
     Object? targetWeight = _targetWeightSentinel,
+    WeightGoalMode? weightGoalMode,
     bool? isBiometricLockEnabled,
     bool? isLocked,
     bool? isOnboardingCompleted,
@@ -143,6 +149,7 @@ final class AppSettingsState extends Equatable {
       targetWeight: targetWeight == _targetWeightSentinel
           ? this.targetWeight
           : targetWeight as double?,
+      weightGoalMode: weightGoalMode ?? this.weightGoalMode,
       isBiometricLockEnabled:
           isBiometricLockEnabled ?? this.isBiometricLockEnabled,
       isLocked: isLocked ?? this.isLocked,
@@ -170,6 +177,7 @@ final class AppSettingsState extends Equatable {
     notificationsEnabled,
     notificationTime,
     targetWeight,
+    weightGoalMode,
     isBiometricLockEnabled,
     isLocked,
     isOnboardingCompleted,
@@ -219,6 +227,10 @@ final class AppSettingsState extends Equatable {
         return const (hour: 8, minute: 0);
       })(),
       targetWeight: (json['targetWeight'] as num?)?.toDouble(),
+      weightGoalMode: WeightGoalMode.values.firstWhere(
+        (e) => e.name == json['weightGoalMode'],
+        orElse: () => WeightGoalMode.lose,
+      ),
       isBiometricLockEnabled: biometricLockEnabled,
       isLocked: biometricLockEnabled
           ? true
@@ -250,6 +262,7 @@ final class AppSettingsState extends Equatable {
         'minute': notificationTime.minute,
       },
       'targetWeight': targetWeight,
+      'weightGoalMode': weightGoalMode.name,
       'isBiometricLockEnabled': isBiometricLockEnabled,
       'isLocked': isLocked,
       'isOnboardingCompleted': isOnboardingCompleted,

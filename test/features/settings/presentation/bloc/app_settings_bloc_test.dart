@@ -10,6 +10,7 @@ import 'package:balance/features/weight/domain/bmi_category.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_event.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_state.dart';
 import 'package:balance/features/settings/presentation/bloc/app_theme_mode.dart';
+import 'package:balance/features/settings/presentation/bloc/weight_goal_mode.dart';
 import 'package:balance/core/models/measurement_unit.dart';
 
 class MockHydratedStorage extends Mock implements HydratedStorage {}
@@ -135,15 +136,33 @@ void main() {
     );
 
     blocTest<AppSettingsBloc, AppSettingsState>(
-      'emits updated targetWeight on TargetWeightChanged',
+      'emits updated targetWeight and weightGoalMode on TargetWeightChanged with mode',
       build: () =>
           AppSettingsBloc(notificationService: mockNotificationService),
-      act: (bloc) => bloc.add(const TargetWeightChanged(70.0)),
+      act: (bloc) =>
+          bloc.add(const TargetWeightChanged(80.0, WeightGoalMode.gain)),
+      expect: () => [
+        isA<AppSettingsState>()
+            .having((s) => s.targetWeight, 'targetWeight', 80.0)
+            .having(
+              (s) => s.weightGoalMode,
+              'weightGoalMode',
+              WeightGoalMode.gain,
+            ),
+      ],
+    );
+
+    blocTest<AppSettingsBloc, AppSettingsState>(
+      'emits updated weightGoalMode on UpdateWeightGoalMode',
+      build: () =>
+          AppSettingsBloc(notificationService: mockNotificationService),
+      act: (bloc) =>
+          bloc.add(const UpdateWeightGoalMode(WeightGoalMode.maintain)),
       expect: () => [
         isA<AppSettingsState>().having(
-          (s) => s.targetWeight,
-          'targetWeight',
-          70.0,
+          (s) => s.weightGoalMode,
+          'weightGoalMode',
+          WeightGoalMode.maintain,
         ),
       ],
     );
