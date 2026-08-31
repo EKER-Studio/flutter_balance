@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:balance/core/presentation/theme/app_layout_tokens.dart';
 import 'package:balance/core/models/measurement_unit.dart';
 import 'package:balance/features/statistics/domain/services/milestone_calculator.dart';
+import 'package:balance/features/statistics/domain/services/period_comparison_calculator.dart';
 import 'package:balance/features/statistics/presentation/widgets/sections/bmi_chart_card.dart';
 import 'package:balance/features/statistics/presentation/widgets/sections/habits_activity_card.dart';
 import 'package:balance/features/statistics/presentation/widgets/sections/hero_progress_card.dart';
 import 'package:balance/features/statistics/presentation/widgets/sections/milestones_card.dart';
+import 'package:balance/features/statistics/presentation/widgets/sections/period_comparison_card.dart';
 import 'package:balance/features/statistics/presentation/widgets/sections/weight_range_card.dart';
 import 'package:balance/features/weight/domain/entities/weight_entry.dart';
 import 'package:balance/features/weight/domain/time_period.dart';
@@ -51,6 +53,11 @@ class StatisticsContentSection extends StatelessWidget {
       targetWeight: targetWeight,
       heightCm: heightCm,
     );
+    final comparison = PeriodComparisonCalculator.compareMonths(
+      entries: entries,
+      now: now,
+      locale: Localizations.localeOf(context).languageCode,
+    );
     final isWide = context.isMultiColumn;
 
     final heroProgressCard = HeroProgressCard(
@@ -63,6 +70,10 @@ class StatisticsContentSection extends StatelessWidget {
     );
 
     final milestonesCard = MilestonesCard(milestones: milestones);
+    final comparisonCard = PeriodComparisonCard(
+      comparison: comparison,
+      unit: unit,
+    );
 
     final habitsCard = HabitsActivityCard(
       streak: streak,
@@ -90,9 +101,17 @@ class StatisticsContentSection extends StatelessWidget {
               Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Expanded(child: habitsCard),
+                  Expanded(child: comparisonCard),
                   const SizedBox(width: 16),
-                  Expanded(child: rangeCard),
+                  Expanded(
+                    child: Column(
+                      children: [
+                        habitsCard,
+                        const SizedBox(height: 16),
+                        rangeCard,
+                      ],
+                    ),
+                  ),
                 ],
               ),
               const SizedBox(height: 16),
@@ -106,6 +125,8 @@ class StatisticsContentSection extends StatelessWidget {
               heroProgressCard,
               const SizedBox(height: 16),
               milestonesCard,
+              const SizedBox(height: 16),
+              comparisonCard,
               const SizedBox(height: 16),
               habitsCard,
               const SizedBox(height: 16),
