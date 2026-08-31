@@ -3,7 +3,7 @@ import 'package:balance/core/presentation/theme/app_layout_tokens.dart';
 import 'package:balance/core/models/measurement_unit.dart';
 import 'package:balance/features/statistics/domain/services/milestone_calculator.dart';
 import 'package:balance/features/statistics/domain/services/period_comparison_calculator.dart';
-import 'package:balance/features/statistics/presentation/widgets/sections/bmi_chart_card.dart';
+import 'package:balance/features/statistics/presentation/widgets/sections/bmi_status_card.dart';
 import 'package:balance/features/statistics/presentation/widgets/sections/habits_activity_card.dart';
 import 'package:balance/features/statistics/presentation/widgets/sections/hero_progress_card.dart';
 import 'package:balance/features/statistics/presentation/widgets/sections/milestones_card.dart';
@@ -12,7 +12,7 @@ import 'package:balance/features/statistics/presentation/widgets/sections/weight
 import 'package:balance/features/weight/domain/entities/weight_entry.dart';
 import 'package:balance/features/weight/domain/time_period.dart';
 
-/// The responsive content section composing progress, habits, range, and BMI chart cards.
+/// The responsive content section composing progress, habits, range, and BMI status cards.
 class StatisticsContentSection extends StatelessWidget {
   final List<WeightEntry> entries;
   final List<WeightEntry> filteredEntries;
@@ -75,6 +75,12 @@ class StatisticsContentSection extends StatelessWidget {
       unit: unit,
     );
 
+    final bmiCard = BmiStatusCard(
+      entries: entries,
+      heightCm: heightCm,
+      unit: unit,
+    );
+
     final habitsCard = HabitsActivityCard(
       streak: streak,
       bestStreak: bestStreak,
@@ -82,13 +88,6 @@ class StatisticsContentSection extends StatelessWidget {
     );
 
     final rangeCard = WeightRangeCard(entries: entries, unit: unit);
-
-    final bmiCard = BmiChartCard(
-      entries: filteredEntries,
-      heightCm: heightCm,
-      period: timePeriod,
-      onPeriodChanged: onPeriodChanged,
-    );
 
     return isWide
         ? Column(
@@ -101,21 +100,20 @@ class StatisticsContentSection extends StatelessWidget {
               Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Expanded(child: comparisonCard),
+                  Expanded(child: bmiCard),
                   const SizedBox(width: 16),
-                  Expanded(
-                    child: Column(
-                      children: [
-                        habitsCard,
-                        const SizedBox(height: 16),
-                        rangeCard,
-                      ],
-                    ),
-                  ),
+                  Expanded(child: comparisonCard),
                 ],
               ),
               const SizedBox(height: 16),
-              bmiCard,
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(child: habitsCard),
+                  const SizedBox(width: 16),
+                  Expanded(child: rangeCard),
+                ],
+              ),
               const SizedBox(height: 32),
             ],
           )
@@ -126,13 +124,13 @@ class StatisticsContentSection extends StatelessWidget {
               const SizedBox(height: 16),
               milestonesCard,
               const SizedBox(height: 16),
+              bmiCard,
+              const SizedBox(height: 16),
               comparisonCard,
               const SizedBox(height: 16),
               habitsCard,
               const SizedBox(height: 16),
               rangeCard,
-              const SizedBox(height: 16),
-              bmiCard,
               const SizedBox(height: 100),
             ],
           );

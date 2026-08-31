@@ -18,7 +18,7 @@ import 'package:balance/l10n/app_localizations.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_bloc.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_event.dart';
 import 'package:balance/features/statistics/presentation/screens/statistics_screen.dart';
-import 'package:balance/features/statistics/presentation/widgets/sections/bmi_chart_card.dart';
+import 'package:balance/features/statistics/presentation/widgets/sections/bmi_status_card.dart';
 import 'package:balance/features/statistics/presentation/widgets/sections/statistics_content_section.dart';
 
 class MockWeightRepository extends Mock implements WeightRepository {}
@@ -315,7 +315,7 @@ void main() {
 
       // Composite card titles & metrics
       expect(find.text('Zakres i średnia wagi'), findsOneWidget);
-      expect(find.byType(BmiChartCard), findsOneWidget);
+      expect(find.byType(BmiStatusCard), findsOneWidget);
     },
   );
 
