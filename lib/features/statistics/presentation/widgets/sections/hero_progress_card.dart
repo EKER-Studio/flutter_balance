@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:balance/core/models/measurement_unit.dart';
 import 'package:balance/core/utils/analytics.dart';
 import 'package:balance/core/utils/unit_converter.dart';
+import 'package:balance/features/settings/presentation/bloc/weight_goal_mode.dart';
 import 'package:balance/features/weight/domain/entities/weight_entry.dart';
 import 'package:balance/l10n/app_localizations.dart';
 
@@ -13,6 +14,7 @@ class HeroProgressCard extends StatelessWidget {
   final double? weeklyPace;
   final MeasurementUnit unit;
   final int paceWindowDays;
+  final WeightGoalMode goalMode;
   final VoidCallback? onPaceWindowTap;
 
   const HeroProgressCard({
@@ -22,6 +24,7 @@ class HeroProgressCard extends StatelessWidget {
     required this.weeklyPace,
     required this.unit,
     this.paceWindowDays = 30,
+    this.goalMode = WeightGoalMode.lose,
     this.onPaceWindowTap,
   });
 
@@ -71,25 +74,85 @@ class HeroProgressCard extends StatelessWidget {
     bool isSuccessBadge = true;
 
     if (targetWeight != null) {
-      if (latestEntry.weightKg <= targetWeight!) {
-        statusBadge = l10n.goalAchieved;
-        goalProgressPct = 100.0;
-      } else {
-        final distKg = latestEntry.weightKg - targetWeight!;
-        final distDisplay = unit == MeasurementUnit.imperial
-            ? kgToLbs(distKg)
-            : distKg;
-        statusBadge =
-            '${distDisplay.toStringAsFixed(1)} $unitLabel ${l10n.toTarget}';
-        isSuccessBadge = false;
-        goalProgressPct = _calculateGoalProgressPct(
-          startKg: firstEntry.weightKg,
-          currentKg: latestEntry.weightKg,
-          targetKg: targetWeight!,
-        );
+      switch (goalMode) {
+        case WeightGoalMode.lose:
+          if (latestEntry.weightKg <= targetWeight!) {
+            statusBadge = l10n.goalAchieved;
+            goalProgressPct = 100.0;
+            isSuccessBadge = true;
+          } else {
+            final distKg = latestEntry.weightKg - targetWeight!;
+            final distDisplay = unit == MeasurementUnit.imperial
+                ? kgToLbs(distKg)
+                : distKg;
+            statusBadge =
+                '${distDisplay.toStringAsFixed(1)} $unitLabel ${l10n.toTarget}';
+            isSuccessBadge = false;
+            goalProgressPct = _calculateGoalProgressPct(
+              startKg: firstEntry.weightKg,
+              currentKg: latestEntry.weightKg,
+              targetKg: targetWeight!,
+              isLosing: true,
+            );
+          }
+
+        case WeightGoalMode.gain:
+          if (latestEntry.weightKg >= targetWeight!) {
+            statusBadge = l10n.goalAchieved;
+            goalProgressPct = 100.0;
+            isSuccessBadge = true;
+          } else {
+            final distKg = targetWeight! - latestEntry.weightKg;
+            final distDisplay = unit == MeasurementUnit.imperial
+                ? kgToLbs(distKg)
+                : distKg;
+            statusBadge =
+                '${distDisplay.toStringAsFixed(1)} $unitLabel ${l10n.toTarget}';
+            isSuccessBadge = false;
+            goalProgressPct = _calculateGoalProgressPct(
+              startKg: firstEntry.weightKg,
+              currentKg: latestEntry.weightKg,
+              targetKg: targetWeight!,
+              isLosing: false,
+            );
+          }
+
+        case WeightGoalMode.maintain:
+          final distKg = (latestEntry.weightKg - targetWeight!).abs();
+          final thresholdKg = unit == MeasurementUnit.imperial
+              ? lbsToKg(2.2)
+              : 1.0;
+          final isMaintained = distKg <= thresholdKg;
+          final rangeDisplay = unit == MeasurementUnit.imperial
+              ? '2.0 lb'
+              : '1.0 kg';
+          final distDisplay = unit == MeasurementUnit.imperial
+              ? kgToLbs(distKg)
+              : distKg;
+          final sign = latestEntry.weightKg >= targetWeight! ? '+' : '-';
+          statusBadge = isMaintained
+              ? l10n.goalWeightMaintained(rangeDisplay)
+              : l10n.goalWeightDeviation(
+                  '$sign${distDisplay.toStringAsFixed(1)} $unitLabel',
+                );
+          isSuccessBadge = isMaintained;
+          final maxDiff = unit == MeasurementUnit.imperial ? 10.0 : 5.0;
+          goalProgressPct = isMaintained
+              ? 100.0
+              : ((1.0 - (distDisplay / maxDiff).clamp(0.0, 1.0)) * 100.0).clamp(
+                  5.0,
+                  100.0,
+                );
       }
-    } else if (totalChangeKg < 0) {
-      statusBadge = l10n.greatJob;
+    } else {
+      if (goalMode == WeightGoalMode.gain && totalChangeKg > 0.05) {
+        statusBadge = l10n.greatJob;
+      } else if (goalMode == WeightGoalMode.lose && totalChangeKg < -0.05) {
+        statusBadge = l10n.greatJob;
+      } else if (goalMode == WeightGoalMode.maintain &&
+          totalChangeKg.abs() <= 1.0) {
+        statusBadge = l10n.greatJob;
+      }
     }
 
     final semanticLabel =
@@ -306,11 +369,11 @@ class HeroProgressCard extends StatelessWidget {
     required double startKg,
     required double currentKg,
     required double targetKg,
+    required bool isLosing,
   }) {
     if (startKg == targetKg) return 100.0;
 
     final totalNeeded = (startKg - targetKg).abs();
-    final isLosing = startKg > targetKg;
     final achieved = isLosing ? (startKg - currentKg) : (currentKg - startKg);
 
     if (achieved <= 0) return 0.0;

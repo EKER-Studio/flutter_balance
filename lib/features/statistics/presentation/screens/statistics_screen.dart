@@ -56,6 +56,7 @@ class StatisticsScreen extends StatelessWidget {
                                 context,
                                 entries: entries,
                                 targetWeight: settingsState.targetWeight,
+                                goalMode: settingsState.weightGoalMode,
                                 unit: settingsState.measurementUnit,
                               );
                             },
@@ -118,6 +119,7 @@ class StatisticsScreen extends StatelessWidget {
                                 timePeriod: weightState.timePeriod,
                                 heightCm: settingsState.height,
                                 targetWeight: settingsState.targetWeight,
+                                goalMode: settingsState.weightGoalMode,
                                 unit: settingsState.measurementUnit,
                                 weeklyPaceWindowDays:
                                     settingsState.weeklyPaceWindowDays,

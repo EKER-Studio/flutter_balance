@@ -20,6 +20,12 @@ extension MilestoneTypeLocalizer on MilestoneType {
         return l10n.milestoneLoss5Title;
       case MilestoneType.weightLoss10kg:
         return l10n.milestoneLoss10Title;
+      case MilestoneType.weightGain1kg:
+        return l10n.weightGain1kgTitle;
+      case MilestoneType.weightGain5kg:
+        return l10n.weightGain5kgTitle;
+      case MilestoneType.weightGain10kg:
+        return l10n.weightGain10kgTitle;
       case MilestoneType.goalHalfway:
         return l10n.milestoneGoalHalfwayTitle;
       case MilestoneType.goalReached:
@@ -46,6 +52,12 @@ extension MilestoneTypeLocalizer on MilestoneType {
         return l10n.milestoneLoss5Desc;
       case MilestoneType.weightLoss10kg:
         return l10n.milestoneLoss10Desc;
+      case MilestoneType.weightGain1kg:
+        return l10n.weightGain1kgDesc;
+      case MilestoneType.weightGain5kg:
+        return l10n.weightGain5kgDesc;
+      case MilestoneType.weightGain10kg:
+        return l10n.weightGain10kgDesc;
       case MilestoneType.goalHalfway:
         return l10n.milestoneGoalHalfwayDesc;
       case MilestoneType.goalReached:

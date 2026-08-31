@@ -1,5 +1,6 @@
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
+import 'package:balance/features/settings/presentation/bloc/weight_goal_mode.dart';
 import 'package:balance/features/statistics/domain/entities/milestone.dart';
 import 'package:balance/features/weight/domain/entities/weight_entry.dart';
 
@@ -7,19 +8,25 @@ import 'package:balance/features/weight/domain/entities/weight_entry.dart';
 class MilestoneCalculator {
   const MilestoneCalculator._();
 
-  /// Evaluates all milestones based on recorded entries, height, and target weight.
+  /// Evaluates all milestones based on recorded entries, height, target weight, and goal mode.
   ///
   /// @param entries The full list of weight measurements.
   /// @param targetWeight The user's configured goal weight in kg, if any.
   /// @param heightCm The user's configured height in centimeters, if any.
+  /// @param goalMode The user's goal mode (lose, maintain, gain).
   /// @return A list of evaluated [Milestone] instances in display order.
   static List<Milestone> evaluate({
     required List<WeightEntry> entries,
     double? targetWeight,
     double? heightCm,
+    WeightGoalMode goalMode = WeightGoalMode.lose,
   }) {
     if (entries.isEmpty) {
-      return _emptyMilestones(targetWeight: targetWeight, heightCm: heightCm);
+      return _emptyMilestones(
+        targetWeight: targetWeight,
+        heightCm: heightCm,
+        goalMode: goalMode,
+      );
     }
 
     final sorted = entries.toList()
@@ -67,23 +74,35 @@ class MilestoneCalculator {
       if (currentStreak >= 100 && streak100Date == null) streak100Date = date;
     }
 
-    // Weight loss milestones
+    // Weight delta milestones
     double minWeight = startWeight;
+    double maxWeight = startWeight;
     DateTime? loss1Date;
     DateTime? loss5Date;
     DateTime? loss10Date;
+    DateTime? gain1Date;
+    DateTime? gain5Date;
+    DateTime? gain10Date;
 
     for (final entry in sorted) {
       if (entry.weightKg < minWeight) {
         minWeight = entry.weightKg;
       }
-      final loss = startWeight - minWeight;
+      if (entry.weightKg > maxWeight) {
+        maxWeight = entry.weightKg;
+      }
+      final loss = startWeight - entry.weightKg;
+      final gain = entry.weightKg - startWeight;
       if (loss >= 1.0 && loss1Date == null) loss1Date = entry.dateTime;
       if (loss >= 5.0 && loss5Date == null) loss5Date = entry.dateTime;
       if (loss >= 10.0 && loss10Date == null) loss10Date = entry.dateTime;
+      if (gain >= 1.0 && gain1Date == null) gain1Date = entry.dateTime;
+      if (gain >= 5.0 && gain5Date == null) gain5Date = entry.dateTime;
+      if (gain >= 10.0 && gain10Date == null) gain10Date = entry.dateTime;
     }
 
     final maxLoss = math.max(0.0, startWeight - minWeight);
+    final maxGain = math.max(0.0, maxWeight - startWeight);
 
     // Goal milestones
     bool isHalfway = false;
@@ -94,29 +113,70 @@ class MilestoneCalculator {
     DateTime? reachedDate;
 
     if (targetWeight != null) {
-      final totalToLose = startWeight - targetWeight;
-      if (totalToLose <= 0) {
-        // Target is same or higher than start
-        isHalfway = true;
-        isReached = true;
-        halfwayProgress = 1.0;
-        reachedProgress = 1.0;
-        halfwayDate = firstEntry.dateTime;
-        reachedDate = firstEntry.dateTime;
-      } else {
-        final progressFraction = (maxLoss / totalToLose).clamp(0.0, 1.0);
-        halfwayProgress = (progressFraction / 0.5).clamp(0.0, 1.0);
-        reachedProgress = progressFraction;
-        isHalfway = progressFraction >= 0.5;
-        isReached = progressFraction >= 1.0;
+      if (goalMode == WeightGoalMode.gain) {
+        final totalToGain = targetWeight - startWeight;
+        if (totalToGain <= 0) {
+          isHalfway = true;
+          isReached = true;
+          halfwayProgress = 1.0;
+          reachedProgress = 1.0;
+          halfwayDate = firstEntry.dateTime;
+          reachedDate = firstEntry.dateTime;
+        } else {
+          final progressFraction = (maxGain / totalToGain).clamp(0.0, 1.0);
+          halfwayProgress = (progressFraction / 0.5).clamp(0.0, 1.0);
+          reachedProgress = progressFraction;
+          isHalfway = progressFraction >= 0.5;
+          isReached = progressFraction >= 1.0;
 
-        for (final entry in sorted) {
-          final loss = startWeight - entry.weightKg;
-          if (loss >= totalToLose * 0.5 && halfwayDate == null) {
-            halfwayDate = entry.dateTime;
+          for (final entry in sorted) {
+            final gain = entry.weightKg - startWeight;
+            if (gain >= totalToGain * 0.5 && halfwayDate == null) {
+              halfwayDate = entry.dateTime;
+            }
+            if (entry.weightKg >= targetWeight && reachedDate == null) {
+              reachedDate = entry.dateTime;
+            }
           }
-          if (entry.weightKg <= targetWeight && reachedDate == null) {
-            reachedDate = entry.dateTime;
+        }
+      } else if (goalMode == WeightGoalMode.maintain) {
+        final latestWeight = sorted.last.weightKg;
+        final diff = (latestWeight - targetWeight).abs();
+        isReached = diff <= 1.0;
+        reachedProgress = isReached
+            ? 1.0
+            : (1.0 - (diff / 5.0)).clamp(0.0, 1.0);
+        isHalfway = diff <= 2.5;
+        halfwayProgress = isHalfway
+            ? 1.0
+            : (1.0 - (diff / 5.0)).clamp(0.0, 1.0);
+        if (isReached) reachedDate = sorted.last.dateTime;
+        if (isHalfway) halfwayDate = sorted.last.dateTime;
+      } else {
+        // lose
+        final totalToLose = startWeight - targetWeight;
+        if (totalToLose <= 0) {
+          isHalfway = true;
+          isReached = true;
+          halfwayProgress = 1.0;
+          reachedProgress = 1.0;
+          halfwayDate = firstEntry.dateTime;
+          reachedDate = firstEntry.dateTime;
+        } else {
+          final progressFraction = (maxLoss / totalToLose).clamp(0.0, 1.0);
+          halfwayProgress = (progressFraction / 0.5).clamp(0.0, 1.0);
+          reachedProgress = progressFraction;
+          isHalfway = progressFraction >= 0.5;
+          isReached = progressFraction >= 1.0;
+
+          for (final entry in sorted) {
+            final loss = startWeight - entry.weightKg;
+            if (loss >= totalToLose * 0.5 && halfwayDate == null) {
+              halfwayDate = entry.dateTime;
+            }
+            if (entry.weightKg <= targetWeight && reachedDate == null) {
+              reachedDate = entry.dateTime;
+            }
           }
         }
       }
@@ -164,6 +224,8 @@ class MilestoneCalculator {
       }
     }
 
+    final isGain = goalMode == WeightGoalMode.gain;
+
     return [
       Milestone(
         type: MilestoneType.firstEntry,
@@ -193,27 +255,51 @@ class MilestoneCalculator {
         progress: (maxStreak / 100.0).clamp(0.0, 1.0),
         unlockedDate: streak100Date,
       ),
-      Milestone(
-        type: MilestoneType.weightLoss1kg,
-        icon: Icons.trending_down_outlined,
-        isUnlocked: maxLoss >= 1.0,
-        progress: (maxLoss / 1.0).clamp(0.0, 1.0),
-        unlockedDate: loss1Date,
-      ),
-      Milestone(
-        type: MilestoneType.weightLoss5kg,
-        icon: Icons.fitness_center_outlined,
-        isUnlocked: maxLoss >= 5.0,
-        progress: (maxLoss / 5.0).clamp(0.0, 1.0),
-        unlockedDate: loss5Date,
-      ),
-      Milestone(
-        type: MilestoneType.weightLoss10kg,
-        icon: Icons.military_tech_outlined,
-        isUnlocked: maxLoss >= 10.0,
-        progress: (maxLoss / 10.0).clamp(0.0, 1.0),
-        unlockedDate: loss10Date,
-      ),
+      if (isGain) ...[
+        Milestone(
+          type: MilestoneType.weightGain1kg,
+          icon: Icons.trending_up_outlined,
+          isUnlocked: maxGain >= 1.0,
+          progress: (maxGain / 1.0).clamp(0.0, 1.0),
+          unlockedDate: gain1Date,
+        ),
+        Milestone(
+          type: MilestoneType.weightGain5kg,
+          icon: Icons.fitness_center_outlined,
+          isUnlocked: maxGain >= 5.0,
+          progress: (maxGain / 5.0).clamp(0.0, 1.0),
+          unlockedDate: gain5Date,
+        ),
+        Milestone(
+          type: MilestoneType.weightGain10kg,
+          icon: Icons.military_tech_outlined,
+          isUnlocked: maxGain >= 10.0,
+          progress: (maxGain / 10.0).clamp(0.0, 1.0),
+          unlockedDate: gain10Date,
+        ),
+      ] else ...[
+        Milestone(
+          type: MilestoneType.weightLoss1kg,
+          icon: Icons.trending_down_outlined,
+          isUnlocked: maxLoss >= 1.0,
+          progress: (maxLoss / 1.0).clamp(0.0, 1.0),
+          unlockedDate: loss1Date,
+        ),
+        Milestone(
+          type: MilestoneType.weightLoss5kg,
+          icon: Icons.fitness_center_outlined,
+          isUnlocked: maxLoss >= 5.0,
+          progress: (maxLoss / 5.0).clamp(0.0, 1.0),
+          unlockedDate: loss5Date,
+        ),
+        Milestone(
+          type: MilestoneType.weightLoss10kg,
+          icon: Icons.military_tech_outlined,
+          isUnlocked: maxLoss >= 10.0,
+          progress: (maxLoss / 10.0).clamp(0.0, 1.0),
+          unlockedDate: loss10Date,
+        ),
+      ],
       if (targetWeight != null) ...[
         Milestone(
           type: MilestoneType.goalHalfway,
@@ -244,7 +330,9 @@ class MilestoneCalculator {
   static List<Milestone> _emptyMilestones({
     double? targetWeight,
     double? heightCm,
+    WeightGoalMode goalMode = WeightGoalMode.lose,
   }) {
+    final isGain = goalMode == WeightGoalMode.gain;
     return [
       const Milestone(
         type: MilestoneType.firstEntry,
@@ -270,24 +358,45 @@ class MilestoneCalculator {
         isUnlocked: false,
         progress: 0.0,
       ),
-      const Milestone(
-        type: MilestoneType.weightLoss1kg,
-        icon: Icons.trending_down_outlined,
-        isUnlocked: false,
-        progress: 0.0,
-      ),
-      const Milestone(
-        type: MilestoneType.weightLoss5kg,
-        icon: Icons.fitness_center_outlined,
-        isUnlocked: false,
-        progress: 0.0,
-      ),
-      const Milestone(
-        type: MilestoneType.weightLoss10kg,
-        icon: Icons.military_tech_outlined,
-        isUnlocked: false,
-        progress: 0.0,
-      ),
+      if (isGain) ...[
+        const Milestone(
+          type: MilestoneType.weightGain1kg,
+          icon: Icons.trending_up_outlined,
+          isUnlocked: false,
+          progress: 0.0,
+        ),
+        const Milestone(
+          type: MilestoneType.weightGain5kg,
+          icon: Icons.fitness_center_outlined,
+          isUnlocked: false,
+          progress: 0.0,
+        ),
+        const Milestone(
+          type: MilestoneType.weightGain10kg,
+          icon: Icons.military_tech_outlined,
+          isUnlocked: false,
+          progress: 0.0,
+        ),
+      ] else ...[
+        const Milestone(
+          type: MilestoneType.weightLoss1kg,
+          icon: Icons.trending_down_outlined,
+          isUnlocked: false,
+          progress: 0.0,
+        ),
+        const Milestone(
+          type: MilestoneType.weightLoss5kg,
+          icon: Icons.fitness_center_outlined,
+          isUnlocked: false,
+          progress: 0.0,
+        ),
+        const Milestone(
+          type: MilestoneType.weightLoss10kg,
+          icon: Icons.military_tech_outlined,
+          isUnlocked: false,
+          progress: 0.0,
+        ),
+      ],
       if (targetWeight != null) ...[
         const Milestone(
           type: MilestoneType.goalHalfway,

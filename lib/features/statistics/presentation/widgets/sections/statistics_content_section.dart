@@ -12,6 +12,8 @@ import 'package:balance/features/statistics/presentation/widgets/sections/weight
 import 'package:balance/features/weight/domain/entities/weight_entry.dart';
 import 'package:balance/features/weight/domain/time_period.dart';
 
+import 'package:balance/features/settings/presentation/bloc/weight_goal_mode.dart';
+
 /// The responsive content section composing progress, habits, range, and BMI status cards.
 class StatisticsContentSection extends StatelessWidget {
   final List<WeightEntry> entries;
@@ -19,6 +21,7 @@ class StatisticsContentSection extends StatelessWidget {
   final TimePeriod timePeriod;
   final double? heightCm;
   final double? targetWeight;
+  final WeightGoalMode goalMode;
   final MeasurementUnit unit;
   final int weeklyPaceWindowDays;
   final ValueChanged<TimePeriod> onPeriodChanged;
@@ -31,6 +34,7 @@ class StatisticsContentSection extends StatelessWidget {
     required this.timePeriod,
     required this.heightCm,
     required this.targetWeight,
+    this.goalMode = WeightGoalMode.lose,
     required this.unit,
     this.weeklyPaceWindowDays = 30,
     required this.onPeriodChanged,
@@ -52,6 +56,7 @@ class StatisticsContentSection extends StatelessWidget {
       entries: entries,
       targetWeight: targetWeight,
       heightCm: heightCm,
+      goalMode: goalMode,
     );
     final comparison = PeriodComparisonCalculator.compareMonths(
       entries: entries,
@@ -66,6 +71,7 @@ class StatisticsContentSection extends StatelessWidget {
       weeklyPace: weeklyPace,
       unit: unit,
       paceWindowDays: weeklyPaceWindowDays,
+      goalMode: goalMode,
       onPaceWindowTap: onPaceWindowTap,
     );
 

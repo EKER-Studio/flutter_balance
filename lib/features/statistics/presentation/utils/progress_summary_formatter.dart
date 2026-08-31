@@ -1,6 +1,7 @@
 import 'package:intl/intl.dart';
 import 'package:balance/core/models/measurement_unit.dart';
 import 'package:balance/core/utils/unit_converter.dart';
+import 'package:balance/features/settings/presentation/bloc/weight_goal_mode.dart';
 import 'package:balance/features/weight/domain/entities/weight_entry.dart';
 import 'package:balance/l10n/app_localizations.dart';
 
@@ -12,12 +13,14 @@ class ProgressSummaryFormatter {
   ///
   /// @param entries List of recorded weight entries.
   /// @param targetWeight Optional goal weight in kg.
+  /// @param goalMode Active goal mode.
   /// @param unit Active measurement unit.
   /// @param l10n Localized strings provider.
   /// @return Formatted plain text string suitable for sharing.
   static String format({
     required List<WeightEntry> entries,
     double? targetWeight,
+    WeightGoalMode goalMode = WeightGoalMode.lose,
     required MeasurementUnit unit,
     required AppLocalizations l10n,
   }) {
@@ -49,8 +52,32 @@ class ProgressSummaryFormatter {
       final targetDisplay = _formatValue(targetWeight, unit);
       final remainingKg = (latest.weightKg - targetWeight).abs();
       final remainingDisplay = _formatValue(remainingKg, unit);
+
+      final String goalSuffix;
+      if (goalMode == WeightGoalMode.maintain) {
+        final thresholdKg = unit == MeasurementUnit.imperial
+            ? lbsToKg(2.2)
+            : 1.0;
+        final rangeDisplay = unit == MeasurementUnit.imperial
+            ? '2.0 lb'
+            : '1.0 kg';
+        final isMaintained = remainingKg <= thresholdKg;
+        goalSuffix = isMaintained
+            ? l10n.goalWeightMaintained(rangeDisplay)
+            : l10n.goalWeightDeviation(
+                '${latest.weightKg >= targetWeight ? '+' : '-'}$remainingDisplay $unitLabel',
+              );
+      } else {
+        final isAchieved = goalMode == WeightGoalMode.gain
+            ? latest.weightKg >= targetWeight
+            : latest.weightKg <= targetWeight;
+        goalSuffix = isAchieved
+            ? l10n.goalAchieved
+            : l10n.remainingWeightLabel('$remainingDisplay $unitLabel');
+      }
+
       buffer.writeln(
-        '🎯 ${l10n.targetWeight}: $targetDisplay $unitLabel (${l10n.remainingWeightLabel("$remainingDisplay $unitLabel")})',
+        '🎯 ${l10n.targetWeight}: $targetDisplay $unitLabel ($goalSuffix)',
       );
     }
 

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:balance/core/models/measurement_unit.dart';
 import 'package:balance/core/utils/analytics.dart';
+import 'package:balance/features/settings/presentation/bloc/weight_goal_mode.dart';
 import 'package:balance/features/statistics/presentation/utils/progress_summary_formatter.dart';
 import 'package:balance/features/weight/domain/entities/weight_entry.dart';
 import 'package:balance/l10n/app_localizations.dart';
@@ -15,17 +16,20 @@ class SummaryShareCoordinator {
   /// @param context Build context used for localization and origin frame coordinates.
   /// @param entries Full list of weight entries.
   /// @param targetWeight Optional goal weight.
+  /// @param goalMode Active goal mode.
   /// @param unit Active measurement unit.
   static Future<void> shareProgress(
     BuildContext context, {
     required List<WeightEntry> entries,
     double? targetWeight,
+    WeightGoalMode goalMode = WeightGoalMode.lose,
     required MeasurementUnit unit,
   }) async {
     final l10n = AppLocalizations.of(context);
     final summaryText = ProgressSummaryFormatter.format(
       entries: entries,
       targetWeight: targetWeight,
+      goalMode: goalMode,
       unit: unit,
       l10n: l10n,
     );

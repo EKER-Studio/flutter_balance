@@ -1,4 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:balance/features/settings/presentation/bloc/weight_goal_mode.dart';
 import 'package:balance/features/statistics/domain/entities/milestone.dart';
 import 'package:balance/features/statistics/domain/services/milestone_calculator.dart';
 import 'package:balance/features/weight/domain/entities/weight_entry.dart';
@@ -145,6 +146,52 @@ void main() {
       expect(healthyBmi.isUnlocked, isTrue);
       expect(healthyBmi.progress, 1.0);
       expect(healthyBmi.unlockedDate, DateTime(2026, 8, 20));
+    });
+
+    test('evaluates weight gain milestones and goal in gain mode', () {
+      final entries = [
+        WeightEntry(id: 1, weightKg: 70.0, dateTime: DateTime(2026, 8, 1)),
+        WeightEntry(
+          id: 2,
+          weightKg: 72.0,
+          dateTime: DateTime(2026, 8, 10),
+        ), // +2 kg
+        WeightEntry(
+          id: 3,
+          weightKg: 76.0,
+          dateTime: DateTime(2026, 8, 20),
+        ), // +6 kg
+      ];
+
+      final milestones = MilestoneCalculator.evaluate(
+        entries: entries,
+        targetWeight: 80.0, // +10 kg target
+        goalMode: WeightGoalMode.gain,
+      );
+
+      final gain1 = milestones.firstWhere(
+        (m) => m.type == MilestoneType.weightGain1kg,
+      );
+      final gain5 = milestones.firstWhere(
+        (m) => m.type == MilestoneType.weightGain5kg,
+      );
+      final gain10 = milestones.firstWhere(
+        (m) => m.type == MilestoneType.weightGain10kg,
+      );
+      final halfway = milestones.firstWhere(
+        (m) => m.type == MilestoneType.goalHalfway,
+      );
+      final reached = milestones.firstWhere(
+        (m) => m.type == MilestoneType.goalReached,
+      );
+
+      expect(gain1.isUnlocked, isTrue);
+      expect(gain5.isUnlocked, isTrue);
+      expect(gain10.isUnlocked, isFalse);
+      expect(gain10.progress, closeTo(6.0 / 10.0, 0.01));
+      expect(halfway.isUnlocked, isTrue);
+      expect(reached.isUnlocked, isFalse);
+      expect(reached.progress, closeTo(0.6, 0.01));
     });
   });
 }
