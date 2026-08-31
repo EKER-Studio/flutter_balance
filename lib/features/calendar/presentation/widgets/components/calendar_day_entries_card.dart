@@ -248,16 +248,12 @@ class CalendarDayEntriesCard extends StatelessWidget {
                                 width: 36,
                                 height: 36,
                                 decoration: BoxDecoration(
-                                  color: isDark
-                                      ? const Color(0xFF252830)
-                                      : cs.surfaceContainerHigh,
+                                  color: cs.surfaceContainerHigh,
                                   borderRadius: BorderRadius.circular(10),
                                   border: Border.all(
-                                    color: isDark
-                                        ? const Color(0xFF262933)
-                                        : cs.outlineVariant.withValues(
-                                            alpha: 0.3,
-                                          ),
+                                    color: cs.outlineVariant.withValues(
+                                      alpha: 0.3,
+                                    ),
                                     width: 1.0,
                                   ),
                                 ),

@@ -98,7 +98,9 @@ class BmiLegendItem extends StatelessWidget {
                             child: Text(
                               l10n.yourResult,
                               style: textTheme.labelSmall?.copyWith(
-                                color: isDark ? Colors.black87 : Colors.white,
+                                color: isDark
+                                    ? colorScheme.surface
+                                    : colorScheme.onPrimary,
                                 fontSize: 9.5,
                                 fontWeight: FontWeight.bold,
                                 letterSpacing: 0.2,
