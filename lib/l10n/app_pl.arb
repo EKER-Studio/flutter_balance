@@ -421,5 +421,8 @@
   "yourResult": "Twój wynik",
   "movingAverage7d": "Średnia 7-dniowa",
   "movingAverage7dLegend": "Śr. 7-dniowa",
-  "weightLegend": "Waga"
+  "weightLegend": "Waga",
+  "paceWindow": "Okno obliczania tempa",
+  "paceWindowDays": "{count, plural, one{Ostatni {count} dzień} few{Ostatnie {count} dni} many{Ostatnie {count} dni} other{Ostatnie {count} dni}}",
+  "paceWindowDaysDefault": "Ostatnie {count} dni (domyślnie)"
 }

@@ -822,6 +822,31 @@ class AppAnalytics {
     );
   }
 
+  /// Logs opening the pace window selection dialog.
+  ///
+  /// @param currentDays The active pace window days.
+  static Future<void> logSettingsPaceWindowDialogOpened(int currentDays) {
+    return logEvent(
+      name: 'settings_pace_window_dialog_opened',
+      parameters: {'current_days': currentDays},
+    );
+  }
+
+  /// Logs cancelling the pace window selection dialog.
+  static Future<void> logSettingsPaceWindowDialogCancelled() {
+    return logEvent(name: 'settings_pace_window_dialog_cancelled');
+  }
+
+  /// Logs changing the weekly pace calculation window.
+  ///
+  /// @param days The selected pace window in days.
+  static Future<void> logSettingsPaceWindowChanged(int days) {
+    return logEvent(
+      name: 'settings_pace_window_changed',
+      parameters: {'window_days': days},
+    );
+  }
+
   /// Logs clicking the reminder notification switch tile.
   ///
   /// @param enabled Target toggle value.

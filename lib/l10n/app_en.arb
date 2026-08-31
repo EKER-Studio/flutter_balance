@@ -472,5 +472,8 @@
   "yourResult": "Your result",
   "movingAverage7d": "7-day average",
   "movingAverage7dLegend": "7-day avg",
-  "weightLegend": "Weight"
+  "weightLegend": "Weight",
+  "paceWindow": "Pace calculation window",
+  "paceWindowDays": "{count, plural, one{Last {count} day} other{Last {count} days}}",
+  "paceWindowDaysDefault": "Last {count} days (default)"
 }
