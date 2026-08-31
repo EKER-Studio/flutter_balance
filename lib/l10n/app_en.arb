@@ -507,5 +507,10 @@
   "measurementsCount": "{count, plural, one{{count} log} other{{count} logs}}",
   "totalMeasurements": "Measurements",
   "comparisonNotEnoughData": "Log measurements across at least two months to see comparison trends.",
-  "shareProgress": "Share progress"
+  "shareProgress": "Share progress",
+  "healthyWeightRange": "Healthy weight range",
+  "healthyWeightForHeight": "Healthy weight: {range}",
+  "distanceToNormalBmi": "{diff} to normal BMI",
+  "inNormalBmiRange": "In healthy BMI range",
+  "setHeightForBmi": "Set your height in Settings to see BMI analysis and your healthy weight range."
 }

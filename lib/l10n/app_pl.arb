@@ -456,5 +456,10 @@
   "measurementsCount": "{count, plural, one{{count} pomiar} few{{count} pomiary} many{{count} pomiarów} other{{count} pomiaru}}",
   "totalMeasurements": "Liczba pomiarów",
   "comparisonNotEnoughData": "Zapisz pomiary w co najmniej dwóch miesiącach, aby zobaczyć trendy porównawcze.",
-  "shareProgress": "Udostępnij postęp"
+  "shareProgress": "Udostępnij postęp",
+  "healthyWeightRange": "Prawidłowy zakres wagi",
+  "healthyWeightForHeight": "Prawidłowa waga: {range}",
+  "distanceToNormalBmi": "Brakuje {diff} do normy BMI",
+  "inNormalBmiRange": "W normie prawidłowego BMI",
+  "setHeightForBmi": "Ustaw wzrost w Ustawieniach, aby zobaczyć analizę BMI i prawidłowy zakres wagi."
 }
