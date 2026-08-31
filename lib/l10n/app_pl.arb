@@ -33,10 +33,43 @@
       }
     }
   },
+  "@calendarDaySemantics": {
+    "description": "Accessibility label for a calendar day cell with measurement count.",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@calendarDaySemanticsGoalAchieved": {
+    "description": "Accessibility label for a calendar day cell when target goal is achieved on that day.",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@chartSemanticsTitle": {
+    "description": "Accessibility label for the weight history chart, describing the displayed period and the latest recorded weight."
+  },
   "@couldNotOpenEmailClient": {
     "description": "Error message shown when the device cannot open the email client for the contact address.",
     "placeholders": {
       "email": {
+        "type": "String"
+      }
+    }
+  },
+  "@couldNotOpenUrl": {
+    "description": "Error message shown when the device cannot open a web link.",
+    "placeholders": {
+      "url": {
         "type": "String"
       }
     }
@@ -55,6 +88,12 @@
         "type": "String"
       }
     }
+  },
+  "@errorWipingData": {
+    "description": "Error message shown when clearing all app data fails."
+  },
+  "@exportError": {
+    "description": "Error message shown when exporting weight entries to a CSV file fails."
   },
   "@goalProgressSemantics": {
     "description": "Accessibility label for the goal progress section on the health summary card.",
@@ -121,6 +160,9 @@
       }
     }
   },
+  "@streakDays": {
+    "description": "Label describing the current consecutive-days logging streak."
+  },
   "@todayAtTime": {
     "placeholders": {
       "time": {
@@ -143,6 +185,9 @@
         "type": "String"
       }
     }
+  },
+  "@weightTrendChartSemantics": {
+    "description": "Accessibility label describing the number of measurements plotted on the weight trend chart."
   },
   "addAnotherMeasurement": "Dodaj kolejny pomiar",
   "addFirstMeasurement": "Dodaj pierwszy pomiar",
@@ -522,23 +567,54 @@
   "year": "Rok",
   "yesterday": "Wczoraj",
   "firstDayOfWeek": "Pierwszy dzień tygodnia",
+  "@firstDayOfWeek": {},
   "firstDayOfWeekSystem": "Systemowo",
+  "@firstDayOfWeekSystem": {},
   "firstDayOfWeekMonday": "Poniedziałek",
+  "@firstDayOfWeekMonday": {},
   "firstDayOfWeekSunday": "Niedziela",
+  "@firstDayOfWeekSunday": {},
   "goalMode": "Tryb celu",
+  "@goalMode": {},
   "goalModeLose": "Redukcja",
+  "@goalModeLose": {},
   "goalModeMaintain": "Utrzymanie",
+  "@goalModeMaintain": {},
   "goalModeGain": "Masa",
+  "@goalModeGain": {},
   "goalModeLoseDesc": "Stopniowa redukcja masy ciała",
+  "@goalModeLoseDesc": {},
   "goalModeMaintainDesc": "Stabilna waga w wyznaczonym przedziale",
+  "@goalModeMaintainDesc": {},
   "goalModeGainDesc": "Stopniowy przyrost masy ciała i mięśni",
+  "@goalModeGainDesc": {},
   "goalWeightMaintained": "Waga stabilna (±{range})",
+  "@goalWeightMaintained": {
+    "placeholders": {
+      "range": {
+        "type": "String"
+      }
+    }
+  },
   "goalWeightDeviation": "Odchylenie: {diff}",
+  "@goalWeightDeviation": {
+    "placeholders": {
+      "diff": {
+        "type": "String"
+      }
+    }
+  },
   "weightGain1kgTitle": "+1 kg masy",
+  "@weightGain1kgTitle": {},
   "weightGain1kgDesc": "Przyrost 1 kg w drodze do celu masy",
+  "@weightGain1kgDesc": {},
   "weightGain5kgTitle": "+5 kg masy",
+  "@weightGain5kgTitle": {},
   "weightGain5kgDesc": "Przyrost 5 kg w drodze do celu masy",
+  "@weightGain5kgDesc": {},
   "weightGain10kgTitle": "+10 kg masy",
+  "@weightGain10kgTitle": {},
   "weightGain10kgDesc": "Przyrost 10 kg w drodze do celu masy",
+  "@weightGain10kgDesc": {},
   "yourResult": "Twój wynik"
 }
