@@ -506,5 +506,6 @@
   "netChange": "Net change",
   "measurementsCount": "{count, plural, one{{count} log} other{{count} logs}}",
   "totalMeasurements": "Measurements",
-  "comparisonNotEnoughData": "Log measurements across at least two months to see comparison trends."
+  "comparisonNotEnoughData": "Log measurements across at least two months to see comparison trends.",
+  "shareProgress": "Share progress"
 }

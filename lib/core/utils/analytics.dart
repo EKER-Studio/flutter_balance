@@ -682,6 +682,18 @@ class AppAnalytics {
     return logEvent(name: 'statistics_period_comparison_card_tapped');
   }
 
+  /// Logs clicking the share progress summary action in statistics.
+  ///
+  /// @param entryCount Total number of measurements included in summary.
+  static Future<void> logStatisticsShareSummaryClicked({
+    required int entryCount,
+  }) {
+    return logEvent(
+      name: 'statistics_share_summary_clicked',
+      parameters: {'entry_count': entryCount},
+    );
+  }
+
   /// Logs interacting with one of the Bento statistics cards.
   ///
   /// @param metricType The category of the metric (e.g. 'min', 'max', 'avg', 'velocity').

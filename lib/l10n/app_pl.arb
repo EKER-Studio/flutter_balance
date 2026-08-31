@@ -455,5 +455,6 @@
   "netChange": "Zmiana wagi",
   "measurementsCount": "{count, plural, one{{count} pomiar} few{{count} pomiary} many{{count} pomiarów} other{{count} pomiaru}}",
   "totalMeasurements": "Liczba pomiarów",
-  "comparisonNotEnoughData": "Zapisz pomiary w co najmniej dwóch miesiącach, aby zobaczyć trendy porównawcze."
+  "comparisonNotEnoughData": "Zapisz pomiary w co najmniej dwóch miesiącach, aby zobaczyć trendy porównawcze.",
+  "shareProgress": "Udostępnij postęp"
 }
