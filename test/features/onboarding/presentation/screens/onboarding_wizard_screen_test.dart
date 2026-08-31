@@ -12,6 +12,7 @@ import 'package:balance/features/weight/presentation/bloc/weight_state.dart';
 import 'package:balance/l10n/app_localizations.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_bloc.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_event.dart';
+import 'package:balance/features/settings/presentation/bloc/weight_goal_mode.dart';
 import 'package:balance/features/onboarding/presentation/screens/onboarding_wizard_screen.dart';
 
 class MockHydratedStorage extends Mock implements HydratedStorage {}
@@ -442,5 +443,71 @@ void main() {
       expect(completed, isTrue);
       expect(settingsBloc.state.isOnboardingCompleted, isTrue);
     });
+
+    testWidgets(
+      'pre-fills initial weight with today latest entry when both today and past entries are in CSV',
+      (tester) async {
+        final now = DateTime.now();
+        final service = FakeCsvImportService((
+          validEntries: [
+            WeightEntry(weightKg: 75.2, dateTime: DateTime(2024, 1, 15)),
+            WeightEntry(
+              weightKg: 78.4,
+              dateTime: DateTime(now.year, now.month, now.day, 8, 30),
+            ),
+            WeightEntry(
+              weightKg: 78.1,
+              dateTime: DateTime(now.year, now.month, now.day, 19, 45),
+            ),
+          ],
+          skippedRowCount: 0,
+          earliestDate: null,
+          latestDate: null,
+        ));
+
+        await tester.pumpWidget(buildSubject(csvImportService: service));
+        await tester.pumpAndSettle();
+
+        // Advance to Step 3 (CSV Import)
+        await pumpToStep3(tester);
+
+        // Step 3 (CSV Import) -> pick file -> continue
+        await tester.tap(find.byKey(const Key('csv_import_tile')));
+        await tester.pumpAndSettle();
+        expect(find.text('Imported 3 entries'), findsOneWidget);
+
+        await tester.tap(find.byKey(const Key('csv_import_continue_button')));
+        await tester.pumpAndSettle();
+
+        // Step 4 (Your Starting Point) shows today's latest entry (78.1) pre-filled.
+        expect(find.bySemanticsLabel('Step 3 of 7'), findsOneWidget);
+        final field = tester.widget<TextField>(
+          find.byKey(const Key('initial_weight_input')),
+        );
+        expect(field.controller!.text, '78.1');
+
+        await tester.tap(find.text('Next'));
+        await tester.pumpAndSettle();
+
+        expect(find.bySemanticsLabel('Step 4 of 7'), findsOneWidget);
+        expect(find.text('Your Dream Goal'), findsOneWidget);
+
+        // In Step 5 (Target Weight), select Weight Gain mode and set 82.0 kg
+        await tester.tap(find.text('Gain weight'));
+        await tester.pumpAndSettle();
+
+        await tester.enterText(
+          find.byKey(const Key('target_weight_input')),
+          '82.0',
+        );
+        await tester.pumpAndSettle();
+
+        await tester.tap(find.text('Next').first);
+        await tester.pumpAndSettle();
+
+        expect(settingsBloc.state.targetWeight, closeTo(82.0, 0.01));
+        expect(settingsBloc.state.weightGoalMode, WeightGoalMode.gain);
+      },
+    );
   });
 }

@@ -148,5 +148,53 @@ void main() {
         ).called(1);
       },
     );
+
+    test(
+      'latestImportedEntry prioritizes today latest entry over older entries',
+      () {
+        final now = DateTime.now();
+        final todayMorning = WeightEntry(
+          id: 1,
+          weightKg: 80.0,
+          dateTime: DateTime(now.year, now.month, now.day, 8, 0),
+        );
+        final todayEvening = WeightEntry(
+          id: 2,
+          weightKg: 80.5,
+          dateTime: DateTime(now.year, now.month, now.day, 20, 0),
+        );
+        final yesterday = WeightEntry(
+          id: 3,
+          weightKg: 81.0,
+          dateTime: now.subtract(const Duration(days: 1)),
+        );
+
+        final state = OnboardingState(
+          importedCsvEntries: [yesterday, todayMorning, todayEvening],
+        );
+
+        expect(state.latestImportedEntry, equals(todayEvening));
+      },
+    );
+
+    test(
+      'latestImportedEntry falls back to most recent entry if no today entry',
+      () {
+        final past1 = WeightEntry(
+          id: 1,
+          weightKg: 78.0,
+          dateTime: DateTime(2024, 5, 10),
+        );
+        final past2 = WeightEntry(
+          id: 2,
+          weightKg: 77.0,
+          dateTime: DateTime(2024, 6, 15),
+        );
+
+        final state = OnboardingState(importedCsvEntries: [past1, past2]);
+
+        expect(state.latestImportedEntry, equals(past2));
+      },
+    );
   });
 }

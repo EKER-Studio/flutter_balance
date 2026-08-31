@@ -79,6 +79,26 @@ class _StepInitialWeightState extends State<StepInitialWeight> {
   }
 
   @override
+  void didUpdateWidget(StepInitialWeight oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.initialWeightKg != oldWidget.initialWeightKg ||
+        widget.unit != oldWidget.unit) {
+      final weightKg = widget.initialWeightKg;
+      if (weightKg != null && weightKg > 0 && weightKg <= 500) {
+        _weightController.text = widget.unit == MeasurementUnit.imperial
+            ? kgToLbs(weightKg).toStringAsFixed(1)
+            : weightKg.toStringAsFixed(1);
+      } else if (weightKg == null) {
+        _weightController.clear();
+      }
+    }
+    if (widget.initialTimestamp != oldWidget.initialTimestamp &&
+        widget.initialTimestamp != null) {
+      _selectedTimestamp = widget.initialTimestamp!;
+    }
+  }
+
+  @override
   void dispose() {
     _weightController.dispose();
     _focusNode.dispose();

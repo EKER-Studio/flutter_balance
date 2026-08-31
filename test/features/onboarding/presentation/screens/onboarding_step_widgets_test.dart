@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:balance/core/models/measurement_unit.dart';
+import 'package:balance/features/settings/presentation/bloc/weight_goal_mode.dart';
 import 'package:balance/l10n/app_localizations.dart';
 import 'package:balance/features/onboarding/presentation/widgets/steps/step_initial_weight.dart';
 import 'package:balance/features/onboarding/presentation/widgets/steps/step_target_weight.dart';
@@ -117,14 +118,19 @@ void main() {
   });
 
   group('StepTargetWeight Widget Tests', () {
-    testWidgets('renders target weight input', (tester) async {
+    testWidgets('renders target weight input and mode segments', (
+      tester,
+    ) async {
       await tester.pumpWidget(
         buildApp(
-          StepTargetWeight(unit: MeasurementUnit.metric, onNext: (_) {}),
+          StepTargetWeight(unit: MeasurementUnit.metric, onNext: (_, _) {}),
         ),
       );
 
       expect(find.text('Your Dream Goal'), findsOneWidget);
+      expect(find.text('Lose weight'), findsOneWidget);
+      expect(find.text('Maintain weight'), findsOneWidget);
+      expect(find.text('Gain weight'), findsOneWidget);
       expect(find.byKey(const Key('target_weight_input')), findsOneWidget);
       expect(find.text('Next'), findsOneWidget);
     });
@@ -134,7 +140,7 @@ void main() {
     ) async {
       await tester.pumpWidget(
         buildApp(
-          StepTargetWeight(unit: MeasurementUnit.metric, onNext: (_) {}),
+          StepTargetWeight(unit: MeasurementUnit.metric, onNext: (_, _) {}),
         ),
       );
 
@@ -147,37 +153,90 @@ void main() {
       expect(find.byKey(const Key('target_delta_text')), findsNothing);
     });
 
-    testWidgets('shows live target delta relative to the initial weight', (
-      tester,
-    ) async {
-      await tester.pumpWidget(
-        buildApp(
-          StepTargetWeight(
-            unit: MeasurementUnit.metric,
-            initialWeightKg: 75.5,
-            onNext: (_) {},
-          ),
-        ),
-      );
-
-      await tester.enterText(
-        find.byKey(const Key('target_weight_input')),
-        '70',
-      );
-      await tester.pumpAndSettle();
-
-      expect(find.text('5.5 kg to target'), findsOneWidget);
-    });
-
     testWidgets(
-      'hides target delta when target is >= initial weight during setup',
+      'shows live target delta relative to the initial weight for loss',
       (tester) async {
         await tester.pumpWidget(
           buildApp(
             StepTargetWeight(
               unit: MeasurementUnit.metric,
               initialWeightKg: 75.5,
-              onNext: (_) {},
+              onNext: (_, _) {},
+            ),
+          ),
+        );
+
+        await tester.enterText(
+          find.byKey(const Key('target_weight_input')),
+          '70',
+        );
+        await tester.pumpAndSettle();
+
+        expect(find.text('5.5 kg to target'), findsOneWidget);
+      },
+    );
+
+    testWidgets('shows live target delta for gain mode', (tester) async {
+      await tester.pumpWidget(
+        buildApp(
+          StepTargetWeight(
+            unit: MeasurementUnit.metric,
+            initialWeightKg: 70.0,
+            onNext: (_, _) {},
+          ),
+        ),
+      );
+
+      await tester.tap(find.text('Gain weight'));
+      await tester.pumpAndSettle();
+
+      await tester.enterText(
+        find.byKey(const Key('target_weight_input')),
+        '75',
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.text('+5.0 kg to target'), findsOneWidget);
+    });
+
+    testWidgets(
+      'shows maintain stable status for maintain mode within threshold',
+      (tester) async {
+        await tester.pumpWidget(
+          buildApp(
+            StepTargetWeight(
+              unit: MeasurementUnit.metric,
+              initialWeightKg: 70.5,
+              onNext: (_, _) {},
+            ),
+          ),
+        );
+
+        await tester.tap(find.text('Maintain weight'));
+        await tester.pumpAndSettle();
+
+        await tester.enterText(
+          find.byKey(const Key('target_weight_input')),
+          '70.0',
+        );
+        await tester.pumpAndSettle();
+
+        expect(
+          find.text('Keep weight stable in a healthy range'),
+          findsWidgets,
+        );
+      },
+    );
+
+    testWidgets(
+      'hides target delta when target is >= initial weight during loss setup',
+      (tester) async {
+        await tester.pumpWidget(
+          buildApp(
+            StepTargetWeight(
+              unit: MeasurementUnit.metric,
+              initialWeightKg: 75.5,
+              onNext: (_, _) {},
             ),
           ),
         );
@@ -200,7 +259,7 @@ void main() {
           StepTargetWeight(
             unit: MeasurementUnit.metric,
             initialWeightKg: 75.5,
-            onNext: (_) {},
+            onNext: (_, _) {},
           ),
         ),
       );
@@ -220,19 +279,21 @@ void main() {
       expect(find.byKey(const Key('target_delta_text')), findsNothing);
     });
 
-    testWidgets('calls onNext(null) when Next pressed with empty input', (
+    testWidgets('calls onNext(null, mode) when Next pressed with empty input', (
       tester,
     ) async {
       double? result;
+      WeightGoalMode? selectedMode;
       bool called = false;
 
       await tester.pumpWidget(
         buildApp(
           StepTargetWeight(
             unit: MeasurementUnit.metric,
-            onNext: (val) {
+            onNext: (val, mode) {
               called = true;
               result = val;
+              selectedMode = mode;
             },
           ),
         ),
@@ -243,33 +304,41 @@ void main() {
 
       expect(called, isTrue);
       expect(result, isNull);
+      expect(selectedMode, WeightGoalMode.lose);
     });
 
-    testWidgets('calls onNext with parsed target weight when Next pressed', (
-      tester,
-    ) async {
-      double? result;
+    testWidgets(
+      'calls onNext with parsed target weight and mode when Next pressed',
+      (tester) async {
+        double? result;
+        WeightGoalMode? selectedMode;
 
-      await tester.pumpWidget(
-        buildApp(
-          StepTargetWeight(
-            unit: MeasurementUnit.metric,
-            onNext: (val) {
-              result = val;
-            },
+        await tester.pumpWidget(
+          buildApp(
+            StepTargetWeight(
+              unit: MeasurementUnit.metric,
+              onNext: (val, mode) {
+                result = val;
+                selectedMode = mode;
+              },
+            ),
           ),
-        ),
-      );
+        );
 
-      await tester.enterText(
-        find.byKey(const Key('target_weight_input')),
-        '75.5',
-      );
-      await tester.tap(find.text('Next'));
-      await tester.pumpAndSettle();
+        await tester.tap(find.text('Gain weight'));
+        await tester.pumpAndSettle();
 
-      expect(result, closeTo(75.5, 0.01));
-    });
+        await tester.enterText(
+          find.byKey(const Key('target_weight_input')),
+          '75.5',
+        );
+        await tester.tap(find.text('Next'));
+        await tester.pumpAndSettle();
+
+        expect(result, closeTo(75.5, 0.01));
+        expect(selectedMode, WeightGoalMode.gain);
+      },
+    );
 
     testWidgets('calls onNext with comma-separated target weight', (
       tester,
@@ -280,7 +349,7 @@ void main() {
         buildApp(
           StepTargetWeight(
             unit: MeasurementUnit.metric,
-            onNext: (val) {
+            onNext: (val, _) {
               result = val;
             },
           ),
@@ -303,7 +372,7 @@ void main() {
           StepTargetWeight(
             unit: MeasurementUnit.metric,
             initialTargetWeightKg: 70.0,
-            onNext: (_) {},
+            onNext: (_, _) {},
           ),
         ),
       );
@@ -319,7 +388,7 @@ void main() {
           StepTargetWeight(
             unit: MeasurementUnit.imperial,
             initialTargetWeightKg: 70.0,
-            onNext: (_) {},
+            onNext: (_, _) {},
           ),
         ),
       );
@@ -333,7 +402,7 @@ void main() {
           StepTargetWeight(
             unit: MeasurementUnit.imperial,
             initialWeightKg: 75.5,
-            onNext: (_) {},
+            onNext: (_, _) {},
           ),
         ),
       );
@@ -356,7 +425,7 @@ void main() {
         buildApp(
           StepTargetWeight(
             unit: MeasurementUnit.imperial,
-            onNext: (val) {
+            onNext: (val, _) {
               result = val;
             },
           ),
@@ -376,7 +445,7 @@ void main() {
     testWidgets('clears inline error when input is emptied', (tester) async {
       await tester.pumpWidget(
         buildApp(
-          StepTargetWeight(unit: MeasurementUnit.metric, onNext: (_) {}),
+          StepTargetWeight(unit: MeasurementUnit.metric, onNext: (_, _) {}),
         ),
       );
 
@@ -414,7 +483,7 @@ void main() {
     ) async {
       await tester.pumpWidget(
         buildApp(
-          StepTargetWeight(unit: MeasurementUnit.metric, onNext: (_) {}),
+          StepTargetWeight(unit: MeasurementUnit.metric, onNext: (_, _) {}),
         ),
       );
 
@@ -446,7 +515,7 @@ void main() {
         buildApp(
           StepTargetWeight(
             unit: MeasurementUnit.metric,
-            onNext: (val) {
+            onNext: (val, _) {
               result = val;
             },
           ),
@@ -559,7 +628,7 @@ void main() {
         // StepTargetWeight
         await tester.pumpWidget(
           buildApp(
-            StepTargetWeight(unit: MeasurementUnit.metric, onNext: (_) {}),
+            StepTargetWeight(unit: MeasurementUnit.metric, onNext: (_, _) {}),
           ),
         );
         await tester.pump(const Duration(milliseconds: 300));
