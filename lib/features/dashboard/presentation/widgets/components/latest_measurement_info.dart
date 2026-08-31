@@ -13,11 +13,15 @@ class LatestMeasurementInfo extends StatelessWidget {
   /// The timestamp when the weight measurement was recorded.
   final DateTime? lastUpdated;
 
+  /// The difference in weight compared to yesterday's measurement (if available).
+  final double? deltaFromYesterday;
+
   const LatestMeasurementInfo({
     super.key,
     required this.displayWeight,
     required this.unitLabel,
     this.lastUpdated,
+    this.deltaFromYesterday,
   });
 
   @override
@@ -65,6 +69,10 @@ class LatestMeasurementInfo extends StatelessWidget {
                   fontWeight: FontWeight.w600,
                 ),
               ),
+              if (deltaFromYesterday != null) ...[
+                const SizedBox(width: 8),
+                _buildDeltaIndicator(context, deltaFromYesterday!),
+              ],
             ],
           ),
           const SizedBox(height: 4),
@@ -100,6 +108,39 @@ class LatestMeasurementInfo extends StatelessWidget {
     final dateStr = DateFormat.MMMd(
       Localizations.localeOf(context).toString(),
     ).format(date);
-    return '$dateStr, $timeStr';
+    return '$dateStr • $timeStr';
+  }
+
+  Widget _buildDeltaIndicator(BuildContext context, double delta) {
+    final l10n = AppLocalizations.of(context);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    
+    // We assume a negative delta (weight loss) is positive improvement
+    final isImprovement = delta <= 0;
+    
+    final Color badgeBg = isImprovement
+        ? Colors.green.withValues(alpha: 0.15)
+        : Colors.orange.withValues(alpha: 0.15);
+    final Color badgeFg = isImprovement
+        ? (isDark ? Colors.green.shade300 : Colors.green.shade700)
+        : (isDark ? Colors.orange.shade300 : Colors.orange.shade700);
+
+    final String sign = delta > 0 ? '+' : '';
+    final String valStr = delta.toStringAsFixed(1);
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+      decoration: BoxDecoration(
+        color: badgeBg,
+        borderRadius: BorderRadius.circular(6),
+      ),
+      child: Text(
+        '$sign$valStr $unitLabel vs ${l10n.yesterday.toLowerCase()}',
+        style: Theme.of(context).textTheme.labelSmall?.copyWith(
+              color: badgeFg,
+              fontWeight: FontWeight.bold,
+            ),
+      ),
+    );
   }
 }

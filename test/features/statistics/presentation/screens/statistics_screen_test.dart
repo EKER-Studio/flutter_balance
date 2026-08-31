@@ -19,10 +19,7 @@ import 'package:balance/features/settings/presentation/bloc/app_settings_bloc.da
 import 'package:balance/features/settings/presentation/bloc/app_settings_event.dart';
 import 'package:balance/features/statistics/presentation/screens/statistics_screen.dart';
 import 'package:balance/features/statistics/presentation/widgets/sections/bmi_status_card.dart';
-import 'package:balance/features/statistics/presentation/widgets/sections/habits_activity_card.dart';
 import 'package:balance/features/statistics/presentation/widgets/sections/hero_progress_card.dart';
-import 'package:balance/features/statistics/presentation/widgets/sections/milestones_card.dart';
-import 'package:balance/features/statistics/presentation/widgets/sections/period_comparison_card.dart';
 import 'package:balance/features/statistics/presentation/widgets/sections/weight_range_card.dart';
 import 'package:balance/features/statistics/presentation/widgets/sections/statistics_content_section.dart';
 

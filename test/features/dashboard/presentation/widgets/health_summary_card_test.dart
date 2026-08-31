@@ -239,7 +239,7 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(find.textContaining(', '), findsOneWidget);
+    expect(find.textContaining(' • '), findsOneWidget);
   });
 
   testWidgets('formats a today last-updated timestamp with the time only', (

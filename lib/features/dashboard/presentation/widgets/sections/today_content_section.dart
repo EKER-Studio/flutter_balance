@@ -29,6 +29,9 @@ class TodayContentSection extends StatelessWidget {
   /// The user's height in centimeters, used for BMI calculation.
   final double? heightCm;
 
+  /// The entry from yesterday, if any, used for delta comparison.
+  final WeightEntry? yesterdayEntry;
+
   /// A callback fired when the chart time period is updated.
   final ValueChanged<TimePeriod> onPeriodChanged;
 
@@ -43,6 +46,7 @@ class TodayContentSection extends StatelessWidget {
     this.errorType,
     required this.measurementUnit,
     this.heightCm,
+    this.yesterdayEntry,
     required this.onPeriodChanged,
     this.onRetry,
   });
@@ -74,6 +78,7 @@ class TodayContentSection extends StatelessWidget {
                     HealthSummaryCard(
                       latestWeightKg: latestEntry.weightKg,
                       lastUpdated: latestEntry.dateTime,
+                      deltaFromYesterday: yesterdayEntry != null ? latestEntry.weightKg - yesterdayEntry!.weightKg : null,
                     ),
                     const SizedBox(height: 16),
                     const DailyTipCard(),
@@ -112,6 +117,7 @@ class TodayContentSection extends StatelessWidget {
               HealthSummaryCard(
                 latestWeightKg: latestEntry.weightKg,
                 lastUpdated: latestEntry.dateTime,
+                deltaFromYesterday: yesterdayEntry != null ? latestEntry.weightKg - yesterdayEntry!.weightKg : null,
               ),
               const SizedBox(height: 16),
               WeightTrendChartCard(

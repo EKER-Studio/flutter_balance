@@ -23,10 +23,14 @@ class HealthSummaryCard extends StatelessWidget {
   /// An optional date of the latest recorded weight measurement.
   final DateTime? lastUpdated;
 
+  /// The difference between the latest weight and yesterday's weight.
+  final double? deltaFromYesterday;
+
   const HealthSummaryCard({
     super.key,
     required this.latestWeightKg,
     this.lastUpdated,
+    this.deltaFromYesterday,
   });
 
   @override
@@ -100,6 +104,11 @@ class HealthSummaryCard extends StatelessWidget {
                                 displayWeight: displayWeight,
                                 unitLabel: unitLabel,
                                 lastUpdated: lastUpdated,
+                                deltaFromYesterday: deltaFromYesterday != null
+                                    ? (weightUnit == MeasurementUnit.imperial
+                                        ? kgToLbs(deltaFromYesterday!)
+                                        : deltaFromYesterday!)
+                                    : null,
                               ),
                             ),
                           ),
