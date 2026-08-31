@@ -1,4 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="ic_launcher_background">#FFFFFF</color>
+    <color name="widget_bg">#FFFFFF</color>
+    <color name="widget_text_primary">#1A1C1E</color>
+    <color name="widget_text_secondary">#74777F</color>
+    <color name="widget_accent">#006688</color>
+    <color name="widget_gain_red">#BA1A1A</color>
+    <color name="widget_loss_green">#006E1C</color>
+    <color name="widget_track">#E1E2EC</color>
 </resources>
