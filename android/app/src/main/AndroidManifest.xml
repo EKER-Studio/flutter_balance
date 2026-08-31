@@ -69,6 +69,7 @@
                 <action android:name="android.intent.action.VIEW_PERMISSION_USAGE" />
                 <category android:name="android.intent.category.HEALTH_PERMISSIONS" />
             </intent-filter>
+        </activity-alias>
         <!-- Home Screen App Widget Provider -->
         <receiver
             android:name=".BalanceAppWidgetProvider"
