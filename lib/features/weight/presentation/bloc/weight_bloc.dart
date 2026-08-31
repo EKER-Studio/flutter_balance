@@ -266,8 +266,7 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
     );
   }
 
-  /// Persists a new [WeightEntry] via the repository, validating that the
-  /// user's height is set first (emits [WeightErrorType.heightNotSet] otherwise).
+  /// Persists a new [WeightEntry] via the repository.
   ///
   /// Local-first: the entry is committed to the local repository before any
   /// platform interaction, and only then mirrored to the health platform as
@@ -281,19 +280,6 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
   Future<void> _onAddWeight(AddWeight event, Emitter<WeightState> emit) async {
     final heightCm = state.heightCm;
     final entries = _entriesFromState(state);
-
-    if (heightCm == null || heightCm <= 0) {
-      emit(
-        WeightError(
-          errorType: WeightErrorType.heightNotSet,
-          heightCm: heightCm,
-          timePeriod: state.timePeriod,
-          entries: entries,
-          filteredEntries: _filterEntries(entries, state.timePeriod),
-        ),
-      );
-      return;
-    }
 
     // Emit loading state if this is the first entry (e.g., from onboarding wizard).
     // This prevents the TodayScreen from flashing the "empty" view while the DB
@@ -345,19 +331,6 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
   ) async {
     final heightCm = state.heightCm;
     final entries = _entriesFromState(state);
-
-    if (heightCm == null || heightCm <= 0) {
-      emit(
-        WeightError(
-          errorType: WeightErrorType.heightNotSet,
-          heightCm: heightCm,
-          timePeriod: state.timePeriod,
-          entries: entries,
-          filteredEntries: _filterEntries(entries, state.timePeriod),
-        ),
-      );
-      return;
-    }
 
     WeightEntry? oldEntry;
     for (final entry in entries) {

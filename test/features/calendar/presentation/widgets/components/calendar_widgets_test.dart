@@ -21,7 +21,11 @@ import 'package:balance/features/calendar/presentation/widgets/components/calend
 import 'package:balance/features/calendar/presentation/widgets/components/calendar_shimmer_skeleton.dart';
 import 'package:balance/features/calendar/presentation/widgets/components/calendar_weekday_header.dart';
 import 'package:balance/l10n/app_localizations.dart';
+import 'package:bloc_test/bloc_test.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_bloc.dart';
+import 'package:balance/features/settings/presentation/bloc/app_settings_event.dart';
+import 'package:balance/features/settings/presentation/bloc/app_settings_state.dart';
+import 'package:balance/features/weight/presentation/bloc/weight_state.dart';
 
 class MockWeightRepository extends Mock implements WeightRepository {}
 
@@ -29,11 +33,21 @@ class MockHydratedStorage extends Mock implements Storage {}
 
 class MockHealthService extends Mock implements HealthService {}
 
+class MockWeightBloc extends MockBloc<WeightEvent, WeightState>
+    implements WeightBloc {}
+
+class MockAppSettingsBloc extends MockBloc<AppSettingsEvent, AppSettingsState>
+    implements AppSettingsBloc {}
+
 void main() {
   late MockWeightRepository repository;
   late MockHydratedStorage storage;
 
   late MockHealthService healthService;
+  setUpAll(() {
+    registerFallbackValue(const DeleteWeight(0));
+  });
+
   setUp(() {
     repository = MockWeightRepository();
     storage = MockHydratedStorage();
@@ -585,23 +599,21 @@ void main() {
 
   testWidgets(
     'CalendarDayEntriesCard delete confirms before dispatching DeleteWeight',
-    skip: true,
     (tester) async {
       final entry = WeightEntry(
         id: 1,
         weightKg: 72.5,
         dateTime: DateTime(2026, 7, 15, 8, 30),
       );
-      final weightBloc = WeightBloc(
-        repository: repository,
-        healthService: healthService,
-      );
-      addTearDown(weightBloc.close);
+      final settingsBloc = MockAppSettingsBloc();
+      when(() => settingsBloc.state).thenReturn(const AppSettingsState());
+      final weightBloc = MockWeightBloc();
+      when(() => weightBloc.state).thenReturn(const WeightInitial());
 
       await tester.pumpWidget(
         MultiBlocProvider(
           providers: [
-            BlocProvider(create: (_) => AppSettingsBloc()),
+            BlocProvider<AppSettingsBloc>.value(value: settingsBloc),
             BlocProvider<WeightBloc>.value(value: weightBloc),
           ],
           child: MaterialApp(
@@ -627,67 +639,59 @@ void main() {
       expect(find.text('Delete entry'), findsWidgets);
 
       await tester.tap(find.widgetWithText(TextButton, 'Delete entry'));
-      await tester.pump();
-      await tester.pump(const Duration(seconds: 2));
+      await tester.pumpAndSettle();
 
       expect(find.text('Delete entry'), findsNothing);
-
-      // Clear the widget tree to prevent tearDown hangs caused by the pop animation
-      await tester.pumpWidget(Container());
-      await tester.pumpAndSettle();
+      verify(
+        () => weightBloc.add(
+          any(that: isA<DeleteWeight>().having((e) => e.id, 'id', 1)),
+        ),
+      ).called(1);
     },
   );
 
-  testWidgets(
-    'CalendarDayEntriesCard delete cancel dispatches nothing',
-    skip: true,
-    (tester) async {
-      final entry = WeightEntry(
-        id: 1,
-        weightKg: 72.5,
-        dateTime: DateTime(2026, 7, 15, 8, 30),
-      );
-      final weightBloc = WeightBloc(
-        repository: repository,
-        healthService: healthService,
-      );
-      addTearDown(weightBloc.close);
+  testWidgets('CalendarDayEntriesCard delete cancel dispatches nothing', (
+    tester,
+  ) async {
+    final entry = WeightEntry(
+      id: 1,
+      weightKg: 72.5,
+      dateTime: DateTime(2026, 7, 15, 8, 30),
+    );
+    final settingsBloc = MockAppSettingsBloc();
+    when(() => settingsBloc.state).thenReturn(const AppSettingsState());
+    final weightBloc = MockWeightBloc();
+    when(() => weightBloc.state).thenReturn(const WeightInitial());
 
-      await tester.pumpWidget(
-        MultiBlocProvider(
-          providers: [
-            BlocProvider(create: (_) => AppSettingsBloc()),
-            BlocProvider<WeightBloc>.value(value: weightBloc),
-          ],
-          child: MaterialApp(
-            locale: const Locale('en'),
-            localizationsDelegates: AppLocalizations.localizationsDelegates,
-            supportedLocales: AppLocalizations.supportedLocales,
-            home: Scaffold(
-              body: CalendarDayEntriesCard(
-                selectedDate: DateTime(2026, 7, 15),
-                entries: [entry],
-              ),
+    await tester.pumpWidget(
+      MultiBlocProvider(
+        providers: [
+          BlocProvider<AppSettingsBloc>.value(value: settingsBloc),
+          BlocProvider<WeightBloc>.value(value: weightBloc),
+        ],
+        child: MaterialApp(
+          locale: const Locale('en'),
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: Scaffold(
+            body: CalendarDayEntriesCard(
+              selectedDate: DateTime(2026, 7, 15),
+              entries: [entry],
             ),
           ),
         ),
-      );
+      ),
+    );
 
-      await tester.tap(find.byIcon(Icons.more_vert));
-      await tester.pumpAndSettle();
+    await tester.tap(find.byIcon(Icons.more_vert));
+    await tester.pumpAndSettle();
 
-      await tester.tap(find.text('Delete'));
-      await tester.pumpAndSettle();
+    await tester.tap(find.text('Delete'));
+    await tester.pumpAndSettle();
 
-      await tester.tap(find.widgetWithText(TextButton, 'Cancel'));
-      await tester.pump();
-      await tester.pump(const Duration(seconds: 2));
+    await tester.tap(find.widgetWithText(TextButton, 'Cancel'));
+    await tester.pumpAndSettle();
 
-      verifyNever(() => repository.deleteEntry(any()));
-
-      // Clear the widget tree to prevent tearDown hangs caused by the pop animation
-      await tester.pumpWidget(Container());
-      await tester.pumpAndSettle();
-    },
-  );
+    verifyNever(() => weightBloc.add(any()));
+  });
 }

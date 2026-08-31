@@ -367,21 +367,20 @@ void main() {
     );
 
     blocTest<WeightBloc, WeightState>(
-      'emits WeightError on UpdateWeight when height is not set',
-      build: () => WeightBloc(repository: repository),
+      'calls repository.addEntry on UpdateWeight even when height is not set',
+      build: () {
+        when(() => repository.addEntry(any())).thenAnswer((_) async {});
+        return WeightBloc(repository: repository);
+      },
       seed: () => const WeightInitial(),
       act: (bloc) => bloc.add(
         UpdateWeight(
           WeightEntry(id: 1, weightKg: 74, dateTime: DateTime(2026, 7, 15, 9)),
         ),
       ),
-      expect: () => [
-        isA<WeightError>().having(
-          (s) => s.errorType,
-          'errorType',
-          WeightErrorType.heightNotSet,
-        ),
-      ],
+      verify: (_) {
+        verify(() => repository.addEntry(any())).called(1);
+      },
     );
 
     blocTest<WeightBloc, WeightState>(
@@ -530,15 +529,41 @@ void main() {
     );
 
     blocTest<WeightBloc, WeightState>(
-      'emits WeightError on AddWeight when height is not set',
-      build: () => WeightBloc(repository: repository),
+      'calls repository.addEntry on AddWeight even when height is not set',
+      build: () {
+        when(() => repository.addEntry(any())).thenAnswer((_) async {});
+        return WeightBloc(repository: repository);
+      },
       seed: () => const WeightInitial(),
       act: (bloc) => bloc.add(const AddWeight(weightKg: 72)),
       expect: () => [
-        isA<WeightError>().having(
-          (s) => s.errorType,
-          'errorType',
-          WeightErrorType.heightNotSet,
+        isA<WeightLoading>().having((s) => s.heightCm, 'heightCm', isNull),
+      ],
+      verify: (_) {
+        verify(() => repository.addEntry(any())).called(1);
+      },
+    );
+
+    blocTest<WeightBloc, WeightState>(
+      'correctly sorts aggregated daily entries chronologically across single and double digit days',
+      build: () {
+        final entries = [
+          WeightEntry(id: 1, weightKg: 70.0, dateTime: DateTime(2026, 10, 10)),
+          WeightEntry(id: 2, weightKg: 71.0, dateTime: DateTime(2026, 10, 2)),
+          WeightEntry(id: 3, weightKg: 72.0, dateTime: DateTime(2026, 9, 30)),
+        ];
+        when(
+          () => repository.watchAllEntries(),
+        ).thenAnswer((_) => Stream.value(entries));
+        return WeightBloc(repository: repository);
+      },
+      act: (bloc) => bloc.add(SubscribeToWeightChanges()),
+      expect: () => [
+        isA<WeightLoading>(),
+        isA<WeightLoaded>().having(
+          (s) => s.filteredEntries.map((e) => e.dateTime.day).toList(),
+          'days in chronological order',
+          [30, 2, 10],
         ),
       ],
     );
