@@ -39,6 +39,8 @@ jobs:
         run: flutter pub get
 
       - name: Restore Firebase configuration or generate CI stub
+        # Generates non-functional dummy credentials for forks/PRs without secrets.
+        # Dummy values (dummy_api_key, dummy-ci-project) are inert stubs and never authenticate.
         run: |
           if [ -n "${{ secrets.FIREBASE_GOOGLE_SERVICES_JSON_BASE64 }}" ]; then
             echo "${{ secrets.FIREBASE_GOOGLE_SERVICES_JSON_BASE64 }}" | base64 --decode > android/app/google-services.json
