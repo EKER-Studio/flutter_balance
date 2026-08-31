@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:balance/core/presentation/theme/app_layout_tokens.dart';
 import 'package:balance/core/models/measurement_unit.dart';
+import 'package:balance/features/statistics/domain/services/milestone_calculator.dart';
 import 'package:balance/features/statistics/presentation/widgets/sections/bmi_chart_card.dart';
 import 'package:balance/features/statistics/presentation/widgets/sections/habits_activity_card.dart';
 import 'package:balance/features/statistics/presentation/widgets/sections/hero_progress_card.dart';
+import 'package:balance/features/statistics/presentation/widgets/sections/milestones_card.dart';
 import 'package:balance/features/statistics/presentation/widgets/sections/weight_range_card.dart';
 import 'package:balance/features/weight/domain/entities/weight_entry.dart';
 import 'package:balance/features/weight/domain/time_period.dart';
@@ -44,6 +46,11 @@ class StatisticsContentSection extends StatelessWidget {
       windowDays: weeklyPaceWindowDays,
       now: now,
     );
+    final milestones = MilestoneCalculator.evaluate(
+      entries: entries,
+      targetWeight: targetWeight,
+      heightCm: heightCm,
+    );
     final isWide = context.isMultiColumn;
 
     final heroProgressCard = HeroProgressCard(
@@ -54,6 +61,8 @@ class StatisticsContentSection extends StatelessWidget {
       paceWindowDays: weeklyPaceWindowDays,
       onPaceWindowTap: onPaceWindowTap,
     );
+
+    final milestonesCard = MilestonesCard(milestones: milestones);
 
     final habitsCard = HabitsActivityCard(
       streak: streak,
@@ -76,6 +85,8 @@ class StatisticsContentSection extends StatelessWidget {
             children: [
               heroProgressCard,
               const SizedBox(height: 16),
+              milestonesCard,
+              const SizedBox(height: 16),
               Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -93,6 +104,8 @@ class StatisticsContentSection extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               heroProgressCard,
+              const SizedBox(height: 16),
+              milestonesCard,
               const SizedBox(height: 16),
               habitsCard,
               const SizedBox(height: 16),
