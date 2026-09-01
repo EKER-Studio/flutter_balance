@@ -97,8 +97,8 @@ class PillSegmentedControl<T> extends StatelessWidget {
               onTap: () => onValueChanged(segment.value),
               child: ConstrainedBox(
                 constraints: const BoxConstraints(
-                  minHeight: 38.0,
-                  minWidth: 44.0,
+                  minHeight: 44.0,
+                  minWidth: 48.0,
                 ),
                 child: Padding(
                   padding: itemPadding,

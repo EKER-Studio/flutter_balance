@@ -245,8 +245,8 @@ class CalendarDayEntriesCard extends StatelessWidget {
                                 ),
                               const SizedBox(width: 8),
                               Container(
-                                width: 36,
-                                height: 36,
+                                width: 40,
+                                height: 40,
                                 decoration: BoxDecoration(
                                   color: cs.surfaceContainerHigh,
                                   borderRadius: BorderRadius.circular(10),
@@ -260,11 +260,11 @@ class CalendarDayEntriesCard extends StatelessWidget {
                                 child: PopupMenuButton<String>(
                                   padding: EdgeInsets.zero,
                                   constraints: const BoxConstraints(),
-                                  iconSize: 18,
+                                  iconSize: 20,
                                   icon: Icon(
                                     Icons.more_vert,
                                     color: cs.onSurfaceVariant,
-                                    size: 18,
+                                    size: 20,
                                   ),
                                   tooltip: l10n.moreOptions,
                                   onSelected: (value) {
@@ -273,21 +273,18 @@ class CalendarDayEntriesCard extends StatelessWidget {
                                         entryId: entry.id,
                                         hasNote: entry.note != null,
                                       );
-                                      AppAnalytics.logDialogEditWeightOpened(
-                                        entry.id,
-                                      );
                                       final weightBloc = context
                                           .read<WeightBloc>();
                                       showModalBottomSheet<void>(
                                         context: context,
                                         isScrollControlled: true,
-                                        builder: (sheetCtx) =>
-                                            BlocProvider.value(
-                                              value: weightBloc,
-                                              child: AddWeightSheet(
-                                                existingEntry: entry,
-                                              ),
-                                            ),
+                                        useSafeArea: true,
+                                        builder: (ctx) => BlocProvider.value(
+                                          value: weightBloc,
+                                          child: AddWeightSheet(
+                                            existingEntry: entry,
+                                          ),
+                                        ),
                                       );
                                     } else if (value == 'delete') {
                                       _confirmDelete(context, entry.id);
@@ -315,14 +312,12 @@ class CalendarDayEntriesCard extends StatelessWidget {
                                           Icon(
                                             Icons.delete_outline,
                                             size: 18,
-                                            color: Colors.red.shade400,
+                                            color: cs.error,
                                           ),
                                           const SizedBox(width: 12),
                                           Text(
                                             l10n.delete,
-                                            style: TextStyle(
-                                              color: Colors.red.shade400,
-                                            ),
+                                            style: TextStyle(color: cs.error),
                                           ),
                                         ],
                                       ),
