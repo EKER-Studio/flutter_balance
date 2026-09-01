@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:balance/core/presentation/theme/app_layout_tokens.dart';
 import 'package:balance/core/models/measurement_unit.dart';
 import 'package:balance/features/statistics/domain/services/milestone_calculator.dart';
-import 'package:balance/features/statistics/domain/services/period_comparison_calculator.dart';
 import 'package:balance/features/statistics/presentation/widgets/sections/bmi_status_card.dart';
 import 'package:balance/features/statistics/presentation/widgets/sections/habits_activity_card.dart';
 import 'package:balance/features/statistics/presentation/widgets/sections/hero_progress_card.dart';
@@ -58,11 +57,6 @@ class StatisticsContentSection extends StatelessWidget {
       heightCm: heightCm,
       goalMode: goalMode,
     );
-    final comparison = PeriodComparisonCalculator.compareMonths(
-      entries: entries,
-      now: now,
-      locale: Localizations.localeOf(context).languageCode,
-    );
     final isWide = context.isMultiColumn;
 
     final heroProgressCard = HeroProgressCard(
@@ -76,10 +70,7 @@ class StatisticsContentSection extends StatelessWidget {
     );
 
     final milestonesCard = MilestonesCard(milestones: milestones);
-    final comparisonCard = PeriodComparisonCard(
-      comparison: comparison,
-      unit: unit,
-    );
+    final comparisonCard = PeriodComparisonCard(entries: entries, unit: unit);
 
     final bmiCard = BmiStatusCard(
       entries: entries,

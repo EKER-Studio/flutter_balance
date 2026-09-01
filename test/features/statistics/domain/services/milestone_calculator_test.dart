@@ -193,5 +193,111 @@ void main() {
       expect(reached.isUnlocked, isFalse);
       expect(reached.progress, closeTo(0.6, 0.01));
     });
+
+    test('evaluates early bird and night owl milestones', () {
+      final entries = [
+        WeightEntry(
+          id: 1,
+          weightKg: 70.0,
+          dateTime: DateTime(2026, 8, 1, 6, 30),
+        ), // 6:30 AM -> early bird
+        WeightEntry(
+          id: 2,
+          weightKg: 70.0,
+          dateTime: DateTime(2026, 8, 2, 23, 15),
+        ), // 11:15 PM -> night owl
+      ];
+
+      final milestones = MilestoneCalculator.evaluate(entries: entries);
+      final earlyBird = milestones.firstWhere(
+        (m) => m.type == MilestoneType.earlyBird,
+      );
+      final nightOwl = milestones.firstWhere(
+        (m) => m.type == MilestoneType.nightOwl,
+      );
+
+      expect(earlyBird.isUnlocked, isTrue);
+      expect(earlyBird.progress, 1.0);
+      expect(nightOwl.isUnlocked, isTrue);
+      expect(nightOwl.progress, 1.0);
+    });
+
+    test('evaluates special calendar milestones (New Year, Year End)', () {
+      final entries = [
+        WeightEntry(
+          id: 1,
+          weightKg: 70.0,
+          dateTime: DateTime(2026, 1, 1, 10, 0),
+        ), // Jan 1 -> New Year
+        WeightEntry(
+          id: 2,
+          weightKg: 70.0,
+          dateTime: DateTime(2026, 12, 31, 10, 0),
+        ), // Dec 31 -> Year End
+      ];
+
+      final milestones = MilestoneCalculator.evaluate(entries: entries);
+      final newYear = milestones.firstWhere(
+        (m) => m.type == MilestoneType.newYear,
+      );
+      final yearEnd = milestones.firstWhere(
+        (m) => m.type == MilestoneType.yearEnd,
+      );
+
+      expect(newYear.isUnlocked, isTrue);
+      expect(yearEnd.isUnlocked, isTrue);
+    });
+
+    test('evaluates comeback milestone when gap > 14 days exists', () {
+      final entries = [
+        WeightEntry(id: 1, weightKg: 80.0, dateTime: DateTime(2026, 8, 1)),
+        WeightEntry(
+          id: 2,
+          weightKg: 79.5,
+          dateTime: DateTime(2026, 8, 20),
+        ), // 19 days gap
+      ];
+
+      final milestones = MilestoneCalculator.evaluate(entries: entries);
+      final comeback = milestones.firstWhere(
+        (m) => m.type == MilestoneType.comeback,
+      );
+
+      expect(comeback.isUnlocked, isTrue);
+      expect(comeback.progress, 1.0);
+    });
+
+    test('evaluates weekend warrior for 4 consecutive weekends', () {
+      final entries = [
+        WeightEntry(
+          id: 1,
+          weightKg: 80.0,
+          dateTime: DateTime(2026, 8, 1),
+        ), // Sat (W1)
+        WeightEntry(
+          id: 2,
+          weightKg: 80.0,
+          dateTime: DateTime(2026, 8, 8),
+        ), // Sat (W2)
+        WeightEntry(
+          id: 3,
+          weightKg: 80.0,
+          dateTime: DateTime(2026, 8, 16),
+        ), // Sun (W3)
+        WeightEntry(
+          id: 4,
+          weightKg: 80.0,
+          dateTime: DateTime(2026, 8, 22),
+        ), // Sat (W4)
+      ];
+
+      final milestones = MilestoneCalculator.evaluate(entries: entries);
+      final weekendWarrior = milestones.firstWhere(
+        (m) => m.type == MilestoneType.weekendWarrior,
+      );
+
+      expect(weekendWarrior.isUnlocked, isTrue);
+      expect(weekendWarrior.progress, 1.0);
+    });
   });
 }

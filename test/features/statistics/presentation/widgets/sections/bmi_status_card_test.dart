@@ -116,5 +116,19 @@ void main() {
 
       expect(find.byType(BmiLegendDialog), findsOneWidget);
     });
+
+    testWidgets('tapping card body opens BmiLegendDialog', (tester) async {
+      final entries = [
+        WeightEntry(id: 1, weightKg: 80.0, dateTime: DateTime.now()),
+      ];
+
+      await tester.pumpWidget(buildSubject(entries: entries, heightCm: 180.0));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('BMI'));
+      await tester.pumpAndSettle();
+
+      expect(find.byType(BmiLegendDialog), findsOneWidget);
+    });
   });
 }

@@ -66,15 +66,33 @@ void main() {
       expect(MilestoneType.values, contains(MilestoneType.streak7));
       expect(MilestoneType.values, contains(MilestoneType.streak30));
       expect(MilestoneType.values, contains(MilestoneType.streak100));
+      expect(MilestoneType.values, contains(MilestoneType.streak365));
+      expect(MilestoneType.values, contains(MilestoneType.comeback));
       expect(MilestoneType.values, contains(MilestoneType.weightLoss1kg));
       expect(MilestoneType.values, contains(MilestoneType.weightLoss5kg));
       expect(MilestoneType.values, contains(MilestoneType.weightLoss10kg));
+      expect(MilestoneType.values, contains(MilestoneType.weightLoss15kg));
+      expect(MilestoneType.values, contains(MilestoneType.weightLoss20kg));
       expect(MilestoneType.values, contains(MilestoneType.weightGain1kg));
       expect(MilestoneType.values, contains(MilestoneType.weightGain5kg));
       expect(MilestoneType.values, contains(MilestoneType.weightGain10kg));
+      expect(MilestoneType.values, contains(MilestoneType.weightGain15kg));
+      expect(MilestoneType.values, contains(MilestoneType.weightGain20kg));
       expect(MilestoneType.values, contains(MilestoneType.goalHalfway));
       expect(MilestoneType.values, contains(MilestoneType.goalReached));
       expect(MilestoneType.values, contains(MilestoneType.healthyBmi));
+      expect(MilestoneType.values, contains(MilestoneType.earlyBird));
+      expect(MilestoneType.values, contains(MilestoneType.nightOwl));
+      expect(MilestoneType.values, contains(MilestoneType.newYear));
+      expect(MilestoneType.values, contains(MilestoneType.yearEnd));
+      expect(MilestoneType.values, contains(MilestoneType.weekendWarrior));
+    });
+
+    test('MilestoneType category mapping assigns correct categories', () {
+      expect(MilestoneType.firstEntry.category, MilestoneCategory.goals);
+      expect(MilestoneType.streak7.category, MilestoneCategory.streaks);
+      expect(MilestoneType.earlyBird.category, MilestoneCategory.routines);
+      expect(MilestoneType.newYear.category, MilestoneCategory.special);
     });
   });
 }

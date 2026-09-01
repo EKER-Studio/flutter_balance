@@ -77,176 +77,201 @@ class BmiStatusCard extends StatelessWidget {
         color: cs.surfaceContainerLow,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         clipBehavior: Clip.antiAlias,
-        child: Padding(
-          padding: const EdgeInsets.all(20),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  Icon(Icons.speed_outlined, size: 24, color: cs.primary),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Text(
-                      l10n.bmi,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        color: cs.onSurface,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ),
-                  IconButton(
-                    icon: Icon(
-                      Icons.info_outline,
-                      size: 20,
-                      color: cs.onSurfaceVariant,
-                    ),
-                    tooltip: l10n.bmiLegendTitle,
-                    padding: EdgeInsets.zero,
-                    constraints: const BoxConstraints(),
-                    onPressed: () => _showLegendDialog(context, latestWeightKg),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 16),
-
-              if (!hasHeight)
-                _buildInfoMessage(
-                  context,
-                  icon: Icons.straighten_outlined,
-                  message: l10n.setHeightForBmi,
-                )
-              else if (!hasEntries || bmi == null || category == null)
-                _buildInfoMessage(
-                  context,
-                  icon: Icons.monitor_weight_outlined,
-                  message: l10n.noDataToAnalyzeSubtitle,
-                )
-              else ...[
+        child: InkWell(
+          onTap: () => _showLegendDialog(context, latestWeightKg),
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
                 Row(
-                  crossAxisAlignment: CrossAxisAlignment.baseline,
-                  textBaseline: TextBaseline.alphabetic,
                   children: [
-                    Text(
-                      bmi.toStringAsFixed(1),
-                      style: Theme.of(context).textTheme.headlineMedium
-                          ?.copyWith(
-                            color: cs.onSurface,
-                            fontWeight: FontWeight.w800,
-                            letterSpacing: -0.5,
-                          ),
-                    ),
-                    const SizedBox(width: 12),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 10,
-                        vertical: 4,
-                      ),
-                      decoration: BoxDecoration(
-                        color: category.chipBackgroundColor(),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
+                    Icon(Icons.speed_outlined, size: 24, color: cs.primary),
+                    const SizedBox(width: 8),
+                    Expanded(
                       child: Text(
-                        category.localizedName(l10n),
-                        style: Theme.of(context).textTheme.labelMedium
+                        l10n.bmi,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: Theme.of(context).textTheme.titleMedium
                             ?.copyWith(
-                              color: category.chipContentColor(isDark: isDark),
-                              fontWeight: FontWeight.w700,
+                              color: cs.onSurface,
+                              fontWeight: FontWeight.w600,
                             ),
                       ),
+                    ),
+                    IconButton(
+                      icon: Icon(
+                        Icons.info_outline,
+                        size: 20,
+                        color: cs.onSurfaceVariant,
+                      ),
+                      tooltip: l10n.bmiLegendTitle,
+                      padding: EdgeInsets.zero,
+                      constraints: const BoxConstraints(),
+                      onPressed: () =>
+                          _showLegendDialog(context, latestWeightKg),
                     ),
                   ],
                 ),
                 const SizedBox(height: 16),
 
-                _buildSpectrumBar(context, bmi: bmi),
-                const SizedBox(height: 16),
-
-                Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: cs.surfaceContainerHighest.withValues(alpha: 0.35),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Column(
+                if (!hasHeight)
+                  _buildInfoMessage(
+                    context,
+                    icon: Icons.straighten_outlined,
+                    message: l10n.setHeightForBmi,
+                  )
+                else if (!hasEntries || bmi == null || category == null)
+                  _buildInfoMessage(
+                    context,
+                    icon: Icons.monitor_weight_outlined,
+                    message: l10n.noDataToAnalyzeSubtitle,
+                  )
+                else ...[
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      Row(
-                        children: [
-                          Icon(
-                            Icons.favorite_outline,
-                            size: 16,
-                            color: cs.primary,
-                          ),
-                          const SizedBox(width: 8),
-                          Expanded(
-                            child: Text(
-                              l10n.healthyWeightForHeight(
-                                '${_formatWeight(minHealthyKg!, unit, unitLabel)} – ${_formatWeight(maxHealthyKg!, unit, unitLabel)}',
-                              ),
-                              style: Theme.of(context).textTheme.bodyMedium
-                                  ?.copyWith(
-                                    color: cs.onSurface,
-                                    fontWeight: FontWeight.w600,
-                                  ),
+                      Text(
+                        bmi.toStringAsFixed(1),
+                        style: Theme.of(context).textTheme.headlineMedium
+                            ?.copyWith(
+                              color: cs.onSurface,
+                              fontWeight: FontWeight.w800,
+                              letterSpacing: -0.5,
                             ),
-                          ),
-                        ],
                       ),
-                      if (distanceToNormalKg != null &&
-                          distanceToNormalKg > 0.05) ...[
-                        const SizedBox(height: 6),
-                        Row(
+                      const SizedBox(width: 12),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 4,
+                        ),
+                        decoration: BoxDecoration(
+                          color: category.chipBackgroundColor(),
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(
+                            color: category
+                                .chipContentColor(isDark: isDark)
+                                .withValues(alpha: 0.35),
+                            width: 1.0,
+                          ),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
                           children: [
                             Icon(
-                              isAboveNormal
-                                  ? Icons.trending_down
-                                  : Icons.trending_up,
-                              size: 16,
-                              color: cs.secondary,
+                              category == BmiCategory.normal
+                                  ? Icons.check_circle_outline
+                                  : Icons.info_outline,
+                              size: 13,
+                              color: category.chipContentColor(isDark: isDark),
                             ),
-                            const SizedBox(width: 8),
-                            Expanded(
-                              child: Text(
-                                l10n.distanceToNormalBmi(
-                                  _formatWeight(
-                                    distanceToNormalKg,
-                                    unit,
-                                    unitLabel,
+                            const SizedBox(width: 4),
+                            Text(
+                              category.localizedName(l10n),
+                              style: Theme.of(context).textTheme.labelMedium
+                                  ?.copyWith(
+                                    color: category.chipContentColor(
+                                      isDark: isDark,
+                                    ),
+                                    fontWeight: FontWeight.w700,
                                   ),
-                                ),
-                                style: Theme.of(context).textTheme.bodySmall
-                                    ?.copyWith(color: cs.onSurfaceVariant),
-                              ),
                             ),
                           ],
                         ),
-                      ] else if (category == BmiCategory.normal) ...[
-                        const SizedBox(height: 6),
-                        Row(
-                          children: [
-                            Icon(
-                              Icons.check_circle_outline,
-                              size: 16,
-                              color: Colors.green.shade600,
-                            ),
-                            const SizedBox(width: 8),
-                            Expanded(
-                              child: Text(
-                                l10n.inNormalBmiRange,
-                                style: Theme.of(context).textTheme.bodySmall
-                                    ?.copyWith(color: cs.onSurfaceVariant),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
+                      ),
                     ],
                   ),
-                ),
+                  const SizedBox(height: 16),
+
+                  _buildSpectrumBar(context, bmi: bmi),
+                  const SizedBox(height: 16),
+
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: cs.surfaceContainerHighest.withValues(alpha: 0.35),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Column(
+                      children: [
+                        Row(
+                          children: [
+                            Icon(
+                              Icons.favorite_outline,
+                              size: 16,
+                              color: cs.primary,
+                            ),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: Text(
+                                l10n.healthyWeightForHeight(
+                                  '${_formatWeight(minHealthyKg!, unit, unitLabel)} – ${_formatWeight(maxHealthyKg!, unit, unitLabel)}',
+                                ),
+                                style: Theme.of(context).textTheme.bodyMedium
+                                    ?.copyWith(
+                                      color: cs.onSurface,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        if (distanceToNormalKg != null &&
+                            distanceToNormalKg > 0.05) ...[
+                          const SizedBox(height: 6),
+                          Row(
+                            children: [
+                              Icon(
+                                isAboveNormal
+                                    ? Icons.trending_down
+                                    : Icons.trending_up,
+                                size: 16,
+                                color: cs.secondary,
+                              ),
+                              const SizedBox(width: 8),
+                              Expanded(
+                                child: Text(
+                                  l10n.distanceToNormalBmi(
+                                    _formatWeight(
+                                      distanceToNormalKg,
+                                      unit,
+                                      unitLabel,
+                                    ),
+                                  ),
+                                  style: Theme.of(context).textTheme.bodySmall
+                                      ?.copyWith(color: cs.onSurfaceVariant),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ] else if (category == BmiCategory.normal) ...[
+                          const SizedBox(height: 6),
+                          Row(
+                            children: [
+                              Icon(
+                                Icons.check_circle_outline,
+                                size: 16,
+                                color: Colors.green.shade600,
+                              ),
+                              const SizedBox(width: 8),
+                              Expanded(
+                                child: Text(
+                                  l10n.inNormalBmiRange,
+                                  style: Theme.of(context).textTheme.bodySmall
+                                      ?.copyWith(color: cs.onSurfaceVariant),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
+                ],
               ],
-            ],
+            ),
           ),
         ),
       ),

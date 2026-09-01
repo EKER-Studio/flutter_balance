@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:balance/core/utils/analytics.dart';
 import 'package:balance/features/statistics/domain/entities/milestone.dart';
 import 'package:balance/features/statistics/presentation/widgets/components/milestone_badge.dart';
+import 'package:balance/features/statistics/presentation/widgets/components/milestones_gallery_sheet.dart';
 import 'package:balance/l10n/app_localizations.dart';
 
 /// A card displaying the user's milestone achievements and progress.
@@ -31,6 +32,7 @@ class MilestonesCard extends StatelessWidget {
         child: InkWell(
           onTap: () {
             AppAnalytics.logStatisticsMilestonesCardTapped();
+            MilestonesGallerySheet.show(context, milestones);
           },
           child: Padding(
             padding: const EdgeInsets.all(20),

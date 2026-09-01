@@ -70,5 +70,25 @@ void main() {
 
       expect(find.byType(AlertDialog), findsNothing);
     });
+
+    testWidgets('tapping milestones card opens milestones gallery sheet', (
+      tester,
+    ) async {
+      const milestones = [
+        Milestone(
+          type: MilestoneType.firstEntry,
+          isUnlocked: true,
+          progress: 1.0,
+        ),
+      ];
+
+      await tester.pumpWidget(buildSubject(milestones));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('Achievements'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Achievements Gallery'), findsOneWidget);
+    });
   });
 }

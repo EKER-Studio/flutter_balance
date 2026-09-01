@@ -16,7 +16,11 @@ void main() {
       locale: const Locale('en'),
       home: Scaffold(
         body: SingleChildScrollView(
-          child: PeriodComparisonCard(comparison: comparison, unit: unit),
+          child: PeriodComparisonCard(
+            entries: const [],
+            comparisonOverride: comparison,
+            unit: unit,
+          ),
         ),
       ),
     );

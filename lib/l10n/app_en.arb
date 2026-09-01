@@ -283,6 +283,14 @@
       }
     }
   },
+  "@rollingPeriodComparisonSubtitle": {
+    "description": "Subtitle describing the rolling comparison window.",
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
   "@sinceEntryDate": {
     "description": "Date label for milestone or progress start.",
     "placeholders": {
@@ -547,10 +555,32 @@
   "milestoneHealthyBmiTitle": "Healthy BMI",
   "milestoneLoss10Desc": "Lost at least 10 kg of weight",
   "milestoneLoss10Title": "10 kg Champion",
+  "milestoneLoss15Desc": "Lost at least 15 kg of weight",
+  "milestoneLoss15Title": "15 kg Down",
+  "milestoneLoss20Desc": "Lost at least 20 kg of weight",
+  "milestoneLoss20Title": "20 kg Metamorphosis",
   "milestoneLoss1Desc": "Lost at least 1 kg of weight",
   "milestoneLoss1Title": "First Kilogram",
   "milestoneLoss5Desc": "Lost at least 5 kg of weight",
   "milestoneLoss5Title": "5 kg Milestone",
+  "weightGain15kgDesc": "Gained at least 15 kg of weight",
+  "weightGain15kgTitle": "Weight Gain: 15 kg",
+  "weightGain20kgDesc": "Gained at least 20 kg of weight",
+  "weightGain20kgTitle": "Weight Gain: 20 kg",
+  "milestoneEarlyBirdDesc": "Logged weight before 8:00 AM",
+  "milestoneEarlyBirdTitle": "Early Bird",
+  "milestoneNightOwlDesc": "Logged weight after 10:00 PM",
+  "milestoneNightOwlTitle": "Night Owl",
+  "milestoneNewYearDesc": "Logged weight on January 1st",
+  "milestoneNewYearTitle": "New Year, New Me",
+  "milestoneYearEndDesc": "Logged weight on December 31st",
+  "milestoneYearEndTitle": "Year-End Balance",
+  "milestoneWeekendWarriorDesc": "Logged weight across 4 consecutive weekends",
+  "milestoneWeekendWarriorTitle": "Weekend Warrior",
+  "milestoneStreak365Desc": "Maintained a 365-day logging streak",
+  "milestoneStreak365Title": "365 Days of Balance",
+  "milestoneComebackDesc": "Returned and logged weight after a break of over 14 days",
+  "milestoneComebackTitle": "Comeback Kid",
   "milestoneStreak100Desc": "Logged weight for 100 consecutive days",
   "milestoneStreak100Title": "Century Club",
   "milestoneStreak30Desc": "Logged weight for 30 consecutive days",
@@ -559,6 +589,14 @@
   "milestoneStreak7Title": "7-Day Streak",
   "milestones": "Achievements",
   "milestonesUnlocked": "{count} / {total}",
+  "achievementsGalleryTitle": "Achievements Gallery",
+  "categoryMilestones": "Goals & Progress",
+  "categoryStreaks": "Consistency & Habits",
+  "categoryRoutines": "Routines & Time",
+  "categorySpecial": "Special Occasions",
+  "rolling7Days": "7 days",
+  "rolling30Days": "30 days",
+  "rollingPeriodComparisonSubtitle": "Last {days} days vs previous {days} days",
   "month": "Month",
   "monthlyCompliance": "Consistency",
   "moreOptions": "More options",

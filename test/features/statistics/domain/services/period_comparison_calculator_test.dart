@@ -101,5 +101,33 @@ void main() {
         expect(result.previousPeriod.entryCount, 1);
       },
     );
+
+    test('compareRollingDays calculates rolling window metrics accurately', () {
+      final now = DateTime(2026, 9, 1, 12, 0);
+      final entries = [
+        // Previous 7d window (Aug 19 – Aug 25)
+        WeightEntry(id: 1, weightKg: 85.0, dateTime: DateTime(2026, 8, 20)),
+        WeightEntry(id: 2, weightKg: 84.0, dateTime: DateTime(2026, 8, 24)),
+        // Current 7d window (Aug 26 – Sep 1)
+        WeightEntry(id: 3, weightKg: 83.5, dateTime: DateTime(2026, 8, 27)),
+        WeightEntry(id: 4, weightKg: 83.0, dateTime: DateTime(2026, 9, 1)),
+      ];
+
+      final result = PeriodComparisonCalculator.compareRollingDays(
+        entries: entries,
+        days: 7,
+        now: now,
+      );
+
+      expect(result.hasComparisonData, isTrue);
+      expect(result.currentPeriod.entryCount, 2);
+      expect(result.previousPeriod.entryCount, 2);
+      expect(result.currentPeriod.netChange, -0.5); // 83.0 - 83.5
+      expect(result.previousPeriod.netChange, -1.0); // 84.0 - 85.0
+      expect(result.deltaNetChange, 0.5); // -0.5 - (-1.0) = +0.5
+      expect(result.currentPeriod.averageWeight, 83.25);
+      expect(result.previousPeriod.averageWeight, 84.5);
+      expect(result.deltaAverage, -1.25);
+    });
   });
 }
