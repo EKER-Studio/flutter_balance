@@ -25,24 +25,41 @@ void main() {
       expect(summary, isEmpty);
     });
 
-    test('formats metric summary with target weight and weight loss', () {
+    test('formats comprehensive metric summary with all sections', () {
       final entries = [
-        WeightEntry(id: 1, weightKg: 85.0, dateTime: DateTime(2026, 8, 1)),
-        WeightEntry(id: 2, weightKg: 80.0, dateTime: DateTime(2026, 8, 20)),
+        WeightEntry(id: 1, weightKg: 91.0, dateTime: DateTime(2026, 5, 30)),
+        WeightEntry(id: 2, weightKg: 87.0, dateTime: DateTime(2026, 7, 15)),
+        WeightEntry(id: 3, weightKg: 85.6, dateTime: DateTime(2026, 9, 1)),
       ];
 
       final summary = ProgressSummaryFormatter.format(
         entries: entries,
-        targetWeight: 75.0,
+        targetWeight: 86.0,
+        heightCm: 177.0,
+        paceWindowDays: 30,
         unit: MeasurementUnit.metric,
         l10n: l10n,
+        now: DateTime(2026, 9, 1),
       );
 
       expect(summary, contains('Total Progress'));
-      expect(summary, contains('85.0 kg'));
-      expect(summary, contains('80.0 kg (-5.0 kg)'));
-      expect(summary, contains('75.0 kg'));
-      expect(summary, contains('5.0 kg'));
+      expect(summary, contains('Progress & Goal'));
+      expect(summary, contains('Start: 91.0 kg'));
+      expect(summary, contains('Current weight: 85.6 kg'));
+      expect(summary, contains('Total change: -5.4 kg (-5.9%)'));
+      expect(summary, contains('Target Weight: 86.0 kg (Goal achieved! 🎉)'));
+      expect(summary, contains('BMI: 27.3 (Overweight)'));
+
+      expect(summary, contains('Range & Average'));
+      expect(summary, contains('Highest: 91.0 kg'));
+      expect(summary, contains('Lowest: 85.6 kg'));
+      expect(summary, contains('Average Weight: 87.9 kg'));
+      expect(summary, contains('Total measurements: 3'));
+
+      expect(summary, contains('Habits & Consistency'));
+      expect(summary, contains('Current streak: 1 day'));
+      expect(summary, contains('Achievements:'));
+      expect(summary, contains('Balance — Simple, private weight tracker'));
     });
 
     test('formats imperial summary in lbs', () {
@@ -63,11 +80,13 @@ void main() {
         entries: entries,
         unit: MeasurementUnit.imperial,
         l10n: l10n,
+        now: DateTime(2026, 8, 20),
       );
 
       expect(summary, contains('lb'));
       expect(summary, contains('176.4 lb'));
       expect(summary, contains('172.0 lb'));
+      expect(summary, contains('-4.4 lb'));
     });
   });
 }

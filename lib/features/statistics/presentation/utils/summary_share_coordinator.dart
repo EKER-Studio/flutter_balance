@@ -18,12 +18,16 @@ class SummaryShareCoordinator {
   /// @param targetWeight Optional goal weight.
   /// @param goalMode Active goal mode.
   /// @param unit Active measurement unit.
+  /// @param heightCm Optional user height in cm.
+  /// @param paceWindowDays Pace calculation window in days.
   static Future<void> shareProgress(
     BuildContext context, {
     required List<WeightEntry> entries,
     double? targetWeight,
     WeightGoalMode goalMode = WeightGoalMode.lose,
     required MeasurementUnit unit,
+    double? heightCm,
+    int paceWindowDays = 30,
   }) async {
     final l10n = AppLocalizations.of(context);
     final summaryText = ProgressSummaryFormatter.format(
@@ -32,6 +36,8 @@ class SummaryShareCoordinator {
       goalMode: goalMode,
       unit: unit,
       l10n: l10n,
+      heightCm: heightCm,
+      paceWindowDays: paceWindowDays,
     );
 
     if (summaryText.isEmpty) return;

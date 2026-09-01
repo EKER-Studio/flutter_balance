@@ -58,6 +58,9 @@ class StatisticsScreen extends StatelessWidget {
                                 targetWeight: settingsState.targetWeight,
                                 goalMode: settingsState.weightGoalMode,
                                 unit: settingsState.measurementUnit,
+                                heightCm: settingsState.height,
+                                paceWindowDays:
+                                    settingsState.weeklyPaceWindowDays,
                               );
                             },
                           ),
