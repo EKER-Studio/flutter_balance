@@ -34,7 +34,6 @@ class MilestoneCalculator {
     final firstEntry = sorted.first;
     final startWeight = firstEntry.weightKg;
 
-    // Calculate maximum historical streak
     final uniqueDates =
         sorted
             .map(
@@ -73,7 +72,6 @@ class MilestoneCalculator {
       if (currentStreak >= 100 && streak100Date == null) streak100Date = date;
     }
 
-    // Weight delta milestones
     double minWeight = startWeight;
     double maxWeight = startWeight;
     DateTime? loss1Date;
@@ -103,7 +101,6 @@ class MilestoneCalculator {
     final maxLoss = math.max(0.0, startWeight - minWeight);
     final maxGain = math.max(0.0, maxWeight - startWeight);
 
-    // Goal milestones
     bool isHalfway = false;
     bool isReached = false;
     double halfwayProgress = 0.0;
@@ -152,7 +149,6 @@ class MilestoneCalculator {
         if (isReached) reachedDate = sorted.last.dateTime;
         if (isHalfway) halfwayDate = sorted.last.dateTime;
       } else {
-        // lose
         final totalToLose = startWeight - targetWeight;
         if (totalToLose <= 0) {
           isHalfway = true;
@@ -181,7 +177,6 @@ class MilestoneCalculator {
       }
     }
 
-    // Healthy BMI milestone
     bool isHealthyBmi = false;
     double healthyBmiProgress = 0.0;
     DateTime? healthyBmiDate;
