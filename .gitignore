@@ -13,9 +13,6 @@ android/app/src/*/google-services.json
 ios/Runner/GoogleService-Info*.plist
 ios/config/**/*.plist
 
-# Local planning & temporary notes
-PLAN_*.md
-
 # Miscellaneous
 *.class
 *.log
@@ -91,5 +88,7 @@ default.isar
 # Security & diagnostic artifacts
 *.key
 crash_log.txt
-/.i18n_audit/
-/.test_audit/
+
+# Agent artifacts
+.ai*
+LOG_*.md

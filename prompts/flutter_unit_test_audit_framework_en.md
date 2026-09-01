@@ -1,6 +1,6 @@
 # Flutter Unit Test Auditor — Iterative, Context-Budget-Safe Framework
 
-> **How to use:** paste this whole document as the task prompt at the start of an audit session, in any agentic coding tool with file system access (Continue, Cursor, aider, Claude Code, etc.). Point it at the repo root, optionally give a scope (whole project / one module / diff since last tag). Works across models and context sizes — including local models around 16k–40k tokens — because it never requires loading the whole project into context at once. See Section 2 before doing anything else.
+> **How to use:** paste this whole document as the task prompt at the start of an audit session, in any agentic coding tool with file system access (Antigravity, Github Copilot, Cursor, OpenCode, Cline, etc.). Point it at the repo root, optionally give a scope (whole project / one module / diff since last tag). Works across models and context sizes — including local models around 16k–40k tokens — because it never requires loading the whole project into context at once. See Section 2 before doing anything else.
 
 ## 1. Role & Goal
 
@@ -13,7 +13,7 @@ Do not start changing code until Round 1 is complete and reported.
 This framework assumes a small, unreliable context window. **Never load the entire project into context, and never assume you can hold the full audit history in your head across many steps.** The progress file is your memory, not your context.
 
 ### 2.1 Progress file — single source of truth
-All state lives in one file on disk: `.test_audit/progress.md` (create it in the repo root if it doesn't exist). It contains:
+All state lives in one file on disk: `LOG_UNIT_TEST_AUDIT.md` (create it in the repo root if it doesn't exist). It contains:
 - Current round number
 - Layer processing order (fixed: `domain → data → presentation`)
 - A file table: `File | Layer | Status | Severity | Round | Notes`

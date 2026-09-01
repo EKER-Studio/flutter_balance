@@ -27,7 +27,7 @@ Never try to reason about the entire `lib/` tree, or an entire large `.arb` file
 - **Category E (supportedLocales):** single-file check (wherever `MaterialApp`/`MaterialApp.router` is declared) — always cheap, no chunking needed.
 
 **Rule 3 — Externalize state, don't carry it in your head.**
-You have terminal access. Maintain a persistent on-disk state file, e.g. `.i18n_audit/state.md`, and **append findings to it immediately after finishing each chunk** — don't wait until the end of a round to write everything down from memory. Structure it as:
+You have terminal access. Maintain a persistent on-disk state file, e.g. `LOG_I18N_L10N_AUDIT.md`, and **append findings to it immediately after finishing each chunk** — don't wait until the end of a round to write everything down from memory. Structure it as:
 ```
 ## Config (from Round 0)
 ...
@@ -64,7 +64,7 @@ Before flagging anything, establish the facts and set up your working state:
    - some other generated class/extension name.
 4. Identify excluded paths: generated code (`*.g.dart`, `*.freezed.dart`, the `l10n/generated` directory or `.dart_tool`), `test/`, `build/`.
 5. Build the chunk work queue: list the target directories under `lib/` (excluding generated/test/build) that Category A will process one at a time, and extract the full key list from `app_en.arb` for the batched Category C searches.
-6. Create `.i18n_audit/state.md` with the config summary and an empty checklist per chunk, per category.
+6. Create `LOG_I18N_L10N_AUDIT.md` with the config summary and an empty checklist per chunk, per category.
 
 Round 0 output: a short summary of the established configuration (source language, target languages, access convention, exclusions, chunk count) plus confirmation that the state file was created. If anything is ambiguous — ask before proceeding.
 
@@ -143,7 +143,7 @@ Feed this category's result back into the next audit's Round 0 — if the sets d
 ## Iterative Process (rounds)
 
 **Round 1 — Audit.**
-Read and report only. Zero code changes. Work chunk by chunk (Rule 2), appending findings to `.i18n_audit/state.md` after each chunk instead of holding everything in your working context. Output: the report format below, grouped by category A–E, with priorities, built from the accumulated state file.
+Read and report only. Zero code changes. Work chunk by chunk (Rule 2), appending findings to `LOG_I18N_L10N_AUDIT.md` after each chunk instead of holding everything in your working context. Output: the report format below, grouped by category A–E, with priorities, built from the accumulated state file.
 
 **Round 2 — Fix.**
 Apply fixes for everything that doesn't need your decision:

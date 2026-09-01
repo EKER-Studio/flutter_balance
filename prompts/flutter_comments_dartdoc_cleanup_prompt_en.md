@@ -75,7 +75,7 @@ Applies to classes, public methods, fields, top-level functions — anything tha
 
 ## Progress & Report Log
 
-Create (or reuse) `COMMENT_CLEANUP_LOG.md` in the project root. After each processed file, append one line:
+Create (or reuse) `LOG_COMMENT_CLEANUP.md` in the project root. After each processed file, append one line:
 
 ```
 - [x] lib/path/to/file.dart — removed: 3, translated: 2, notes: none
@@ -87,7 +87,7 @@ Use `notes:` for edge cases kept despite ambiguity, so they can be checked by ha
 
 1. Check git status is clean (see "Before You Start").
 2. List all in-scope `.dart` file paths.
-3. Read `COMMENT_CLEANUP_LOG.md` if it exists; skip files already marked `done`.
+3. Read `LOG_COMMENT_CLEANUP.md` if it exists; skip files already marked `done`.
 4. For each remaining file, in path-alphabetical order:
    - read the file (in two passes if over 250 lines — see rule 6 above),
    - identify all comments and DartDoc,
@@ -97,7 +97,7 @@ Use `notes:` for edge cases kept despite ambiguity, so they can be checked by ha
    - append one line to the log,
    - commit the change for this file alone.
 5. After the whole project is processed, run `dart format .` and `dart analyze` (if available in the environment) and report any new errors/warnings introduced by the changes.
-6. Print the final summary (see below), then delete `COMMENT_CLEANUP_LOG.md` — it's a working artifact, not documentation, once the run is complete.
+6. Print the final summary (see below), then delete `LOG_COMMENT_CLEANUP.md` — it's a working artifact, not documentation, once the run is complete.
 
 ## Final Summary (required)
 
