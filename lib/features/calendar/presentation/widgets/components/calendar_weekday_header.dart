@@ -40,25 +40,28 @@ class CalendarWeekdayHeader extends StatelessWidget {
       return sub[0].toUpperCase() + sub.substring(1);
     }
 
-    return Row(
-      children: weekDays.map((d) {
-        final fullDayName = DateFormat.EEEE(locale).format(d);
-        return Expanded(
-          child: Center(
-            child: Semantics(
-              label: fullDayName,
-              excludeSemantics: true,
-              child: Text(
-                capitalize3(format.format(d)),
-                style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                  color: Theme.of(context).colorScheme.onSurfaceVariant,
-                  fontWeight: FontWeight.bold,
+    return SizedBox(
+      height: 24,
+      child: Row(
+        children: weekDays.map((d) {
+          final fullDayName = DateFormat.EEEE(locale).format(d);
+          return Expanded(
+            child: Center(
+              child: Semantics(
+                label: fullDayName,
+                excludeSemantics: true,
+                child: Text(
+                  capitalize3(format.format(d)),
+                  style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
             ),
-          ),
-        );
-      }).toList(),
+          );
+        }).toList(),
+      ),
     );
   }
 }

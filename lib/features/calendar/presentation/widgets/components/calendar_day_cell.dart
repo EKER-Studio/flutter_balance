@@ -166,34 +166,33 @@ class CalendarDayCell extends StatelessWidget {
         child: InkWell(
           onTap: isFuture ? null : onTap,
           customBorder: const CircleBorder(),
-          child: FittedBox(
-            fit: BoxFit.scaleDown,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Container(
-                  width: 30,
-                  height: 30,
-                  decoration: cellDecoration,
-                  alignment: Alignment.center,
-                  child: ExcludeSemantics(
-                    child: Text(
-                      '$dayNumber',
-                      style: theme.textTheme.bodyMedium?.copyWith(
-                        color: textColor,
-                        fontWeight: (isSelected || isToday)
-                            ? FontWeight.bold
-                            : FontWeight.normal,
-                      ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                width: 30,
+                height: 30,
+                decoration: cellDecoration,
+                alignment: Alignment.center,
+                child: ExcludeSemantics(
+                  child: Text(
+                    '$dayNumber',
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: textColor,
+                      fontWeight: (isSelected || isToday)
+                          ? FontWeight.bold
+                          : FontWeight.normal,
                     ),
                   ),
                 ),
-                if (hasIndicator) const SizedBox(height: 2),
-                if (hasIndicator)
-                  SizedBox(height: 4, child: Center(child: indicator)),
-              ],
-            ),
+              ),
+              const SizedBox(height: 2),
+              SizedBox(
+                height: 4,
+                child: hasIndicator ? Center(child: indicator) : null,
+              ),
+            ],
           ),
         ),
       ),

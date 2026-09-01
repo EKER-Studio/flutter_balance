@@ -93,9 +93,9 @@ class CalendarGrid extends StatelessWidget {
       clipBehavior: Clip.none,
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 7,
-        mainAxisSpacing: 2,
+        mainAxisSpacing: 4,
         crossAxisSpacing: 0,
-        childAspectRatio: 1.15,
+        mainAxisExtent: 40,
       ),
       itemCount: totalCells,
       itemBuilder: (context, index) {
