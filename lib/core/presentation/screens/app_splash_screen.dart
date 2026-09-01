@@ -24,7 +24,6 @@ class _AppSplashScreenState extends State<AppSplashScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // Scaffold automatically uses Theme.of(context).colorScheme.surface as background.
     return Scaffold(
       body: SafeArea(
         child: Padding(
