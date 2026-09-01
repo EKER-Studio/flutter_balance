@@ -26,23 +26,26 @@ void main() {
       expect(state.weeklyPaceWindowDays, 30);
     });
 
-    test('copyWith modifies specified fields and supports nulling targetWeight and height', () {
-      const initial = AppSettingsState(
-        height: 180.0,
-        targetWeight: 75.0,
-        themeMode: AppThemeMode.light,
-      );
+    test(
+      'copyWith modifies specified fields and supports nulling targetWeight and height',
+      () {
+        const initial = AppSettingsState(
+          height: 180.0,
+          targetWeight: 75.0,
+          themeMode: AppThemeMode.light,
+        );
 
-      final updated = initial.copyWith(
-        height: null,
-        targetWeight: null,
-        themeMode: AppThemeMode.dark,
-      );
+        final updated = initial.copyWith(
+          height: null,
+          targetWeight: null,
+          themeMode: AppThemeMode.dark,
+        );
 
-      expect(updated.height, isNull);
-      expect(updated.targetWeight, isNull);
-      expect(updated.themeMode, AppThemeMode.dark);
-    });
+        expect(updated.height, isNull);
+        expect(updated.targetWeight, isNull);
+        expect(updated.themeMode, AppThemeMode.dark);
+      },
+    );
 
     test('toJson and fromJson perform complete roundtrip serialization', () {
       final syncTime = DateTime(2026, 7, 1, 14, 30);
@@ -82,14 +85,17 @@ void main() {
       expect(restored.weeklyPaceWindowDays, 14);
     });
 
-    test('calculateBmi returns 0.0 when height is null and accurate BMI when set', () {
-      const stateWithoutHeight = AppSettingsState(height: null);
-      expect(stateWithoutHeight.calculateBmi(70.0), 0.0);
+    test(
+      'calculateBmi returns 0.0 when height is null and accurate BMI when set',
+      () {
+        const stateWithoutHeight = AppSettingsState(height: null);
+        expect(stateWithoutHeight.calculateBmi(70.0), 0.0);
 
-      const stateWithHeight = AppSettingsState(height: 180.0);
-      final bmi = stateWithHeight.calculateBmi(72.9);
-      expect(bmi, closeTo(22.5, 0.1));
-      expect(stateWithHeight.getBmiCategory(bmi), BmiCategory.normal);
-    });
+        const stateWithHeight = AppSettingsState(height: 180.0);
+        final bmi = stateWithHeight.calculateBmi(72.9);
+        expect(bmi, closeTo(22.5, 0.1));
+        expect(stateWithHeight.getBmiCategory(bmi), BmiCategory.normal);
+      },
+    );
   });
 }

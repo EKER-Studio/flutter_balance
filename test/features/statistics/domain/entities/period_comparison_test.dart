@@ -57,37 +57,40 @@ void main() {
       expect(result.hasComparisonData, isTrue);
     });
 
-    test('PeriodComparisonResult handles null metrics when data is insufficient', () {
-      const current = PeriodSummary(
-        startWeight: null,
-        endWeight: null,
-        netChange: null,
-        averageWeight: null,
-        entryCount: 0,
-        label: 'Current',
-      );
+    test(
+      'PeriodComparisonResult handles null metrics when data is insufficient',
+      () {
+        const current = PeriodSummary(
+          startWeight: null,
+          endWeight: null,
+          netChange: null,
+          averageWeight: null,
+          entryCount: 0,
+          label: 'Current',
+        );
 
-      const previous = PeriodSummary(
-        startWeight: null,
-        endWeight: null,
-        netChange: null,
-        averageWeight: null,
-        entryCount: 0,
-        label: 'Previous',
-      );
+        const previous = PeriodSummary(
+          startWeight: null,
+          endWeight: null,
+          netChange: null,
+          averageWeight: null,
+          entryCount: 0,
+          label: 'Previous',
+        );
 
-      const result = PeriodComparisonResult(
-        currentPeriod: current,
-        previousPeriod: previous,
-        deltaNetChange: null,
-        deltaAverage: null,
-        deltaEntryCount: 0,
-        hasComparisonData: false,
-      );
+        const result = PeriodComparisonResult(
+          currentPeriod: current,
+          previousPeriod: previous,
+          deltaNetChange: null,
+          deltaAverage: null,
+          deltaEntryCount: 0,
+          hasComparisonData: false,
+        );
 
-      expect(result.hasComparisonData, isFalse);
-      expect(result.deltaNetChange, isNull);
-      expect(result.deltaAverage, isNull);
-    });
+        expect(result.hasComparisonData, isFalse);
+        expect(result.deltaNetChange, isNull);
+        expect(result.deltaAverage, isNull);
+      },
+    );
   });
 }

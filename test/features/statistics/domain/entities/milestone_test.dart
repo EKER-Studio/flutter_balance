@@ -41,22 +41,25 @@ void main() {
       expect(updated.unlockedDate, newDate);
     });
 
-    test('copyWith returns identical instance values when no arguments provided', () {
-      final date = DateTime(2026, 5, 1);
-      final milestone = Milestone(
-        type: MilestoneType.healthyBmi,
-        isUnlocked: true,
-        progress: 1.0,
-        unlockedDate: date,
-      );
+    test(
+      'copyWith returns identical instance values when no arguments provided',
+      () {
+        final date = DateTime(2026, 5, 1);
+        final milestone = Milestone(
+          type: MilestoneType.healthyBmi,
+          isUnlocked: true,
+          progress: 1.0,
+          unlockedDate: date,
+        );
 
-      final updated = milestone.copyWith();
+        final updated = milestone.copyWith();
 
-      expect(updated.type, milestone.type);
-      expect(updated.isUnlocked, milestone.isUnlocked);
-      expect(updated.progress, milestone.progress);
-      expect(updated.unlockedDate, milestone.unlockedDate);
-    });
+        expect(updated.type, milestone.type);
+        expect(updated.isUnlocked, milestone.isUnlocked);
+        expect(updated.progress, milestone.progress);
+        expect(updated.unlockedDate, milestone.unlockedDate);
+      },
+    );
 
     test('MilestoneType enum contains all expected achievement variants', () {
       expect(MilestoneType.values, contains(MilestoneType.firstEntry));
