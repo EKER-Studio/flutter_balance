@@ -95,7 +95,7 @@ class CalendarGrid extends StatelessWidget {
         crossAxisCount: 7,
         mainAxisSpacing: 2,
         crossAxisSpacing: 0,
-        childAspectRatio: 1.0,
+        childAspectRatio: 1.15,
       ),
       itemCount: totalCells,
       itemBuilder: (context, index) {

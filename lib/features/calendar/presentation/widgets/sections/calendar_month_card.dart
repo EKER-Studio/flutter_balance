@@ -74,7 +74,7 @@ class CalendarMonthCard extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: CalendarWeekdayHeader(firstDayOfWeek: firstDayOfWeek),
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 4),
             GestureDetector(
               onHorizontalDragEnd: (details) {
                 if (details.primaryVelocity != null) {

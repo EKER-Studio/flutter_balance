@@ -218,37 +218,12 @@ class _AddWeightSheetState extends State<AddWeightSheet>
                   });
                 },
               ),
-              const SizedBox(height: 12),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  _QuickAdjustButton(
-                    label: '-0.5',
-                    delta: -0.5,
-                    onPressed: _applyDelta,
-                  ),
-                  _QuickAdjustButton(
-                    label: '-0.1',
-                    delta: -0.1,
-                    onPressed: _applyDelta,
-                  ),
-                  _QuickAdjustButton(
-                    label: '+0.1',
-                    delta: 0.1,
-                    onPressed: _applyDelta,
-                  ),
-                  _QuickAdjustButton(
-                    label: '+0.5',
-                    delta: 0.5,
-                    onPressed: _applyDelta,
-                  ),
-                ],
-              ),
               const SizedBox(height: 16),
               TextField(
                 controller: _noteController,
                 decoration: InputDecoration(
                   labelText: l10n.noteLabel,
+                  alignLabelWithHint: true,
                   border: const OutlineInputBorder(),
                   suffixIcon: _noteController.text.isNotEmpty
                       ? IconButton(
@@ -268,7 +243,8 @@ class _AddWeightSheetState extends State<AddWeightSheet>
                     12,
                   ),
                 ),
-                maxLines: 1,
+                minLines: 2,
+                maxLines: 3,
                 textInputAction: TextInputAction.done,
                 onChanged: (val) {
                   setState(() {});
@@ -381,48 +357,5 @@ class _AddWeightSheetState extends State<AddWeightSheet>
     }
 
     Navigator.of(context).pop();
-  }
-
-  void _applyDelta(double delta) {
-    final text = _weightController.text.trim().replaceAll(',', '.');
-    final val = double.tryParse(text);
-    if (val != null) {
-      final newVal = val + delta;
-      if (newVal > 0) {
-        _weightController.text = newVal.toStringAsFixed(1);
-        setState(() {
-          _weightError = null;
-        });
-      }
-    }
-  }
-}
-
-class _QuickAdjustButton extends StatelessWidget {
-  final String label;
-  final double delta;
-  final ValueChanged<double> onPressed;
-
-  const _QuickAdjustButton({
-    required this.label,
-    required this.delta,
-    required this.onPressed,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return ActionChip(
-      label: Text(label, style: const TextStyle(fontWeight: FontWeight.bold)),
-      onPressed: () {
-        AppAnalytics.logEvent(
-          name: 'add_weight_quick_adjust',
-          parameters: {'delta': delta},
-        );
-        onPressed(delta);
-      },
-      backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      side: BorderSide.none,
-    );
   }
 }
