@@ -156,7 +156,6 @@ class _BiometricShieldScreenState extends State<BiometricShieldScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final bloc = context.read<AppSettingsBloc>();
     final l10n = AppLocalizations.of(context);
     return BlocBuilder<AppSettingsBloc, AppSettingsState>(
       builder: (context, state) {
@@ -211,7 +210,10 @@ class _BiometricShieldScreenState extends State<BiometricShieldScreen> {
                             ? null
                             : () {
                                 AppAnalytics.logBiometricShieldUnlockTapped();
-                                _handleUnlock(context, bloc);
+                                _handleUnlock(
+                                  context,
+                                  context.read<AppSettingsBloc>(),
+                                );
                               },
                         icon: const Icon(Icons.fingerprint),
                         label: Text(l10n.unlock),
