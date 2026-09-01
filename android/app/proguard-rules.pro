@@ -28,3 +28,12 @@
 # Health Connect / AndroidX Health
 -keep class androidx.health.** { *; }
 -dontwarn androidx.health.**
+
+# home_widget package — HomeWidgetProvider, launch-intent glue, and background receiver
+# must be preserved; R8 renames/strips them in release builds causing "Nie można wczytać widżetu"
+-keep class es.antonborri.home_widget.** { *; }
+-keep interface es.antonborri.home_widget.** { *; }
+-dontwarn es.antonborri.home_widget.**
+
+# App widget provider declared in AndroidManifest — R8 must not rename or remove it
+-keep class com.ekerstudio.balance.BalanceAppWidgetProvider { *; }
