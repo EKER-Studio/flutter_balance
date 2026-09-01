@@ -40,7 +40,11 @@ class OnboardingAppBar extends StatelessWidget implements PreferredSizeWidget {
       bottom: PreferredSize(
         preferredSize: const Size.fromHeight(8.0),
         child: Padding(
-          padding: const EdgeInsets.only(left: 16.0, right: 16.0, bottom: 6.0),
+          padding: const EdgeInsetsDirectional.only(
+            start: 16.0,
+            end: 16.0,
+            bottom: 6.0,
+          ),
           child: Semantics(
             label: l10n.stepOf(displayStep, displayTotalSteps),
             child: ClipRRect(

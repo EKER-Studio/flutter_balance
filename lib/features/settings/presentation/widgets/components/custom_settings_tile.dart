@@ -71,6 +71,9 @@ class CustomSettingsTileState extends State<CustomSettingsTile> {
       ?widget.subtitle,
     ];
 
+    final isRtl = Directionality.of(context) == TextDirection.rtl;
+    final chevronIcon = isRtl ? Icons.chevron_left : Icons.chevron_right;
+
     Widget? trailingWidget;
     if (widget.valueText != null) {
       trailingWidget = Row(
@@ -88,13 +91,13 @@ class CustomSettingsTileState extends State<CustomSettingsTile> {
           ),
           if (widget.showChevron)
             ExcludeSemantics(
-              child: Icon(Icons.chevron_right, size: 20, color: effectiveColor),
+              child: Icon(chevronIcon, size: 20, color: effectiveColor),
             ),
         ],
       );
     } else if (widget.showChevron) {
       trailingWidget = ExcludeSemantics(
-        child: Icon(Icons.chevron_right, size: 20, color: effectiveColor),
+        child: Icon(chevronIcon, size: 20, color: effectiveColor),
       );
     }
 

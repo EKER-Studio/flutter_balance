@@ -62,8 +62,12 @@ class CsvImportIdleView extends StatelessWidget {
                       color: theme.colorScheme.onSurfaceVariant,
                     ),
                   ),
-                  trailing: const ExcludeSemantics(
-                    child: Icon(Icons.chevron_right),
+                  trailing: ExcludeSemantics(
+                    child: Icon(
+                      Directionality.of(context) == TextDirection.rtl
+                          ? Icons.chevron_left
+                          : Icons.chevron_right,
+                    ),
                   ),
                 ),
               ),

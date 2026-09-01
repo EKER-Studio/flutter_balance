@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
+import 'package:intl/intl.dart' hide TextDirection;
 import 'package:balance/l10n/app_localizations.dart';
 import 'package:balance/core/utils/string_capitalize.dart';
 
@@ -29,35 +29,40 @@ class CalendarMonthHeader extends StatelessWidget {
       Localizations.localeOf(context).toString(),
     ).format(focusedMonth).capitalizeFirst();
 
+    final isRtl = Directionality.of(context) == TextDirection.rtl;
+
     return Padding(
       padding: const EdgeInsets.only(bottom: 8),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Expanded(
-            child: Text(
-              monthYearStr,
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.bold,
-                color: Theme.of(context).colorScheme.onSurface,
+            child: Semantics(
+              header: true,
+              child: Text(
+                monthYearStr,
+                style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: Theme.of(context).colorScheme.onSurface,
+                ),
+                overflow: TextOverflow.ellipsis,
               ),
-              overflow: TextOverflow.ellipsis,
             ),
           ),
           Row(
             mainAxisSize: MainAxisSize.min,
             children: [
               Container(
-                width: 32,
-                height: 32,
+                width: 40,
+                height: 40,
                 decoration: BoxDecoration(
                   color: Theme.of(context).colorScheme.surfaceContainerHigh,
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: IconButton(
                   padding: EdgeInsets.zero,
-                  iconSize: 18,
-                  icon: const Icon(Icons.chevron_left),
+                  iconSize: 20,
+                  icon: Icon(isRtl ? Icons.chevron_right : Icons.chevron_left),
                   onPressed: onPreviousMonth,
                   tooltip: l10n.previousMonth,
                   color: Theme.of(context).colorScheme.onSurface,
@@ -65,16 +70,16 @@ class CalendarMonthHeader extends StatelessWidget {
               ),
               const SizedBox(width: 8),
               Container(
-                width: 32,
-                height: 32,
+                width: 40,
+                height: 40,
                 decoration: BoxDecoration(
                   color: Theme.of(context).colorScheme.surfaceContainerHigh,
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: IconButton(
                   padding: EdgeInsets.zero,
-                  iconSize: 18,
-                  icon: const Icon(Icons.chevron_right),
+                  iconSize: 20,
+                  icon: Icon(isRtl ? Icons.chevron_left : Icons.chevron_right),
                   onPressed: onNextMonth,
                   tooltip: l10n.nextMonth,
                   color: Theme.of(context).colorScheme.onSurface,

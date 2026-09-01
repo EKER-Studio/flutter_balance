@@ -141,7 +141,11 @@ class _StepReminderNotificationState extends State<StepReminderNotification> {
                             minute: notificationTime.minute,
                           ).format(context),
                         ),
-                        trailing: const Icon(Icons.chevron_right),
+                        trailing: Icon(
+                          Directionality.of(context) == TextDirection.rtl
+                              ? Icons.chevron_left
+                              : Icons.chevron_right,
+                        ),
                         onTap: enabled
                             ? () => _handleTimePicker(context)
                             : null,
