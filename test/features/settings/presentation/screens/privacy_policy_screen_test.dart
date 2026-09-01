@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:balance/core/presentation/theme/app_layout_tokens.dart';
+import 'package:balance/core/presentation/widgets/clamped_layout.dart';
 import 'package:balance/features/settings/presentation/screens/privacy_policy_screen.dart';
 import 'package:balance/l10n/app_localizations.dart';
 
@@ -56,4 +58,25 @@ void main() {
     expect(find.textContaining('7. Kontakt z nami'), findsOneWidget);
     expect(find.text('contact@ekerstudio.com'), findsOneWidget);
   });
+
+  testWidgets(
+    'PrivacyPolicyScreen wraps content with ClampedLayout for tablet & landscape',
+    (tester) async {
+      tester.view.physicalSize = const Size(1200, 800);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+
+      await tester.pumpWidget(createTestWidget());
+      await tester.pumpAndSettle();
+
+      final clampedLayoutFinder = find.byType(ClampedLayout);
+      expect(clampedLayoutFinder, findsOneWidget);
+      final clampedLayout = tester.widget<ClampedLayout>(clampedLayoutFinder);
+      expect(
+        clampedLayout.maxWidth,
+        AppLayoutTokens.maxSingleColumnContentWidth,
+      );
+    },
+  );
 }

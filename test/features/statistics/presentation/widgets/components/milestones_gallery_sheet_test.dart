@@ -52,7 +52,10 @@ void main() {
         find.text('Special Occasions', skipOffstage: false),
         findsOneWidget,
       );
-      expect(find.byType(MilestoneBadge, skipOffstage: false), findsNWidgets(4));
+      expect(
+        find.byType(MilestoneBadge, skipOffstage: false),
+        findsNWidgets(4),
+      );
     });
   });
 }
