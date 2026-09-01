@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:balance/core/models/measurement_unit.dart';
+import 'package:balance/core/presentation/widgets/pill_segmented_control.dart';
 import 'package:balance/core/utils/analytics.dart';
 import 'package:balance/core/utils/unit_converter.dart';
 import 'package:balance/features/settings/presentation/bloc/weight_goal_mode.dart';
@@ -124,30 +125,27 @@ class _TargetWeightSheetState extends State<TargetWeightSheet> {
                 ),
               ),
               const SizedBox(height: 16),
-              SegmentedButton<WeightGoalMode>(
-                segments: [
-                  ButtonSegment(
-                    value: WeightGoalMode.lose,
-                    label: Text(l10n.goalModeLose),
-                    icon: const Icon(Icons.trending_down, size: 18),
-                  ),
-                  ButtonSegment(
-                    value: WeightGoalMode.maintain,
-                    label: Text(l10n.goalModeMaintain),
-                    icon: const Icon(Icons.horizontal_rule, size: 18),
-                  ),
-                  ButtonSegment(
-                    value: WeightGoalMode.gain,
-                    label: Text(l10n.goalModeGain),
-                    icon: const Icon(Icons.trending_up, size: 18),
-                  ),
-                ],
-                selected: {_selectedMode},
-                onSelectionChanged: (newSelection) {
+              PillSegmentedControl<WeightGoalMode>(
+                selectedValue: _selectedMode,
+                onValueChanged: (mode) {
                   setState(() {
-                    _selectedMode = newSelection.first;
+                    _selectedMode = mode;
                   });
                 },
+                segments: [
+                  PillSegment(
+                    value: WeightGoalMode.lose,
+                    label: l10n.goalModeLose,
+                  ),
+                  PillSegment(
+                    value: WeightGoalMode.maintain,
+                    label: l10n.goalModeMaintain,
+                  ),
+                  PillSegment(
+                    value: WeightGoalMode.gain,
+                    label: l10n.goalModeGain,
+                  ),
+                ],
               ),
               const SizedBox(height: 10),
               Text(
