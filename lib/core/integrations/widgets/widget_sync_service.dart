@@ -65,7 +65,6 @@ class WidgetSyncService {
             : latest.weightKg;
         final unitLabel = unitLabelFor(unit);
 
-        // Calculate delta from previous entry (or 0 if single entry)
         String deltaText = '';
         bool deltaIsLoss = false;
         if (sorted.length > 1) {
@@ -79,7 +78,6 @@ class WidgetSyncService {
           deltaText = '$sign${deltaDisplay.toStringAsFixed(1)} $unitLabel';
         }
 
-        // Calculate goal progress
         int goalProgressPct = 0;
         String targetWeightStr = '';
         if (targetWeight != null) {
