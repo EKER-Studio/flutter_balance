@@ -93,7 +93,7 @@ class HealthSummaryCard extends StatelessWidget {
                         Flexible(
                           child: FittedBox(
                             fit: BoxFit.scaleDown,
-                            alignment: Alignment.centerLeft,
+                            alignment: AlignmentDirectional.centerStart,
                             child: InkWell(
                               borderRadius: BorderRadius.circular(12),
                               onTap: () {

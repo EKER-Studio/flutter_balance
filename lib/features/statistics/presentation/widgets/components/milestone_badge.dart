@@ -71,8 +71,8 @@ class MilestoneBadge extends StatelessWidget {
                           : cs.onSurfaceVariant.withValues(alpha: 0.4),
                     ),
                   ),
-                  Positioned(
-                    right: 0,
+                  PositionedDirectional(
+                    end: 0,
                     bottom: 0,
                     child: Container(
                       width: 15,
@@ -91,8 +91,8 @@ class MilestoneBadge extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 6),
-              SizedBox(
-                height: 28,
+              ConstrainedBox(
+                constraints: const BoxConstraints(minHeight: 28),
                 child: Text(
                   title,
                   textAlign: TextAlign.center,
@@ -114,7 +114,7 @@ class MilestoneBadge extends StatelessWidget {
                     height: 3,
                     width: double.infinity,
                     color: cs.surfaceContainerHighest,
-                    alignment: Alignment.centerLeft,
+                    alignment: AlignmentDirectional.centerStart,
                     child: FractionallySizedBox(
                       widthFactor: milestone.progress.clamp(0.0, 1.0),
                       child: Container(color: cs.secondary),
@@ -195,7 +195,7 @@ class MilestoneBadge extends StatelessWidget {
                       height: 6,
                       width: double.infinity,
                       color: cs.surfaceContainerHighest,
-                      alignment: Alignment.centerLeft,
+                      alignment: AlignmentDirectional.centerStart,
                       child: FractionallySizedBox(
                         widthFactor: milestone.progress.clamp(0.0, 1.0),
                         child: Container(color: cs.secondary),

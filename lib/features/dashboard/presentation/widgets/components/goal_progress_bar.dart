@@ -212,7 +212,7 @@ class GoalProgressBar extends StatelessWidget {
                 ),
                 child: progress > 0
                     ? FractionallySizedBox(
-                        alignment: Alignment.centerLeft,
+                        alignment: AlignmentDirectional.centerStart,
                         widthFactor: progress,
                         child: Container(
                           decoration: BoxDecoration(

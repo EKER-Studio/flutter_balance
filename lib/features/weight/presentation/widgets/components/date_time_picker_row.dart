@@ -57,7 +57,7 @@ class DateTimePickerRow extends StatelessWidget {
                     ),
                     child: FittedBox(
                       fit: BoxFit.scaleDown,
-                      alignment: Alignment.centerLeft,
+                      alignment: AlignmentDirectional.centerStart,
                       child: Text(
                         dateStr,
                         style: Theme.of(context).textTheme.bodyLarge,
@@ -93,7 +93,7 @@ class DateTimePickerRow extends StatelessWidget {
                     ),
                     child: FittedBox(
                       fit: BoxFit.scaleDown,
-                      alignment: Alignment.centerLeft,
+                      alignment: AlignmentDirectional.centerStart,
                       child: Text(
                         timeStr,
                         style: Theme.of(context).textTheme.bodyLarge,
@@ -108,7 +108,7 @@ class DateTimePickerRow extends StatelessWidget {
         if (dateTimeError != null) ...[
           const SizedBox(height: 6),
           Padding(
-            padding: const EdgeInsets.only(left: 12.0),
+            padding: const EdgeInsetsDirectional.only(start: 12.0),
             child: Text(
               dateTimeError!,
               style: TextStyle(
