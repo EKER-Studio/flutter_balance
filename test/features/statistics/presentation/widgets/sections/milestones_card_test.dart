@@ -90,5 +90,46 @@ void main() {
 
       expect(find.text('Achievements Gallery'), findsOneWidget);
     });
+
+    testWidgets(
+      'tapping milestone badge opens detail dialog without overflow on low-height landscape',
+      (tester) async {
+        // Small landscape phone viewport: 800x320
+        tester.view.physicalSize = const Size(800, 320);
+        tester.view.devicePixelRatio = 1.0;
+        addTearDown(tester.view.resetPhysicalSize);
+        addTearDown(tester.view.resetDevicePixelRatio);
+
+        final milestones = [
+          Milestone(
+            type: MilestoneType.streak30,
+            isUnlocked: true,
+            progress: 1.0,
+            unlockedDate: DateTime(2026, 6, 28),
+          ),
+          const Milestone(
+            type: MilestoneType.streak100,
+            isUnlocked: false,
+            progress: 0.95,
+          ),
+        ];
+
+        await tester.pumpWidget(buildSubject(milestones));
+        await tester.pumpAndSettle();
+
+        await tester.tap(find.text('30-Day Habit'));
+        await tester.pumpAndSettle();
+
+        expect(tester.takeException(), isNull);
+        expect(find.byType(AlertDialog), findsOneWidget);
+        expect(find.text('30-Day Habit'), findsWidgets);
+
+        await tester.tap(find.text('OK'));
+        await tester.pumpAndSettle();
+
+        expect(tester.takeException(), isNull);
+        expect(find.byType(AlertDialog), findsNothing);
+      },
+    );
   });
 }

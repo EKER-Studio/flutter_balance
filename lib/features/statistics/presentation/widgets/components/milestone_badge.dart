@@ -148,9 +148,11 @@ class MilestoneBadge extends StatelessWidget {
     showDialog<void>(
       context: context,
       builder: (ctx) => AlertDialog(
+        scrollable: true,
+        insetPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
         icon: Container(
-          width: 52,
-          height: 52,
+          width: 48,
+          height: 48,
           decoration: BoxDecoration(
             color: milestone.isUnlocked
                 ? cs.primaryContainer
@@ -159,7 +161,7 @@ class MilestoneBadge extends StatelessWidget {
           ),
           child: Icon(
             iconForMilestone(milestone.type),
-            size: 28,
+            size: 26,
             color: milestone.isUnlocked
                 ? cs.primary
                 : cs.onSurfaceVariant.withValues(alpha: 0.5),
