@@ -1,11 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="ic_launcher_background">#000000</color>
-    <color name="widget_bg">#1E2022</color>
-    <color name="widget_text_primary">#E2E2E6</color>
+    <color name="ic_launcher_background">#FFFFFF</color>
+
+    <!-- Widget Card Colors (Matches AppTheme darkColorScheme) -->
+    <color name="widget_card_bg">#191C20</color>
+    <color name="widget_card_border">#2E3239</color>
+
+    <color name="widget_primary">#ADC6FF</color>
+    <color name="widget_text_primary">#E2E2E9</color>
     <color name="widget_text_secondary">#8E9099</color>
-    <color name="widget_accent">#6DD2FF</color>
-    <color name="widget_gain_red">#FFB4AB</color>
-    <color name="widget_loss_green">#7CDA85</color>
-    <color name="widget_track">#43474E</color>
+    <color name="widget_track">#33353A</color>
+
+    <!-- Chip / Status Colors -->
+    <color name="widget_goal_green">#7CDA85</color>
+    <color name="widget_chip_loss_bg">#14291E</color>
+    <color name="widget_chip_loss_fg">#7CE38B</color>
+    <color name="widget_chip_gain_bg">#382819</color>
+    <color name="widget_chip_gain_fg">#FDBA74</color>
+
+    <!-- BMI Badge Colors -->
+    <color name="widget_bmi_bg">#2A200B</color>
+    <color name="widget_bmi_border">#594100</color>
+    <color name="widget_bmi_fg">#FFD56B</color>
 </resources>

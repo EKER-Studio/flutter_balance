@@ -3,7 +3,7 @@
     android:id="@+id/widget_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/widget_background_light"
+    android:background="@drawable/widget_background_dark"
     android:orientation="vertical"
     android:padding="12dp">
 
@@ -30,7 +30,7 @@
                 android:maxLines="1"
                 android:singleLine="true"
                 android:text="Ostatni pomiar"
-                android:textColor="#44474F"
+                android:textColor="#8E9099"
                 android:textSize="11sp"
                 android:textStyle="bold" />
 
@@ -53,7 +53,7 @@
                         android:maxLines="1"
                         android:singleLine="true"
                         android:text="--"
-                        android:textColor="#005BDE"
+                        android:textColor="#ADC6FF"
                         android:textSize="26sp"
                         android:textStyle="bold" />
 
@@ -65,7 +65,7 @@
                         android:maxLines="1"
                         android:singleLine="true"
                         android:text="kg"
-                        android:textColor="#44474F"
+                        android:textColor="#C4C6D0"
                         android:textSize="12sp"
                         android:textStyle="bold" />
                 </LinearLayout>
@@ -78,9 +78,9 @@
             android:layout_width="34dp"
             android:layout_height="34dp"
             android:layout_marginStart="8dp"
-            android:background="@drawable/widget_action_btn_light"
+            android:background="@drawable/widget_action_btn_dark"
             android:scaleType="centerInside"
-            android:src="@drawable/widget_ic_add_light"
+            android:src="@drawable/widget_ic_add_dark"
             android:contentDescription="Dodaj pomiar" />
     </LinearLayout>
 
@@ -91,7 +91,7 @@
         android:layout_height="match_parent"
         android:gravity="center"
         android:text="Brak pomiarów\nDotknij, aby dodać"
-        android:textColor="#44474F"
+        android:textColor="#8E9099"
         android:textSize="12sp"
         android:visibility="gone" />
 

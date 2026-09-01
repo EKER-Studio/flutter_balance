@@ -1,11 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="ic_launcher_background">#FFFFFF</color>
-    <color name="widget_bg">#FFFFFF</color>
-    <color name="widget_text_primary">#1A1C1E</color>
-    <color name="widget_text_secondary">#74777F</color>
-    <color name="widget_accent">#006688</color>
-    <color name="widget_gain_red">#BA1A1A</color>
-    <color name="widget_loss_green">#006E1C</color>
-    <color name="widget_track">#E1E2EC</color>
+
+    <!-- Widget Card Colors (Matches AppTheme lightColorScheme) -->
+    <color name="widget_card_bg">#F3F3FA</color>
+    <color name="widget_card_border">#E2E2E9</color>
+
+    <color name="widget_primary">#005BDE</color>
+    <color name="widget_text_primary">#191C20</color>
+    <color name="widget_text_secondary">#44474F</color>
+    <color name="widget_track">#E2E2E9</color>
+
+    <!-- Chip / Status Colors -->
+    <color name="widget_goal_green">#15803D</color>
+    <color name="widget_chip_loss_bg">#E7F8ED</color>
+    <color name="widget_chip_loss_fg">#15803D</color>
+    <color name="widget_chip_gain_bg">#FEF3C7</color>
+    <color name="widget_chip_gain_fg">#C2410C</color>
+
+    <!-- BMI Badge Colors (Warning/Neutral for Overweight/Norm) -->
+    <color name="widget_bmi_bg">#FEF7E0</color>
+    <color name="widget_bmi_border">#F9AB00</color>
+    <color name="widget_bmi_fg">#7D5700</color>
 </resources>

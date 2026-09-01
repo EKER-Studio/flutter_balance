@@ -35,5 +35,6 @@
 -keep interface es.antonborri.home_widget.** { *; }
 -dontwarn es.antonborri.home_widget.**
 
-# App widget provider declared in AndroidManifest — R8 must not rename or remove it
+# App widget providers declared in AndroidManifest — R8 must not rename or remove them
 -keep class com.ekerstudio.balance.BalanceAppWidgetProvider { *; }
+-keep class com.ekerstudio.balance.BalanceFullAppWidgetProvider { *; }
