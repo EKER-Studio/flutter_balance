@@ -432,12 +432,20 @@ class SettingsDataCoordinator {
     WeightState? weightState;
     try {
       weightState = context.read<WeightBloc>().state;
-    } catch (_) {}
+    } catch (_) {
+      if (getIt.isRegistered<WeightBloc>()) {
+        weightState = getIt<WeightBloc>().state;
+      }
+    }
 
     AppSettingsState? settingsState;
     try {
       settingsState = context.read<AppSettingsBloc>().state;
-    } catch (_) {}
+    } catch (_) {
+      if (getIt.isRegistered<AppSettingsBloc>()) {
+        settingsState = getIt<AppSettingsBloc>().state;
+      }
+    }
 
     final entries = weightState?.entries ?? const [];
     final latestWeightKg = entries.isNotEmpty

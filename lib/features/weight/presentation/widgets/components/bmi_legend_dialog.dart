@@ -55,22 +55,18 @@ class _BmiLegendDialogState extends State<BmiLegendDialog> {
     try {
       settingsState = context.read<AppSettingsBloc>().state;
     } catch (_) {
-      try {
-        if (getIt.isRegistered<AppSettingsBloc>()) {
-          settingsState = getIt<AppSettingsBloc>().state;
-        }
-      } catch (_) {}
+      if (getIt.isRegistered<AppSettingsBloc>()) {
+        settingsState = getIt<AppSettingsBloc>().state;
+      }
     }
 
     WeightState? weightState;
     try {
       weightState = context.read<WeightBloc>().state;
     } catch (_) {
-      try {
-        if (getIt.isRegistered<WeightBloc>()) {
-          weightState = getIt<WeightBloc>().state;
-        }
-      } catch (_) {}
+      if (getIt.isRegistered<WeightBloc>()) {
+        weightState = getIt<WeightBloc>().state;
+      }
     }
 
     final resolvedHeightCm =
