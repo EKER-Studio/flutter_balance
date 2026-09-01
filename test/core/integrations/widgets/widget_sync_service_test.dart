@@ -102,6 +102,7 @@ void main() {
         );
 
         expect(savedData['has_data'], isTrue);
+        expect(savedData['header_title'], 'Ostatni pomiar');
         expect(savedData['current_weight'], '79.4');
         expect(savedData['unit'], 'kg');
         expect(savedData['delta_text'], '-0.6 kg');
@@ -109,6 +110,8 @@ void main() {
         expect(savedData['target_weight'], '75.0 kg');
         // Start 80.0, current 79.4, target 75.0 -> 0.6 / 5.0 = 12%
         expect(savedData['goal_progress_pct'], 12);
+        expect(savedData['is_goal_achieved'], isFalse);
+        expect(savedData['goal_status_text'], '12%');
         expect(savedData['goal_mode'], 'lose');
         expect(savedData['last_entry_date'], isNotEmpty);
         expect(updatedWidgets, isNotEmpty);

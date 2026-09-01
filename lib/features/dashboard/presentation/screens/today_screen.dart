@@ -47,6 +47,19 @@ class _TodayScreenState extends State<TodayScreen> {
   }
 
   @override
+  void didUpdateWidget(covariant TodayScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.initialAction == AppRouteParams.actionAdd &&
+        oldWidget.initialAction != AppRouteParams.actionAdd) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          _showAddWeightSheet(context, source: 'deep_link');
+        }
+      });
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
 

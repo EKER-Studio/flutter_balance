@@ -219,11 +219,24 @@ class _AppState extends State<App> {
                       final settingsState = context
                           .read<AppSettingsBloc>()
                           .state;
+                      final isDark = switch (settingsState.themeMode) {
+                        AppThemeMode.dark => true,
+                        AppThemeMode.light => false,
+                        AppThemeMode.system =>
+                          WidgetsBinding
+                                  .instance
+                                  .platformDispatcher
+                                  .platformBrightness ==
+                              Brightness.dark,
+                      };
                       WidgetSyncService.instance.updateWidgetData(
                         entries: weightState.entries,
                         targetWeight: settingsState.targetWeight,
+                        heightCm: settingsState.height,
                         goalMode: settingsState.weightGoalMode,
                         unit: settingsState.measurementUnit,
+                        themeMode: settingsState.themeMode,
+                        isDarkMode: isDark,
                       );
                       if (weightState.entries.isEmpty) {
                         _milestoneCoordinator.reset();
@@ -242,14 +255,29 @@ class _AppState extends State<App> {
                     listenWhen: (previous, current) =>
                         previous.targetWeight != current.targetWeight ||
                         previous.measurementUnit != current.measurementUnit ||
-                        previous.weightGoalMode != current.weightGoalMode,
+                        previous.weightGoalMode != current.weightGoalMode ||
+                        previous.height != current.height ||
+                        previous.themeMode != current.themeMode,
                     listener: (context, settingsState) {
                       final weightState = context.read<WeightBloc>().state;
+                      final isDark = switch (settingsState.themeMode) {
+                        AppThemeMode.dark => true,
+                        AppThemeMode.light => false,
+                        AppThemeMode.system =>
+                          WidgetsBinding
+                                  .instance
+                                  .platformDispatcher
+                                  .platformBrightness ==
+                              Brightness.dark,
+                      };
                       WidgetSyncService.instance.updateWidgetData(
                         entries: weightState.entries,
                         targetWeight: settingsState.targetWeight,
+                        heightCm: settingsState.height,
                         goalMode: settingsState.weightGoalMode,
                         unit: settingsState.measurementUnit,
+                        themeMode: settingsState.themeMode,
+                        isDarkMode: isDark,
                       );
                     },
                   ),
@@ -439,8 +467,50 @@ class _HealthSyncLifecycleObserverState
     context.read<WeightBloc>().add(const SubscribeToWeightChanges());
 
     final settingsBloc = context.read<AppSettingsBloc>();
+    final weightBloc = context.read<WeightBloc>();
+    final isDark = switch (settingsBloc.state.themeMode) {
+      AppThemeMode.dark => true,
+      AppThemeMode.light => false,
+      AppThemeMode.system =>
+        WidgetsBinding.instance.platformDispatcher.platformBrightness ==
+            Brightness.dark,
+    };
+    WidgetSyncService.instance.updateWidgetData(
+      entries: weightBloc.state.entries,
+      targetWeight: settingsBloc.state.targetWeight,
+      heightCm: settingsBloc.state.height,
+      goalMode: settingsBloc.state.weightGoalMode,
+      unit: settingsBloc.state.measurementUnit,
+      themeMode: settingsBloc.state.themeMode,
+      isDarkMode: isDark,
+    );
+
     if (!settingsBloc.state.isHealthSyncEnabled) return;
     context.read<WeightBloc>().add(const SyncHealthEntries());
+  }
+
+  @override
+  void didChangePlatformBrightness() {
+    super.didChangePlatformBrightness();
+    if (!mounted) return;
+    final settingsBloc = context.read<AppSettingsBloc>();
+    final weightBloc = context.read<WeightBloc>();
+    final isDark = switch (settingsBloc.state.themeMode) {
+      AppThemeMode.dark => true,
+      AppThemeMode.light => false,
+      AppThemeMode.system =>
+        WidgetsBinding.instance.platformDispatcher.platformBrightness ==
+            Brightness.dark,
+    };
+    WidgetSyncService.instance.updateWidgetData(
+      entries: weightBloc.state.entries,
+      targetWeight: settingsBloc.state.targetWeight,
+      heightCm: settingsBloc.state.height,
+      goalMode: settingsBloc.state.weightGoalMode,
+      unit: settingsBloc.state.measurementUnit,
+      themeMode: settingsBloc.state.themeMode,
+      isDarkMode: isDark,
+    );
   }
 
   @override
