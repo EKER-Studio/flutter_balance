@@ -78,9 +78,7 @@ class AppAnalytics {
     return _service.logEvent(name: name, parameters: parameters);
   }
 
-  // ---------------------------------------------------------------------------
   // ONBOARDING EVENTS
-  // ---------------------------------------------------------------------------
 
   /// Logs the start of the onboarding wizard flow.
   ///
@@ -448,9 +446,7 @@ class AppAnalytics {
     );
   }
 
-  // ---------------------------------------------------------------------------
   // DASHBOARD (TODAY) EVENTS
-  // ---------------------------------------------------------------------------
 
   /// Logs displaying the main Today dashboard tab.
   static Future<void> logTodayScreenViewed() {
@@ -536,9 +532,7 @@ class AppAnalytics {
     return logEvent(name: 'today_pull_to_refresh');
   }
 
-  // ---------------------------------------------------------------------------
   // CALENDAR EVENTS
-  // ---------------------------------------------------------------------------
 
   /// Logs displaying the Calendar tab.
   static Future<void> logCalendarScreenViewed() {
@@ -604,9 +598,7 @@ class AppAnalytics {
     );
   }
 
-  // ---------------------------------------------------------------------------
   // STATISTICS EVENTS
-  // ---------------------------------------------------------------------------
 
   /// Logs displaying the Statistics tab.
   static Future<void> logStatisticsScreenViewed() {
@@ -704,9 +696,7 @@ class AppAnalytics {
     );
   }
 
-  // ---------------------------------------------------------------------------
   // SETTINGS EVENTS
-  // ---------------------------------------------------------------------------
 
   /// Logs displaying the Settings screen.
   static Future<void> logSettingsScreenViewed() {
@@ -1140,9 +1130,7 @@ class AppAnalytics {
     return logEvent(name: 'settings_view_on_github_clicked');
   }
 
-  // ---------------------------------------------------------------------------
   // NAVIGATION & DIALOG EVENTS
-  // ---------------------------------------------------------------------------
 
   /// Logs switching main navigation tabs in the bottom bar.
   ///
