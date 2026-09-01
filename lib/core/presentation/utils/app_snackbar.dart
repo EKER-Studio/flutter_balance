@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:balance/core/presentation/theme/app_feedback_theme.dart';
 
 /// Severity types determining background, text, and icon styling for [AppSnackBar].
 enum SnackBarType { success, error, warning, info }
@@ -24,38 +25,38 @@ class AppSnackBar {
     switch (type) {
       case SnackBarType.success:
         backgroundColor = isDark
-            ? const Color(0xFF14291E)
-            : const Color(0xFFE7F8ED);
+            ? AppFeedbackTheme.successBackgroundDark
+            : AppFeedbackTheme.successBackgroundLight;
         foregroundColor = isDark
-            ? const Color(0xFF7CE38B)
-            : const Color(0xFF156F35);
+            ? AppFeedbackTheme.successForegroundDark
+            : AppFeedbackTheme.successForegroundLight;
         defaultIcon = Icons.check_circle_outline_rounded;
         break;
       case SnackBarType.error:
         backgroundColor = isDark
-            ? const Color(0xFF2E1517)
-            : const Color(0xFFFCE8E6);
+            ? AppFeedbackTheme.errorBackgroundDark
+            : AppFeedbackTheme.errorBackgroundLight;
         foregroundColor = isDark
-            ? const Color(0xFFF2B8B5)
-            : const Color(0xFFB3261E);
+            ? AppFeedbackTheme.errorForegroundDark
+            : AppFeedbackTheme.errorForegroundLight;
         defaultIcon = Icons.error_outline_rounded;
         break;
       case SnackBarType.warning:
         backgroundColor = isDark
-            ? const Color(0xFF2A200B)
-            : const Color(0xFFFEF7E0);
+            ? AppFeedbackTheme.warningBackgroundDark
+            : AppFeedbackTheme.warningBackgroundLight;
         foregroundColor = isDark
-            ? const Color(0xFFFFD56B)
-            : const Color(0xFF7D5700);
+            ? AppFeedbackTheme.warningForegroundDark
+            : AppFeedbackTheme.warningForegroundLight;
         defaultIcon = Icons.warning_amber_rounded;
         break;
       case SnackBarType.info:
         backgroundColor = isDark
-            ? const Color(0xFF121C2B)
-            : const Color(0xFFE8F0FE);
+            ? AppFeedbackTheme.infoBackgroundDark
+            : AppFeedbackTheme.infoBackgroundLight;
         foregroundColor = isDark
-            ? const Color(0xFFA8C7FA)
-            : const Color(0xFF0A56D1);
+            ? AppFeedbackTheme.infoForegroundDark
+            : AppFeedbackTheme.infoForegroundLight;
         defaultIcon = Icons.info_outline_rounded;
         break;
     }
