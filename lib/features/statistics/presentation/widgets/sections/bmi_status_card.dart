@@ -269,8 +269,9 @@ class BmiStatusCard extends StatelessWidget {
               clipBehavior: Clip.none,
               children: [
                 SizedBox(width: constraints.maxWidth, height: 10),
-                Positioned(
-                  left: (position - 6).clamp(0.0, constraints.maxWidth - 12),
+                Positioned.directional(
+                  textDirection: Directionality.of(context),
+                  start: (position - 6).clamp(0.0, constraints.maxWidth - 12),
                   top: 0,
                   child: Icon(
                     Icons.arrow_drop_down,
