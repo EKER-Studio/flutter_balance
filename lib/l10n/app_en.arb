@@ -251,6 +251,14 @@
       }
     }
   },
+  "@multipleAchievementsUnlockedNotificationBody": {
+    "description": "Notification body when multiple achievements are unlocked at once.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "@paceWindowDays": {
     "description": "Option label for pace calculation window in days.",
     "placeholders": {
@@ -557,6 +565,11 @@
   "movingAverage7dLegend": "7-day avg",
   "netChange": "Net change",
   "next": "Next",
+  "achievementUnlockedNotificationTitle": "🏆 Achievement Unlocked!",
+  "achievementsChannelDescription": "Notifications when you unlock new health milestones and streaks.",
+  "achievementsChannelName": "Achievements & Milestones",
+  "multipleAchievementsUnlockedNotificationBody": "You unlocked {count} new achievements!",
+  "multipleAchievementsUnlockedNotificationTitle": "🏆 New Achievements!",
   "nextMonth": "Next month",
   "noDataToAnalyze": "No data to analyze",
   "noDataToAnalyzeSubtitle": "Your statistics will appear here after a few days of regular measurements. Add entries to start tracking your progress.",

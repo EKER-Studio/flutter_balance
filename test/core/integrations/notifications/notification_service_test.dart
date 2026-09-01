@@ -37,6 +37,7 @@ class FakeNotificationsChannel {
       'initialize' => true,
       'createNotificationChannel' => null,
       'cancel' => null,
+      'show' => null,
       'zonedSchedule' => null,
       'requestNotificationsPermission' => requestNotificationsResult,
       'requestPermissions' => true,
@@ -183,11 +184,40 @@ void main() {
         channelDescription: 'Opis',
       );
 
+      await Future<void>.delayed(Duration.zero);
+
       expect(
         fake.invokedMethods.where((m) => m == 'createNotificationChannel'),
-        hasLength(channelCallsBefore + 1),
+        hasLength(channelCallsBefore + 2),
       );
     });
+
+    test('showAchievementNotification invokes platform show', () async {
+      await NotificationService.instance.initialize();
+
+      await NotificationService.instance.showAchievementNotification(
+        id: 101,
+        title: '🏆 Zdobyto odznakę!',
+        body: 'Tydzień dyscypliny',
+      );
+
+      expect(fake.invokedMethods, contains('show'));
+    });
+
+    test(
+      'showMultipleAchievementsNotification invokes platform show',
+      () async {
+        await NotificationService.instance.initialize();
+
+        await NotificationService.instance.showMultipleAchievementsNotification(
+          count: 3,
+          title: '🏆 Nowe osiągnięcia!',
+          body: 'Odblokowano 3 nowe osiągnięcia!',
+        );
+
+        expect(fake.invokedMethods, contains('show'));
+      },
+    );
 
     test(
       'requestPermissions returns true when permission is granted',

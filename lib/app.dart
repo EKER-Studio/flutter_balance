@@ -25,6 +25,7 @@ import 'package:balance/features/settings/presentation/bloc/app_settings_bloc.da
 import 'package:balance/features/settings/presentation/bloc/app_settings_event.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_state.dart';
 import 'package:balance/features/settings/presentation/bloc/app_theme_mode.dart';
+import 'package:balance/features/statistics/presentation/utils/milestone_notification_coordinator.dart';
 import 'package:balance/features/weight/domain/repositories/weight_repository.dart';
 import 'package:balance/features/weight/presentation/bloc/weight_bloc.dart';
 import 'package:balance/features/weight/presentation/bloc/weight_event.dart';
@@ -51,6 +52,7 @@ class _AppState extends State<App> {
   late AppLocalizations _l10n;
   late Future<WeightRepository> _initFuture;
   GoRouter? _router;
+  final _milestoneCoordinator = MilestoneNotificationCoordinator();
 
   @override
   void initState() {
@@ -196,6 +198,9 @@ class _AppState extends State<App> {
                   body: l10n.notificationReminderBody,
                   channelName: l10n.notificationChannelName,
                   channelDescription: l10n.notificationChannelDescription,
+                  achievementsChannelName: l10n.achievementsChannelName,
+                  achievementsChannelDescription:
+                      l10n.achievementsChannelDescription,
                 );
               },
               child: MultiBlocListener(
@@ -220,6 +225,17 @@ class _AppState extends State<App> {
                         goalMode: settingsState.weightGoalMode,
                         unit: settingsState.measurementUnit,
                       );
+                      if (weightState.entries.isEmpty) {
+                        _milestoneCoordinator.reset();
+                      } else {
+                        _milestoneCoordinator.checkForNewMilestones(
+                          entries: weightState.entries,
+                          targetWeight: settingsState.targetWeight,
+                          heightCm: settingsState.height,
+                          goalMode: settingsState.weightGoalMode,
+                          l10n: _l10n,
+                        );
+                      }
                     },
                   ),
                   BlocListener<AppSettingsBloc, AppSettingsState>(

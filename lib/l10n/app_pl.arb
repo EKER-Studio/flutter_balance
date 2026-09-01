@@ -248,6 +248,14 @@
       }
     }
   },
+  "@multipleAchievementsUnlockedNotificationBody": {
+    "description": "Notification body when multiple achievements are unlocked at once.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "@paceWindowDays": {
     "description": "Option label for pace calculation window in days.",
     "placeholders": {
@@ -551,6 +559,11 @@
   "movingAverage7dLegend": "Śr. 7-dniowa",
   "netChange": "Zmiana wagi",
   "next": "Dalej",
+  "achievementUnlockedNotificationTitle": "🏆 Zdobyto odznakę!",
+  "achievementsChannelDescription": "Powiadomienia o zdobytych odznakach i seriach ważenia.",
+  "achievementsChannelName": "Osiągnięcia i kamienie milowe",
+  "multipleAchievementsUnlockedNotificationBody": "Odblokowano {count} nowe osiągnięcia!",
+  "multipleAchievementsUnlockedNotificationTitle": "🏆 Nowe osiągnięcia!",
   "nextMonth": "Następny miesiąc",
   "noDataToAnalyze": "Brak danych do analizy",
   "noDataToAnalyzeSubtitle": "Twoje statystyki pojawią się tutaj po kilku dniach regularnych pomiarów. Dodaj wpisy, aby zacząć śledzić swój postęp.",
