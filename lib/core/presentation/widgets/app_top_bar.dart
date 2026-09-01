@@ -39,11 +39,14 @@ class AppTopBar extends StatelessWidget {
       pinned: pinned,
       snap: false,
       titleSpacing: context.contentHorizontalPadding,
-      title: Text(
-        title,
-        style: textTheme.headlineMedium?.copyWith(
-          color: colorScheme.primary,
-          fontWeight: FontWeight.w700,
+      title: Semantics(
+        header: true,
+        child: Text(
+          title,
+          style: textTheme.headlineMedium?.copyWith(
+            color: colorScheme.primary,
+            fontWeight: FontWeight.w700,
+          ),
         ),
       ),
       actions: actions,
