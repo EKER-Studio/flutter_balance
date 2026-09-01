@@ -71,18 +71,18 @@ class ApplicationSection extends StatelessWidget {
             },
           ),
           CustomSettingsTile(
-            icon: Icons.calendar_today_outlined,
-            title: l10n.firstDayOfWeek,
-            subtitle: state.firstDayOfWeek.localizedName(l10n),
-            sectionLabel: l10n.applicationSection,
-            onTap: onFirstDayOfWeekTap,
-          ),
-          CustomSettingsTile(
             icon: Icons.speed_outlined,
             title: l10n.paceWindow,
             subtitle: l10n.paceWindowDays(state.weeklyPaceWindowDays),
             sectionLabel: l10n.applicationSection,
             onTap: onPaceWindowTap,
+          ),
+          CustomSettingsTile(
+            icon: Icons.calendar_today_outlined,
+            title: l10n.firstDayOfWeek,
+            subtitle: state.firstDayOfWeek.localizedName(l10n),
+            sectionLabel: l10n.applicationSection,
+            onTap: onFirstDayOfWeekTap,
           ),
           CustomSettingsToggle(
             icon: Icons.notifications_outlined,
