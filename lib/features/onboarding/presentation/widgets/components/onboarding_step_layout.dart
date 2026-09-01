@@ -77,7 +77,6 @@ class OnboardingStepLayout extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    // 1. Header (Title & Subtitle)
                     if (titleWidget != null)
                       titleWidget!
                     else if (title != null) ...[
@@ -102,7 +101,6 @@ class OnboardingStepLayout extends StatelessWidget {
                     ],
                     const SizedBox(height: 8.0),
 
-                    // 2. Middle Content Area
                     Align(
                       alignment: centerContent
                           ? Alignment.center
@@ -112,7 +110,6 @@ class OnboardingStepLayout extends StatelessWidget {
 
                     const SizedBox(height: 12.0),
 
-                    // 3. Bottom Footer Action
                     ConstrainedBox(
                       constraints: const BoxConstraints(minHeight: 48.0),
                       child: footer,
@@ -134,7 +131,6 @@ class OnboardingStepLayout extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      // 1. Header (Title & Subtitle)
                       if (titleWidget != null)
                         titleWidget!
                       else if (title != null) ...[
@@ -158,7 +154,6 @@ class OnboardingStepLayout extends StatelessWidget {
                       ],
                       const SizedBox(height: 24.0),
 
-                      // 2. Middle Content Area
                       Expanded(
                         child: Align(
                           alignment: centerContent
@@ -170,7 +165,6 @@ class OnboardingStepLayout extends StatelessWidget {
 
                       const SizedBox(height: 24.0),
 
-                      // 3. Bottom Footer Action
                       ConstrainedBox(
                         constraints: const BoxConstraints(minHeight: 48.0),
                         child: footer,
