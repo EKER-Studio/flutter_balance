@@ -21,6 +21,12 @@ class MilestoneBadge extends StatelessWidget {
     final description = milestone.type.localizedDescription(l10n);
     final isUnlocked = milestone.isUnlocked;
 
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final successColor = isDark ? Colors.green.shade400 : Colors.green.shade600;
+    final inProgressColor = isDark
+        ? Colors.blue.shade400
+        : Colors.blue.shade600;
+
     return Semantics(
       button: true,
       label: '$title: ${isUnlocked ? "Odblokowane" : "Zablokowane"}',
@@ -107,29 +113,23 @@ class MilestoneBadge extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 4),
-              if (!isUnlocked)
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(2),
-                  child: Container(
-                    height: 3,
-                    width: double.infinity,
-                    color: cs.surfaceContainerHighest,
-                    alignment: AlignmentDirectional.centerStart,
-                    child: FractionallySizedBox(
-                      widthFactor: milestone.progress.clamp(0.0, 1.0),
-                      child: Container(color: cs.secondary),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(2),
+                child: Container(
+                  height: 3,
+                  width: double.infinity,
+                  color: cs.surfaceContainerHighest,
+                  alignment: AlignmentDirectional.centerStart,
+                  child: FractionallySizedBox(
+                    widthFactor: isUnlocked
+                        ? 1.0
+                        : milestone.progress.clamp(0.0, 1.0),
+                    child: Container(
+                      color: isUnlocked ? successColor : inProgressColor,
                     ),
                   ),
-                )
-              else
-                Container(
-                  height: 3,
-                  width: 18,
-                  decoration: BoxDecoration(
-                    color: cs.primary,
-                    borderRadius: BorderRadius.circular(2),
-                  ),
                 ),
+              ),
             ],
           ),
         ),
@@ -144,6 +144,7 @@ class MilestoneBadge extends StatelessWidget {
     String title,
     String description,
   ) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     showDialog<void>(
       context: context,
       builder: (ctx) => AlertDialog(
@@ -176,17 +177,26 @@ class MilestoneBadge extends StatelessWidget {
               ).textTheme.bodyMedium?.copyWith(color: cs.onSurfaceVariant),
             ),
             const SizedBox(height: 16),
-            if (milestone.isUnlocked && milestone.unlockedDate != null)
+            if (milestone.isUnlocked && milestone.unlockedDate != null) ...[
               Text(
                 DateFormat.yMMMMd(
                   l10n.localeName,
                 ).format(milestone.unlockedDate!),
                 style: Theme.of(ctx).textTheme.labelMedium?.copyWith(
-                  color: cs.primary,
+                  color: isDark ? Colors.green.shade400 : Colors.green.shade700,
                   fontWeight: FontWeight.w600,
                 ),
-              )
-            else if (!milestone.isUnlocked)
+              ),
+              const SizedBox(height: 12),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(4),
+                child: Container(
+                  height: 6,
+                  width: double.infinity,
+                  color: isDark ? Colors.green.shade400 : Colors.green.shade600,
+                ),
+              ),
+            ] else if (!milestone.isUnlocked) ...[
               Column(
                 children: [
                   ClipRRect(
@@ -198,7 +208,11 @@ class MilestoneBadge extends StatelessWidget {
                       alignment: AlignmentDirectional.centerStart,
                       child: FractionallySizedBox(
                         widthFactor: milestone.progress.clamp(0.0, 1.0),
-                        child: Container(color: cs.secondary),
+                        child: Container(
+                          color: isDark
+                              ? Colors.blue.shade400
+                              : Colors.blue.shade600,
+                        ),
                       ),
                     ),
                   ),
@@ -206,12 +220,15 @@ class MilestoneBadge extends StatelessWidget {
                   Text(
                     '${(milestone.progress * 100).toInt()}%',
                     style: Theme.of(ctx).textTheme.labelSmall?.copyWith(
-                      color: cs.secondary,
+                      color: isDark
+                          ? Colors.blue.shade400
+                          : Colors.blue.shade600,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
                 ],
               ),
+            ],
           ],
         ),
         actions: [
