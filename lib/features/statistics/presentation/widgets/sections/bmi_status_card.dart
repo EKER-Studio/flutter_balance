@@ -82,7 +82,6 @@ class BmiStatusCard extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Header
               Row(
                 children: [
                   Icon(Icons.speed_outlined, size: 24, color: cs.primary),
@@ -126,7 +125,6 @@ class BmiStatusCard extends StatelessWidget {
                   message: l10n.noDataToAnalyzeSubtitle,
                 )
               else ...[
-                // Main Score Row
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.baseline,
                   textBaseline: TextBaseline.alphabetic,
@@ -163,11 +161,9 @@ class BmiStatusCard extends StatelessWidget {
                 ),
                 const SizedBox(height: 16),
 
-                // 4-Zone Spectrum Bar
                 _buildSpectrumBar(context, bmi: bmi),
                 const SizedBox(height: 16),
 
-                // Healthy Range & Distance Info
                 Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
@@ -286,7 +282,6 @@ class BmiStatusCard extends StatelessWidget {
             );
           },
         ),
-        // 4 Segment Colored Bar
         ClipRRect(
           borderRadius: BorderRadius.circular(4),
           child: Row(
@@ -326,7 +321,6 @@ class BmiStatusCard extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 4),
-        // Scale labels
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
