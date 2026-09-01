@@ -57,7 +57,15 @@
     }
   },
   "@chartSemanticsTitle": {
-    "description": "Accessibility label for the weight history chart, describing the displayed period and the latest recorded weight."
+    "description": "Accessibility label for the weight history chart, describing the displayed period and the latest recorded weight.",
+    "placeholders": {
+      "period": {
+        "type": "String"
+      },
+      "weight": {
+        "type": "String"
+      }
+    }
   },
   "@couldNotOpenEmailClient": {
     "description": "Error message shown when the device cannot open the email client for the contact address.",
@@ -75,11 +83,46 @@
       }
     }
   },
+  "@csvImportComplete": {
+    "description": "Confirmation message after importing CSV entries.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "@csvImportSuccess": {
     "description": "Confirmation shown after the user imports their weight history from a CSV file during onboarding.",
     "placeholders": {
       "count": {
         "type": "int"
+      }
+    }
+  },
+  "@csvPreviewDateRange": {
+    "description": "Date range label for CSV import preview.",
+    "placeholders": {
+      "from": {
+        "type": "String"
+      },
+      "to": {
+        "type": "String"
+      }
+    }
+  },
+  "@csvPreviewSkippedRows": {
+    "description": "Skipped rows count in CSV import preview.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@distanceToNormalBmi": {
+    "description": "Weight distance required to reach normal BMI range.",
+    "placeholders": {
+      "diff": {
+        "type": "String"
       }
     }
   },
@@ -92,11 +135,32 @@
     }
   },
   "@errorWipingData": {
-    "description": "Error message shown when clearing all app data fails."
+    "description": "Error message shown when clearing all app data fails.",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
   },
   "@exportError": {
-    "description": "Error message shown when exporting weight entries to a CSV file fails."
+    "description": "Error message shown when exporting weight entries to a CSV file fails.",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
   },
+  "@firstDayOfWeek": {},
+  "@firstDayOfWeekMonday": {},
+  "@firstDayOfWeekSunday": {},
+  "@firstDayOfWeekSystem": {},
+  "@goalMode": {},
+  "@goalModeGain": {},
+  "@goalModeGainDesc": {},
+  "@goalModeLose": {},
+  "@goalModeLoseDesc": {},
+  "@goalModeMaintain": {},
+  "@goalModeMaintainDesc": {},
   "@goalProgressSemantics": {
     "description": "Accessibility label for the goal progress section on the health summary card.",
     "placeholders": {
@@ -108,10 +172,32 @@
       }
     }
   },
+  "@goalWeightDeviation": {
+    "placeholders": {
+      "diff": {
+        "type": "String"
+      }
+    }
+  },
   "@goalWeightLabel": {
     "description": "Label showing the user's target weight goal.",
     "placeholders": {
       "weight": {
+        "type": "String"
+      }
+    }
+  },
+  "@goalWeightMaintained": {
+    "placeholders": {
+      "range": {
+        "type": "String"
+      }
+    }
+  },
+  "@healthyWeightForHeight": {
+    "description": "Healthy weight range for given height.",
+    "placeholders": {
+      "range": {
         "type": "String"
       }
     }
@@ -146,10 +232,53 @@
       }
     }
   },
+  "@measurementsCount": {
+    "description": "Count of recorded measurements.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@milestonesUnlocked": {
+    "description": "Count of unlocked milestones out of total.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "@paceWindowDays": {
+    "description": "Option label for pace calculation window in days.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@paceWindowDaysDefault": {
+    "description": "Option label for default pace calculation window in days.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "@remainingWeightLabel": {
     "description": "Label showing the weight still to lose or gain to reach the goal.",
     "placeholders": {
       "weight": {
+        "type": "String"
+      }
+    }
+  },
+  "@sinceEntryDate": {
+    "description": "Date label for milestone or progress start.",
+    "placeholders": {
+      "date": {
         "type": "String"
       }
     }
@@ -166,7 +295,12 @@
     }
   },
   "@streakDays": {
-    "description": "Label describing the current consecutive-days logging streak."
+    "description": "Label describing the current consecutive-days logging streak.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   },
   "@todayAtTime": {
     "description": "Label showing that a measurement was recorded today at the given time.",
@@ -192,8 +326,19 @@
       }
     }
   },
+  "@weightGain10kgDesc": {},
+  "@weightGain10kgTitle": {},
+  "@weightGain1kgDesc": {},
+  "@weightGain1kgTitle": {},
+  "@weightGain5kgDesc": {},
+  "@weightGain5kgTitle": {},
   "@weightTrendChartSemantics": {
-    "description": "Accessibility label describing the number of measurements plotted on the weight trend chart."
+    "description": "Accessibility label describing the number of measurements plotted on the weight trend chart.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   },
   "addAnotherMeasurement": "Add another measurement",
   "addFirstMeasurement": "Add first measurement",
@@ -299,12 +444,25 @@
   "exportNoData": "No weight entries to export.",
   "exportSuccess": "Export completed successfully.",
   "feetLabel": "Feet",
+  "firstDayOfWeek": "First day of week",
+  "firstDayOfWeekMonday": "Monday",
+  "firstDayOfWeekSunday": "Sunday",
+  "firstDayOfWeekSystem": "System default",
   "futureDateError": "Date and time cannot be in the future",
   "goalAchieved": "Goal achieved!",
   "goalAchievedOnDayBanner": "Weight goal was achieved on this day!",
+  "goalMode": "Goal type",
+  "goalModeGain": "Gain weight",
+  "goalModeGainDesc": "Focus on steady weight gain and mass",
+  "goalModeLose": "Lose weight",
+  "goalModeLoseDesc": "Focus on gradual weight loss",
+  "goalModeMaintain": "Maintain weight",
+  "goalModeMaintainDesc": "Keep weight stable in a healthy range",
   "goalProgress": "Goal progress",
   "goalProgressSemantics": "Goal: {target}. {detail}. Double tap to edit target weight.",
+  "goalWeightDeviation": "Deviation: {diff}",
   "goalWeightLabel": "Goal: {weight}",
+  "goalWeightMaintained": "Weight stable (±{range})",
   "greatJob": "Great job!",
   "healthConnectRequiredSubtitle": "Download the official Google Health Connect app from the Play Store to enable sync.",
   "healthConnectRequiredTitle": "Health Connect App Required",
@@ -549,6 +707,12 @@
   "weeklyPaceBadge": "{value}/week",
   "weightCannotBeEmpty": "Weight cannot be empty",
   "weightChangeSemantics": "Weight change: {value}",
+  "weightGain10kgDesc": "Gained 10 kg towards your mass goal",
+  "weightGain10kgTitle": "+10 kg gained",
+  "weightGain1kgDesc": "Gained 1 kg towards your mass goal",
+  "weightGain1kgTitle": "+1 kg gained",
+  "weightGain5kgDesc": "Gained 5 kg towards your mass goal",
+  "weightGain5kgTitle": "+5 kg gained",
   "weightHint": "e.g. 75.5",
   "weightInKgLabel": "Weight (kg)",
   "weightInLbLabel": "Weight in lb",
@@ -565,55 +729,5 @@
   "wipeDataContent": "This will permanently delete all your weight entries and reset app settings. This action cannot be undone.",
   "year": "Year",
   "yesterday": "Yesterday",
-  "firstDayOfWeek": "First day of week",
-  "@firstDayOfWeek": {},
-  "firstDayOfWeekSystem": "System default",
-  "@firstDayOfWeekSystem": {},
-  "firstDayOfWeekMonday": "Monday",
-  "@firstDayOfWeekMonday": {},
-  "firstDayOfWeekSunday": "Sunday",
-  "@firstDayOfWeekSunday": {},
-  "goalMode": "Goal type",
-  "@goalMode": {},
-  "goalModeLose": "Lose weight",
-  "@goalModeLose": {},
-  "goalModeMaintain": "Maintain weight",
-  "@goalModeMaintain": {},
-  "goalModeGain": "Gain weight",
-  "@goalModeGain": {},
-  "goalModeLoseDesc": "Focus on gradual weight loss",
-  "@goalModeLoseDesc": {},
-  "goalModeMaintainDesc": "Keep weight stable in a healthy range",
-  "@goalModeMaintainDesc": {},
-  "goalModeGainDesc": "Focus on steady weight gain and mass",
-  "@goalModeGainDesc": {},
-  "goalWeightMaintained": "Weight stable (±{range})",
-  "@goalWeightMaintained": {
-    "placeholders": {
-      "range": {
-        "type": "String"
-      }
-    }
-  },
-  "goalWeightDeviation": "Deviation: {diff}",
-  "@goalWeightDeviation": {
-    "placeholders": {
-      "diff": {
-        "type": "String"
-      }
-    }
-  },
-  "weightGain1kgTitle": "+1 kg gained",
-  "@weightGain1kgTitle": {},
-  "weightGain1kgDesc": "Gained 1 kg towards your mass goal",
-  "@weightGain1kgDesc": {},
-  "weightGain5kgTitle": "+5 kg gained",
-  "@weightGain5kgTitle": {},
-  "weightGain5kgDesc": "Gained 5 kg towards your mass goal",
-  "@weightGain5kgDesc": {},
-  "weightGain10kgTitle": "+10 kg gained",
-  "@weightGain10kgTitle": {},
-  "weightGain10kgDesc": "Gained 10 kg towards your mass goal",
-  "@weightGain10kgDesc": {},
   "yourResult": "Your result"
 }
