@@ -339,10 +339,10 @@ class CalendarDayEntriesCard extends StatelessWidget {
                         const SizedBox(height: 12),
                         Container(
                           width: double.infinity,
-                          padding: const EdgeInsets.only(left: 10),
+                          padding: const EdgeInsetsDirectional.only(start: 10),
                           decoration: BoxDecoration(
-                            border: Border(
-                              left: BorderSide(width: 2.5, color: cs.outline),
+                            border: BorderDirectional(
+                              start: BorderSide(width: 2.5, color: cs.outline),
                             ),
                           ),
                           child: Text(

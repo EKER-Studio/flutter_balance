@@ -58,7 +58,7 @@ class WeightInputField extends StatelessWidget {
         ),
         if (weightError != null)
           Padding(
-            padding: const EdgeInsets.only(top: 8.0, left: 12.0),
+            padding: const EdgeInsetsDirectional.only(top: 8.0, start: 12.0),
             child: Text(
               weightError!,
               style: TextStyle(

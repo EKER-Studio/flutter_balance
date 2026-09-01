@@ -139,7 +139,10 @@ class _CalendarShimmerSkeletonState extends State<CalendarShimmerSkeleton>
                 ),
                 const SizedBox(height: 20),
                 Padding(
-                  padding: const EdgeInsets.only(left: 8, bottom: 8),
+                  padding: const EdgeInsetsDirectional.only(
+                    start: 8,
+                    bottom: 8,
+                  ),
                   child: Container(
                     width: 120,
                     height: 18,

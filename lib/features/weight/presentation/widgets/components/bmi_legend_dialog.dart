@@ -163,7 +163,7 @@ class _BmiLegendDialogState extends State<BmiLegendDialog> {
           child: SingleChildScrollView(
             controller: _scrollController,
             child: Padding(
-              padding: const EdgeInsets.only(right: 6),
+              padding: const EdgeInsetsDirectional.only(end: 6),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.stretch,

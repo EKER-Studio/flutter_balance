@@ -70,7 +70,11 @@ class AppSnackBar {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         // Bottom margin of 16 is sufficient; SnackBarBehavior.floating handles
         // FAB/BottomNav avoidance automatically.
-        margin: const EdgeInsets.only(bottom: 16, left: 16, right: 16),
+        margin: const EdgeInsetsDirectional.only(
+          bottom: 16,
+          start: 16,
+          end: 16,
+        ),
         action: action,
         content: Row(
           children: [

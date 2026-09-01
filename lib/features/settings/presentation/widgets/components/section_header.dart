@@ -11,10 +11,13 @@ class SectionHeader extends StatelessWidget {
     final textTheme = Theme.of(context).textTheme;
     final colorScheme = Theme.of(context).colorScheme;
     return Padding(
-      padding: const EdgeInsets.only(left: 16),
-      child: Text(
-        label,
-        style: textTheme.labelLarge?.copyWith(color: colorScheme.primary),
+      padding: const EdgeInsetsDirectional.only(start: 16),
+      child: Semantics(
+        header: true,
+        child: Text(
+          label,
+          style: textTheme.labelLarge?.copyWith(color: colorScheme.primary),
+        ),
       ),
     );
   }

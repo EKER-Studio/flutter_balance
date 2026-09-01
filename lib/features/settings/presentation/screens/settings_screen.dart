@@ -104,7 +104,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         sliver: SliverToBoxAdapter(
                           child: ClampedLayout(
                             maxWidth: context.standardContentMaxWidth,
-                            padding: EdgeInsets.fromLTRB(
+                            padding: EdgeInsetsDirectional.fromSTEB(
                               context.contentHorizontalPadding,
                               12,
                               context.contentHorizontalPadding,
