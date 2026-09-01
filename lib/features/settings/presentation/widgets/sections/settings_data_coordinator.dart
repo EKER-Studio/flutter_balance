@@ -26,6 +26,7 @@ import 'package:balance/features/settings/presentation/widgets/components/theme_
 import 'package:balance/features/settings/presentation/widgets/components/first_day_of_week_selection_dialog.dart';
 import 'package:balance/features/settings/presentation/bloc/weight_goal_mode.dart';
 import 'package:balance/features/settings/presentation/widgets/components/unit_selection_dialog.dart';
+import 'package:balance/features/settings/presentation/screens/licenses_screen.dart';
 import 'package:balance/features/settings/presentation/screens/privacy_policy_screen.dart';
 import 'package:balance/features/settings/presentation/widgets/components/height_sheet.dart';
 import 'package:balance/features/settings/presentation/widgets/components/target_weight_sheet.dart';
@@ -404,26 +405,16 @@ class SettingsDataCoordinator {
     }
   }
 
-  /// Shows the standard Flutter open-source licenses page.
+  /// Shows the open-source licenses page.
   static Future<void> showLicenses(BuildContext context) async {
     AppAnalytics.logSettingsOpenSourceLicensesClicked();
     final packageInfo = await PackageInfo.fromPlatform();
     if (!context.mounted) return;
 
-    showLicensePage(
-      context: context,
-      useRootNavigator: true,
-      applicationName: 'Balance',
-      applicationVersion: packageInfo.version,
-      applicationIcon: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 8.0),
-        child: Icon(
-          Icons.monitor_weight_outlined,
-          size: 48,
-          color: Theme.of(context).colorScheme.primary,
-        ),
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (_) => LicensesScreen(packageInfo: packageInfo),
       ),
-      applicationLegalese: '© 2026 EKER Studio',
     );
   }
 

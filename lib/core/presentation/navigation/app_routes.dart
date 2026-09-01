@@ -27,6 +27,9 @@ abstract final class AppRoutes {
   /// Native privacy policy document screen.
   static const String privacyPolicy = '/privacy-policy';
 
+  /// Native open-source licenses screen.
+  static const String licenses = '/licenses';
+
   /// Constructs a deep link URI targeting the today screen with the add measurement dialog open.
   static String todayWithAddAction() =>
       '$today?${AppRouteParams.action}=${AppRouteParams.actionAdd}';
