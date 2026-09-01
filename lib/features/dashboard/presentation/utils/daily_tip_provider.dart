@@ -16,10 +16,7 @@ class DailyTipProvider {
     // Choose a tip based on the current day of the year
     final now = DateTime.now();
     // A simple deterministic hash based on year and day of year
-    // Using year + dayOfYear ensures it rotates every day
-    final dayOfYear = int.parse(
-      "${now.year}${now.month.toString().padLeft(2, '0')}${now.day.toString().padLeft(2, '0')}",
-    );
+    final dayOfYear = now.year * 10000 + now.month * 100 + now.day;
 
     final index = dayOfYear % tips.length;
     return tips[index];
