@@ -26,10 +26,8 @@ class CalendarWeekdayHeader extends StatelessWidget {
           context,
         ).firstDayOfWeekIndex;
         if (systemFirstDayIndex == 1) {
-          // Monday
           baseDay = DateTime(2026, 1, 5);
         } else {
-          // Sunday
           baseDay = DateTime(2026, 1, 4);
         }
     }
