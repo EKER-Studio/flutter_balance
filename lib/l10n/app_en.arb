@@ -310,6 +310,14 @@
       }
     }
   },
+  "@vsYesterday": {
+    "description": "Comparison indicator for weight change against yesterday.",
+    "placeholders": {
+      "delta": {
+        "type": "String"
+      }
+    }
+  },
   "@weeklyPaceBadge": {
     "description": "Badge showing the weekly weight pace change per week.",
     "placeholders": {
@@ -696,6 +704,7 @@
   "totalProgress": "Total Progress",
   "unlock": "Unlock",
   "viewOnGitHub": "View on GitHub",
+  "vsYesterday": "{delta} vs yesterday",
   "week": "Week",
   "weekdayShortFriday": "Fri",
   "weekdayShortMonday": "Mon",

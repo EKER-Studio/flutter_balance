@@ -135,7 +135,7 @@ class LatestMeasurementInfo extends StatelessWidget {
         borderRadius: BorderRadius.circular(6),
       ),
       child: Text(
-        '$sign$valStr $unitLabel vs ${l10n.yesterday.toLowerCase()}',
+        l10n.vsYesterday('$sign$valStr $unitLabel'),
         style: Theme.of(context).textTheme.labelSmall?.copyWith(
           color: badgeFg,
           fontWeight: FontWeight.bold,
