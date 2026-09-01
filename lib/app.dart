@@ -277,7 +277,7 @@ class _AppState extends State<App> {
               data: mediaQuery.copyWith(
                 textScaler: mediaQuery.textScaler.clamp(
                   minScaleFactor: 0.85,
-                  maxScaleFactor: 1.35,
+                  maxScaleFactor: 2.0,
                 ),
               ),
               child: Stack(
