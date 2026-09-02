@@ -60,10 +60,12 @@ class FakeWeightRepository implements WeightRepository {
   Future<void> deleteEntry(int id) async {}
 
   @override
-  Future<int> bulkImportEntries(List<WeightEntry> entries) async => entries.length;
+  Future<int> bulkImportEntries(List<WeightEntry> entries) async =>
+      entries.length;
 
   @override
-  Future<int> syncRemoteEntries(List<WeightEntry> remoteEntries) async => remoteEntries.length;
+  Future<int> syncRemoteEntries(List<WeightEntry> remoteEntries) async =>
+      remoteEntries.length;
 
   @override
   Future<void> clearAllData() async {}
@@ -79,8 +81,8 @@ List<WeightEntry> generate90MockEntries() {
     final weight = (i == 0)
         ? 87.0
         : (i == 1)
-            ? 87.2
-            : double.parse((base + fluctuation).toStringAsFixed(1));
+        ? 87.2
+        : double.parse((base + fluctuation).toStringAsFixed(1));
     entries.add(
       WeightEntry(
         id: 90 - i,
@@ -134,8 +136,10 @@ void main() {
     PreferredSizeWidget? appBar,
   }) {
     final effectiveSettingsBloc = settingsBloc ?? AppSettingsBloc();
-    final effectiveWeightBloc = weightBloc ??
-        (WeightBloc(repository: weightRepo)..add(const SubscribeToWeightChanges()));
+    final effectiveWeightBloc =
+        weightBloc ??
+        (WeightBloc(repository: weightRepo)
+          ..add(const SubscribeToWeightChanges()));
 
     return MultiBlocProvider(
       providers: [
@@ -168,27 +172,25 @@ void main() {
         // ---------------------------------------------------------------------
         // 00_splash (Generated across locales)
         // ---------------------------------------------------------------------
-        testWidgets(
-          'Capture 00_splash [$localeCode] [$themeLabel]',
-          (WidgetTester tester) async {
-            await tester.pumpWidget(
-              buildAppWrapper(
-                child: const AppSplashScreen(),
-                locale: locale,
-                theme: theme,
-                themeMode: themeMode,
-              ),
-            );
+        testWidgets('Capture 00_splash [$localeCode] [$themeLabel]', (
+          WidgetTester tester,
+        ) async {
+          await tester.pumpWidget(
+            buildAppWrapper(
+              child: const AppSplashScreen(),
+              locale: locale,
+              theme: theme,
+              themeMode: themeMode,
+            ),
+          );
 
-            await tester.pump();
-            await tester.pump(const Duration(milliseconds: 300));
+          await tester.pump();
+          await tester.pump(const Duration(milliseconds: 300));
 
-            await binding.takeScreenshot(
-              '$localeCode/00_splash/splash_$themeLabel',
-            );
-          },
-          tags: 'screenshot',
-        );
+          await binding.takeScreenshot(
+            '$localeCode/00_splash/splash_$themeLabel',
+          );
+        }, tags: 'screenshot');
 
         // ---------------------------------------------------------------------
         // 01_onboarding / 01_welcome
@@ -460,7 +462,8 @@ void main() {
                   debugShowCheckedModeBanner: false,
                   locale: locale,
                   supportedLocales: AppLocalizations.supportedLocales,
-                  localizationsDelegates: AppLocalizations.localizationsDelegates,
+                  localizationsDelegates:
+                      AppLocalizations.localizationsDelegates,
                   theme: theme,
                   themeMode: themeMode,
                   home: const MainNavigationScreen(),
@@ -499,7 +502,8 @@ void main() {
                   debugShowCheckedModeBanner: false,
                   locale: locale,
                   supportedLocales: AppLocalizations.supportedLocales,
-                  localizationsDelegates: AppLocalizations.localizationsDelegates,
+                  localizationsDelegates:
+                      AppLocalizations.localizationsDelegates,
                   theme: theme,
                   themeMode: themeMode,
                   home: Scaffold(
@@ -547,7 +551,8 @@ void main() {
                   debugShowCheckedModeBanner: false,
                   locale: locale,
                   supportedLocales: AppLocalizations.supportedLocales,
-                  localizationsDelegates: AppLocalizations.localizationsDelegates,
+                  localizationsDelegates:
+                      AppLocalizations.localizationsDelegates,
                   theme: theme,
                   themeMode: themeMode,
                   home: const Scaffold(
@@ -594,12 +599,11 @@ void main() {
                   debugShowCheckedModeBanner: false,
                   locale: locale,
                   supportedLocales: AppLocalizations.supportedLocales,
-                  localizationsDelegates: AppLocalizations.localizationsDelegates,
+                  localizationsDelegates:
+                      AppLocalizations.localizationsDelegates,
                   theme: theme,
                   themeMode: themeMode,
-                  home: CalendarScreen(
-                    initialDate: DateTime(2026, 9, 2),
-                  ),
+                  home: CalendarScreen(initialDate: DateTime(2026, 9, 2)),
                 ),
               ),
             );
@@ -637,11 +641,16 @@ void main() {
                   debugShowCheckedModeBanner: false,
                   locale: locale,
                   supportedLocales: AppLocalizations.supportedLocales,
-                  localizationsDelegates: AppLocalizations.localizationsDelegates,
+                  localizationsDelegates:
+                      AppLocalizations.localizationsDelegates,
                   theme: theme,
                   themeMode: themeMode,
                   home: CalendarScreen(
-                    initialDate: DateTime(2026, 9, 20), // Day without measurements
+                    initialDate: DateTime(
+                      2026,
+                      9,
+                      20,
+                    ), // Day without measurements
                   ),
                 ),
               ),
@@ -681,7 +690,8 @@ void main() {
                   debugShowCheckedModeBanner: false,
                   locale: locale,
                   supportedLocales: AppLocalizations.supportedLocales,
-                  localizationsDelegates: AppLocalizations.localizationsDelegates,
+                  localizationsDelegates:
+                      AppLocalizations.localizationsDelegates,
                   theme: theme,
                   themeMode: themeMode,
                   home: const StatisticsScreen(),
@@ -761,7 +771,8 @@ void main() {
                   debugShowCheckedModeBanner: false,
                   locale: locale,
                   supportedLocales: AppLocalizations.supportedLocales,
-                  localizationsDelegates: AppLocalizations.localizationsDelegates,
+                  localizationsDelegates:
+                      AppLocalizations.localizationsDelegates,
                   theme: theme,
                   themeMode: themeMode,
                   home: const SettingsScreen(),
@@ -802,7 +813,8 @@ void main() {
                   debugShowCheckedModeBanner: false,
                   locale: locale,
                   supportedLocales: AppLocalizations.supportedLocales,
-                  localizationsDelegates: AppLocalizations.localizationsDelegates,
+                  localizationsDelegates:
+                      AppLocalizations.localizationsDelegates,
                   theme: theme,
                   themeMode: themeMode,
                   home: const Scaffold(
@@ -847,6 +859,40 @@ void main() {
             await tester.pumpAndSettle();
             await binding.takeScreenshot(
               '$localeCode/05_settings/03_privacy_policy_$themeLabel',
+            );
+          },
+          tags: 'screenshot',
+        );
+
+        // ---------------------------------------------------------------------
+        // 06_biometric / 01_biometric_lock (Biometric shield / App lock screen)
+        // ---------------------------------------------------------------------
+        testWidgets(
+          'Capture 06_biometric/01_biometric_lock [$localeCode] [$themeLabel]',
+          (WidgetTester tester) async {
+            final settingsBloc = AppSettingsBloc()
+              ..add(const UpdateBiometricLock(true))
+              ..add(const SetLocked(true));
+
+            await tester.pumpWidget(
+              BlocProvider<AppSettingsBloc>.value(
+                value: settingsBloc,
+                child: MaterialApp(
+                  debugShowCheckedModeBanner: false,
+                  locale: locale,
+                  supportedLocales: AppLocalizations.supportedLocales,
+                  localizationsDelegates:
+                      AppLocalizations.localizationsDelegates,
+                  theme: theme,
+                  themeMode: themeMode,
+                  home: const BiometricShieldScreen(),
+                ),
+              ),
+            );
+
+            await tester.pumpAndSettle();
+            await binding.takeScreenshot(
+              '$localeCode/06_biometric/01_biometric_lock_$themeLabel',
             );
           },
           tags: 'screenshot',
