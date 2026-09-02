@@ -28,6 +28,8 @@ End result: code with English-only comments, no informational noise, and documen
 
 Run `git status` before touching anything. If the working tree is not clean (uncommitted changes present), **stop and ask** before making any edits — this task should produce one clean, reviewable diff, not a mix of unrelated changes. Ideally this task runs on a dedicated branch.
 
+Check whether `.gitignore` already has a `.audit-*/` entry. If not, add one. If the repo has an `agents_project.md`, commit that addition on its own now (e.g. `chore: gitignore audit working folders`); if it doesn't, confirm with the operator before committing it — same rule as every other commit in this task. Either way, do this before starting file-by-file work. The `.audit-comments/` folder (see "Progress & Report Log" below) is working state for you, not a deliverable — it should never appear in the diffs you produce, and this one gitignore line also covers the working folders used by the i18n and unit-test audit prompts in this same suite, if they're used in this repo too.
+
 ## Operating Mode — Memory-Safe Iteration (IMPORTANT)
 
 This task can involve dozens or hundreds of files, and you may be running with a small context window. Follow these rules strictly — they are not optional:
@@ -35,13 +37,13 @@ This task can involve dozens or hundreds of files, and you may be running with a
 1. **Never load the whole project into context.** Start by listing file *paths* only (a glob/tree listing), not file contents.
 2. **Process exactly one file at a time.** Read → evaluate → edit → save → move to the next file. Do not hold more than one file's full content in your working context at the same time. Do not "read ahead" into other files to plan changes.
 3. **Plan only from the path list.** Any prioritization or batching decision is made off file paths/sizes, never off file contents you haven't processed yet.
-4. **Append-only progress log.** After finishing each file, append one line to a log file on disk (see below) instead of keeping the running report in your own context. This keeps your context footprint flat regardless of project size.
-5. **Resume from the log.** At the start of a run, read the log first and skip any file already marked `done`. This lets the task be stopped and resumed across multiple sessions without re-reading finished files.
+4. **Append-only progress log.** After finishing each file, append one line to the log file on disk (see "Progress & Report Log" below) instead of keeping the running report in your own context. This keeps your context footprint flat regardless of project size.
+5. **Resume from the log.** At the start of a run, read `.audit-comments/log.md` first and skip any file already marked `done`. This lets the task be stopped and resumed across multiple sessions without re-reading finished files.
 6. **Oversized individual files.** If a file is longer than **250 lines**, process it in two passes instead of loading it whole:
-   - Pass 1: only `///` DartDoc blocks and file-level comments.
-   - Pass 2: only inline `//` / `/* */` comments.
-   Re-open the file fresh for pass 2 — don't try to carry pass-1 reasoning in context. (250 lines is a hard threshold, not a judgment call — it accounts for the low end of a 16k–40k token context window once these instructions are also loaded.)
-7. **Commit per file.** After each file is edited, saved, and logged, make a small git commit for that file alone (e.g. `chore: clean up comments in lib/foo/bar.dart`). This bounds the damage of an interrupted run — if the session dies mid-project, everything up to the last commit is safe and reviewable, and the log tells you exactly where to resume.
+   - Pass 1: extract only `///` DartDoc blocks and file-level comments via `grep -n "^\s*///"` (or equivalent) — don't open the full file.
+   - Pass 2: extract only inline `//` / `/* */` comments via a separate targeted search — again, don't open the full file.
+   Only read the surrounding lines you actually need to judge a given comment (a few lines of context around each match), and only open the full file if a genuinely ambiguous case requires it. Treat each pass as independent — don't try to carry pass-1 reasoning in context. (250 lines is a hard threshold, not a judgment call — it accounts for the low end of a 16k–40k token context window once these instructions are also loaded.)
+7. **Commit per file.** After each file is edited, saved, and logged, commit that file alone (e.g. `chore: clean up comments in lib/foo/bar.dart`). If the repo has no `agents_project.md`, confirm with the operator before committing — per your AGENTS.md policy, don't commit autonomously without one. This bounds the damage of an interrupted run — if the session dies mid-project, everything up to the last commit is safe and reviewable, and the log tells you exactly where to resume.
 
 ## Comment Evaluation Rules (`//`, `/* */`)
 
@@ -75,7 +77,7 @@ Applies to classes, public methods, fields, top-level functions — anything tha
 
 ## Progress & Report Log
 
-Create (or reuse) `LOG_COMMENT_CLEANUP.md` in the project root. After each processed file, append one line:
+Create (or reuse) the `.audit-comments/` folder in the project root — it's covered by the `.gitignore` entry above, so it stays out of your per-file commits and can safely persist across sessions. Inside it, keep `log.md` as the append-only per-file record. After each processed file, append one line:
 
 ```
 - [x] lib/path/to/file.dart — removed: 3, translated: 2, notes: none
@@ -83,13 +85,15 @@ Create (or reuse) `LOG_COMMENT_CLEANUP.md` in the project root. After each proce
 
 Use `notes:` for edge cases kept despite ambiguity, so they can be checked by hand later.
 
+You're not limited to a single file inside the folder. If the project is large enough that `log.md` becomes unwieldy to read back in full at the start of a resumed session, archive its already-processed lines into a dated `log-archive-<N>.md` in the same folder and keep only the unprocessed tail plus a one-line pointer (e.g. `<!-- earlier entries: see log-archive-1.md -->`) at the top of `log.md`. Whatever you split off, `log.md` must always be the first thing you read to know where to resume — never split state into a file `log.md` doesn't point to.
+
 ## Step-by-Step Process
 
 1. Check git status is clean (see "Before You Start").
 2. List all in-scope `.dart` file paths.
-3. Read `LOG_COMMENT_CLEANUP.md` if it exists; skip files already marked `done`.
+3. Read `.audit-comments/log.md` if it exists; skip files already marked `done`.
 4. For each remaining file, in path-alphabetical order:
-   - read the file (in two passes if over 250 lines — see rule 6 above),
+   - read the file (or extract comments via the grep-based two-pass approach if over 250 lines — see rule 6 above),
    - identify all comments and DartDoc,
    - apply the evaluation rules (redundancy + language; private `///` follows the comment rules, public `///` follows the DartDoc rules),
    - apply the edits,
@@ -97,7 +101,7 @@ Use `notes:` for edge cases kept despite ambiguity, so they can be checked by ha
    - append one line to the log,
    - commit the change for this file alone.
 5. After the whole project is processed, run `dart format .` and `dart analyze` (if available in the environment) and report any new errors/warnings introduced by the changes.
-6. Print the final summary (see below), then delete `LOG_COMMENT_CLEANUP.md` — it's a working artifact, not documentation, once the run is complete.
+6. Print the final summary (see below). `.audit-comments/` is gitignored, so leaving it in place costs nothing — don't delete it automatically. Leave it for manual review of the `notes:` entries, and only delete it if the operator asks.
 
 ## Final Summary (required)
 
