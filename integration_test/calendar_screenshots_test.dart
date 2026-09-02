@@ -8,11 +8,14 @@ import 'package:integration_test/integration_test.dart';
 
 import 'package:balance/core/presentation/theme/app_theme.dart';
 import 'package:balance/features/calendar/presentation/screens/calendar_screen.dart';
+import 'package:balance/features/navigation/presentation/widgets/components/adaptive_bottom_navigation_bar.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_bloc.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_event.dart';
 import 'package:balance/features/settings/presentation/bloc/weight_goal_mode.dart';
+import 'package:balance/features/weight/domain/entities/weight_entry.dart';
 import 'package:balance/features/weight/presentation/bloc/weight_bloc.dart';
 import 'package:balance/features/weight/presentation/bloc/weight_event.dart';
+import 'package:balance/features/weight/presentation/widgets/components/add_weight_sheet.dart';
 import 'package:balance/l10n/app_localizations.dart';
 import 'helpers/screenshot_test_helper.dart';
 
@@ -28,11 +31,12 @@ void main() {
 
   group('03_calendar Screenshot Generator', () {
     for (final localeCode in effectiveLocales) {
+      final locale = Locale(localeCode);
+
       for (final isDark in [false, true]) {
-        final themeLabel = isDark ? 'dark' : 'light';
-        final theme = isDark ? AppTheme.darkTheme : AppTheme.lightTheme;
         final themeMode = isDark ? ThemeMode.dark : ThemeMode.light;
-        final locale = Locale(localeCode);
+        final theme = isDark ? AppTheme.darkTheme : AppTheme.lightTheme;
+        final themeLabel = isDark ? 'dark' : 'light';
 
         // 03_calendar / 01_month_view
         testWidgets(
@@ -62,7 +66,13 @@ void main() {
                   home: ScreenshotDeviceFrame(
                     isDark: isDark,
                     showNotificationIcon: true,
-                    child: CalendarScreen(initialDate: DateTime(2026, 8, 14)),
+                    child: Scaffold(
+                      body: CalendarScreen(initialDate: DateTime(2026, 8, 14)),
+                      bottomNavigationBar: AdaptiveBottomNavigationBar(
+                        selectedIndex: 1,
+                        onDestinationSelected: (_) {},
+                      ),
+                    ),
                   ),
                 ),
               ),
@@ -78,9 +88,9 @@ void main() {
           tags: 'screenshot',
         );
 
-        // 03_calendar / 02_day_details
+        // 03_calendar / 02_edit_measurement
         testWidgets(
-          'Capture 03_calendar/02_day_details [$localeCode] [$themeLabel]',
+          'Capture 03_calendar/02_edit_measurement [$localeCode] [$themeLabel]',
           (WidgetTester tester) async {
             final settingsBloc = AppSettingsBloc()
               ..add(const UpdateHeight(177.0))
@@ -88,6 +98,13 @@ void main() {
 
             final weightBloc = WeightBloc(repository: weightRepo)
               ..add(const SubscribeToWeightChanges());
+
+            final editEntry = WeightEntry(
+              id: 26,
+              weightKg: 87.0,
+              dateTime: DateTime(2026, 8, 26, 9, 41),
+              note: getMockRunNote(localeCode),
+            );
 
             await tester.pumpWidget(
               MultiBlocProvider(
@@ -106,7 +123,27 @@ void main() {
                   home: ScreenshotDeviceFrame(
                     isDark: isDark,
                     showNotificationIcon: true,
-                    child: CalendarScreen(initialDate: DateTime(2026, 8, 25)),
+                    child: Scaffold(
+                      body: Stack(
+                        children: [
+                          CalendarScreen(initialDate: DateTime(2026, 8, 26)),
+                          const ModalBarrier(
+                            dismissible: false,
+                            color: Colors.black54,
+                          ),
+                          Align(
+                            alignment: Alignment.bottomCenter,
+                            child: ScreenshotBottomSheetContainer(
+                              child: AddWeightSheet(existingEntry: editEntry),
+                            ),
+                          ),
+                        ],
+                      ),
+                      bottomNavigationBar: AdaptiveBottomNavigationBar(
+                        selectedIndex: 1,
+                        onDestinationSelected: (_) {},
+                      ),
+                    ),
                   ),
                 ),
               ),
@@ -116,7 +153,7 @@ void main() {
             await tester.pump(const Duration(milliseconds: 300));
 
             await binding.takeScreenshot(
-              '$prefix$localeCode/03_calendar/02_day_details_$themeLabel',
+              '$prefix$localeCode/03_calendar/02_edit_measurement_$themeLabel',
             );
           },
           tags: 'screenshot',

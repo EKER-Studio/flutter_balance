@@ -14,6 +14,7 @@ import 'package:balance/core/presentation/screens/biometric_shield_screen.dart';
 import 'package:balance/core/presentation/theme/app_theme.dart';
 import 'package:balance/features/calendar/presentation/screens/calendar_screen.dart';
 import 'package:balance/features/navigation/presentation/screens/main_navigation_screen.dart';
+import 'package:balance/features/navigation/presentation/widgets/components/adaptive_bottom_navigation_bar.dart';
 import 'package:balance/features/onboarding/presentation/widgets/components/csv_import_success_view.dart';
 import 'package:balance/features/onboarding/presentation/widgets/components/onboarding_app_bar.dart';
 import 'package:balance/features/onboarding/presentation/widgets/steps/step_biometric_lock.dart';
@@ -41,6 +42,7 @@ import 'package:balance/features/weight/presentation/utils/bmi_category_localize
 import 'package:balance/features/weight/presentation/widgets/components/add_weight_sheet.dart';
 import 'package:balance/features/weight/presentation/widgets/components/bmi_legend_dialog.dart';
 import 'package:balance/l10n/app_localizations.dart';
+import 'helpers/screenshot_test_helper.dart';
 
 class MockHydratedStorage extends Mock implements HydratedStorage {}
 
@@ -78,12 +80,7 @@ List<WeightEntry> generate90MockEntries() {
 
   void addEntry(DateTime dt, double weight, [String? note]) {
     entries.add(
-      WeightEntry(
-        id: nextId++,
-        weightKg: weight,
-        dateTime: dt,
-        note: note,
-      ),
+      WeightEntry(id: nextId++, weightKg: weight, dateTime: dt, note: note),
     );
   }
 
@@ -635,6 +632,7 @@ void main() {
                             color: Colors.transparent,
                             child: AddWeightSheet(
                               initialDate: DateTime(2026, 9, 2, 9, 41),
+                              initialNote: getMockRunNote(localeCode),
                             ),
                           ),
                         ),
@@ -743,7 +741,13 @@ void main() {
                         AppLocalizations.localizationsDelegates,
                     theme: theme,
                     themeMode: themeMode,
-                    home: CalendarScreen(initialDate: DateTime(2026, 8, 14)),
+                    home: Scaffold(
+                      body: CalendarScreen(initialDate: DateTime(2026, 8, 14)),
+                      bottomNavigationBar: AdaptiveBottomNavigationBar(
+                        selectedIndex: 1,
+                        onDestinationSelected: (_) {},
+                      ),
+                    ),
                   ),
                 ),
               );
@@ -758,9 +762,9 @@ void main() {
             tags: 'screenshot',
           );
 
-          // 03_calendar / 02_day_details
+          // 03_calendar / 02_edit_measurement
           testWidgets(
-            'Capture 03_calendar/02_day_details [$localeCode] [$themeLabel]',
+            'Capture 03_calendar/02_edit_measurement [$localeCode] [$themeLabel]',
             (WidgetTester tester) async {
               final settingsBloc = AppSettingsBloc()
                 ..add(const UpdateHeight(177.0))
@@ -768,6 +772,13 @@ void main() {
 
               final weightBloc = WeightBloc(repository: weightRepo)
                 ..add(const SubscribeToWeightChanges());
+
+              final editEntry = WeightEntry(
+                id: 26,
+                weightKg: 87.0,
+                dateTime: DateTime(2026, 8, 26, 9, 41),
+                note: getMockRunNote(localeCode),
+              );
 
               await tester.pumpWidget(
                 MultiBlocProvider(
@@ -783,7 +794,35 @@ void main() {
                         AppLocalizations.localizationsDelegates,
                     theme: theme,
                     themeMode: themeMode,
-                    home: CalendarScreen(initialDate: DateTime(2026, 8, 25)),
+                    home: Scaffold(
+                      body: Stack(
+                        children: [
+                          CalendarScreen(initialDate: DateTime(2026, 8, 26)),
+                          const ModalBarrier(
+                            dismissible: false,
+                            color: Colors.black54,
+                          ),
+                          Align(
+                            alignment: Alignment.bottomCenter,
+                            child: Material(
+                              color: theme.colorScheme.surfaceContainerLow,
+                              elevation: 2.0,
+                              shape: const RoundedRectangleBorder(
+                                borderRadius: BorderRadius.vertical(
+                                  top: Radius.circular(28.0),
+                                ),
+                              ),
+                              clipBehavior: Clip.antiAlias,
+                              child: AddWeightSheet(existingEntry: editEntry),
+                            ),
+                          ),
+                        ],
+                      ),
+                      bottomNavigationBar: AdaptiveBottomNavigationBar(
+                        selectedIndex: 1,
+                        onDestinationSelected: (_) {},
+                      ),
+                    ),
                   ),
                 ),
               );
@@ -792,7 +831,7 @@ void main() {
               await tester.pump(const Duration(milliseconds: 300));
 
               await binding.takeScreenshot(
-                '$prefix$localeCode/03_calendar/02_day_details_$themeLabel',
+                '$prefix$localeCode/03_calendar/02_edit_measurement_$themeLabel',
               );
             },
             tags: 'screenshot',

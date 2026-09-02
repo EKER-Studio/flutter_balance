@@ -48,12 +48,7 @@ List<WeightEntry> generate90MockEntries() {
 
   void addEntry(DateTime dt, double weight, [String? note]) {
     entries.add(
-      WeightEntry(
-        id: nextId++,
-        weightKg: weight,
-        dateTime: dt,
-        note: note,
-      ),
+      WeightEntry(id: nextId++, weightKg: weight, dateTime: dt, note: note),
     );
   }
 
@@ -419,5 +414,34 @@ class ScreenshotBottomSheetContainer extends StatelessWidget {
       clipBehavior: Clip.antiAlias,
       child: child,
     );
+  }
+}
+
+/// Returns a realistic two-sentence running note tailored to [localeCode] for screenshot demonstrations.
+///
+/// @param localeCode The two-letter ISO language code (e.g. 'pl', 'en').
+String getMockRunNote(String localeCode) {
+  switch (localeCode) {
+    case 'pl':
+      return 'Pomiar po biegu wokół Jeziora Maltańskiego (5 km). Wczoraj zrobiłam dwa takie pętle!';
+    case 'de':
+      return 'Messung nach einem Lauf um den Maltasee (5 km). Gestern habe ich zweimal dieselbe Runde gelaufen!';
+    case 'fr':
+      return 'Mesure après une course autour du lac Malta (5 km). Hier, j\'ai fait deux fois ce tour !';
+    case 'es':
+      return 'Medición después de una carrera alrededor del lago Malta (5 km). ¡Ayer hice dos vueltas a este circuito!';
+    case 'pt':
+      return 'Medição após uma corrida ao redor do Lago Malta (5 km). Yesterday fiz duas vezes esse percurso!';
+    case 'it':
+      return 'Misurazione dopo una corsa intorno al lago Malta (5 km). Ieri ho fatto due volte questo giro!';
+    case 'nl':
+      return 'Meting na een hardlooprondje rond het Maltameer (5 km). Gisteren liep ik twee keer deze route!';
+    case 'ja':
+      return 'マルタ湖5kmラン後の測定。昨日は同じルートを2回走りました！';
+    case 'ko':
+      return '말타 호수 5km 달리기 후 측정. 어제 이 코스를 두 번 돌았습니다!';
+    case 'en':
+    default:
+      return 'Measurement after running around Malta Lake (5 km). Yesterday I did this route twice!';
   }
 }
