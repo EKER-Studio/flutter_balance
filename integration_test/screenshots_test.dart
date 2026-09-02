@@ -743,11 +743,7 @@ void main() {
                         AppLocalizations.localizationsDelegates,
                     theme: theme,
                     themeMode: themeMode,
-                    home: ScreenshotDeviceFrame(
-                      isDark: isDark,
-                      showNotificationIcon: true,
-                      child: CalendarScreen(initialDate: DateTime(2026, 8, 14)),
-                    ),
+                    home: CalendarScreen(initialDate: DateTime(2026, 8, 14)),
                   ),
                 ),
               );
@@ -787,11 +783,7 @@ void main() {
                         AppLocalizations.localizationsDelegates,
                     theme: theme,
                     themeMode: themeMode,
-                    home: ScreenshotDeviceFrame(
-                      isDark: isDark,
-                      showNotificationIcon: true,
-                      child: CalendarScreen(initialDate: DateTime(2026, 8, 25)),
-                    ),
+                    home: CalendarScreen(initialDate: DateTime(2026, 8, 25)),
                   ),
                 ),
               );
