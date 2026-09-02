@@ -21,6 +21,7 @@ import 'package:balance/features/settings/presentation/widgets/components/pace_w
 import 'package:balance/features/settings/presentation/widgets/components/target_weight_sheet.dart';
 import 'package:balance/features/settings/presentation/widgets/components/theme_selection_dialog.dart';
 import 'package:balance/features/settings/presentation/widgets/components/unit_selection_dialog.dart';
+import 'package:balance/features/settings/presentation/widgets/components/wipe_data_dialog.dart';
 import 'package:balance/features/weight/presentation/bloc/weight_bloc.dart';
 import 'package:balance/features/weight/presentation/bloc/weight_event.dart';
 import 'package:balance/l10n/app_localizations.dart';
@@ -437,9 +438,62 @@ void main() {
           tags: 'screenshot',
         );
 
-        // 05_settings / 08_privacy_policy
+        // 05_settings / 08_wipe_data_dialog (destructive confirmation)
         testWidgets(
-          'Capture 05_settings/08_privacy_policy [$localeCode] [$themeLabel]',
+          'Capture 05_settings/08_wipe_data_dialog [$localeCode] [$themeLabel]',
+          (WidgetTester tester) async {
+            final settingsBloc = AppSettingsBloc()
+              ..add(const UpdateHeight(177.0))
+              ..add(const TargetWeightChanged(85.0, WeightGoalMode.lose));
+
+            final weightBloc = WeightBloc(repository: weightRepo)
+              ..add(const SubscribeToWeightChanges());
+
+            await tester.pumpWidget(
+              MultiBlocProvider(
+                providers: [
+                  BlocProvider<AppSettingsBloc>.value(value: settingsBloc),
+                  BlocProvider<WeightBloc>.value(value: weightBloc),
+                ],
+                child: MaterialApp(
+                  debugShowCheckedModeBanner: false,
+                  locale: locale,
+                  supportedLocales: AppLocalizations.supportedLocales,
+                  localizationsDelegates:
+                      AppLocalizations.localizationsDelegates,
+                  theme: theme,
+                  themeMode: themeMode,
+                  home: ScreenshotDeviceFrame(
+                    isDark: isDark,
+                    showNotificationIcon: true,
+                    child: Stack(
+                      children: [
+                        const SettingsScreen(),
+                        const ModalBarrier(
+                          dismissible: false,
+                          color: Colors.black54,
+                        ),
+                        const Center(child: WipeDataDialog()),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            );
+
+            await tester.pump();
+            await tester.pump(const Duration(milliseconds: 300));
+
+            await binding.takeScreenshot(
+              '$prefix$localeCode/05_settings/08_wipe_data_dialog_$themeLabel',
+            );
+          },
+          tags: 'screenshot',
+        );
+
+        // 05_settings / 09_privacy_policy
+        testWidgets(
+          'Capture 05_settings/09_privacy_policy [$localeCode] [$themeLabel]',
           (WidgetTester tester) async {
             await tester.pumpWidget(
               MaterialApp(
@@ -460,7 +514,7 @@ void main() {
             await tester.pumpAndSettle();
 
             await binding.takeScreenshot(
-              '$prefix$localeCode/05_settings/08_privacy_policy_$themeLabel',
+              '$prefix$localeCode/05_settings/09_privacy_policy_$themeLabel',
             );
           },
           tags: 'screenshot',
