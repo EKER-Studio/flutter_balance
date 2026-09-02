@@ -10,6 +10,7 @@ import 'package:mocktail/mocktail.dart';
 
 import 'package:balance/core/models/measurement_unit.dart';
 import 'package:balance/core/presentation/screens/app_splash_screen.dart';
+import 'package:balance/core/presentation/screens/biometric_shield_screen.dart';
 import 'package:balance/core/presentation/theme/app_theme.dart';
 import 'package:balance/features/calendar/presentation/screens/calendar_screen.dart';
 import 'package:balance/features/navigation/presentation/screens/main_navigation_screen.dart';
@@ -25,6 +26,9 @@ import 'package:balance/features/onboarding/presentation/widgets/steps/step_welc
 import 'package:balance/features/settings/presentation/bloc/app_settings_bloc.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_event.dart';
 import 'package:balance/features/settings/presentation/bloc/weight_goal_mode.dart';
+import 'package:balance/features/settings/presentation/screens/privacy_policy_screen.dart';
+import 'package:balance/features/settings/presentation/screens/settings_screen.dart';
+import 'package:balance/features/settings/presentation/widgets/components/target_weight_sheet.dart';
 import 'package:balance/features/statistics/domain/services/milestone_calculator.dart';
 import 'package:balance/features/statistics/presentation/screens/statistics_screen.dart';
 import 'package:balance/features/statistics/presentation/widgets/components/milestones_gallery_sheet.dart';
@@ -729,6 +733,120 @@ void main() {
             await tester.pumpAndSettle();
             await binding.takeScreenshot(
               '$localeCode/04_statistics/02_achievements_gallery_$themeLabel',
+            );
+          },
+          tags: 'screenshot',
+        );
+
+        // ---------------------------------------------------------------------
+        // 05_settings / 01_preferences (Main settings screen)
+        // ---------------------------------------------------------------------
+        testWidgets(
+          'Capture 05_settings/01_preferences [$localeCode] [$themeLabel]',
+          (WidgetTester tester) async {
+            final settingsBloc = AppSettingsBloc()
+              ..add(const UpdateHeight(177.0))
+              ..add(const TargetWeightChanged(85.0, WeightGoalMode.lose));
+
+            final weightBloc = WeightBloc(repository: weightRepo)
+              ..add(const SubscribeToWeightChanges());
+
+            await tester.pumpWidget(
+              MultiBlocProvider(
+                providers: [
+                  BlocProvider<AppSettingsBloc>.value(value: settingsBloc),
+                  BlocProvider<WeightBloc>.value(value: weightBloc),
+                ],
+                child: MaterialApp(
+                  debugShowCheckedModeBanner: false,
+                  locale: locale,
+                  supportedLocales: AppLocalizations.supportedLocales,
+                  localizationsDelegates: AppLocalizations.localizationsDelegates,
+                  theme: theme,
+                  themeMode: themeMode,
+                  home: const SettingsScreen(),
+                ),
+              ),
+            );
+
+            await tester.pump();
+            await tester.pump(const Duration(milliseconds: 300));
+
+            await binding.takeScreenshot(
+              '$localeCode/05_settings/01_preferences_$themeLabel',
+            );
+          },
+          tags: 'screenshot',
+        );
+
+        // ---------------------------------------------------------------------
+        // 05_settings / 02_target_weight_sheet (Target weight configuration modal)
+        // ---------------------------------------------------------------------
+        testWidgets(
+          'Capture 05_settings/02_target_weight_sheet [$localeCode] [$themeLabel]',
+          (WidgetTester tester) async {
+            final settingsBloc = AppSettingsBloc()
+              ..add(const UpdateHeight(177.0))
+              ..add(const TargetWeightChanged(85.0, WeightGoalMode.lose));
+
+            final weightBloc = WeightBloc(repository: weightRepo)
+              ..add(const SubscribeToWeightChanges());
+
+            await tester.pumpWidget(
+              MultiBlocProvider(
+                providers: [
+                  BlocProvider<AppSettingsBloc>.value(value: settingsBloc),
+                  BlocProvider<WeightBloc>.value(value: weightBloc),
+                ],
+                child: MaterialApp(
+                  debugShowCheckedModeBanner: false,
+                  locale: locale,
+                  supportedLocales: AppLocalizations.supportedLocales,
+                  localizationsDelegates: AppLocalizations.localizationsDelegates,
+                  theme: theme,
+                  themeMode: themeMode,
+                  home: const Scaffold(
+                    body: SafeArea(
+                      child: TargetWeightSheet(
+                        currentValueKg: 85.0,
+                        measurementUnit: MeasurementUnit.metric,
+                        initialGoalMode: WeightGoalMode.lose,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            );
+
+            await tester.pumpAndSettle();
+            await binding.takeScreenshot(
+              '$localeCode/05_settings/02_target_weight_sheet_$themeLabel',
+            );
+          },
+          tags: 'screenshot',
+        );
+
+        // ---------------------------------------------------------------------
+        // 05_settings / 03_privacy_policy (Privacy Policy Screen)
+        // ---------------------------------------------------------------------
+        testWidgets(
+          'Capture 05_settings/03_privacy_policy [$localeCode] [$themeLabel]',
+          (WidgetTester tester) async {
+            await tester.pumpWidget(
+              MaterialApp(
+                debugShowCheckedModeBanner: false,
+                locale: locale,
+                supportedLocales: AppLocalizations.supportedLocales,
+                localizationsDelegates: AppLocalizations.localizationsDelegates,
+                theme: theme,
+                themeMode: themeMode,
+                home: const PrivacyPolicyScreen(),
+              ),
+            );
+
+            await tester.pumpAndSettle();
+            await binding.takeScreenshot(
+              '$localeCode/05_settings/03_privacy_policy_$themeLabel',
             );
           },
           tags: 'screenshot',
