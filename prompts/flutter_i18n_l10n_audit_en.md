@@ -27,7 +27,7 @@ Never try to reason about the entire `lib/` tree, or an entire large `.arb` file
 - **Category E (supportedLocales):** single-file check (wherever `MaterialApp`/`MaterialApp.router` is declared) — always cheap, no chunking needed.
 
 **Rule 3 — Externalize state, don't carry it in your head.**
-You have terminal access. Maintain a persistent on-disk state file, e.g. `LOG_I18N_L10N_AUDIT.md`, and **append findings to it immediately after finishing each chunk** — don't wait until the end of a round to write everything down from memory. Structure it as:
+You have terminal access. Maintain a persistent on-disk state folder, `.audit-i18n/`, with `state.md` as your main file, and **append findings to it immediately after finishing each chunk** — don't wait until the end of a round to write everything down from memory. Structure `state.md` as:
 ```
 ## Config (from Round 0)
 ...
@@ -41,10 +41,20 @@ You have terminal access. Maintain a persistent on-disk state file, e.g. `LOG_I1
 | # | Priority | File:line | Snippet | Proposed key | Status |
 ...
 ```
-If your context gets reset or you're resumed in a new session, **read the state file first**, not the source tree — it tells you what's already covered and what's still pending, so you never need to re-scan everything from scratch.
+You're not limited to a single file inside the folder. If `state.md` grows too large to read back comfortably in one go (large projects, many categories), split it into per-category files inside `.audit-i18n/` (e.g. `findings-a.md`, `findings-c.md`, ...) and keep `state.md` as a short index naming which file holds which category's checklist and findings. Whatever you split off, `state.md` must always be the first thing you read — never split state into a file `state.md` doesn't point to.
+
+If your context gets reset or you're resumed in a new session, **read `state.md` first**, not the source tree — it tells you what's already covered and what's still pending (and where the rest of the state lives, if split), so you never need to re-scan everything from scratch.
 
 **Rule 4 — Local decisions only.**
 Every chunk's flag/skip decision must be resolvable using just that chunk's grep output plus the small, cheap reference data (the ARB key list, the exclusion rules from Round 0). Never make a chunk's classification depend on having the full accumulated report in context — that's what the state file is for.
+
+---
+
+## Before You Start — Safety Check
+
+Run `git status` before touching anything. If the working tree is not clean (uncommitted changes present), **stop and ask** before making any edits — Round 2 will produce real code and `.arb` changes, and this should be one clean, reviewable diff, not mixed in with unrelated work. Ideally this runs on a dedicated branch.
+
+Check whether `.gitignore` already has a `.audit-*/` entry. If not, add one. If the repo has an `agents_project.md`, commit that addition on its own now (e.g. `chore: gitignore audit working folders`); if it doesn't, confirm with the operator before committing it — same rule as every other commit in this task. Either way, do this before Round 0. The `.audit-i18n/` folder (see Rule 3 above) is working state for you, not a deliverable — it should never appear in the diffs you produce, and this one gitignore line also covers the working folders used by the comment-cleanup and unit-test audit prompts in this same suite, if they're used in this repo too.
 
 ---
 
@@ -64,7 +74,7 @@ Before flagging anything, establish the facts and set up your working state:
    - some other generated class/extension name.
 4. Identify excluded paths: generated code (`*.g.dart`, `*.freezed.dart`, the `l10n/generated` directory or `.dart_tool`), `test/`, `build/`.
 5. Build the chunk work queue: list the target directories under `lib/` (excluding generated/test/build) that Category A will process one at a time, and extract the full key list from `app_en.arb` for the batched Category C searches.
-6. Create `LOG_I18N_L10N_AUDIT.md` with the config summary and an empty checklist per chunk, per category.
+6. Create the `.audit-i18n/` folder and its `state.md` — gitignored per the Safety Check above, so it can persist across sessions and rounds without touching your commits — with the config summary and an empty checklist per chunk, per category.
 
 Round 0 output: a short summary of the established configuration (source language, target languages, access convention, exclusions, chunk count) plus confirmation that the state file was created. If anything is ambiguous — ask before proceeding.
 
@@ -109,7 +119,7 @@ For every other `app_<locale>.arb` file:
 3. **Suspiciously identical values** — the target-language value is identical to `en`. Don't auto-overwrite (could legitimately be a proper noun, number, symbol) — flag as "needs manual review" with the key name.
 4. **Mismatched placeholder metadata** (`{count}`, `{name}`, etc., and the `@key` blocks with `placeholders`) — a placeholder defined in `en` but missing or renamed in another language is a real compile/runtime error → flag as Critical.
 
-For gaps (points 1 and 2), **propose the translation immediately** in the Fix round — you're capable of producing it. Match the tone/register already used in that file.
+For gaps (points 1 and 2), **propose the translation immediately** in the Fix round — you're capable of producing it. Match the tone/register already used in that file. Tag every proposed translation `needs-native-review: true` in the state file — proposing text in a language isn't the same as confirming it reads naturally to a native speaker, and the report must never present the two as equivalent.
 
 ### C. Unused keys (dead translations)
 
@@ -143,15 +153,15 @@ Feed this category's result back into the next audit's Round 0 — if the sets d
 ## Iterative Process (rounds)
 
 **Round 1 — Audit.**
-Read and report only. Zero code changes. Work chunk by chunk (Rule 2), appending findings to `LOG_I18N_L10N_AUDIT.md` after each chunk instead of holding everything in your working context. Output: the report format below, grouped by category A–E, with priorities, built from the accumulated state file.
+Read and report only. Zero code changes. Work chunk by chunk (Rule 2), appending findings to `.audit-i18n/state.md` (or its per-category split files) after each chunk instead of holding everything in your working context. Output: the report format below, grouped by category A–E, with priorities, built from the accumulated state file.
 
 **Round 2 — Fix.**
 Apply fixes for everything that doesn't need your decision:
 - replace hardcoded strings with `AppLocalizations`/`context.l10n` + add missing keys to `app_en.arb` (and the rest, with translation included immediately),
-- fill in missing/empty translations,
+- fill in missing/empty translations (tag each as `needs-native-review: true` per Category B),
 - remove confirmed-dead keys from all `.arb` files,
 - fix mismatched placeholders.
-Same chunking discipline applies: fix one chunk, verify that chunk's diff compiles/parses conceptually, update the state file, move on. Leave anything tagged "needs manual review" untouched and list it separately for a decision.
+Same chunking discipline applies: fix one chunk, verify that chunk's diff compiles/parses conceptually, update the state file, commit that chunk's changes on its own (see Safety Rules), then move on. Leave anything tagged "needs manual review" untouched and list it separately for a decision.
 
 **Round 3 — Verify.**
 Re-run the Category A, B, C, and E heuristics from scratch on the updated code, again chunk by chunk against the state file:
@@ -195,7 +205,7 @@ If verification finds new/unresolved issues → go back to Round 2 for just thos
 - Awaiting my decision: C
 ```
 
-`Status` values: `Found` (audit round) / `Fixed` / `Verified` / `Needs decision`.
+`Status` values: `Found` (audit round) / `Fixed` / `Fixed — needs native review` (a translation you proposed yourself) / `Verified` / `Needs decision`.
 `Priority` values from the scale above: `Critical` / `High` / `Medium` / `Low`.
 
 ---
@@ -206,6 +216,9 @@ If verification finds new/unresolved issues → go back to Round 2 for just thos
 - Never overwrite an existing, non-empty translation without explicitly flagging it as a separate item pending approval — this especially applies to the "suspiciously identical values" case in Category B.
 - Make `.arb` changes symmetrically across all languages in one step (never leave files in a drifted state between rounds).
 - When adding a new key, also add its `@key` metadata block with a `description` and `placeholders` if it uses any — matching the existing convention in the file.
+- Every translation you propose yourself is tagged `needs-native-review: true` and reported with status `Fixed — needs native review` — never reported as plain `Fixed`, which is reserved for changes that don't need a native speaker's judgment call (removed keys, placeholder fixes, hardcoded-string extraction).
+- Commit each fixed chunk on its own (e.g. `chore(i18n): externalize strings in lib/features/onboarding`). If the repo has no `agents_project.md`, confirm with the operator before committing — per your AGENTS.md policy, don't commit autonomously without one.
+- `.audit-i18n/` is gitignored, so it never needs to be part of a commit. Once Definition of Done is met it can be deleted or left in place for manual review — default to keeping it, since Category E's result feeds the next audit's Round 0; only delete it if the operator asks or explicitly wants the next run to start Round 0 from scratch.
 
 ---
 
