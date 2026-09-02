@@ -30,7 +30,11 @@ gaps, violations, risks, and concrete fixes.
 
 If the provided codebase exceeds your context window, explicitly
 state which dimensions were NOT fully analyzed rather than
-producing incomplete findings silently.
+producing incomplete findings silently — and persist that fact in
+the state file (see "STATE & RESUMABILITY" below) so the next
+session picks up exactly where this one stopped.
+
+Before starting Dimension 1, check whether commonly load-bearing files were provided: `pubspec.yaml`, `analysis_options.yaml`, `l10n.yaml`, CI workflow files, `before_push.sh`. If any are missing, ask for them once, up front — don't discover the gap dimension-by-dimension and mark each one `NOT PROVIDED` individually.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ## TECH STACK CONTEXT
@@ -59,6 +63,61 @@ Prioritize findings in this strict order:
 5. OPTIMIZATION items last
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+## STATE & RESUMABILITY
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+This audit runs through an agentic tool with file system access,
+and a full 12-dimension pass over a real repository can exceed a
+single session's context. Persist progress so a new session
+continues instead of restarting from Dimension 1.
+
+At the start of every session, check for `.audit-architect-riverpod/state.md`
+before reading any source file:
+- If it exists, read it first. Resume from its pointer, skip
+  dimensions already marked `✅ Done`, and keep appending findings
+  to the same file rather than starting a fresh report.
+- If it doesn't exist, create the folder and file, then proceed
+  from Dimension 1 in priority-tier order (see "AUDIT ITERATION
+  PROTOCOL" above).
+
+Check whether `.gitignore` already has a `.audit-*/` entry; if
+not, add one. This audit never edits source code, so none of its
+own work needs a commit — but if you do add the gitignore entry
+and the repo has no `agents_project.md`, confirm with the
+operator before committing that one line, same as any other
+commit made on this repo's behalf.
+
+Structure `.audit-architect-riverpod/state.md` as:
+```
+## Files analyzed this run
+- lib/features/...
+
+## Files referenced but NOT PROVIDED
+- ...
+
+## Dimension progress
+| # | Dimension | Status | Findings so far |
+|---|---|---|---|
+| 1 | CI/CD & Config Integrity | ✅ Done | 3 |
+| 2 | Clean Architecture Boundaries | ✅ Done | 5 |
+| 3 | State-management anti-patterns | ⏳ In progress | 2 |
+| 4 | Lifecycle & Resource Mgmt | ⬜ Not started | - |
+...
+
+## Resume pointer
+Next: Dimension 3, continue from lib/features/onboarding/...
+
+## Findings (cumulative — feeds the final report)
+[same tables as REQUIRED OUTPUT FORMAT below, appended per
+dimension as it's completed]
+```
+
+Once the full REQUIRED OUTPUT FORMAT report has been delivered,
+`.audit-architect-riverpod/` can be deleted or left in place for reference — it's
+gitignored either way, so keeping it costs nothing. Don't delete
+it automatically.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ## AUDIT DIMENSIONS — EXECUTE ALL
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
@@ -83,6 +142,12 @@ Prioritize findings in this strict order:
   registration in `pubspec.yaml`.
 - Verify `exclude` patterns don't accidentally suppress
   analysis of non-generated production files.
+- If `import_lint` (or an equivalent boundary-enforcement
+  lint) declares `severity: error`, verify the CI step
+  actually fails on violations by checking the exit-code
+  handling, not just the declared severity — `severity: error`
+  alone does not guarantee a non-zero exit code, and
+  `|| true` or unchecked output masks this silently.
 
 **Audit `pubspec.yaml` and `l10n.yaml`:**
 
@@ -293,6 +358,8 @@ Prioritize findings in this strict order:
 
 ### DIMENSION 7 — ROBUSTNESS, SAFETY & CODE SMELLS
 
+*Hardcoded-string findings here are a triage signal only — a full i18n/ARB audit (missing translations, unused keys, `supportedLocales` sync) is out of scope; use the dedicated i18n/l10n audit prompt for that.*
+
 **Exception handling:**
 
 - Flag empty `catch` blocks.
@@ -338,12 +405,15 @@ Prioritize findings in this strict order:
 
 ### DIMENSION 8 — TEST SUITE ASSESSMENT
 
+*Findings here are a triage signal only — iteratively writing or fixing tests is out of scope; use the dedicated unit test audit framework for that.*
+
 **Coverage gaps:**
 
 - Identify untested critical business paths:
   business logic state transitions, data persistence,
   failure scenarios, and calculations.
-- Flag critical Notifiers with zero unit test coverage.
+- Flag critical Notifiers with zero unit test coverage
+  (e.g. missing a `ProviderContainer`-based test).
 
 **Unit test quality:**
 
@@ -519,6 +589,8 @@ and any assistant context documents against actual implementation:
 Generate the report in strict Markdown using the sections
 below, in this exact order.
 
+If this run spans multiple sessions (see "STATE & RESUMABILITY" above), build every section below from `.audit-architect-riverpod/state.md`'s cumulative findings — not just the current session's work. The header, dashboard, and finding tables must reflect the full audit across every resumed session, never just the last one.
+
 ---
 
 ## 🔴 AUDIT HEADER
@@ -638,5 +710,17 @@ For each finding use this exact structure:
 
 ### Option A — Ready `.patch` snippet
 
+Use this when the fix is fully derivable from the files you were given — no missing dependencies, no ambiguous architectural choice. One independently applicable diff per Critical finding, in finding-ID order, formatted so it can be validated with `git apply --check` before use:
+
 ```diff
-[patch content]
+--- a/path/to/file.dart
++++ b/path/to/file.dart
+@@ ...
+[patch content for finding C-1]
+```
+
+### Option B — Manual fix instructions
+
+Use this when a clean patch isn't safe to generate — the fix touches a file you weren't given, depends on a decision only the operator can make (e.g. choosing between two valid caching strategies), or its correctness can't be confirmed without running the code. State plainly why a diff wasn't produced, then give precise, numbered steps to implement the fix by hand.
+
+Never fabricate a diff against a file you don't have complete content for — that's exactly the hallucination this framework's Mandatory Constraints section forbids. Default to Option B whenever full file content isn't available for every touched line.
