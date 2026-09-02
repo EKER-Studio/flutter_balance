@@ -3,7 +3,7 @@ import 'package:balance/core/models/measurement_unit.dart';
 import 'package:balance/core/utils/unit_converter.dart';
 import 'package:balance/features/settings/presentation/bloc/weight_goal_mode.dart';
 import 'package:balance/features/statistics/domain/services/milestone_calculator.dart';
-import 'package:balance/features/statistics/presentation/widgets/sections/statistics_content_section.dart';
+import 'package:balance/features/statistics/domain/services/pace_calculator.dart';
 import 'package:balance/features/weight/domain/bmi_category.dart';
 import 'package:balance/features/weight/domain/entities/weight_entry.dart';
 import 'package:balance/features/weight/presentation/utils/bmi_category_localizer.dart';
@@ -119,7 +119,7 @@ class ProgressSummaryFormatter {
       );
     }
 
-    final weeklyPace = StatisticsContentSection.calculateWeeklyPace(
+    final weeklyPace = PaceCalculator.calculateWeeklyPace(
       entries,
       windowDays: paceWindowDays,
       now: currentDate,

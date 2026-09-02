@@ -17,11 +17,11 @@ import 'package:balance/features/weight/presentation/widgets/components/add_weig
 import 'package:balance/l10n/app_localizations.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_bloc.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_event.dart';
+import 'package:balance/features/statistics/domain/services/pace_calculator.dart';
 import 'package:balance/features/statistics/presentation/screens/statistics_screen.dart';
 import 'package:balance/features/statistics/presentation/widgets/sections/bmi_status_card.dart';
 import 'package:balance/features/statistics/presentation/widgets/sections/hero_progress_card.dart';
 import 'package:balance/features/statistics/presentation/widgets/sections/weight_range_card.dart';
-import 'package:balance/features/statistics/presentation/widgets/sections/statistics_content_section.dart';
 
 class MockWeightRepository extends Mock implements WeightRepository {}
 
@@ -749,9 +749,9 @@ void main() {
 
   group('Custom Weekly Pace Window Tests', () {
     test('calculateWeeklyPace returns null for less than 2 entries', () {
-      expect(StatisticsContentSection.calculateWeeklyPace([]), isNull);
+      expect(PaceCalculator.calculateWeeklyPace([]), isNull);
       expect(
-        StatisticsContentSection.calculateWeeklyPace([
+        PaceCalculator.calculateWeeklyPace([
           WeightEntry(id: 1, weightKg: 80, dateTime: DateTime(2026, 8, 1)),
         ]),
         isNull,
@@ -780,17 +780,13 @@ void main() {
 
       // 7-day window: only entry 3 is within last 7 days -> returns null
       expect(
-        StatisticsContentSection.calculateWeeklyPace(
-          entries,
-          windowDays: 7,
-          now: now,
-        ),
+        PaceCalculator.calculateWeeklyPace(entries, windowDays: 7, now: now),
         isNull,
       );
 
       // 14-day window: entry 2 (78kg) and entry 3 (77kg), difference is -1kg over 10 days (10/7 weeks = 1.428 weeks)
       // pace = -1 / (10/7) = -0.7 kg/week
-      final pace14 = StatisticsContentSection.calculateWeeklyPace(
+      final pace14 = PaceCalculator.calculateWeeklyPace(
         entries,
         windowDays: 14,
         now: now,
@@ -799,7 +795,7 @@ void main() {
 
       // 30-day window: includes all 3 entries (80kg -> 77kg over 27 days = 3.857 weeks)
       // pace = -3 / (27/7) = -0.777 kg/week
-      final pace30 = StatisticsContentSection.calculateWeeklyPace(
+      final pace30 = PaceCalculator.calculateWeeklyPace(
         entries,
         windowDays: 30,
         now: now,

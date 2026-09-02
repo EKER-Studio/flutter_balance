@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:balance/core/presentation/theme/app_layout_tokens.dart';
 import 'package:balance/core/models/measurement_unit.dart';
+import 'package:balance/features/statistics/domain/services/habits_calculator.dart';
 import 'package:balance/features/statistics/domain/services/milestone_calculator.dart';
+import 'package:balance/features/statistics/domain/services/pace_calculator.dart';
 import 'package:balance/features/statistics/presentation/widgets/sections/bmi_status_card.dart';
 import 'package:balance/features/statistics/presentation/widgets/sections/habits_activity_card.dart';
 import 'package:balance/features/statistics/presentation/widgets/sections/hero_progress_card.dart';
@@ -43,10 +45,13 @@ class StatisticsContentSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final now = DateTime.now();
-    final streak = _calculateStreak(entries, now);
-    final bestStreak = _calculateBestStreak(entries);
-    final compliancePct = _calculateTotalCompliance(entries, now);
-    final weeklyPace = calculateWeeklyPace(
+    final streak = HabitsCalculator.calculateStreak(entries, now);
+    final bestStreak = HabitsCalculator.calculateBestStreak(entries);
+    final compliancePct = HabitsCalculator.calculateTotalCompliance(
+      entries,
+      now,
+    );
+    final weeklyPace = PaceCalculator.calculateWeeklyPace(
       entries,
       windowDays: weeklyPaceWindowDays,
       now: now,
@@ -131,115 +136,5 @@ class StatisticsContentSection extends StatelessWidget {
               const SizedBox(height: 100),
             ],
           );
-  }
-
-  /// Computes the average weekly pace (weight change per 7 days) over the given [windowDays].
-  ///
-  /// Filters entries within `[now - windowDays, now]`.
-  /// Returns `null` if fewer than 2 entries exist in that window.
-  static double? calculateWeeklyPace(
-    List<WeightEntry> entries, {
-    int windowDays = 30,
-    DateTime? now,
-  }) {
-    if (entries.length < 2) return null;
-
-    final sorted = entries.toList()
-      ..sort((a, b) => a.dateTime.compareTo(b.dateTime));
-    final referenceDate = now ?? DateTime.now();
-    final windowStart = referenceDate.subtract(Duration(days: windowDays));
-
-    final recentEntries = sorted
-        .where((e) => !e.dateTime.isBefore(windowStart))
-        .toList();
-    if (recentEntries.length < 2) return null;
-
-    final first = recentEntries.first;
-    final last = recentEntries.last;
-
-    final days = last.dateTime.difference(first.dateTime).inDays;
-    if (days < 1) return 0.0;
-
-    final weeks = days / 7.0;
-    final diffKg = last.weightKg - first.weightKg;
-
-    return diffKg / weeks;
-  }
-
-  static int _calculateStreak(List<WeightEntry> entries, DateTime now) {
-    if (entries.isEmpty) return 0;
-
-    final dates = entries
-        .map((e) => DateTime(e.dateTime.year, e.dateTime.month, e.dateTime.day))
-        .toSet();
-
-    final todayDate = DateTime(now.year, now.month, now.day);
-    final yesterdayDate = DateTime(now.year, now.month, now.day - 1);
-
-    if (!dates.contains(todayDate) && !dates.contains(yesterdayDate)) {
-      return 0;
-    }
-
-    int streak = 0;
-    DateTime checkDate = dates.contains(todayDate) ? todayDate : yesterdayDate;
-
-    while (dates.contains(checkDate)) {
-      streak++;
-      checkDate = DateTime(checkDate.year, checkDate.month, checkDate.day - 1);
-    }
-
-    return streak;
-  }
-
-  static int _calculateTotalCompliance(
-    List<WeightEntry> entries,
-    DateTime now,
-  ) {
-    if (entries.isEmpty) return 0;
-
-    final firstDate = entries
-        .map((e) => e.dateTime)
-        .reduce((a, b) => a.isBefore(b) ? a : b);
-
-    final today = DateTime(now.year, now.month, now.day);
-    final start = DateTime(firstDate.year, firstDate.month, firstDate.day);
-
-    int totalDays = today.difference(start).inDays + 1;
-    if (totalDays <= 0) totalDays = 1;
-
-    final loggedDays = entries
-        .map((e) => DateTime(e.dateTime.year, e.dateTime.month, e.dateTime.day))
-        .toSet()
-        .length;
-    return ((loggedDays / totalDays) * 100).round().clamp(0, 100);
-  }
-
-  static int _calculateBestStreak(List<WeightEntry> entries) {
-    if (entries.isEmpty) return 0;
-
-    final dates =
-        entries
-            .map(
-              (e) =>
-                  DateTime(e.dateTime.year, e.dateTime.month, e.dateTime.day),
-            )
-            .toSet()
-            .toList()
-          ..sort((a, b) => a.compareTo(b));
-
-    int best = 1;
-    int current = 1;
-
-    for (var i = 1; i < dates.length; i++) {
-      final diff = dates[i].difference(dates[i - 1]).inDays;
-      if (diff == 1) {
-        current++;
-        if (current > best) best = current;
-      } else if (diff > 1) {
-        current = 1;
-      }
-    }
-
-    return best;
   }
 }
