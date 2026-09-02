@@ -1,7 +1,6 @@
 import 'dart:math' as math;
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:balance/core/presentation/theme/app_chart_theme.dart';
 import 'package:balance/core/utils/analytics.dart';
 import 'package:balance/features/weight/domain/entities/weight_entry.dart';
@@ -83,7 +82,10 @@ class BmiLineChart extends StatelessWidget {
                   sideTitles: SideTitles(
                     showTitles: true,
                     reservedSize: 30,
-                    interval: _bottomInterval(sortedEntries.length, period),
+                    interval: AppChartTheme.bottomInterval(
+                      sortedEntries.length,
+                      period,
+                    ),
                     getTitlesWidget: (value, meta) => _buildBottomTitle(
                       context,
                       value,
@@ -181,16 +183,6 @@ class BmiLineChart extends StatelessWidget {
     );
   }
 
-  static double _bottomInterval(int length, TimePeriod period) {
-    if (length <= 1) return 1;
-    final targetIntervals = switch (period) {
-      TimePeriod.week => 6,
-      TimePeriod.month => 4,
-      TimePeriod.year || TimePeriod.all => 5,
-    };
-    return math.max(1, ((length - 1) / targetIntervals).ceil()).toDouble();
-  }
-
   Widget _buildBottomTitle(
     BuildContext context,
     double value,
@@ -204,20 +196,18 @@ class BmiLineChart extends StatelessWidget {
       return const SizedBox.shrink();
     }
 
-    if (_isDuplicateMonthTick(index, sortedEntries, period)) {
+    if (AppChartTheme.isDuplicateMonthTick(
+      index,
+      sortedEntries.map((e) => e.dateTime).toList(),
+      period,
+    )) {
       return const SizedBox.shrink();
     }
 
     final l10n = AppLocalizations.of(context);
     final date = sortedEntries[index].dateTime;
 
-    final label = switch (period) {
-      TimePeriod.week => _weekdayLabel(date.weekday, l10n),
-      TimePeriod.month => date.day.toString(),
-      TimePeriod.year || TimePeriod.all => DateFormat.MMM(
-        Localizations.localeOf(context).toString(),
-      ).format(date),
-    };
+    final label = AppChartTheme.bottomAxisLabel(context, date, period, l10n);
 
     return Padding(
       padding: const EdgeInsets.only(top: 8),
@@ -229,33 +219,5 @@ class BmiLineChart extends StatelessWidget {
         ),
       ),
     );
-  }
-
-  static bool _isDuplicateMonthTick(
-    int index,
-    List<WeightEntry> sortedEntries,
-    TimePeriod period,
-  ) {
-    if (period != TimePeriod.year && period != TimePeriod.all) return false;
-    final step = _bottomInterval(sortedEntries.length, period).toInt();
-    final prevIndex = index - step;
-    if (prevIndex < 0 || prevIndex >= sortedEntries.length) return false;
-    final currentDate = sortedEntries[index].dateTime;
-    final prevDate = sortedEntries[prevIndex].dateTime;
-    return prevDate.year == currentDate.year &&
-        prevDate.month == currentDate.month;
-  }
-
-  String _weekdayLabel(int weekday, AppLocalizations l10n) {
-    return switch (weekday) {
-      DateTime.monday => l10n.weekdayShortMonday,
-      DateTime.tuesday => l10n.weekdayShortTuesday,
-      DateTime.wednesday => l10n.weekdayShortWednesday,
-      DateTime.thursday => l10n.weekdayShortThursday,
-      DateTime.friday => l10n.weekdayShortFriday,
-      DateTime.saturday => l10n.weekdayShortSaturday,
-      DateTime.sunday => l10n.weekdayShortSunday,
-      _ => l10n.weekdayShortMonday,
-    };
   }
 }
