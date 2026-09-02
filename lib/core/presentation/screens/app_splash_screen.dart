@@ -37,8 +37,8 @@ class _AppSplashScreenState extends State<AppSplashScreen> {
         child: Center(
           child: Image.asset(
             assetPath,
-            width: 140,
-            height: 140,
+            width: 288,
+            height: 288,
             fit: BoxFit.contain,
           ),
         ),
