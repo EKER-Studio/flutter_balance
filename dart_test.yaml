@@ -1,3 +1,5 @@
 tags:
   golden:
     description: "Tests that generate golden files."
+  screenshot:
+    description: "Integration tests that capture device screenshots locally."

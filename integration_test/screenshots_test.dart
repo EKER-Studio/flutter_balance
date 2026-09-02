@@ -59,7 +59,7 @@ void main() {
           // Take pixel-perfect screenshot and deliver to test driver
           final screenshotName = '$localeCode/00_splash/splash_$themeLabel';
           await binding.takeScreenshot(screenshotName);
-        });
+        }, tags: 'screenshot');
       }
     }
   });
