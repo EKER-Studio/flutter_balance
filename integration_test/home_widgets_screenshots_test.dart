@@ -128,49 +128,108 @@ class WidgetPreviewCanvas extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bgGradient = isDark
-        ? const LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [Color(0xFF0F1117), Color(0xFF141721), Color(0xFF1A1D29)],
-          )
-        : const LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [Color(0xFFE9EEF5), Color(0xFFF3F6FA), Color(0xFFE3E9F2)],
-          );
+    // Solid wallpaper: dark teal for dark, deep teal for light (consistent family)
+    final bgColor = isDark ? const Color(0xFF0B2E2A) : const Color(0xFF0F766E);
 
     return DecoratedBox(
-      decoration: BoxDecoration(gradient: bgGradient),
-      child: Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 5),
-              margin: const EdgeInsets.only(bottom: 24),
-              decoration: BoxDecoration(
-                color: isDark
-                    ? Colors.white.withValues(alpha: 0.1)
-                    : Colors.black.withValues(alpha: 0.06),
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: Text(
-                title,
-                style: TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w700,
-                  letterSpacing: 0.5,
-                  color: isDark
-                      ? const Color(0xFFC4C7D0)
-                      : const Color(0xFF555B68),
-                ),
-              ),
-            ),
-            child,
-          ],
+      decoration: BoxDecoration(color: bgColor),
+      child: Stack(
+        fit: StackFit.expand,
+        children: [
+          // Centered widget (no label — real home screen has no "Widget 2×1" badge)
+          Center(child: child),
+          // Bottom dock: phone, messages, browser, camera
+          Positioned(
+            left: 16,
+            right: 16,
+            bottom: 36,
+            child: _HomeDock(isDark: isDark),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Bottom dock with 4 app icons mimicking Android home screen.
+class _HomeDock extends StatelessWidget {
+  final bool isDark;
+
+  const _HomeDock({required this.isDark});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+      decoration: BoxDecoration(
+        color: isDark
+            ? Colors.black.withValues(alpha: 0.28)
+            : Colors.white.withValues(alpha: 0.12),
+        borderRadius: BorderRadius.circular(28),
+        border: Border.all(
+          color: isDark
+              ? Colors.white.withValues(alpha: 0.06)
+              : Colors.white.withValues(alpha: 0.08),
+          width: 1,
         ),
       ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          _DockIcon(
+            icon: Icons.call,
+            bgColor: const Color(0xFF34A853),
+            iconColor: Colors.white,
+          ),
+          _DockIcon(
+            icon: Icons.chat_bubble,
+            bgColor: const Color(0xFF4285F4),
+            iconColor: Colors.white,
+          ),
+          _DockIcon(
+            icon: Icons.language,
+            bgColor: const Color(0xFFEA4335),
+            iconColor: Colors.white,
+          ),
+          _DockIcon(
+            icon: Icons.photo_camera,
+            bgColor: const Color(0xFFFBBC05),
+            iconColor: const Color(0xFF202124),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _DockIcon extends StatelessWidget {
+  final IconData icon;
+  final Color bgColor;
+  final Color iconColor;
+
+  const _DockIcon({
+    required this.icon,
+    required this.bgColor,
+    required this.iconColor,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 52,
+      height: 52,
+      decoration: BoxDecoration(
+        color: bgColor,
+        borderRadius: BorderRadius.circular(14),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.2),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Icon(icon, color: iconColor, size: 26),
     );
   }
 }
