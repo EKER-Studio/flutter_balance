@@ -82,9 +82,6 @@ app.*.map.json
 *.bak
 default.isar
 
-# Aider configs
-.aider*
-
 # Security & diagnostic artifacts
 *.key
 crash_log.txt
@@ -92,3 +89,4 @@ crash_log.txt
 # Agent artifacts
 .ai*
 LOG_*.md
+.audit-*/
