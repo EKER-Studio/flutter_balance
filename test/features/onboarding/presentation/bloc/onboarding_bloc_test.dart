@@ -1,6 +1,7 @@
 import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:balance/core/models/measurement_unit.dart';
 import 'package:balance/features/weight/presentation/bloc/weight_bloc.dart';
 import 'package:balance/features/onboarding/presentation/bloc/onboarding_bloc.dart';
 import 'package:balance/features/onboarding/presentation/bloc/onboarding_event.dart';
@@ -37,6 +38,100 @@ void main() {
   }
 
   group('OnboardingBloc', () {
+    blocTest<OnboardingBloc, OnboardingState>(
+      'OnboardingStarted resets the state to initial values',
+      build: buildBloc,
+      seed: () => const OnboardingState(
+        currentStepIndex: 3,
+        selectedUnit: MeasurementUnit.imperial,
+        isHealthSyncRequested: true,
+      ),
+      act: (bloc) => bloc.add(const OnboardingStarted()),
+      expect: () => [
+        const OnboardingState(
+          currentStepIndex: 0,
+          selectedUnit: MeasurementUnit.metric,
+          isHealthSyncRequested: false,
+        ),
+      ],
+    );
+
+    blocTest<OnboardingBloc, OnboardingState>(
+      'OnboardingUnitSelected updates selectedUnit',
+      build: buildBloc,
+      act: (bloc) =>
+          bloc.add(const OnboardingUnitSelected(MeasurementUnit.imperial)),
+      expect: () => [
+        const OnboardingState(selectedUnit: MeasurementUnit.imperial),
+      ],
+    );
+
+    blocTest<OnboardingBloc, OnboardingState>(
+      'OnboardingCsvImported updates importedCsvEntries',
+      build: buildBloc,
+      act: (bloc) {
+        final entries = [
+          WeightEntry(weightKg: 74.0, dateTime: DateTime(2026, 8, 1)),
+        ];
+        bloc.add(OnboardingCsvImported(entries));
+      },
+      expect: () => [
+        isA<OnboardingState>().having(
+          (s) => s.importedCsvEntries.length,
+          'importedCsvEntries.length',
+          1,
+        ),
+      ],
+    );
+
+    blocTest<OnboardingBloc, OnboardingState>(
+      'OnboardingInitialWeightSet dispatches AddWeight to weightBloc and emits draft weight',
+      build: () {
+        when(() => weightBloc.add(any())).thenReturn(null);
+        return buildBloc();
+      },
+      act: (bloc) => bloc.add(
+        OnboardingInitialWeightSet(
+          weightKg: 78.5,
+          timestamp: DateTime(2026, 8, 20),
+        ),
+      ),
+      expect: () => [
+        isA<OnboardingState>()
+            .having((s) => s.draftInitialWeight, 'draftInitialWeight', 78.5)
+            .having(
+              (s) => s.draftInitialTimestamp,
+              'draftInitialTimestamp',
+              DateTime(2026, 8, 20),
+            ),
+      ],
+      verify: (_) {
+        verify(
+          () => weightBloc.add(
+            any(
+              that: isA<AddWeight>()
+                  .having((a) => a.weightKg, 'weightKg', 78.5)
+                  .having((a) => a.dateTime, 'dateTime', DateTime(2026, 8, 20)),
+            ),
+          ),
+        ).called(1);
+      },
+    );
+
+    blocTest<OnboardingBloc, OnboardingState>(
+      'OnboardingTargetWeightSet updates draftTargetWeight',
+      build: buildBloc,
+      act: (bloc) => bloc.add(const OnboardingTargetWeightSet(72.0)),
+      expect: () => [const OnboardingState(draftTargetWeight: 72.0)],
+    );
+
+    blocTest<OnboardingBloc, OnboardingState>(
+      'OnboardingBiometricsToggled updates isBiometricEnabled flag',
+      build: buildBloc,
+      act: (bloc) => bloc.add(const OnboardingBiometricsToggled(true)),
+      expect: () => [const OnboardingState(isBiometricEnabled: true)],
+    );
+
     blocTest<OnboardingBloc, OnboardingState>(
       'OnboardingHealthSyncToggled(true) sets the isHealthSyncRequested flag',
       build: buildBloc,
