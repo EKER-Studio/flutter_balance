@@ -123,7 +123,6 @@ void main() {
                           child: ScreenshotBottomSheetContainer(
                             child: AddWeightSheet(
                               initialDate: DateTime(2026, 9, 2, 9, 41),
-                              initialNote: getMockRunNote(localeCode),
                             ),
                           ),
                         ),
