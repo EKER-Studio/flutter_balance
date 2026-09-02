@@ -42,17 +42,6 @@ import 'package:balance/features/weight/presentation/widgets/components/add_weig
 import 'package:balance/features/weight/presentation/widgets/components/bmi_legend_dialog.dart';
 import 'package:balance/l10n/app_localizations.dart';
 
-/// Device prefix for screenshot output path.
-///
-/// Passed via `--dart-define=SCREENSHOT_DEVICE=android/phone` (default).
-/// Supported values: `android/phone`, `android/tablet_7`, `android/tablet_10`.
-/// Allows the same test suite to generate per-device screenshot sets without
-/// duplicating test logic.
-const _screenshotDevicePrefix = String.fromEnvironment(
-  'SCREENSHOT_DEVICE',
-  defaultValue: 'android/phone',
-);
-
 class MockHydratedStorage extends Mock implements HydratedStorage {}
 
 class FakeWeightRepository implements WeightRepository {
@@ -138,6 +127,40 @@ void main() {
     'ko',
   ];
 
+  // Configurable target device (default: 'android/phone')
+  const screenshotDevice = String.fromEnvironment(
+    'SCREENSHOT_DEVICE',
+    defaultValue: 'android/phone',
+  );
+
+  // Configurable module filter (default: all modules)
+  const screenshotModuleFilter = String.fromEnvironment(
+    'SCREENSHOT_MODULE',
+    defaultValue: 'all',
+  );
+
+  // Optional single locale filter (e.g. 'pl', 'en', or empty for all)
+  const screenshotLocaleFilter = String.fromEnvironment(
+    'SCREENSHOT_LOCALE',
+    defaultValue: '',
+  );
+
+  bool shouldRunModule(String module) {
+    if (screenshotModuleFilter.isEmpty ||
+        screenshotModuleFilter == 'all' ||
+        screenshotModuleFilter == 'all_modules') {
+      return true;
+    }
+    return module.toLowerCase().contains(
+          screenshotModuleFilter.toLowerCase(),
+        ) ||
+        screenshotModuleFilter.toLowerCase().contains(module.toLowerCase());
+  }
+
+  final effectiveLocales = screenshotLocaleFilter.isNotEmpty
+      ? [screenshotLocaleFilter]
+      : supportedLocales;
+
   Widget buildAppWrapper({
     required Widget child,
     required Locale locale,
@@ -174,340 +197,554 @@ void main() {
   }
 
   group('Automated Multi-Locale Screenshots Generator', () {
-    for (final localeCode in supportedLocales) {
+    for (final localeCode in effectiveLocales) {
       for (final isDark in [false, true]) {
         final themeLabel = isDark ? 'dark' : 'light';
         final theme = isDark ? AppTheme.darkTheme : AppTheme.lightTheme;
         final themeMode = isDark ? ThemeMode.dark : ThemeMode.light;
         final locale = Locale(localeCode);
+        final prefix = screenshotDevice.isNotEmpty ? '$screenshotDevice/' : '';
 
         // ---------------------------------------------------------------------
-        // 00_splash (Generated across locales)
+        // 00_splash (App startup loading screen directly from codebase)
         // ---------------------------------------------------------------------
-        testWidgets('Capture 00_splash [$localeCode] [$themeLabel]', (
-          WidgetTester tester,
-        ) async {
-          await tester.pumpWidget(
-            buildAppWrapper(
-              child: const AppSplashScreen(),
-              locale: locale,
-              theme: theme,
-              themeMode: themeMode,
-            ),
-          );
-
-          await tester.pump();
-          await tester.pump(const Duration(milliseconds: 300));
-
-          await binding.takeScreenshot(
-            '$_screenshotDevicePrefix/$localeCode/00_splash/splash_$themeLabel',
-          );
-        }, tags: 'screenshot');
-
-        // ---------------------------------------------------------------------
-        // 01_onboarding / 01_welcome
-        // ---------------------------------------------------------------------
-        testWidgets(
-          'Capture 01_onboarding/01_welcome [$localeCode] [$themeLabel]',
-          (WidgetTester tester) async {
+        if (shouldRunModule('00_splash') || shouldRunModule('splash')) {
+          testWidgets('Capture 00_splash [$localeCode] [$themeLabel]', (
+            WidgetTester tester,
+          ) async {
             await tester.pumpWidget(
-              buildAppWrapper(
-                child: StepWelcome(onNext: () {}),
-                locale: locale,
-                theme: theme,
-                themeMode: themeMode,
-              ),
-            );
-
-            await tester.pumpAndSettle();
-            await binding.takeScreenshot(
-              '$_screenshotDevicePrefix/$localeCode/01_onboarding/01_welcome_$themeLabel',
-            );
-          },
-          tags: 'screenshot',
-        );
-
-        // ---------------------------------------------------------------------
-        // 01_onboarding / 02_units_height (177 cm)
-        // ---------------------------------------------------------------------
-        testWidgets(
-          'Capture 01_onboarding/02_units_height [$localeCode] [$themeLabel]',
-          (WidgetTester tester) async {
-            await tester.pumpWidget(
-              buildAppWrapper(
-                appBar: OnboardingAppBar(
-                  displayStep: 1,
-                  displayTotalSteps: 7,
-                  progress: 1 / 7,
-                  onBackPressed: () {},
-                ),
-                child: StepUnitsHeight(
-                  initialUnit: MeasurementUnit.metric,
-                  initialHeightCm: 177.0,
-                  isCurrentPage: true,
-                  onNext: (_, _) {},
-                ),
-                locale: locale,
-                theme: theme,
-                themeMode: themeMode,
-              ),
-            );
-
-            await tester.pumpAndSettle();
-            await binding.takeScreenshot(
-              '$_screenshotDevicePrefix/$localeCode/01_onboarding/02_units_height_$themeLabel',
-            );
-          },
-          tags: 'screenshot',
-        );
-
-        // ---------------------------------------------------------------------
-        // 01_onboarding / 03_csv_import (90 records loaded)
-        // ---------------------------------------------------------------------
-        testWidgets(
-          'Capture 01_onboarding/03_csv_import [$localeCode] [$themeLabel]',
-          (WidgetTester tester) async {
-            await tester.pumpWidget(
-              buildAppWrapper(
-                appBar: OnboardingAppBar(
-                  displayStep: 2,
-                  displayTotalSteps: 7,
-                  progress: 2 / 7,
-                  onBackPressed: () {},
-                ),
-                child: CsvImportSuccessView(
-                  count: 90,
-                  onContinue: () {},
-                  isLandscape: false,
-                ),
-                locale: locale,
-                theme: theme,
-                themeMode: themeMode,
-              ),
-            );
-
-            await tester.pumpAndSettle();
-            await binding.takeScreenshot(
-              '$_screenshotDevicePrefix/$localeCode/01_onboarding/03_csv_import_$themeLabel',
-            );
-          },
-          tags: 'screenshot',
-        );
-
-        // ---------------------------------------------------------------------
-        // 01_onboarding / 04_starting_point (87.0 kg)
-        // ---------------------------------------------------------------------
-        testWidgets(
-          'Capture 01_onboarding/04_starting_point [$localeCode] [$themeLabel]',
-          (WidgetTester tester) async {
-            await tester.pumpWidget(
-              buildAppWrapper(
-                appBar: OnboardingAppBar(
-                  displayStep: 3,
-                  displayTotalSteps: 7,
-                  progress: 3 / 7,
-                  onBackPressed: () {},
-                ),
-                child: StepInitialWeight(
-                  unit: MeasurementUnit.metric,
-                  initialWeightKg: 87.0,
-                  initialTimestamp: DateTime(2026, 9, 2, 8, 0),
-                  onNext: (_, _) {},
-                ),
-                locale: locale,
-                theme: theme,
-                themeMode: themeMode,
-              ),
-            );
-
-            await tester.pumpAndSettle();
-            await binding.takeScreenshot(
-              '$_screenshotDevicePrefix/$localeCode/01_onboarding/04_starting_point_$themeLabel',
-            );
-          },
-          tags: 'screenshot',
-        );
-
-        // ---------------------------------------------------------------------
-        // 01_onboarding / 05_target_weight (85.0 kg, goal: lose 2.0 kg)
-        // ---------------------------------------------------------------------
-        testWidgets(
-          'Capture 01_onboarding/05_target_weight [$localeCode] [$themeLabel]',
-          (WidgetTester tester) async {
-            await tester.pumpWidget(
-              buildAppWrapper(
-                appBar: OnboardingAppBar(
-                  displayStep: 4,
-                  displayTotalSteps: 7,
-                  progress: 4 / 7,
-                  onBackPressed: () {},
-                ),
-                child: StepTargetWeight(
-                  unit: MeasurementUnit.metric,
-                  initialWeightKg: 87.0,
-                  initialTargetWeightKg: 85.0,
-                  initialGoalMode: WeightGoalMode.lose,
-                  onNext: (_, _) {},
-                ),
-                locale: locale,
-                theme: theme,
-                themeMode: themeMode,
-              ),
-            );
-
-            await tester.pumpAndSettle();
-            await binding.takeScreenshot(
-              '$_screenshotDevicePrefix/$localeCode/01_onboarding/05_target_weight_$themeLabel',
-            );
-          },
-          tags: 'screenshot',
-        );
-
-        // ---------------------------------------------------------------------
-        // 01_onboarding / 06_notifications
-        // ---------------------------------------------------------------------
-        testWidgets(
-          'Capture 01_onboarding/06_notifications [$localeCode] [$themeLabel]',
-          (WidgetTester tester) async {
-            await tester.pumpWidget(
-              buildAppWrapper(
-                appBar: OnboardingAppBar(
-                  displayStep: 5,
-                  displayTotalSteps: 7,
-                  progress: 5 / 7,
-                  onBackPressed: () {},
-                ),
-                child: StepReminderNotification(onNext: () {}),
-                locale: locale,
-                theme: theme,
-                themeMode: themeMode,
-              ),
-            );
-
-            await tester.pumpAndSettle();
-            await binding.takeScreenshot(
-              '$_screenshotDevicePrefix/$localeCode/01_onboarding/06_notifications_$themeLabel',
-            );
-          },
-          tags: 'screenshot',
-        );
-
-        // ---------------------------------------------------------------------
-        // 01_onboarding / 07_health_sync
-        // ---------------------------------------------------------------------
-        testWidgets(
-          'Capture 01_onboarding/07_health_sync [$localeCode] [$themeLabel]',
-          (WidgetTester tester) async {
-            await tester.pumpWidget(
-              buildAppWrapper(
-                appBar: OnboardingAppBar(
-                  displayStep: 6,
-                  displayTotalSteps: 7,
-                  progress: 6 / 7,
-                  onBackPressed: () {},
-                ),
-                child: StepHealthSync(onNext: () {}),
-                locale: locale,
-                theme: theme,
-                themeMode: themeMode,
-              ),
-            );
-
-            await tester.pumpAndSettle();
-            await binding.takeScreenshot(
-              '$_screenshotDevicePrefix/$localeCode/01_onboarding/07_health_sync_$themeLabel',
-            );
-          },
-          tags: 'screenshot',
-        );
-
-        // ---------------------------------------------------------------------
-        // 01_onboarding / 08_biometric_lock
-        // ---------------------------------------------------------------------
-        testWidgets(
-          'Capture 01_onboarding/08_biometric_lock [$localeCode] [$themeLabel]',
-          (WidgetTester tester) async {
-            await tester.pumpWidget(
-              buildAppWrapper(
-                appBar: OnboardingAppBar(
-                  displayStep: 7,
-                  displayTotalSteps: 7,
-                  progress: 1.0,
-                  onBackPressed: () {},
-                ),
-                child: StepBiometricLock(onNext: () {}),
-                locale: locale,
-                theme: theme,
-                themeMode: themeMode,
-              ),
-            );
-
-            await tester.pumpAndSettle();
-            await binding.takeScreenshot(
-              '$_screenshotDevicePrefix/$localeCode/01_onboarding/08_biometric_lock_$themeLabel',
-            );
-          },
-          tags: 'screenshot',
-        );
-
-        // ---------------------------------------------------------------------
-        // 02_today / 01_dashboard (Populated with 90 records, 177cm, 87kg, target 85kg)
-        // ---------------------------------------------------------------------
-        testWidgets('Capture 02_today/01_dashboard [$localeCode] [$themeLabel]', (
-          WidgetTester tester,
-        ) async {
-          final settingsBloc = AppSettingsBloc()
-            ..add(const UpdateHeight(177.0))
-            ..add(const TargetWeightChanged(85.0, WeightGoalMode.lose));
-
-          final weightBloc = WeightBloc(repository: weightRepo)
-            ..add(const SubscribeToWeightChanges())
-            ..add(const ChangeChartFilter(TimePeriod.month));
-
-          await tester.pumpWidget(
-            MultiBlocProvider(
-              providers: [
-                BlocProvider<AppSettingsBloc>.value(value: settingsBloc),
-                BlocProvider<WeightBloc>.value(value: weightBloc),
-              ],
-              child: MaterialApp(
+              MaterialApp(
                 debugShowCheckedModeBanner: false,
                 locale: locale,
                 supportedLocales: AppLocalizations.supportedLocales,
                 localizationsDelegates: AppLocalizations.localizationsDelegates,
                 theme: theme,
                 themeMode: themeMode,
-                home: const MainNavigationScreen(),
+                home: const AppSplashScreen(),
               ),
-            ),
-          );
+            );
 
-          await tester.pump();
-          await tester.pump(const Duration(milliseconds: 300));
+            await tester.pump();
+            await tester.pump(const Duration(milliseconds: 300));
 
-          await binding.takeScreenshot(
-            '$_screenshotDevicePrefix/$localeCode/02_today/01_dashboard_$themeLabel',
-          );
-        }, tags: 'screenshot');
+            await binding.takeScreenshot(
+              '$prefix$localeCode/00_splash/splash_$themeLabel',
+            );
+          }, tags: 'screenshot');
+        }
 
         // ---------------------------------------------------------------------
-        // 02_today / 02_add_measurement (Add/Edit measurement modal sheet)
+        // 01_onboarding
         // ---------------------------------------------------------------------
-        testWidgets(
-          'Capture 02_today/02_add_measurement [$localeCode] [$themeLabel]',
-          (WidgetTester tester) async {
-            final settingsBloc = AppSettingsBloc()
-              ..add(const UpdateHeight(177.0));
-            final weightBloc = WeightBloc(repository: weightRepo)
-              ..add(const SubscribeToWeightChanges());
+        if (shouldRunModule('01_onboarding') || shouldRunModule('onboarding')) {
+          // 01_onboarding / 01_welcome
+          testWidgets(
+            'Capture 01_onboarding/01_welcome [$localeCode] [$themeLabel]',
+            (WidgetTester tester) async {
+              await tester.pumpWidget(
+                buildAppWrapper(
+                  child: StepWelcome(onNext: () {}),
+                  locale: locale,
+                  theme: theme,
+                  themeMode: themeMode,
+                ),
+              );
 
-            await tester.pumpWidget(
-              MultiBlocProvider(
-                providers: [
-                  BlocProvider<AppSettingsBloc>.value(value: settingsBloc),
-                  BlocProvider<WeightBloc>.value(value: weightBloc),
-                ],
-                child: MaterialApp(
+              await tester.pumpAndSettle();
+              await binding.takeScreenshot(
+                '$prefix$localeCode/01_onboarding/01_welcome_$themeLabel',
+              );
+            },
+            tags: 'screenshot',
+          );
+
+          // 01_onboarding / 02_units_height (177 cm)
+          testWidgets(
+            'Capture 01_onboarding/02_units_height [$localeCode] [$themeLabel]',
+            (WidgetTester tester) async {
+              await tester.pumpWidget(
+                buildAppWrapper(
+                  appBar: OnboardingAppBar(
+                    displayStep: 1,
+                    displayTotalSteps: 7,
+                    progress: 1 / 7,
+                    onBackPressed: () {},
+                  ),
+                  child: StepUnitsHeight(
+                    initialUnit: MeasurementUnit.metric,
+                    initialHeightCm: 177.0,
+                    isCurrentPage: true,
+                    onNext: (_, _) {},
+                  ),
+                  locale: locale,
+                  theme: theme,
+                  themeMode: themeMode,
+                ),
+              );
+
+              await tester.pumpAndSettle();
+              await binding.takeScreenshot(
+                '$prefix$localeCode/01_onboarding/02_units_height_$themeLabel',
+              );
+            },
+            tags: 'screenshot',
+          );
+
+          // 01_onboarding / 03_csv_import (90 records loaded)
+          testWidgets(
+            'Capture 01_onboarding/03_csv_import [$localeCode] [$themeLabel]',
+            (WidgetTester tester) async {
+              await tester.pumpWidget(
+                buildAppWrapper(
+                  appBar: OnboardingAppBar(
+                    displayStep: 2,
+                    displayTotalSteps: 7,
+                    progress: 2 / 7,
+                    onBackPressed: () {},
+                  ),
+                  child: CsvImportSuccessView(
+                    count: 90,
+                    onContinue: () {},
+                    isLandscape: false,
+                  ),
+                  locale: locale,
+                  theme: theme,
+                  themeMode: themeMode,
+                ),
+              );
+
+              await tester.pumpAndSettle();
+              await binding.takeScreenshot(
+                '$prefix$localeCode/01_onboarding/03_csv_import_$themeLabel',
+              );
+            },
+            tags: 'screenshot',
+          );
+
+          // 01_onboarding / 04_starting_point (87.0 kg)
+          testWidgets(
+            'Capture 01_onboarding/04_starting_point [$localeCode] [$themeLabel]',
+            (WidgetTester tester) async {
+              await tester.pumpWidget(
+                buildAppWrapper(
+                  appBar: OnboardingAppBar(
+                    displayStep: 3,
+                    displayTotalSteps: 7,
+                    progress: 3 / 7,
+                    onBackPressed: () {},
+                  ),
+                  child: StepInitialWeight(
+                    unit: MeasurementUnit.metric,
+                    initialWeightKg: 87.0,
+                    initialTimestamp: DateTime(2026, 9, 2, 8, 0),
+                    onNext: (_, _) {},
+                  ),
+                  locale: locale,
+                  theme: theme,
+                  themeMode: themeMode,
+                ),
+              );
+
+              await tester.pumpAndSettle();
+              await binding.takeScreenshot(
+                '$prefix$localeCode/01_onboarding/04_starting_point_$themeLabel',
+              );
+            },
+            tags: 'screenshot',
+          );
+
+          // 01_onboarding / 05_target_weight (85.0 kg, goal: lose 2.0 kg)
+          testWidgets(
+            'Capture 01_onboarding/05_target_weight [$localeCode] [$themeLabel]',
+            (WidgetTester tester) async {
+              await tester.pumpWidget(
+                buildAppWrapper(
+                  appBar: OnboardingAppBar(
+                    displayStep: 4,
+                    displayTotalSteps: 7,
+                    progress: 4 / 7,
+                    onBackPressed: () {},
+                  ),
+                  child: StepTargetWeight(
+                    unit: MeasurementUnit.metric,
+                    initialWeightKg: 87.0,
+                    initialTargetWeightKg: 85.0,
+                    initialGoalMode: WeightGoalMode.lose,
+                    onNext: (_, _) {},
+                  ),
+                  locale: locale,
+                  theme: theme,
+                  themeMode: themeMode,
+                ),
+              );
+
+              await tester.pumpAndSettle();
+              await binding.takeScreenshot(
+                '$prefix$localeCode/01_onboarding/05_target_weight_$themeLabel',
+              );
+            },
+            tags: 'screenshot',
+          );
+
+          // 01_onboarding / 06_notifications
+          testWidgets(
+            'Capture 01_onboarding/06_notifications [$localeCode] [$themeLabel]',
+            (WidgetTester tester) async {
+              await tester.pumpWidget(
+                buildAppWrapper(
+                  appBar: OnboardingAppBar(
+                    displayStep: 5,
+                    displayTotalSteps: 7,
+                    progress: 5 / 7,
+                    onBackPressed: () {},
+                  ),
+                  child: StepReminderNotification(onNext: () {}),
+                  locale: locale,
+                  theme: theme,
+                  themeMode: themeMode,
+                ),
+              );
+
+              await tester.pumpAndSettle();
+              await binding.takeScreenshot(
+                '$prefix$localeCode/01_onboarding/06_notifications_$themeLabel',
+              );
+            },
+            tags: 'screenshot',
+          );
+
+          // 01_onboarding / 07_health_sync
+          testWidgets(
+            'Capture 01_onboarding/07_health_sync [$localeCode] [$themeLabel]',
+            (WidgetTester tester) async {
+              await tester.pumpWidget(
+                buildAppWrapper(
+                  appBar: OnboardingAppBar(
+                    displayStep: 6,
+                    displayTotalSteps: 7,
+                    progress: 6 / 7,
+                    onBackPressed: () {},
+                  ),
+                  child: StepHealthSync(onNext: () {}),
+                  locale: locale,
+                  theme: theme,
+                  themeMode: themeMode,
+                ),
+              );
+
+              await tester.pumpAndSettle();
+              await binding.takeScreenshot(
+                '$prefix$localeCode/01_onboarding/07_health_sync_$themeLabel',
+              );
+            },
+            tags: 'screenshot',
+          );
+
+          // 01_onboarding / 08_biometric_lock
+          testWidgets(
+            'Capture 01_onboarding/08_biometric_lock [$localeCode] [$themeLabel]',
+            (WidgetTester tester) async {
+              await tester.pumpWidget(
+                buildAppWrapper(
+                  appBar: OnboardingAppBar(
+                    displayStep: 7,
+                    displayTotalSteps: 7,
+                    progress: 1.0,
+                    onBackPressed: () {},
+                  ),
+                  child: StepBiometricLock(onNext: () {}),
+                  locale: locale,
+                  theme: theme,
+                  themeMode: themeMode,
+                ),
+              );
+
+              await tester.pumpAndSettle();
+              await binding.takeScreenshot(
+                '$prefix$localeCode/01_onboarding/08_biometric_lock_$themeLabel',
+              );
+            },
+            tags: 'screenshot',
+          );
+        }
+
+        // ---------------------------------------------------------------------
+        // 02_today
+        // ---------------------------------------------------------------------
+        if (shouldRunModule('02_today') || shouldRunModule('today')) {
+          testWidgets(
+            'Capture 02_today/01_dashboard [$localeCode] [$themeLabel]',
+            (WidgetTester tester) async {
+              final settingsBloc = AppSettingsBloc()
+                ..add(const UpdateHeight(177.0))
+                ..add(const TargetWeightChanged(85.0, WeightGoalMode.lose));
+
+              final weightBloc = WeightBloc(repository: weightRepo)
+                ..add(const SubscribeToWeightChanges())
+                ..add(const ChangeChartFilter(TimePeriod.month));
+
+              await tester.pumpWidget(
+                MultiBlocProvider(
+                  providers: [
+                    BlocProvider<AppSettingsBloc>.value(value: settingsBloc),
+                    BlocProvider<WeightBloc>.value(value: weightBloc),
+                  ],
+                  child: MaterialApp(
+                    debugShowCheckedModeBanner: false,
+                    locale: locale,
+                    supportedLocales: AppLocalizations.supportedLocales,
+                    localizationsDelegates:
+                        AppLocalizations.localizationsDelegates,
+                    theme: theme,
+                    themeMode: themeMode,
+                    home: const MainNavigationScreen(),
+                  ),
+                ),
+              );
+
+              await tester.pump();
+              await tester.pump(const Duration(milliseconds: 300));
+
+              await binding.takeScreenshot(
+                '$prefix$localeCode/02_today/01_dashboard_$themeLabel',
+              );
+            },
+            tags: 'screenshot',
+          );
+
+          // 02_today / 02_add_measurement
+          testWidgets(
+            'Capture 02_today/02_add_measurement [$localeCode] [$themeLabel]',
+            (WidgetTester tester) async {
+              final settingsBloc = AppSettingsBloc()
+                ..add(const UpdateHeight(177.0));
+              final weightBloc = WeightBloc(repository: weightRepo)
+                ..add(const SubscribeToWeightChanges());
+
+              await tester.pumpWidget(
+                MultiBlocProvider(
+                  providers: [
+                    BlocProvider<AppSettingsBloc>.value(value: settingsBloc),
+                    BlocProvider<WeightBloc>.value(value: weightBloc),
+                  ],
+                  child: MaterialApp(
+                    debugShowCheckedModeBanner: false,
+                    locale: locale,
+                    supportedLocales: AppLocalizations.supportedLocales,
+                    localizationsDelegates:
+                        AppLocalizations.localizationsDelegates,
+                    theme: theme,
+                    themeMode: themeMode,
+                    home: Scaffold(
+                      body: SafeArea(
+                        child: AddWeightSheet(
+                          existingEntry: WeightEntry(
+                            id: 90,
+                            weightKg: 87.0,
+                            dateTime: DateTime(2026, 9, 2, 8, 30),
+                            note: 'Morning weigh-in',
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              );
+
+              await tester.pumpAndSettle();
+              await binding.takeScreenshot(
+                '$prefix$localeCode/02_today/02_add_measurement_$themeLabel',
+              );
+            },
+            tags: 'screenshot',
+          );
+
+          // 02_today / 03_bmi_categories
+          testWidgets(
+            'Capture 02_today/03_bmi_categories [$localeCode] [$themeLabel]',
+            (WidgetTester tester) async {
+              final settingsBloc = AppSettingsBloc()
+                ..add(const UpdateHeight(177.0));
+              final weightBloc = WeightBloc(repository: weightRepo)
+                ..add(const SubscribeToWeightChanges());
+
+              await tester.pumpWidget(
+                MultiBlocProvider(
+                  providers: [
+                    BlocProvider<AppSettingsBloc>.value(value: settingsBloc),
+                    BlocProvider<WeightBloc>.value(value: weightBloc),
+                  ],
+                  child: MaterialApp(
+                    debugShowCheckedModeBanner: false,
+                    locale: locale,
+                    supportedLocales: AppLocalizations.supportedLocales,
+                    localizationsDelegates:
+                        AppLocalizations.localizationsDelegates,
+                    theme: theme,
+                    themeMode: themeMode,
+                    home: const Scaffold(
+                      body: SafeArea(
+                        child: BmiLegendDialog(
+                          latestWeightKg: 87.0,
+                          heightCm: 177.0,
+                          currentCategory: BmiCategory.overweight,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              );
+
+              await tester.pumpAndSettle();
+              await binding.takeScreenshot(
+                '$prefix$localeCode/02_today/03_bmi_categories_$themeLabel',
+              );
+            },
+            tags: 'screenshot',
+          );
+        }
+
+        // ---------------------------------------------------------------------
+        // 03_calendar
+        // ---------------------------------------------------------------------
+        if (shouldRunModule('03_calendar') || shouldRunModule('calendar')) {
+          testWidgets(
+            'Capture 03_calendar/01_month_view [$localeCode] [$themeLabel]',
+            (WidgetTester tester) async {
+              final settingsBloc = AppSettingsBloc()
+                ..add(const UpdateHeight(177.0))
+                ..add(const TargetWeightChanged(85.0, WeightGoalMode.lose));
+
+              final weightBloc = WeightBloc(repository: weightRepo)
+                ..add(const SubscribeToWeightChanges());
+
+              await tester.pumpWidget(
+                MultiBlocProvider(
+                  providers: [
+                    BlocProvider<AppSettingsBloc>.value(value: settingsBloc),
+                    BlocProvider<WeightBloc>.value(value: weightBloc),
+                  ],
+                  child: MaterialApp(
+                    debugShowCheckedModeBanner: false,
+                    locale: locale,
+                    supportedLocales: AppLocalizations.supportedLocales,
+                    localizationsDelegates:
+                        AppLocalizations.localizationsDelegates,
+                    theme: theme,
+                    themeMode: themeMode,
+                    home: CalendarScreen(initialDate: DateTime(2026, 9, 2)),
+                  ),
+                ),
+              );
+
+              await tester.pump();
+              await tester.pump(const Duration(milliseconds: 300));
+
+              await binding.takeScreenshot(
+                '$prefix$localeCode/03_calendar/01_month_view_$themeLabel',
+              );
+            },
+            tags: 'screenshot',
+          );
+
+          // 03_calendar / 02_day_details
+          testWidgets(
+            'Capture 03_calendar/02_day_details [$localeCode] [$themeLabel]',
+            (WidgetTester tester) async {
+              final settingsBloc = AppSettingsBloc()
+                ..add(const UpdateHeight(177.0))
+                ..add(const TargetWeightChanged(85.0, WeightGoalMode.lose));
+
+              final weightBloc = WeightBloc(repository: weightRepo)
+                ..add(const SubscribeToWeightChanges());
+
+              await tester.pumpWidget(
+                MultiBlocProvider(
+                  providers: [
+                    BlocProvider<AppSettingsBloc>.value(value: settingsBloc),
+                    BlocProvider<WeightBloc>.value(value: weightBloc),
+                  ],
+                  child: MaterialApp(
+                    debugShowCheckedModeBanner: false,
+                    locale: locale,
+                    supportedLocales: AppLocalizations.supportedLocales,
+                    localizationsDelegates:
+                        AppLocalizations.localizationsDelegates,
+                    theme: theme,
+                    themeMode: themeMode,
+                    home: CalendarScreen(initialDate: DateTime(2026, 9, 20)),
+                  ),
+                ),
+              );
+
+              await tester.pump();
+              await tester.pump(const Duration(milliseconds: 300));
+
+              await binding.takeScreenshot(
+                '$prefix$localeCode/03_calendar/02_day_details_$themeLabel',
+              );
+            },
+            tags: 'screenshot',
+          );
+        }
+
+        // ---------------------------------------------------------------------
+        // 04_statistics
+        // ---------------------------------------------------------------------
+        if (shouldRunModule('04_statistics') || shouldRunModule('statistics')) {
+          testWidgets(
+            'Capture 04_statistics/01_overview [$localeCode] [$themeLabel]',
+            (WidgetTester tester) async {
+              final settingsBloc = AppSettingsBloc()
+                ..add(const UpdateHeight(177.0))
+                ..add(const TargetWeightChanged(85.0, WeightGoalMode.lose));
+
+              final weightBloc = WeightBloc(repository: weightRepo)
+                ..add(const SubscribeToWeightChanges())
+                ..add(const ChangeChartFilter(TimePeriod.month));
+
+              await tester.pumpWidget(
+                MultiBlocProvider(
+                  providers: [
+                    BlocProvider<AppSettingsBloc>.value(value: settingsBloc),
+                    BlocProvider<WeightBloc>.value(value: weightBloc),
+                  ],
+                  child: MaterialApp(
+                    debugShowCheckedModeBanner: false,
+                    locale: locale,
+                    supportedLocales: AppLocalizations.supportedLocales,
+                    localizationsDelegates:
+                        AppLocalizations.localizationsDelegates,
+                    theme: theme,
+                    themeMode: themeMode,
+                    home: const StatisticsScreen(),
+                  ),
+                ),
+              );
+
+              await tester.pump();
+              await tester.pump(const Duration(milliseconds: 300));
+
+              await binding.takeScreenshot(
+                '$prefix$localeCode/04_statistics/01_overview_$themeLabel',
+              );
+            },
+            tags: 'screenshot',
+          );
+
+          // 04_statistics / 02_achievements_gallery
+          testWidgets(
+            'Capture 04_statistics/02_achievements_gallery [$localeCode] [$themeLabel]',
+            (WidgetTester tester) async {
+              final evaluatedMilestones = MilestoneCalculator.evaluate(
+                entries: mockEntries,
+                targetWeight: 85.0,
+                heightCm: 177.0,
+                goalMode: WeightGoalMode.lose,
+              );
+
+              await tester.pumpWidget(
+                MaterialApp(
                   debugShowCheckedModeBanner: false,
                   locale: locale,
                   supportedLocales: AppLocalizations.supportedLocales,
@@ -517,46 +754,118 @@ void main() {
                   themeMode: themeMode,
                   home: Scaffold(
                     body: SafeArea(
-                      child: AddWeightSheet(
-                        existingEntry: WeightEntry(
-                          id: 90,
-                          weightKg: 87.0,
-                          dateTime: DateTime(2026, 9, 2, 8, 30),
-                          note: 'Morning weigh-in',
+                      child: MilestonesGallerySheet(
+                        milestones: evaluatedMilestones,
+                      ),
+                    ),
+                  ),
+                ),
+              );
+
+              await tester.pumpAndSettle();
+              await binding.takeScreenshot(
+                '$prefix$localeCode/04_statistics/02_achievements_gallery_$themeLabel',
+              );
+            },
+            tags: 'screenshot',
+          );
+        }
+
+        // ---------------------------------------------------------------------
+        // 05_settings
+        // ---------------------------------------------------------------------
+        if (shouldRunModule('05_settings') || shouldRunModule('settings')) {
+          testWidgets(
+            'Capture 05_settings/01_preferences [$localeCode] [$themeLabel]',
+            (WidgetTester tester) async {
+              final settingsBloc = AppSettingsBloc()
+                ..add(const UpdateHeight(177.0))
+                ..add(const TargetWeightChanged(85.0, WeightGoalMode.lose));
+
+              final weightBloc = WeightBloc(repository: weightRepo)
+                ..add(const SubscribeToWeightChanges());
+
+              await tester.pumpWidget(
+                MultiBlocProvider(
+                  providers: [
+                    BlocProvider<AppSettingsBloc>.value(value: settingsBloc),
+                    BlocProvider<WeightBloc>.value(value: weightBloc),
+                  ],
+                  child: MaterialApp(
+                    debugShowCheckedModeBanner: false,
+                    locale: locale,
+                    supportedLocales: AppLocalizations.supportedLocales,
+                    localizationsDelegates:
+                        AppLocalizations.localizationsDelegates,
+                    theme: theme,
+                    themeMode: themeMode,
+                    home: const SettingsScreen(),
+                  ),
+                ),
+              );
+
+              await tester.pump();
+              await tester.pump(const Duration(milliseconds: 300));
+
+              await binding.takeScreenshot(
+                '$prefix$localeCode/05_settings/01_preferences_$themeLabel',
+              );
+            },
+            tags: 'screenshot',
+          );
+
+          // 05_settings / 02_target_weight_sheet
+          testWidgets(
+            'Capture 05_settings/02_target_weight_sheet [$localeCode] [$themeLabel]',
+            (WidgetTester tester) async {
+              final settingsBloc = AppSettingsBloc()
+                ..add(const UpdateHeight(177.0))
+                ..add(const TargetWeightChanged(85.0, WeightGoalMode.lose));
+
+              final weightBloc = WeightBloc(repository: weightRepo)
+                ..add(const SubscribeToWeightChanges());
+
+              await tester.pumpWidget(
+                MultiBlocProvider(
+                  providers: [
+                    BlocProvider<AppSettingsBloc>.value(value: settingsBloc),
+                    BlocProvider<WeightBloc>.value(value: weightBloc),
+                  ],
+                  child: MaterialApp(
+                    debugShowCheckedModeBanner: false,
+                    locale: locale,
+                    supportedLocales: AppLocalizations.supportedLocales,
+                    localizationsDelegates:
+                        AppLocalizations.localizationsDelegates,
+                    theme: theme,
+                    themeMode: themeMode,
+                    home: const Scaffold(
+                      body: SafeArea(
+                        child: TargetWeightSheet(
+                          currentValueKg: 85.0,
+                          measurementUnit: MeasurementUnit.metric,
+                          initialGoalMode: WeightGoalMode.lose,
                         ),
                       ),
                     ),
                   ),
                 ),
-              ),
-            );
+              );
 
-            await tester.pumpAndSettle();
-            await binding.takeScreenshot(
-              '$_screenshotDevicePrefix/$localeCode/02_today/02_add_measurement_$themeLabel',
-            );
-          },
-          tags: 'screenshot',
-        );
+              await tester.pumpAndSettle();
+              await binding.takeScreenshot(
+                '$prefix$localeCode/05_settings/02_target_weight_sheet_$themeLabel',
+              );
+            },
+            tags: 'screenshot',
+          );
 
-        // ---------------------------------------------------------------------
-        // 02_today / 03_bmi_categories (BMI Categories breakdown dialog)
-        // ---------------------------------------------------------------------
-        testWidgets(
-          'Capture 02_today/03_bmi_categories [$localeCode] [$themeLabel]',
-          (WidgetTester tester) async {
-            final settingsBloc = AppSettingsBloc()
-              ..add(const UpdateHeight(177.0));
-            final weightBloc = WeightBloc(repository: weightRepo)
-              ..add(const SubscribeToWeightChanges());
-
-            await tester.pumpWidget(
-              MultiBlocProvider(
-                providers: [
-                  BlocProvider<AppSettingsBloc>.value(value: settingsBloc),
-                  BlocProvider<WeightBloc>.value(value: weightBloc),
-                ],
-                child: MaterialApp(
+          // 05_settings / 03_privacy_policy
+          testWidgets(
+            'Capture 05_settings/03_privacy_policy [$localeCode] [$themeLabel]',
+            (WidgetTester tester) async {
+              await tester.pumpWidget(
+                MaterialApp(
                   debugShowCheckedModeBanner: false,
                   locale: locale,
                   supportedLocales: AppLocalizations.supportedLocales,
@@ -564,47 +873,100 @@ void main() {
                       AppLocalizations.localizationsDelegates,
                   theme: theme,
                   themeMode: themeMode,
-                  home: const Scaffold(
-                    body: SafeArea(
-                      child: BmiLegendDialog(
-                        latestWeightKg: 87.0,
-                        heightCm: 177.0,
-                        currentCategory: BmiCategory.overweight,
+                  home: const PrivacyPolicyScreen(),
+                ),
+              );
+
+              await tester.pumpAndSettle();
+              await binding.takeScreenshot(
+                '$prefix$localeCode/05_settings/03_privacy_policy_$themeLabel',
+              );
+            },
+            tags: 'screenshot',
+          );
+        }
+
+        // ---------------------------------------------------------------------
+        // 06_biometric
+        // ---------------------------------------------------------------------
+        if (shouldRunModule('06_biometric') || shouldRunModule('biometric')) {
+          testWidgets(
+            'Capture 06_biometric/01_biometric_lock [$localeCode] [$themeLabel]',
+            (WidgetTester tester) async {
+              final settingsBloc = AppSettingsBloc()
+                ..add(const UpdateBiometricLock(true))
+                ..add(const SetLocked(true));
+
+              await tester.pumpWidget(
+                BlocProvider<AppSettingsBloc>.value(
+                  value: settingsBloc,
+                  child: MaterialApp(
+                    debugShowCheckedModeBanner: false,
+                    locale: locale,
+                    supportedLocales: AppLocalizations.supportedLocales,
+                    localizationsDelegates:
+                        AppLocalizations.localizationsDelegates,
+                    theme: theme,
+                    themeMode: themeMode,
+                    home: const BiometricShieldScreen(),
+                  ),
+                ),
+              );
+
+              await tester.pumpAndSettle();
+              await binding.takeScreenshot(
+                '$prefix$localeCode/06_biometric/01_biometric_lock_$themeLabel',
+              );
+            },
+            tags: 'screenshot',
+          );
+        }
+
+        // ---------------------------------------------------------------------
+        // 07_home_widgets
+        // ---------------------------------------------------------------------
+        if (shouldRunModule('07_home_widgets') ||
+            shouldRunModule('home_widgets')) {
+          testWidgets(
+            'Capture 07_home_widgets/01_widget_2x1 [$localeCode] [$themeLabel]',
+            (WidgetTester tester) async {
+              await tester.pumpWidget(
+                MaterialApp(
+                  debugShowCheckedModeBanner: false,
+                  locale: locale,
+                  supportedLocales: AppLocalizations.supportedLocales,
+                  localizationsDelegates:
+                      AppLocalizations.localizationsDelegates,
+                  theme: theme,
+                  themeMode: themeMode,
+                  home: Scaffold(
+                    body: WidgetPreviewCanvas(
+                      title: 'Widget 2 × 1',
+                      isDark: isDark,
+                      child: HomeWidget2x1View(
+                        currentWeight: 87.0,
+                        unit: 'kg',
+                        isDark: isDark,
                       ),
                     ),
                   ),
                 ),
-              ),
-            );
+              );
 
-            await tester.pumpAndSettle();
-            await binding.takeScreenshot(
-              '$_screenshotDevicePrefix/$localeCode/02_today/03_bmi_categories_$themeLabel',
-            );
-          },
-          tags: 'screenshot',
-        );
+              await tester.pumpAndSettle();
+              await binding.takeScreenshot(
+                '$prefix$localeCode/07_home_widgets/01_widget_2x1_$themeLabel',
+              );
+            },
+            tags: 'screenshot',
+          );
 
-        // ---------------------------------------------------------------------
-        // 03_calendar / 01_month_view (Calendar month view with 90 entries & today selected)
-        // ---------------------------------------------------------------------
-        testWidgets(
-          'Capture 03_calendar/01_month_view [$localeCode] [$themeLabel]',
-          (WidgetTester tester) async {
-            final settingsBloc = AppSettingsBloc()
-              ..add(const UpdateHeight(177.0))
-              ..add(const TargetWeightChanged(85.0, WeightGoalMode.lose));
-
-            final weightBloc = WeightBloc(repository: weightRepo)
-              ..add(const SubscribeToWeightChanges());
-
-            await tester.pumpWidget(
-              MultiBlocProvider(
-                providers: [
-                  BlocProvider<AppSettingsBloc>.value(value: settingsBloc),
-                  BlocProvider<WeightBloc>.value(value: weightBloc),
-                ],
-                child: MaterialApp(
+          // 07_home_widgets / 02_widget_3x2
+          testWidgets(
+            'Capture 07_home_widgets/02_widget_3x2 [$localeCode] [$themeLabel]',
+            (WidgetTester tester) async {
+              await tester.pumpWidget(
+                MaterialApp(
                   debugShowCheckedModeBanner: false,
                   locale: locale,
                   supportedLocales: AppLocalizations.supportedLocales,
@@ -612,391 +974,39 @@ void main() {
                       AppLocalizations.localizationsDelegates,
                   theme: theme,
                   themeMode: themeMode,
-                  home: CalendarScreen(initialDate: DateTime(2026, 9, 2)),
-                ),
-              ),
-            );
-
-            await tester.pump();
-            await tester.pump(const Duration(milliseconds: 300));
-
-            await binding.takeScreenshot(
-              '$_screenshotDevicePrefix/$localeCode/03_calendar/01_month_view_$themeLabel',
-            );
-          },
-          tags: 'screenshot',
-        );
-
-        // ---------------------------------------------------------------------
-        // 03_calendar / 02_day_details (Calendar view with day empty/no measurements)
-        // ---------------------------------------------------------------------
-        testWidgets(
-          'Capture 03_calendar/02_day_details [$localeCode] [$themeLabel]',
-          (WidgetTester tester) async {
-            final settingsBloc = AppSettingsBloc()
-              ..add(const UpdateHeight(177.0))
-              ..add(const TargetWeightChanged(85.0, WeightGoalMode.lose));
-
-            final weightBloc = WeightBloc(repository: weightRepo)
-              ..add(const SubscribeToWeightChanges());
-
-            await tester.pumpWidget(
-              MultiBlocProvider(
-                providers: [
-                  BlocProvider<AppSettingsBloc>.value(value: settingsBloc),
-                  BlocProvider<WeightBloc>.value(value: weightBloc),
-                ],
-                child: MaterialApp(
-                  debugShowCheckedModeBanner: false,
-                  locale: locale,
-                  supportedLocales: AppLocalizations.supportedLocales,
-                  localizationsDelegates:
-                      AppLocalizations.localizationsDelegates,
-                  theme: theme,
-                  themeMode: themeMode,
-                  home: CalendarScreen(
-                    initialDate: DateTime(
-                      2026,
-                      9,
-                      20,
-                    ), // Day without measurements
-                  ),
-                ),
-              ),
-            );
-
-            await tester.pump();
-            await tester.pump(const Duration(milliseconds: 300));
-
-            await binding.takeScreenshot(
-              '$_screenshotDevicePrefix/$localeCode/03_calendar/02_day_details_$themeLabel',
-            );
-          },
-          tags: 'screenshot',
-        );
-
-        // ---------------------------------------------------------------------
-        // 04_statistics / 01_overview (Statistics screen with progress & BMI chart)
-        // ---------------------------------------------------------------------
-        testWidgets(
-          'Capture 04_statistics/01_overview [$localeCode] [$themeLabel]',
-          (WidgetTester tester) async {
-            final settingsBloc = AppSettingsBloc()
-              ..add(const UpdateHeight(177.0))
-              ..add(const TargetWeightChanged(85.0, WeightGoalMode.lose));
-
-            final weightBloc = WeightBloc(repository: weightRepo)
-              ..add(const SubscribeToWeightChanges())
-              ..add(const ChangeChartFilter(TimePeriod.month));
-
-            await tester.pumpWidget(
-              MultiBlocProvider(
-                providers: [
-                  BlocProvider<AppSettingsBloc>.value(value: settingsBloc),
-                  BlocProvider<WeightBloc>.value(value: weightBloc),
-                ],
-                child: MaterialApp(
-                  debugShowCheckedModeBanner: false,
-                  locale: locale,
-                  supportedLocales: AppLocalizations.supportedLocales,
-                  localizationsDelegates:
-                      AppLocalizations.localizationsDelegates,
-                  theme: theme,
-                  themeMode: themeMode,
-                  home: const StatisticsScreen(),
-                ),
-              ),
-            );
-
-            await tester.pump();
-            await tester.pump(const Duration(milliseconds: 300));
-
-            await binding.takeScreenshot(
-              '$_screenshotDevicePrefix/$localeCode/04_statistics/01_overview_$themeLabel',
-            );
-          },
-          tags: 'screenshot',
-        );
-
-        // ---------------------------------------------------------------------
-        // 04_statistics / 02_achievements_gallery (Milestones / Achievements Sheet)
-        // ---------------------------------------------------------------------
-        testWidgets(
-          'Capture 04_statistics/02_achievements_gallery [$localeCode] [$themeLabel]',
-          (WidgetTester tester) async {
-            final evaluatedMilestones = MilestoneCalculator.evaluate(
-              entries: mockEntries,
-              targetWeight: 85.0,
-              heightCm: 177.0,
-              goalMode: WeightGoalMode.lose,
-            );
-
-            await tester.pumpWidget(
-              MaterialApp(
-                debugShowCheckedModeBanner: false,
-                locale: locale,
-                supportedLocales: AppLocalizations.supportedLocales,
-                localizationsDelegates: AppLocalizations.localizationsDelegates,
-                theme: theme,
-                themeMode: themeMode,
-                home: Scaffold(
-                  body: SafeArea(
-                    child: MilestonesGallerySheet(
-                      milestones: evaluatedMilestones,
-                    ),
-                  ),
-                ),
-              ),
-            );
-
-            await tester.pumpAndSettle();
-            await binding.takeScreenshot(
-              '$_screenshotDevicePrefix/$localeCode/04_statistics/02_achievements_gallery_$themeLabel',
-            );
-          },
-          tags: 'screenshot',
-        );
-
-        // ---------------------------------------------------------------------
-        // 05_settings / 01_preferences (Main settings screen)
-        // ---------------------------------------------------------------------
-        testWidgets(
-          'Capture 05_settings/01_preferences [$localeCode] [$themeLabel]',
-          (WidgetTester tester) async {
-            final settingsBloc = AppSettingsBloc()
-              ..add(const UpdateHeight(177.0))
-              ..add(const TargetWeightChanged(85.0, WeightGoalMode.lose));
-
-            final weightBloc = WeightBloc(repository: weightRepo)
-              ..add(const SubscribeToWeightChanges());
-
-            await tester.pumpWidget(
-              MultiBlocProvider(
-                providers: [
-                  BlocProvider<AppSettingsBloc>.value(value: settingsBloc),
-                  BlocProvider<WeightBloc>.value(value: weightBloc),
-                ],
-                child: MaterialApp(
-                  debugShowCheckedModeBanner: false,
-                  locale: locale,
-                  supportedLocales: AppLocalizations.supportedLocales,
-                  localizationsDelegates:
-                      AppLocalizations.localizationsDelegates,
-                  theme: theme,
-                  themeMode: themeMode,
-                  home: const SettingsScreen(),
-                ),
-              ),
-            );
-
-            await tester.pump();
-            await tester.pump(const Duration(milliseconds: 300));
-
-            await binding.takeScreenshot(
-              '$_screenshotDevicePrefix/$localeCode/05_settings/01_preferences_$themeLabel',
-            );
-          },
-          tags: 'screenshot',
-        );
-
-        // ---------------------------------------------------------------------
-        // 05_settings / 02_target_weight_sheet (Target weight configuration modal)
-        // ---------------------------------------------------------------------
-        testWidgets(
-          'Capture 05_settings/02_target_weight_sheet [$localeCode] [$themeLabel]',
-          (WidgetTester tester) async {
-            final settingsBloc = AppSettingsBloc()
-              ..add(const UpdateHeight(177.0))
-              ..add(const TargetWeightChanged(85.0, WeightGoalMode.lose));
-
-            final weightBloc = WeightBloc(repository: weightRepo)
-              ..add(const SubscribeToWeightChanges());
-
-            await tester.pumpWidget(
-              MultiBlocProvider(
-                providers: [
-                  BlocProvider<AppSettingsBloc>.value(value: settingsBloc),
-                  BlocProvider<WeightBloc>.value(value: weightBloc),
-                ],
-                child: MaterialApp(
-                  debugShowCheckedModeBanner: false,
-                  locale: locale,
-                  supportedLocales: AppLocalizations.supportedLocales,
-                  localizationsDelegates:
-                      AppLocalizations.localizationsDelegates,
-                  theme: theme,
-                  themeMode: themeMode,
-                  home: const Scaffold(
-                    body: SafeArea(
-                      child: TargetWeightSheet(
-                        currentValueKg: 85.0,
-                        measurementUnit: MeasurementUnit.metric,
-                        initialGoalMode: WeightGoalMode.lose,
+                  home: Scaffold(
+                    body: WidgetPreviewCanvas(
+                      title: 'Widget 3 × 2',
+                      isDark: isDark,
+                      child: HomeWidget3x2View(
+                        currentWeight: 87.0,
+                        targetWeight: 85.0,
+                        delta: -0.2,
+                        unit: 'kg',
+                        bmiCategory: BmiCategory.overweight,
+                        bmiValue: 27.8,
+                        goalProgressPct: 73,
+                        isDark: isDark,
                       ),
                     ),
                   ),
                 ),
-              ),
-            );
+              );
 
-            await tester.pumpAndSettle();
-            await binding.takeScreenshot(
-              '$_screenshotDevicePrefix/$localeCode/05_settings/02_target_weight_sheet_$themeLabel',
-            );
-          },
-          tags: 'screenshot',
-        );
-
-        // ---------------------------------------------------------------------
-        // 05_settings / 03_privacy_policy (Privacy Policy Screen)
-        // ---------------------------------------------------------------------
-        testWidgets(
-          'Capture 05_settings/03_privacy_policy [$localeCode] [$themeLabel]',
-          (WidgetTester tester) async {
-            await tester.pumpWidget(
-              MaterialApp(
-                debugShowCheckedModeBanner: false,
-                locale: locale,
-                supportedLocales: AppLocalizations.supportedLocales,
-                localizationsDelegates: AppLocalizations.localizationsDelegates,
-                theme: theme,
-                themeMode: themeMode,
-                home: const PrivacyPolicyScreen(),
-              ),
-            );
-
-            await tester.pumpAndSettle();
-            await binding.takeScreenshot(
-              '$_screenshotDevicePrefix/$localeCode/05_settings/03_privacy_policy_$themeLabel',
-            );
-          },
-          tags: 'screenshot',
-        );
-
-        // ---------------------------------------------------------------------
-        // 06_biometric / 01_biometric_lock (Biometric shield / App lock screen)
-        // ---------------------------------------------------------------------
-        testWidgets(
-          'Capture 06_biometric/01_biometric_lock [$localeCode] [$themeLabel]',
-          (WidgetTester tester) async {
-            final settingsBloc = AppSettingsBloc()
-              ..add(const UpdateBiometricLock(true))
-              ..add(const SetLocked(true));
-
-            await tester.pumpWidget(
-              BlocProvider<AppSettingsBloc>.value(
-                value: settingsBloc,
-                child: MaterialApp(
-                  debugShowCheckedModeBanner: false,
-                  locale: locale,
-                  supportedLocales: AppLocalizations.supportedLocales,
-                  localizationsDelegates:
-                      AppLocalizations.localizationsDelegates,
-                  theme: theme,
-                  themeMode: themeMode,
-                  home: const BiometricShieldScreen(),
-                ),
-              ),
-            );
-
-            await tester.pumpAndSettle();
-            await binding.takeScreenshot(
-              '$_screenshotDevicePrefix/$localeCode/06_biometric/01_biometric_lock_$themeLabel',
-            );
-          },
-          tags: 'screenshot',
-        );
-
-        // ---------------------------------------------------------------------
-        // 07_home_widgets / 01_widget_2x1 (Compact 2x1 Home Screen Widget)
-        // ---------------------------------------------------------------------
-        testWidgets(
-          'Capture 07_home_widgets/01_widget_2x1 [$localeCode] [$themeLabel]',
-          (WidgetTester tester) async {
-            await tester.pumpWidget(
-              MaterialApp(
-                debugShowCheckedModeBanner: false,
-                locale: locale,
-                supportedLocales: AppLocalizations.supportedLocales,
-                localizationsDelegates: AppLocalizations.localizationsDelegates,
-                theme: theme,
-                themeMode: themeMode,
-                home: Scaffold(
-                  body: WidgetPreviewCanvas(
-                    title: 'Widget 2 × 1',
-                    isDark: isDark,
-                    child: HomeWidget2x1View(
-                      currentWeight: 87.0,
-                      unit: 'kg',
-                      isDark: isDark,
-                    ),
-                  ),
-                ),
-              ),
-            );
-
-            await tester.pumpAndSettle();
-            await binding.takeScreenshot(
-              '$_screenshotDevicePrefix/$localeCode/07_home_widgets/01_widget_2x1_$themeLabel',
-            );
-          },
-          tags: 'screenshot',
-        );
-
-        // ---------------------------------------------------------------------
-        // 07_home_widgets / 02_widget_3x2 (Full 3x2 Home Screen Widget)
-        // ---------------------------------------------------------------------
-        testWidgets(
-          'Capture 07_home_widgets/02_widget_3x2 [$localeCode] [$themeLabel]',
-          (WidgetTester tester) async {
-            await tester.pumpWidget(
-              MaterialApp(
-                debugShowCheckedModeBanner: false,
-                locale: locale,
-                supportedLocales: AppLocalizations.supportedLocales,
-                localizationsDelegates: AppLocalizations.localizationsDelegates,
-                theme: theme,
-                themeMode: themeMode,
-                home: Scaffold(
-                  body: WidgetPreviewCanvas(
-                    title: 'Widget 3 × 2',
-                    isDark: isDark,
-                    child: HomeWidget3x2View(
-                      currentWeight: 87.0,
-                      targetWeight: 85.0,
-                      delta: -0.2,
-                      unit: 'kg',
-                      bmiCategory: BmiCategory.overweight,
-                      bmiValue: 27.8,
-                      goalProgressPct: 73,
-                      isDark: isDark,
-                    ),
-                  ),
-                ),
-              ),
-            );
-
-            await tester.pumpAndSettle();
-            await binding.takeScreenshot(
-              '$_screenshotDevicePrefix/$localeCode/07_home_widgets/02_widget_3x2_$themeLabel',
-            );
-          },
-          tags: 'screenshot',
-        );
+              await tester.pumpAndSettle();
+              await binding.takeScreenshot(
+                '$prefix$localeCode/07_home_widgets/02_widget_3x2_$themeLabel',
+              );
+            },
+            tags: 'screenshot',
+          );
+        }
       }
     }
   });
 }
 
-/// Canvas wrapper presenting home widgets on a simulated phone home screen.
-///
-/// Variant A: wallpaper + app icon grid + dock instead of plain gradient,
-/// to make Play Store screenshots look like a real home screen.
-///
-/// The wallpaper is a subtle gradient (no external asset needed), the icon
-/// grid uses Material icons at low opacity, and the dock mimics Pixel
-/// Launcher. The widget itself is centered with a slight top offset,
-/// as on a real home screen.
+/// Canvas wrapper to present home widgets cleanly in screenshots.
 class WidgetPreviewCanvas extends StatelessWidget {
   final Widget child;
   final String title;
@@ -1011,238 +1021,48 @@ class WidgetPreviewCanvas extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final wallpaper = isDark
+    final bgGradient = isDark
         ? const LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [Color(0xFF1A1D29), Color(0xFF0F1117), Color(0xFF141721)],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [Color(0xFF0F1117), Color(0xFF141721), Color(0xFF1A1D29)],
           )
         : const LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [Color(0xFFD6E4F0), Color(0xFFE9EEF5), Color(0xFFF3F6FA)],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [Color(0xFFE9EEF5), Color(0xFFF3F6FA), Color(0xFFE3E9F2)],
           );
 
     return DecoratedBox(
-      decoration: BoxDecoration(gradient: wallpaper),
-      child: Stack(
-        children: [
-          // Subtle home-screen wallpaper with icon grid behind the widget.
-          Positioned.fill(
-            child: SafeArea(
-              child: Column(
-                children: [
-                  // Status bar mock (time, battery) — minimal, non-distracting.
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 20,
-                      vertical: 8,
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          '09:30',
-                          style: TextStyle(
-                            fontSize: 13,
-                            fontWeight: FontWeight.w600,
-                            color: isDark
-                                ? Colors.white.withValues(alpha: 0.9)
-                                : Colors.black.withValues(alpha: 0.8),
-                          ),
-                        ),
-                        Row(
-                          children: [
-                            Icon(
-                              Icons.signal_cellular_alt,
-                              size: 14,
-                              color: isDark
-                                  ? Colors.white.withValues(alpha: 0.7)
-                                  : Colors.black.withValues(alpha: 0.6),
-                            ),
-                            const SizedBox(width: 4),
-                            Icon(
-                              Icons.wifi,
-                              size: 14,
-                              color: isDark
-                                  ? Colors.white.withValues(alpha: 0.7)
-                                  : Colors.black.withValues(alpha: 0.6),
-                            ),
-                            const SizedBox(width: 4),
-                            Icon(
-                              Icons.battery_full,
-                              size: 16,
-                              color: isDark
-                                  ? Colors.white.withValues(alpha: 0.7)
-                                  : Colors.black.withValues(alpha: 0.6),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  // App icon grid — faint, suggests real home screen.
-                  Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
-                      child: _HomeIconGrid(isDark: isDark),
-                    ),
-                  ),
-                  // Dock at the bottom.
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
-                    child: _HomeDock(isDark: isDark),
-                  ),
-                ],
+      decoration: BoxDecoration(gradient: bgGradient),
+      child: Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 5),
+              margin: const EdgeInsets.only(bottom: 24),
+              decoration: BoxDecoration(
+                color: isDark
+                    ? Colors.white.withValues(alpha: 0.1)
+                    : Colors.black.withValues(alpha: 0.06),
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: Text(
+                title,
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: 0.5,
+                  color: isDark
+                      ? const Color(0xFFC4C7D0)
+                      : const Color(0xFF555B68),
+                ),
               ),
             ),
-          ),
-          // Centered widget (with slight top offset like real home screen).
-          Center(
-            child: Padding(
-              padding: const EdgeInsets.only(bottom: 80),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 10,
-                      vertical: 4,
-                    ),
-                    decoration: BoxDecoration(
-                      color: isDark
-                          ? Colors.white.withValues(alpha: 0.12)
-                          : Colors.black.withValues(alpha: 0.06),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Text(
-                      title,
-                      style: TextStyle(
-                        fontSize: 10,
-                        fontWeight: FontWeight.w700,
-                        letterSpacing: 0.4,
-                        color: isDark
-                            ? const Color(0xFFC4C7D0)
-                            : const Color(0xFF555B68),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  child,
-                ],
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-/// Faint app icon grid to simulate a home screen behind the widget.
-class _HomeIconGrid extends StatelessWidget {
-  final bool isDark;
-
-  const _HomeIconGrid({required this.isDark});
-
-  @override
-  Widget build(BuildContext context) {
-    const icons = [
-      Icons.mail_outline,
-      Icons.calendar_today_outlined,
-      Icons.photo_outlined,
-      Icons.camera_alt_outlined,
-      Icons.map_outlined,
-      Icons.music_note_outlined,
-      Icons.videocam_outlined,
-      Icons.chat_bubble_outline,
-      Icons.shopping_bag_outlined,
-      Icons.settings_outlined,
-      Icons.folder_outlined,
-      Icons.help_outline,
-    ];
-
-    return Opacity(
-      opacity: isDark ? 0.35 : 0.45,
-      child: GridView.builder(
-        physics: const NeverScrollableScrollPhysics(),
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 4,
-          mainAxisSpacing: 18,
-          crossAxisSpacing: 12,
-          childAspectRatio: 0.82,
+            child,
+          ],
         ),
-        itemCount: icons.length,
-        itemBuilder: (context, index) {
-          return Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Container(
-                width: 48,
-                height: 48,
-                decoration: BoxDecoration(
-                  color: isDark
-                      ? Colors.white.withValues(alpha: 0.08)
-                      : Colors.white.withValues(alpha: 0.85),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Icon(
-                  icons[index],
-                  size: 22,
-                  color: isDark
-                      ? Colors.white.withValues(alpha: 0.65)
-                      : const Color(0xFF3B404E),
-                ),
-              ),
-              const SizedBox(height: 4),
-              Container(
-                width: 36,
-                height: 6,
-                decoration: BoxDecoration(
-                  color: isDark
-                      ? Colors.white.withValues(alpha: 0.25)
-                      : Colors.black.withValues(alpha: 0.25),
-                  borderRadius: BorderRadius.circular(3),
-                ),
-              ),
-            ],
-          );
-        },
-      ),
-    );
-  }
-}
-
-/// Bottom dock mimicking Pixel Launcher.
-class _HomeDock extends StatelessWidget {
-  final bool isDark;
-
-  const _HomeDock({required this.isDark});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-      decoration: BoxDecoration(
-        color: isDark
-            ? Colors.white.withValues(alpha: 0.08)
-            : Colors.white.withValues(alpha: 0.75),
-        borderRadius: BorderRadius.circular(28),
-        border: Border.all(
-          color: isDark
-              ? Colors.white.withValues(alpha: 0.1)
-              : Colors.black.withValues(alpha: 0.06),
-        ),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: const [
-          Icon(Icons.phone, size: 22, color: Color(0xFF34A853)),
-          Icon(Icons.chat_bubble, size: 22, color: Color(0xFF4285F4)),
-          Icon(Icons.camera_alt, size: 22, color: Color(0xFFEA4335)),
-          Icon(Icons.apps, size: 22, color: Color(0xFF5F6368)),
-        ],
       ),
     );
   }
