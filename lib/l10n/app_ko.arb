@@ -232,7 +232,6 @@
   "categorySpecial": "특별한 날",
   "rolling7Days": "7일",
   "rolling30Days": "30일",
-  "rollingPeriodComparisonSubtitle": "최근 {days}일 vs 이전 {days}일",
   "month": "월",
   "monthlyCompliance": "기록 달성률",
   "moreOptions": "추가 옵션",

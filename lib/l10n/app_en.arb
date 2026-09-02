@@ -283,14 +283,6 @@
       }
     }
   },
-  "@rollingPeriodComparisonSubtitle": {
-    "description": "Subtitle describing the rolling comparison window.",
-    "placeholders": {
-      "days": {
-        "type": "int"
-      }
-    }
-  },
   "@sinceEntryDate": {
     "description": "Date label for milestone or progress start.",
     "placeholders": {
@@ -596,7 +588,6 @@
   "categorySpecial": "Special Occasions",
   "rolling7Days": "7 days",
   "rolling30Days": "30 days",
-  "rollingPeriodComparisonSubtitle": "Last {days} days vs previous {days} days",
   "month": "Month",
   "monthlyCompliance": "Consistency",
   "moreOptions": "More options",

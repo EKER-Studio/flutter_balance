@@ -232,7 +232,6 @@
   "categorySpecial": "特別な記念日",
   "rolling7Days": "7日間",
   "rolling30Days": "30日間",
-  "rollingPeriodComparisonSubtitle": "直近{days}日間 vs 前の{days}日間",
   "month": "月",
   "monthlyCompliance": "記録の継続率",
   "moreOptions": "その他のオプション",
