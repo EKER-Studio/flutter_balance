@@ -89,7 +89,7 @@ lib/
 │       ├── data/                 # WeightEntryModel (Isar schema) & IsarWeightRepository
 │       ├── domain/               # WeightEntry entities, repository contracts & health sync coordinator
 │       └── presentation/         # Shared WeightBloc, events, states & AddWeightSheet
-└── l10n/                         # Localization ARB assets (app_en.arb, app_pl.arb)
+└── l10n/                         # Localization ARB assets (EN, DE, JA, FR, ES, PL, PT-BR, NL, IT, KO)
 ```
 
 ### Design Principles
@@ -115,7 +115,7 @@ lib/
 | **Biometrics** | local_auth | Native biometric authentication (Face ID, Touch ID, fingerprint) |
 | **Health** | health | Integration with Apple HealthKit & Android Health Connect |
 | **CSV Handling** | csv, file_picker | CSV encoding, streaming parser, and native Storage Access Framework file picker |
-| **Localization** | flutter_localizations + gen-l10n | Internationalization (English, Polish) |
+| **Localization** | flutter_localizations + gen-l10n | Internationalization (10 languages: EN, DE, JA, FR, ES, PL, PT-BR, NL, IT, KO) |
 | **Notifications** | flutter_local_notifications, timezone | Local scheduled daily reminders & timezone resolution |
 | **Diagnostics & Crash Reporting** | firebase_crashlytics | Anonymous crash reporting and technical diagnostics |
 | **Analytics** | firebase_analytics | Privacy-first telemetry and UI interaction metrics (no health data) |

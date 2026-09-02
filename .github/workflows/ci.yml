@@ -62,7 +62,15 @@ jobs:
             echo "aW1wb3J0ICdwYWNrYWdlOmZpcmViYXNlX2NvcmUvZmlyZWJhc2VfY29yZS5kYXJ0JyBzaG93IEZpcmViYXNlT3B0aW9uczsKaW1wb3J0ICdwYWNrYWdlOmZsdXR0ZXIvZm91bmRhdGlvbi5kYXJ0JyBzaG93IGRlZmF1bHRUYXJnZXRQbGF0Zm9ybSwgVGFyZ2V0UGxhdGZvcm07CgpjbGFzcyBEZWZhdWx0RmlyZWJhc2VPcHRpb25zIHsKICBzdGF0aWMgRmlyZWJhc2VPcHRpb25zIGdldCBjdXJyZW50UGxhdGZvcm0gewogICAgcmV0dXJuIGNvbnN0IEZpcmViYXNlT3B0aW9ucygKICAgICAgYXBpS2V5OiAnZHVtbXlfYXBpX2tleScsCiAgICAgIGFwcElkOiAnZHVtbXlfYXBwX2lkJywKICAgICAgbWVzc2FnaW5nU2VuZGVySWQ6ICdkdW1teV9zZW5kZXJfaWQnLAogICAgICBwcm9qZWN0SWQ6ICdkdW1teV9wcm9qZWN0X2lkJywKICAgICk7CiAgfQp9Cg==" | base64 --decode > lib/firebase_options.dart
           fi
 
+      - name: Cache Isar core binary
+        id: cache-isar
+        uses: actions/cache@v4
+        with:
+          path: libisar.so
+          key: ${{ runner.os }}-isar-${{ hashFiles('**/pubspec.lock') }}
+
       - name: Fetch Isar core binary for native tests
+        if: steps.cache-isar.outputs.cache-hit != 'true'
         run: |
           ISAR_VERSION=$(awk '/isar_community:/{flag=1; next} flag && /version:/{print $2; exit}' pubspec.lock | tr -d '"')
           echo "Using Isar version: $ISAR_VERSION"
