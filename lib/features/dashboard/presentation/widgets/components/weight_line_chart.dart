@@ -7,7 +7,7 @@ import 'package:balance/core/presentation/theme/app_chart_theme.dart';
 import 'package:balance/core/utils/analytics.dart';
 import 'package:balance/core/utils/unit_converter.dart';
 import 'package:balance/features/weight/domain/entities/weight_entry.dart';
-import 'package:balance/features/weight/domain/time_period.dart';
+import 'package:balance/core/models/time_period.dart';
 import 'package:balance/l10n/app_localizations.dart';
 
 /// A curved line chart of daily-aggregated weight values with touch tooltips.

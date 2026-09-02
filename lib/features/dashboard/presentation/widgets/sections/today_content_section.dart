@@ -6,7 +6,7 @@ import 'package:balance/features/dashboard/presentation/widgets/sections/daily_t
 import 'package:balance/features/dashboard/presentation/widgets/sections/health_summary_card.dart';
 import 'package:balance/features/dashboard/presentation/widgets/sections/weight_trend_chart_card.dart';
 import 'package:balance/features/weight/domain/entities/weight_entry.dart';
-import 'package:balance/features/weight/domain/time_period.dart';
+import 'package:balance/core/models/time_period.dart';
 import 'package:balance/features/weight/domain/weight_error_type.dart';
 
 /// The responsive content section composing summary, chart, tips, and error banner.

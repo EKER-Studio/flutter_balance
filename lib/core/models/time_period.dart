@@ -1,4 +1,4 @@
-/// The selected time period for the chart filter.
+/// The selected time period for filtering historical measurement data.
 enum TimePeriod {
   /// Last 7 days.
   week,

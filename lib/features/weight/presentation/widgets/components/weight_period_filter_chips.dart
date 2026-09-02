@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:balance/features/weight/domain/time_period.dart';
+import 'package:balance/core/models/time_period.dart';
 import 'package:balance/l10n/app_localizations.dart';
 
 /// A presentational wrap of choice chips for selecting the chart time period.

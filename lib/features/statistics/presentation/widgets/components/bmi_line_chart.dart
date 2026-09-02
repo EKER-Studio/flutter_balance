@@ -5,7 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:balance/core/presentation/theme/app_chart_theme.dart';
 import 'package:balance/core/utils/analytics.dart';
 import 'package:balance/features/weight/domain/entities/weight_entry.dart';
-import 'package:balance/features/weight/domain/time_period.dart';
+import 'package:balance/core/models/time_period.dart';
 import 'package:balance/l10n/app_localizations.dart';
 
 /// A presentational line chart plotting BMI points with touch tooltips and formatted date axis ticks.

@@ -11,7 +11,7 @@ import 'package:balance/features/statistics/presentation/widgets/sections/milest
 import 'package:balance/features/statistics/presentation/widgets/sections/period_comparison_card.dart';
 import 'package:balance/features/statistics/presentation/widgets/sections/weight_range_card.dart';
 import 'package:balance/features/weight/domain/entities/weight_entry.dart';
-import 'package:balance/features/weight/domain/time_period.dart';
+import 'package:balance/core/models/time_period.dart';
 
 import 'package:balance/features/settings/presentation/bloc/weight_goal_mode.dart';
 

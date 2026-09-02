@@ -1,8 +1,8 @@
 import 'package:balance/core/integrations/csv/csv_importer.dart';
 import 'package:balance/features/weight/domain/entities/weight_entry.dart';
-import 'package:balance/features/weight/domain/time_period.dart';
+import 'package:balance/core/models/time_period.dart';
 
-export 'package:balance/features/weight/domain/time_period.dart';
+export 'package:balance/core/models/time_period.dart';
 
 /// A base class for all weight events.
 sealed class WeightEvent {

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:balance/core/presentation/widgets/pill_segmented_control.dart';
-import 'package:balance/features/weight/domain/time_period.dart';
+import 'package:balance/core/models/time_period.dart';
 import 'package:balance/l10n/app_localizations.dart';
 
 /// A centered row of segmented pill buttons for selecting the chart time period.

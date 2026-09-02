@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:balance/features/weight/domain/time_period.dart';
+import 'package:balance/core/models/time_period.dart';
 import 'package:balance/features/weight/presentation/widgets/components/weight_period_filter_chips.dart';
 import 'package:balance/l10n/app_localizations.dart';
 

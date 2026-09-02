@@ -5,7 +5,7 @@ import 'package:balance/features/dashboard/presentation/widgets/components/chart
 import 'package:balance/features/dashboard/presentation/widgets/components/weight_delta_chip.dart';
 import 'package:balance/features/dashboard/presentation/widgets/components/weight_line_chart.dart';
 import 'package:balance/features/weight/domain/entities/weight_entry.dart';
-import 'package:balance/features/weight/domain/time_period.dart';
+import 'package:balance/core/models/time_period.dart';
 import 'package:balance/features/weight/presentation/widgets/components/bmi_legend_dialog.dart';
 import 'package:balance/l10n/app_localizations.dart';
 
