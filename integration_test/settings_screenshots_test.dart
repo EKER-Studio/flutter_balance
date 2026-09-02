@@ -113,8 +113,7 @@ void main() {
                         ModalBarrier(dismissible: false, color: Colors.black54),
                         Align(
                           alignment: Alignment.bottomCenter,
-                          child: Material(
-                            color: Colors.transparent,
+                          child: ScreenshotBottomSheetContainer(
                             child: TargetWeightSheet(
                               currentValueKg: 85.0,
                               measurementUnit: MeasurementUnit.metric,

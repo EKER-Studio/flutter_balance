@@ -238,3 +238,26 @@ class ScreenshotDeviceFrame extends StatelessWidget {
     );
   }
 }
+
+/// Renders a Material 3 bottom sheet container with proper background color,
+/// elevation, and top rounded corners to emulate modal bottom sheets in tests.
+class ScreenshotBottomSheetContainer extends StatelessWidget {
+  final Widget child;
+
+  const ScreenshotBottomSheetContainer({super.key, required this.child});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Material(
+      color: theme.colorScheme.surfaceContainerLow,
+      elevation: 2.0,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(28.0)),
+      ),
+      clipBehavior: Clip.antiAlias,
+      child: child,
+    );
+  }
+}
+

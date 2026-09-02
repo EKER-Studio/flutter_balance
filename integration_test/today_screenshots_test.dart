@@ -119,8 +119,7 @@ void main() {
                         ),
                         Align(
                           alignment: Alignment.bottomCenter,
-                          child: Material(
-                            color: Colors.transparent,
+                          child: ScreenshotBottomSheetContainer(
                             child: AddWeightSheet(
                               existingEntry: WeightEntry(
                                 id: 90,
