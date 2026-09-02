@@ -2,7 +2,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:balance/core/integrations/widgets/widget_sync_service.dart';
 import 'package:balance/core/models/measurement_unit.dart';
-import 'package:balance/features/settings/presentation/bloc/weight_goal_mode.dart';
+import 'package:balance/features/weight/domain/weight_goal_mode.dart';
 import 'package:balance/features/weight/domain/entities/weight_entry.dart';
 
 void main() {

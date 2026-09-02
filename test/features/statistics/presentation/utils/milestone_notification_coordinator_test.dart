@@ -6,7 +6,7 @@ import 'package:flutter_local_notifications/src/platform_flutter_local_notificat
     show AndroidFlutterLocalNotificationsPlugin;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:balance/core/integrations/notifications/notification_service.dart';
-import 'package:balance/features/settings/presentation/bloc/weight_goal_mode.dart';
+import 'package:balance/features/weight/domain/weight_goal_mode.dart';
 import 'package:balance/features/statistics/domain/entities/milestone.dart';
 import 'package:balance/features/statistics/presentation/utils/milestone_notification_coordinator.dart';
 import 'package:balance/features/weight/domain/entities/weight_entry.dart';

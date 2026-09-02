@@ -13,7 +13,7 @@ import 'package:balance/features/statistics/presentation/widgets/sections/weight
 import 'package:balance/features/weight/domain/entities/weight_entry.dart';
 import 'package:balance/core/models/time_period.dart';
 
-import 'package:balance/features/settings/presentation/bloc/weight_goal_mode.dart';
+import 'package:balance/features/weight/domain/weight_goal_mode.dart';
 
 /// The responsive content section composing progress, habits, range, and BMI status cards.
 class StatisticsContentSection extends StatelessWidget {

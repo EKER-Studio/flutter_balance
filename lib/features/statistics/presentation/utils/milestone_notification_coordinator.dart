@@ -1,5 +1,5 @@
 import 'package:balance/core/integrations/notifications/notification_service.dart';
-import 'package:balance/features/settings/presentation/bloc/weight_goal_mode.dart';
+import 'package:balance/features/weight/domain/weight_goal_mode.dart';
 import 'package:balance/features/statistics/domain/entities/milestone.dart';
 import 'package:balance/features/statistics/domain/services/milestone_calculator.dart';
 import 'package:balance/features/statistics/presentation/utils/milestone_localizer.dart';

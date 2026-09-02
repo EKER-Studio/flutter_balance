@@ -4,7 +4,7 @@ import 'package:balance/features/calendar/presentation/widgets/components/calend
 import 'package:balance/features/calendar/presentation/widgets/components/calendar_month_header.dart';
 import 'package:balance/features/calendar/presentation/widgets/components/calendar_weekday_header.dart';
 import 'package:balance/features/settings/presentation/bloc/first_day_of_week.dart';
-import 'package:balance/features/settings/presentation/bloc/weight_goal_mode.dart';
+import 'package:balance/features/weight/domain/weight_goal_mode.dart';
 import 'package:balance/features/weight/domain/entities/weight_entry.dart';
 
 /// A card section hosting the monthly navigation header, weekday names, and interactive calendar grid.

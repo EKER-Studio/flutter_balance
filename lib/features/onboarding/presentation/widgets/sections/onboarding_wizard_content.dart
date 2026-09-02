@@ -17,7 +17,7 @@ import 'package:balance/features/onboarding/presentation/widgets/steps/step_welc
 import 'package:balance/core/utils/analytics.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_bloc.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_event.dart';
-import 'package:balance/features/settings/presentation/bloc/weight_goal_mode.dart';
+import 'package:balance/features/weight/domain/weight_goal_mode.dart';
 import 'package:balance/features/weight/domain/entities/weight_entry.dart';
 import 'package:balance/features/weight/presentation/bloc/weight_bloc.dart';
 import 'package:balance/features/weight/presentation/bloc/weight_event.dart';

@@ -24,7 +24,7 @@ import 'package:balance/features/settings/presentation/widgets/components/health
 import 'package:balance/features/settings/presentation/widgets/components/pace_window_selection_dialog.dart';
 import 'package:balance/features/settings/presentation/widgets/components/theme_selection_dialog.dart';
 import 'package:balance/features/settings/presentation/widgets/components/first_day_of_week_selection_dialog.dart';
-import 'package:balance/features/settings/presentation/bloc/weight_goal_mode.dart';
+import 'package:balance/features/weight/domain/weight_goal_mode.dart';
 import 'package:balance/features/settings/presentation/widgets/components/unit_selection_dialog.dart';
 import 'package:balance/features/settings/presentation/screens/licenses_screen.dart';
 import 'package:balance/features/settings/presentation/screens/privacy_policy_screen.dart';

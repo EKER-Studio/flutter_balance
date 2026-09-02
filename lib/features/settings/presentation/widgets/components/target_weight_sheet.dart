@@ -3,7 +3,7 @@ import 'package:balance/core/models/measurement_unit.dart';
 import 'package:balance/core/presentation/widgets/pill_segmented_control.dart';
 import 'package:balance/core/utils/analytics.dart';
 import 'package:balance/core/utils/unit_converter.dart';
-import 'package:balance/features/settings/presentation/bloc/weight_goal_mode.dart';
+import 'package:balance/features/weight/domain/weight_goal_mode.dart';
 import 'package:balance/features/settings/presentation/utils/weight_goal_mode_localizer.dart';
 import 'package:balance/features/weight/domain/entities/weight_entry.dart';
 import 'package:balance/l10n/app_localizations.dart';

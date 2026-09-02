@@ -4,7 +4,7 @@ import 'package:balance/core/models/measurement_unit.dart';
 import 'package:balance/core/utils/crash_reporter.dart';
 import 'package:balance/core/utils/unit_converter.dart';
 import 'package:balance/features/settings/presentation/bloc/app_theme_mode.dart';
-import 'package:balance/features/settings/presentation/bloc/weight_goal_mode.dart';
+import 'package:balance/features/weight/domain/weight_goal_mode.dart';
 import 'package:balance/features/weight/domain/bmi_category.dart';
 import 'package:balance/features/weight/domain/entities/weight_entry.dart';
 

@@ -2,7 +2,7 @@ import 'package:equatable/equatable.dart';
 
 import 'package:balance/features/settings/presentation/bloc/app_theme_mode.dart';
 import 'package:balance/features/settings/presentation/bloc/first_day_of_week.dart';
-import 'package:balance/features/settings/presentation/bloc/weight_goal_mode.dart';
+import 'package:balance/features/weight/domain/weight_goal_mode.dart';
 import 'package:balance/features/weight/domain/bmi_category.dart';
 import 'package:balance/core/models/measurement_unit.dart';
 

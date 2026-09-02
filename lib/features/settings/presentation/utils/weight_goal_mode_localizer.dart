@@ -1,5 +1,5 @@
 import 'package:flutter/widgets.dart';
-import 'package:balance/features/settings/presentation/bloc/weight_goal_mode.dart';
+import 'package:balance/features/weight/domain/weight_goal_mode.dart';
 import 'package:balance/l10n/app_localizations.dart';
 
 /// Extension providing localized display names and descriptions for [WeightGoalMode].

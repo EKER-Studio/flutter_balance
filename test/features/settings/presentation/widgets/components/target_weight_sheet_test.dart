@@ -4,7 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:bloc_test/bloc_test.dart';
 import 'package:balance/core/models/measurement_unit.dart';
-import 'package:balance/features/settings/presentation/bloc/weight_goal_mode.dart';
+import 'package:balance/features/weight/domain/weight_goal_mode.dart';
 import 'package:balance/l10n/app_localizations.dart';
 import 'package:balance/features/settings/presentation/widgets/components/target_weight_sheet.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_bloc.dart';
