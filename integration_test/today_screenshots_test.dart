@@ -64,7 +64,10 @@ void main() {
                       AppLocalizations.localizationsDelegates,
                   theme: theme,
                   themeMode: themeMode,
-                  home: const MainNavigationScreen(),
+                  home: ScreenshotDeviceFrame(
+                    isDark: isDark,
+                    child: const MainNavigationScreen(),
+                  ),
                 ),
               ),
             );
@@ -105,28 +108,31 @@ void main() {
                       AppLocalizations.localizationsDelegates,
                   theme: theme,
                   themeMode: themeMode,
-                  home: Stack(
-                    children: [
-                      const MainNavigationScreen(),
-                      const ModalBarrier(
-                        dismissible: false,
-                        color: Colors.black54,
-                      ),
-                      Align(
-                        alignment: Alignment.bottomCenter,
-                        child: Material(
-                          color: Colors.transparent,
-                          child: AddWeightSheet(
-                            existingEntry: WeightEntry(
-                              id: 90,
-                              weightKg: 87.0,
-                              dateTime: DateTime(2026, 9, 2, 8, 30),
-                              note: 'Morning weigh-in',
+                  home: ScreenshotDeviceFrame(
+                    isDark: isDark,
+                    child: Stack(
+                      children: [
+                        const MainNavigationScreen(),
+                        const ModalBarrier(
+                          dismissible: false,
+                          color: Colors.black54,
+                        ),
+                        Align(
+                          alignment: Alignment.bottomCenter,
+                          child: Material(
+                            color: Colors.transparent,
+                            child: AddWeightSheet(
+                              existingEntry: WeightEntry(
+                                id: 90,
+                                weightKg: 87.0,
+                                dateTime: DateTime(2026, 9, 2, 8, 30),
+                                note: 'Morning weigh-in',
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -168,26 +174,29 @@ void main() {
                       AppLocalizations.localizationsDelegates,
                   theme: theme,
                   themeMode: themeMode,
-                  home: const Stack(
-                    children: [
-                      MainNavigationScreen(),
-                      ModalBarrier(dismissible: false, color: Colors.black54),
-                      SafeArea(
-                        child: Center(
-                          child: SingleChildScrollView(
-                            padding: EdgeInsets.symmetric(horizontal: 24),
-                            child: Material(
-                              color: Colors.transparent,
-                              child: BmiLegendDialog(
-                                latestWeightKg: 87.0,
-                                heightCm: 177.0,
-                                currentCategory: BmiCategory.overweight,
+                  home: ScreenshotDeviceFrame(
+                    isDark: isDark,
+                    child: const Stack(
+                      children: [
+                        MainNavigationScreen(),
+                        ModalBarrier(dismissible: false, color: Colors.black54),
+                        SafeArea(
+                          child: Center(
+                            child: SingleChildScrollView(
+                              padding: EdgeInsets.symmetric(horizontal: 24),
+                              child: Material(
+                                color: Colors.transparent,
+                                child: BmiLegendDialog(
+                                  latestWeightKg: 87.0,
+                                  heightCm: 177.0,
+                                  currentCategory: BmiCategory.overweight,
+                                ),
                               ),
                             ),
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               ),

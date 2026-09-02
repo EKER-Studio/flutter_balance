@@ -110,46 +110,41 @@ class _StepReminderNotificationState extends State<StepReminderNotification> {
                               : theme.colorScheme.onSurfaceVariant,
                         ),
                       ),
-                      Divider(
-                        height: 1.0,
-                        indent: 16.0,
-                        endIndent: 16.0,
-                        color: theme.colorScheme.outlineVariant.withValues(
-                          alpha: 0.3,
-                        ),
-                      ),
-                      ListTile(
-                        key: const Key('notification_step_time_tile'),
-                        enabled: enabled,
-                        leading: Icon(
-                          Icons.access_time,
-                          color: enabled
-                              ? theme.colorScheme.primary
-                              : theme.colorScheme.onSurfaceVariant.withValues(
-                                  alpha: 0.38,
-                                ),
-                        ),
-                        title: Text(
-                          l10n.reminderTime,
-                          style: theme.textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.w600,
+                      if (enabled) ...[
+                        Divider(
+                          height: 1.0,
+                          indent: 16.0,
+                          endIndent: 16.0,
+                          color: theme.colorScheme.outlineVariant.withValues(
+                            alpha: 0.3,
                           ),
                         ),
-                        subtitle: Text(
-                          TimeOfDay(
-                            hour: notificationTime.hour,
-                            minute: notificationTime.minute,
-                          ).format(context),
+                        ListTile(
+                          key: const Key('notification_step_time_tile'),
+                          leading: Icon(
+                            Icons.access_time,
+                            color: theme.colorScheme.primary,
+                          ),
+                          title: Text(
+                            l10n.reminderTime,
+                            style: theme.textTheme.titleMedium?.copyWith(
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          subtitle: Text(
+                            TimeOfDay(
+                              hour: notificationTime.hour,
+                              minute: notificationTime.minute,
+                            ).format(context),
+                          ),
+                          trailing: Icon(
+                            Directionality.of(context) == TextDirection.rtl
+                                ? Icons.chevron_left
+                                : Icons.chevron_right,
+                          ),
+                          onTap: () => _handleTimePicker(context),
                         ),
-                        trailing: Icon(
-                          Directionality.of(context) == TextDirection.rtl
-                              ? Icons.chevron_left
-                              : Icons.chevron_right,
-                        ),
-                        onTap: enabled
-                            ? () => _handleTimePicker(context)
-                            : null,
-                      ),
+                      ],
                     ],
                   ),
                 ),

@@ -120,12 +120,20 @@ Widget buildScreenshotAppWrapper({
   AppSettingsBloc? settingsBloc,
   WeightBloc? weightBloc,
   PreferredSizeWidget? appBar,
+  bool includeSystemBars = true,
 }) {
   final effectiveSettingsBloc = settingsBloc ?? AppSettingsBloc();
   final effectiveWeightBloc =
       weightBloc ??
       (WeightBloc(repository: weightRepo)
         ..add(const SubscribeToWeightChanges()));
+
+  final isDark = themeMode == ThemeMode.dark;
+
+  final content = Scaffold(
+    appBar: appBar,
+    body: SafeArea(child: child),
+  );
 
   return MultiBlocProvider(
     providers: [
@@ -139,10 +147,94 @@ Widget buildScreenshotAppWrapper({
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       theme: theme,
       themeMode: themeMode,
-      home: Scaffold(
-        appBar: appBar,
-        body: SafeArea(child: child),
-      ),
+      home: includeSystemBars
+          ? ScreenshotDeviceFrame(isDark: isDark, child: content)
+          : content,
     ),
   );
+}
+
+/// Device frame that emulates a realistic mobile status bar and bottom gesture navigation pill.
+class ScreenshotDeviceFrame extends StatelessWidget {
+  final Widget child;
+  final bool isDark;
+  final Color? statusBarColor;
+  final Color? navigationBarColor;
+
+  const ScreenshotDeviceFrame({
+    super.key,
+    required this.child,
+    required this.isDark,
+    this.statusBarColor,
+    this.navigationBarColor,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final bgColor = theme.scaffoldBackgroundColor;
+    final fgColor = isDark ? Colors.white : const Color(0xFF1E1E1E);
+
+    return Material(
+      color: bgColor,
+      child: Column(
+        children: [
+          // Mock System Status Bar
+          Container(
+            height: 38.0,
+            padding: const EdgeInsets.symmetric(horizontal: 24.0),
+            color: statusBarColor ?? bgColor,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Text(
+                  '09:41',
+                  style: TextStyle(
+                    color: fgColor,
+                    fontSize: 14.0,
+                    fontWeight: FontWeight.w600,
+                    letterSpacing: -0.2,
+                  ),
+                ),
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.signal_cellular_alt, color: fgColor, size: 16.0),
+                    const SizedBox(width: 6.0),
+                    Icon(Icons.wifi, color: fgColor, size: 16.0),
+                    const SizedBox(width: 6.0),
+                    Icon(Icons.battery_full, color: fgColor, size: 18.0),
+                  ],
+                ),
+              ],
+            ),
+          ),
+          // App Content
+          Expanded(
+            child: MediaQuery.removePadding(
+              context: context,
+              removeTop: true,
+              removeBottom: true,
+              child: child,
+            ),
+          ),
+          // Mock Bottom Gesture Navigation Bar
+          Container(
+            height: 20.0,
+            color: navigationBarColor ?? bgColor,
+            alignment: Alignment.center,
+            child: Container(
+              width: 134.0,
+              height: 4.5,
+              decoration: BoxDecoration(
+                color: fgColor.withValues(alpha: 0.35),
+                borderRadius: BorderRadius.circular(10.0),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 }

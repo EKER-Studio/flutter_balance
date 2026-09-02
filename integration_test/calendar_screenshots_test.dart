@@ -59,7 +59,10 @@ void main() {
                       AppLocalizations.localizationsDelegates,
                   theme: theme,
                   themeMode: themeMode,
-                  home: CalendarScreen(initialDate: DateTime(2026, 9, 2)),
+                  home: ScreenshotDeviceFrame(
+                    isDark: isDark,
+                    child: CalendarScreen(initialDate: DateTime(2026, 9, 2)),
+                  ),
                 ),
               ),
             );
@@ -99,7 +102,10 @@ void main() {
                       AppLocalizations.localizationsDelegates,
                   theme: theme,
                   themeMode: themeMode,
-                  home: CalendarScreen(initialDate: DateTime(2026, 9, 20)),
+                  home: ScreenshotDeviceFrame(
+                    isDark: isDark,
+                    child: CalendarScreen(initialDate: DateTime(2026, 9, 20)),
+                  ),
                 ),
               ),
             );

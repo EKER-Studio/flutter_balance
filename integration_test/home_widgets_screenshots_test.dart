@@ -40,14 +40,17 @@ void main() {
                 localizationsDelegates: AppLocalizations.localizationsDelegates,
                 theme: theme,
                 themeMode: themeMode,
-                home: Scaffold(
-                  body: WidgetPreviewCanvas(
-                    title: 'Widget 2 × 1',
-                    isDark: isDark,
-                    child: HomeWidget2x1View(
-                      currentWeight: 87.0,
-                      unit: 'kg',
+                home: ScreenshotDeviceFrame(
+                  isDark: isDark,
+                  child: Scaffold(
+                    body: WidgetPreviewCanvas(
+                      title: 'Widget 2 × 1',
                       isDark: isDark,
+                      child: HomeWidget2x1View(
+                        currentWeight: 87.0,
+                        unit: 'kg',
+                        isDark: isDark,
+                      ),
                     ),
                   ),
                 ),
@@ -75,19 +78,22 @@ void main() {
                 localizationsDelegates: AppLocalizations.localizationsDelegates,
                 theme: theme,
                 themeMode: themeMode,
-                home: Scaffold(
-                  body: WidgetPreviewCanvas(
-                    title: 'Widget 3 × 2',
-                    isDark: isDark,
-                    child: HomeWidget3x2View(
-                      currentWeight: 87.0,
-                      targetWeight: 85.0,
-                      delta: -0.2,
-                      unit: 'kg',
-                      bmiCategory: BmiCategory.overweight,
-                      bmiValue: 27.8,
-                      goalProgressPct: 73,
+                home: ScreenshotDeviceFrame(
+                  isDark: isDark,
+                  child: Scaffold(
+                    body: WidgetPreviewCanvas(
+                      title: 'Widget 3 × 2',
                       isDark: isDark,
+                      child: HomeWidget3x2View(
+                        currentWeight: 87.0,
+                        targetWeight: 85.0,
+                        delta: -0.2,
+                        unit: 'kg',
+                        bmiCategory: BmiCategory.overweight,
+                        bmiValue: 27.8,
+                        goalProgressPct: 73,
+                        isDark: isDark,
+                      ),
                     ),
                   ),
                 ),

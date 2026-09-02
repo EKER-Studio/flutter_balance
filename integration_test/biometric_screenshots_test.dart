@@ -19,7 +19,7 @@ void main() {
   final prefix = getScreenshotPrefix();
 
   setUpAll(() async {
-    await binding.convertFlutterSurfaceToImage();
+    await initScreenshotEnvironment(binding);
   });
 
   group('06_biometric Screenshot Generator', () {
@@ -49,7 +49,10 @@ void main() {
                       AppLocalizations.localizationsDelegates,
                   theme: theme,
                   themeMode: themeMode,
-                  home: const BiometricShieldScreen(),
+                  home: ScreenshotDeviceFrame(
+                    isDark: isDark,
+                    child: const BiometricShieldScreen(),
+                  ),
                 ),
               ),
             );

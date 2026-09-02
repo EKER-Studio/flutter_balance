@@ -38,7 +38,10 @@ void main() {
               localizationsDelegates: AppLocalizations.localizationsDelegates,
               theme: theme,
               themeMode: themeMode,
-              home: const AppSplashScreen(),
+              home: ScreenshotDeviceFrame(
+                isDark: isDark,
+                child: const AppSplashScreen(),
+              ),
             ),
           );
 

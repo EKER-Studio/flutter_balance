@@ -62,7 +62,10 @@ void main() {
                       AppLocalizations.localizationsDelegates,
                   theme: theme,
                   themeMode: themeMode,
-                  home: const SettingsScreen(),
+                  home: ScreenshotDeviceFrame(
+                    isDark: isDark,
+                    child: const SettingsScreen(),
+                  ),
                 ),
               ),
             );
@@ -102,22 +105,25 @@ void main() {
                       AppLocalizations.localizationsDelegates,
                   theme: theme,
                   themeMode: themeMode,
-                  home: const Stack(
-                    children: [
-                      SettingsScreen(),
-                      ModalBarrier(dismissible: false, color: Colors.black54),
-                      Align(
-                        alignment: Alignment.bottomCenter,
-                        child: Material(
-                          color: Colors.transparent,
-                          child: TargetWeightSheet(
-                            currentValueKg: 85.0,
-                            measurementUnit: MeasurementUnit.metric,
-                            initialGoalMode: WeightGoalMode.lose,
+                  home: ScreenshotDeviceFrame(
+                    isDark: isDark,
+                    child: const Stack(
+                      children: [
+                        SettingsScreen(),
+                        ModalBarrier(dismissible: false, color: Colors.black54),
+                        Align(
+                          alignment: Alignment.bottomCenter,
+                          child: Material(
+                            color: Colors.transparent,
+                            child: TargetWeightSheet(
+                              currentValueKg: 85.0,
+                              measurementUnit: MeasurementUnit.metric,
+                              initialGoalMode: WeightGoalMode.lose,
+                            ),
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -145,7 +151,10 @@ void main() {
                 localizationsDelegates: AppLocalizations.localizationsDelegates,
                 theme: theme,
                 themeMode: themeMode,
-                home: const PrivacyPolicyScreen(),
+                home: ScreenshotDeviceFrame(
+                  isDark: isDark,
+                  child: const PrivacyPolicyScreen(),
+                ),
               ),
             );
 

@@ -62,7 +62,10 @@ void main() {
                       AppLocalizations.localizationsDelegates,
                   theme: theme,
                   themeMode: themeMode,
-                  home: const StatisticsScreen(),
+                  home: ScreenshotDeviceFrame(
+                    isDark: isDark,
+                    child: const StatisticsScreen(),
+                  ),
                 ),
               ),
             );
@@ -110,23 +113,26 @@ void main() {
                       AppLocalizations.localizationsDelegates,
                   theme: theme,
                   themeMode: themeMode,
-                  home: Stack(
-                    children: [
-                      const StatisticsScreen(),
-                      const ModalBarrier(
-                        dismissible: false,
-                        color: Colors.black54,
-                      ),
-                      Align(
-                        alignment: Alignment.bottomCenter,
-                        child: Material(
-                          color: Colors.transparent,
-                          child: MilestonesGallerySheet(
-                            milestones: evaluatedMilestones,
+                  home: ScreenshotDeviceFrame(
+                    isDark: isDark,
+                    child: Stack(
+                      children: [
+                        const StatisticsScreen(),
+                        const ModalBarrier(
+                          dismissible: false,
+                          color: Colors.black54,
+                        ),
+                        Align(
+                          alignment: Alignment.bottomCenter,
+                          child: Material(
+                            color: Colors.transparent,
+                            child: MilestonesGallerySheet(
+                              milestones: evaluatedMilestones,
+                            ),
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               ),
