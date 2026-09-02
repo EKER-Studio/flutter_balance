@@ -11,6 +11,7 @@ import 'package:mocktail/mocktail.dart';
 import 'package:balance/core/models/measurement_unit.dart';
 import 'package:balance/core/presentation/screens/app_splash_screen.dart';
 import 'package:balance/core/presentation/theme/app_theme.dart';
+import 'package:balance/features/calendar/presentation/screens/calendar_screen.dart';
 import 'package:balance/features/navigation/presentation/screens/main_navigation_screen.dart';
 import 'package:balance/features/onboarding/presentation/widgets/components/csv_import_success_view.dart';
 import 'package:balance/features/onboarding/presentation/widgets/components/onboarding_app_bar.dart';
@@ -558,6 +559,92 @@ void main() {
             await tester.pumpAndSettle();
             await binding.takeScreenshot(
               '$localeCode/02_today/03_bmi_categories_$themeLabel',
+            );
+          },
+          tags: 'screenshot',
+        );
+
+        // ---------------------------------------------------------------------
+        // 03_calendar / 01_month_view (Calendar month view with 90 entries & today selected)
+        // ---------------------------------------------------------------------
+        testWidgets(
+          'Capture 03_calendar/01_month_view [$localeCode] [$themeLabel]',
+          (WidgetTester tester) async {
+            final settingsBloc = AppSettingsBloc()
+              ..add(const UpdateHeight(177.0))
+              ..add(const TargetWeightChanged(85.0, WeightGoalMode.lose));
+
+            final weightBloc = WeightBloc(repository: weightRepo)
+              ..add(const SubscribeToWeightChanges());
+
+            await tester.pumpWidget(
+              MultiBlocProvider(
+                providers: [
+                  BlocProvider<AppSettingsBloc>.value(value: settingsBloc),
+                  BlocProvider<WeightBloc>.value(value: weightBloc),
+                ],
+                child: MaterialApp(
+                  debugShowCheckedModeBanner: false,
+                  locale: locale,
+                  supportedLocales: AppLocalizations.supportedLocales,
+                  localizationsDelegates: AppLocalizations.localizationsDelegates,
+                  theme: theme,
+                  themeMode: themeMode,
+                  home: CalendarScreen(
+                    initialDate: DateTime(2026, 9, 2),
+                  ),
+                ),
+              ),
+            );
+
+            await tester.pump();
+            await tester.pump(const Duration(milliseconds: 300));
+
+            await binding.takeScreenshot(
+              '$localeCode/03_calendar/01_month_view_$themeLabel',
+            );
+          },
+          tags: 'screenshot',
+        );
+
+        // ---------------------------------------------------------------------
+        // 03_calendar / 02_day_details (Calendar view with day empty/no measurements)
+        // ---------------------------------------------------------------------
+        testWidgets(
+          'Capture 03_calendar/02_day_details [$localeCode] [$themeLabel]',
+          (WidgetTester tester) async {
+            final settingsBloc = AppSettingsBloc()
+              ..add(const UpdateHeight(177.0))
+              ..add(const TargetWeightChanged(85.0, WeightGoalMode.lose));
+
+            final weightBloc = WeightBloc(repository: weightRepo)
+              ..add(const SubscribeToWeightChanges());
+
+            await tester.pumpWidget(
+              MultiBlocProvider(
+                providers: [
+                  BlocProvider<AppSettingsBloc>.value(value: settingsBloc),
+                  BlocProvider<WeightBloc>.value(value: weightBloc),
+                ],
+                child: MaterialApp(
+                  debugShowCheckedModeBanner: false,
+                  locale: locale,
+                  supportedLocales: AppLocalizations.supportedLocales,
+                  localizationsDelegates: AppLocalizations.localizationsDelegates,
+                  theme: theme,
+                  themeMode: themeMode,
+                  home: CalendarScreen(
+                    initialDate: DateTime(2026, 9, 20), // Day without measurements
+                  ),
+                ),
+              ),
+            );
+
+            await tester.pump();
+            await tester.pump(const Duration(milliseconds: 300));
+
+            await binding.takeScreenshot(
+              '$localeCode/03_calendar/02_day_details_$themeLabel',
             );
           },
           tags: 'screenshot',
