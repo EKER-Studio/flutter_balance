@@ -2,6 +2,12 @@
 
 > **How to use:** paste this whole document as the task prompt at the start of an audit session, in any agentic coding tool with file system access (Antigravity, Github Copilot, Cursor, OpenCode, Cline, etc.). Point it at the repo root, optionally give a scope (whole project / one module / diff since last tag). Works across models and context sizes — including local models around 16k–40k tokens — because it never requires loading the whole project into context at once. See Section 2 before doing anything else.
 
+## 0. Before You Start — Safety Check
+
+Run `git status` before touching anything. If the working tree is not clean (uncommitted changes present), **stop and ask** before making any edits — Round 2 will change or add test files (and, in rare confirmed cases, production code), and this should produce clean, reviewable diffs. Ideally this runs on a dedicated branch.
+
+Check whether `.gitignore` already has a `.audit-*/` entry. If not, add one. If the repo has an `agents_project.md`, commit that addition on its own now (e.g. `chore: gitignore audit working folders`); if it doesn't, confirm with the operator before committing it — same rule as every other commit in this task. Either way, do this before starting the discovery pass. The `.audit-test/` folder (Section 2.1) is working state for you, not a deliverable — it should never appear in the diffs you produce, and this one gitignore line also covers the working folders used by the i18n and comment-cleanup audit prompts in this same suite, if they're used in this repo too.
+
 ## 1. Role & Goal
 
 You are a unit test auditor for a Flutter project. Your job: go through the project file by file, layer by layer, identify test coverage gaps, and fix or complete tests according to the rules below. You work in **rounds**: Inventory → Fix/Complete → Verify.
@@ -12,14 +18,16 @@ Do not start changing code until Round 1 is complete and reported.
 
 This framework assumes a small, unreliable context window. **Never load the entire project into context, and never assume you can hold the full audit history in your head across many steps.** The progress file is your memory, not your context.
 
-### 2.1 Progress file — single source of truth
-All state lives in one file on disk: `LOG_UNIT_TEST_AUDIT.md` (create it in the repo root if it doesn't exist). It contains:
+### 2.1 Progress folder — single source of truth
+All state lives in the `.audit-test/` folder (create it in the repo root if it doesn't exist; it's gitignored per the Safety Check above, so it can persist across sessions without touching your commits). Its main file, `progress.md`, contains:
 - Current round number
 - Layer processing order (fixed: `domain → data → presentation`)
 - A file table: `File | Layer | Status | Severity | Round | Notes`
 - A **Resume pointer**, formatted as `Round <N> — <file path>` (e.g. `Round 1 — lib/domain/usecases/foo_usecase.dart`), so a new session (same or different model) always knows both *which round* and *which file* to continue from. When Round 1 finishes (every row has moved past `⏳ pending audit`), the pointer switches to tracking Round 2's own walk through the severity order — it does not need to remember the Round 1 position anymore, since the table already records that.
 
-At the start of **every** session, read this file first — it's small and cheap — before touching any source file. If it doesn't exist yet, create it via a discovery pass (2.2) before reading any file's content.
+You're not limited to a single file inside the folder. For a large project, once a single file table gets unwieldy to read back in full, split it by layer into `domain.md`, `data.md`, `presentation.md` inside `.audit-test/` — but `progress.md` must always stay the first thing you read: keep the round number and Resume pointer there, and have it say exactly which file holds which layer's table, so a fresh session never has to guess where state lives.
+
+At the start of **every** session, read `progress.md` first — it's small and cheap — before touching any source file. If it doesn't exist yet, create it via a discovery pass (2.2) before reading any file's content.
 
 ### 2.2 Discovery pass — list, don't read
 To build or refresh the file table, use directory listing / `find` / `grep --include` to enumerate candidate files by path and extension only. Do **not** open file contents during discovery. Populate the table with status `⏳ pending audit` for every match, grouped by layer.
@@ -33,17 +41,18 @@ Each step, in order:
 3. Read only what's needed for that item — the source file and its corresponding test file, if one exists. Nothing else, unless a specific check genuinely requires a directly related file (e.g. an interface the use case depends on).
 4. Analyze / fix / write tests for that item only.
 5. Run the affected test file.
-6. Update the progress file: status, severity, round, notes — and move the resume pointer forward.
-7. Checkpoint (2.5).
+6. If this step modified any file (a new/edited test, or a confirmed production fix), commit it alone (e.g. `chore(test): add coverage for FooUseCase`). If the repo has no `agents_project.md`, confirm with the operator before committing, per your AGENTS.md policy. A Round 1 audit-only step with no code change skips this.
+7. Update the progress file: status, severity, round, notes — and move the resume pointer forward.
+8. Checkpoint (2.5).
 
 ### 2.4 Batch granularity
 Default to **one file at a time**. You may bundle a source file with its direct test file, or a tightly coupled pair (e.g. a mapper and its test), only if the combined content clearly fits your budget. Rule of thumb: reserve at least 40% of your context window for your own reasoning and output — don't fill more than ~50–60% of the window with file contents in a single step. If in doubt, process one file at a time rather than guessing.
 
 ### 2.5 Checkpoint & session end
-Stop proactively before your context gets close to full — don't wait until you're forced to truncate or lose track. Write the updated progress file, summarize in plain language what changed in this step, and end the session cleanly. A fresh session must be able to resume correctly by reading only the progress file — never rely on anything that only exists in this session's context.
+Stop proactively before your context gets close to full — don't wait until you're forced to truncate or lose track. Write the updated progress file, summarize in plain language what changed in this step, and end the session cleanly. A fresh session must be able to resume correctly by reading only `progress.md` (and whatever it points to) — never rely on anything that only exists in this session's context.
 
 ### 2.6 Test run output
-Running a single test file (Section 2.3, step 5) produces small output — read it directly. Any run that touches multiple files — a full `flutter test`, a re-run after a batch of fixes, or the Round 3 full suite — should be redirected to a log file (e.g. `flutter test --coverage > .test_audit/last_run.log 2>&1`), and you should then read back only a filtered summary: pass/fail counts and the names of failing tests (`grep -E "All tests passed|FAILED|Some tests failed" .test_audit/last_run.log`, or similar). Never load a full multi-file test run's console output into context.
+Running a single test file (Section 2.3, step 5) produces small output — read it directly. Any run that touches multiple files — a full `flutter test`, a re-run after a batch of fixes, or the Round 3 full suite — should be redirected to a log file (e.g. `flutter test --coverage > .audit-test/last_run.log 2>&1`), and you should then read back only a filtered summary: pass/fail counts and the names of failing tests (`grep -E "All tests passed|FAILED|Some tests failed" .audit-test/last_run.log`, or similar). Never load a full multi-file test run's console output into context.
 
 ## 3. Scope & Layer Priority
 
@@ -69,7 +78,8 @@ Before starting, check `pubspec.yaml` and existing tests to determine:
 Executed incrementally, per the protocol in Section 2 — never as one big sweep. For each item processed, check:
 
 - Does a corresponding test file exist?
-- If yes — does it compile and pass (run it)?
+- If yes — before running it, confirm the generated files it depends on (`*.g.dart`, `*.freezed.dart`, `*.mocks.dart`) are current; regenerate via `build_runner` if there's any doubt. A stale generated file is a common false `❌ Broken`, not a real test defect — rule this out first.
+- Does it compile and pass (run it)?
 - Does the test actually verify anything (not empty, not `expect(true, true)`)?
 - Does it cover: happy path, edge cases, errors/exceptions, boundary states (null, empty collections, timeouts)?
 - Is it structured Arrange-Act-Assert, with mocks fully isolated (no real I/O, no Isar/DB, no network)?
@@ -85,6 +95,7 @@ Once every file in scope has a non-`⏳ pending audit` status, present the full 
 
 For each `❌`/`⚠️` item, evaluate individually where the problem actually lives:
 
+- **Stale generated code** (`.g.dart`/`.freezed.dart`/`.mocks.dart` out of date) → not a real finding; regenerate via `build_runner build --delete-conflicting-outputs`, re-run, and only proceed to the criteria below if the failure persists.
 - **Bug in the test itself** (wrong assertion, stale mock, bad input data) → fix it locally, keep the rest of the test intact.
 - **Structurally flawed test** (no isolation, testing the wrong layer, doesn't reflect the current contract) → rewrite from scratch per the standards in Section 7.
 - **The test caught a real bug in production code** → do **not** fix the test to match broken behavior. Report it as a separate finding describing the gap between expected and actual behavior. Do not change production code without explicit confirmation from the operator.
@@ -137,6 +148,7 @@ Derived from the progress file's cumulative table:
 - Follow the style and conventions already present in the repo (linter, formatting, folder structure).
 - Work iteratively; ask for confirmation before large test rewrites.
 - Never skip the discovery-first, read-minimal, checkpoint-often discipline in Section 2 — even if the current model's context feels large enough to "just wing it."
+- Once the audit closes (Round 3 verified, or explicitly deferred), `.audit-test/` can be deleted or left in place for manual review — it's gitignored, so keeping it doesn't affect the repo. Don't delete it automatically.
 
 ## 12. Startup Checklist
 
@@ -144,4 +156,4 @@ Derived from the progress file's cumulative table:
 2. Scope: whole project / specific module / diff since last tag: `___`
 3. OK to run `flutter test` automatically during the audit: yes/no
 4. Stop after Round 1 (report) before starting fixes: yes/no
-5. Progress file exists already? If yes, resume from its Resume pointer. If no, run the discovery pass (2.2) first.
+5. Progress folder (`.audit-test/`) exists already? If yes, resume from `progress.md`'s Resume pointer. If no, run the discovery pass (2.2) first.
