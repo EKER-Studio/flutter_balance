@@ -73,9 +73,9 @@ class FakeWeightRepository implements WeightRepository {
 }
 
 List<WeightEntry> generate90MockEntries() {
-  final now = DateTime(2026, 9, 2, 8, 0);
+  final now = DateTime(2026, 9, 2, 9, 41);
   final entries = <WeightEntry>[];
-  for (int i = 89; i >= 0; i--) {
+  for (int i = 0; i < 90; i++) {
     final date = now.subtract(Duration(days: i));
     final base = 92.5 - (92.5 - 87.0) * (89 - i) / 89.0;
     final fluctuation = ((i * 7) % 5 - 2) * 0.1;
@@ -336,7 +336,7 @@ void main() {
                   child: StepInitialWeight(
                     unit: MeasurementUnit.metric,
                     initialWeightKg: 87.0,
-                    initialTimestamp: DateTime(2026, 9, 2, 8, 0),
+                    initialTimestamp: DateTime(2026, 9, 2, 9, 41),
                     onNext: (_, _) {},
                   ),
                   locale: locale,
@@ -549,12 +549,7 @@ void main() {
                           child: Material(
                             color: Colors.transparent,
                             child: AddWeightSheet(
-                              existingEntry: WeightEntry(
-                                id: 90,
-                                weightKg: 87.0,
-                                dateTime: DateTime(2026, 9, 2, 8, 30),
-                                note: 'Morning weigh-in',
-                              ),
+                              initialDate: DateTime(2026, 9, 2, 9, 41),
                             ),
                           ),
                         ),

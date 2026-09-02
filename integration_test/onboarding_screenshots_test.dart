@@ -139,7 +139,7 @@ void main() {
                 child: StepInitialWeight(
                   unit: MeasurementUnit.metric,
                   initialWeightKg: 87.0,
-                  initialTimestamp: DateTime(2026, 9, 2, 8, 0),
+                  initialTimestamp: DateTime(2026, 9, 2, 9, 41),
                   onNext: (_, _) {},
                 ),
                 locale: locale,

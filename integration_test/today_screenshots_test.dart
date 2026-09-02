@@ -123,12 +123,7 @@ void main() {
                           alignment: Alignment.bottomCenter,
                           child: ScreenshotBottomSheetContainer(
                             child: AddWeightSheet(
-                              existingEntry: WeightEntry(
-                                id: 90,
-                                weightKg: 87.0,
-                                dateTime: DateTime(2026, 9, 2, 8, 30),
-                                note: 'Morning weigh-in',
-                              ),
+                              initialDate: DateTime(2026, 9, 2, 9, 41),
                             ),
                           ),
                         ),
