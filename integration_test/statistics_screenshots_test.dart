@@ -15,6 +15,7 @@ import 'package:balance/features/statistics/presentation/screens/statistics_scre
 import 'package:balance/features/statistics/presentation/utils/milestone_icon_resolver.dart';
 import 'package:balance/features/statistics/presentation/utils/milestone_localizer.dart';
 import 'package:balance/features/statistics/presentation/widgets/components/milestones_gallery_sheet.dart';
+import 'package:balance/features/statistics/presentation/widgets/sections/period_comparison_card.dart';
 import 'package:balance/features/weight/presentation/bloc/weight_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:balance/features/weight/presentation/bloc/weight_event.dart';
@@ -321,6 +322,65 @@ void main() {
 
             await binding.takeScreenshot(
               '$prefix$localeCode/04_statistics/03_achievement_detail_$themeLabel',
+            );
+          },
+          tags: 'screenshot',
+        );
+
+        // 04_statistics / 04_period_comparison_scrolled (PeriodComparison at top)
+        testWidgets(
+          'Capture 04_statistics/04_period_comparison_scrolled [$localeCode] [$themeLabel]',
+          (WidgetTester tester) async {
+            final settingsBloc = AppSettingsBloc()
+              ..add(const UpdateHeight(177.0))
+              ..add(const TargetWeightChanged(85.0, WeightGoalMode.lose));
+
+            final weightBloc = WeightBloc(repository: weightRepo)
+              ..add(const SubscribeToWeightChanges())
+              ..add(const ChangeChartFilter(TimePeriod.month));
+
+            await tester.pumpWidget(
+              MultiBlocProvider(
+                providers: [
+                  BlocProvider<AppSettingsBloc>.value(value: settingsBloc),
+                  BlocProvider<WeightBloc>.value(value: weightBloc),
+                ],
+                child: MaterialApp(
+                  debugShowCheckedModeBanner: false,
+                  locale: locale,
+                  supportedLocales: AppLocalizations.supportedLocales,
+                  localizationsDelegates:
+                      AppLocalizations.localizationsDelegates,
+                  theme: theme,
+                  themeMode: themeMode,
+                  home: ScreenshotDeviceFrame(
+                    isDark: isDark,
+                    showNotificationIcon: true,
+                    child: const StatisticsScreen(),
+                  ),
+                ),
+              ),
+            );
+
+            await tester.pump();
+            await tester.pump(const Duration(milliseconds: 300));
+
+            // Scroll until PeriodComparison card is at the top (below AppTopBar)
+            final scrollable = find.byType(CustomScrollView);
+            expect(scrollable, findsOneWidget);
+
+            // Repeated drags to bring lower content into view
+            for (int i = 0; i < 6; i++) {
+              await tester.drag(scrollable, const Offset(0, -400));
+              await tester.pumpAndSettle();
+            }
+
+            // Ensure PeriodComparison is visible near top
+            final periodComparison = find.byType(PeriodComparisonCard);
+            expect(periodComparison, findsOneWidget);
+
+            await binding.takeScreenshot(
+              '$prefix$localeCode/04_statistics/04_period_comparison_scrolled_$themeLabel',
             );
           },
           tags: 'screenshot',
