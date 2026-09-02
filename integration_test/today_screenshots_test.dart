@@ -66,6 +66,7 @@ void main() {
                   themeMode: themeMode,
                   home: ScreenshotDeviceFrame(
                     isDark: isDark,
+                    showNotificationIcon: true,
                     child: const MainNavigationScreen(),
                   ),
                 ),
@@ -110,6 +111,7 @@ void main() {
                   themeMode: themeMode,
                   home: ScreenshotDeviceFrame(
                     isDark: isDark,
+                    showNotificationIcon: true,
                     child: Stack(
                       children: [
                         const MainNavigationScreen(),
@@ -175,6 +177,7 @@ void main() {
                   themeMode: themeMode,
                   home: ScreenshotDeviceFrame(
                     isDark: isDark,
+                    showNotificationIcon: true,
                     child: const Stack(
                       children: [
                         MainNavigationScreen(),

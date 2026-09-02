@@ -121,6 +121,7 @@ Widget buildScreenshotAppWrapper({
   WeightBloc? weightBloc,
   PreferredSizeWidget? appBar,
   bool includeSystemBars = true,
+  bool showNotificationIcon = false,
 }) {
   final effectiveSettingsBloc = settingsBloc ?? AppSettingsBloc();
   final effectiveWeightBloc =
@@ -148,7 +149,11 @@ Widget buildScreenshotAppWrapper({
       theme: theme,
       themeMode: themeMode,
       home: includeSystemBars
-          ? ScreenshotDeviceFrame(isDark: isDark, child: content)
+          ? ScreenshotDeviceFrame(
+              isDark: isDark,
+              showNotificationIcon: showNotificationIcon,
+              child: content,
+            )
           : content,
     ),
   );
@@ -158,6 +163,7 @@ Widget buildScreenshotAppWrapper({
 class ScreenshotDeviceFrame extends StatelessWidget {
   final Widget child;
   final bool isDark;
+  final bool showNotificationIcon;
   final Color? statusBarColor;
   final Color? navigationBarColor;
 
@@ -165,71 +171,141 @@ class ScreenshotDeviceFrame extends StatelessWidget {
     super.key,
     required this.child,
     required this.isDark,
+    this.showNotificationIcon = false,
     this.statusBarColor,
     this.navigationBarColor,
   });
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final bgColor = theme.scaffoldBackgroundColor;
     final fgColor = isDark ? Colors.white : const Color(0xFF1E1E1E);
 
-    return Material(
-      color: bgColor,
-      child: Column(
+    return MediaQuery(
+      data: MediaQuery.of(context).copyWith(
+        padding: const EdgeInsets.only(top: 36.0, bottom: 20.0),
+        viewPadding: const EdgeInsets.only(top: 36.0, bottom: 20.0),
+      ),
+      child: Stack(
+        fit: StackFit.expand,
         children: [
-          // Mock System Status Bar
-          Container(
-            height: 38.0,
-            padding: const EdgeInsets.symmetric(horizontal: 24.0),
-            color: statusBarColor ?? bgColor,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Text(
-                  '09:41',
-                  style: TextStyle(
-                    color: fgColor,
-                    fontSize: 14.0,
-                    fontWeight: FontWeight.w600,
-                    letterSpacing: -0.2,
+          // App Content
+          child,
+
+          // Mock System Status Bar (Overlay)
+          Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
+            height: 36.0,
+            child: IgnorePointer(
+              child: Material(
+                type: MaterialType.transparency,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                  color: statusBarColor ?? Colors.transparent,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      // Left side: Time + Notification icon
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            '09:41',
+                            style: TextStyle(
+                              color: fgColor,
+                              fontSize: 14.0,
+                              fontWeight: FontWeight.w600,
+                              letterSpacing: -0.2,
+                              decoration: TextDecoration.none,
+                            ),
+                          ),
+                          if (showNotificationIcon) ...[
+                            const SizedBox(width: 6.0),
+                            Image.asset(
+                              'assets/icon/app_icon_foreground.png',
+                              width: 17.0,
+                              height: 17.0,
+                              color: fgColor.withValues(alpha: 0.9),
+                              colorBlendMode: BlendMode.srcIn,
+                            ),
+                          ],
+                        ],
+                      ),
+                      // Right side: Signal, Wi-Fi, Horizontal Battery
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            Icons.signal_cellular_alt,
+                            color: fgColor,
+                            size: 15.0,
+                          ),
+                          const SizedBox(width: 6.0),
+                          Icon(Icons.wifi, color: fgColor, size: 15.0),
+                          const SizedBox(width: 8.0),
+                          // Horizontal battery icon
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Container(
+                                width: 20.0,
+                                height: 10.0,
+                                decoration: BoxDecoration(
+                                  border: Border.all(
+                                    color: fgColor,
+                                    width: 1.2,
+                                  ),
+                                  borderRadius: BorderRadius.circular(3.0),
+                                ),
+                                padding: const EdgeInsets.all(1.5),
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    color: fgColor,
+                                    borderRadius: BorderRadius.circular(1.0),
+                                  ),
+                                ),
+                              ),
+                              Container(
+                                width: 1.5,
+                                height: 4.0,
+                                decoration: BoxDecoration(
+                                  color: fgColor.withValues(alpha: 0.8),
+                                  borderRadius: const BorderRadius.horizontal(
+                                    right: Radius.circular(1.0),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
                 ),
-                Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(Icons.signal_cellular_alt, color: fgColor, size: 16.0),
-                    const SizedBox(width: 6.0),
-                    Icon(Icons.wifi, color: fgColor, size: 16.0),
-                    const SizedBox(width: 6.0),
-                    Icon(Icons.battery_full, color: fgColor, size: 18.0),
-                  ],
-                ),
-              ],
+              ),
             ),
           ),
-          // App Content
-          Expanded(
-            child: MediaQuery.removePadding(
-              context: context,
-              removeTop: true,
-              removeBottom: true,
-              child: child,
-            ),
-          ),
-          // Mock Bottom Gesture Navigation Bar
-          Container(
+
+          // Mock Bottom Gesture Navigation Bar (Overlay)
+          Positioned(
+            bottom: 0,
+            left: 0,
+            right: 0,
             height: 20.0,
-            color: navigationBarColor ?? bgColor,
-            alignment: Alignment.center,
-            child: Container(
-              width: 134.0,
-              height: 4.5,
-              decoration: BoxDecoration(
-                color: fgColor.withValues(alpha: 0.35),
-                borderRadius: BorderRadius.circular(10.0),
+            child: IgnorePointer(
+              child: Container(
+                color: navigationBarColor ?? Colors.transparent,
+                alignment: Alignment.center,
+                child: Container(
+                  width: 134.0,
+                  height: 4.5,
+                  decoration: BoxDecoration(
+                    color: fgColor.withValues(alpha: 0.35),
+                    borderRadius: BorderRadius.circular(10.0),
+                  ),
+                ),
               ),
             ),
           ),

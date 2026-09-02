@@ -64,6 +64,7 @@ void main() {
                   themeMode: themeMode,
                   home: ScreenshotDeviceFrame(
                     isDark: isDark,
+                    showNotificationIcon: true,
                     child: const SettingsScreen(),
                   ),
                 ),
@@ -107,6 +108,7 @@ void main() {
                   themeMode: themeMode,
                   home: ScreenshotDeviceFrame(
                     isDark: isDark,
+                    showNotificationIcon: true,
                     child: const Stack(
                       children: [
                         SettingsScreen(),
@@ -152,6 +154,7 @@ void main() {
                 themeMode: themeMode,
                 home: ScreenshotDeviceFrame(
                   isDark: isDark,
+                  showNotificationIcon: true,
                   child: const PrivacyPolicyScreen(),
                 ),
               ),

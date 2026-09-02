@@ -61,6 +61,7 @@ void main() {
                   themeMode: themeMode,
                   home: ScreenshotDeviceFrame(
                     isDark: isDark,
+                    showNotificationIcon: true,
                     child: CalendarScreen(initialDate: DateTime(2026, 9, 2)),
                   ),
                 ),
@@ -104,6 +105,7 @@ void main() {
                   themeMode: themeMode,
                   home: ScreenshotDeviceFrame(
                     isDark: isDark,
+                    showNotificationIcon: true,
                     child: CalendarScreen(initialDate: DateTime(2026, 9, 20)),
                   ),
                 ),
