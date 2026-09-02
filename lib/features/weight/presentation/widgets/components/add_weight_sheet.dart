@@ -24,7 +24,15 @@ class AddWeightSheet extends StatefulWidget {
   /// The existing entry to edit, if in edit mode.
   final WeightEntry? existingEntry;
 
-  const AddWeightSheet({super.key, this.initialDate, this.existingEntry});
+  /// The optional initial note text prefilled in the note field.
+  final String? initialNote;
+
+  const AddWeightSheet({
+    super.key,
+    this.initialDate,
+    this.existingEntry,
+    this.initialNote,
+  });
 
   @override
   State<AddWeightSheet> createState() => _AddWeightSheetState();
@@ -64,11 +72,16 @@ class _AddWeightSheetState extends State<AddWeightSheet>
           ? kgToLbs(existing.weightKg)
           : existing.weightKg;
       _weightController.text = displayWeight.toStringAsFixed(1);
-    } else if (widget.initialDate != null &&
-        (initial.hour != 0 || initial.minute != 0)) {
-      _selectedTime = TimeOfDay.fromDateTime(initial);
     } else {
-      _selectedTime = TimeOfDay.now();
+      if (widget.initialNote != null && widget.initialNote!.isNotEmpty) {
+        _noteController.text = widget.initialNote!;
+      }
+      if (widget.initialDate != null &&
+          (initial.hour != 0 || initial.minute != 0)) {
+        _selectedTime = TimeOfDay.fromDateTime(initial);
+      } else {
+        _selectedTime = TimeOfDay.now();
+      }
     }
   }
 
