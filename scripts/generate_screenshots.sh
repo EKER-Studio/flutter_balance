@@ -6,11 +6,8 @@
 #              modular per-feature generators (via run_screenshot_target.sh).
 #              Ensures consistent ScreenshotDeviceFrame emulation (top status
 #              bar 09:41 + signal/wifi/battery + bottom gesture pill) across
-#              all suites. Previously a monolithic `flutter drive` of
-#              integration_test/screenshots_test.dart which lacked
-#              ScreenshotDeviceFrame – now delegates to the 8 modular
-#              *_screenshots_test.dart files that use
-#              helpers/screenshot_test_helper.dart.
+#              all suites via the 8 modular *_screenshots_test.dart files that
+#              use helpers/screenshot_test_helper.dart (KISS/DRY – no monolith).
 # Supports:
 #   android/phone     (1080 x 2400)  -> Medium_Phone
 #   android/tablet_7  (800 x 1280)   -> Small_Tablet  (7")
@@ -29,8 +26,8 @@
 #     generate_settings.sh, generate_biometric.sh, generate_home_widgets.sh
 #   - Each delegates to run_screenshot_target.sh which handles emulator boot
 #     and --dart-define=SCREENSHOT_DEVICE / SCREENSHOT_LOCALE.
-#   - For legacy single-file run use: ./scripts/run_screenshot_target.sh
-#     integration_test/screenshots_test.dart [device] [locale]
+#   - Single-module run: ./scripts/run_screenshot_target.sh
+#     integration_test/calendar_screenshots_test.dart [device] [locale]
 # ==============================================================================
 
 set -euo pipefail
@@ -60,9 +57,9 @@ log_error() {
 DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 # ------------------------------------------------------------------------------
-# Ordered list of per-feature generators – matches screenshots_test.dart module
-# order (00_splash -> 07_home_widgets). Each script is a thin wrapper around
-# run_screenshot_target.sh and already handles [device] [locale] args.
+# Ordered list of per-feature generators (00_splash -> 07_home_widgets).
+# Each script is a thin wrapper around run_screenshot_target.sh and already
+# handles [device] [locale] args.
 # ------------------------------------------------------------------------------
 FEATURE_SCRIPTS=(
     "generate_splash.sh"
@@ -173,5 +170,4 @@ DURATION=$((END_TIME - START_TIME))
 echo -e "\n=============================================================================="
 log_success "Full screenshots suite completed in ${DURATION}s (devices: $DEVICE_INPUT, locale: ${LOCALE_FILTER:-all})"
 echo -e "=============================================================================="
-echo -e "${BLUE}ℹ️  [INFO] Legacy monolithic target: integration_test/screenshots_test.dart is deprecated.${NC}"
 echo -e "${BLUE}ℹ️  [INFO] For single-module runs use e.g.: ./scripts/generate_calendar.sh $DEVICE_INPUT ${LOCALE_FILTER:-}${NC}"
