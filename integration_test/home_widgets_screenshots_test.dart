@@ -421,7 +421,7 @@ class HomeWidget3x2View extends StatelessWidget {
                     ),
                     const SizedBox(height: 2),
                     Text(
-                      '${l10n.today}, 08:30',
+                      '${l10n.today}, 09:41',
                       style: TextStyle(
                         fontSize: 11,
                         fontWeight: FontWeight.w500,

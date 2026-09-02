@@ -336,4 +336,3 @@ class ScreenshotBottomSheetContainer extends StatelessWidget {
     );
   }
 }
-

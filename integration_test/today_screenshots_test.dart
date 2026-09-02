@@ -12,7 +12,6 @@ import 'package:balance/features/settings/presentation/bloc/app_settings_bloc.da
 import 'package:balance/features/settings/presentation/bloc/app_settings_event.dart';
 import 'package:balance/features/settings/presentation/bloc/weight_goal_mode.dart';
 import 'package:balance/features/weight/domain/bmi_category.dart';
-import 'package:balance/features/weight/domain/entities/weight_entry.dart';
 import 'package:balance/features/weight/presentation/bloc/weight_bloc.dart';
 import 'package:balance/features/weight/presentation/bloc/weight_event.dart';
 import 'package:balance/features/weight/presentation/widgets/components/add_weight_sheet.dart';
