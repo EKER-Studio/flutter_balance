@@ -12,8 +12,11 @@ import 'package:balance/features/settings/presentation/bloc/app_settings_event.d
 import 'package:balance/features/settings/presentation/bloc/weight_goal_mode.dart';
 import 'package:balance/features/statistics/domain/services/milestone_calculator.dart';
 import 'package:balance/features/statistics/presentation/screens/statistics_screen.dart';
+import 'package:balance/features/statistics/presentation/utils/milestone_icon_resolver.dart';
+import 'package:balance/features/statistics/presentation/utils/milestone_localizer.dart';
 import 'package:balance/features/statistics/presentation/widgets/components/milestones_gallery_sheet.dart';
 import 'package:balance/features/weight/presentation/bloc/weight_bloc.dart';
+import 'package:intl/intl.dart';
 import 'package:balance/features/weight/presentation/bloc/weight_event.dart';
 import 'package:balance/l10n/app_localizations.dart';
 import 'helpers/screenshot_test_helper.dart';
@@ -144,6 +147,180 @@ void main() {
 
             await binding.takeScreenshot(
               '$prefix$localeCode/04_statistics/02_achievements_gallery_$themeLabel',
+            );
+          },
+          tags: 'screenshot',
+        );
+
+        // 04_statistics / 03_achievement_detail (gallery + detail dialog on top)
+        testWidgets(
+          'Capture 04_statistics/03_achievement_detail [$localeCode] [$themeLabel]',
+          (WidgetTester tester) async {
+            final evaluatedMilestones = MilestoneCalculator.evaluate(
+              entries: generate90MockEntries(),
+              targetWeight: 85.0,
+              heightCm: 177.0,
+              goalMode: WeightGoalMode.lose,
+            );
+
+            // Pick first unlocked milestone (e.g. "Pierwszy krok" / "First Step")
+            final milestone = evaluatedMilestones.firstWhere(
+              (m) => m.isUnlocked && m.unlockedDate != null,
+              orElse: () => evaluatedMilestones.first,
+            );
+
+            final settingsBloc = AppSettingsBloc()
+              ..add(const UpdateHeight(177.0))
+              ..add(const TargetWeightChanged(85.0, WeightGoalMode.lose));
+
+            final weightBloc = WeightBloc(repository: weightRepo)
+              ..add(const SubscribeToWeightChanges())
+              ..add(const ChangeChartFilter(TimePeriod.month));
+
+            await tester.pumpWidget(
+              MultiBlocProvider(
+                providers: [
+                  BlocProvider<AppSettingsBloc>.value(value: settingsBloc),
+                  BlocProvider<WeightBloc>.value(value: weightBloc),
+                ],
+                child: MaterialApp(
+                  debugShowCheckedModeBanner: false,
+                  locale: locale,
+                  supportedLocales: AppLocalizations.supportedLocales,
+                  localizationsDelegates:
+                      AppLocalizations.localizationsDelegates,
+                  theme: theme,
+                  themeMode: themeMode,
+                  home: ScreenshotDeviceFrame(
+                    isDark: isDark,
+                    showNotificationIcon: true,
+                    child: Stack(
+                      children: [
+                        const StatisticsScreen(),
+                        const ModalBarrier(
+                          dismissible: false,
+                          color: Colors.black54,
+                        ),
+                        Align(
+                          alignment: Alignment.bottomCenter,
+                          child: ScreenshotBottomSheetContainer(
+                            child: MilestonesGallerySheet(
+                              milestones: evaluatedMilestones,
+                            ),
+                          ),
+                        ),
+                        // Detail dialog overlay (as if user tapped a badge)
+                        const ModalBarrier(
+                          dismissible: false,
+                          color: Colors.black54,
+                        ),
+                        Center(
+                          child: Builder(
+                            builder: (context) {
+                              final l10n = AppLocalizations.of(context);
+                              final cs = Theme.of(context).colorScheme;
+                              final isDarkTheme =
+                                  Theme.of(context).brightness ==
+                                  Brightness.dark;
+                              final title = milestone.type.localizedTitle(l10n);
+                              final description = milestone.type
+                                  .localizedDescription(l10n);
+                              return AlertDialog(
+                                scrollable: true,
+                                insetPadding: const EdgeInsets.symmetric(
+                                  horizontal: 24,
+                                  vertical: 16,
+                                ),
+                                icon: Container(
+                                  width: 48,
+                                  height: 48,
+                                  decoration: BoxDecoration(
+                                    color: milestone.isUnlocked
+                                        ? cs.primaryContainer
+                                        : cs.surfaceContainerHighest,
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: Icon(
+                                    iconForMilestone(milestone.type),
+                                    size: 26,
+                                    color: milestone.isUnlocked
+                                        ? cs.primary
+                                        : cs.onSurfaceVariant.withValues(
+                                            alpha: 0.5,
+                                          ),
+                                  ),
+                                ),
+                                title: Text(title, textAlign: TextAlign.center),
+                                content: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Text(
+                                      description,
+                                      textAlign: TextAlign.center,
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodyMedium
+                                          ?.copyWith(
+                                            color: cs.onSurfaceVariant,
+                                          ),
+                                    ),
+                                    const SizedBox(height: 16),
+                                    if (milestone.isUnlocked &&
+                                        milestone.unlockedDate != null) ...[
+                                      Text(
+                                        DateFormat.yMMMMd(
+                                          l10n.localeName,
+                                        ).format(milestone.unlockedDate!),
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .labelMedium
+                                            ?.copyWith(
+                                              color: isDarkTheme
+                                                  ? Colors.green.shade400
+                                                  : Colors.green.shade700,
+                                              fontWeight: FontWeight.w600,
+                                            ),
+                                      ),
+                                      const SizedBox(height: 12),
+                                      ClipRRect(
+                                        borderRadius: BorderRadius.circular(4),
+                                        child: Container(
+                                          height: 6,
+                                          width: double.infinity,
+                                          color: isDarkTheme
+                                              ? Colors.green.shade400
+                                              : Colors.green.shade600,
+                                        ),
+                                      ),
+                                    ],
+                                  ],
+                                ),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () {},
+                                    child: Text(
+                                      MaterialLocalizations.of(
+                                        context,
+                                      ).okButtonLabel,
+                                    ),
+                                  ),
+                                ],
+                              );
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            );
+
+            await tester.pump();
+            await tester.pump(const Duration(milliseconds: 300));
+
+            await binding.takeScreenshot(
+              '$prefix$localeCode/04_statistics/03_achievement_detail_$themeLabel',
             );
           },
           tags: 'screenshot',
