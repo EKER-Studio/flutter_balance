@@ -1,6 +1,12 @@
 @Tags(['screenshot'])
 library;
 
+// DEPRECATED: Prefer modular per-feature suites in integration_test/*_screenshots_test.dart
+// via helpers/screenshot_test_helper.dart (ScreenshotDeviceFrame) and scripts/generate_*.sh.
+// This monolithic suite is kept for `generate_screenshots.sh` backward compat and now
+// wraps all captures with ScreenshotDeviceFrame to ensure status bar (09:41 + wifi/battery)
+// and bottom gesture pill parity with modular generators.
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -251,12 +257,14 @@ void main() {
     AppSettingsBloc? settingsBloc,
     WeightBloc? weightBloc,
     PreferredSizeWidget? appBar,
+    bool showNotificationIcon = false,
   }) {
     final effectiveSettingsBloc = settingsBloc ?? AppSettingsBloc();
     final effectiveWeightBloc =
         weightBloc ??
         (WeightBloc(repository: weightRepo)
           ..add(const SubscribeToWeightChanges()));
+    final isDark = themeMode == ThemeMode.dark;
 
     return MultiBlocProvider(
       providers: [
@@ -270,9 +278,13 @@ void main() {
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         theme: theme,
         themeMode: themeMode,
-        home: Scaffold(
-          appBar: appBar,
-          body: SafeArea(child: child),
+        home: ScreenshotDeviceFrame(
+          isDark: isDark,
+          showNotificationIcon: showNotificationIcon,
+          child: Scaffold(
+            appBar: appBar,
+            body: SafeArea(child: child),
+          ),
         ),
       ),
     );
@@ -302,7 +314,10 @@ void main() {
                 localizationsDelegates: AppLocalizations.localizationsDelegates,
                 theme: theme,
                 themeMode: themeMode,
-                home: const AppSplashScreen(),
+                home: ScreenshotDeviceFrame(
+                  isDark: isDark,
+                  child: const AppSplashScreen(),
+                ),
               ),
             );
 
@@ -579,7 +594,11 @@ void main() {
                         AppLocalizations.localizationsDelegates,
                     theme: theme,
                     themeMode: themeMode,
-                    home: const MainNavigationScreen(),
+                    home: ScreenshotDeviceFrame(
+                      isDark: isDark,
+                      showNotificationIcon: true,
+                      child: const MainNavigationScreen(),
+                    ),
                   ),
                 ),
               );
@@ -619,24 +638,27 @@ void main() {
                         AppLocalizations.localizationsDelegates,
                     theme: theme,
                     themeMode: themeMode,
-                    home: Stack(
-                      children: [
-                        const MainNavigationScreen(),
-                        const ModalBarrier(
-                          dismissible: false,
-                          color: Colors.black54,
-                        ),
-                        Align(
-                          alignment: Alignment.bottomCenter,
-                          child: Material(
-                            color: Colors.transparent,
-                            child: AddWeightSheet(
-                              initialDate: DateTime(2026, 9, 2, 9, 41),
-                              initialNote: getMockRunNote(localeCode),
+                    home: ScreenshotDeviceFrame(
+                      isDark: isDark,
+                      showNotificationIcon: true,
+                      child: Stack(
+                        children: [
+                          const MainNavigationScreen(),
+                          const ModalBarrier(
+                            dismissible: false,
+                            color: Colors.black54,
+                          ),
+                          Align(
+                            alignment: Alignment.bottomCenter,
+                            child: ScreenshotBottomSheetContainer(
+                              child: AddWeightSheet(
+                                initialDate: DateTime(2026, 9, 2, 9, 41),
+                                initialNote: getMockRunNote(localeCode),
+                              ),
                             ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
                 ),
@@ -677,26 +699,33 @@ void main() {
                         AppLocalizations.localizationsDelegates,
                     theme: theme,
                     themeMode: themeMode,
-                    home: const Stack(
-                      children: [
-                        MainNavigationScreen(),
-                        ModalBarrier(dismissible: false, color: Colors.black54),
-                        SafeArea(
-                          child: Center(
-                            child: SingleChildScrollView(
-                              padding: EdgeInsets.symmetric(horizontal: 24),
-                              child: Material(
-                                color: Colors.transparent,
-                                child: BmiLegendDialog(
-                                  latestWeightKg: 87.0,
-                                  heightCm: 177.0,
-                                  currentCategory: BmiCategory.overweight,
+                    home: ScreenshotDeviceFrame(
+                      isDark: isDark,
+                      showNotificationIcon: true,
+                      child: const Stack(
+                        children: [
+                          MainNavigationScreen(),
+                          ModalBarrier(
+                            dismissible: false,
+                            color: Colors.black54,
+                          ),
+                          SafeArea(
+                            child: Center(
+                              child: SingleChildScrollView(
+                                padding: EdgeInsets.symmetric(horizontal: 24),
+                                child: Material(
+                                  color: Colors.transparent,
+                                  child: BmiLegendDialog(
+                                    latestWeightKg: 87.0,
+                                    heightCm: 177.0,
+                                    currentCategory: BmiCategory.overweight,
+                                  ),
                                 ),
                               ),
                             ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
                 ),
@@ -741,11 +770,17 @@ void main() {
                         AppLocalizations.localizationsDelegates,
                     theme: theme,
                     themeMode: themeMode,
-                    home: Scaffold(
-                      body: CalendarScreen(initialDate: DateTime(2026, 8, 14)),
-                      bottomNavigationBar: AdaptiveBottomNavigationBar(
-                        selectedIndex: 1,
-                        onDestinationSelected: (_) {},
+                    home: ScreenshotDeviceFrame(
+                      isDark: isDark,
+                      showNotificationIcon: true,
+                      child: Scaffold(
+                        body: CalendarScreen(
+                          initialDate: DateTime(2026, 8, 14),
+                        ),
+                        bottomNavigationBar: AdaptiveBottomNavigationBar(
+                          selectedIndex: 1,
+                          onDestinationSelected: (_) {},
+                        ),
                       ),
                     ),
                   ),
@@ -794,33 +829,29 @@ void main() {
                         AppLocalizations.localizationsDelegates,
                     theme: theme,
                     themeMode: themeMode,
-                    home: Scaffold(
-                      body: Stack(
-                        children: [
-                          CalendarScreen(initialDate: DateTime(2026, 8, 26)),
-                          const ModalBarrier(
-                            dismissible: false,
-                            color: Colors.black54,
-                          ),
-                          Align(
-                            alignment: Alignment.bottomCenter,
-                            child: Material(
-                              color: theme.colorScheme.surfaceContainerLow,
-                              elevation: 2.0,
-                              shape: const RoundedRectangleBorder(
-                                borderRadius: BorderRadius.vertical(
-                                  top: Radius.circular(28.0),
-                                ),
-                              ),
-                              clipBehavior: Clip.antiAlias,
-                              child: AddWeightSheet(existingEntry: editEntry),
+                    home: ScreenshotDeviceFrame(
+                      isDark: isDark,
+                      showNotificationIcon: true,
+                      child: Scaffold(
+                        body: Stack(
+                          children: [
+                            CalendarScreen(initialDate: DateTime(2026, 8, 26)),
+                            const ModalBarrier(
+                              dismissible: false,
+                              color: Colors.black54,
                             ),
-                          ),
-                        ],
-                      ),
-                      bottomNavigationBar: AdaptiveBottomNavigationBar(
-                        selectedIndex: 1,
-                        onDestinationSelected: (_) {},
+                            Align(
+                              alignment: Alignment.bottomCenter,
+                              child: ScreenshotBottomSheetContainer(
+                                child: AddWeightSheet(existingEntry: editEntry),
+                              ),
+                            ),
+                          ],
+                        ),
+                        bottomNavigationBar: AdaptiveBottomNavigationBar(
+                          selectedIndex: 1,
+                          onDestinationSelected: (_) {},
+                        ),
                       ),
                     ),
                   ),
@@ -867,7 +898,11 @@ void main() {
                         AppLocalizations.localizationsDelegates,
                     theme: theme,
                     themeMode: themeMode,
-                    home: const StatisticsScreen(),
+                    home: ScreenshotDeviceFrame(
+                      isDark: isDark,
+                      showNotificationIcon: true,
+                      child: const StatisticsScreen(),
+                    ),
                   ),
                 ),
               );
@@ -915,23 +950,26 @@ void main() {
                         AppLocalizations.localizationsDelegates,
                     theme: theme,
                     themeMode: themeMode,
-                    home: Stack(
-                      children: [
-                        const StatisticsScreen(),
-                        const ModalBarrier(
-                          dismissible: false,
-                          color: Colors.black54,
-                        ),
-                        Align(
-                          alignment: Alignment.bottomCenter,
-                          child: Material(
-                            color: Colors.transparent,
-                            child: MilestonesGallerySheet(
-                              milestones: evaluatedMilestones,
+                    home: ScreenshotDeviceFrame(
+                      isDark: isDark,
+                      showNotificationIcon: true,
+                      child: Stack(
+                        children: [
+                          const StatisticsScreen(),
+                          const ModalBarrier(
+                            dismissible: false,
+                            color: Colors.black54,
+                          ),
+                          Align(
+                            alignment: Alignment.bottomCenter,
+                            child: ScreenshotBottomSheetContainer(
+                              child: MilestonesGallerySheet(
+                                milestones: evaluatedMilestones,
+                              ),
                             ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
                 ),
@@ -976,7 +1014,11 @@ void main() {
                         AppLocalizations.localizationsDelegates,
                     theme: theme,
                     themeMode: themeMode,
-                    home: const SettingsScreen(),
+                    home: ScreenshotDeviceFrame(
+                      isDark: isDark,
+                      showNotificationIcon: true,
+                      child: const SettingsScreen(),
+                    ),
                   ),
                 ),
               );
@@ -1016,22 +1058,28 @@ void main() {
                         AppLocalizations.localizationsDelegates,
                     theme: theme,
                     themeMode: themeMode,
-                    home: const Stack(
-                      children: [
-                        SettingsScreen(),
-                        ModalBarrier(dismissible: false, color: Colors.black54),
-                        Align(
-                          alignment: Alignment.bottomCenter,
-                          child: Material(
-                            color: Colors.transparent,
-                            child: TargetWeightSheet(
-                              currentValueKg: 85.0,
-                              measurementUnit: MeasurementUnit.metric,
-                              initialGoalMode: WeightGoalMode.lose,
+                    home: ScreenshotDeviceFrame(
+                      isDark: isDark,
+                      showNotificationIcon: true,
+                      child: const Stack(
+                        children: [
+                          SettingsScreen(),
+                          ModalBarrier(
+                            dismissible: false,
+                            color: Colors.black54,
+                          ),
+                          Align(
+                            alignment: Alignment.bottomCenter,
+                            child: ScreenshotBottomSheetContainer(
+                              child: TargetWeightSheet(
+                                currentValueKg: 85.0,
+                                measurementUnit: MeasurementUnit.metric,
+                                initialGoalMode: WeightGoalMode.lose,
+                              ),
                             ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
                 ),
@@ -1060,7 +1108,11 @@ void main() {
                       AppLocalizations.localizationsDelegates,
                   theme: theme,
                   themeMode: themeMode,
-                  home: const PrivacyPolicyScreen(),
+                  home: ScreenshotDeviceFrame(
+                    isDark: isDark,
+                    showNotificationIcon: true,
+                    child: const PrivacyPolicyScreen(),
+                  ),
                 ),
               );
 
@@ -1095,7 +1147,10 @@ void main() {
                         AppLocalizations.localizationsDelegates,
                     theme: theme,
                     themeMode: themeMode,
-                    home: const BiometricShieldScreen(),
+                    home: ScreenshotDeviceFrame(
+                      isDark: isDark,
+                      child: const BiometricShieldScreen(),
+                    ),
                   ),
                 ),
               );
@@ -1126,14 +1181,17 @@ void main() {
                       AppLocalizations.localizationsDelegates,
                   theme: theme,
                   themeMode: themeMode,
-                  home: Scaffold(
-                    body: WidgetPreviewCanvas(
-                      title: 'Widget 2 × 1',
-                      isDark: isDark,
-                      child: HomeWidget2x1View(
-                        currentWeight: 87.0,
-                        unit: 'kg',
+                  home: ScreenshotDeviceFrame(
+                    isDark: isDark,
+                    child: Scaffold(
+                      body: WidgetPreviewCanvas(
+                        title: 'Widget 2 × 1',
                         isDark: isDark,
+                        child: HomeWidget2x1View(
+                          currentWeight: 87.0,
+                          unit: 'kg',
+                          isDark: isDark,
+                        ),
                       ),
                     ),
                   ),
@@ -1161,19 +1219,22 @@ void main() {
                       AppLocalizations.localizationsDelegates,
                   theme: theme,
                   themeMode: themeMode,
-                  home: Scaffold(
-                    body: WidgetPreviewCanvas(
-                      title: 'Widget 3 × 2',
-                      isDark: isDark,
-                      child: HomeWidget3x2View(
-                        currentWeight: 87.0,
-                        targetWeight: 85.0,
-                        delta: -0.2,
-                        unit: 'kg',
-                        bmiCategory: BmiCategory.overweight,
-                        bmiValue: 27.8,
-                        goalProgressPct: 73,
+                  home: ScreenshotDeviceFrame(
+                    isDark: isDark,
+                    child: Scaffold(
+                      body: WidgetPreviewCanvas(
+                        title: 'Widget 3 × 2',
                         isDark: isDark,
+                        child: HomeWidget3x2View(
+                          currentWeight: 87.0,
+                          targetWeight: 85.0,
+                          delta: -0.2,
+                          unit: 'kg',
+                          bmiCategory: BmiCategory.overweight,
+                          bmiValue: 27.8,
+                          goalProgressPct: 73,
+                          isDark: isDark,
+                        ),
                       ),
                     ),
                   ),

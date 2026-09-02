@@ -2,19 +2,35 @@
 
 # ==============================================================================
 # Script Name: generate_screenshots.sh
-# Description: Automated multi-locale screenshot generator on Android emulator.
+# Description: Orchestrator – generates FULL screenshot suite by delegating to
+#              modular per-feature generators (via run_screenshot_target.sh).
+#              Ensures consistent ScreenshotDeviceFrame emulation (top status
+#              bar 09:41 + signal/wifi/battery + bottom gesture pill) across
+#              all suites. Previously a monolithic `flutter drive` of
+#              integration_test/screenshots_test.dart which lacked
+#              ScreenshotDeviceFrame – now delegates to the 8 modular
+#              *_screenshots_test.dart files that use
+#              helpers/screenshot_test_helper.dart.
 # Supports:
 #   android/phone     (1080 x 2400)  -> Medium_Phone
 #   android/tablet_7  (800 x 1280)   -> Small_Tablet  (7")
 #   android/tablet_10 (2560 x 1600)  -> Medium_Tablet (10")
-# iOS targets (iphone/ipad) are handled separately via iOS Simulator workflow.
 # Usage:
-#   ./scripts/generate_screenshots.sh [phone|tablet_7|tablet_10|all]
-#   Default: phone
+#   ./scripts/generate_screenshots.sh [phone|tablet_7|tablet_10|all] [locale]
+#   Default: phone (all locales)
 #   Examples:
 #     ./scripts/generate_screenshots.sh phone
-#     ./scripts/generate_screenshots.sh tablet_7
-#     ./scripts/generate_screenshots.sh all
+#     ./scripts/generate_screenshots.sh tablet_7 pl
+#     ./scripts/generate_screenshots.sh all ja
+#     ./scripts/generate_screenshots.sh all      # all devices, all locales
+# Notes:
+#   - Per-feature scripts: generate_splash.sh, generate_onboarding.sh,
+#     generate_today.sh, generate_calendar.sh, generate_statistics.sh,
+#     generate_settings.sh, generate_biometric.sh, generate_home_widgets.sh
+#   - Each delegates to run_screenshot_target.sh which handles emulator boot
+#     and --dart-define=SCREENSHOT_DEVICE / SCREENSHOT_LOCALE.
+#   - For legacy single-file run use: ./scripts/run_screenshot_target.sh
+#     integration_test/screenshots_test.dart [device] [locale]
 # ==============================================================================
 
 set -euo pipefail
@@ -41,52 +57,66 @@ log_error() {
     echo -e "${RED}❌ [ERROR]${NC} $1"
 }
 
-# ------------------------------------------------------------------------------
-# Device mapping: logical name -> AVD id -> screenshot prefix -> resolution
-# ------------------------------------------------------------------------------
-resolve_device_config() {
-    local device="$1"
-    case "$device" in
-        phone)
-            echo "Medium_Phone|android/phone|1080x2400"
-            ;;
-        tablet_7)
-            echo "Small_Tablet|android/tablet_7|800x1280"
-            ;;
-        tablet_10)
-            echo "Medium_Tablet|android/tablet_10|2560x1600"
-            ;;
-        *)
-            log_error "Unknown device: $device (expected: phone|tablet_7|tablet_10|all)"
-            exit 1
-            ;;
-    esac
-}
+DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 # ------------------------------------------------------------------------------
-# Parse args
+# Ordered list of per-feature generators – matches screenshots_test.dart module
+# order (00_splash -> 07_home_widgets). Each script is a thin wrapper around
+# run_screenshot_target.sh and already handles [device] [locale] args.
 # ------------------------------------------------------------------------------
-TARGETS=()
-if [ $# -eq 0 ]; then
-    TARGETS=("phone")
-else
-    case "$1" in
-        all)
-            TARGETS=("phone" "tablet_7" "tablet_10")
-            ;;
-        phone|tablet_7|tablet_10)
-            TARGETS=("$1")
-            ;;
-        -h|--help)
-            echo "Usage: $0 [phone|tablet_7|tablet_10|all]"
-            echo ""
-            echo "Generates screenshots into screenshots/android/<device>/<locale>/"
-            echo "Each device captures both light and dark themes (per integration_test/screenshots_test.dart)."
-            exit 0
-            ;;
+FEATURE_SCRIPTS=(
+    "generate_splash.sh"
+    "generate_onboarding.sh"
+    "generate_today.sh"
+    "generate_calendar.sh"
+    "generate_statistics.sh"
+    "generate_settings.sh"
+    "generate_biometric.sh"
+    "generate_home_widgets.sh"
+)
+
+# ------------------------------------------------------------------------------
+# Parse args: [device] [locale]  – keep compat with old single-arg invocation
+# ------------------------------------------------------------------------------
+DEVICE_INPUT="${1:-phone}"
+LOCALE_FILTER="${2:-}"
+
+if [[ "$DEVICE_INPUT" == "-h" || "$DEVICE_INPUT" == "--help" ]]; then
+    echo "Usage: $0 [phone|tablet_7|tablet_10|all] [locale]"
+    echo ""
+    echo "Generates FULL screenshot suite via modular per-feature targets."
+    echo "Each feature is captured with ScreenshotDeviceFrame (status bar 09:41"
+    echo "+ signal/wifi/battery + bottom gesture pill) for visual consistency."
+    echo ""
+    echo "Arguments:"
+    echo "  device  phone|tablet_7|tablet_10|all  (default: phone)"
+    echo "  locale  en|de|ja|fr|es|pl|pt|nl|it|ko  (default: all)"
+    echo ""
+    echo "Examples:"
+    echo "  $0 phone"
+    echo "  $0 tablet_7 pl"
+    echo "  $0 all ja"
+    echo ""
+    echo "Per-feature alternative:"
+    echo "  ./scripts/generate_calendar.sh phone pl"
+    echo "  ./scripts/run_screenshot_target.sh integration_test/calendar_screenshots_test.dart phone pl"
+    exit 0
+fi
+
+case "$DEVICE_INPUT" in
+    phone|tablet_7|tablet_10|all) ;;
+    *)
+        log_error "Unknown device: $DEVICE_INPUT (expected: phone|tablet_7|tablet_10|all)"
+        echo "Usage: $0 [phone|tablet_7|tablet_10|all] [locale]"
+        exit 1
+        ;;
+esac
+
+if [[ -n "$LOCALE_FILTER" ]]; then
+    case "$LOCALE_FILTER" in
+        en|de|ja|fr|es|pl|pt|nl|it|ko) ;;
         *)
-            log_error "Unknown argument: $1"
-            echo "Usage: $0 [phone|tablet_7|tablet_10|all]"
+            log_error "Unknown locale: $LOCALE_FILTER (expected: en|de|ja|fr|es|pl|pt|nl|it|ko)"
             exit 1
             ;;
     esac
@@ -94,101 +124,54 @@ fi
 
 START_TIME=$(date +%s)
 
-log_info "Starting Automated Multi-Locale Screenshot Capture..."
-log_info "Targets: ${TARGETS[*]}"
+log_info "Starting FULL Screenshot Suite (Orchestrator Mode)..."
+log_info "Devices: $DEVICE_INPUT | Locale: ${LOCALE_FILTER:-all} | Features: ${#FEATURE_SCRIPTS[@]}"
+log_info "Each feature will run via run_screenshot_target.sh with ScreenshotDeviceFrame."
 
-for TARGET_DEVICE in "${TARGETS[@]}"; do
-    CONFIG=$(resolve_device_config "$TARGET_DEVICE")
-    IFS='|' read -r EMULATOR_ID SCREENSHOT_PREFIX RESOLUTION <<< "$CONFIG"
-
-    log_step "Device: $TARGET_DEVICE ($RESOLUTION) -> $EMULATOR_ID -> screenshots/$SCREENSHOT_PREFIX/"
-
-    # ------------------------------------------------------------------------------
-    log_step "1. Detecting/Booting Emulator ($EMULATOR_ID)..."
-    # ------------------------------------------------------------------------------
-    DEVICE_ID=""
-
-    if command -v adb &> /dev/null; then
-        RUNNING_EMULATORS=$(adb devices | grep -w "device" | grep "emulator-" || true)
-        if [ -n "$RUNNING_EMULATORS" ]; then
-            DEVICE_ID=$(echo "$RUNNING_EMULATORS" | head -n 1 | awk '{print $1}')
-            log_info "Detected running ADB emulator: $DEVICE_ID"
-        fi
+# ------------------------------------------------------------------------------
+# Delegate sequentially to each per-feature generator.
+# Emulator is detected/reused inside run_screenshot_target.sh – no need to
+# boot here. Sequential execution ensures deterministic ordering and allows
+# reusing the same emulator across features when possible.
+# ------------------------------------------------------------------------------
+for SCRIPT in "${FEATURE_SCRIPTS[@]}"; do
+    log_step "Feature: $SCRIPT ($DEVICE_INPUT / ${LOCALE_FILTER:-all})"
+    if [[ ! -x "$DIR/$SCRIPT" ]]; then
+        log_error "Missing or non-executable: $DIR/$SCRIPT"
+        exit 1
     fi
-
-    if [ -z "$DEVICE_ID" ]; then
-        log_info "No running emulator found. Launching $EMULATOR_ID..."
-        flutter emulators --launch "$EMULATOR_ID" || true
-
-        log_info "Waiting for emulator $EMULATOR_ID to boot..."
-        if command -v adb &> /dev/null; then
-            # Wait for emulator device to appear (handles physical device attached)
-            for _ in $(seq 1 60); do
-                DEVICE_ID=$(adb devices | grep -w "device" | grep "emulator-" | head -n 1 | awk '{print $1}')
-                if [ -n "$DEVICE_ID" ]; then break; fi
-                sleep 2
-            done
-            if [ -z "$DEVICE_ID" ]; then
-                log_error "Emulator $EMULATOR_ID failed to appear after 120s"
-                adb devices
-                exit 1
-            fi
-            log_info "Emulator device detected: $DEVICE_ID, waiting for boot completion..."
-            for _ in $(seq 1 90); do
-                BOOT=$(adb -s "$DEVICE_ID" shell getprop sys.boot_completed 2>/dev/null | tr -d '\r' || true)
-                if [ "$BOOT" = "1" ]; then break; fi
-                sleep 2
-            done
-            log_info "Android emulator booted with ID: $DEVICE_ID"
-        else
-            sleep 15
-            DEVICE_ID="emulator-5554"
-        fi
-    else
-        log_info "Reusing running emulator $DEVICE_ID for $EMULATOR_ID. If wrong AVD, kill emulator and re-run with correct target."
-    fi
-
-    # ------------------------------------------------------------------------------
-    log_step "2. Executing Screenshot Integration Test Pipeline ($SCREENSHOT_PREFIX)..."
-    # ------------------------------------------------------------------------------
-    mkdir -p "screenshots/$SCREENSHOT_PREFIX"
-
-    DEVICE_ARG=""
-    if [ -n "$DEVICE_ID" ]; then
-        DEVICE_ARG="-d $DEVICE_ID"
-    fi
-
-    flutter drive \
-      --driver=test_driver/integration_test.dart \
-      --target=integration_test/screenshots_test.dart \
-      --dart-define=SCREENSHOT_DEVICE="$SCREENSHOT_PREFIX" \
-      $DEVICE_ARG
-
-    # ------------------------------------------------------------------------------
-    log_step "3. Verifying Captured Screenshots in screenshots/$SCREENSHOT_PREFIX/..."
-    # ------------------------------------------------------------------------------
-    TOTAL_COUNT=$(find "screenshots/$SCREENSHOT_PREFIX" -type f -name "*.png" | wc -l | tr -d ' ')
-    log_success "Captured $TOTAL_COUNT screenshots for $SCREENSHOT_PREFIX (expected ~440: 10 locales x 22 screens x 2 themes)."
-
-    find "screenshots/$SCREENSHOT_PREFIX" -type f -name "*.png" | sort | head -n 20
-    if [ "$TOTAL_COUNT" -gt 20 ]; then
-        echo "... ($TOTAL_COUNT total, truncated)"
-    fi
+    "$DIR/$SCRIPT" "$DEVICE_INPUT" "${LOCALE_FILTER:-}"
 done
 
 # ------------------------------------------------------------------------------
-log_step "4. Global Verification (all devices)..."
+# Global verification – count all android screenshots
+# Expected: 8 features × ~440 total when locale=all:
+#   splash 1×20 + onboarding 8×20 + today 3×20 + calendar 2×20 + statistics 2×20
+#   + settings 3×20 + biometric 1×20 + home_widgets 2×20 = 22×20 = 440 per device
 # ------------------------------------------------------------------------------
-TOTAL_ALL=$(find screenshots/android -type f -name "*.png" | wc -l | tr -d ' ')
+log_step "Global Verification (all devices)..."
+
+TOTAL_ALL=$(find screenshots/android -type f -name "*.png" 2>/dev/null | wc -l | tr -d ' ' || echo "0")
 log_success "Total Android screenshots across all devices: $TOTAL_ALL"
-find screenshots/android -type f -name "*.png" | sort | head -n 30
-if [ "$TOTAL_ALL" -gt 30 ]; then
-    echo "... ($TOTAL_ALL total, truncated)"
+
+if [[ -d "screenshots/android" ]]; then
+    find screenshots/android -type f -name "*.png" | sort | head -n 30
+    if [[ "$TOTAL_ALL" -gt 30 ]]; then
+        echo "... ($TOTAL_ALL total, truncated)"
+    fi
+    echo ""
+    log_info "Per-device breakdown:"
+    for D in phone tablet_7 tablet_10; do
+        COUNT=$(find "screenshots/android/$D" -type f -name "*.png" 2>/dev/null | wc -l | tr -d ' ' || echo "0")
+        echo "  android/$D: $COUNT"
+    done
 fi
 
 END_TIME=$(date +%s)
 DURATION=$((END_TIME - START_TIME))
 
 echo -e "\n=============================================================================="
-log_success "Screenshots generation completed in ${DURATION}s for targets: ${TARGETS[*]}"
+log_success "Full screenshots suite completed in ${DURATION}s (devices: $DEVICE_INPUT, locale: ${LOCALE_FILTER:-all})"
 echo -e "=============================================================================="
+echo -e "${BLUE}ℹ️  [INFO] Legacy monolithic target: integration_test/screenshots_test.dart is deprecated.${NC}"
+echo -e "${BLUE}ℹ️  [INFO] For single-module runs use e.g.: ./scripts/generate_calendar.sh $DEVICE_INPUT ${LOCALE_FILTER:-}${NC}"
