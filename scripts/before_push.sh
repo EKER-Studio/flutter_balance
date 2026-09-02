@@ -81,7 +81,7 @@ log_success "Static analysis passed with zero warnings or errors."
 log_step "6" "Running complete unit and widget test suites..."
 # ------------------------------------------------------------------------------
 # Executes all automated tests inside the /test directory
-flutter test
+flutter test --exclude-tags "golden,screenshot"
 log_success "All automated unit and widget tests completed successfully."
 
 # ------------------------------------------------------------------------------

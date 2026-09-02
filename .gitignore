@@ -90,3 +90,6 @@ crash_log.txt
 .ai*
 LOG_*.md
 .audit-*/
+
+# Automated screenshot test output artifacts
+/screenshots/

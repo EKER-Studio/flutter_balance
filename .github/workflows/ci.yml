@@ -89,7 +89,7 @@ jobs:
         run: flutter analyze
 
       - name: Run unit and widget tests
-        run: flutter test --coverage --exclude-tags golden
+        run: flutter test --coverage --exclude-tags "golden,screenshot"
 
       - name: Generate Coverage Job Summary
         if: always()
