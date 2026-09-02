@@ -62,7 +62,7 @@ void main() {
                   home: ScreenshotDeviceFrame(
                     isDark: isDark,
                     showNotificationIcon: true,
-                    child: CalendarScreen(initialDate: DateTime(2026, 9, 2)),
+                    child: CalendarScreen(initialDate: DateTime(2026, 8, 14)),
                   ),
                 ),
               ),
@@ -106,7 +106,7 @@ void main() {
                   home: ScreenshotDeviceFrame(
                     isDark: isDark,
                     showNotificationIcon: true,
-                    child: CalendarScreen(initialDate: DateTime(2026, 9, 20)),
+                    child: CalendarScreen(initialDate: DateTime(2026, 8, 25)),
                   ),
                 ),
               ),

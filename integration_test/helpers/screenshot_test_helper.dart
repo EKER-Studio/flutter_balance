@@ -43,26 +43,111 @@ class FakeWeightRepository implements WeightRepository {
 }
 
 List<WeightEntry> generate90MockEntries() {
-  final now = DateTime(2026, 9, 2, 9, 41);
   final entries = <WeightEntry>[];
-  for (int i = 0; i < 90; i++) {
-    final date = now.subtract(Duration(days: i));
-    final base = 92.5 - (92.5 - 87.0) * (89 - i) / 89.0;
-    final fluctuation = ((i * 7) % 5 - 2) * 0.1;
-    final weight = (i == 0)
-        ? 87.0
-        : (i == 1)
-        ? 87.2
-        : double.parse((base + fluctuation).toStringAsFixed(1));
+  int nextId = 1;
+
+  void addEntry(DateTime dt, double weight, [String? note]) {
     entries.add(
       WeightEntry(
-        id: 90 - i,
+        id: nextId++,
         weightKg: weight,
-        dateTime: date,
-        note: i % 10 == 0 ? 'Morning check' : null,
+        dateTime: dt,
+        note: note,
       ),
     );
   }
+
+  // September 2026 (Today & Yesterday)
+  addEntry(DateTime(2026, 9, 2, 9, 41), 87.0, 'Morning check');
+  addEntry(DateTime(2026, 9, 1, 9, 41), 87.2);
+
+  // August 2026 - matching exact calendar distribution:
+  // Target: 85.0 kg (< 85.0 is green, >= 85.0 is blue)
+  // Day 31: 1 green dot
+  addEntry(DateTime(2026, 8, 31, 8, 30), 84.3);
+  // Day 30: 1 green dot
+  addEntry(DateTime(2026, 8, 30, 8, 15), 84.4);
+  // Day 29: 1 green dot
+  addEntry(DateTime(2026, 8, 29, 8, 20), 84.5);
+  // Day 28: 1 green dot
+  addEntry(DateTime(2026, 8, 28, 8, 10), 84.6);
+  // Day 27: 1 blue dot
+  addEntry(DateTime(2026, 8, 27, 8, 30), 85.2);
+  // Day 26: 2 green dots
+  addEntry(DateTime(2026, 8, 26, 20, 15), 84.3, 'Evening weigh-in');
+  addEntry(DateTime(2026, 8, 26, 8, 0), 84.5, 'Morning check');
+  // Day 25: >= 4 entries -> dash (blue bar: all >= 85.0 kg)
+  addEntry(DateTime(2026, 8, 25, 21, 20), 85.4, 'Evening check');
+  addEntry(DateTime(2026, 8, 25, 17, 30), 85.5, 'Post-workout');
+  addEntry(DateTime(2026, 8, 25, 12, 45), 85.6, 'After lunch');
+  addEntry(DateTime(2026, 8, 25, 8, 15), 85.8, 'Morning check');
+  // Day 24: 2 green dots
+  addEntry(DateTime(2026, 8, 24, 20, 45), 84.3);
+  addEntry(DateTime(2026, 8, 24, 8, 15), 84.5);
+  // Day 23: 1 green dot
+  addEntry(DateTime(2026, 8, 23, 8, 45), 84.6);
+  // Day 22: 2 green dots
+  addEntry(DateTime(2026, 8, 22, 19, 30), 84.4);
+  addEntry(DateTime(2026, 8, 22, 8, 0), 84.6);
+  // Day 21: 1 blue dot
+  addEntry(DateTime(2026, 8, 21, 8, 15), 85.3);
+  // Day 20: 2 green dots
+  addEntry(DateTime(2026, 8, 20, 21, 0), 84.5);
+  addEntry(DateTime(2026, 8, 20, 8, 30), 84.7);
+  // Day 19: 1 blue dot
+  addEntry(DateTime(2026, 8, 19, 8, 20), 85.4);
+  // Day 18: 3 green dots
+  addEntry(DateTime(2026, 8, 18, 20, 0), 84.5, 'Evening check');
+  addEntry(DateTime(2026, 8, 18, 13, 30), 84.6, 'Midday check');
+  addEntry(DateTime(2026, 8, 18, 8, 0), 84.8, 'Morning check');
+  // Day 17: 1 green dot
+  addEntry(DateTime(2026, 8, 17, 8, 30), 84.7);
+  // Day 16: 1 green dot
+  addEntry(DateTime(2026, 8, 16, 8, 15), 84.8);
+  // Day 15: 1 blue dot
+  addEntry(DateTime(2026, 8, 15, 8, 45), 85.6);
+  // Day 14: 2 green dots
+  addEntry(DateTime(2026, 8, 14, 19, 45), 84.6, 'Evening check');
+  addEntry(DateTime(2026, 8, 14, 8, 15), 84.8, 'Morning check');
+  // Day 13: 2 blue dots
+  addEntry(DateTime(2026, 8, 13, 20, 30), 85.7);
+  addEntry(DateTime(2026, 8, 13, 8, 0), 85.9);
+  // Day 12: 1 blue dot
+  addEntry(DateTime(2026, 8, 12, 8, 15), 85.8);
+  // Day 11: 1 blue dot
+  addEntry(DateTime(2026, 8, 11, 8, 20), 86.1);
+  // Day 10: 1 blue dot
+  addEntry(DateTime(2026, 8, 10, 8, 10), 86.4);
+  // Day 9: 1 blue dot
+  addEntry(DateTime(2026, 8, 9, 8, 30), 86.2);
+  // Day 8: 1 green dot
+  addEntry(DateTime(2026, 8, 8, 8, 15), 84.7);
+  // Day 7: 1 green dot
+  addEntry(DateTime(2026, 8, 7, 8, 30), 84.8);
+  // Day 6: 1 blue dot
+  addEntry(DateTime(2026, 8, 6, 8, 15), 86.5);
+  // Day 5: 1 blue dot
+  addEntry(DateTime(2026, 8, 5, 8, 30), 86.8);
+  // Day 4: 1 blue dot
+  addEntry(DateTime(2026, 8, 4, 8, 10), 87.1);
+  // Day 3: 1 blue dot
+  addEntry(DateTime(2026, 8, 3, 8, 20), 87.4);
+  // Day 2: 1 blue dot
+  addEntry(DateTime(2026, 8, 2, 8, 15), 87.6);
+  // Day 1: 1 blue dot
+  addEntry(DateTime(2026, 8, 1, 8, 30), 87.8);
+
+  // July & June history (gradual trend from 92.5 kg down to 88.0 kg)
+  for (int d = 1; d <= 57; d++) {
+    final date = DateTime(2026, 8, 1, 8, 0).subtract(Duration(days: d));
+    final base = 88.0 + (92.5 - 88.0) * d / 57.0;
+    final fluctuation = ((d * 7) % 5 - 2) * 0.1;
+    final weight = double.parse((base + fluctuation).toStringAsFixed(1));
+    addEntry(date, weight, d % 10 == 0 ? 'Morning check' : null);
+  }
+
+  // Ensure entries are strictly sorted newest first
+  entries.sort((a, b) => b.dateTime.compareTo(a.dateTime));
   return entries;
 }
 
