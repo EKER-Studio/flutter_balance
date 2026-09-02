@@ -10,6 +10,8 @@ class MockHealthService extends Mock implements HealthService {}
 class MockWeightRepository extends Mock implements WeightRepository {}
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+
   setUpAll(() {
     registerFallbackValue(DateTime.now());
   });
@@ -58,6 +60,51 @@ void main() {
       },
     );
 
+    test('pushes local entries missing from remote health service', () async {
+      final now = DateTime.now();
+      final localOnlyEntry = WeightEntry(
+        id: 2,
+        weightKg: 82.0,
+        dateTime: now.subtract(const Duration(days: 2)),
+      );
+      when(
+        () => mockHealthService.fetchWeightHistory(
+          start: any(named: 'start'),
+          end: any(named: 'end'),
+        ),
+      ).thenAnswer((_) async => []);
+      when(
+        () => mockRepository.getAllEntries(),
+      ).thenAnswer((_) async => [localOnlyEntry]);
+      when(
+        () => mockHealthService.writeWeight(
+          weightKg: any(named: 'weightKg'),
+          timestamp: any(named: 'timestamp'),
+        ),
+      ).thenAnswer((_) async => true);
+
+      final result = await coordinator.sync(
+        lastSyncTime: now.subtract(const Duration(days: 5)),
+      );
+
+      expect(result, isNotNull);
+      expect(result!.remoteCount, 0);
+      expect(result.pushedLocalCount, 1);
+    });
+
+    test('returns null when healthService throws during sync', () async {
+      when(
+        () => mockHealthService.fetchWeightHistory(
+          start: any(named: 'start'),
+          end: any(named: 'end'),
+        ),
+      ).thenThrow(Exception('Health service unavailable'));
+
+      final result = await coordinator.sync();
+
+      expect(result, isNull);
+    });
+
     test('mirrorWrite invokes healthService.writeWeight', () async {
       when(
         () => mockHealthService.writeWeight(
@@ -81,6 +128,25 @@ void main() {
       ).called(1);
     });
 
+    test(
+      'mirrorWrite catches error when healthService.writeWeight throws',
+      () async {
+        when(
+          () => mockHealthService.writeWeight(
+            weightKg: any(named: 'weightKg'),
+            timestamp: any(named: 'timestamp'),
+          ),
+        ).thenThrow(Exception('Write failed'));
+
+        final entry = WeightEntry(
+          weightKg: 72.5,
+          dateTime: DateTime(2026, 8, 24, 10, 0),
+        );
+
+        await expectLater(coordinator.mirrorWrite(entry), completes);
+      },
+    );
+
     test('mirrorDelete invokes healthService.deleteWeight', () async {
       when(
         () => mockHealthService.deleteWeight(
@@ -99,5 +165,20 @@ void main() {
         ),
       ).called(1);
     });
+
+    test(
+      'mirrorDelete catches error when healthService.deleteWeight throws',
+      () async {
+        when(
+          () => mockHealthService.deleteWeight(
+            weightKg: any(named: 'weightKg'),
+            timestamp: any(named: 'timestamp'),
+          ),
+        ).thenThrow(Exception('Delete failed'));
+
+        final timestamp = DateTime(2026, 8, 24, 10, 0);
+        await expectLater(coordinator.mirrorDelete(72.5, timestamp), completes);
+      },
+    );
   });
 }
