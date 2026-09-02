@@ -198,7 +198,7 @@ void main() {
   testWidgets('allows selecting gain goal mode', (tester) async {
     final getResult = await openDialog(tester);
 
-    await tester.tap(find.text('Gain weight'));
+    await tester.tap(find.text('Gain'));
     await tester.pumpAndSettle();
 
     await tester.enterText(find.byType(TextField), '95.0');

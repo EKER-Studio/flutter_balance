@@ -493,7 +493,7 @@ void main() {
         expect(find.text('Your Dream Goal'), findsOneWidget);
 
         // In Step 5 (Target Weight), select Weight Gain mode and set 82.0 kg
-        await tester.tap(find.text('Gain weight'));
+        await tester.tap(find.text('Gain'));
         await tester.pumpAndSettle();
 
         await tester.enterText(

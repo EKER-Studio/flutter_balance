@@ -116,7 +116,7 @@
   "goalModeGainDesc": "Focus op gestage gewichts- en spiertoename",
   "goalModeLose": "Afvallen",
   "goalModeLoseDesc": "Focus op geleidelijk gewichtsverlies",
-  "goalModeMaintain": "Gewicht behouden",
+  "goalModeMaintain": "Behouden",
   "goalModeMaintainDesc": "Gewicht stabiel houden in een gezonde marge",
   "goalProgress": "Doelvoortgang",
   "goalProgressSemantics": "Doel: {target}. {detail}. Dubbeltik om streefgewicht te bewerken.",

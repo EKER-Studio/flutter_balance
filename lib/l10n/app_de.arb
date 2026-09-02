@@ -116,7 +116,7 @@
   "goalModeGainDesc": "Fokus auf stetigen Masse- und Gewichtszuwachs",
   "goalModeLose": "Abnehmen",
   "goalModeLoseDesc": "Fokus auf schrittweise Gewichtsreduktion",
-  "goalModeMaintain": "Gewicht halten",
+  "goalModeMaintain": "Halten",
   "goalModeMaintainDesc": "Gewicht stabil im gesunden Bereich halten",
   "goalProgress": "Zielfortschritt",
   "goalProgressSemantics": "Ziel: {target}. {detail}. Doppeltippen, um Zielgewicht zu bearbeiten.",
