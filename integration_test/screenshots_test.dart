@@ -988,7 +988,15 @@ void main() {
   });
 }
 
-/// Canvas wrapper to present home widgets cleanly in screenshots.
+/// Canvas wrapper presenting home widgets on a simulated phone home screen.
+///
+/// Variant A: wallpaper + app icon grid + dock instead of plain gradient,
+/// to make Play Store screenshots look like a real home screen.
+///
+/// The wallpaper is a subtle gradient (no external asset needed), the icon
+/// grid uses Material icons at low opacity, and the dock mimics Pixel
+/// Launcher. The widget itself is centered with a slight top offset,
+/// as on a real home screen.
 class WidgetPreviewCanvas extends StatelessWidget {
   final Widget child;
   final String title;
@@ -1003,48 +1011,238 @@ class WidgetPreviewCanvas extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bgGradient = isDark
+    final wallpaper = isDark
         ? const LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [Color(0xFF0F1117), Color(0xFF141721), Color(0xFF1A1D29)],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [Color(0xFF1A1D29), Color(0xFF0F1117), Color(0xFF141721)],
           )
         : const LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [Color(0xFFE9EEF5), Color(0xFFF3F6FA), Color(0xFFE3E9F2)],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [Color(0xFFD6E4F0), Color(0xFFE9EEF5), Color(0xFFF3F6FA)],
           );
 
-    return Container(
-      decoration: BoxDecoration(gradient: bgGradient),
-      child: Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 5),
-              margin: const EdgeInsets.only(bottom: 24),
-              decoration: BoxDecoration(
-                color: isDark
-                    ? Colors.white.withValues(alpha: 0.1)
-                    : Colors.black.withValues(alpha: 0.06),
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: Text(
-                title,
-                style: TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w700,
-                  letterSpacing: 0.5,
-                  color: isDark
-                      ? const Color(0xFFC4C7D0)
-                      : const Color(0xFF555B68),
-                ),
+    return DecoratedBox(
+      decoration: BoxDecoration(gradient: wallpaper),
+      child: Stack(
+        children: [
+          // Subtle home-screen wallpaper with icon grid behind the widget.
+          Positioned.fill(
+            child: SafeArea(
+              child: Column(
+                children: [
+                  // Status bar mock (time, battery) — minimal, non-distracting.
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 20,
+                      vertical: 8,
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          '09:30',
+                          style: TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600,
+                            color: isDark
+                                ? Colors.white.withValues(alpha: 0.9)
+                                : Colors.black.withValues(alpha: 0.8),
+                          ),
+                        ),
+                        Row(
+                          children: [
+                            Icon(
+                              Icons.signal_cellular_alt,
+                              size: 14,
+                              color: isDark
+                                  ? Colors.white.withValues(alpha: 0.7)
+                                  : Colors.black.withValues(alpha: 0.6),
+                            ),
+                            const SizedBox(width: 4),
+                            Icon(
+                              Icons.wifi,
+                              size: 14,
+                              color: isDark
+                                  ? Colors.white.withValues(alpha: 0.7)
+                                  : Colors.black.withValues(alpha: 0.6),
+                            ),
+                            const SizedBox(width: 4),
+                            Icon(
+                              Icons.battery_full,
+                              size: 16,
+                              color: isDark
+                                  ? Colors.white.withValues(alpha: 0.7)
+                                  : Colors.black.withValues(alpha: 0.6),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  // App icon grid — faint, suggests real home screen.
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      child: _HomeIconGrid(isDark: isDark),
+                    ),
+                  ),
+                  // Dock at the bottom.
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
+                    child: _HomeDock(isDark: isDark),
+                  ),
+                ],
               ),
             ),
-            child,
-          ],
+          ),
+          // Centered widget (with slight top offset like real home screen).
+          Center(
+            child: Padding(
+              padding: const EdgeInsets.only(bottom: 80),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 4,
+                    ),
+                    decoration: BoxDecoration(
+                      color: isDark
+                          ? Colors.white.withValues(alpha: 0.12)
+                          : Colors.black.withValues(alpha: 0.06),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Text(
+                      title,
+                      style: TextStyle(
+                        fontSize: 10,
+                        fontWeight: FontWeight.w700,
+                        letterSpacing: 0.4,
+                        color: isDark
+                            ? const Color(0xFFC4C7D0)
+                            : const Color(0xFF555B68),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  child,
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Faint app icon grid to simulate a home screen behind the widget.
+class _HomeIconGrid extends StatelessWidget {
+  final bool isDark;
+
+  const _HomeIconGrid({required this.isDark});
+
+  @override
+  Widget build(BuildContext context) {
+    const icons = [
+      Icons.mail_outline,
+      Icons.calendar_today_outlined,
+      Icons.photo_outlined,
+      Icons.camera_alt_outlined,
+      Icons.map_outlined,
+      Icons.music_note_outlined,
+      Icons.videocam_outlined,
+      Icons.chat_bubble_outline,
+      Icons.shopping_bag_outlined,
+      Icons.settings_outlined,
+      Icons.folder_outlined,
+      Icons.help_outline,
+    ];
+
+    return Opacity(
+      opacity: isDark ? 0.35 : 0.45,
+      child: GridView.builder(
+        physics: const NeverScrollableScrollPhysics(),
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 4,
+          mainAxisSpacing: 18,
+          crossAxisSpacing: 12,
+          childAspectRatio: 0.82,
         ),
+        itemCount: icons.length,
+        itemBuilder: (context, index) {
+          return Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 48,
+                height: 48,
+                decoration: BoxDecoration(
+                  color: isDark
+                      ? Colors.white.withValues(alpha: 0.08)
+                      : Colors.white.withValues(alpha: 0.85),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Icon(
+                  icons[index],
+                  size: 22,
+                  color: isDark
+                      ? Colors.white.withValues(alpha: 0.65)
+                      : const Color(0xFF3B404E),
+                ),
+              ),
+              const SizedBox(height: 4),
+              Container(
+                width: 36,
+                height: 6,
+                decoration: BoxDecoration(
+                  color: isDark
+                      ? Colors.white.withValues(alpha: 0.25)
+                      : Colors.black.withValues(alpha: 0.25),
+                  borderRadius: BorderRadius.circular(3),
+                ),
+              ),
+            ],
+          );
+        },
+      ),
+    );
+  }
+}
+
+/// Bottom dock mimicking Pixel Launcher.
+class _HomeDock extends StatelessWidget {
+  final bool isDark;
+
+  const _HomeDock({required this.isDark});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+      decoration: BoxDecoration(
+        color: isDark
+            ? Colors.white.withValues(alpha: 0.08)
+            : Colors.white.withValues(alpha: 0.75),
+        borderRadius: BorderRadius.circular(28),
+        border: Border.all(
+          color: isDark
+              ? Colors.white.withValues(alpha: 0.1)
+              : Colors.black.withValues(alpha: 0.06),
+        ),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: const [
+          Icon(Icons.phone, size: 22, color: Color(0xFF34A853)),
+          Icon(Icons.chat_bubble, size: 22, color: Color(0xFF4285F4)),
+          Icon(Icons.camera_alt, size: 22, color: Color(0xFFEA4335)),
+          Icon(Icons.apps, size: 22, color: Color(0xFF5F6368)),
+        ],
       ),
     );
   }
