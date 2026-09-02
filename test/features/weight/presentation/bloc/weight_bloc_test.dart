@@ -7,6 +7,7 @@ import 'package:mocktail/mocktail.dart';
 import 'package:balance/core/integrations/health/health_service.dart';
 import 'package:balance/features/weight/domain/entities/weight_entry.dart';
 import 'package:balance/features/weight/domain/repositories/weight_repository.dart';
+import 'package:balance/features/weight/domain/services/csv_weight_importer.dart';
 import 'package:balance/features/weight/domain/weight_error_type.dart';
 import 'package:balance/features/weight/presentation/bloc/weight_bloc.dart';
 import 'package:balance/features/weight/presentation/bloc/weight_event.dart';
@@ -21,6 +22,8 @@ class MockHydratedStorage extends Mock implements HydratedStorage {}
 class MockHealthService extends Mock implements HealthService {}
 
 class MockAppSettingsBloc extends Mock implements AppSettingsBloc {}
+
+class MockCsvWeightImporter extends Mock implements CsvWeightImporter {}
 
 void main() {
   late MockWeightRepository repository;
@@ -1511,6 +1514,59 @@ void main() {
           'entries.length',
           2,
         ),
+      ],
+    );
+
+    blocTest<WeightBloc, WeightState>(
+      'AnalyzeCsvFile emits [CsvAnalysisInProgress, CsvAnalysisReady] on successful analysis',
+      build: () {
+        final importer = MockCsvWeightImporter();
+        when(() => importer.analyzeFile('/path/to/valid.csv')).thenAnswer(
+          (_) async => CsvAnalysisSuccess((
+            validEntries: [
+              WeightEntry(weightKg: 80.0, dateTime: DateTime(2026, 1, 1)),
+            ],
+            skippedRowCount: 0,
+            earliestDate: DateTime(2026, 1, 1),
+            latestDate: DateTime(2026, 1, 1),
+          )),
+        );
+        return WeightBloc(repository: repository, csvWeightImporter: importer);
+      },
+      seed: () =>
+          const WeightLoaded(entries: [], filteredEntries: [], heightCm: 175),
+      act: (bloc) =>
+          bloc.add(const AnalyzeCsvFile(filePath: '/path/to/valid.csv')),
+      expect: () => [
+        isA<CsvAnalysisInProgress>().having((s) => s.heightCm, 'heightCm', 175),
+        isA<CsvAnalysisReady>()
+            .having((s) => s.heightCm, 'heightCm', 175)
+            .having(
+              (s) => s.analysis.validEntries.length,
+              'validEntries.length',
+              1,
+            ),
+      ],
+    );
+
+    blocTest<WeightBloc, WeightState>(
+      'AnalyzeCsvFile emits [CsvAnalysisInProgress, CsvAnalysisError] on analysis failure',
+      build: () {
+        final importer = MockCsvWeightImporter();
+        when(() => importer.analyzeFile('/path/to/invalid.csv')).thenAnswer(
+          (_) async => const CsvAnalysisFailure(CsvErrorType.fileTooLarge),
+        );
+        return WeightBloc(repository: repository, csvWeightImporter: importer);
+      },
+      seed: () =>
+          const WeightLoaded(entries: [], filteredEntries: [], heightCm: 175),
+      act: (bloc) =>
+          bloc.add(const AnalyzeCsvFile(filePath: '/path/to/invalid.csv')),
+      expect: () => [
+        isA<CsvAnalysisInProgress>().having((s) => s.heightCm, 'heightCm', 175),
+        isA<CsvAnalysisError>()
+            .having((s) => s.heightCm, 'heightCm', 175)
+            .having((s) => s.errorType, 'errorType', CsvErrorType.fileTooLarge),
       ],
     );
   });
