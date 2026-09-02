@@ -11,6 +11,7 @@ import 'package:mocktail/mocktail.dart';
 import 'package:balance/core/models/measurement_unit.dart';
 import 'package:balance/core/presentation/screens/app_splash_screen.dart';
 import 'package:balance/core/presentation/theme/app_theme.dart';
+import 'package:balance/features/navigation/presentation/screens/main_navigation_screen.dart';
 import 'package:balance/features/onboarding/presentation/widgets/components/csv_import_success_view.dart';
 import 'package:balance/features/onboarding/presentation/widgets/components/onboarding_app_bar.dart';
 import 'package:balance/features/onboarding/presentation/widgets/steps/step_biometric_lock.dart';
@@ -21,16 +22,75 @@ import 'package:balance/features/onboarding/presentation/widgets/steps/step_targ
 import 'package:balance/features/onboarding/presentation/widgets/steps/step_units_height.dart';
 import 'package:balance/features/onboarding/presentation/widgets/steps/step_welcome.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_bloc.dart';
-import 'package:balance/features/weight/domain/weight_goal_mode.dart';
+import 'package:balance/features/settings/presentation/bloc/app_settings_event.dart';
+import 'package:balance/features/settings/presentation/bloc/weight_goal_mode.dart';
+import 'package:balance/features/weight/domain/bmi_category.dart';
+import 'package:balance/features/weight/domain/entities/weight_entry.dart';
+import 'package:balance/features/weight/domain/repositories/weight_repository.dart';
+import 'package:balance/features/weight/presentation/bloc/weight_bloc.dart';
+import 'package:balance/features/weight/presentation/bloc/weight_event.dart';
+import 'package:balance/features/weight/presentation/widgets/components/add_weight_sheet.dart';
+import 'package:balance/features/weight/presentation/widgets/components/bmi_legend_dialog.dart';
 import 'package:balance/l10n/app_localizations.dart';
 
 class MockHydratedStorage extends Mock implements HydratedStorage {}
+
+class FakeWeightRepository implements WeightRepository {
+  final List<WeightEntry> entries;
+  FakeWeightRepository(this.entries);
+
+  @override
+  Stream<List<WeightEntry>> watchAllEntries() => Stream.value(entries);
+
+  @override
+  Future<List<WeightEntry>> getAllEntries() async => entries;
+
+  @override
+  Future<void> addEntry(WeightEntry entry) async {}
+
+  @override
+  Future<void> deleteEntry(int id) async {}
+
+  @override
+  Future<int> bulkImportEntries(List<WeightEntry> entries) async => entries.length;
+
+  @override
+  Future<int> syncRemoteEntries(List<WeightEntry> remoteEntries) async => remoteEntries.length;
+
+  @override
+  Future<void> clearAllData() async {}
+}
+
+List<WeightEntry> generate90MockEntries() {
+  final now = DateTime(2026, 9, 2, 8, 0);
+  final entries = <WeightEntry>[];
+  for (int i = 89; i >= 0; i--) {
+    final date = now.subtract(Duration(days: i));
+    final base = 92.5 - (92.5 - 87.0) * (89 - i) / 89.0;
+    final fluctuation = ((i * 7) % 5 - 2) * 0.1;
+    final weight = (i == 0)
+        ? 87.0
+        : (i == 1)
+            ? 87.2
+            : double.parse((base + fluctuation).toStringAsFixed(1));
+    entries.add(
+      WeightEntry(
+        id: 90 - i,
+        weightKg: weight,
+        dateTime: date,
+        note: i % 10 == 0 ? 'Morning check' : null,
+      ),
+    );
+  }
+  return entries;
+}
 
 void main() {
   final binding = IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
   late MockHydratedStorage storage;
-  late AppSettingsBloc settingsBloc;
+  late List<WeightEntry> mockEntries;
+  late FakeWeightRepository weightRepo;
 
   setUpAll(() async {
     await binding.convertFlutterSurfaceToImage();
@@ -38,10 +98,8 @@ void main() {
     HydratedBloc.storage = storage;
     when(() => storage.read(any())).thenReturn(null);
     when(() => storage.write(any(), any())).thenAnswer((_) async {});
-  });
-
-  setUp(() {
-    settingsBloc = AppSettingsBloc();
+    mockEntries = generate90MockEntries();
+    weightRepo = FakeWeightRepository(mockEntries);
   });
 
   // All 10 officially supported target locales
@@ -63,10 +121,19 @@ void main() {
     required Locale locale,
     required ThemeData theme,
     required ThemeMode themeMode,
+    AppSettingsBloc? settingsBloc,
+    WeightBloc? weightBloc,
     PreferredSizeWidget? appBar,
   }) {
-    return BlocProvider<AppSettingsBloc>.value(
-      value: settingsBloc,
+    final effectiveSettingsBloc = settingsBloc ?? AppSettingsBloc();
+    final effectiveWeightBloc = weightBloc ??
+        (WeightBloc(repository: weightRepo)..add(const SubscribeToWeightChanges()));
+
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider<AppSettingsBloc>.value(value: effectiveSettingsBloc),
+        BlocProvider<WeightBloc>.value(value: effectiveWeightBloc),
+      ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         locale: locale,
@@ -91,7 +158,7 @@ void main() {
         final locale = Locale(localeCode);
 
         // ---------------------------------------------------------------------
-        // 00_splash (Generated in en/ and across locales)
+        // 00_splash (Generated across locales)
         // ---------------------------------------------------------------------
         testWidgets(
           'Capture 00_splash [$localeCode] [$themeLabel]',
@@ -356,6 +423,141 @@ void main() {
             await tester.pumpAndSettle();
             await binding.takeScreenshot(
               '$localeCode/01_onboarding/08_biometric_lock_$themeLabel',
+            );
+          },
+          tags: 'screenshot',
+        );
+
+        // ---------------------------------------------------------------------
+        // 02_today / 01_dashboard (Populated with 90 records, 177cm, 87kg, target 85kg)
+        // ---------------------------------------------------------------------
+        testWidgets(
+          'Capture 02_today/01_dashboard [$localeCode] [$themeLabel]',
+          (WidgetTester tester) async {
+            final settingsBloc = AppSettingsBloc()
+              ..add(const UpdateHeight(177.0))
+              ..add(const TargetWeightChanged(85.0, WeightGoalMode.lose));
+
+            final weightBloc = WeightBloc(repository: weightRepo)
+              ..add(const SubscribeToWeightChanges())
+              ..add(const ChangeChartFilter(TimePeriod.month));
+
+            await tester.pumpWidget(
+              MultiBlocProvider(
+                providers: [
+                  BlocProvider<AppSettingsBloc>.value(value: settingsBloc),
+                  BlocProvider<WeightBloc>.value(value: weightBloc),
+                ],
+                child: MaterialApp(
+                  debugShowCheckedModeBanner: false,
+                  locale: locale,
+                  supportedLocales: AppLocalizations.supportedLocales,
+                  localizationsDelegates: AppLocalizations.localizationsDelegates,
+                  theme: theme,
+                  themeMode: themeMode,
+                  home: const MainNavigationScreen(),
+                ),
+              ),
+            );
+
+            await tester.pump();
+            await tester.pump(const Duration(milliseconds: 300));
+
+            await binding.takeScreenshot(
+              '$localeCode/02_today/01_dashboard_$themeLabel',
+            );
+          },
+          tags: 'screenshot',
+        );
+
+        // ---------------------------------------------------------------------
+        // 02_today / 02_add_measurement (Add/Edit measurement modal sheet)
+        // ---------------------------------------------------------------------
+        testWidgets(
+          'Capture 02_today/02_add_measurement [$localeCode] [$themeLabel]',
+          (WidgetTester tester) async {
+            final settingsBloc = AppSettingsBloc()
+              ..add(const UpdateHeight(177.0));
+            final weightBloc = WeightBloc(repository: weightRepo)
+              ..add(const SubscribeToWeightChanges());
+
+            await tester.pumpWidget(
+              MultiBlocProvider(
+                providers: [
+                  BlocProvider<AppSettingsBloc>.value(value: settingsBloc),
+                  BlocProvider<WeightBloc>.value(value: weightBloc),
+                ],
+                child: MaterialApp(
+                  debugShowCheckedModeBanner: false,
+                  locale: locale,
+                  supportedLocales: AppLocalizations.supportedLocales,
+                  localizationsDelegates: AppLocalizations.localizationsDelegates,
+                  theme: theme,
+                  themeMode: themeMode,
+                  home: Scaffold(
+                    body: SafeArea(
+                      child: AddWeightSheet(
+                        existingEntry: WeightEntry(
+                          id: 90,
+                          weightKg: 87.0,
+                          dateTime: DateTime(2026, 9, 2, 8, 30),
+                          note: 'Morning weigh-in',
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            );
+
+            await tester.pumpAndSettle();
+            await binding.takeScreenshot(
+              '$localeCode/02_today/02_add_measurement_$themeLabel',
+            );
+          },
+          tags: 'screenshot',
+        );
+
+        // ---------------------------------------------------------------------
+        // 02_today / 03_bmi_categories (BMI Categories breakdown dialog)
+        // ---------------------------------------------------------------------
+        testWidgets(
+          'Capture 02_today/03_bmi_categories [$localeCode] [$themeLabel]',
+          (WidgetTester tester) async {
+            final settingsBloc = AppSettingsBloc()
+              ..add(const UpdateHeight(177.0));
+            final weightBloc = WeightBloc(repository: weightRepo)
+              ..add(const SubscribeToWeightChanges());
+
+            await tester.pumpWidget(
+              MultiBlocProvider(
+                providers: [
+                  BlocProvider<AppSettingsBloc>.value(value: settingsBloc),
+                  BlocProvider<WeightBloc>.value(value: weightBloc),
+                ],
+                child: MaterialApp(
+                  debugShowCheckedModeBanner: false,
+                  locale: locale,
+                  supportedLocales: AppLocalizations.supportedLocales,
+                  localizationsDelegates: AppLocalizations.localizationsDelegates,
+                  theme: theme,
+                  themeMode: themeMode,
+                  home: const Scaffold(
+                    body: SafeArea(
+                      child: BmiLegendDialog(
+                        latestWeightKg: 87.0,
+                        heightCm: 177.0,
+                        currentCategory: BmiCategory.overweight,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            );
+
+            await tester.pumpAndSettle();
+            await binding.takeScreenshot(
+              '$localeCode/02_today/03_bmi_categories_$themeLabel',
             );
           },
           tags: 'screenshot',
