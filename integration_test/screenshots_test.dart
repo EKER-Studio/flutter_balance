@@ -37,9 +37,21 @@ import 'package:balance/features/weight/domain/entities/weight_entry.dart';
 import 'package:balance/features/weight/domain/repositories/weight_repository.dart';
 import 'package:balance/features/weight/presentation/bloc/weight_bloc.dart';
 import 'package:balance/features/weight/presentation/bloc/weight_event.dart';
+import 'package:balance/features/weight/presentation/utils/bmi_category_localizer.dart';
 import 'package:balance/features/weight/presentation/widgets/components/add_weight_sheet.dart';
 import 'package:balance/features/weight/presentation/widgets/components/bmi_legend_dialog.dart';
 import 'package:balance/l10n/app_localizations.dart';
+
+/// Device prefix for screenshot output path.
+///
+/// Passed via `--dart-define=SCREENSHOT_DEVICE=android/phone` (default).
+/// Supported values: `android/phone`, `android/tablet_7`, `android/tablet_10`.
+/// Allows the same test suite to generate per-device screenshot sets without
+/// duplicating test logic.
+const _screenshotDevicePrefix = String.fromEnvironment(
+  'SCREENSHOT_DEVICE',
+  defaultValue: 'android/phone',
+);
 
 class MockHydratedStorage extends Mock implements HydratedStorage {}
 
@@ -188,7 +200,7 @@ void main() {
           await tester.pump(const Duration(milliseconds: 300));
 
           await binding.takeScreenshot(
-            '$localeCode/00_splash/splash_$themeLabel',
+            '$_screenshotDevicePrefix/$localeCode/00_splash/splash_$themeLabel',
           );
         }, tags: 'screenshot');
 
@@ -209,7 +221,7 @@ void main() {
 
             await tester.pumpAndSettle();
             await binding.takeScreenshot(
-              '$localeCode/01_onboarding/01_welcome_$themeLabel',
+              '$_screenshotDevicePrefix/$localeCode/01_onboarding/01_welcome_$themeLabel',
             );
           },
           tags: 'screenshot',
@@ -243,7 +255,7 @@ void main() {
 
             await tester.pumpAndSettle();
             await binding.takeScreenshot(
-              '$localeCode/01_onboarding/02_units_height_$themeLabel',
+              '$_screenshotDevicePrefix/$localeCode/01_onboarding/02_units_height_$themeLabel',
             );
           },
           tags: 'screenshot',
@@ -276,7 +288,7 @@ void main() {
 
             await tester.pumpAndSettle();
             await binding.takeScreenshot(
-              '$localeCode/01_onboarding/03_csv_import_$themeLabel',
+              '$_screenshotDevicePrefix/$localeCode/01_onboarding/03_csv_import_$themeLabel',
             );
           },
           tags: 'screenshot',
@@ -310,7 +322,7 @@ void main() {
 
             await tester.pumpAndSettle();
             await binding.takeScreenshot(
-              '$localeCode/01_onboarding/04_starting_point_$themeLabel',
+              '$_screenshotDevicePrefix/$localeCode/01_onboarding/04_starting_point_$themeLabel',
             );
           },
           tags: 'screenshot',
@@ -345,7 +357,7 @@ void main() {
 
             await tester.pumpAndSettle();
             await binding.takeScreenshot(
-              '$localeCode/01_onboarding/05_target_weight_$themeLabel',
+              '$_screenshotDevicePrefix/$localeCode/01_onboarding/05_target_weight_$themeLabel',
             );
           },
           tags: 'screenshot',
@@ -374,7 +386,7 @@ void main() {
 
             await tester.pumpAndSettle();
             await binding.takeScreenshot(
-              '$localeCode/01_onboarding/06_notifications_$themeLabel',
+              '$_screenshotDevicePrefix/$localeCode/01_onboarding/06_notifications_$themeLabel',
             );
           },
           tags: 'screenshot',
@@ -403,7 +415,7 @@ void main() {
 
             await tester.pumpAndSettle();
             await binding.takeScreenshot(
-              '$localeCode/01_onboarding/07_health_sync_$themeLabel',
+              '$_screenshotDevicePrefix/$localeCode/01_onboarding/07_health_sync_$themeLabel',
             );
           },
           tags: 'screenshot',
@@ -432,7 +444,7 @@ void main() {
 
             await tester.pumpAndSettle();
             await binding.takeScreenshot(
-              '$localeCode/01_onboarding/08_biometric_lock_$themeLabel',
+              '$_screenshotDevicePrefix/$localeCode/01_onboarding/08_biometric_lock_$themeLabel',
             );
           },
           tags: 'screenshot',
@@ -441,45 +453,42 @@ void main() {
         // ---------------------------------------------------------------------
         // 02_today / 01_dashboard (Populated with 90 records, 177cm, 87kg, target 85kg)
         // ---------------------------------------------------------------------
-        testWidgets(
-          'Capture 02_today/01_dashboard [$localeCode] [$themeLabel]',
-          (WidgetTester tester) async {
-            final settingsBloc = AppSettingsBloc()
-              ..add(const UpdateHeight(177.0))
-              ..add(const TargetWeightChanged(85.0, WeightGoalMode.lose));
+        testWidgets('Capture 02_today/01_dashboard [$localeCode] [$themeLabel]', (
+          WidgetTester tester,
+        ) async {
+          final settingsBloc = AppSettingsBloc()
+            ..add(const UpdateHeight(177.0))
+            ..add(const TargetWeightChanged(85.0, WeightGoalMode.lose));
 
-            final weightBloc = WeightBloc(repository: weightRepo)
-              ..add(const SubscribeToWeightChanges())
-              ..add(const ChangeChartFilter(TimePeriod.month));
+          final weightBloc = WeightBloc(repository: weightRepo)
+            ..add(const SubscribeToWeightChanges())
+            ..add(const ChangeChartFilter(TimePeriod.month));
 
-            await tester.pumpWidget(
-              MultiBlocProvider(
-                providers: [
-                  BlocProvider<AppSettingsBloc>.value(value: settingsBloc),
-                  BlocProvider<WeightBloc>.value(value: weightBloc),
-                ],
-                child: MaterialApp(
-                  debugShowCheckedModeBanner: false,
-                  locale: locale,
-                  supportedLocales: AppLocalizations.supportedLocales,
-                  localizationsDelegates:
-                      AppLocalizations.localizationsDelegates,
-                  theme: theme,
-                  themeMode: themeMode,
-                  home: const MainNavigationScreen(),
-                ),
+          await tester.pumpWidget(
+            MultiBlocProvider(
+              providers: [
+                BlocProvider<AppSettingsBloc>.value(value: settingsBloc),
+                BlocProvider<WeightBloc>.value(value: weightBloc),
+              ],
+              child: MaterialApp(
+                debugShowCheckedModeBanner: false,
+                locale: locale,
+                supportedLocales: AppLocalizations.supportedLocales,
+                localizationsDelegates: AppLocalizations.localizationsDelegates,
+                theme: theme,
+                themeMode: themeMode,
+                home: const MainNavigationScreen(),
               ),
-            );
+            ),
+          );
 
-            await tester.pump();
-            await tester.pump(const Duration(milliseconds: 300));
+          await tester.pump();
+          await tester.pump(const Duration(milliseconds: 300));
 
-            await binding.takeScreenshot(
-              '$localeCode/02_today/01_dashboard_$themeLabel',
-            );
-          },
-          tags: 'screenshot',
-        );
+          await binding.takeScreenshot(
+            '$_screenshotDevicePrefix/$localeCode/02_today/01_dashboard_$themeLabel',
+          );
+        }, tags: 'screenshot');
 
         // ---------------------------------------------------------------------
         // 02_today / 02_add_measurement (Add/Edit measurement modal sheet)
@@ -524,7 +533,7 @@ void main() {
 
             await tester.pumpAndSettle();
             await binding.takeScreenshot(
-              '$localeCode/02_today/02_add_measurement_$themeLabel',
+              '$_screenshotDevicePrefix/$localeCode/02_today/02_add_measurement_$themeLabel',
             );
           },
           tags: 'screenshot',
@@ -570,7 +579,7 @@ void main() {
 
             await tester.pumpAndSettle();
             await binding.takeScreenshot(
-              '$localeCode/02_today/03_bmi_categories_$themeLabel',
+              '$_screenshotDevicePrefix/$localeCode/02_today/03_bmi_categories_$themeLabel',
             );
           },
           tags: 'screenshot',
@@ -612,7 +621,7 @@ void main() {
             await tester.pump(const Duration(milliseconds: 300));
 
             await binding.takeScreenshot(
-              '$localeCode/03_calendar/01_month_view_$themeLabel',
+              '$_screenshotDevicePrefix/$localeCode/03_calendar/01_month_view_$themeLabel',
             );
           },
           tags: 'screenshot',
@@ -660,7 +669,7 @@ void main() {
             await tester.pump(const Duration(milliseconds: 300));
 
             await binding.takeScreenshot(
-              '$localeCode/03_calendar/02_day_details_$themeLabel',
+              '$_screenshotDevicePrefix/$localeCode/03_calendar/02_day_details_$themeLabel',
             );
           },
           tags: 'screenshot',
@@ -703,7 +712,7 @@ void main() {
             await tester.pump(const Duration(milliseconds: 300));
 
             await binding.takeScreenshot(
-              '$localeCode/04_statistics/01_overview_$themeLabel',
+              '$_screenshotDevicePrefix/$localeCode/04_statistics/01_overview_$themeLabel',
             );
           },
           tags: 'screenshot',
@@ -742,7 +751,7 @@ void main() {
 
             await tester.pumpAndSettle();
             await binding.takeScreenshot(
-              '$localeCode/04_statistics/02_achievements_gallery_$themeLabel',
+              '$_screenshotDevicePrefix/$localeCode/04_statistics/02_achievements_gallery_$themeLabel',
             );
           },
           tags: 'screenshot',
@@ -784,7 +793,7 @@ void main() {
             await tester.pump(const Duration(milliseconds: 300));
 
             await binding.takeScreenshot(
-              '$localeCode/05_settings/01_preferences_$themeLabel',
+              '$_screenshotDevicePrefix/$localeCode/05_settings/01_preferences_$themeLabel',
             );
           },
           tags: 'screenshot',
@@ -832,7 +841,7 @@ void main() {
 
             await tester.pumpAndSettle();
             await binding.takeScreenshot(
-              '$localeCode/05_settings/02_target_weight_sheet_$themeLabel',
+              '$_screenshotDevicePrefix/$localeCode/05_settings/02_target_weight_sheet_$themeLabel',
             );
           },
           tags: 'screenshot',
@@ -858,7 +867,7 @@ void main() {
 
             await tester.pumpAndSettle();
             await binding.takeScreenshot(
-              '$localeCode/05_settings/03_privacy_policy_$themeLabel',
+              '$_screenshotDevicePrefix/$localeCode/05_settings/03_privacy_policy_$themeLabel',
             );
           },
           tags: 'screenshot',
@@ -892,7 +901,84 @@ void main() {
 
             await tester.pumpAndSettle();
             await binding.takeScreenshot(
-              '$localeCode/06_biometric/01_biometric_lock_$themeLabel',
+              '$_screenshotDevicePrefix/$localeCode/06_biometric/01_biometric_lock_$themeLabel',
+            );
+          },
+          tags: 'screenshot',
+        );
+
+        // ---------------------------------------------------------------------
+        // 07_home_widgets / 01_widget_2x1 (Compact 2x1 Home Screen Widget)
+        // ---------------------------------------------------------------------
+        testWidgets(
+          'Capture 07_home_widgets/01_widget_2x1 [$localeCode] [$themeLabel]',
+          (WidgetTester tester) async {
+            await tester.pumpWidget(
+              MaterialApp(
+                debugShowCheckedModeBanner: false,
+                locale: locale,
+                supportedLocales: AppLocalizations.supportedLocales,
+                localizationsDelegates: AppLocalizations.localizationsDelegates,
+                theme: theme,
+                themeMode: themeMode,
+                home: Scaffold(
+                  body: WidgetPreviewCanvas(
+                    title: 'Widget 2 × 1',
+                    isDark: isDark,
+                    child: HomeWidget2x1View(
+                      currentWeight: 87.0,
+                      unit: 'kg',
+                      isDark: isDark,
+                    ),
+                  ),
+                ),
+              ),
+            );
+
+            await tester.pumpAndSettle();
+            await binding.takeScreenshot(
+              '$_screenshotDevicePrefix/$localeCode/07_home_widgets/01_widget_2x1_$themeLabel',
+            );
+          },
+          tags: 'screenshot',
+        );
+
+        // ---------------------------------------------------------------------
+        // 07_home_widgets / 02_widget_3x2 (Full 3x2 Home Screen Widget)
+        // ---------------------------------------------------------------------
+        testWidgets(
+          'Capture 07_home_widgets/02_widget_3x2 [$localeCode] [$themeLabel]',
+          (WidgetTester tester) async {
+            await tester.pumpWidget(
+              MaterialApp(
+                debugShowCheckedModeBanner: false,
+                locale: locale,
+                supportedLocales: AppLocalizations.supportedLocales,
+                localizationsDelegates: AppLocalizations.localizationsDelegates,
+                theme: theme,
+                themeMode: themeMode,
+                home: Scaffold(
+                  body: WidgetPreviewCanvas(
+                    title: 'Widget 3 × 2',
+                    isDark: isDark,
+                    child: HomeWidget3x2View(
+                      currentWeight: 87.0,
+                      targetWeight: 85.0,
+                      delta: -0.2,
+                      unit: 'kg',
+                      bmiCategory: BmiCategory.overweight,
+                      bmiValue: 27.8,
+                      goalProgressPct: 73,
+                      isDark: isDark,
+                    ),
+                  ),
+                ),
+              ),
+            );
+
+            await tester.pumpAndSettle();
+            await binding.takeScreenshot(
+              '$_screenshotDevicePrefix/$localeCode/07_home_widgets/02_widget_3x2_$themeLabel',
             );
           },
           tags: 'screenshot',
@@ -900,4 +986,408 @@ void main() {
       }
     }
   });
+}
+
+/// Canvas wrapper to present home widgets cleanly in screenshots.
+class WidgetPreviewCanvas extends StatelessWidget {
+  final Widget child;
+  final String title;
+  final bool isDark;
+
+  const WidgetPreviewCanvas({
+    super.key,
+    required this.child,
+    required this.title,
+    required this.isDark,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final bgGradient = isDark
+        ? const LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [Color(0xFF0F1117), Color(0xFF141721), Color(0xFF1A1D29)],
+          )
+        : const LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [Color(0xFFE9EEF5), Color(0xFFF3F6FA), Color(0xFFE3E9F2)],
+          );
+
+    return Container(
+      decoration: BoxDecoration(gradient: bgGradient),
+      child: Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 5),
+              margin: const EdgeInsets.only(bottom: 24),
+              decoration: BoxDecoration(
+                color: isDark
+                    ? Colors.white.withValues(alpha: 0.1)
+                    : Colors.black.withValues(alpha: 0.06),
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: Text(
+                title,
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: 0.5,
+                  color: isDark
+                      ? const Color(0xFFC4C7D0)
+                      : const Color(0xFF555B68),
+                ),
+              ),
+            ),
+            child,
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Visual representation of the compact 2x1 home screen widget.
+class HomeWidget2x1View extends StatelessWidget {
+  final double currentWeight;
+  final String unit;
+  final bool isDark;
+
+  const HomeWidget2x1View({
+    super.key,
+    required this.currentWeight,
+    required this.unit,
+    required this.isDark,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final cardBg = isDark ? const Color(0xFF1E2128) : const Color(0xFFFFFFFF);
+    final borderColor = isDark
+        ? const Color(0xFF2E333D)
+        : const Color(0xFFE2E4E9);
+    final textHeader = isDark
+        ? const Color(0xFFC4C7D0)
+        : const Color(0xFF44474F);
+    final primaryBlue = isDark
+        ? const Color(0xFFA8C7FA)
+        : const Color(0xFF005BDE);
+    final buttonBg = isDark ? const Color(0xFF2A3140) : const Color(0xFFE8F0FE);
+    final buttonIconColor = isDark
+        ? const Color(0xFFA8C7FA)
+        : const Color(0xFF005BDE);
+
+    return Container(
+      width: 336,
+      height: 96,
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+      decoration: BoxDecoration(
+        color: cardBg,
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: borderColor, width: 1.2),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: isDark ? 0.3 : 0.06),
+            blurRadius: 16,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  'Balance • ${l10n.today}',
+                  style: TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w700,
+                    color: textHeader,
+                    letterSpacing: 0.3,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                const SizedBox(height: 4),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.baseline,
+                  textBaseline: TextBaseline.alphabetic,
+                  children: [
+                    Text(
+                      currentWeight.toStringAsFixed(1),
+                      style: TextStyle(
+                        fontSize: 28,
+                        fontWeight: FontWeight.w800,
+                        color: primaryBlue,
+                        letterSpacing: -0.5,
+                      ),
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      unit,
+                      style: TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w700,
+                        color: textHeader,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+          Container(
+            width: 38,
+            height: 38,
+            decoration: BoxDecoration(color: buttonBg, shape: BoxShape.circle),
+            child: Icon(Icons.add, color: buttonIconColor, size: 20),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Visual representation of the full 3x2 home screen widget.
+class HomeWidget3x2View extends StatelessWidget {
+  final double currentWeight;
+  final double targetWeight;
+  final double delta;
+  final String unit;
+  final BmiCategory bmiCategory;
+  final double bmiValue;
+  final int goalProgressPct;
+  final bool isDark;
+
+  const HomeWidget3x2View({
+    super.key,
+    required this.currentWeight,
+    required this.targetWeight,
+    required this.delta,
+    required this.unit,
+    required this.bmiCategory,
+    required this.bmiValue,
+    required this.goalProgressPct,
+    required this.isDark,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final cardBg = isDark ? const Color(0xFF1E2128) : const Color(0xFFFFFFFF);
+    final borderColor = isDark
+        ? const Color(0xFF2E333D)
+        : const Color(0xFFE2E4E9);
+    final textHeader = isDark
+        ? const Color(0xFFC4C7D0)
+        : const Color(0xFF44474F);
+    final primaryBlue = isDark
+        ? const Color(0xFFA8C7FA)
+        : const Color(0xFF005BDE);
+    final progressBg = isDark
+        ? const Color(0xFF2E333D)
+        : const Color(0xFFE5E7EB);
+
+    final isLoss = delta <= 0;
+    final chipBg = isLoss
+        ? (isDark ? const Color(0xFF1B3B1E) : const Color(0xFFE8F5E9))
+        : (isDark ? const Color(0xFF3E2723) : const Color(0xFFFFEBEE));
+    final chipTextColor = isLoss
+        ? (isDark ? const Color(0xFF81C784) : const Color(0xFF2E7D32))
+        : (isDark ? const Color(0xFFE57373) : const Color(0xFFC62828));
+
+    final bmiBg = isDark ? const Color(0xFF3E2E1E) : const Color(0xFFFFF3E0);
+    final bmiTextColor = isDark
+        ? const Color(0xFFFFB74D)
+        : const Color(0xFFEF6C00);
+
+    final deltaStr = isLoss
+        ? '${delta.toStringAsFixed(1)} $unit'
+        : '+${delta.toStringAsFixed(1)} $unit';
+
+    return Container(
+      width: 348,
+      height: 168,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: cardBg,
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: borderColor, width: 1.2),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: isDark ? 0.3 : 0.06),
+            blurRadius: 16,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Balance • ${l10n.today}',
+                      style: TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w700,
+                        color: textHeader,
+                        letterSpacing: 0.3,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: 4),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.baseline,
+                      textBaseline: TextBaseline.alphabetic,
+                      children: [
+                        Text(
+                          currentWeight.toStringAsFixed(1),
+                          style: TextStyle(
+                            fontSize: 30,
+                            fontWeight: FontWeight.w800,
+                            color: primaryBlue,
+                            letterSpacing: -0.5,
+                          ),
+                        ),
+                        const SizedBox(width: 4),
+                        Text(
+                          unit,
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w700,
+                            color: textHeader,
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 6,
+                            vertical: 2.5,
+                          ),
+                          decoration: BoxDecoration(
+                            color: chipBg,
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Text(
+                            deltaStr,
+                            style: TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.w700,
+                              color: chipTextColor,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      '${l10n.today}, 08:30',
+                      style: TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w500,
+                        color: textHeader.withValues(alpha: 0.8),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 6,
+                ),
+                decoration: BoxDecoration(
+                  color: bmiBg,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      bmiCategory.localizedName(l10n),
+                      style: TextStyle(
+                        fontSize: 10.5,
+                        fontWeight: FontWeight.w700,
+                        color: bmiTextColor,
+                      ),
+                    ),
+                    const SizedBox(height: 1),
+                    Text(
+                      'BMI ${bmiValue.toStringAsFixed(1)}',
+                      style: TextStyle(
+                        fontSize: 12.5,
+                        fontWeight: FontWeight.w800,
+                        color: bmiTextColor,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const Spacer(),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    '${l10n.chartTargetLabel}: ${targetWeight.toStringAsFixed(1)} $unit',
+                    style: TextStyle(
+                      fontSize: 11.5,
+                      fontWeight: FontWeight.w600,
+                      color: textHeader,
+                    ),
+                  ),
+                  Text(
+                    '$goalProgressPct%',
+                    style: TextStyle(
+                      fontSize: 11.5,
+                      fontWeight: FontWeight.w700,
+                      color: primaryBlue,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 6),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(4),
+                child: Container(
+                  height: 6,
+                  width: double.infinity,
+                  color: progressBg,
+                  child: FractionallySizedBox(
+                    alignment: Alignment.centerLeft,
+                    widthFactor: (goalProgressPct / 100.0).clamp(0.0, 1.0),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: primaryBlue,
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
 }
