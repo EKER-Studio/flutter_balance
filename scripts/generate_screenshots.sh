@@ -6,7 +6,7 @@
 # Supports:
 #   android/phone     (1080 x 2400)  -> Medium_Phone
 #   android/tablet_7  (800 x 1280)   -> Small_Tablet  (7")
-#   android/tablet_10 (2560 x 1600)  -> Small_Tablet* (10" - requires custom AVD)
+#   android/tablet_10 (2560 x 1600)  -> Medium_Tablet (10")
 # iOS targets (iphone/ipad) are handled separately via iOS Simulator workflow.
 # Usage:
 #   ./scripts/generate_screenshots.sh [phone|tablet_7|tablet_10|all]
@@ -54,11 +54,7 @@ resolve_device_config() {
             echo "Small_Tablet|android/tablet_7|800x1280"
             ;;
         tablet_10)
-            # Small_Tablet is the only tablet AVD currently available.
-            # For true 10" (2560x1600), create a custom AVD:
-            #   flutter emulators --create --name Medium_Tablet
-            # and update this mapping.
-            echo "Small_Tablet|android/tablet_10|2560x1600 (emulated via Small_Tablet)"
+            echo "Medium_Tablet|android/tablet_10|2560x1600"
             ;;
         *)
             log_error "Unknown device: $device (expected: phone|tablet_7|tablet_10|all)"
@@ -124,18 +120,32 @@ for TARGET_DEVICE in "${TARGETS[@]}"; do
         log_info "No running emulator found. Launching $EMULATOR_ID..."
         flutter emulators --launch "$EMULATOR_ID" || true
 
-        log_info "Waiting for emulator to boot..."
+        log_info "Waiting for emulator $EMULATOR_ID to boot..."
         if command -v adb &> /dev/null; then
-            adb wait-for-device
-            while [ "$(adb shell getprop sys.boot_completed 2>/dev/null | tr -d '\r')" != "1" ]; do
+            # Wait for emulator device to appear (handles physical device attached)
+            for _ in $(seq 1 60); do
+                DEVICE_ID=$(adb devices | grep -w "device" | grep "emulator-" | head -n 1 | awk '{print $1}')
+                if [ -n "$DEVICE_ID" ]; then break; fi
                 sleep 2
             done
-            DEVICE_ID=$(adb devices | grep -w "device" | grep "emulator-" | head -n 1 | awk '{print $1}')
+            if [ -z "$DEVICE_ID" ]; then
+                log_error "Emulator $EMULATOR_ID failed to appear after 120s"
+                adb devices
+                exit 1
+            fi
+            log_info "Emulator device detected: $DEVICE_ID, waiting for boot completion..."
+            for _ in $(seq 1 90); do
+                BOOT=$(adb -s "$DEVICE_ID" shell getprop sys.boot_completed 2>/dev/null | tr -d '\r' || true)
+                if [ "$BOOT" = "1" ]; then break; fi
+                sleep 2
+            done
             log_info "Android emulator booted with ID: $DEVICE_ID"
         else
             sleep 15
             DEVICE_ID="emulator-5554"
         fi
+    else
+        log_info "Reusing running emulator $DEVICE_ID for $EMULATOR_ID. If wrong AVD, kill emulator and re-run with correct target."
     fi
 
     # ------------------------------------------------------------------------------
