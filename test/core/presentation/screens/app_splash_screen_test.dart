@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:balance/features/dashboard/presentation/widgets/sections/today_shimmer_skeleton.dart';
 import 'package:balance/l10n/app_localizations.dart';
 import 'package:balance/core/presentation/screens/app_splash_screen.dart';
 
@@ -15,12 +14,12 @@ void main() {
   }
 
   group('AppSplashScreen', () {
-    testWidgets('renders the skeleton loader', (tester) async {
+    testWidgets('renders the splash screen with app logo', (tester) async {
       await tester.pumpWidget(buildTestWidget());
       await tester.pump();
 
       expect(find.byType(AppSplashScreen), findsOneWidget);
-      expect(find.byType(TodayShimmerSkeleton), findsOneWidget);
+      expect(find.byType(Image), findsOneWidget);
     });
 
     testWidgets('exposes the app loading semantics label', (tester) async {
