@@ -25,6 +25,9 @@ import 'package:balance/features/onboarding/presentation/widgets/steps/step_welc
 import 'package:balance/features/settings/presentation/bloc/app_settings_bloc.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_event.dart';
 import 'package:balance/features/settings/presentation/bloc/weight_goal_mode.dart';
+import 'package:balance/features/statistics/domain/services/milestone_calculator.dart';
+import 'package:balance/features/statistics/presentation/screens/statistics_screen.dart';
+import 'package:balance/features/statistics/presentation/widgets/components/milestones_gallery_sheet.dart';
 import 'package:balance/features/weight/domain/bmi_category.dart';
 import 'package:balance/features/weight/domain/entities/weight_entry.dart';
 import 'package:balance/features/weight/domain/repositories/weight_repository.dart';
@@ -645,6 +648,87 @@ void main() {
 
             await binding.takeScreenshot(
               '$localeCode/03_calendar/02_day_details_$themeLabel',
+            );
+          },
+          tags: 'screenshot',
+        );
+
+        // ---------------------------------------------------------------------
+        // 04_statistics / 01_overview (Statistics screen with progress & BMI chart)
+        // ---------------------------------------------------------------------
+        testWidgets(
+          'Capture 04_statistics/01_overview [$localeCode] [$themeLabel]',
+          (WidgetTester tester) async {
+            final settingsBloc = AppSettingsBloc()
+              ..add(const UpdateHeight(177.0))
+              ..add(const TargetWeightChanged(85.0, WeightGoalMode.lose));
+
+            final weightBloc = WeightBloc(repository: weightRepo)
+              ..add(const SubscribeToWeightChanges())
+              ..add(const ChangeChartFilter(TimePeriod.month));
+
+            await tester.pumpWidget(
+              MultiBlocProvider(
+                providers: [
+                  BlocProvider<AppSettingsBloc>.value(value: settingsBloc),
+                  BlocProvider<WeightBloc>.value(value: weightBloc),
+                ],
+                child: MaterialApp(
+                  debugShowCheckedModeBanner: false,
+                  locale: locale,
+                  supportedLocales: AppLocalizations.supportedLocales,
+                  localizationsDelegates: AppLocalizations.localizationsDelegates,
+                  theme: theme,
+                  themeMode: themeMode,
+                  home: const StatisticsScreen(),
+                ),
+              ),
+            );
+
+            await tester.pump();
+            await tester.pump(const Duration(milliseconds: 300));
+
+            await binding.takeScreenshot(
+              '$localeCode/04_statistics/01_overview_$themeLabel',
+            );
+          },
+          tags: 'screenshot',
+        );
+
+        // ---------------------------------------------------------------------
+        // 04_statistics / 02_achievements_gallery (Milestones / Achievements Sheet)
+        // ---------------------------------------------------------------------
+        testWidgets(
+          'Capture 04_statistics/02_achievements_gallery [$localeCode] [$themeLabel]',
+          (WidgetTester tester) async {
+            final evaluatedMilestones = MilestoneCalculator.evaluate(
+              entries: mockEntries,
+              targetWeight: 85.0,
+              heightCm: 177.0,
+              goalMode: WeightGoalMode.lose,
+            );
+
+            await tester.pumpWidget(
+              MaterialApp(
+                debugShowCheckedModeBanner: false,
+                locale: locale,
+                supportedLocales: AppLocalizations.supportedLocales,
+                localizationsDelegates: AppLocalizations.localizationsDelegates,
+                theme: theme,
+                themeMode: themeMode,
+                home: Scaffold(
+                  body: SafeArea(
+                    child: MilestonesGallerySheet(
+                      milestones: evaluatedMilestones,
+                    ),
+                  ),
+                ),
+              ),
+            );
+
+            await tester.pumpAndSettle();
+            await binding.takeScreenshot(
+              '$localeCode/04_statistics/02_achievements_gallery_$themeLabel',
             );
           },
           tags: 'screenshot',
