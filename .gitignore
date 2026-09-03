@@ -93,3 +93,5 @@ LOG_*.md
 
 # Automated screenshot test output artifacts
 /screenshots/
+.screenshots/
+.github/assets/
