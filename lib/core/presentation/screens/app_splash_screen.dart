@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:balance/core/utils/analytics.dart';
-import 'package:balance/features/dashboard/presentation/widgets/sections/today_shimmer_skeleton.dart';
 import 'package:balance/l10n/app_localizations.dart';
 
 /// The in-app splash screen shown during startup initialization.
@@ -24,14 +23,23 @@ class _AppSplashScreenState extends State<AppSplashScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final bgColor = isDark ? const Color(0xFF141218) : const Color(0xFFFDF7FF);
+    final assetPath = isDark
+        ? 'assets/icon/splash_dark.png'
+        : 'assets/icon/splash_light.png';
+
     return Scaffold(
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0),
-          child: Semantics(
-            label: AppLocalizations.of(context).appLoadingSemantics,
-            textDirection: TextDirection.ltr,
-            child: const TodayShimmerSkeleton(),
+      backgroundColor: bgColor,
+      body: Semantics(
+        label: AppLocalizations.of(context).appLoadingSemantics,
+        textDirection: TextDirection.ltr,
+        child: Center(
+          child: Image.asset(
+            assetPath,
+            width: 288,
+            height: 288,
+            fit: BoxFit.contain,
           ),
         ),
       ),

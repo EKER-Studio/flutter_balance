@@ -319,7 +319,7 @@ void main() {
       expect(find.text('Height'), findsOneWidget);
       expect(find.text('175 cm'), findsOneWidget);
       expect(find.text('Target Weight'), findsOneWidget);
-      expect(find.text('Lose weight • 80.0 kg'), findsOneWidget);
+      expect(find.text('Lose • 80.0 kg'), findsOneWidget);
     });
 
     testWidgets('renders imperial units for feet and pounds', (tester) async {
@@ -340,7 +340,7 @@ void main() {
       );
 
       expect(find.text("5'11\""), findsOneWidget);
-      expect(find.text('Lose weight • 154.3 lbs'), findsOneWidget);
+      expect(find.text('Lose • 154.3 lbs'), findsOneWidget);
     });
 
     testWidgets('renders not-set labels when values are missing', (

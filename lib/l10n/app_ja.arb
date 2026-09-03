@@ -116,7 +116,7 @@
   "goalModeGainDesc": "健康的な体重・筋肉量の増加を目指す",
   "goalModeLose": "減量",
   "goalModeLoseDesc": "無理のない段階的な体重減少を目指す",
-  "goalModeMaintain": "体重維持",
+  "goalModeMaintain": "維持",
   "goalModeMaintainDesc": "健康的な適正体重をキープする",
   "goalProgress": "目標の進捗",
   "goalProgressSemantics": "目標: {target}。{detail}。ダブルタップで目標体重を編集。",

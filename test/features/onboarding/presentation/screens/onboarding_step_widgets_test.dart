@@ -128,9 +128,9 @@ void main() {
       );
 
       expect(find.text('Your Dream Goal'), findsOneWidget);
-      expect(find.text('Lose weight'), findsOneWidget);
-      expect(find.text('Maintain weight'), findsOneWidget);
-      expect(find.text('Gain weight'), findsOneWidget);
+      expect(find.text('Lose'), findsOneWidget);
+      expect(find.text('Maintain'), findsOneWidget);
+      expect(find.text('Gain'), findsOneWidget);
       expect(find.byKey(const Key('target_weight_input')), findsOneWidget);
       expect(find.text('Next'), findsOneWidget);
     });
@@ -187,7 +187,7 @@ void main() {
         ),
       );
 
-      await tester.tap(find.text('Gain weight'));
+      await tester.tap(find.text('Gain'));
       await tester.pumpAndSettle();
 
       await tester.enterText(
@@ -212,7 +212,7 @@ void main() {
           ),
         );
 
-        await tester.tap(find.text('Maintain weight'));
+        await tester.tap(find.text('Maintain'));
         await tester.pumpAndSettle();
 
         await tester.enterText(
@@ -325,7 +325,7 @@ void main() {
           ),
         );
 
-        await tester.tap(find.text('Gain weight'));
+        await tester.tap(find.text('Gain'));
         await tester.pumpAndSettle();
 
         await tester.enterText(

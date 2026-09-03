@@ -2,4 +2,5 @@ tags:
   golden:
     description: "Tests that generate golden files."
   screenshot:
-    description: "Integration tests that capture device screenshots locally."
+    description: "Integration tests that capture UI screenshots on Android emulator."
+    timeout: 300s

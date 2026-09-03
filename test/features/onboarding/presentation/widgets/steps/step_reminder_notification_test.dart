@@ -90,24 +90,24 @@ void main() {
     });
 
     testWidgets(
-      'toggling the switch enables notifications via the bloc and enables time tile',
+      'toggling the switch enables notifications via the bloc and reveals time tile',
       (tester) async {
         await tester.pumpWidget(buildEnabledSubject());
 
         expect(settingsBloc.state.notificationsEnabled, isFalse);
-        final timeTileBefore = tester.widget<ListTile>(
+        expect(
           find.byKey(const Key('notification_step_time_tile')),
+          findsNothing,
         );
-        expect(timeTileBefore.enabled, isFalse);
 
         await tester.tap(find.byKey(const Key('notification_step_switch')));
         await tester.pumpAndSettle();
 
         expect(settingsBloc.state.notificationsEnabled, isTrue);
-        final timeTileAfter = tester.widget<ListTile>(
+        expect(
           find.byKey(const Key('notification_step_time_tile')),
+          findsOneWidget,
         );
-        expect(timeTileAfter.enabled, isTrue);
       },
     );
 

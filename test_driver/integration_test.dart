@@ -11,7 +11,7 @@ Future<void> main() async {
           List<int> screenshotBytes, [
           Map<String, dynamic>? args,
         ]) async {
-          final file = File('.github/assets/$screenshotName.png');
+          final file = File('screenshots/$screenshotName.png');
           file.parent.createSync(recursive: true);
           await file.writeAsBytes(screenshotBytes);
           // ignore: avoid_print
