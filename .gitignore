@@ -90,3 +90,8 @@ crash_log.txt
 .ai*
 LOG_*.md
 .audit-*/
+
+# Generated screenshot output (not curated README assets)
+# Note: .github/assets/ contains curated README screenshots and IS tracked
+/screenshots/
+.screenshots/
