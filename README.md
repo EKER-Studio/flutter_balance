@@ -220,16 +220,31 @@ The script automatically executes and validates:
 1. `flutter pub get` — Resolves workspace dependencies
 2. `flutter gen-l10n` — Regenerates localization classes
 3. `dart run build_runner build` — Regenerates Isar and Injectable code
-4. `dart format --set-exit-if-changed lib test` — Strict formatting verification
+4. `dart format --set-exit-if-changed lib test integration_test test_driver` — Strict formatting verification
 5. `flutter analyze` — Static linter verification (0 warnings/errors)
-6. `flutter test` — Comprehensive automated test suite (over 1047+ passing tests)
+6. `flutter test --exclude-tags golden,screenshot` — Comprehensive automated test suite (1863 passing tests)
 7. `flutter build apk --debug` — Android compilation integrity check
 
 Or execute unit/widget tests directly:
 
 ```bash
-flutter test
+flutter test --exclude-tags golden,screenshot
 ```
+
+### Screenshots
+
+Generate localized screenshots for Play Store (10 locales × 2 themes):
+
+```bash
+# Full suite (all features, phone)
+./scripts/screenshots/generate_screenshots.sh phone
+
+# Single feature or locale
+./scripts/screenshots/generate_settings.sh phone pl
+./scripts/screenshots/run_screenshot_target.sh integration_test/calendar_screenshots_test.dart phone pl
+```
+
+Screenshots are rendered with `ScreenshotDeviceFrame` (status bar 09:41, gesture pill) and stored in `screenshots/` (ignored) — curated assets for README are in `.github/assets/`.
 
 ## CSV Specifications
 
@@ -261,6 +276,14 @@ As part of our commitment to building in public and advancing agentic workflows,
 - **[Unit Test Auditor Framework](prompts/flutter_unit_test_audit_framework_en.md)**: Iterative, bounded-context audit and test generation framework for Flutter unit tests.
 - **[i18n / L10n Localization Audit](prompts/flutter_i18n_l10n_audit_en.md)**: Chunked, stateful localization auditor for `.arb` + `flutter gen-l10n` toolchains.
 - **[Comments & DartDoc Cleanup Prompt](prompts/flutter_comments_dartdoc_cleanup_prompt_en.md)**: Memory-safe, file-by-file comment translation and documentation refactoring prompt.
+
+## Branches
+
+- `develop` — default integration branch. All feature PRs target `develop`.
+- `release` — release branch. APK built via `release.yml` on push to `release` or tag `v*`.
+- `feature/*` — feature branches from `develop`.
+
+See [CONTRIBUTING](.github/CONTRIBUTING.md) for workflow and PR templates.
 
 ## License
 
