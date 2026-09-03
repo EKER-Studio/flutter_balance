@@ -21,7 +21,9 @@ import 'package:balance/features/settings/presentation/widgets/components/pace_w
 import 'package:balance/features/settings/presentation/widgets/components/target_weight_sheet.dart';
 import 'package:balance/features/settings/presentation/widgets/components/theme_selection_dialog.dart';
 import 'package:balance/features/settings/presentation/widgets/components/unit_selection_dialog.dart';
+import 'package:balance/features/settings/presentation/widgets/components/csv_import_preview_dialog.dart';
 import 'package:balance/features/settings/presentation/widgets/components/wipe_data_dialog.dart';
+import 'package:balance/features/weight/domain/entities/weight_entry.dart';
 import 'package:balance/features/weight/presentation/bloc/weight_bloc.dart';
 import 'package:balance/features/weight/presentation/bloc/weight_event.dart';
 import 'package:balance/l10n/app_localizations.dart';
@@ -491,9 +493,80 @@ void main() {
           tags: 'screenshot',
         );
 
-        // 05_settings / 09_privacy_policy
+        // 05_settings / 09_csv_import_preview (94 entries, date range)
         testWidgets(
-          'Capture 05_settings/09_privacy_policy [$localeCode] [$themeLabel]',
+          'Capture 05_settings/09_csv_import_preview [$localeCode] [$themeLabel]',
+          (WidgetTester tester) async {
+            final settingsBloc = AppSettingsBloc()
+              ..add(const UpdateHeight(177.0))
+              ..add(const TargetWeightChanged(85.0, WeightGoalMode.lose));
+
+            final weightBloc = WeightBloc(repository: weightRepo)
+              ..add(const SubscribeToWeightChanges());
+
+            // Mock analysis matching the screenshot: 94 entries, 30 May – 31 Aug 2026
+            final mockEntries = List.generate(
+              94,
+              (i) => WeightEntry(
+                id: i + 1,
+                weightKg: 85.0 + (i % 5) * 0.3,
+                dateTime: DateTime(2026, 5, 30).add(Duration(days: i)),
+              ),
+            );
+            final analysis = (
+              validEntries: mockEntries,
+              skippedRowCount: 0,
+              earliestDate: DateTime(2026, 5, 30),
+              latestDate: DateTime(2026, 8, 31),
+            );
+
+            await tester.pumpWidget(
+              MultiBlocProvider(
+                providers: [
+                  BlocProvider<AppSettingsBloc>.value(value: settingsBloc),
+                  BlocProvider<WeightBloc>.value(value: weightBloc),
+                ],
+                child: MaterialApp(
+                  debugShowCheckedModeBanner: false,
+                  locale: locale,
+                  supportedLocales: AppLocalizations.supportedLocales,
+                  localizationsDelegates:
+                      AppLocalizations.localizationsDelegates,
+                  theme: theme,
+                  themeMode: themeMode,
+                  home: ScreenshotDeviceFrame(
+                    isDark: isDark,
+                    showNotificationIcon: true,
+                    child: Stack(
+                      children: [
+                        const SettingsScreen(),
+                        const ModalBarrier(
+                          dismissible: false,
+                          color: Colors.black54,
+                        ),
+                        Center(
+                          child: CsvImportPreviewDialog(analysis: analysis),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            );
+
+            await tester.pump();
+            await tester.pump(const Duration(milliseconds: 300));
+
+            await binding.takeScreenshot(
+              '$prefix$localeCode/05_settings/09_csv_import_preview_$themeLabel',
+            );
+          },
+          tags: 'screenshot',
+        );
+
+        // 05_settings / 10_privacy_policy
+        testWidgets(
+          'Capture 05_settings/10_privacy_policy [$localeCode] [$themeLabel]',
           (WidgetTester tester) async {
             await tester.pumpWidget(
               MaterialApp(
@@ -514,7 +587,7 @@ void main() {
             await tester.pumpAndSettle();
 
             await binding.takeScreenshot(
-              '$prefix$localeCode/05_settings/09_privacy_policy_$themeLabel',
+              '$prefix$localeCode/05_settings/10_privacy_policy_$themeLabel',
             );
           },
           tags: 'screenshot',
