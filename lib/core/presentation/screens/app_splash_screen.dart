@@ -24,7 +24,8 @@ class _AppSplashScreenState extends State<AppSplashScreen> {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final bgColor = isDark ? const Color(0xFF141218) : const Color(0xFFFDF7FF);
+    final colorScheme = Theme.of(context).colorScheme;
+    final bgColor = colorScheme.surface;
     final assetPath = isDark
         ? 'assets/icon/splash_dark.png'
         : 'assets/icon/splash_light.png';
