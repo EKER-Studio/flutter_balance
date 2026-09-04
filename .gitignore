@@ -84,6 +84,10 @@ default.isar
 
 # Security & diagnostic artifacts
 *.key
+*.keystore
+*.jks
+android/key.properties
+android/app/release.keystore
 crash_log.txt
 
 # Agent artifacts
