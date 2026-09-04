@@ -1,5 +1,29 @@
 # Changelog
 
+## [1.1.1] — 2026-09-04
+
+### 🇵🇱 Polski (Google Play Release Notes)
+- 🔒 **Bezpieczeństwo:** Utwardzono reguły kopii zapasowej (wykluczenie kluczy sprzętowych), poprawiono obsługę błędów biometrii i ignorowanie artefaktów podpisywania.
+- ♿ **Dostępność:** Wymuszono minimalne obszary dotyku 48dp.
+- 🧭 **Nawigacja:** Podłączono martwe trasy i obsłużono nienaświetlone stany.
+- 📊 **Wydajność danych:** Zoptymalizowano zapytania Isar do zakresów dat (indeksowane `where`).
+- 🧩 **Stabilność BLoC:** Zamieniono `read` na `watch`/`select` wewnątrz `build`.
+- 📈 **Statystyki:** Obsługa `WeightError` z danymi z cache i stanem pustym.
+- 🌐 **Lokalizacja:** Usunięto martwe klucze `chartSemanticsTitle` i `yesterday`.
+- 🔧 **Konfiguracja:** Wykluczono wygenerowane pliki l10n z analizatora, poprawiono ścieżkę `before_push.sh`.
+
+### 🇬🇧 English (Google Play Release Notes)
+- 🔒 **Security:** Hardened backup rules (hardware key exclusion), improved biometric error handling, ignored signing artifacts.
+- ♿ **Accessibility:** Enforced 48dp minimum touch targets.
+- 🧭 **Navigation:** Wired dead routes and handled unlistened states.
+- 📊 **Data performance:** Optimized Isar queries for date ranges (indexed `where`).
+- 🧩 **BLoC stability:** Replaced `read` with `watch`/`select` inside `build`.
+- 📈 **Statistics:** Handled `WeightError` with cached entries and empty state.
+- 🌐 **Localization:** Removed dead keys `chartSemanticsTitle` and `yesterday`.
+- 🔧 **Config:** Excluded generated l10n from analyzer, fixed `before_push.sh` path.
+
+---
+
 ## [1.1.0] — What's New / Co nowego
 
 ### 🇵🇱 Polski (Google Play Release Notes)

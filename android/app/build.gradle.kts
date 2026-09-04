@@ -56,7 +56,11 @@ android {
             manifestPlaceholders["appName"] = "Balance (Dev)"
         }
         release {
-            signingConfig = signingConfigs.getByName("release")
+            // Use release signing only when keystore is configured (CI with secrets or local key.properties).
+            // Otherwise fall back to unsigned build so PRs/forks without secrets still compile.
+            if (keystorePropertiesFile.exists() && keystoreProperties.getProperty("storeFile") != null) {
+                signingConfig = signingConfigs.getByName("release")
+            }
             manifestPlaceholders["appName"] = "Balance"
             
             isMinifyEnabled = true
