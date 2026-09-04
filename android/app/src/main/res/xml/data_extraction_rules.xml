@@ -5,8 +5,9 @@
         <include domain="file" path="app_flutter" />
         <include domain="database" path="." />
         <include domain="sharedpref" path="." />
-        <!-- Exclude active Isar lock file and hardware-bound Keystore shared preference -->
+        <!-- Exclude active Isar lock file, hardware-bound Keystore shared preference, and plaintext encryption key backup -->
         <exclude domain="file" path="app_flutter/balance_v1.isar.lock" />
+        <exclude domain="file" path="app_flutter/balance_v1.key" />
         <exclude domain="sharedpref" path="FlutterSecureStorage.xml" />
     </cloud-backup>
     <device-transfer>
@@ -15,5 +16,6 @@
         <include domain="database" path="." />
         <include domain="sharedpref" path="." />
         <exclude domain="file" path="app_flutter/balance_v1.isar.lock" />
+        <exclude domain="file" path="app_flutter/balance_v1.key" />
     </device-transfer>
 </data-extraction-rules>

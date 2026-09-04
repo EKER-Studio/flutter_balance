@@ -271,6 +271,14 @@ class BiometricService {
         LocalAuthExceptionCode.deviceError ||
         LocalAuthExceptionCode.unknownError => BiometricAuthResult.error,
       };
+    } on MissingPluginException catch (e, stack) {
+      AppCrashReporter.recordError(
+        e,
+        stack,
+        reason: '[BiometricService] MissingPluginException: $e',
+        fatal: false,
+      );
+      return BiometricAuthResult.notAvailable;
     } on PlatformException catch (e, stack) {
       AppCrashReporter.recordError(
         e,
