@@ -40,7 +40,6 @@
   "cancel": "취소",
   "chartEmpty": "차트를 표시할 데이터가 충분하지 않습니다.",
   "chartSemanticsFilter": "필터",
-  "chartSemanticsTitle": "{period} 기간의 체중 변화 차트. 최근 기록된 체중은 {weight}입니다.",
   "chartTargetLabel": "목표",
   "clearField": "입력 지우기",
   "comparisonNotEnoughData": "비교 추세를 보려면 최소 2개월 동안 측정을 기록하세요.",
@@ -433,6 +432,5 @@
   "wipeDataButton": "데이터 삭제",
   "wipeDataContent": "모든 체중 기록이 영구적으로 삭제되고 앱 설정이 초기화됩니다. 이 작업은 취소할 수 없습니다.",
   "year": "년",
-  "yesterday": "어제",
   "yourResult": "결과"
 }

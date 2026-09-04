@@ -55,17 +55,6 @@
       }
     }
   },
-  "@chartSemanticsTitle": {
-    "description": "Accessibility label for the weight history chart, describing the displayed period and the latest recorded weight.",
-    "placeholders": {
-      "period": {
-        "type": "String"
-      },
-      "weight": {
-        "type": "String"
-      }
-    }
-  },
   "@couldNotOpenEmailClient": {
     "description": "Error message shown when the device cannot open the email client for the contact address.",
     "placeholders": {
@@ -390,7 +379,6 @@
   "cancel": "Anuluj",
   "chartEmpty": "Za mało danych, aby wyświetlić wykres.",
   "chartSemanticsFilter": "filtr",
-  "chartSemanticsTitle": "Wykres liniowy historii wagi dla okresu {period}. Ostatni zarejestrowany wynik to {weight}.",
   "chartTargetLabel": "Cel",
   "clearField": "Wyczyść pole",
   "comparisonNotEnoughData": "Zapisz pomiary w co najmniej dwóch miesiącach, aby zobaczyć trendy porównawcze.",
@@ -783,6 +771,5 @@
   "wipeDataButton": "Wyczyść dane",
   "wipeDataContent": "To trwale usunie wszystkie wpisy wagi i zresetuje ustawienia aplikacji. Tej operacji nie można cofnąć.",
   "year": "Rok",
-  "yesterday": "Wczoraj",
   "yourResult": "Twój wynik"
 }

@@ -40,7 +40,6 @@
   "cancel": "Annuleren",
   "chartEmpty": "Niet genoeg gegevens om de grafiek weer te geven.",
   "chartSemanticsFilter": "filter",
-  "chartSemanticsTitle": "Gewichtsverloopgrafiek voor periode {period}. Meest recent geregistreerde gewicht is {weight}.",
   "chartTargetLabel": "Doel",
   "clearField": "Veld wissen",
   "comparisonNotEnoughData": "Registreer metingen over minimaal twee maanden om vergelijkingstrends te zien.",
@@ -433,6 +432,5 @@
   "wipeDataButton": "Gegevens wissen",
   "wipeDataContent": "Dit zal al je gewichtsregistraties permanent verwijderen en de app-instellingen resetten. Deze actie kan niet ongedaan worden gemaakt.",
   "year": "Jaar",
-  "yesterday": "Gisteren",
   "yourResult": "Jouw resultaat"
 }

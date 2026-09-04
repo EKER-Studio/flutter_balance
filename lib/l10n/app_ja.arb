@@ -40,7 +40,6 @@
   "cancel": "キャンセル",
   "chartEmpty": "グラフを表示するのに十分なデータがありません。",
   "chartSemanticsFilter": "フィルター",
-  "chartSemanticsTitle": "{period}期間の体重推移グラフ。最新の記録体重は{weight}です。",
   "chartTargetLabel": "目標",
   "clearField": "入力をクリア",
   "comparisonNotEnoughData": "比較傾向を確認するには、少なくとも2か月間の測定データを記録してください。",
@@ -433,6 +432,5 @@
   "wipeDataButton": "データを消去",
   "wipeDataContent": "すべての体重記録が完全に削除され、アプリの設定がリセットされます。この操作は取り消せません。",
   "year": "年",
-  "yesterday": "昨日",
   "yourResult": "あなたの結果"
 }

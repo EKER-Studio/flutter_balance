@@ -40,7 +40,6 @@
   "cancel": "Cancelar",
   "chartEmpty": "No hay suficientes datos para mostrar el gráfico.",
   "chartSemanticsFilter": "filtro",
-  "chartSemanticsTitle": "Gráfico de historial de peso para el periodo {period}. Último peso registrado: {weight}.",
   "chartTargetLabel": "Objetivo",
   "clearField": "Borrar campo",
   "comparisonNotEnoughData": "Registra mediciones durante al menos dos meses para ver las tendencias comparativas.",
@@ -433,6 +432,5 @@
   "wipeDataButton": "Borrar datos",
   "wipeDataContent": "Esto eliminará permanentemente todos tus registros de peso y restablecerá los ajustes de la aplicación. Esta acción no se puede deshacer.",
   "year": "Año",
-  "yesterday": "Ayer",
   "yourResult": "Tu resultado"
 }

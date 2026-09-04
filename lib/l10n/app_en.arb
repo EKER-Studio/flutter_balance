@@ -56,17 +56,6 @@
       }
     }
   },
-  "@chartSemanticsTitle": {
-    "description": "Accessibility label for the weight history chart, describing the displayed period and the latest recorded weight.",
-    "placeholders": {
-      "period": {
-        "type": "String"
-      },
-      "weight": {
-        "type": "String"
-      }
-    }
-  },
   "@couldNotOpenEmailClient": {
     "description": "Error message shown when the device cannot open the email client for the contact address.",
     "placeholders": {
@@ -396,7 +385,6 @@
   "cancel": "Cancel",
   "chartEmpty": "Not enough data to display chart.",
   "chartSemanticsFilter": "filter",
-  "chartSemanticsTitle": "Weight history line chart for {period} period. Latest recorded weight is {weight}.",
   "chartTargetLabel": "Target",
   "clearField": "Clear field",
   "comparisonNotEnoughData": "Log measurements across at least two months to see comparison trends.",
@@ -789,6 +777,5 @@
   "wipeDataButton": "Wipe Data",
   "wipeDataContent": "This will permanently delete all your weight entries and reset app settings. This action cannot be undone.",
   "year": "Year",
-  "yesterday": "Yesterday",
   "yourResult": "Your result"
 }

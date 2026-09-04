@@ -40,7 +40,6 @@
   "cancel": "Abbrechen",
   "chartEmpty": "Nicht genügend Daten zur Anzeige des Diagramms.",
   "chartSemanticsFilter": "Filter",
-  "chartSemanticsTitle": "Gewichtsverlaufsdiagramm für den Zeitraum {period}. Zuletzt erfasstes Gewicht: {weight}.",
   "chartTargetLabel": "Ziel",
   "clearField": "Feld leeren",
   "comparisonNotEnoughData": "Erfasse Messungen über mindestens zwei Monate, um Vergleichstrends zu sehen.",
@@ -433,6 +432,5 @@
   "wipeDataButton": "Daten löschen",
   "wipeDataContent": "Dadurch werden alle deine Gewichtseinträge dauerhaft gelöscht und die App-Einstellungen zurückgesetzt. Diese Aktion kann nicht rückgängig gemacht werden.",
   "year": "Jahr",
-  "yesterday": "Gestern",
   "yourResult": "Dein Ergebnis"
 }
