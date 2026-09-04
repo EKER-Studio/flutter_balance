@@ -107,8 +107,10 @@ class BmiStatusCard extends StatelessWidget {
                         color: cs.onSurfaceVariant,
                       ),
                       tooltip: l10n.bmiLegendTitle,
-                      padding: EdgeInsets.zero,
-                      constraints: const BoxConstraints(),
+                      constraints: const BoxConstraints(
+                        minWidth: 48,
+                        minHeight: 48,
+                      ),
                       onPressed: () =>
                           _showLegendDialog(context, latestWeightKg),
                     ),
