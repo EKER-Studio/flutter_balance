@@ -222,11 +222,17 @@ class _OnboardingWizardContentState extends State<OnboardingWizardContent> {
       },
       child: BlocBuilder<OnboardingBloc, OnboardingState>(
         builder: (context, state) {
+          final initialHeightCm = context.select(
+            (AppSettingsBloc b) => b.state.height,
+          );
+          final initialGoalMode = context.select(
+            (AppSettingsBloc b) => b.state.weightGoalMode,
+          );
           final steps = <Widget>[
             StepWelcome(onNext: _handleWelcomeNext),
             StepUnitsHeight(
               initialUnit: state.selectedUnit,
-              initialHeightCm: context.read<AppSettingsBloc>().state.height,
+              initialHeightCm: initialHeightCm,
               isCurrentPage: state.currentStepIndex == 1,
               onNext: _handleUnitsHeightNext,
             ),
@@ -244,10 +250,7 @@ class _OnboardingWizardContentState extends State<OnboardingWizardContent> {
             StepTargetWeight(
               unit: state.selectedUnit,
               initialTargetWeightKg: state.draftTargetWeight,
-              initialGoalMode: context
-                  .read<AppSettingsBloc>()
-                  .state
-                  .weightGoalMode,
+              initialGoalMode: initialGoalMode,
               initialWeightKg: state.draftInitialWeight,
               onNext: _handleTargetWeightNext,
             ),

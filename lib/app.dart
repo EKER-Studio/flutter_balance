@@ -293,7 +293,7 @@ class _AppState extends State<App> {
 
   @override
   Widget build(BuildContext context) {
-    final settingsBloc = context.read<AppSettingsBloc>();
+    final settingsBloc = context.watch<AppSettingsBloc>();
 
     return BlocBuilder<AppSettingsBloc, AppSettingsState>(
       builder: (context, settingsState) {

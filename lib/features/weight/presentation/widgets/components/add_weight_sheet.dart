@@ -328,7 +328,10 @@ class _AddWeightSheetState extends State<AddWeightSheet>
     }
 
     final normalized = _weightController.text.trim().replaceAll(',', '.');
-    final parsed = double.tryParse(normalized)!;
+    // Invariant: _validateWeight already ensured tryParse succeeds when
+    // _weightError is null; guard against stale validation.
+    final parsed = double.tryParse(normalized);
+    if (parsed == null) return;
 
     final unit = context.read<AppSettingsBloc>().state.measurementUnit;
     final weightKg = unit == MeasurementUnit.imperial
