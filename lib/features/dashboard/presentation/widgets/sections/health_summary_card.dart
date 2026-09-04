@@ -12,7 +12,9 @@ import 'package:balance/features/settings/presentation/bloc/app_settings_event.d
 import 'package:balance/features/settings/presentation/bloc/app_settings_state.dart';
 import 'package:balance/features/weight/domain/weight_goal_mode.dart';
 import 'package:balance/features/settings/presentation/widgets/components/target_weight_sheet.dart';
+import 'package:balance/features/weight/presentation/bloc/weight_bloc.dart';
 import 'package:balance/features/weight/presentation/utils/bmi_category_localizer.dart';
+import 'package:balance/features/weight/presentation/widgets/components/add_weight_sheet.dart';
 import 'package:balance/features/weight/presentation/widgets/components/bmi_legend_dialog.dart';
 import 'package:balance/l10n/app_localizations.dart';
 
@@ -100,6 +102,7 @@ class HealthSummaryCard extends StatelessWidget {
                                 AppAnalytics.logTodayLatestWeightTapped(
                                   unit: unitLabel,
                                 );
+                                _openAddWeightSheet(context);
                               },
                               child: LatestMeasurementInfo(
                                 displayWeight: displayWeight,
@@ -148,6 +151,17 @@ class HealthSummaryCard extends StatelessWidget {
           ),
         );
       },
+    );
+  }
+
+  void _openAddWeightSheet(BuildContext context) {
+    AppAnalytics.logDialogAddWeightOpened('today_latest_measurement');
+    final weightBloc = context.read<WeightBloc>();
+    showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      builder: (sheetCtx) =>
+          BlocProvider.value(value: weightBloc, child: const AddWeightSheet()),
     );
   }
 
