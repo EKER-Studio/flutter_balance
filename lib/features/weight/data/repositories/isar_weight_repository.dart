@@ -458,7 +458,7 @@ class IsarWeightRepository implements WeightRepository {
 
       // Step 2 — Load existing models in the window (single indexed query).
       final existingModels = await liveIsar.weightEntryModels
-          .filter()
+          .where()
           .dateTimeBetween(windowStart, windowEnd)
           .findAll();
 
@@ -581,7 +581,7 @@ class IsarWeightRepository implements WeightRepository {
       final windowEnd = maxDate.add(const Duration(seconds: 60));
 
       final existingModels = await liveIsar.weightEntryModels
-          .filter()
+          .where()
           .dateTimeBetween(windowStart, windowEnd)
           .findAll();
 
