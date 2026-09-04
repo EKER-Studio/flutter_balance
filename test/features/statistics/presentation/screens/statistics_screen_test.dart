@@ -433,7 +433,9 @@ void main() {
         buildSubject(settingsBloc: settingsBloc, weightBloc: weightBloc),
       );
 
-      expect(find.text('Brak danych do analizy'), findsOneWidget);
+      // WeightError with no cached entries shows error card, not empty state.
+      expect(find.text('Błąd odczytu bazy danych'), findsOneWidget);
+      expect(find.text('Spróbuj ponownie'), findsOneWidget);
     },
   );
 

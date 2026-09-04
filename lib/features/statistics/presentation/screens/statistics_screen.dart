@@ -87,29 +87,32 @@ class StatisticsScreen extends StatelessWidget {
                         }
 
                         if (weightState is WeightError) {
-                          return ClampedLayout(
-                            maxWidth: context.standardContentMaxWidth,
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 16,
-                              vertical: 32,
-                            ),
-                            child: StateMessageCard(
-                              icon: Icons.error_outline,
-                              iconColor: Theme.of(context).colorScheme.error,
-                              iconContainerColor: Theme.of(
-                                context,
-                              ).colorScheme.errorContainer,
-                              title: l10n.databaseErrorTitle,
-                              subtitle: weightState.errorType.localizedMessage(
-                                l10n,
+                          if (entries.isEmpty) {
+                            return ClampedLayout(
+                              maxWidth: context.standardContentMaxWidth,
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 32,
                               ),
-                              buttonLabel: l10n.retry,
-                              buttonIcon: Icons.refresh,
-                              onButtonPressed: () => context
-                                  .read<WeightBloc>()
-                                  .add(const SubscribeToWeightChanges()),
-                            ),
-                          );
+                              child: StateMessageCard(
+                                icon: Icons.error_outline,
+                                iconColor: Theme.of(context).colorScheme.error,
+                                iconContainerColor: Theme.of(
+                                  context,
+                                ).colorScheme.errorContainer,
+                                title: l10n.databaseErrorTitle,
+                                subtitle: weightState.errorType
+                                    .localizedMessage(l10n),
+                                buttonLabel: l10n.retry,
+                                buttonIcon: Icons.refresh,
+                                onButtonPressed: () => context
+                                    .read<WeightBloc>()
+                                    .add(const SubscribeToWeightChanges()),
+                              ),
+                            );
+                          }
+                          // WeightError with cached entries: fall through to
+                          // render metrics below (same as WeightLoaded).
                         }
 
                         if (entries.isEmpty) {
