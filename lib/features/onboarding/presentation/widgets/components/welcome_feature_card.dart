@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:balance/core/utils/analytics.dart';
 
 /// A presentational card highlighting an onboarding feature with an icon and title.
 class WelcomeFeatureCard extends StatelessWidget {
@@ -19,51 +18,45 @@ class WelcomeFeatureCard extends StatelessWidget {
     final theme = Theme.of(context);
     final primaryColor = theme.colorScheme.primary;
 
-    return Material(
-      color: theme.colorScheme.surfaceContainerLow,
-      borderRadius: BorderRadius.circular(16.0),
-      clipBehavior: Clip.antiAlias,
-      child: InkWell(
-        onTap: () {
-          AppAnalytics.logOnboardingWelcomeFeatureCardTapped(title);
-        },
-        child: Padding(
-          padding: EdgeInsets.symmetric(
-            horizontal: 16.0,
-            vertical: isLandscape ? 10.0 : 12.0,
-          ),
-          child: Row(
-            children: [
-              ExcludeSemantics(
-                child: Container(
-                  padding: EdgeInsets.all(isLandscape ? 6.0 : 8.0),
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: primaryColor.withValues(alpha: 0.12),
-                  ),
-                  child: Icon(
-                    icon,
-                    size: isLandscape ? 18.0 : 20.0,
-                    color: primaryColor,
-                  ),
-                ),
+    return Container(
+      decoration: BoxDecoration(
+        color: theme.colorScheme.surfaceContainerLow,
+        borderRadius: BorderRadius.circular(16.0),
+      ),
+      padding: EdgeInsets.symmetric(
+        horizontal: 16.0,
+        vertical: isLandscape ? 10.0 : 12.0,
+      ),
+      child: Row(
+        children: [
+          ExcludeSemantics(
+            child: Container(
+              padding: EdgeInsets.all(isLandscape ? 6.0 : 8.0),
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: primaryColor.withValues(alpha: 0.12),
               ),
-              const SizedBox(width: 12.0),
-              Expanded(
-                child: Text(
-                  title,
-                  style:
-                      (isLandscape
-                              ? theme.textTheme.bodyMedium
-                              : theme.textTheme.bodyLarge)
-                          ?.copyWith(fontWeight: FontWeight.w500),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
+              child: Icon(
+                icon,
+                size: isLandscape ? 18.0 : 20.0,
+                color: primaryColor,
               ),
-            ],
+            ),
           ),
-        ),
+          const SizedBox(width: 12.0),
+          Expanded(
+            child: Text(
+              title,
+              style:
+                  (isLandscape
+                          ? theme.textTheme.bodyMedium
+                          : theme.textTheme.bodyLarge)
+                      ?.copyWith(fontWeight: FontWeight.w500),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+        ],
       ),
     );
   }
