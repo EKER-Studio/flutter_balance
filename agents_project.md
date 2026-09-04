@@ -55,6 +55,6 @@ Implements `AGENTS.md` → Mandatory Verification Pipeline (7 steps):
 6. `dart run custom_lint` — state-management lints (**not configured in this project — skipped**)
 7. `flutter test --exclude-tags golden` — tests (golden tests excluded by tag; coverage excludes `.g.dart` and `l10n`)
 
-Canonical local script is `tool/before_push.sh` (if present) / CI `/.github/workflows/ci.yml` which follow the same ordering.
+Canonical local script is `scripts/before_push.sh` / CI `/.github/workflows/ci.yml` which follow the same ordering.
 Once all applicable steps are green and the Resource Lifecycle checklist above is verified, commit per `AGENTS.md` →
 Git & Version Control (autonomous commit is enabled for this repo, since this file exists).
