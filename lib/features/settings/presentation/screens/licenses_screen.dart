@@ -97,8 +97,26 @@ class _LicensesScreenState extends State<LicensesScreen> {
                 );
               }
 
-              final packageInfo = snapshot.data![0] as PackageInfo;
-              final licenses = snapshot.data![1] as List<PackageLicense>;
+              if (snapshot.hasError) {
+                return Center(
+                  child: Padding(
+                    padding: const EdgeInsets.all(24),
+                    child: Text(l10n.databaseErrorDefaultMessage),
+                  ),
+                );
+              }
+
+              final data = snapshot.data;
+              if (data == null || data.length < 2) {
+                return Center(
+                  child: Padding(
+                    padding: const EdgeInsets.all(24),
+                    child: Text(l10n.databaseErrorDefaultMessage),
+                  ),
+                );
+              }
+              final packageInfo = data[0] as PackageInfo;
+              final licenses = data[1] as List<PackageLicense>;
 
               return ListView.builder(
                 padding: const EdgeInsets.symmetric(

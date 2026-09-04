@@ -203,7 +203,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   void _onWeightStateChange(BuildContext context, WeightState state) async {
-    if (state is CsvAnalysisError) {
+    if (state is CsvAnalysisInProgress) {
+      final l10n = AppLocalizations.of(context);
+      AppSnackBar.show(
+        context,
+        message: l10n.csvImportLoading,
+        type: SnackBarType.info,
+      );
+    } else if (state is CsvAnalysisError) {
       AppAnalytics.logDialogCsvAnalysisError(state.errorType.name);
       final l10n = AppLocalizations.of(context);
       String errorMessage;

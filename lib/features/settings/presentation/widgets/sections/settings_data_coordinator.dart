@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:go_router/go_router.dart';
-import 'package:package_info_plus/package_info_plus.dart';
 import 'package:share_plus/share_plus.dart';
 
 import 'package:balance/core/di/injection.dart';
@@ -26,7 +25,6 @@ import 'package:balance/features/settings/presentation/widgets/components/theme_
 import 'package:balance/features/settings/presentation/widgets/components/first_day_of_week_selection_dialog.dart';
 import 'package:balance/features/weight/domain/weight_goal_mode.dart';
 import 'package:balance/features/settings/presentation/widgets/components/unit_selection_dialog.dart';
-import 'package:balance/features/settings/presentation/screens/licenses_screen.dart';
 import 'package:balance/features/settings/presentation/screens/privacy_policy_screen.dart';
 import 'package:balance/features/settings/presentation/widgets/components/height_sheet.dart';
 import 'package:balance/features/settings/presentation/widgets/components/target_weight_sheet.dart';
@@ -405,17 +403,10 @@ class SettingsDataCoordinator {
     }
   }
 
-  /// Shows the open-source licenses page.
-  static Future<void> showLicenses(BuildContext context) async {
+  /// Shows the open-source licenses page via the router.
+  static void showLicenses(BuildContext context) {
     AppAnalytics.logSettingsOpenSourceLicensesClicked();
-    final packageInfo = await PackageInfo.fromPlatform();
-    if (!context.mounted) return;
-
-    Navigator.of(context).push(
-      MaterialPageRoute<void>(
-        builder: (_) => LicensesScreen(packageInfo: packageInfo),
-      ),
-    );
+    context.push(AppRoutes.licenses);
   }
 
   /// Shows the BMI category legend and reference ranges dialog.

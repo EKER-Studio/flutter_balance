@@ -16,6 +16,7 @@ import 'package:balance/features/weight/domain/entities/weight_entry.dart';
 import 'package:balance/features/weight/presentation/bloc/weight_bloc.dart';
 import 'package:balance/features/weight/presentation/bloc/weight_event.dart';
 import 'package:balance/features/weight/presentation/bloc/weight_state.dart';
+import 'package:balance/features/weight/presentation/utils/weight_error_localizer.dart';
 import 'package:balance/features/weight/presentation/widgets/components/add_weight_sheet.dart';
 import 'package:balance/l10n/app_localizations.dart';
 
@@ -82,6 +83,32 @@ class StatisticsScreen extends StatelessWidget {
                               vertical: 12,
                             ),
                             child: const StatisticsShimmerSkeleton(),
+                          );
+                        }
+
+                        if (weightState is WeightError) {
+                          return ClampedLayout(
+                            maxWidth: context.standardContentMaxWidth,
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 32,
+                            ),
+                            child: StateMessageCard(
+                              icon: Icons.error_outline,
+                              iconColor: Theme.of(context).colorScheme.error,
+                              iconContainerColor: Theme.of(
+                                context,
+                              ).colorScheme.errorContainer,
+                              title: l10n.databaseErrorTitle,
+                              subtitle: weightState.errorType.localizedMessage(
+                                l10n,
+                              ),
+                              buttonLabel: l10n.retry,
+                              buttonIcon: Icons.refresh,
+                              onButtonPressed: () => context
+                                  .read<WeightBloc>()
+                                  .add(const SubscribeToWeightChanges()),
+                            ),
                           );
                         }
 

@@ -12,6 +12,7 @@ import 'package:balance/core/models/measurement_unit.dart';
 final class AppSettingsState extends Equatable {
   static const Object _targetWeightSentinel = Object();
   static const Object _heightSentinel = Object();
+  static const Object _lastHealthSyncSentinel = Object();
 
   /// Minimum valid height in centimeters, inclusive.
   static const double minHeightCm = 50.0;
@@ -136,7 +137,7 @@ final class AppSettingsState extends Equatable {
     bool? isHealthSyncEnabled,
     bool? isHealthApiAvailable,
     bool? healthPermissionDenied,
-    DateTime? lastHealthSyncTimestamp,
+    Object? lastHealthSyncTimestamp = _lastHealthSyncSentinel,
     int? weeklyPaceWindowDays,
   }) {
     return AppSettingsState(
@@ -163,7 +164,9 @@ final class AppSettingsState extends Equatable {
       healthPermissionDenied:
           healthPermissionDenied ?? this.healthPermissionDenied,
       lastHealthSyncTimestamp:
-          lastHealthSyncTimestamp ?? this.lastHealthSyncTimestamp,
+          lastHealthSyncTimestamp == _lastHealthSyncSentinel
+          ? this.lastHealthSyncTimestamp
+          : lastHealthSyncTimestamp as DateTime?,
       weeklyPaceWindowDays: weeklyPaceWindowDays ?? this.weeklyPaceWindowDays,
     );
   }
