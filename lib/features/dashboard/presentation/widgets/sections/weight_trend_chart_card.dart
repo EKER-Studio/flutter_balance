@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:balance/core/models/measurement_unit.dart';
+import 'package:balance/core/presentation/navigation/app_routes.dart';
 import 'package:balance/core/utils/analytics.dart';
 import 'package:balance/features/dashboard/presentation/widgets/components/chart_period_filters.dart';
 import 'package:balance/features/dashboard/presentation/widgets/components/weight_delta_chip.dart';
 import 'package:balance/features/dashboard/presentation/widgets/components/weight_line_chart.dart';
 import 'package:balance/features/weight/domain/entities/weight_entry.dart';
 import 'package:balance/core/models/time_period.dart';
-import 'package:balance/features/weight/presentation/widgets/components/bmi_legend_dialog.dart';
 import 'package:balance/l10n/app_localizations.dart';
 
 /// A card section displaying the weight trend line chart, period filter, and delta chip.
@@ -82,7 +83,7 @@ class WeightTrendChartCard extends StatelessWidget {
                 WeightDeltaChip(
                   entries: entries,
                   measurementUnit: measurementUnit,
-                  onTap: () => _openBmiLegendDialog(context),
+                  onTap: () => _navigateToStatistics(context),
                 ),
               ],
             ),
@@ -159,16 +160,8 @@ class WeightTrendChartCard extends StatelessWidget {
     );
   }
 
-  void _openBmiLegendDialog(BuildContext context) {
-    AppAnalytics.logDialogBmiLegendOpened();
-    final latestWeightKg = entries.isNotEmpty
-        ? (entries.toList()..sort((a, b) => b.dateTime.compareTo(a.dateTime)))
-              .first
-              .weightKg
-        : null;
-    showDialog<void>(
-      context: context,
-      builder: (context) => BmiLegendDialog(latestWeightKg: latestWeightKg),
-    );
+  void _navigateToStatistics(BuildContext context) {
+    AppAnalytics.logEvent(name: 'today_delta_chip_to_statistics');
+    context.go(AppRoutes.statistics);
   }
 }
