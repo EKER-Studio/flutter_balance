@@ -46,29 +46,34 @@ lib/
 ├── main.dart                     # App entry point, splash preservation & crash reporting
 ├── firebase_options.dart         # Auto-configured Firebase credentials per platform
 ├── core/                         # Cross-cutting concerns & infrastructure
+│   ├── bloc/                     # Global BLoC lifecycle observer (AppBlocObserver)
 │   ├── config/                   # AppEnvironment (dev, prod configurations)
 │   ├── database/                 # Database module & Isar initialization
 │   ├── di/                       # Dependency injection setup via GetIt & Injectable
 │   ├── errors/                   # Unified app error types & exception handlers
 │   ├── integrations/             # Native platform & 3rd-party integration services
+│   │   ├── analytics/            # Privacy-first telemetry service (AnalyticsService)
 │   │   ├── biometrics/           # Local authentication (Face ID/Fingerprint) & lock observer
 │   │   ├── csv/                  # CSV parser, validation & import/export pipelines
 │   │   ├── health/               # Apple HealthKit & Android Health Connect sync service
-│   │   └── notifications/        # Local scheduled notifications & timezone management
-│   ├── models/                   # Core shared models (MeasurementUnit)
+│   │   ├── notifications/        # Local scheduled notifications & timezone management
+│   │   └── widgets/              # Android home screen glanceable widgets synchronization service
+│   ├── models/                   # Core shared models (MeasurementUnit, TimePeriod)
 │   ├── presentation/             # Global app UI & shared design system
-│   │   ├── navigation/           # AppRoutes and route definitions
+│   │   ├── navigation/           # AppRoutes, AppRouter and route definitions
 │   │   ├── screens/              # AppSplashScreen, AppInitializationErrorScreen, BiometricShieldScreen
-│   │   ├── theme/                # AppTheme (Light & Dark Material 3 tokens) & AppColors
-│   │   └── widgets/              # Reusable components (AppTopBar, ClampedLayout)
-│   └── utils/                    # Shared utilities (AppAnalytics, AppCrashReporter, AppBlocObserver)
+│   │   ├── theme/                # AppTheme (Light & Dark Material 3 tokens), layout tokens & feedback
+│   │   └── widgets/              # Reusable components (AppTopBar, ClampedLayout, PillSegmentedControl)
+│   └── utils/                    # Shared utilities (AppAnalytics, AppCrashReporter, FieldCipher, UnitConverter)
 ├── features/                     # Feature modules (Feature-First architecture)
 │   ├── calendar/                 # Calendar monthly view, day history & entry sheet
 │   ├── dashboard/                # Today's overview, BMI gauge & quick-add weight cards
 │   ├── navigation/               # Main navigation scaffold (BottomBar & NavigationRail)
-│   ├── onboarding/               # 8-step initial setup wizard
+│   ├── onboarding/               # Ephemeral onboarding wizard & OnboardingBloc
 │   ├── settings/                 # User preferences, reminders, backup, wipe data & privacy policy
-│   ├── statistics/               # Analytical charts, BMI trend cards & period filters
+│   ├── statistics/               # Analytics, BMI charts, period comparison & achievements
+│   │   ├── domain/               # Milestone & period comparison entities and calculation services
+│   │   └── presentation/         # StatisticsScreen, Achievements gallery sheet, trend & habit cards
 │   └── weight/                   # Core weight tracking domain, data & state
 │       ├── data/                 # WeightEntryModel (Isar schema) & IsarWeightRepository
 │       ├── domain/               # WeightEntry entities, repository contracts & health sync coordinator
@@ -98,6 +103,7 @@ lib/
 | **Charts** | fl_chart | Interactive weight history visualizations |
 | **Biometrics** | local_auth | Native biometric authentication (Face ID, Touch ID, fingerprint) |
 | **Health** | health | Integration with Apple HealthKit & Android Health Connect |
+| **Home Widgets** | home_widget | Android home screen glanceable widgets (2x1, 3x2) |
 | **CSV Handling** | csv, file_picker | CSV encoding, streaming parser, and native Storage Access Framework file picker |
 | **Localization** | flutter_localizations + gen-l10n | Internationalization (10 languages: EN, DE, JA, FR, ES, PL, PT-BR, NL, IT, KO) |
 | **Notifications** | flutter_local_notifications, timezone | Local scheduled daily reminders & timezone resolution |
@@ -113,10 +119,14 @@ lib/
 - Filter data by timeframe (`Week`, `Month`, `Year`, `All`).
 - **Official WHO BMI Classification**: 6-tier BMI categories (Underweight, Normal, Overweight, Obese Class I/II/III) with dynamic category badges.
 - **Healthy Weight Range**: Automatic calculation and visual guidance for target healthy weight boundaries.
+- **Milestone Achievements & Gamification**: 19 unlockable achievement badges across 3 categories (*Goals & Progress*, *Consistency & Habits*, *Routines & Time*) with an interactive Achievements Gallery and progress counter.
+- **Habit Streaks & Consistency**: Real-time tracking of current weigh-in streak, personal best streak, and consistency percentage across all entries.
+- **Period Comparison Analytics**: Compare progress across customizable time intervals (7 days vs previous 7 days, 30 days vs previous 30 days) with average weight, delta indicators, and highest/lowest records.
 - Summary metrics: BMI calculation, BMI category badge, target weight progress, and remaining weight delta.
 - Automated BMI calculation from configured height.
 
 ### Data Management & Integrations
+- **Home Screen Widgets**: Native Android desktop widgets (compact 2x1 and detailed 3x2) powered by `home_widget`, displaying current weight, 7-day delta, WHO BMI category badge, and goal progress bar with automatic background synchronization.
 - **Health Sync**: Native synchronization with Apple Health (iOS) and Health Connect (Android).
 - **CSV Import**: Batch import entries via `CsvImporter` with row validation and isolate background parsing.
 - **CSV Export**: Export entries via `CsvExporter` to a CSV file on disk and share via native OS share dialog.
@@ -127,7 +137,7 @@ lib/
 - **Declarative Navigation & Deep Linking**: Powered by `go_router` 14.x with persistent `StatefulShellRoute` multi-tab state preservation, URI query parsing (`/today?action=add`, `/calendar?date=YYYY-MM-DD`), and reactive auth/onboarding redirection guards.
 - **Android 15 Edge-to-Edge & Display Cutouts**: Full compliance with Android 15 (API 35) edge-to-edge drawing, transparent system bars (`enableEdgeToEdge`), camera cutout/notch adaptation (`shortEdges`), and responsive `SafeArea` boundary guards.
 - **Predictive Back & Per-App Language**: Modern predictive back gesture support (`PopScope`) and native per-app language configuration (`locales_config.xml`) for Android 13+.
-- **8-Step Onboarding**: A comprehensive wizard guiding users through unit selection, initial logging, CSV imports, and permission setups.
+- **Step-by-Step Onboarding**: A comprehensive wizard guiding users through unit selection, initial logging, CSV imports, and permission setups.
 - **Theme Options**: Light, Dark, or System mode with Material 3 dynamic styling.
 - **Target Tracking**: Configurable target weight goals with dynamic milestone progress.
 - **Reminders**: Daily reminder notifications with custom time selection and timezone persistence.
@@ -173,6 +183,9 @@ flutter run
 - **`AppSettingsBloc`**: Manages persistent user preferences via `HydratedBloc`.
   - Events: `UpdateTheme`, `UpdateMeasurementUnit`, `UpdateHeight`, `TargetWeightChanged`, `UpdateBiometricLock`, `ToggleNotifications`, `UpdateNotificationTime`, `ToggleHealthSync`, `SetLocked`, `ClearAllData`
   - State: `AppSettingsState` (hydrated and encrypted on-device).
+- **`OnboardingBloc`**: Controls the ephemeral multi-step initial setup wizard state machine.
+  - Events: `OnboardingStarted`, `OnboardingStepChanged`, `OnboardingUnitSelected`, `OnboardingInitialWeightSet`, `OnboardingTargetWeightSet`, `OnboardingNotificationsToggled`, `OnboardingHealthSyncToggled`, `OnboardingCompleted`
+  - State: `OnboardingState` (holds temporary wizard draft values, hands off persistent outcomes to `AppSettingsBloc` and `WeightBloc` upon completion).
 
 ### Code Generation
 
