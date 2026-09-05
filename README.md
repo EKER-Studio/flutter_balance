@@ -26,29 +26,13 @@
 
 ## Screenshots
 
-### Splash & Onboarding Flow
-
-| Splash (Dark) | Welcome (Light) | CSV Import (Light) | Starting Weight (Dark) | Daily Reminders (Dark) |
-| :---: | :---: | :---: | :---: | :---: |
-| <img src=".github/assets/00_splash/splash_dark.png" width="180" alt="Splash Screen Dark" /> | <img src=".github/assets/01_onboarding/01_welcome_light.png" width="180" alt="Onboarding Welcome Light" /> | <img src=".github/assets/01_onboarding/03_csv_import_light.png" width="180" alt="CSV Import Step Light" /> | <img src=".github/assets/01_onboarding/04_starting_point_dark.png" width="180" alt="Starting Weight Step Dark" /> | <img src=".github/assets/01_onboarding/06_notifications_dark.png" width="180" alt="Notifications Setup Dark" /> |
-
-### Today Dashboard & Analytics
-
-| Today Dashboard (Light) | Add Measurement (Dark) | BMI Categories (Dark) | Statistics Overview (Light) | Trend & BMI Analysis (Dark) |
-| :---: | :---: | :---: | :---: | :---: |
-| <img src=".github/assets/02_today/01_dashboard_light.png" width="180" alt="Today Dashboard Light" /> | <img src=".github/assets/02_today/02_add_measurement_dark.png" width="180" alt="Add Measurement Dark" /> | <img src=".github/assets/02_today/03_bmi_categories_dark.png" width="180" alt="BMI Categories Modal Dark" /> | <img src=".github/assets/04_statistics/01_overview_light.png" width="180" alt="Statistics Overview Light" /> | <img src=".github/assets/04_statistics/02_bmi_chart_dark.png" width="180" alt="Trend and BMI Analysis Dark" /> |
-
-### Calendar & Reminders
-
-| Calendar Month (Light) | Measurement Sheet (Light) | Calendar Month (Dark) | Scheduled Notification (Light) |
+| Today Dashboard (Light) | Statistics Overview (Light) | WHO BMI Categories (Light) | Calendar & History (Light) |
 | :---: | :---: | :---: | :---: |
-| <img src=".github/assets/03_calendar/01_month_view_light.png" width="180" alt="Calendar Month View Light" /> | <img src=".github/assets/03_calendar/02_add_measurement_sheet_light.png" width="180" alt="Add Measurement Sheet Light" /> | <img src=".github/assets/03_calendar/03_month_view_dark.png" width="180" alt="Calendar Month View Dark" /> | <img src=".github/assets/07_other/01_notification_light.png" width="180" alt="System Notification Banner" /> |
+| <img src=".github/assets/01_dashboard.png" width="190" alt="Today Dashboard (Light)" /> | <img src=".github/assets/02_statistics.png" width="190" alt="Statistics Overview (Light)" /> | <img src=".github/assets/03_bmi_categories.png" width="190" alt="WHO BMI Categories (Light)" /> | <img src=".github/assets/04_calendar.png" width="190" alt="Calendar and History (Light)" /> |
 
-### Settings & Security
-
-| Settings (Light) | CSV Import Preview (Dark) | Privacy Policy (Dark) | Biometric Shield (Light) | Biometric Auth (Dark) |
-| :---: | :---: | :---: | :---: | :---: |
-| <img src=".github/assets/05_settings/01_preferences_light.png" width="180" alt="Settings Preferences Light" /> | <img src=".github/assets/05_settings/02_csv_import_preview_dark.png" width="180" alt="CSV Import Preview Dark" /> | <img src=".github/assets/05_settings/03_privacy_policy_dark.png" width="180" alt="Privacy Policy Dark" /> | <img src=".github/assets/06_biometric/01_biometric_lock_light.png" width="180" alt="Biometric Lock Shield Light" /> | <img src=".github/assets/06_biometric/02_biometric_failed_dark.png" width="180" alt="Biometric Authentication Prompt Dark" /> |
+| Achievements Gallery (Light) | Edit Measurement (Light) | Home Screen Widget (Dark) | Settings & Health Connect (Dark) |
+| :---: | :---: | :---: | :---: |
+| <img src=".github/assets/05_achievements.png" width="190" alt="Achievements Gallery (Light)" /> | <img src=".github/assets/06_measurement_sheet.png" width="190" alt="Edit Measurement (Light)" /> | <img src=".github/assets/07_home_widget.png" width="190" alt="Home Screen Widget (Dark)" /> | <img src=".github/assets/08_settings.png" width="190" alt="Settings & Health Connect (Dark)" /> |
 
 ---
 
