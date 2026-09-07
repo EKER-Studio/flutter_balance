@@ -16,6 +16,7 @@ ios/config/**/*.plist
 # Miscellaneous
 *.class
 *.log
+log.txt
 *.pyc
 *.swp
 .DS_Store
@@ -100,3 +101,9 @@ LOG_*.md
 # Note: .github/assets/ contains curated README screenshots and IS tracked
 /screenshots/
 .screenshots/
+
+# Fastlane local reports & test artifacts
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/screenshots/
+fastlane/test_output/

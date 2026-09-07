@@ -1,5 +1,8 @@
 targets:
   $default:
+    sources:
+      exclude:
+        - "lib/l10n/**"
     builders:
       isar_community_generator:isar_community_generator:
         generate_for:
