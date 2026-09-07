@@ -1,0 +1,29 @@
+Prendi il controllo della tua salute con Balance — il tracker di peso e BMI intelligente, privato ed elegante, progettato per la semplicità e la costanza quotidiana.
+
+A differenza di altre app per la salute, Balance mette la tua privacy al primo posto: nessun account da creare, nessun tracciamento su cloud, nessun abbonamento e zero pubblicità. I tuoi dati sanitari rimangono al 100% sul tuo dispositivo, protetti dalla crittografia AES-256 di livello bancario.
+
+🎯 PERCHÉ AMERAI BALANCE:
+
+• 100% Privato & Funzionamento Offline
+Nessun login, nessuna connessione internet richiesta e nessuna raccolta dati. Le tue misurazioni personali non lasciano mai il tuo telefono.
+
+• Calcolatore Intelligente di BMI e Peso Forma
+Classificazione istantanea del BMI secondo gli standard dell'OMS (Organizzazione Mondiale della Sanità) con obiettivi personalizzati di peso forma.
+
+• Statistiche e Trend Dettagliati
+Comprendi i tuoi progressi a colpo d'occhio grazie a grafici interattivi, medie mobili, tendenze settimanali/mensili e una cronologia visiva a calendario.
+
+• Integrazione Fluida con Health Connect
+Sincronizza automaticamente peso e misurazioni con Google Health Connect per mantenere aggiornato l'intero ecosistema della tua salute.
+
+• Blocco di Sicurezza Biometrico
+Proteggi i tuoi dati sensibili con impronta digitale o riconoscimento facciale ogni volta che apri l'app.
+
+• Piena Libertà dei Dati (Import & Export)
+I tuoi dati appartengono solo a te. Esporta o importa comodamente la cronologia completa tramite file CSV in qualsiasi momento.
+
+• Design Moderno Material 3
+Interfaccia fluida, raffinata e a basso consumo energetico con modalità chiara e scura automatica.
+
+🌟 Monitoraggio Puro. Zero Distrazioni.
+Scarica Balance oggi stesso e inizia a monitorare il tuo percorso di benessere in totale serenità!

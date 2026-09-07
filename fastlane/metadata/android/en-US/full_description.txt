@@ -1,0 +1,29 @@
+Take control of your health with Balance — the smart, private, and beautifully designed weight & BMI tracker built for simplicity and daily consistency.
+
+Unlike other health apps, Balance puts your privacy first: no accounts to create, no cloud tracking, no subscriptions, and zero ads. Your health data stays 100% on your device, encrypted with bank-grade AES-256 security.
+
+🎯 WHY YOU’LL LOVE BALANCE:
+
+• 100% Private & Offline-First
+No login, no internet required, and no data collection. Your personal metrics never leave your phone.
+
+• Smart BMI & Healthy Weight Calculator
+Instant WHO-standard (World Health Organization) BMI classification with personalized healthy weight range targets.
+
+• Beautiful Trends & Analytics
+Understand your progress at a glance with clean interactive charts, rolling averages, weekly/monthly trends, and a visual calendar history.
+
+• Seamless Health Connect Integration
+Automatically sync your weight and measurements with Google Health Connect to keep your entire health ecosystem up to date.
+
+• Biometric Security Lock
+Protect your sensitive data with Fingerprint or Face Unlock authentication every time you open the app.
+
+• Easy Data Freedom (Import & Export)
+Your data belongs to you. Seamlessly export or import your full history via CSV anytime.
+
+• Modern Material 3 Design
+Stunning, fluid, and battery-friendly interface with automatic Dark & Light mode.
+
+🌟 Pure Tracking. Zero Distractions.
+Download Balance today and start tracking your fitness journey with complete peace of mind!

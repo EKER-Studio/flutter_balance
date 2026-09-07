@@ -1,0 +1,5 @@
+• 🔒 Segurança: Proteção de backup reforçada e melhor suporte à autenticação biométrica.
+• ♿ Acessibilidade: Áreas de toque ampliadas (mín. 48dp) para maior facilidade de uso.
+• 📊 Gráficos e desempenho: Carregamento mais rápido do histórico e estatísticas mais fluidas.
+• 🧭 Navegação e estabilidade: Transições aprimoradas e maior estabilidade da interface.
+• ⚡ Correções de bugs e otimizações de desempenho.

@@ -1,0 +1,5 @@
+• 🔒 Seguridad: Protección de copia de seguridad reforzada y mejor autenticación biométrica.
+• ♿ Accesibilidad: Áreas táctiles ampliadas (mín. 48dp) para una navegación más cómoda.
+• 📊 Gráficos y rendimiento: Carga más rápida del historial y estadísticas más fluidas.
+• 🧭 Navegación y estabilidad: Transiciones mejoradas y mayor estabilidad de la app.
+• ⚡ Corrección de errores y optimizaciones generales.

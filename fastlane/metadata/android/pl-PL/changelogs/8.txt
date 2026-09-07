@@ -1,0 +1,5 @@
+• 🔒 Bezpieczeństwo: Udoskonalona ochrona danych w kopii zapasowej oraz stabilniejsza autoryzacja biometryczna.
+• ♿ Dostępność: Wygodniejsza obsługa – powiększone obszary dotykowe przycisków (min. 48dp).
+• 📊 Statystyki i dane: Szybsze ładowanie historii pomiarów oraz płynniejszy wykres postępów.
+• 🧭 Nawigacja: Poprawione przechodzenie między ekranami i większa stabilność aplikacji.
+• ⚡ Drobne poprawki błędów i optymalizacje wydajności.

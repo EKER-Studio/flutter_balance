@@ -1,0 +1,29 @@
+Neem de controle over je gezondheid met Balance — de slimme, privacyvriendelijke en prachtig ontworpen gewichts- en BMI-tracker gebouwd voor eenvoud en dagelijkse regelmaat.
+
+In tegenstelling tot andere gezondheidsapps stelt Balance jouw privacy voorop: geen accounts aanmaken, geen tracking in de cloud, geen abonnementen en geen advertenties. Je gezondheidsgegevens blijven 100% op jouw apparaat, beveiligd met AES-256 encryptie van bankkwaliteit.
+
+🎯 WAAROM JE VAN BALANCE ZULT HOUDEN:
+
+• 100% Privé & Offline-First
+Geen login, geen internet vereist en geen gegevensverzameling. Je persoonlijke meetwaarden verlaten nooit je telefoon.
+
+• Slimme BMI- en Gezond Gewichtscalculator
+Directe BMI-classificatie volgens WHO-normen (Wereldgezondheidsorganisatie) met gepersonaliseerde streefgewichtzones.
+
+• Duidelijke Trends & Analyses
+Bekijk je voortgang in één oogopslag met interactieve grafieken, voortschrijdende gemiddelden, wekelijkse/maandelijkse trends en een overzichtelijke kalendergeschiedenis.
+
+• Naadloze Health Connect-integratie
+Synchroniseer je gewicht en metingen automatisch met Google Health Connect om je complete gezondheidsecosysteem actueel te houden.
+
+• Biometrische Beveiligingsvergrendeling
+Bescherm je gevoelige gegevens met vingerafdruk- of gezichtsherkenning bij elke opening van de app.
+
+• Eenvoudige Datavrijheid (Import & Export)
+Jouw gegevens zijn van jou. Exporteer of importeer je complete geschiedenis op elk moment eenvoudig via CSV.
+
+• Modern Material 3 Design
+Strakke, soepele en batterijvriendelijke interface met automatische lichte en donkere modus.
+
+🌟 Puur Meten. Zonder Afleiding.
+Download Balance vandaag nog en volg je fitnessreis met volledige gemoedsrust!

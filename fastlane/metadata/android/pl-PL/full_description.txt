@@ -1,0 +1,29 @@
+Przejmij kontrolę nad swoim zdrowiem z Balance — inteligentnym, prywatnym i pięknie zaprojektowanym monitorem wagi i BMI, stworzonym z myślą o prostocie i codziennej regularności.
+
+W przeciwieństwie do innych aplikacji zdrowotnych, Balance stawia Twoją prywatność na pierwszym miejscu: bez zakładania konta, bez śledzenia w chmurze, bez subskrypcji i bez reklam. Twoje dane zdrowotne pozostają w 100% na Twoim urządzeniu, zaszyfrowane bezpiecznym algorytmem AES-256.
+
+🎯 DLACZEGO POKOCHASZ BALANCE:
+
+• W 100% prywatna i działająca offline
+Bez logowania, bez konieczności połączenia z internetem i bez gromadzenia danych. Twoje osobiste pomiary nigdy nie opuszczają Twojego telefonu.
+
+• Inteligentny kalkulator BMI i prawidłowej wagi
+Błyskawiczna klasyfikacja BMI według standardów WHO (Światowej Organizacji Zdrowia) wraz ze spersonalizowanym wyliczaniem optymalnego zakresu zdrowej wagi.
+
+• Przejrzyste trendy i analityka
+Śledź swoje postępy na pierwszy rzut oka dzięki czytelnym, interaktywnym wykresom, średnim kroczącym, trendom tygodniowym/miesięcznym oraz wizualnej historii w kalendarzu.
+
+• Płynna integracja z Health Connect
+Automatycznie synchronizuj wagę i pomiary z Google Health Connect, dbając o spójność całego ekosystemu zdrowia na Twoim telefonie.
+
+• Blokada biometryczna
+Chroń swoje wrażliwe dane za pomocą odcisku palca lub rozpoznawania twarzy przy każdym uruchomieniu aplikacji.
+
+• Pełna kontrola nad danymi (Import i Eksport)
+Twoje dane należą wyłącznie do Ciebie. W każdej chwili możesz bez problemu wyeksportować lub zaimportować pełną historię w formacie CSV.
+
+• Nowoczesny design Material 3
+Elegancki, płynny i energooszczędny interfejs z automatycznym trybem ciemnym i jasnym.
+
+🌟 Czyste śledzenie wagi. Zero rozpraszaczy.
+Pobierz Balance już dziś i zacznij kontrolować swoje postępy z pełnym spokojem i bezpieczeństwem!

@@ -1,0 +1,5 @@
+• 🔒 Sicherheit: Verbesserter Backup-Datenschutz und stabilere biometrische Authentifizierung.
+• ♿ Barrierefreiheit: Bessere Bedienung dank vergrößerter Touch-Bereiche (mind. 48dp).
+• 📊 Statistiken: Schnellere Ladezeiten für Messverläufe und flüssigere Diagramme.
+• 🧭 Navigation & Stabilität: Optimierte Bildschirmübergänge und höhere Zuverlässigkeit.
+• ⚡ Allgemeine Leistungsverbesserungen und Fehlerbehebungen.

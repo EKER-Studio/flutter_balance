@@ -1,0 +1,29 @@
+Prenez le contrôle de votre santé avec Balance — le suivi de poids et d'IMC intelligent, privé et élégamment conçu pour la simplicité et la régularité quotidienne.
+
+Contrairement à d'autres applications de santé, Balance place votre confidentialité au premier plan : pas de compte à créer, pas de suivi dans le cloud, pas d'abonnement et aucune publicité. Vos données de santé restent à 100 % sur votre appareil, protégées par un chiffrement AES-256 de niveau bancaire.
+
+🎯 POURQUOI VOUS ALLEZ AIMER BALANCE :
+
+• 100 % Privé & Conçu Hors Ligne
+Pas d'inscription, aucune connexion internet requise et aucune collecte de données. Vos mesures personnelles ne quittent jamais votre téléphone.
+
+• Calculateur Intelligent d'IMC et de Poids Santé
+Classification instantanée de l'IMC selon les normes de l'OMS (Organisation Mondiale de la Santé) avec plages cibles personnalisées pour un poids santé.
+
+• Tendances et Statistiques Élégantes
+Visualisez vos progrès en un coup d'œil grâce à des graphiques interactifs, des moyennes mobiles, des tendances hebdomadaires/mensuelles et un calendrier historique.
+
+• Intégration Transparente avec Health Connect
+Synchronisez automatiquement votre poids et vos mesures avec Google Health Connect pour maintenir à jour l'ensemble de votre écosystème de santé.
+
+• Verrouillage de Sécurité Biométrique
+Protégez vos données sensibles par empreinte digitale ou reconnaissance faciale à chaque ouverture de l'application.
+
+• Liberté Totale de Vos Données (Import & Export)
+Vos données vous appartiennent. Exportez ou importez facilement l'intégralité de votre historique au format CSV à tout moment.
+
+• Design Moderne Material 3
+Interface fluide, soignée et économe en batterie avec basculement automatique entre mode sombre et clair.
+
+🌟 Un Suivi Pur. Zéro Distraction.
+Téléchargez Balance dès aujourd'hui et suivez votre parcours de remise en forme en toute sérénité !

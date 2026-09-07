@@ -1,0 +1,5 @@
+• 🔒 Security: Hardened backup protection rules and improved biometric authentication handling.
+• ♿ Accessibility: Enhanced touch ergonomics with 48dp minimum touch target sizes.
+• 📊 Charts & Performance: Faster date-range data loading and smoother weight statistics display.
+• 🧭 Navigation & Stability: Refined route handling and improved UI reliability.
+• ⚡ Minor bug fixes and overall performance optimizations.

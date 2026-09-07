@@ -1,0 +1,5 @@
+• 🔒 Beveiliging: Verbeterde back-upbescherming en betere afhandeling van biometrische verificatie.
+• ♿ Toegankelijkheid: Grotere aanraakvlakken (min. 48dp) voor een comfortabelere bediening.
+• 📊 Statistieken & Prestaties: Snellere laadtijden voor meetgegevens en soepelere grafieken.
+• 🧭 Navigatie & Stabiliteit: Geoptimaliseerde schermovergangen en verbeterde stabiliteit.
+• ⚡ Kleine bugfixes en prestatieverbeteringen.

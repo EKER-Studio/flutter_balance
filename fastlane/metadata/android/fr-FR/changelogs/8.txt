@@ -1,0 +1,5 @@
+• 🔒 Sécurité : Protection renforcée des sauvegardes et meilleure gestion biométrique.
+• ♿ Accessibilité : Cibles tactiles agrandies (min. 48dp) pour un confort d'utilisation accru.
+• 📊 Graphiques & Données : Chargement plus rapide de l'historique et statistiques plus fluides.
+• 🧭 Navigation & Stabilité : Transitions d'écrans optimisées et meilleure fiabilité.
+• ⚡ Corrections de bugs et améliorations des performances.

@@ -1,0 +1,1 @@
+Privé offline gewicht- en BMI-tracker. Geen account, Health Connect-sync.

@@ -1,0 +1,5 @@
+• 🔒 Sicurezza: Protezione del backup rafforzata e migliore gestione dell'autenticazione biometrica.
+• ♿ Accessibilità: Aree di tocco ampliate (min. 48dp) per un utilizzo più confortevole.
+• 📊 Grafici e dati: Caricamento più rapido della cronologia e statistiche del peso più fluide.
+• 🧭 Navigazione e stabilità: Transizioni migliorate e maggiore affidabilità dell'interfaccia.
+• ⚡ Risoluzione di bug e ottimizzazioni delle prestazioni.
