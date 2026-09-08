@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:balance/core/integrations/csv/csv_import_service.dart';
+import 'package:balance/features/weight/data/services/csv_import_service.dart';
 import 'package:balance/features/onboarding/presentation/widgets/components/onboarding_step_layout.dart';
 import 'package:balance/core/utils/analytics.dart';
 import 'package:balance/core/utils/crash_reporter.dart';

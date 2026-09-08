@@ -3,7 +3,7 @@ import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:balance/core/di/injection.dart';
 import 'package:balance/core/integrations/biometrics/biometric_service.dart';
-import 'package:balance/core/integrations/csv/csv_import_service.dart';
+import 'package:balance/features/weight/data/services/csv_import_service.dart';
 import 'package:balance/core/integrations/health/health_service.dart';
 import 'package:balance/core/integrations/notifications/notification_service.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_bloc.dart';

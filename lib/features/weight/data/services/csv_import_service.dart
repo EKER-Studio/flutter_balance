@@ -2,9 +2,9 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
-import 'package:balance/core/integrations/csv/csv_importer.dart';
+import 'package:balance/features/weight/data/services/csv_importer.dart';
 
-export 'package:balance/core/integrations/csv/csv_importer.dart'
+export 'package:balance/features/weight/data/services/csv_importer.dart'
     show CsvImportAnalysis;
 
 /// Thrown when the selected CSV file exceeds [CsvImportService.maxFileSizeBytes].

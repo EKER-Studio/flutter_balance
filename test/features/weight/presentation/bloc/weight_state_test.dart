@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:balance/core/integrations/csv/csv_importer.dart';
+import 'package:balance/features/weight/data/services/csv_importer.dart';
 import 'package:balance/features/weight/domain/entities/weight_entry.dart';
 import 'package:balance/core/models/time_period.dart';
 import 'package:balance/features/weight/domain/weight_error_type.dart';

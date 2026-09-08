@@ -17,6 +17,7 @@ import 'package:isar_community/isar.dart' as _i214;
 
 import '../../features/settings/presentation/bloc/app_settings_bloc.dart'
     as _i388;
+import '../../features/weight/data/services/csv_import_service.dart' as _i115;
 import '../../features/weight/data/services/csv_weight_importer.dart' as _i849;
 import '../../features/weight/data/services/health_sync_coordinator.dart'
     as _i67;
@@ -24,7 +25,6 @@ import '../../features/weight/domain/repositories/weight_repository.dart'
     as _i627;
 import '../../features/weight/presentation/bloc/weight_bloc.dart' as _i524;
 import '../integrations/biometrics/biometric_service.dart' as _i957;
-import '../integrations/csv/csv_import_service.dart' as _i808;
 import '../integrations/health/health_service.dart' as _i330;
 import '../integrations/notifications/notification_service.dart' as _i141;
 import 'register_module.dart' as _i291;
@@ -50,7 +50,7 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i141.NotificationService>(
       () => registerModule.notificationService,
     );
-    gh.lazySingleton<_i808.CsvImportService>(
+    gh.lazySingleton<_i115.CsvImportService>(
       () => registerModule.csvImportService,
     );
     gh.lazySingleton<_i388.AppSettingsBloc>(

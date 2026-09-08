@@ -4,7 +4,7 @@ import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:file_picker/src/platform/file_picker_platform_interface.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:balance/core/integrations/csv/csv_import_service.dart';
+import 'package:balance/features/weight/data/services/csv_import_service.dart';
 
 /// A test double that extends [FilePickerPlatform] so the platform interface
 /// token verification in `FilePickerPlatform.instance =` passes.

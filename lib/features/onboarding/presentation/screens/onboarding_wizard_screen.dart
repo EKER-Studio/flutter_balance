@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:balance/core/integrations/csv/csv_import_service.dart';
+import 'package:balance/features/weight/data/services/csv_import_service.dart';
 import 'package:balance/features/onboarding/presentation/bloc/onboarding_bloc.dart';
 import 'package:balance/features/onboarding/presentation/bloc/onboarding_event.dart';
 import 'package:balance/features/onboarding/presentation/widgets/sections/onboarding_wizard_content.dart';
