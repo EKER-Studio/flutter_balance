@@ -1,3 +1,6 @@
+concurrency: 4
+timeout: 60s
+
 tags:
   golden:
     description: "Tests that generate golden files."
