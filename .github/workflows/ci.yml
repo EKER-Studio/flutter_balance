@@ -95,6 +95,9 @@ jobs:
       - name: Run unit and widget tests
         run: flutter test --coverage --exclude-tags "golden,screenshot"
 
+      - name: Build Android Debug APK
+        run: flutter build apk --debug
+
       - name: Generate Coverage Job Summary
         if: always()
         run: |
