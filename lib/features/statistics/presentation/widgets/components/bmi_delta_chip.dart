@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:balance/features/weight/domain/bmi_category.dart';
 import 'package:balance/features/weight/domain/entities/weight_entry.dart';
+import 'package:balance/features/weight/domain/services/bmi_calculator.dart';
 import 'package:balance/features/weight/presentation/utils/bmi_category_localizer.dart';
 import 'package:balance/l10n/app_localizations.dart';
 
@@ -26,15 +27,19 @@ class BmiDeltaChip extends StatelessWidget {
   Widget build(BuildContext context) {
     final sortedEntries = [...entries]
       ..sort((a, b) => a.dateTime.compareTo(b.dateTime));
-    final hMeters = heightCm / 100.0;
-    final hSquared = hMeters * hMeters;
 
     final double deltaBmi;
-    if (sortedEntries.length < 2 || hSquared <= 0) {
+    if (sortedEntries.length < 2 || heightCm <= 0) {
       deltaBmi = 0.0;
     } else {
-      final firstBmi = sortedEntries.first.weightKg / hSquared;
-      final latestBmi = sortedEntries.last.weightKg / hSquared;
+      final firstBmi = BmiCalculator.calculate(
+        weightKg: sortedEntries.first.weightKg,
+        heightCm: heightCm,
+      );
+      final latestBmi = BmiCalculator.calculate(
+        weightKg: sortedEntries.last.weightKg,
+        heightCm: heightCm,
+      );
       deltaBmi = latestBmi - firstBmi;
     }
 

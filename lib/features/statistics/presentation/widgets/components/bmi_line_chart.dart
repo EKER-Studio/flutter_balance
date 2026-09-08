@@ -1,13 +1,14 @@
 import 'dart:math' as math;
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:balance/core/models/time_period.dart';
 import 'package:balance/core/presentation/theme/app_chart_theme.dart';
 import 'package:balance/core/utils/analytics.dart';
 import 'package:balance/features/weight/domain/entities/weight_entry.dart';
-import 'package:balance/core/models/time_period.dart';
+import 'package:balance/features/weight/domain/services/bmi_calculator.dart';
 import 'package:balance/l10n/app_localizations.dart';
 
-/// A presentational line chart plotting BMI points with touch tooltips and formatted date axis ticks.
+/// A line chart visualizing the Body Mass Index trend over time.
 class BmiLineChart extends StatelessWidget {
   final List<WeightEntry> entries;
   final double heightCm;
@@ -28,15 +29,15 @@ class BmiLineChart extends StatelessWidget {
     final sortedEntries = [...entries]
       ..sort((a, b) => a.dateTime.compareTo(b.dateTime));
 
-    final hMeters = heightCm / 100.0;
-    final hSquared = hMeters * hMeters;
-
     final spots = <FlSpot>[];
     double minBmi = double.infinity;
     double maxBmi = double.negativeInfinity;
 
     for (var i = 0; i < sortedEntries.length; i++) {
-      final bmi = sortedEntries[i].weightKg / hSquared;
+      final bmi = BmiCalculator.calculate(
+        weightKg: sortedEntries[i].weightKg,
+        heightCm: heightCm,
+      );
       if (bmi < minBmi) minBmi = bmi;
       if (bmi > maxBmi) maxBmi = bmi;
       spots.add(FlSpot(i.toDouble(), bmi));

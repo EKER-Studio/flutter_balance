@@ -4,6 +4,7 @@ import 'package:balance/features/settings/presentation/bloc/app_theme_mode.dart'
 import 'package:balance/features/settings/presentation/bloc/first_day_of_week.dart';
 import 'package:balance/features/weight/domain/weight_goal_mode.dart';
 import 'package:balance/features/weight/domain/bmi_category.dart';
+import 'package:balance/features/weight/domain/services/bmi_calculator.dart';
 import 'package:balance/core/models/measurement_unit.dart';
 
 /// A persistent app settings state.
@@ -287,10 +288,8 @@ extension AppSettingsX on AppSettingsState {
     if (h == null || h <= 0) {
       return 0.0;
     }
-
-    final heightInMeters = h / 100;
-    return currentWeightKg / (heightInMeters * heightInMeters);
+    return BmiCalculator.calculate(weightKg: currentWeightKg, heightCm: h);
   }
 
-  BmiCategory getBmiCategory(double bmi) => BmiCategory.fromBmi(bmi);
+  BmiCategory getBmiCategory(double bmi) => BmiCalculator.categoryFor(bmi: bmi);
 }
