@@ -56,11 +56,12 @@ Future<void> main() async {
   } catch (error, stackTrace) {
     AppCrashReporter.setFirebaseAvailable(false);
     AppAnalytics.setFirebaseAvailable(false);
-    if (kDebugMode) {
-      debugPrint(
-        '[Firebase] Initialization skipped or failed: $error\n$stackTrace',
-      );
-    }
+    await AppCrashReporter.recordError(
+      error,
+      stackTrace,
+      reason: 'Firebase initialization skipped or failed',
+      fatal: false,
+    );
   }
 
   FlutterError.onError = (details) {
