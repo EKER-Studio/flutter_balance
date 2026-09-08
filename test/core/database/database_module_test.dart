@@ -275,29 +275,9 @@ void main() {
     });
 
     test(
-      'returns key from existing key file directly without calling secure storage',
+      'returns key from secure storage directly without checking legacy file',
       () async {
-        final keyBytes = List<int>.generate(32, (i) => i + 10);
-        final keyFile = File('${tempDir.path}/balance_v1.key');
-        keyFile.writeAsStringSync(base64Encode(keyBytes));
-
-        final log = <MethodCall>[];
-        messenger.setMockMethodCallHandler(secureStorageChannel, (call) async {
-          log.add(call);
-          return null;
-        });
-
-        final key = await DatabaseModule.getEncryptionKey(tempDir.path);
-
-        expect(key, Uint8List.fromList(keyBytes));
-        expect(log, isEmpty);
-      },
-    );
-
-    test(
-      'migrates previously stored key from secure storage to key file',
-      () async {
-        final storedKey = List<int>.generate(32, (i) => i);
+        final storedKey = List<int>.generate(32, (i) => i + 5);
         final log = <MethodCall>[];
         messenger.setMockMethodCallHandler(secureStorageChannel, (
           MethodCall call,
@@ -312,15 +292,39 @@ void main() {
         expect(key, Uint8List.fromList(storedKey));
         final readCall = log.firstWhere((c) => c.method == 'read');
         expect(readCall.arguments['key'], 'isar_encryption_key');
-
-        final keyFile = File('${tempDir.path}/balance_v1.key');
-        expect(keyFile.existsSync(), isTrue);
-        expect(base64Decode(keyFile.readAsStringSync().trim()), storedKey);
+        expect(File('${tempDir.path}/balance_v1.key').existsSync(), isFalse);
       },
     );
 
     test(
-      'generates a fresh 256-bit key and persists it to both file and secure storage',
+      'migrates legacy key from file to secure storage and deletes file',
+      () async {
+        final fileKey = List<int>.generate(32, (i) => i + 10);
+        final keyFile = File('${tempDir.path}/balance_v1.key');
+        keyFile.writeAsStringSync(base64Encode(fileKey));
+
+        final log = <MethodCall>[];
+        messenger.setMockMethodCallHandler(secureStorageChannel, (
+          MethodCall call,
+        ) async {
+          log.add(call);
+          return null;
+        });
+
+        final key = await DatabaseModule.getEncryptionKey(tempDir.path);
+
+        expect(key, Uint8List.fromList(fileKey));
+        final writeCall = log.firstWhere((c) => c.method == 'write');
+        expect(writeCall.arguments['key'], 'isar_encryption_key');
+        expect(base64Decode(writeCall.arguments['value'] as String), fileKey);
+
+        // Plaintext file must be securely deleted after migration
+        expect(keyFile.existsSync(), isFalse);
+      },
+    );
+
+    test(
+      'generates a fresh 256-bit key and persists it only to secure storage',
       () async {
         final log = <MethodCall>[];
         messenger.setMockMethodCallHandler(secureStorageChannel, (
@@ -337,9 +341,9 @@ void main() {
         expect(writeCall.arguments['key'], 'isar_encryption_key');
         expect(base64Decode(writeCall.arguments['value'] as String), key);
 
+        // Plaintext key file should NOT be created
         final keyFile = File('${tempDir.path}/balance_v1.key');
-        expect(keyFile.existsSync(), isTrue);
-        expect(base64Decode(keyFile.readAsStringSync().trim()), key);
+        expect(keyFile.existsSync(), isFalse);
       },
     );
 

@@ -39,83 +39,103 @@ class DatabaseModule {
   ];
 
   static const String _encryptionKeyKey = 'isar_encryption_key';
-  static const String _encryptionKeyFileName = 'balance_v1.key';
+  static const String _legacyEncryptionKeyFileName = 'balance_v1.key';
 
   static const FlutterSecureStorage _secureStorage = FlutterSecureStorage();
 
   /// Retrieves or generates a 256-bit AES encryption key.
   ///
-  /// Checks for a persisted key file in the application documents directory
-  /// (which is included in Android Cloud Backup). If not present, falls back
-  /// to [FlutterSecureStorage] to migrate existing keys, and writes the key to
-  /// the file. If neither exists, generates a fresh random 256-bit key and
-  /// stores it in both places.
+  /// Checks [FlutterSecureStorage] for the persisted key. If not present, checks
+  /// for a legacy unencrypted key file (`balance_v1.key`), migrates the key to
+  /// [FlutterSecureStorage], and deletes the legacy file from disk to prevent
+  /// exposure in backups and device dumps. If neither exists, generates a fresh
+  /// random 256-bit key and stores it exclusively in [FlutterSecureStorage].
   ///
-  /// @param directoryPath Optional directory override (used in testing).
+  /// @param directoryPath Optional directory override for legacy migration (used in testing).
   static Future<Uint8List> getEncryptionKey([String? directoryPath]) async {
-    File? keyFile;
-    try {
-      final dirPath =
-          directoryPath ?? (await getApplicationDocumentsDirectory()).path;
-      keyFile = File('$dirPath/$_encryptionKeyFileName');
-
-      if (await keyFile.exists()) {
-        final content = (await keyFile.readAsString()).trim();
-        if (content.isNotEmpty) {
-          final decoded = base64Decode(content);
-          if (decoded.length == 32) {
-            return Uint8List.fromList(decoded);
-          }
-        }
-      }
-    } catch (_) {
-      // Path provider may be unavailable in some isolated test environments
-    }
-
-    // Fallback/Migration: Check FlutterSecureStorage
+    // 1. Primary secure store: FlutterSecureStorage
     String? stored;
     try {
       stored = await _secureStorage.read(key: _encryptionKeyKey);
-    } catch (_) {
-      // Secure storage might fail or be unavailable
+    } catch (e, stack) {
+      AppCrashReporter.recordError(
+        e,
+        stack,
+        reason:
+            '[DatabaseModule] Failed to read encryption key from secure storage',
+        fatal: false,
+      );
     }
 
     if (stored != null && stored.isNotEmpty) {
       try {
         final decoded = base64Decode(stored);
         if (decoded.length == 32) {
-          try {
-            await keyFile?.writeAsString(stored);
-          } catch (e, stack) {
-            AppCrashReporter.recordError(
-              e,
-              stack,
-              reason: 'Failed to write migrated encryption key to file backup',
-              fatal: false,
-            );
-          }
           return Uint8List.fromList(decoded);
         }
+        throw FormatException(
+          'Malformed stored encryption key: expected 32 bytes, got ${decoded.length}',
+        );
       } catch (e) {
         throw FormatException('Malformed stored encryption key: $e');
       }
     }
 
-    final key = Uint8List.fromList(
-      List<int>.generate(32, (_) => Random.secure().nextInt(256)),
-    );
-    final base64Key = base64Encode(key);
-
+    // 2. Migration: Check for legacy unencrypted file on disk
+    File? legacyKeyFile;
     try {
-      await keyFile?.writeAsString(base64Key);
+      final dirPath =
+          directoryPath ?? (await getApplicationDocumentsDirectory()).path;
+      legacyKeyFile = File('$dirPath/$_legacyEncryptionKeyFileName');
+
+      if (await legacyKeyFile.exists()) {
+        final content = (await legacyKeyFile.readAsString()).trim();
+        if (content.isNotEmpty) {
+          final decoded = base64Decode(content);
+          if (decoded.length == 32) {
+            try {
+              await _secureStorage.write(
+                key: _encryptionKeyKey,
+                value: content,
+              );
+            } catch (e, stack) {
+              AppCrashReporter.recordError(
+                e,
+                stack,
+                reason:
+                    '[DatabaseModule] Failed to migrate legacy key to secure storage',
+                fatal: false,
+              );
+            }
+            try {
+              await legacyKeyFile.delete();
+            } catch (e, stack) {
+              AppCrashReporter.recordError(
+                e,
+                stack,
+                reason:
+                    '[DatabaseModule] Failed to delete legacy key file after migration',
+                fatal: false,
+              );
+            }
+            return Uint8List.fromList(decoded);
+          }
+        }
+      }
     } catch (e, stack) {
       AppCrashReporter.recordError(
         e,
         stack,
-        reason: 'Failed to write encryption key to file backup',
+        reason: '[DatabaseModule] Error checking legacy encryption key file',
         fatal: false,
       );
     }
+
+    // 3. Generate fresh 256-bit key and persist exclusively to secure storage
+    final key = Uint8List.fromList(
+      List<int>.generate(32, (_) => Random.secure().nextInt(256)),
+    );
+    final base64Key = base64Encode(key);
 
     try {
       await _secureStorage.write(key: _encryptionKeyKey, value: base64Key);
@@ -124,7 +144,7 @@ class DatabaseModule {
         e,
         stack,
         reason:
-            'Failed to write encryption key to secure storage — data loss risk if file backup also failed',
+            '[DatabaseModule] Failed to write new encryption key to secure storage',
         fatal: false,
       );
     }
