@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:balance/core/di/injection.dart';
 import 'package:balance/core/models/measurement_unit.dart';
 import 'package:balance/core/utils/analytics.dart';
 import 'package:balance/core/utils/unit_converter.dart';
@@ -54,19 +53,15 @@ class _BmiLegendDialogState extends State<BmiLegendDialog> {
     AppSettingsState? settingsState;
     try {
       settingsState = context.read<AppSettingsBloc>().state;
-    } catch (_) {
-      if (getIt.isRegistered<AppSettingsBloc>()) {
-        settingsState = getIt<AppSettingsBloc>().state;
-      }
+    } on Object {
+      settingsState = null;
     }
 
     WeightState? weightState;
     try {
       weightState = context.read<WeightBloc>().state;
-    } catch (_) {
-      if (getIt.isRegistered<WeightBloc>()) {
-        weightState = getIt<WeightBloc>().state;
-      }
+    } on Object {
+      weightState = null;
     }
 
     final resolvedHeightCm =

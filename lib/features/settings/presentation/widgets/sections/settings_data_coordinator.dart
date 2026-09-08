@@ -5,7 +5,6 @@ import 'package:file_picker/file_picker.dart';
 import 'package:go_router/go_router.dart';
 import 'package:share_plus/share_plus.dart';
 
-import 'package:balance/core/di/injection.dart';
 import 'package:balance/core/integrations/biometrics/biometric_service.dart';
 import 'package:balance/core/integrations/csv/csv_exporter.dart';
 import 'package:balance/core/integrations/widgets/widget_sync_service.dart';
@@ -415,19 +414,15 @@ class SettingsDataCoordinator {
     WeightState? weightState;
     try {
       weightState = context.read<WeightBloc>().state;
-    } catch (_) {
-      if (getIt.isRegistered<WeightBloc>()) {
-        weightState = getIt<WeightBloc>().state;
-      }
+    } on Object {
+      weightState = null;
     }
 
     AppSettingsState? settingsState;
     try {
       settingsState = context.read<AppSettingsBloc>().state;
-    } catch (_) {
-      if (getIt.isRegistered<AppSettingsBloc>()) {
-        settingsState = getIt<AppSettingsBloc>().state;
-      }
+    } on Object {
+      settingsState = null;
     }
 
     final entries = weightState?.entries ?? const [];

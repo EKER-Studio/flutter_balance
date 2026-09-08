@@ -14,6 +14,7 @@ import 'package:balance/l10n/app_localizations.dart';
 import 'package:balance/features/weight/presentation/bloc/weight_bloc.dart';
 import 'package:balance/features/weight/presentation/bloc/weight_event.dart';
 import 'package:balance/features/weight/presentation/bloc/weight_state.dart';
+import 'package:balance/features/weight/presentation/utils/weight_error_localizer.dart';
 
 import 'package:balance/features/settings/presentation/bloc/app_settings_bloc.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_event.dart';
@@ -246,6 +247,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
         type: state.importedCount == 0
             ? SnackBarType.info
             : SnackBarType.success,
+      );
+    } else if (state is WeightError) {
+      final l10n = AppLocalizations.of(context);
+      AppSnackBar.show(
+        context,
+        message: state.errorType.localizedMessage(l10n),
+        type: SnackBarType.error,
       );
     }
   }
