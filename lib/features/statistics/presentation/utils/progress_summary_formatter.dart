@@ -63,7 +63,6 @@ class ProgressSummaryFormatter {
     );
     buffer.writeln('');
 
-    // --- Section 1: Progress & Goal ---
     buffer.writeln('⚖️ ${l10n.summaryProgressTitle}');
     final startDateFormatted = DateFormat.yMMMd(
       l10n.localeName,
@@ -145,7 +144,6 @@ class ProgressSummaryFormatter {
       );
     }
 
-    // --- Section 2: Range & Statistics ---
     buffer.writeln('');
     buffer.writeln('📈 ${l10n.summaryRangeTitle}');
     final maxEntry = entries.reduce((a, b) => a.weightKg > b.weightKg ? a : b);
@@ -168,7 +166,6 @@ class ProgressSummaryFormatter {
     buffer.writeln('• ${l10n.averageWeight}: $avgDisplay $unitLabel');
     buffer.writeln('• ${l10n.summaryTotalMeasurements}: ${entries.length}');
 
-    // --- Section 3: Habits & Consistency ---
     buffer.writeln('');
     buffer.writeln('🔥 ${l10n.summaryHabitsTitle}');
     final streak = _calculateStreak(entries, currentDate);
