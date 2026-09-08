@@ -7,7 +7,7 @@ import 'package:mocktail/mocktail.dart';
 import 'package:balance/core/integrations/health/health_service.dart';
 import 'package:balance/features/weight/domain/entities/weight_entry.dart';
 import 'package:balance/features/weight/domain/repositories/weight_repository.dart';
-import 'package:balance/features/weight/domain/services/csv_weight_importer.dart';
+import 'package:balance/features/weight/data/services/csv_weight_importer.dart';
 import 'package:balance/features/weight/domain/weight_error_type.dart';
 import 'package:balance/features/weight/presentation/bloc/weight_bloc.dart';
 import 'package:balance/features/weight/presentation/bloc/weight_event.dart';

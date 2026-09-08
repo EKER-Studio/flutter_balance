@@ -25,7 +25,7 @@ class CsvAnalysisFailure extends CsvAnalysisOutcome {
   const CsvAnalysisFailure(this.errorType);
 }
 
-/// Domain service responsible for validating, parsing, and committing CSV weight records.
+/// Data service responsible for validating, parsing, and committing CSV weight records.
 class CsvWeightImporter {
   final WeightRepository repository;
 

@@ -4,7 +4,7 @@ import 'package:mocktail/mocktail.dart';
 import 'package:balance/features/weight/domain/csv_error_type.dart';
 import 'package:balance/features/weight/domain/entities/weight_entry.dart';
 import 'package:balance/features/weight/domain/repositories/weight_repository.dart';
-import 'package:balance/features/weight/domain/services/csv_weight_importer.dart';
+import 'package:balance/features/weight/data/services/csv_weight_importer.dart';
 
 class MockWeightRepository extends Mock implements WeightRepository {}
 
