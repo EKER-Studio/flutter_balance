@@ -27,6 +27,11 @@ analyzer:
     - "macos/**"
     - "linux/**"
 
+  errors:
+    unused_import: error
+    unused_local_variable: warning
+    dead_code: warning
+
 linter:
   rules:
     # Error Prevention & Async Safety
@@ -44,6 +49,9 @@ linter:
     - use_build_context_synchronously
     - use_rethrow_when_possible
     - valid_regexps
+    - prefer_void_to_null
+    - unnecessary_await_in_return
+    - noop_primitive_operations
 
     # Clean Code & Const Optimization
     - always_declare_return_types
@@ -51,6 +59,7 @@ linter:
     - curly_braces_in_flow_control_structures
     - depend_on_referenced_packages
     - no_leading_underscores_for_local_identifiers
+    - prefer_final_in_for_each
     - prefer_conditional_assignment
     - prefer_const_declarations
     - prefer_if_null_operators
@@ -64,7 +73,11 @@ linter:
     - unnecessary_nullable_for_final_variable_declarations
     - unnecessary_string_escapes
     - unnecessary_string_interpolations
+    - use_string_buffers
+    - sort_unnamed_constructors_first
     - use_super_parameters
+    - avoid_unnecessary_containers
+    - unnecessary_parenthesis
 
     # Flutter Performance & UI Polish
     - sized_box_for_whitespace
