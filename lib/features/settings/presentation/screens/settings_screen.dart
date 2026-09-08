@@ -35,7 +35,6 @@ class SettingsScreen extends StatefulWidget {
   State<SettingsScreen> createState() => _SettingsScreenState();
 }
 
-/// The state for [SettingsScreen] that manages dialogs and CSV import/export/wipe flows.
 class _SettingsScreenState extends State<SettingsScreen> {
   /// Resolves once to whether device biometrics are available on this device;
   /// drives the security section's toggle.

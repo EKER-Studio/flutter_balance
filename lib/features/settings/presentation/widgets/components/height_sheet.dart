@@ -26,7 +26,6 @@ class HeightSheet extends StatefulWidget {
   State<HeightSheet> createState() => _HeightSheetState();
 }
 
-/// State for [HeightSheet] owning text input controllers and conversion/validation logic.
 class _HeightSheetState extends State<HeightSheet> {
   late final TextEditingController _cmController;
   late final TextEditingController _feetController;

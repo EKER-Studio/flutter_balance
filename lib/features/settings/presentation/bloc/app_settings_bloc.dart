@@ -266,7 +266,6 @@ class AppSettingsBloc extends HydratedBloc<AppSettingsEvent, AppSettingsState> {
     emit(state.copyWith(lastHealthSyncTimestamp: event.timestamp));
   }
 
-  /// Resets every setting back to the default [AppSettingsState].
   void _onResetAppSettings(
     ResetAppSettings event,
     Emitter<AppSettingsState> emit,

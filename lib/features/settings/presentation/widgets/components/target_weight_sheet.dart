@@ -27,7 +27,6 @@ class TargetWeightSheet extends StatefulWidget {
   State<TargetWeightSheet> createState() => _TargetWeightSheetState();
 }
 
-/// The state owning the target weight controller and save flow.
 class _TargetWeightSheetState extends State<TargetWeightSheet> {
   late final TextEditingController _controller;
   late WeightGoalMode _selectedMode;
