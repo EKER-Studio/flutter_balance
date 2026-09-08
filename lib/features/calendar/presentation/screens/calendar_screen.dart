@@ -33,7 +33,6 @@ class CalendarScreen extends StatefulWidget {
   State<CalendarScreen> createState() => _CalendarScreenState();
 }
 
-/// Tracks the focused month, the selected day, and month paging state for [CalendarScreen].
 class _CalendarScreenState extends State<CalendarScreen> {
   late DateTime _focusedMonth;
   late DateTime _selectedDate;
@@ -55,7 +54,6 @@ class _CalendarScreenState extends State<CalendarScreen> {
     });
   }
 
-  /// Shifts the focused month one month back.
   void _previousMonth() {
     final newMonth = DateTime(_focusedMonth.year, _focusedMonth.month - 1, 1);
     AppAnalytics.logCalendarMonthChanged(
@@ -66,7 +64,6 @@ class _CalendarScreenState extends State<CalendarScreen> {
     });
   }
 
-  /// Shifts the focused month one month forward.
   void _nextMonth() {
     final newMonth = DateTime(_focusedMonth.year, _focusedMonth.month + 1, 1);
     AppAnalytics.logCalendarMonthChanged(

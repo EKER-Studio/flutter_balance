@@ -10,7 +10,6 @@ class CalendarShimmerSkeleton extends StatefulWidget {
       _CalendarShimmerSkeletonState();
 }
 
-/// Drives the shimmer opacity tween and disposes the [AnimationController].
 class _CalendarShimmerSkeletonState extends State<CalendarShimmerSkeleton>
     with SingleTickerProviderStateMixin {
   late final AnimationController _controller;

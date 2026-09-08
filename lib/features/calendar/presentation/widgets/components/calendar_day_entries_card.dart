@@ -376,7 +376,6 @@ class CalendarDayEntriesCard extends StatelessWidget {
     );
   }
 
-  /// Prompts the user for confirmation before deleting the entry with [entryId].
   Future<void> _confirmDelete(BuildContext context, int entryId) async {
     final l10n = AppLocalizations.of(context);
     AppAnalytics.logDialogDeleteWeightOpened(entryId);
