@@ -42,14 +42,14 @@ GoRouter createAppRouter({
 
       if (isGoingToSplash || isGoingToError) return null;
 
-      // 1. First-time user onboarding gate
-      if (!settings.isOnboardingCompleted) {
-        return isGoingToOnboarding ? null : AppRoutes.onboarding;
-      }
-
-      // 2. Biometric shield authentication gate
+      // 1. Biometric shield authentication gate
       if (settings.isLocked) {
         return isGoingToShield ? null : AppRoutes.shield;
+      }
+
+      // 2. First-time user onboarding gate
+      if (!settings.isOnboardingCompleted) {
+        return isGoingToOnboarding ? null : AppRoutes.onboarding;
       }
 
       // 3. User is authenticated and onboarding is finished; redirect away from gate screens.

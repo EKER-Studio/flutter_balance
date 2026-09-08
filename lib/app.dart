@@ -17,7 +17,6 @@ import 'package:balance/core/presentation/navigation/app_router.dart';
 import 'package:balance/core/presentation/navigation/app_routes.dart';
 import 'package:balance/core/presentation/screens/app_initialization_error_screen.dart';
 import 'package:balance/core/presentation/screens/app_splash_screen.dart';
-import 'package:balance/core/presentation/screens/biometric_shield_screen.dart';
 import 'package:balance/core/presentation/theme/app_theme.dart';
 import 'package:balance/core/utils/analytics.dart';
 import 'package:balance/core/utils/crash_reporter.dart';
@@ -293,7 +292,7 @@ class _AppState extends State<App> {
 
   @override
   Widget build(BuildContext context) {
-    final settingsBloc = context.watch<AppSettingsBloc>();
+    final settingsBloc = context.read<AppSettingsBloc>();
 
     return BlocBuilder<AppSettingsBloc, AppSettingsState>(
       builder: (context, settingsState) {
@@ -324,13 +323,7 @@ class _AppState extends State<App> {
                   maxScaleFactor: 2.0,
                 ),
               ),
-              child: Stack(
-                children: [
-                  ?child,
-                  if (settingsState.isLocked)
-                    const Positioned.fill(child: BiometricShieldScreen()),
-                ],
-              ),
+              child: child ?? const SizedBox.shrink(),
             );
           },
           home: widget.repositoryOverride != null

@@ -1,16 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:balance/core/utils/analytics.dart';
 import 'package:balance/features/calendar/presentation/screens/calendar_screen.dart';
 import 'package:balance/features/dashboard/presentation/screens/today_screen.dart';
 import 'package:balance/features/navigation/presentation/widgets/components/adaptive_bottom_navigation_bar.dart';
 import 'package:balance/features/navigation/presentation/widgets/components/adaptive_navigation_rail.dart';
-import 'package:balance/features/settings/presentation/bloc/app_settings_bloc.dart';
 import 'package:balance/features/settings/presentation/screens/settings_screen.dart';
 import 'package:balance/features/statistics/presentation/screens/statistics_screen.dart';
-import 'package:balance/features/weight/presentation/bloc/weight_bloc.dart';
-import 'package:balance/features/weight/presentation/bloc/weight_event.dart';
 
 /// Main container screen featuring adaptive navigation (NavigationBar in portrait, NavigationRail in landscape).
 ///
@@ -27,8 +23,7 @@ class MainNavigationScreen extends StatefulWidget {
 }
 
 /// State holding the active tab index and rendering the selected screen.
-class _MainNavigationScreenState extends State<MainNavigationScreen>
-    with WidgetsBindingObserver {
+class _MainNavigationScreenState extends State<MainNavigationScreen> {
   int _currentIndex = 0;
 
   static const _tabNames = ['today', 'calendar', 'stats', 'settings'];
@@ -39,13 +34,11 @@ class _MainNavigationScreenState extends State<MainNavigationScreen>
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addObserver(this);
     AppAnalytics.logTodayScreenViewed();
   }
 
   @override
   void dispose() {
-    WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
 
@@ -74,16 +67,6 @@ class _MainNavigationScreenState extends State<MainNavigationScreen>
       setState(() {
         _currentIndex = index;
       });
-    }
-  }
-
-  @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.resumed && mounted) {
-      final settings = context.read<AppSettingsBloc>().state;
-      if (settings.isHealthSyncEnabled) {
-        context.read<WeightBloc>().add(const SyncHealthEntries());
-      }
     }
   }
 
