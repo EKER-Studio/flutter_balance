@@ -37,19 +37,12 @@ class NotificationService {
 
   bool _initialized = false;
 
-  /// The display name for the Android reminder notification channel.
   String _channelName = 'Daily Weight Reminders';
-
-  /// The description for the Android reminder notification channel.
   String _channelDescription =
       'Reminds you to record your daily weight measurement.';
-
-  /// The display name for the Android achievements notification channel.
   String _achievementsChannelName = 'Achievements & Milestones';
-
-  /// The description for the Android achievements notification channel.
   String _achievementsChannelDescription =
-      'Notifications when you unlock new health milestones and streaks.';
+      'Notifications celebrating your milestones and streaks.';
 
   String _title = 'Time to weigh in!';
 

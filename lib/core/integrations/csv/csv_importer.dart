@@ -444,7 +444,7 @@ class CsvImporter {
       try {
         return format.parseStrict(trimmed);
       } on FormatException {
-        // Try next format
+        // Fall through to test subsequent date format patterns.
       }
     }
 

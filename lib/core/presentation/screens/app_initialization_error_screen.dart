@@ -15,7 +15,6 @@ class AppInitializationErrorContent extends StatefulWidget {
   /// Callback executed when the user taps the retry button.
   final VoidCallback onRetry;
 
-  /// Creates an [AppInitializationErrorContent].
   const AppInitializationErrorContent({
     super.key,
     required this.error,
@@ -27,7 +26,6 @@ class AppInitializationErrorContent extends StatefulWidget {
       _AppInitializationErrorContentState();
 }
 
-/// State for [AppInitializationErrorContent] reporting the screen view once.
 class _AppInitializationErrorContentState
     extends State<AppInitializationErrorContent> {
   @override
@@ -127,7 +125,6 @@ class AppInitializationErrorScreen extends StatelessWidget {
   /// Callback executed when the user taps the retry button.
   final VoidCallback onRetry;
 
-  /// Creates an [AppInitializationErrorScreen].
   const AppInitializationErrorScreen({
     super.key,
     required this.error,
