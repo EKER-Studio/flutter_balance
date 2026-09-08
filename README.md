@@ -269,7 +269,6 @@ ID,Date,Weight (kg),Note
 As part of our commitment to building in public and advancing agentic workflows, this repository includes battle-tested, token-budget-safe audit frameworks and prompts in the [`prompts/`](prompts/) directory:
 
 - **[BLoC Architecture Deep Audit](prompts/flutter_architect_deep_bloc_audit.md)**: Exhaustive 12-dimension technical and architectural audit framework tailored for Flutter + BLoC + Isar apps.
-- **[Riverpod Architecture Deep Audit](prompts/flutter_architect_deep_riverpod_audit.md)**: Complete 12-dimension audit framework for Flutter + Riverpod 3.x + Isar apps.
 - **[Unit Test Auditor Framework](prompts/flutter_unit_test_audit_framework_en.md)**: Iterative, bounded-context audit and test generation framework for Flutter unit tests.
 - **[i18n / L10n Localization Audit](prompts/flutter_i18n_l10n_audit_en.md)**: Chunked, stateful localization auditor for `.arb` + `flutter gen-l10n` toolchains.
 - **[Comments & DartDoc Cleanup Prompt](prompts/flutter_comments_dartdoc_cleanup_prompt_en.md)**: Memory-safe, file-by-file comment translation and documentation refactoring prompt.
@@ -277,7 +276,7 @@ As part of our commitment to building in public and advancing agentic workflows,
 ## Branches
 
 - `develop` — default integration branch. All feature PRs target `develop`.
-- `release` — release branch. APK built via `release.yml` on push to `release` or tag `v*`.
+- `release` — release branch. APK & AAB built via `release.yml` on push to `release` or tag `v*`.
 - `feature/*` — feature branches from `develop`.
 
 See [CONTRIBUTING](.github/CONTRIBUTING.md) for workflow and PR templates.
