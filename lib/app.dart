@@ -23,7 +23,7 @@ import 'package:balance/core/utils/crash_reporter.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_bloc.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_event.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_state.dart';
-import 'package:balance/features/settings/presentation/bloc/app_theme_mode.dart';
+import 'package:balance/core/presentation/theme/app_theme_mode.dart';
 import 'package:balance/features/statistics/presentation/utils/milestone_notification_coordinator.dart';
 import 'package:balance/features/weight/domain/repositories/weight_repository.dart';
 import 'package:balance/features/weight/presentation/bloc/weight_bloc.dart';
