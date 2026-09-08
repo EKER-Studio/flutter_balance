@@ -49,6 +49,7 @@ migrate_working_dir/
 
 # Generated localization files
 lib/l10n/app_localizations*.dart
+l10n_untranslated.txt
 
 # Symbolication related
 app.*.symbols
