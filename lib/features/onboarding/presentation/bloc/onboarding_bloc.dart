@@ -62,7 +62,6 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
     on<OnboardingCompleted>(_onCompleted, transformer: droppable());
   }
 
-  /// Resets the wizard to a pristine state seeded from the constructor values.
   void _onStarted(OnboardingStarted event, Emitter<OnboardingState> emit) {
     emit(
       OnboardingState(

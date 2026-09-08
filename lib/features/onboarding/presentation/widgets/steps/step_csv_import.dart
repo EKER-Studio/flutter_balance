@@ -10,7 +10,6 @@ import 'package:balance/features/onboarding/presentation/widgets/components/csv_
 import 'package:balance/features/weight/domain/entities/weight_entry.dart';
 import 'package:balance/l10n/app_localizations.dart';
 
-/// Internal state of the CSV import step.
 enum _CsvImportStatus {
   /// Standard view with the description and the file picker button.
   idle,

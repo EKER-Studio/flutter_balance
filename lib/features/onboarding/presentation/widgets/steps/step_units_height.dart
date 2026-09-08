@@ -181,7 +181,6 @@ class _StepUnitsHeightState extends State<StepUnitsHeight> {
     });
   }
 
-  /// Validates the form and invokes [StepUnitsHeight.onNext] on success.
   void _handleNext() {
     final heightCm = _calculateHeightCm();
     if (heightCm != null) {

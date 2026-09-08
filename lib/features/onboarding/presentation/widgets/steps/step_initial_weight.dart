@@ -105,8 +105,6 @@ class _StepInitialWeightState extends State<StepInitialWeight> {
     super.dispose();
   }
 
-  /// Shows the date and time pickers (dates from 2000 up to today) and
-  /// replaces the selected timestamp with the user's choice.
   Future<void> _pickDateTime() async {
     final now = DateTime.now();
     AppAnalytics.logOnboardingInitialWeightDatePickerOpened();
@@ -191,8 +189,6 @@ class _StepInitialWeightState extends State<StepInitialWeight> {
     });
   }
 
-  /// Invokes [StepInitialWeight.onNext] with the parsed weight and the
-  /// selected timestamp when the input is valid.
   void _handleNext() {
     final weightKg = _parseWeightKg();
     if (weightKg != null) {

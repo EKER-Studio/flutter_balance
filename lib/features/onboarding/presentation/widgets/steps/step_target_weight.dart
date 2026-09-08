@@ -185,8 +185,6 @@ class _StepTargetWeightState extends State<StepTargetWeight> {
     }
   }
 
-  /// Invokes [StepTargetWeight.onNext] with the parsed target weight (or
-  /// `null` when the field was left empty) and selected goal mode.
   void _handleNext() {
     final weightKg = _parseTargetWeightKg();
     widget.onNext(weightKg, _selectedMode);
