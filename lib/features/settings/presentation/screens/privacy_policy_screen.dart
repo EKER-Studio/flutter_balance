@@ -11,19 +11,18 @@ class PrivacyPolicyScreen extends StatelessWidget {
   const PrivacyPolicyScreen({super.key});
 
   Future<void> _sendContactEmail(BuildContext context) async {
+    final l10n = AppLocalizations.of(context);
     final uri = Uri(
       scheme: 'mailto',
       path: 'contact@ekerstudio.com',
-      queryParameters: {'subject': 'Balance App — Privacy Policy Inquiry'},
+      queryParameters: {'subject': l10n.privacyPolicyEmailSubject},
     );
     try {
       final launched = await launchUrl(uri);
       if (!launched && context.mounted) {
         AppSnackBar.show(
           context,
-          message: AppLocalizations.of(
-            context,
-          ).couldNotOpenEmailClient('contact@ekerstudio.com'),
+          message: l10n.couldNotOpenEmailClient('contact@ekerstudio.com'),
         );
       }
     } catch (e, stack) {
@@ -98,7 +97,7 @@ class PrivacyPolicyScreen extends StatelessWidget {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  'Balance',
+                                  l10n.appTitle,
                                   style: theme.textTheme.titleLarge?.copyWith(
                                     fontWeight: FontWeight.bold,
                                     color: colorScheme.onSurface,

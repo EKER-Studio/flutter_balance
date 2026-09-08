@@ -238,7 +238,7 @@ class _LicensesScreenState extends State<LicensesScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Balance',
+                        l10n.appTitle,
                         style: theme.textTheme.titleLarge?.copyWith(
                           fontWeight: FontWeight.bold,
                           color: colorScheme.onSurface,
@@ -273,7 +273,7 @@ class _LicensesScreenState extends State<LicensesScreen> {
                   ),
                 ),
                 Text(
-                  'Powered by Flutter',
+                  l10n.poweredByFlutter,
                   style: theme.textTheme.bodySmall?.copyWith(
                     color: colorScheme.onSurfaceVariant,
                     fontWeight: FontWeight.w500,
