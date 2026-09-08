@@ -186,7 +186,7 @@ class BiometricService {
           '[BiometricService] Authentication already in progress. Re-using active Future.',
         );
       }
-      return await _activeAuthFuture!;
+      return _activeAuthFuture!;
     }
 
     _activeAuthFuture = _performAuthentication(
