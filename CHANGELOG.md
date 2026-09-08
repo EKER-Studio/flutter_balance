@@ -1,5 +1,19 @@
 # Changelog
 
+## [Unreleased]
+
+### 🇵🇱 Polski
+- 🔧 **Konfiguracja:** Dodano reguły analizy statycznej, zoptymalizowano `build.yaml` i `dart_test.yaml`, oczyszczono `pubspec.yaml`.
+- 🛡️ **Jakość kodu:** Zastąpiono `debugPrint` ustrukturyzowanym rejestratorem `AppCrashReporter`.
+- 📦 **Wydanie:** Dodano budowanie pakietu Android App Bundle (AAB) z zaciemnianiem kodu (obfuscation).
+
+### 🇬🇧 English
+- 🔧 **Configuration:** Added strict static analysis rules, optimized `build.yaml` and `dart_test.yaml`, cleaned up `pubspec.yaml`.
+- 🛡️ **Code Quality:** Replaced `debugPrint` with structured `AppCrashReporter`.
+- 📦 **Release:** Added Android App Bundle (AAB) target with code obfuscation.
+
+---
+
 ## [1.1.1] — 2026-09-04
 
 ### 🇵🇱 Polski (Google Play Release Notes)
