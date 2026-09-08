@@ -38,7 +38,6 @@ Future<void> main() async {
     ),
   );
 
-  // Install global BLoC error observer to report any unhandled BLoC errors.
   Bloc.observer = const AppBlocObserver();
 
   try {
@@ -64,7 +63,6 @@ Future<void> main() async {
     }
   }
 
-  // Route framework errors to Crashlytics and local crash log in release builds.
   FlutterError.onError = (details) {
     FlutterError.presentError(details);
     AppCrashReporter.recordError(
@@ -75,7 +73,6 @@ Future<void> main() async {
     );
   };
 
-  // Route asynchronous platform errors to Crashlytics and local crash log in release builds.
   ui.PlatformDispatcher.instance.onError = (Object error, StackTrace stack) {
     AppCrashReporter.recordError(
       error,
