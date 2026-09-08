@@ -87,8 +87,6 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
   bool get _isHealthSyncEnabled =>
       _settingsBloc?.state.isHealthSyncEnabled ?? false;
 
-  /// Extracts the persisted entries from any [WeightState], falling back to
-  /// an empty list for [WeightInitial] and [WeightLoading].
   static List<WeightEntry> _entriesFromState(WeightState state) =>
       state.entries;
 
@@ -192,7 +190,6 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
     final currentEntries = _entriesFromState(state);
 
     if (currentEntries.isEmpty) {
-      // Emit loading state while establishing the new subscription.
       emit(
         WeightLoading(heightCm: state.heightCm, timePeriod: state.timePeriod),
       );
@@ -480,8 +477,6 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
     );
   }
 
-  /// Re-reads all entries from the repository and emits a fresh [WeightLoaded]
-  /// state, emitting [WeightErrorType.readFailed] on failure.
   Future<void> _onRefreshWeightData(
     RefreshWeightData event,
     Emitter<WeightState> emit,
@@ -519,8 +514,6 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
     }
   }
 
-  /// Wipes all stored weight data and emits an empty [WeightLoaded] state,
-  /// emitting [WeightErrorType.wipeFailed] on failure.
   Future<void> _onClearAllWeightData(
     ClearAllWeightData event,
     Emitter<WeightState> emit,
@@ -644,8 +637,6 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
     }
   }
 
-  /// Persists the [ConfirmCsvImport.validEntries] via the idempotent repository
-  /// bulk import and emits [WeightImportSuccess] with the inserted-entry count.
   Future<void> _onConfirmCsvImport(
     ConfirmCsvImport event,
     Emitter<WeightState> emit,

@@ -38,7 +38,6 @@ class AddWeightSheet extends StatefulWidget {
   State<AddWeightSheet> createState() => _AddWeightSheetState();
 }
 
-/// The state owning the form controllers, selected date/time, and save flow.
 class _AddWeightSheetState extends State<AddWeightSheet>
     with WidgetsBindingObserver {
   final _weightController = TextEditingController();
@@ -119,8 +118,6 @@ class _AddWeightSheetState extends State<AddWeightSheet>
     _selectedTime.minute,
   );
 
-  /// Shows the date picker and validates that the combined selection is not
-  /// in the future.
   Future<void> _pickDate(BuildContext context) async {
     FocusScope.of(context).unfocus();
     AppAnalytics.logDialogAddWeightDatePickerOpened();
@@ -144,7 +141,6 @@ class _AddWeightSheetState extends State<AddWeightSheet>
     }
   }
 
-  /// Shows the time picker and validates the combined selection.
   Future<void> _pickTime(BuildContext context) async {
     FocusScope.of(context).unfocus();
     AppAnalytics.logDialogAddWeightTimePickerOpened();
@@ -166,7 +162,6 @@ class _AddWeightSheetState extends State<AddWeightSheet>
     }
   }
 
-  /// Marks the combined date/time as invalid when it lies in the future.
   void _validateDateTime() {
     final now = DateTime.now().add(const Duration(minutes: 1));
     if (_combinedDateTime.isAfter(now)) {
@@ -289,7 +284,6 @@ class _AddWeightSheetState extends State<AddWeightSheet>
     );
   }
 
-  /// Validates [value] against weight bounds and sets [_weightError].
   void _validateWeight(String value) {
     if (value.trim().isEmpty) {
       AppAnalytics.logDialogAddWeightValidationError('empty');
@@ -316,7 +310,6 @@ class _AddWeightSheetState extends State<AddWeightSheet>
     _weightError = null;
   }
 
-  /// Validates the form and dispatches [AddWeight] to [WeightBloc] on success.
   void _onSave() {
     FocusScope.of(context).unfocus();
     _validateDateTime();
