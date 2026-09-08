@@ -153,7 +153,7 @@ lib/
 
 ### Prerequisites
 
-- Dart SDK >= 3.12 (Flutter >= 3.47.1)
+- Dart SDK >= 3.12.2 (Flutter >= 3.47.1) — pinned via `.flutter-version`
 - Android Studio Ladybug+ (Android API 26–35) / Xcode 15+ (iOS)
 
 ### Setup

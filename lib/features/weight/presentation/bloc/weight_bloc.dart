@@ -14,6 +14,7 @@ import 'package:balance/core/utils/analytics.dart';
 import 'package:balance/core/utils/crash_reporter.dart';
 import 'package:balance/features/weight/data/services/csv_weight_importer.dart';
 import 'package:balance/features/weight/data/services/health_sync_coordinator.dart';
+import 'package:balance/features/weight/domain/services/weight_chart_calculator.dart';
 
 /// A BLoC managing weight entries and user height.
 ///
@@ -92,87 +93,21 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
 
   /// Filters [entries] by [period] and aggregates them per calendar day.
   ///
-  /// Uses a memoized result keyed on the entry content so identical stream
-  /// emissions skip the filter and aggregation work entirely.
+  /// Delegates pure calculations to [WeightChartCalculator] while keeping a
+  /// memo cache here so identical stream emissions skip recomputation.
   List<WeightEntry> _filterEntries(
     List<WeightEntry> entries,
     TimePeriod period,
   ) {
-    if (period == _memoPeriod && _sameEntries(entries, _memoEntries)) {
+    if (period == _memoPeriod &&
+        WeightChartCalculator.sameEntries(entries, _memoEntries)) {
       return _memoResult;
     }
-    final filtered = switch (period) {
-      TimePeriod.all => entries,
-      TimePeriod.week || TimePeriod.month || TimePeriod.year =>
-        entries
-            .where(
-              (e) => e.dateTime.isAfter(
-                DateTime.now().subtract(period.lookbackDuration),
-              ),
-            )
-            .toList(),
-    };
-    final result = _aggregateByDay(filtered);
+    final result = WeightChartCalculator.filterAndAggregate(entries, period);
     _memoEntries = entries;
     _memoPeriod = period;
     _memoResult = result;
     return result;
-  }
-
-  /// Compares two entry lists by content key without relying on identity.
-  ///
-  /// Reactive streams always allocate new list and entry instances, so
-  /// `identical`/`listEquals` can never detect an unchanged dataset. Each
-  /// element's stable key (id + dateTime + weightKg) is compared in a single
-  /// allocation-free pass, which is far cheaper than re-running the filter and
-  /// day aggregation on every stream emission.
-  static bool _sameEntries(List<WeightEntry> entries, List<WeightEntry>? memo) {
-    if (identical(entries, memo)) return true;
-    if (memo == null || entries.length != memo.length) return false;
-    for (var i = 0; i < entries.length; i++) {
-      final current = entries[i];
-      final cached = memo[i];
-      if (current.id != cached.id ||
-          current.dateTime != cached.dateTime ||
-          current.weightKg != cached.weightKg) {
-        return false;
-      }
-    }
-    return true;
-  }
-
-  /// Aggregates [entries] so that multiple measurements on the same calendar
-  /// day are collapsed into a single averaged data point.
-  ///
-  /// The merged entry carries the mean [WeightEntry.weightKg] for that day,
-  /// with [WeightEntry.dateTime] set to noon (12:00) of the day to keep the
-  /// X-axis positions stable across re-renders.
-  List<WeightEntry> _aggregateByDay(List<WeightEntry> entries) {
-    final Map<DateTime, List<WeightEntry>> grouped = {};
-    for (final e in entries) {
-      final dayKey = DateTime(
-        e.dateTime.year,
-        e.dateTime.month,
-        e.dateTime.day,
-      );
-      grouped.putIfAbsent(dayKey, () => []).add(e);
-    }
-
-    final sortedKeys = grouped.keys.toList()..sort();
-    return sortedKeys.map((dayKey) {
-      // The key is taken from grouped.keys, so the lookup always succeeds.
-      final dayEntries = grouped[dayKey]!;
-      final avgWeight =
-          dayEntries.map((e) => e.weightKg).reduce((a, b) => a + b) /
-          dayEntries.length;
-
-      final noonDate = DateTime(dayKey.year, dayKey.month, dayKey.day, 12);
-      return WeightEntry(
-        id: dayEntries.first.id,
-        weightKg: (avgWeight * 100).round() / 100,
-        dateTime: noonDate,
-      );
-    }).toList();
   }
 
   /// Subscribes to the repository watch stream and forwards emissions to
