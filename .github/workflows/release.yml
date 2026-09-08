@@ -114,7 +114,18 @@ jobs:
           echo "keyPassword=$KEY_PASSWORD" >> android/key.properties
 
       - name: Build APK (release)
-        run: flutter build apk --release
+        run: |
+          flutter build apk --release \
+            --obfuscate \
+            --split-debug-info=build/symbols \
+            --dart-define=ENVIRONMENT=prod
+
+      - name: Build App Bundle (AAB release)
+        run: |
+          flutter build appbundle --release \
+            --obfuscate \
+            --split-debug-info=build/symbols \
+            --dart-define=ENVIRONMENT=prod
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
@@ -123,9 +134,25 @@ jobs:
           path: build/app/outputs/flutter-apk/app-release.apk
           retention-days: 30
 
+      - name: Upload AAB artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-aab-${{ github.sha }}
+          path: build/app/outputs/bundle/release/app-release.aab
+          retention-days: 30
+
+      - name: Upload debug symbols
+        uses: actions/upload-artifact@v4
+        with:
+          name: debug-symbols-${{ github.sha }}
+          path: build/symbols/
+          retention-days: 30
+
       - name: Create GitHub Release (on tag)
         if: startsWith(github.ref, 'refs/tags/v')
         uses: softprops/action-gh-release@v2
         with:
-          files: build/app/outputs/flutter-apk/app-release.apk
+          files: |
+            build/app/outputs/flutter-apk/app-release.apk
+            build/app/outputs/bundle/release/app-release.aab
           generate_release_notes: true
