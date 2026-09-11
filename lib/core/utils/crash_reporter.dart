@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart' show MissingPluginException;
 import 'package:path_provider/path_provider.dart';
 import 'package:balance/core/utils/crash_log.dart';
 
@@ -78,7 +79,8 @@ class AppCrashReporter {
       await file.writeAsString(entry, mode: FileMode.append, flush: true);
     } catch (e) {
       // Local logging must never throw.
-      if (kDebugMode) {
+      // Suppress missing plugin in headless tests.
+      if (e is! MissingPluginException && kDebugMode) {
         debugPrint('[AppCrashReporter] writeCrashLog failed: $e');
       }
     }
@@ -95,7 +97,8 @@ class AppCrashReporter {
           : tail.substring(firstEntryStart + 2);
       await file.writeAsString(kept, flush: true);
     } catch (e) {
-      if (kDebugMode) {
+      // Suppress missing plugin in headless tests.
+      if (e is! MissingPluginException && kDebugMode) {
         debugPrint('[AppCrashReporter] _trimCrashLog failed: $e');
       }
     }
