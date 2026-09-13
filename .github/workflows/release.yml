@@ -66,18 +66,18 @@ jobs:
 
           # Ensure google-services.json always contains the debug package client for debug builds
           if [ -f "android/app/google-services.json" ] && ! grep -q "com.ekerstudio.balance.debug" android/app/google-services.json; then
-            python3 -c "
-            import copy, json
-            with open('android/app/google-services.json', 'r+') as f:
-                data = json.load(f)
-                if 'client' in data and len(data['client']) > 0:
-                    debug_client = copy.deepcopy(data['client'][0])
-                    debug_client['client_info']['android_client_info']['package_name'] = 'com.ekerstudio.balance.debug'
-                    data['client'].append(debug_client)
-                    f.seek(0)
-                    json.dump(data, f, indent=2)
-                    f.truncate()
-            "
+            python3 -c "import textwrap; exec(textwrap.dedent('''
+              import copy, json
+              with open('android/app/google-services.json', 'r+') as f:
+                  data = json.load(f)
+                  if 'client' in data and len(data['client']) > 0:
+                      debug_client = copy.deepcopy(data['client'][0])
+                      debug_client['client_info']['android_client_info']['package_name'] = 'com.ekerstudio.balance.debug'
+                      data['client'].append(debug_client)
+                      f.seek(0)
+                      json.dump(data, f, indent=2)
+                      f.truncate()
+            '''))"
           fi
 
           if [ -n "$FIREBASE_GOOGLE_SERVICE_INFO_PLIST_BASE64" ]; then
