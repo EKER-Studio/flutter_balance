@@ -37,7 +37,7 @@ This task can involve dozens or hundreds of files, and you may be running with a
 1. **Never load the whole project into context.** Start by listing file *paths* only (a glob/tree listing), not file contents.
 2. **Process exactly one file at a time.** Read → evaluate → edit → save → move to the next file. Do not hold more than one file's full content in your working context at the same time. Do not "read ahead" into other files to plan changes.
 3. **Plan only from the path list.** Any prioritization or batching decision is made off file paths/sizes, never off file contents you haven't processed yet.
-4. **Append-only progress log.** After finishing each file, append one line to the log file on disk (see "Progress & Report Log" below) instead of keeping the running report in your own context. This keeps your context footprint flat regardless of project size.
+4. **Append-only progress log.** After finishing each file, append one line to the log file on disk (see "Progress & Report Log" below) instead of keeping the running report in your own context. This keeps your context footprint flat regardless of project size. Keep the chat message for that file to one short line too (e.g. `✅ lib/foo/bar.dart — removed 3, translated 2`) — the log already has the detail, and repeating it in chat just spends this session's token budget faster.
 5. **Resume from the log.** At the start of a run, read `.audit-comments/log.md` first and skip any file already marked `done`. This lets the task be stopped and resumed across multiple sessions without re-reading finished files.
 6. **Oversized individual files.** If a file is longer than **250 lines**, process it in two passes instead of loading it whole:
    - Pass 1: extract only `///` DartDoc blocks and file-level comments via `grep -n "^\s*///"` (or equivalent) — don't open the full file.
@@ -100,7 +100,9 @@ You're not limited to a single file inside the folder. If the project is large e
    - save the file,
    - append one line to the log,
    - commit the change for this file alone.
-5. After the whole project is processed, run `dart format .` and `dart analyze` (if available in the environment) and report any new errors/warnings introduced by the changes.
+5. After the whole project is processed, run `dart format lib test` and `flutter analyze` (if available in
+   the environment — these are AGENTS.md's canonical commands) and report any new errors/warnings introduced
+   by the changes.
 6. Print the final summary (see below). `.audit-comments/` is gitignored, so leaving it in place costs nothing — don't delete it automatically. Leave it for manual review of the `notes:` entries, and only delete it if the operator asks.
 
 ## Final Summary (required)
