@@ -303,12 +303,25 @@ class ScreenshotDeviceFrame extends StatelessWidget {
                           ),
                           if (showNotificationIcon) ...[
                             const SizedBox(width: 6.0),
-                            Image.asset(
-                              'assets/icon/app_icon_foreground.png',
+                            SizedBox(
                               width: 17.0,
                               height: 17.0,
-                              color: fgColor.withValues(alpha: 0.9),
-                              colorBlendMode: BlendMode.srcIn,
+                              child: Image.asset(
+                                'assets/icon/app_icon_foreground.png',
+                                width: 17.0,
+                                height: 17.0,
+                                color: fgColor.withValues(alpha: 0.9),
+                                colorBlendMode: BlendMode.srcIn,
+                                errorBuilder:
+                                    (
+                                      BuildContext context,
+                                      Object error,
+                                      StackTrace? stackTrace,
+                                    ) => const SizedBox(
+                                      width: 17.0,
+                                      height: 17.0,
+                                    ),
+                              ),
                             ),
                           ],
                         ],
