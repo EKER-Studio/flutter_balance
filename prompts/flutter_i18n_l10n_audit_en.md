@@ -48,6 +48,9 @@ If your context gets reset or you're resumed in a new session, **read `state.md`
 **Rule 4 — Local decisions only.**
 Every chunk's flag/skip decision must be resolvable using just that chunk's grep output plus the small, cheap reference data (the ARB key list, the exclusion rules from Round 0). Never make a chunk's classification depend on having the full accumulated report in context — that's what the state file is for.
 
+**Rule 5 — Keep chat output brief while working.**
+Full detail belongs in `state.md` (and its split-off files), not in chat — writing it out in both places wastes this session's own token budget, which is exactly what pushes a run past a timeout or token limit before it's done. Per chunk, report one short line to chat (e.g. `✅ lib/features/onboarding/ — 3 findings → state.md`), not the full findings table. The exception is each round's Report Format (see below) — that one is meant to be read in full, in chat.
+
 ---
 
 ## Before You Start — Safety Check
