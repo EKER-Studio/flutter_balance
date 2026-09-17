@@ -6,6 +6,17 @@ third-party libraries a given project happens to use. Anything specific to one p
 commands, architecture, quirks — belongs in that project's own `agents_project.md`, which sits next to this
 file and is OPTIONAL. If a repo has no `agents_project.md`, this file alone still fully applies.*
 
+## Note for opencode Users: `/init` Overwrites This File
+`opencode`'s `/init`/`/initialize` command scans the repo and regenerates `AGENTS.md` from what it finds —
+including project-specific detail this file deliberately excludes. If you run `/init` in a repo using this
+split:
+1. This file is tracked in git, so the overwrite is fully reversible — nothing is lost.
+2. After `/init` runs, check the diff. Move anything genuinely project-specific (stack, architecture,
+   commands, quirks) into that repo's `agents_project.md`, merging with what's already there.
+3. Skip anything `/init` generated that just restates a rule already covered below — don't reintroduce
+   duplication between the two files.
+4. Restore the universal version of this file with `git checkout -- AGENTS.md`.
+
 ## Language
 All technical comments, documentation, and logic descriptions in the codebase MUST be written in English.
 
@@ -62,6 +73,14 @@ layer in use provides. Exactly which resource types apply in a given project (BL
 streams, background services, event buses, ...) and where precisely they're torn down is documented
 per-project in `agents_project.md`.
 
+## Progress Tracking for Multi-Step Tasks
+Built-in task/todo widgets some tools provide (e.g. opencode's Todo list) are convenience UI, not a reliable
+persistence layer — they are known to be updated in batches rather than per item, to go stale, or in some
+tool versions to be unavailable outright. For any multi-step task worth tracking across more than a couple
+of tool calls, also maintain a plain markdown checklist/state file in the repo (the task's own state file if
+one is already defined, e.g. via an audit prompt's `state.md`/`progress.md`), updated immediately after each
+item completes — not batched. If the widget and the file ever disagree, the file is the source of truth.
+
 ## Mandatory Verification Pipeline
 After any modification within source directories (`lib/**`, `test/**`, or config that affects them), run the
 following pipeline, in order, before considering the task complete. Skip a step only after confirming its
@@ -90,10 +109,21 @@ drop one of them.
   change without asking for permission first.
 - **If `agents_project.md` does not exist in this repository, do NOT commit autonomously — always ask for
   confirmation first, even after a fully green pipeline.**
+- When working through a list of multiple, independent fixes (e.g. an audit), treat each fix as its own
+  atomic change: verify and commit it individually once green, rather than letting fixes accumulate
+  uncommitted. Do not wait until an entire multi-item task is fully complete before committing the parts
+  already done.
 - Do NOT commit if any pipeline step failed, was skipped, or could not be run — stop and report instead.
 - Write descriptive, atomic commit messages (what changed and why, not just "fix"), following Conventional
   Commit style: `git commit -m '<type>(<scope>): <atomic description>'`.
-- NEVER force-push, rewrite shared history, or delete branches without explicit confirmation.
+- Committing locally is autonomous per the rules above; **`git push` is not** — NEVER push, even a plain
+  non-force push, without explicit confirmation first.
+- Before any operation that rewrites commit history (interactive rebase, amending commit dates/messages,
+  squashing, etc.), create a backup branch first (e.g. `git branch backup/<short-desc>-<timestamp>`). Delete
+  it only after confirming the rewrite completed successfully and was verified — never before, and never
+  without explicit confirmation.
+- NEVER force-push, delete a branch (including the backup branch above), or otherwise rewrite shared history
+  without explicit confirmation.
 
 ## Security
 - NEVER hardcode API keys, tokens, passwords, or other secrets in source code.
