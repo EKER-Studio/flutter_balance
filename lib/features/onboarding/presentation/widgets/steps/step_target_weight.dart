@@ -59,13 +59,13 @@ class _StepTargetWeightState extends State<StepTargetWeight> {
     });
 
     String initialText = '';
-    if (widget.initialTargetWeightKg != null &&
-        widget.initialTargetWeightKg! > 0) {
+    final initialTarget = widget.initialTargetWeightKg;
+    if (initialTarget != null && initialTarget > 0) {
       if (widget.unit == MeasurementUnit.imperial) {
-        final lbs = kgToLbs(widget.initialTargetWeightKg!);
+        final lbs = kgToLbs(initialTarget);
         initialText = lbs.toStringAsFixed(1);
       } else {
-        initialText = widget.initialTargetWeightKg!.toStringAsFixed(1);
+        initialText = initialTarget.toStringAsFixed(1);
       }
     }
 

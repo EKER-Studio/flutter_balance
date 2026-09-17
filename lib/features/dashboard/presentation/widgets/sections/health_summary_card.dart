@@ -43,6 +43,7 @@ class HealthSummaryCard extends StatelessWidget {
         final heightCm = state.height;
         final targetWeight = state.targetWeight;
         final weightUnit = state.measurementUnit;
+        final delta = deltaFromYesterday;
         final l10n = AppLocalizations.of(context);
 
         final bmi = (heightCm != null && heightCm > 0)
@@ -108,10 +109,10 @@ class HealthSummaryCard extends StatelessWidget {
                                 displayWeight: displayWeight,
                                 unitLabel: unitLabel,
                                 lastUpdated: lastUpdated,
-                                deltaFromYesterday: deltaFromYesterday != null
+                                deltaFromYesterday: delta != null
                                     ? (weightUnit == MeasurementUnit.imperial
-                                          ? kgToLbs(deltaFromYesterday!)
-                                          : deltaFromYesterday!)
+                                          ? kgToLbs(delta)
+                                          : delta)
                                     : null,
                               ),
                             ),

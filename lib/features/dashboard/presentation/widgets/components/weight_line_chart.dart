@@ -63,10 +63,11 @@ class WeightLineChart extends StatelessWidget {
         ? smaWeights.map((w) => _displayWeight(w, measurementUnit)).toList()
         : const <double>[];
 
-    final hasHeight = heightCm != null && heightCm! > 0;
+    final height = heightCm;
+    final hasHeight = height != null && height > 0;
+    final heightM = hasHeight ? height / 100.0 : null;
     double? normalBmiThresholdDisplay;
-    if (hasHeight) {
-      final heightM = heightCm! / 100.0;
+    if (heightM != null) {
       final thresholdKg = 24.9 * (heightM * heightM);
       normalBmiThresholdDisplay = _displayWeight(thresholdKg, measurementUnit);
     }
@@ -203,8 +204,7 @@ class WeightLineChart extends StatelessWidget {
 
                   String text =
                       '$prefix${formatWeight(weightKg, measurementUnit)}';
-                  if (!isSmaBar && hasHeight) {
-                    final heightM = heightCm! / 100.0;
+                  if (!isSmaBar && heightM != null) {
                     final bmi = weightKg / (heightM * heightM);
                     text +=
                         '\n${l10n.bmiValueShortLabel(bmi.toStringAsFixed(1))}';

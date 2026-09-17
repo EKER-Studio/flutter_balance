@@ -74,14 +74,15 @@ class CalendarGrid extends StatelessWidget {
     final todayEnd = DateTime(now.year, now.month, now.day, 23, 59, 59);
 
     bool isEntryGoalAchieved(WeightEntry e) {
-      if (targetWeight != null) {
+      final target = targetWeight;
+      if (target != null) {
         switch (goalMode) {
           case WeightGoalMode.lose:
-            return e.weightKg <= targetWeight!;
+            return e.weightKg <= target;
           case WeightGoalMode.gain:
-            return e.weightKg >= targetWeight!;
+            return e.weightKg >= target;
           case WeightGoalMode.maintain:
-            return (e.weightKg - targetWeight!).abs() <= 1.0;
+            return (e.weightKg - target).abs() <= 1.0;
         }
       }
       return false;
