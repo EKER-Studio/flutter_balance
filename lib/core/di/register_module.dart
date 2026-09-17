@@ -3,7 +3,7 @@ import 'package:injectable/injectable.dart';
 import 'package:isar_community/isar.dart';
 import 'package:balance/core/database/database_module.dart';
 import 'package:balance/core/integrations/biometrics/biometric_service.dart';
-import 'package:balance/features/weight/data/services/csv_import_service.dart';
+import 'package:balance/core/integrations/csv/csv_import_service.dart';
 import 'package:balance/core/integrations/health/health_service.dart';
 import 'package:balance/core/integrations/notifications/notification_service.dart';
 import 'package:balance/features/weight/data/repositories/isar_weight_repository.dart';
