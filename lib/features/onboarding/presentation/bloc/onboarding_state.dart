@@ -34,6 +34,9 @@ final class OnboardingState extends Equatable {
   final bool isHealthSyncRequested;
   final bool isBiometricEnabled;
 
+  /// True when the onboarding wizard has completed all steps.
+  final bool isCompleted;
+
   const OnboardingState({
     this.currentStepIndex = 0,
     this.totalSteps = 6,
@@ -44,6 +47,7 @@ final class OnboardingState extends Equatable {
     this.draftTargetWeight,
     this.isHealthSyncRequested = false,
     this.isBiometricEnabled = false,
+    this.isCompleted = false,
   });
 
   /// Latest chronological entry from [importedCsvEntries], prioritizing today's
@@ -86,6 +90,7 @@ final class OnboardingState extends Equatable {
     Object? draftTargetWeight = _sentinel,
     bool? isHealthSyncRequested,
     bool? isBiometricEnabled,
+    bool? isCompleted,
   }) {
     return OnboardingState(
       currentStepIndex: currentStepIndex ?? this.currentStepIndex,
@@ -104,6 +109,7 @@ final class OnboardingState extends Equatable {
       isHealthSyncRequested:
           isHealthSyncRequested ?? this.isHealthSyncRequested,
       isBiometricEnabled: isBiometricEnabled ?? this.isBiometricEnabled,
+      isCompleted: isCompleted ?? this.isCompleted,
     );
   }
 
@@ -118,5 +124,6 @@ final class OnboardingState extends Equatable {
     draftTargetWeight,
     isHealthSyncRequested,
     isBiometricEnabled,
+    isCompleted,
   ];
 }

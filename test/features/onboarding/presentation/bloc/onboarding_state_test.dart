@@ -17,6 +17,7 @@ void main() {
       expect(state.draftTargetWeight, isNull);
       expect(state.isHealthSyncRequested, isFalse);
       expect(state.isBiometricEnabled, isFalse);
+      expect(state.isCompleted, isFalse);
       expect(state.latestImportedEntry, isNull);
     });
 
@@ -52,6 +53,7 @@ void main() {
           draftInitialWeight: null,
           draftTargetWeight: null,
           isHealthSyncRequested: false,
+          isCompleted: true,
         );
 
         expect(updated.currentStepIndex, 3);
@@ -59,6 +61,7 @@ void main() {
         expect(updated.draftInitialTimestamp, initialDate);
         expect(updated.draftTargetWeight, isNull);
         expect(updated.isHealthSyncRequested, isFalse);
+        expect(updated.isCompleted, isTrue);
       },
     );
 

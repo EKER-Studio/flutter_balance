@@ -87,7 +87,6 @@ class _OnboardingWizardContentState extends State<OnboardingWizardContent> {
         biometricsEnabled: settingsState.isBiometricLockEnabled,
       );
       bloc.add(const OnboardingCompleted());
-      widget.onWizardCompleted?.call();
     } else {
       bloc.add(const OnboardingStepAdvanced());
     }
@@ -125,6 +124,9 @@ class _OnboardingWizardContentState extends State<OnboardingWizardContent> {
 
   void _handleInitialWeightNext(double weightKg, DateTime timestamp) {
     AppAnalytics.logOnboardingInitialWeightSet();
+    context.read<WeightBloc>().add(
+      AddWeight(weightKg: weightKg, dateTime: timestamp),
+    );
     context.read<OnboardingBloc>().add(
       OnboardingInitialWeightSet(weightKg: weightKg, timestamp: timestamp),
     );
@@ -197,29 +199,62 @@ class _OnboardingWizardContentState extends State<OnboardingWizardContent> {
     context.read<OnboardingBloc>().add(const OnboardingStepRewound());
   }
 
+  void _handleWizardCompleted(OnboardingState state) {
+    final latest = state.latestImportedEntry;
+    final remainingImported = latest == null
+        ? const <WeightEntry>[]
+        : state.importedCsvEntries.where((entry) => entry != latest).toList();
+    if (remainingImported.isNotEmpty) {
+      context.read<WeightBloc>().add(ImportWeightEntries(remainingImported));
+    }
+
+    final settingsBloc = context.read<AppSettingsBloc>();
+    final settingsState = settingsBloc.state;
+    if (state.isHealthSyncRequested && !settingsState.isHealthSyncEnabled) {
+      settingsBloc.add(const ToggleHealthSync(true));
+    }
+    if (state.isBiometricEnabled && !settingsState.isBiometricLockEnabled) {
+      settingsBloc.add(const UpdateBiometricLock(true));
+    }
+    settingsBloc.add(const CompleteOnboarding());
+
+    widget.onWizardCompleted?.call();
+  }
+
   @override
   Widget build(BuildContext context) {
     final isBiometricSupported = context.select(
       (AppSettingsBloc bloc) => bloc.state.isBiometricSupported,
     );
 
-    return BlocListener<OnboardingBloc, OnboardingState>(
-      listenWhen: (previous, current) =>
-          previous.currentStepIndex != current.currentStepIndex,
-      listener: (context, state) {
-        final stepName = state.currentStepIndex < _stepNames.length
-            ? _stepNames[state.currentStepIndex]
-            : 'step_${state.currentStepIndex}';
-        AppAnalytics.logOnboardingStepViewed(
-          stepIndex: state.currentStepIndex,
-          stepName: stepName,
-        );
-        _pageController.animateToPage(
-          state.currentStepIndex,
-          duration: const Duration(milliseconds: 300),
-          curve: Curves.easeInOut,
-        );
-      },
+    return MultiBlocListener(
+      listeners: [
+        BlocListener<OnboardingBloc, OnboardingState>(
+          listenWhen: (previous, current) =>
+              previous.currentStepIndex != current.currentStepIndex,
+          listener: (context, state) {
+            final stepName = state.currentStepIndex < _stepNames.length
+                ? _stepNames[state.currentStepIndex]
+                : 'step_${state.currentStepIndex}';
+            AppAnalytics.logOnboardingStepViewed(
+              stepIndex: state.currentStepIndex,
+              stepName: stepName,
+            );
+            _pageController.animateToPage(
+              state.currentStepIndex,
+              duration: const Duration(milliseconds: 300),
+              curve: Curves.easeInOut,
+            );
+          },
+        ),
+        BlocListener<OnboardingBloc, OnboardingState>(
+          listenWhen: (previous, current) =>
+              !previous.isCompleted && current.isCompleted,
+          listener: (context, state) {
+            _handleWizardCompleted(state);
+          },
+        ),
+      ],
       child: BlocBuilder<OnboardingBloc, OnboardingState>(
         builder: (context, state) {
           final initialHeightCm = context.select(
