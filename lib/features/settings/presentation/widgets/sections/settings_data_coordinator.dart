@@ -6,7 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:share_plus/share_plus.dart';
 
 import 'package:balance/core/integrations/biometrics/biometric_service.dart';
-import 'package:balance/features/weight/data/services/csv_exporter.dart';
+import 'package:balance/features/weight/domain/services/csv_exporter.dart';
 import 'package:balance/core/integrations/widgets/widget_sync_service.dart';
 import 'package:balance/core/models/measurement_unit.dart';
 import 'package:balance/core/presentation/navigation/app_routes.dart';

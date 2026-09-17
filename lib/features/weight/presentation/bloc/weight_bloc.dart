@@ -12,7 +12,7 @@ import 'package:balance/features/settings/presentation/bloc/app_settings_event.d
 import 'package:balance/core/integrations/health/health_service.dart';
 import 'package:balance/core/utils/analytics.dart';
 import 'package:balance/core/utils/crash_reporter.dart';
-import 'package:balance/features/weight/data/services/csv_weight_importer.dart';
+import 'package:balance/features/weight/domain/services/csv_weight_importer.dart';
 import 'package:balance/features/weight/domain/services/health_sync_coordinator.dart';
 import 'package:balance/features/weight/domain/services/weight_chart_calculator.dart';
 
