@@ -66,8 +66,12 @@ log_success "Code generation completed."
 # ------------------------------------------------------------------------------
 log_step "4" "Verifying code formatting standards..."
 # ------------------------------------------------------------------------------
-# Ensures the code strictly obeys Dart formatting guidelines without altering files
+# Ensures the code strictly obeys Dart formatting guidelines
 dart format lib test integration_test test_driver
+if ! git diff --quiet lib test integration_test test_driver; then
+    log_error "Unstaged formatting changes detected after 'dart format'. Stage and commit them before pushing."
+    exit 1
+fi
 log_success "Codebase formatting aligns with style specifications."
 
 # ------------------------------------------------------------------------------
