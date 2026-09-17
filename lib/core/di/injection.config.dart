@@ -19,10 +19,10 @@ import '../../features/settings/presentation/bloc/app_settings_bloc.dart'
     as _i388;
 import '../../features/weight/data/services/csv_import_service.dart' as _i115;
 import '../../features/weight/data/services/csv_weight_importer.dart' as _i849;
-import '../../features/weight/data/services/health_sync_coordinator.dart'
-    as _i67;
 import '../../features/weight/domain/repositories/weight_repository.dart'
     as _i627;
+import '../../features/weight/domain/services/health_sync_coordinator.dart'
+    as _i491;
 import '../../features/weight/presentation/bloc/weight_bloc.dart' as _i524;
 import '../integrations/biometrics/biometric_service.dart' as _i957;
 import '../integrations/health/health_service.dart' as _i330;
@@ -67,16 +67,7 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i558.FlutterSecureStorage>(),
       ),
     );
-    gh.factory<_i524.WeightBloc>(
-      () => _i524.WeightBloc(
-        repository: gh<_i627.WeightRepository>(),
-        appSettingsBloc: gh<_i388.AppSettingsBloc>(),
-        healthService: gh<_i330.HealthService>(),
-        healthSyncCoordinator: gh<_i67.HealthSyncCoordinator>(),
-        csvWeightImporter: gh<_i849.CsvWeightImporter>(),
-      ),
-    );
-    gh.lazySingleton<_i67.HealthSyncCoordinator>(
+    gh.lazySingleton<_i491.HealthSyncCoordinator>(
       () => registerModule.healthSyncCoordinator(
         gh<_i330.HealthService>(),
         gh<_i627.WeightRepository>(),
@@ -84,6 +75,15 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.lazySingleton<_i849.CsvWeightImporter>(
       () => registerModule.csvWeightImporter(gh<_i627.WeightRepository>()),
+    );
+    gh.factory<_i524.WeightBloc>(
+      () => _i524.WeightBloc(
+        repository: gh<_i627.WeightRepository>(),
+        appSettingsBloc: gh<_i388.AppSettingsBloc>(),
+        healthService: gh<_i330.HealthService>(),
+        healthSyncCoordinator: gh<_i491.HealthSyncCoordinator>(),
+        csvWeightImporter: gh<_i849.CsvWeightImporter>(),
+      ),
     );
     return this;
   }
