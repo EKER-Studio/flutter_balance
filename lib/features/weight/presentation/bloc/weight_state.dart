@@ -1,8 +1,8 @@
 export 'package:balance/features/weight/domain/csv_error_type.dart';
 
 import 'package:equatable/equatable.dart';
-import 'package:balance/features/weight/data/services/csv_importer.dart';
 import 'package:balance/features/weight/domain/csv_error_type.dart';
+import 'package:balance/features/weight/domain/entities/csv_import_analysis.dart';
 import 'package:balance/features/weight/domain/entities/weight_entry.dart';
 import 'package:balance/features/weight/domain/weight_error_type.dart';
 import 'package:balance/features/weight/presentation/bloc/weight_event.dart';

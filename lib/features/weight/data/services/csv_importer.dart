@@ -2,16 +2,10 @@ import 'dart:isolate';
 import 'dart:math' as math;
 import 'package:csv/csv.dart';
 import 'package:intl/intl.dart';
+import 'package:balance/features/weight/domain/entities/csv_import_analysis.dart';
 import 'package:balance/features/weight/domain/entities/weight_entry.dart';
 
-/// Result record returned by [CsvImporter.parse], carrying parsed entries and
-/// audit statistics for the preview dialog and import confirmation flow.
-typedef CsvImportAnalysis = ({
-  List<WeightEntry> validEntries,
-  int skippedRowCount,
-  DateTime? earliestDate,
-  DateTime? latestDate,
-});
+export 'package:balance/features/weight/domain/entities/csv_import_analysis.dart';
 
 /// Parses weight-history CSV content into [WeightEntry] entities on a background isolate.
 ///

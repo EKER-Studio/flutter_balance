@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:balance/core/utils/analytics.dart';
 import 'package:balance/l10n/app_localizations.dart';
-import 'package:balance/features/weight/data/services/csv_import_service.dart';
+import 'package:balance/features/weight/domain/entities/csv_import_analysis.dart';
 
 /// A modal dialog summarizing the result of a dry-run CSV analysis.
 ///
