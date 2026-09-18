@@ -54,7 +54,7 @@ lib/
 │   ├── integrations/             # Native platform & 3rd-party integration services
 │   │   ├── analytics/            # Privacy-first telemetry service (AnalyticsService)
 │   │   ├── biometrics/           # Local authentication (Face ID/Fingerprint) & lock observer
-│   │   ├── csv/                  # CSV parser, validation & import/export pipelines
+│   │   ├── csv/                  # CSV parser, CsvImportService validation & import/export pipelines
 │   │   ├── health/               # Apple HealthKit & Android Health Connect sync service
 │   │   ├── notifications/        # Local scheduled notifications & timezone management
 │   │   └── widgets/              # Android home screen glanceable widgets synchronization service
@@ -75,8 +75,8 @@ lib/
 │   │   ├── domain/               # Milestone & period comparison entities and calculation services
 │   │   └── presentation/         # StatisticsScreen, Achievements gallery sheet, trend & habit cards
 │   └── weight/                   # Core weight tracking domain, data & state
-│       ├── data/                 # WeightEntryModel (Isar schema) & IsarWeightRepository
-│       ├── domain/               # WeightEntry entities, repository contracts & health sync coordinator
+│       ├── data/                 # WeightEntryModel (Isar schema), IsarWeightRepository & CSV services
+│       ├── domain/               # WeightEntry entities, BmiCalculator, domain calculation services & repository contracts
 │       └── presentation/         # Shared WeightBloc, events, states & AddWeightSheet
 └── l10n/                         # Localization ARB assets (EN, DE, JA, FR, ES, PL, PT-BR, NL, IT, KO)
 ```
@@ -185,7 +185,7 @@ flutter run
   - State: `AppSettingsState` (hydrated and encrypted on-device).
 - **`OnboardingBloc`**: Controls the ephemeral multi-step initial setup wizard state machine.
   - Events: `OnboardingStarted`, `OnboardingStepChanged`, `OnboardingUnitSelected`, `OnboardingInitialWeightSet`, `OnboardingTargetWeightSet`, `OnboardingNotificationsToggled`, `OnboardingHealthSyncToggled`, `OnboardingCompleted`
-  - State: `OnboardingState` (holds temporary wizard draft values, hands off persistent outcomes to `AppSettingsBloc` and `WeightBloc` upon completion).
+  - State: `OnboardingState` (holds temporary wizard draft values and emits UI states; decoupled from sibling BLoCs with persistence orchestrated by the wizard presentation layer upon completion).
 
 ### Code Generation
 
@@ -219,7 +219,7 @@ The script automatically executes and validates:
 3. `dart run build_runner build` — Regenerates Isar and Injectable code
 4. `dart format --set-exit-if-changed lib test integration_test test_driver` — Strict formatting verification
 5. `flutter analyze` — Static linter verification (0 warnings/errors)
-6. `flutter test --exclude-tags golden,screenshot` — Comprehensive automated test suite (1863 passing tests)
+6. `flutter test --exclude-tags golden,screenshot` — Comprehensive automated test suite (1177 passing tests)
 7. `flutter build apk --debug` — Android compilation integrity check
 
 Or execute unit/widget tests directly:
@@ -269,6 +269,7 @@ ID,Date,Weight (kg),Note
 As part of our commitment to building in public and advancing agentic workflows, this repository includes battle-tested, token-budget-safe audit frameworks and prompts in the [`prompts/`](prompts/) directory:
 
 - **[BLoC Architecture Deep Audit](prompts/flutter_architect_deep_bloc_audit.md)**: Exhaustive 12-dimension technical and architectural audit framework tailored for Flutter + BLoC + Isar apps.
+- **[Riverpod Architecture Deep Audit](prompts/flutter_architect_deep_riverpod_audit.md)**: Exhaustive 12-dimension technical and architectural audit framework tailored for Flutter + Riverpod + Isar apps.
 - **[Unit Test Auditor Framework](prompts/flutter_unit_test_audit_framework_en.md)**: Iterative, bounded-context audit and test generation framework for Flutter unit tests.
 - **[i18n / L10n Localization Audit](prompts/flutter_i18n_l10n_audit_en.md)**: Chunked, stateful localization auditor for `.arb` + `flutter gen-l10n` toolchains.
 - **[Comments & DartDoc Cleanup Prompt](prompts/flutter_comments_dartdoc_cleanup_prompt_en.md)**: Memory-safe, file-by-file comment translation and documentation refactoring prompt.

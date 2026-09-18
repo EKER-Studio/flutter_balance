@@ -1,0 +1,5 @@
+• 🔒 Seguridad: Clave de cifrado de la base de datos anclada en el Keystore/Keychain de hardware.
+• 🏗️ Arquitectura y estabilidad: Cálculo de IMC unificado y bienvenida inicial optimizada.
+• 🛡️ Confiabilidad: Notificación estructurada de errores y diagnóstico técnico mejorado.
+• 🌐 Localización: Cadenas de configuración traducidas y ajustes de interfaz.
+• ⚡ Corrección de errores y optimizaciones generales.

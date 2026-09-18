@@ -1,0 +1,5 @@
+• 🔒 Sicurezza: Chiave di crittografia del database ancorata nel Keystore/Keychain hardware.
+• 🏗️ Architettura e stabilità: Calcolo dell'IMC unificato e configurazione iniziale ottimizzata.
+• 🛡️ Affidabilità: Segnalazione strutturata degli errori e diagnostica migliorata.
+• 🌐 Localizzazione: Traduzioni perfezionate nelle impostazioni.
+• ⚡ Risoluzione di bug e ottimizzazioni delle prestazioni.

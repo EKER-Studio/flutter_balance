@@ -2,15 +2,29 @@
 
 ## [Unreleased]
 
-### 🇵🇱 Polski
-- 🔧 **Konfiguracja:** Dodano reguły analizy statycznej, zoptymalizowano `build.yaml` i `dart_test.yaml`, oczyszczono `pubspec.yaml`.
-- 🛡️ **Jakość kodu:** Zastąpiono `debugPrint` ustrukturyzowanym rejestratorem `AppCrashReporter`.
-- 📦 **Wydanie:** Dodano budowanie pakietu Android App Bundle (AAB) z zaciemnianiem kodu (obfuscation).
+---
 
-### 🇬🇧 English
-- 🔧 **Configuration:** Added strict static analysis rules, optimized `build.yaml` and `dart_test.yaml`, cleaned up `pubspec.yaml`.
-- 🛡️ **Code Quality:** Replaced `debugPrint` with structured `AppCrashReporter`.
-- 📦 **Release:** Added Android App Bundle (AAB) target with code obfuscation.
+## [1.2.0] — 2026-09-18
+
+### 🇵🇱 Polski (Google Play Release Notes & Architektura)
+- 🔒 **Bezpieczeństwo i szyfrowanie:** Przeniesiono klucz szyfrujący bazę danych Isar wyłącznie do bezpiecznego magazynu sprzętowego (`flutter_secure_storage` w Android Keystore / iOS Keychain), z bezpieczną migracją i usunięciem starego pliku jawnego. Dodano politykę ujawniania podatności w `SECURITY.md`.
+- 🏗️ **Architektura & Clean Architecture:** Odsprzężono `OnboardingBloc` od sąsiednich BLoC-ów. Wydzielono serwis domenowy `BmiCalculator` i ujednolicono logikę obliczeń BMI w całej aplikacji. Przeniesiono serwisy CSV do warstwy domeny/integracji oraz `AppThemeMode` do warstwy core.
+- 📦 **Wydanie & Android App Bundle:** Wdrożono budowanie paczek wydawniczych Android App Bundle (AAB) z zaciemnianiem kodu (R8 obfuscation) oraz automatycznym uploadem symboli debugowania (`mapping.txt`).
+- 🛡️ **Stabilność i rejestrowanie awarii:** Zastąpiono niesystemowe wywołania `debugPrint` ustrukturyzowanym rejestratorem `AppCrashReporter` (Firebase Crashlytics) w całym kodzie inicjalizacyjnym i asynchronicznym.
+- 🔧 **Konfiguracja i CI/CD:** Wdrożono automatyczną weryfikację kompilacji debug APK w CI (`before_push.sh` i GitHub Actions), utwardzono reguły analizatora statycznego oraz zoptymalizowano `build.yaml` i `dart_test.yaml`.
+- 📱 **Metadane sklepu i zrzuty ekranu:** Skonfigurowano kompletną strukturę metadanych Fastlane Supply, zaktualizowano zlokalizowane zrzuty ekranu dla 10 języków oraz grafikę promocyjną (Feature Graphic).
+- 🌐 **Lokalizacja:** Wyodrębniono brakujące teksty w ustawieniach i zaktualizowano mechanizm śledzenia nieprzetłumaczonych fraz.
+- 🤖 **Zasoby AI (#built_in_public):** Dodano framework głębokiego audytu architektonicznego Flutter + Riverpod + Isar do katalogu `prompts/`.
+
+### 🇬🇧 English (Google Play Release Notes & Architecture)
+- 🔒 **Security & Storage:** Anchored the Isar database encryption key exclusively within hardware-backed secure storage (`flutter_secure_storage` via Android Keystore / iOS Keychain) with automatic quarantine/removal of legacy plaintext files. Added vulnerability disclosure policy in `SECURITY.md`.
+- 🏗️ **Clean Architecture & Decoupling:** Decoupled `OnboardingBloc` from sibling BLoCs. Extracted `BmiCalculator` as a dedicated domain service unifying BMI calculations across the app. Relocated CSV services to domain/integrations and `AppThemeMode` to the core theme layer.
+- 📦 **Release & Android App Bundle:** Added production Android App Bundle (AAB) target with R8 code obfuscation and automated debug symbols (`mapping.txt`) upload.
+- 🛡️ **Code Quality & Crash Reporting:** Replaced raw `debugPrint` calls with structured `AppCrashReporter` (Firebase Crashlytics) across bootstrap and async error boundaries.
+- 🔧 **CI/CD & Verification:** Integrated automated Android debug APK build verification into CI and `before_push.sh`, enforced strict static analysis linter rules, and optimized `build.yaml` and `dart_test.yaml`.
+- 📱 **Store Metadata & Screenshots:** Configured complete Fastlane Supply metadata, refreshed localized Play Store screenshots across 10 locales, and added high-res feature graphics.
+- 🌐 **Localization:** Externalized remaining hardcoded UI strings in settings screens and configured untranslated strings tracking.
+- 🤖 **AI-Native Engineering:** Added comprehensive Flutter + Riverpod + Isar deep architecture audit prompt to the `prompts/` suite.
 
 ---
 

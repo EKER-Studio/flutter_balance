@@ -1,0 +1,5 @@
+• 🔒 Bezpieczeństwo: Sprzętowe szyfrowanie bazy danych w Android Keystore / iOS Keychain.
+• 🏗️ Stabilność i architektura: Zoptymalizowana logika obliczeń BMI i usprawniony onboarding.
+• 🛡️ Niezawodność: Ustrukturyzowane rejestrowanie awarii i diagnostyka błędów.
+• 🌐 Lokalizacja i interfejs: Uzupełnione tłumaczenia w ustawieniach i odświeżony wygląd.
+• ⚡ Drobne poprawki błędów i optymalizacje wydajności.

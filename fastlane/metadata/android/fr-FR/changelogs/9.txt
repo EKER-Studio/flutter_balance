@@ -1,0 +1,5 @@
+• 🔒 Sécurité : Clé de chiffrement de la base de données ancrée dans le Keystore/Keychain matériel.
+• 🏗️ Architecture & Stabilité : Calcul d'IMC unifié et processus d'accueil optimisé.
+• 🛡️ Fiabilité : Rapport d'erreurs structuré et diagnostics techniques renforcés.
+• 🌐 Localisation : Traductions complétées dans les paramètres.
+• ⚡ Corrections de bugs et améliorations des performances.

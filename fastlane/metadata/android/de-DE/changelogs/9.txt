@@ -1,0 +1,5 @@
+• 🔒 Sicherheit: Datenbank-Verschlüsselungsschlüssel hardwaregesichert im Keystore/Keychain.
+• 🏗️ Architektur & Stabilität: Vereinheitlichte BMI-Berechnung und optimiertes Onboarding.
+• 🛡️ Zuverlässigkeit: Strukturierte Fehlerberichterstattung und verbesserte Diagnose.
+• 🌐 Lokalisierung: Vollständige Übersetzungen in den Einstellungen.
+• ⚡ Allgemeine Leistungsverbesserungen und Fehlerbehebungen.

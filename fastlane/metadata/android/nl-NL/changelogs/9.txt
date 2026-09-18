@@ -1,0 +1,5 @@
+• 🔒 Beveiliging: Versleutelingssleutel van de database beveiligd in hardware Keystore/Keychain.
+• 🏗️ Architectuur & Stabiliteit: Geünificeerde BMI-berekening en gestroomlijnde onboarding.
+• 🛡️ Betrouwbaarheid: Gestructureerde foutrapportage en verbeterde achtergronddiagnostiek.
+• 🌐 Lokalisatie: Verbeterde vertalingen in de instellingen.
+• ⚡ Kleine bugfixes en prestatieverbeteringen.

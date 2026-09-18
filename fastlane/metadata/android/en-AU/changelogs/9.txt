@@ -1,0 +1,5 @@
+• 🔒 Security: Database encryption key anchored in hardware Keystore/Keychain.
+• 🏗️ Architecture & Stability: Unified BMI calculation service and streamlined initial onboarding.
+• 🛡️ Reliability: Structured error reporting and enhanced background diagnostics.
+• 🌐 Localization: Polished translations and externalized settings strings.
+• ⚡ Minor bug fixes and general performance optimizations.
