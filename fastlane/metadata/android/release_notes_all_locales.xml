@@ -1,0 +1,140 @@
+<en-US>
+• 🔒 Security: Database encryption key anchored in hardware Keystore/Keychain.
+• 🏗️ Architecture & Stability: Unified BMI calculation service and streamlined initial onboarding.
+• 🛡️ Reliability: Structured error reporting and enhanced background diagnostics.
+• 🌐 Localization: Polished translations and externalized settings strings.
+• ⚡ Minor bug fixes and general performance optimizations.
+</en-US>
+<pl-PL>
+• 🔒 Bezpieczeństwo: Sprzętowe szyfrowanie bazy danych w Android Keystore / iOS Keychain.
+• 🏗️ Stabilność i architektura: Zoptymalizowana logika obliczeń BMI i usprawniony onboarding.
+• 🛡️ Niezawodność: Ustrukturyzowane rejestrowanie awarii i diagnostyka błędów.
+• 🌐 Lokalizacja i interfejs: Uzupełnione tłumaczenia w ustawieniach i odświeżony wygląd.
+• ⚡ Drobne poprawki błędów i optymalizacje wydajności.
+</pl-PL>
+<de-DE>
+• 🔒 Sicherheit: Datenbank-Verschlüsselungsschlüssel hardwaregesichert im Keystore/Keychain.
+• 🏗️ Architektur & Stabilität: Vereinheitlichte BMI-Berechnung und optimiertes Onboarding.
+• 🛡️ Zuverlässigkeit: Strukturierte Fehlerberichterstattung und verbesserte Diagnose.
+• 🌐 Lokalisierung: Vollständige Übersetzungen in den Einstellungen.
+• ⚡ Allgemeine Leistungsverbesserungen und Fehlerbehebungen.
+</de-DE>
+<es-ES>
+• 🔒 Seguridad: Clave de cifrado de la base de datos anclada en el Keystore/Keychain de hardware.
+• 🏗️ Arquitectura y estabilidad: Cálculo de IMC unificado y bienvenida inicial optimizada.
+• 🛡️ Confiabilidad: Notificación estructurada de errores y diagnóstico técnico mejorado.
+• 🌐 Localización: Cadenas de configuración traducidas y ajustes de interfaz.
+• ⚡ Corrección de errores y optimizaciones generales.
+</es-ES>
+<fr-FR>
+• 🔒 Sécurité : Clé de chiffrement de la base de données ancrée dans le Keystore/Keychain matériel.
+• 🏗️ Architecture & Stabilité : Calcul d'IMC unifié et processus d'accueil optimisé.
+• 🛡️ Fiabilité : Rapport d'erreurs structuré et diagnostics techniques renforcés.
+• 🌐 Localisation : Traductions complétées dans les paramètres.
+• ⚡ Corrections de bugs et améliorations des performances.
+</fr-FR>
+<it-IT>
+• 🔒 Sicurezza: Chiave di crittografia del database ancorata nel Keystore/Keychain hardware.
+• 🏗️ Architettura e stabilità: Calcolo dell'IMC unificato e configurazione iniziale ottimizzata.
+• 🛡️ Affidabilità: Segnalazione strutturata degli errori e diagnostica migliorata.
+• 🌐 Localizzazione: Traduzioni perfezionate nelle impostazioni.
+• ⚡ Risoluzione di bug e ottimizzazioni delle prestazioni.
+</it-IT>
+<nl-NL>
+• 🔒 Beveiliging: Versleutelingssleutel van de database beveiligd in hardware Keystore/Keychain.
+• 🏗️ Architectuur & Stabiliteit: Geünificeerde BMI-berekening en gestroomlijnde onboarding.
+• 🛡️ Betrouwbaarheid: Gestructureerde foutrapportage en verbeterde achtergronddiagnostiek.
+• 🌐 Lokalisatie: Verbeterde vertalingen in de instellingen.
+• ⚡ Kleine bugfixes en prestatieverbeteringen.
+</nl-NL>
+<pt-BR>
+• 🔒 Segurança: Chave de criptografia do banco de dados ancorada no Keystore/Keychain de hardware.
+• 🏗️ Arquitetura e estabilidade: Cálculo de IMC unificado e fluxo de boas-vindas aprimorado.
+• 🛡️ Confiabilidade: Relatórios de erros estruturados e diagnósticos avançados.
+• 🌐 Localização: Traduções completas nas telas de configurações.
+• ⚡ Correções de bugs e otimizações de desempenho.
+</pt-BR>
+<ja-JP>
+• 🔒 セキュリティ：ハードウェアKeystore/Keychainによるデータベース暗号化キーの保護。
+• 🏗️ アーキテクチャと安定性：BMI計算ロジックの統一および初期設定フローの最適化。
+• 🛡️ 信頼性：構造化されたエラーレポートと診断機能の強化。
+• 🌐 多言語対応：設定画面の翻訳改善およびUI調整。
+• ⚡ パフォーマンスの最適化および軽微な不具合の修正。
+</ja-JP>
+<ko-KR>
+• 🔒 보안: 하드웨어 Keystore/Keychain에 안전하게 보관되는 데이터베이스 암호화 키.
+• 🏗️ 아키텍처 및 안정성: 일관된 BMI 계산 서비스 제공 및 온보딩 설정 플로우 최적화.
+• 🛡️ 안정성 향상: 구조화된 오류 보고 및 진단 기능 강화.
+• 🌐 다국어 지원: 설정 화면의 번역 보완 및 인터페이스 개선.
+• ⚡ 성능 최적화 및 기타 버그 수정.
+</ko-KR>
+<en-GB>
+• 🔒 Security: Database encryption key anchored in hardware Keystore/Keychain.
+• 🏗️ Architecture & Stability: Unified BMI calculation service and streamlined initial onboarding.
+• 🛡️ Reliability: Structured error reporting and enhanced background diagnostics.
+• 🌐 Localization: Polished translations and externalized settings strings.
+• ⚡ Minor bug fixes and general performance optimizations.
+</en-GB>
+<en-CA>
+• 🔒 Security: Database encryption key anchored in hardware Keystore/Keychain.
+• 🏗️ Architecture & Stability: Unified BMI calculation service and streamlined initial onboarding.
+• 🛡️ Reliability: Structured error reporting and enhanced background diagnostics.
+• 🌐 Localization: Polished translations and externalized settings strings.
+• ⚡ Minor bug fixes and general performance optimizations.
+</en-CA>
+<en-AU>
+• 🔒 Security: Database encryption key anchored in hardware Keystore/Keychain.
+• 🏗️ Architecture & Stability: Unified BMI calculation service and streamlined initial onboarding.
+• 🛡️ Reliability: Structured error reporting and enhanced background diagnostics.
+• 🌐 Localization: Polished translations and externalized settings strings.
+• ⚡ Minor bug fixes and general performance optimizations.
+</en-AU>
+<en-IN>
+• 🔒 Security: Database encryption key anchored in hardware Keystore/Keychain.
+• 🏗️ Architecture & Stability: Unified BMI calculation service and streamlined initial onboarding.
+• 🛡️ Reliability: Structured error reporting and enhanced background diagnostics.
+• 🌐 Localization: Polished translations and externalized settings strings.
+• ⚡ Minor bug fixes and general performance optimizations.
+</en-IN>
+<en-SG>
+• 🔒 Security: Database encryption key anchored in hardware Keystore/Keychain.
+• 🏗️ Architecture & Stability: Unified BMI calculation service and streamlined initial onboarding.
+• 🛡️ Reliability: Structured error reporting and enhanced background diagnostics.
+• 🌐 Localization: Polished translations and externalized settings strings.
+• ⚡ Minor bug fixes and general performance optimizations.
+</en-SG>
+<en-ZA>
+• 🔒 Security: Database encryption key anchored in hardware Keystore/Keychain.
+• 🏗️ Architecture & Stability: Unified BMI calculation service and streamlined initial onboarding.
+• 🛡️ Reliability: Structured error reporting and enhanced background diagnostics.
+• 🌐 Localization: Polished translations and externalized settings strings.
+• ⚡ Minor bug fixes and general performance optimizations.
+</en-ZA>
+<es-419>
+• 🔒 Seguridad: Clave de cifrado de la base de datos anclada en el Keystore/Keychain de hardware.
+• 🏗️ Arquitectura y estabilidad: Cálculo de IMC unificado y bienvenida inicial optimizada.
+• 🛡️ Confiabilidad: Notificación estructurada de errores y diagnóstico técnico mejorado.
+• 🌐 Localización: Cadenas de configuración traducidas y ajustes de interfaz.
+• ⚡ Corrección de errores y optimizaciones generales.
+</es-419>
+<es-US>
+• 🔒 Seguridad: Clave de cifrado de la base de datos anclada en el Keystore/Keychain de hardware.
+• 🏗️ Arquitectura y estabilidad: Cálculo de IMC unificado y bienvenida inicial optimizada.
+• 🛡️ Confiabilidad: Notificación estructurada de errores y diagnóstico técnico mejorado.
+• 🌐 Localización: Cadenas de configuración traducidas y ajustes de interfaz.
+• ⚡ Corrección de errores y optimizaciones generales.
+</es-US>
+<fr-CA>
+• 🔒 Sécurité : Clé de chiffrement de la base de données ancrée dans le Keystore/Keychain matériel.
+• 🏗️ Architecture & Stabilité : Calcul d'IMC unifié et processus d'accueil optimisé.
+• 🛡️ Fiabilité : Rapport d'erreurs structuré et diagnostics techniques renforcés.
+• 🌐 Localisation : Traductions complétées dans les paramètres.
+• ⚡ Corrections de bugs et améliorations des performances.
+</fr-CA>
+<pt-PT>
+• 🔒 Segurança: Chave de criptografia do banco de dados ancorada no Keystore/Keychain de hardware.
+• 🏗️ Arquitetura e estabilidade: Cálculo de IMC unificado e fluxo de boas-vindas aprimorado.
+• 🛡️ Confiabilidade: Relatórios de erros estruturados e diagnósticos avançados.
+• 🌐 Localização: Traduções completas nas telas de configurações.
+• ⚡ Correções de bugs e otimizações de desempenho.
+</pt-PT>
