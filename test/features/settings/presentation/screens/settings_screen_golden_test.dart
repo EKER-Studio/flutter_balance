@@ -71,16 +71,16 @@ void main() {
         BlocProvider<WeightBloc>.value(value: weightBloc),
         BlocProvider<AppSettingsBloc>.value(value: settingsBloc),
       ],
-      child: MaterialApp(
-        locale: const Locale('en'),
-        localizationsDelegates: const [
+      child: const MaterialApp(
+        locale: Locale('en'),
+        localizationsDelegates: [
           AppLocalizations.delegate,
           GlobalMaterialLocalizations.delegate,
           GlobalCupertinoLocalizations.delegate,
           GlobalWidgetsLocalizations.delegate,
         ],
         supportedLocales: AppLocalizations.supportedLocales,
-        home: const SettingsScreen(),
+        home: SettingsScreen(),
       ),
     );
   }

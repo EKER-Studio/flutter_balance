@@ -86,7 +86,7 @@ void main() {
       'emits [WeightLoading, WeightLoaded] after SubscribeToWeightChanges',
       build: () => WeightBloc(repository: repository),
       act: (bloc) async {
-        bloc.add(SubscribeToWeightChanges());
+        bloc.add(const SubscribeToWeightChanges());
         await Future(() {});
         streamController.add([]);
       },
@@ -109,7 +109,7 @@ void main() {
         ],
       ),
       act: (bloc) async {
-        bloc.add(SubscribeToWeightChanges());
+        bloc.add(const SubscribeToWeightChanges());
         await Future(() {});
         streamController.add([
           WeightEntry(id: 1, weightKg: 70, dateTime: DateTime(2025, 1, 1)),
@@ -126,7 +126,7 @@ void main() {
       'emits WeightError preserving entries when the stream fails to start',
       build: () {
         when(() => repository.watchAllEntries()).thenThrow(
-          WeightRepositoryException(
+          const WeightRepositoryException(
             type: WeightErrorType.streamError,
             message: 'database closed',
           ),
@@ -141,7 +141,7 @@ void main() {
           WeightEntry(id: 1, weightKg: 70, dateTime: DateTime(2025, 1, 1)),
         ],
       ),
-      act: (bloc) => bloc.add(SubscribeToWeightChanges()),
+      act: (bloc) => bloc.add(const SubscribeToWeightChanges()),
       expect: () => [
         isA<WeightError>()
             .having(
@@ -159,7 +159,7 @@ void main() {
       build: () {
         when(() => repository.watchAllEntries()).thenAnswer(
           (_) => Stream.error(
-            WeightRepositoryException(
+            const WeightRepositoryException(
               type: WeightErrorType.readFailed,
               message: 'stream failure',
             ),
@@ -167,7 +167,7 @@ void main() {
         );
         return WeightBloc(repository: repository);
       },
-      act: (bloc) => bloc.add(SubscribeToWeightChanges()),
+      act: (bloc) => bloc.add(const SubscribeToWeightChanges()),
       expect: () => [
         isA<WeightLoading>(),
         isA<WeightError>().having(
@@ -265,7 +265,7 @@ void main() {
         );
         return WeightBloc(repository: repository);
       },
-      act: (bloc) => bloc.add(SubscribeToWeightChanges()),
+      act: (bloc) => bloc.add(const SubscribeToWeightChanges()),
       expect: () => [
         isA<WeightLoading>(),
         isA<WeightError>().having(
@@ -420,7 +420,7 @@ void main() {
       },
       seed: () =>
           const WeightLoaded(entries: [], filteredEntries: [], heightCm: 170),
-      act: (bloc) => bloc.add(DeleteWeight(1)),
+      act: (bloc) => bloc.add(const DeleteWeight(1)),
       expect: () => [
         isA<WeightError>().having(
           (s) => s.errorType,
@@ -435,7 +435,7 @@ void main() {
       build: () => WeightBloc(repository: repository),
       seed: () =>
           const WeightLoaded(entries: [], filteredEntries: [], heightCm: 170),
-      act: (bloc) => bloc.add(ChangeChartFilter(TimePeriod.year)),
+      act: (bloc) => bloc.add(const ChangeChartFilter(TimePeriod.year)),
       expect: () => [
         isA<WeightLoaded>().having(
           (s) => s.timePeriod,
@@ -560,7 +560,7 @@ void main() {
         ).thenAnswer((_) => Stream.value(entries));
         return WeightBloc(repository: repository);
       },
-      act: (bloc) => bloc.add(SubscribeToWeightChanges()),
+      act: (bloc) => bloc.add(const SubscribeToWeightChanges()),
       expect: () => [
         isA<WeightLoading>(),
         isA<WeightLoaded>().having(
@@ -628,7 +628,7 @@ void main() {
           ),
         ];
 
-        bloc.add(SubscribeToWeightChanges());
+        bloc.add(const SubscribeToWeightChanges());
         await Future(() {});
         streamController.add(first);
         await Future(() {});
@@ -652,7 +652,7 @@ void main() {
       addTearDown(bloc.close);
 
       final now = DateTime.now();
-      bloc.add(SubscribeToWeightChanges());
+      bloc.add(const SubscribeToWeightChanges());
       await Future(() {});
 
       streamController.add([
@@ -925,7 +925,7 @@ void main() {
           ],
           heightCm: 170,
         ),
-        act: (bloc) => bloc.add(DeleteWeight(1)),
+        act: (bloc) => bloc.add(const DeleteWeight(1)),
         verify: (_) {
           verify(
             () => healthService.deleteWeight(
@@ -953,7 +953,7 @@ void main() {
           ],
           heightCm: 170,
         ),
-        act: (bloc) => bloc.add(DeleteWeight(1)),
+        act: (bloc) => bloc.add(const DeleteWeight(1)),
         verify: (_) {
           verifyNever(
             () => healthService.deleteWeight(
@@ -988,7 +988,7 @@ void main() {
           ],
           heightCm: 170,
         ),
-        act: (bloc) => bloc.add(DeleteWeight(1)),
+        act: (bloc) => bloc.add(const DeleteWeight(1)),
         expect: () => <WeightState>[],
         verify: (_) {
           verify(() => repository.deleteEntry(1)).called(1);

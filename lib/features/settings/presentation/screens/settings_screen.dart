@@ -91,7 +91,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
               );
             },
             child: BlocListener<WeightBloc, WeightState>(
-              listener: _onWeightStateChange,
+              listener: (context, state) {
+                _onWeightStateChange(context, state);
+              },
               child: BlocBuilder<AppSettingsBloc, AppSettingsState>(
                 builder: (context, state) {
                   final l10n = AppLocalizations.of(context);
@@ -202,7 +204,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
-  void _onWeightStateChange(BuildContext context, WeightState state) async {
+  Future<void> _onWeightStateChange(
+    BuildContext context,
+    WeightState state,
+  ) async {
     if (state is CsvAnalysisInProgress) {
       final l10n = AppLocalizations.of(context);
       AppSnackBar.show(

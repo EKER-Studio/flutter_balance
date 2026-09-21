@@ -28,7 +28,7 @@ void main() {
   late AppSettingsBloc settingsBloc;
 
   setUpAll(() {
-    registerFallbackValue(ChangeChartFilter(TimePeriod.week));
+    registerFallbackValue(const ChangeChartFilter(TimePeriod.week));
   });
 
   setUp(() {
@@ -499,7 +499,7 @@ void main() {
     when(() => weightBloc.state).thenReturn(
       WeightLoaded(
         entries: [entry],
-        filteredEntries: [],
+        filteredEntries: const [],
         timePeriod: TimePeriod.month,
         heightCm: 175.0,
       ),
@@ -508,7 +508,7 @@ void main() {
       (_) => Stream.value(
         WeightLoaded(
           entries: [entry],
-          filteredEntries: [],
+          filteredEntries: const [],
           timePeriod: TimePeriod.month,
           heightCm: 175.0,
         ),

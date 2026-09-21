@@ -53,7 +53,7 @@ class CsvImportService {
 
     final file = File(path);
     if (file.lengthSync() > maxFileSizeBytes) {
-      throw FileTooLargeException(maxBytes: maxFileSizeBytes);
+      throw const FileTooLargeException(maxBytes: maxFileSizeBytes);
     }
 
     final bytes = await file.readAsBytes();

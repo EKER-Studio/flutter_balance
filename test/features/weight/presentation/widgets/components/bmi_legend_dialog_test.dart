@@ -158,7 +158,7 @@ void main() {
         entries: [
           WeightEntry(id: 1, weightKg: 86.5, dateTime: DateTime(2026, 8, 25)),
         ],
-        filteredEntries: [],
+        filteredEntries: const [],
       ),
     );
 

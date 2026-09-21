@@ -6,29 +6,29 @@ import 'package:balance/features/settings/presentation/bloc/app_theme_mode.dart'
 void main() {
   group('AppSettingsEvent construction', () {
     test('event instances carry their configured values', () {
-      expect(UpdateTheme(AppThemeMode.dark).themeMode, AppThemeMode.dark);
+      expect(const UpdateTheme(AppThemeMode.dark).themeMode, AppThemeMode.dark);
       expect(
-        UpdateMeasurementUnit(MeasurementUnit.imperial).measurementUnit,
+        const UpdateMeasurementUnit(MeasurementUnit.imperial).measurementUnit,
         MeasurementUnit.imperial,
       );
-      expect(UpdateHeight(175.0).height, 175.0);
-      expect(ToggleNotifications(true).enabled, isTrue);
-      expect(UpdateNotificationTime((hour: 9, minute: 30)).notificationTime, (
-        hour: 9,
-        minute: 30,
-      ));
-      expect(TargetWeightChanged(80).weight, 80);
-      expect(TargetWeightChanged(null).weight, isNull);
-      expect(UpdateBiometricLock(true).enabled, isTrue);
-      expect(SetLocked(true).locked, isTrue);
-      expect(UpdateBiometricSupport(false).isSupported, isFalse);
-      expect(ToggleHealthSync(true).enabled, isTrue);
+      expect(const UpdateHeight(175.0).height, 175.0);
+      expect(const ToggleNotifications(true).enabled, isTrue);
+      expect(
+        const UpdateNotificationTime((hour: 9, minute: 30)).notificationTime,
+        (hour: 9, minute: 30),
+      );
+      expect(const TargetWeightChanged(80).weight, 80);
+      expect(const TargetWeightChanged(null).weight, isNull);
+      expect(const UpdateBiometricLock(true).enabled, isTrue);
+      expect(const SetLocked(true).locked, isTrue);
+      expect(const UpdateBiometricSupport(false).isSupported, isFalse);
+      expect(const ToggleHealthSync(true).enabled, isTrue);
     });
 
     test('flag-less events are constructible', () {
-      expect(CompleteOnboarding(), isA<CompleteOnboarding>());
-      expect(CheckHealthSyncStatus(), isA<CheckHealthSyncStatus>());
-      expect(ResetAppSettings(), isA<ResetAppSettings>());
+      expect(const CompleteOnboarding(), isA<CompleteOnboarding>());
+      expect(const CheckHealthSyncStatus(), isA<CheckHealthSyncStatus>());
+      expect(const ResetAppSettings(), isA<ResetAppSettings>());
     });
   });
 }

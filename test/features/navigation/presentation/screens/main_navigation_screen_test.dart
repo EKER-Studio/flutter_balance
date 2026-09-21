@@ -66,10 +66,10 @@ void main() {
                 ..add(const SubscribeToWeightChanges()),
         ),
       ],
-      child: MaterialApp(
+      child: const MaterialApp(
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
-        home: MainNavigationScreen(key: const ValueKey('non_const_nav')),
+        home: MainNavigationScreen(key: ValueKey('non_const_nav')),
       ),
     );
   }

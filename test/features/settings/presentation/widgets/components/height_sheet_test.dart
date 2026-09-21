@@ -180,7 +180,7 @@ void main() {
 
     testWidgets('renders imperial fields with clear icons', (tester) async {
       await tester.pumpWidget(
-        MaterialApp(
+        const MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
           home: Scaffold(

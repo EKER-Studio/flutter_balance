@@ -112,7 +112,7 @@ void main() {
       final weightBloc = createBloc(
         WeightLoaded(
           entries: entries,
-          filteredEntries: [],
+          filteredEntries: const [],
           timePeriod: TimePeriod.week,
           heightCm: null,
         ),
@@ -189,7 +189,7 @@ void main() {
     final weightBloc = createBloc(
       WeightLoaded(
         entries: entries,
-        filteredEntries: [],
+        filteredEntries: const [],
         timePeriod: TimePeriod.week,
         heightCm: null,
       ),
@@ -223,7 +223,7 @@ void main() {
       final weightBloc = createBloc(
         WeightLoaded(
           entries: entries,
-          filteredEntries: [],
+          filteredEntries: const [],
           timePeriod: TimePeriod.week,
           heightCm: null,
         ),
@@ -254,7 +254,7 @@ void main() {
     final weightBloc = createBloc(
       WeightLoaded(
         entries: entries,
-        filteredEntries: [],
+        filteredEntries: const [],
         timePeriod: TimePeriod.week,
         heightCm: null,
       ),
@@ -284,7 +284,7 @@ void main() {
     final weightBloc = createBloc(
       WeightLoaded(
         entries: entries,
-        filteredEntries: [],
+        filteredEntries: const [],
         timePeriod: TimePeriod.week,
         heightCm: null,
       ),
@@ -316,7 +316,7 @@ void main() {
       final weightBloc = createBloc(
         WeightLoaded(
           entries: entries,
-          filteredEntries: [],
+          filteredEntries: const [],
           timePeriod: TimePeriod.week,
           heightCm: 175.0,
         ),
@@ -391,7 +391,7 @@ void main() {
         WeightError(
           errorType: WeightErrorType.readFailed,
           entries: entries,
-          filteredEntries: [],
+          filteredEntries: const [],
         ),
       );
 

@@ -468,14 +468,14 @@ void main() {
                   home: ScreenshotDeviceFrame(
                     isDark: isDark,
                     showNotificationIcon: true,
-                    child: Stack(
+                    child: const Stack(
                       children: [
-                        const SettingsScreen(),
-                        const ModalBarrier(
+                        SettingsScreen(),
+                        ModalBarrier(
                           dismissible: false,
                           color: Colors.black54,
                         ),
-                        const Center(child: WipeDataDialog()),
+                        Center(child: WipeDataDialog()),
                       ],
                     ),
                   ),

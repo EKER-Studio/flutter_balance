@@ -6,7 +6,7 @@ void main() {
   group('CustomSettingsTile', () {
     testWidgets('renders title and icon', (tester) async {
       await tester.pumpWidget(
-        MaterialApp(
+        const MaterialApp(
           home: Scaffold(
             body: CustomSettingsTile(title: 'Test Title', icon: Icons.settings),
           ),
@@ -19,7 +19,7 @@ void main() {
 
     testWidgets('renders subtitle and valueText', (tester) async {
       await tester.pumpWidget(
-        MaterialApp(
+        const MaterialApp(
           home: Scaffold(
             body: CustomSettingsTile(
               title: 'Test Title',
@@ -60,7 +60,7 @@ void main() {
       tester,
     ) async {
       await tester.pumpWidget(
-        MaterialApp(
+        const MaterialApp(
           home: Scaffold(
             body: CustomSettingsTile(
               title: 'Test Title',
@@ -77,7 +77,7 @@ void main() {
     });
     testWidgets('shows error styling when isError is true', (tester) async {
       await tester.pumpWidget(
-        MaterialApp(
+        const MaterialApp(
           home: Scaffold(
             body: CustomSettingsTile(
               title: 'Test Title',
@@ -108,7 +108,7 @@ void main() {
       tester,
     ) async {
       await tester.pumpWidget(
-        MaterialApp(
+        const MaterialApp(
           home: Scaffold(
             body: CustomSettingsTile(
               title: 'Test Title',
@@ -126,7 +126,7 @@ void main() {
       tester,
     ) async {
       await tester.pumpWidget(
-        MaterialApp(
+        const MaterialApp(
           home: Scaffold(
             body: CustomSettingsTile(
               title: 'Test Title',

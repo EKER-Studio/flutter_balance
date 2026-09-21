@@ -211,11 +211,11 @@ void main() {
               ),
             ),
           ],
-          child: MaterialApp(
+          child: const MaterialApp(
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
-            locale: const Locale('pl'),
-            home: CalendarScreen(key: const ValueKey('non_const_calendar')),
+            locale: Locale('pl'),
+            home: CalendarScreen(key: ValueKey('non_const_calendar')),
           ),
         ),
       );

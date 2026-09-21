@@ -31,7 +31,6 @@ class AppSnackBar {
             ? AppFeedbackTheme.successForegroundDark
             : AppFeedbackTheme.successForegroundLight;
         defaultIcon = Icons.check_circle_outline_rounded;
-        break;
       case SnackBarType.error:
         backgroundColor = isDark
             ? AppFeedbackTheme.errorBackgroundDark
@@ -40,7 +39,6 @@ class AppSnackBar {
             ? AppFeedbackTheme.errorForegroundDark
             : AppFeedbackTheme.errorForegroundLight;
         defaultIcon = Icons.error_outline_rounded;
-        break;
       case SnackBarType.warning:
         backgroundColor = isDark
             ? AppFeedbackTheme.warningBackgroundDark
@@ -49,7 +47,6 @@ class AppSnackBar {
             ? AppFeedbackTheme.warningForegroundDark
             : AppFeedbackTheme.warningForegroundLight;
         defaultIcon = Icons.warning_amber_rounded;
-        break;
       case SnackBarType.info:
         backgroundColor = isDark
             ? AppFeedbackTheme.infoBackgroundDark
@@ -58,7 +55,6 @@ class AppSnackBar {
             ? AppFeedbackTheme.infoForegroundDark
             : AppFeedbackTheme.infoForegroundLight;
         defaultIcon = Icons.info_outline_rounded;
-        break;
     }
 
     ScaffoldMessenger.of(context).hideCurrentSnackBar();

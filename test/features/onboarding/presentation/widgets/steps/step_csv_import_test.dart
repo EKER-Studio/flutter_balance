@@ -177,7 +177,7 @@ void main() {
             latestDate: null,
           ),
         ],
-        error: FormatException('missing columns'),
+        error: const FormatException('missing columns'),
         throwOnCall: 1,
       );
       await tester.pumpWidget(buildSubject(service: service));

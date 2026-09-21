@@ -153,15 +153,15 @@ void main() {
         BlocProvider<WeightBloc>.value(value: weightBloc),
         BlocProvider<AppSettingsBloc>.value(value: settingsBloc),
       ],
-      child: MaterialApp(
-        localizationsDelegates: const [
+      child: const MaterialApp(
+        localizationsDelegates: [
           AppLocalizations.delegate,
           GlobalMaterialLocalizations.delegate,
           GlobalCupertinoLocalizations.delegate,
           GlobalWidgetsLocalizations.delegate,
         ],
         supportedLocales: AppLocalizations.supportedLocales,
-        home: const SettingsScreen(),
+        home: SettingsScreen(),
       ),
     );
   }
@@ -1193,7 +1193,7 @@ void main() {
     testWidgets('shows unavailability snackbar on terminal auth failure', (
       tester,
     ) async {
-      platform.authenticateHandler = () async => throw LocalAuthException(
+      platform.authenticateHandler = () async => throw const LocalAuthException(
         code: LocalAuthExceptionCode.noBiometricsEnrolled,
         description: 'no enrolled biometrics',
       );
@@ -1296,8 +1296,8 @@ void main() {
 
       stateController.add(
         CsvAnalysisReady(
-          entries: [],
-          filteredEntries: [],
+          entries: const [],
+          filteredEntries: const [],
           analysis: (
             validEntries: [
               WeightEntry(weightKg: 69.0, dateTime: DateTime(2026, 7, 25)),
@@ -1397,7 +1397,7 @@ void main() {
               dateTime: DateTime(2026, 7, 24, 15, 0),
             ),
           ],
-          filteredEntries: [],
+          filteredEntries: const [],
         ),
       );
 
@@ -1428,7 +1428,7 @@ void main() {
               dateTime: DateTime(2026, 7, 24, 15, 0),
             ),
           ],
-          filteredEntries: [],
+          filteredEntries: const [],
         ),
       );
       TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger

@@ -40,7 +40,7 @@ void main() {
       );
       expect(
         OnboardingCsvImported(entries),
-        isNot(OnboardingCsvImported(const [])),
+        isNot(const OnboardingCsvImported([])),
       );
       expect(OnboardingCsvImported(entries).props, [entries]);
     });
@@ -74,7 +74,7 @@ void main() {
       );
       expect(
         const OnboardingTargetWeightSet(null),
-        OnboardingTargetWeightSet(null),
+        const OnboardingTargetWeightSet(null),
       );
       expect(
         const OnboardingTargetWeightSet(70),
@@ -98,7 +98,7 @@ void main() {
     test('OnboardingBiometricsToggled compares by enabled flag', () {
       expect(
         const OnboardingBiometricsToggled(false),
-        OnboardingBiometricsToggled(false),
+        const OnboardingBiometricsToggled(false),
       );
       expect(
         const OnboardingBiometricsToggled(false),

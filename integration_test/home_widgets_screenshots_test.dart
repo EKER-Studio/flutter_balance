@@ -173,28 +173,28 @@ class _HomeDock extends StatelessWidget {
           width: 1,
         ),
       ),
-      child: Row(
+      child: const Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
           _DockIcon(
             icon: Icons.call,
-            bgColor: const Color(0xFF34A853),
+            bgColor: Color(0xFF34A853),
             iconColor: Colors.white,
           ),
           _DockIcon(
             icon: Icons.chat_bubble,
-            bgColor: const Color(0xFF4285F4),
+            bgColor: Color(0xFF4285F4),
             iconColor: Colors.white,
           ),
           _DockIcon(
             icon: Icons.language,
-            bgColor: const Color(0xFFEA4335),
+            bgColor: Color(0xFFEA4335),
             iconColor: Colors.white,
           ),
           _DockIcon(
             icon: Icons.photo_camera,
-            bgColor: const Color(0xFFFBBC05),
-            iconColor: const Color(0xFF202124),
+            bgColor: Color(0xFFFBBC05),
+            iconColor: Color(0xFF202124),
           ),
         ],
       ),

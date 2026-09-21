@@ -5,8 +5,7 @@
 # IDEs (https://dart.dev/tools#ides-and-editors). The analyzer can also be
 # invoked from the command line by running `flutter analyze`.
 
-# The following line activates a set of recommended lints for Flutter apps,
-# packages, and plugins designed to encourage good coding practices.
+# Activates recommended lints for Flutter apps (inherits from package:lints/recommended.yaml)
 include: package:flutter_lints/flutter.yaml
 
 analyzer:
@@ -19,7 +18,7 @@ analyzer:
     # Swift Package Manager
     - "ios/Pods/**"
     - "build/ios/**"
-    # Android
+    # Native platforms
     - "android/**"
     - "ios/**"
     - "web/**"
@@ -36,51 +35,31 @@ linter:
   rules:
     # Error Prevention & Async Safety
     - cancel_subscriptions
-    - avoid_print
-    - avoid_empty_else
-    - avoid_relative_lib_imports
-    - avoid_shadowing_type_parameters
-    - avoid_types_as_parameter_names
-    - await_only_futures
-    - empty_catches
-    - hash_and_equals
-    - no_duplicate_case_values
-    - null_closures
-    - use_build_context_synchronously
-    - use_rethrow_when_possible
-    - valid_regexps
-    - prefer_void_to_null
+    - avoid_void_async
+    - no_adjacent_strings_in_list
+    - unnecessary_statements
+    - throw_in_finally
     - unnecessary_await_in_return
+    - prefer_void_to_null
     - noop_primitive_operations
 
-    # Clean Code & Const Optimization
-    - always_declare_return_types
-    - avoid_returning_null_for_void
-    - curly_braces_in_flow_control_structures
-    - depend_on_referenced_packages
-    - no_leading_underscores_for_local_identifiers
-    - prefer_final_in_for_each
-    - prefer_conditional_assignment
+    # Code Quality & Immutability (Const Rebuild Optimizations)
+    - prefer_const_constructors
+    - prefer_const_literals_to_create_immutables
     - prefer_const_declarations
-    - prefer_if_null_operators
-    - prefer_is_empty
-    - prefer_is_not_empty
-    - prefer_iterable_whereType
-    - prefer_null_aware_operators
-    - prefer_spread_collections
-    - unnecessary_null_aware_assignments
-    - unnecessary_null_in_if_null_operators
-    - unnecessary_nullable_for_final_variable_declarations
-    - unnecessary_string_escapes
-    - unnecessary_string_interpolations
+    - prefer_final_in_for_each
+    - always_declare_return_types
+    - depend_on_referenced_packages
     - use_string_buffers
     - sort_unnamed_constructors_first
-    - use_super_parameters
-    - avoid_unnecessary_containers
     - unnecessary_parenthesis
+    - unnecessary_breaks
+    - combinators_ordering
+    - dangling_library_doc_comments
+    - library_annotations
+    - tighten_type_of_initializing_formals
 
-    # Flutter Performance & UI Polish
-    - sized_box_for_whitespace
+    # Flutter Performance & Widget Tree Polish
     - sized_box_shrink_expand
     - use_colored_box
     - use_decorated_box

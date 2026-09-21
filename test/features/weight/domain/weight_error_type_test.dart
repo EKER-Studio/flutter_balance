@@ -35,7 +35,7 @@ void main() {
     });
 
     test('allows a null source error', () {
-      final exception = WeightRepositoryException(
+      const exception = WeightRepositoryException(
         type: WeightErrorType.readFailed,
         message: 'Could not read entries',
       );
@@ -44,7 +44,7 @@ void main() {
     });
 
     test('toString includes the type and message', () {
-      final exception = WeightRepositoryException(
+      const exception = WeightRepositoryException(
         type: WeightErrorType.deleteEntryFailed,
         message: 'Delete failed',
       );
@@ -57,7 +57,7 @@ void main() {
     });
 
     test('implements Exception', () {
-      final exception = WeightRepositoryException(
+      const exception = WeightRepositoryException(
         type: WeightErrorType.addEntryFailed,
         message: 'Add failed',
       );
