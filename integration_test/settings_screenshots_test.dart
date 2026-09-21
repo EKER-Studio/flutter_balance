@@ -471,10 +471,7 @@ void main() {
                     child: const Stack(
                       children: [
                         SettingsScreen(),
-                        ModalBarrier(
-                          dismissible: false,
-                          color: Colors.black54,
-                        ),
+                        ModalBarrier(dismissible: false, color: Colors.black54),
                         Center(child: WipeDataDialog()),
                       ],
                     ),
