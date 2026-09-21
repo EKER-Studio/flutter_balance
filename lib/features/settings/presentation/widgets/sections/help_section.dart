@@ -30,6 +30,58 @@ class HelpSection extends StatefulWidget {
 class HelpSectionState extends State<HelpSection> {
   late final Future<PackageInfo> _packageInfo = PackageInfo.fromPlatform();
 
+  Future<void> _rateApp(BuildContext context) async {
+    AppAnalytics.logSettingsRateAppClicked();
+    final marketUri = Uri.parse('market://details?id=com.ekerstudio.balance');
+    final webUri = Uri.parse(
+      'https://play.google.com/store/apps/details?id=com.ekerstudio.balance',
+    );
+    try {
+      final launched = await launchUrl(
+        marketUri,
+        mode: LaunchMode.externalApplication,
+      );
+      if (!launched) {
+        final webLaunched = await launchUrl(
+          webUri,
+          mode: LaunchMode.externalApplication,
+        );
+        if (!webLaunched && context.mounted) {
+          AppSnackBar.show(
+            context,
+            message: widget.l10n.couldNotOpenUrl(webUri.toString()),
+          );
+        }
+      }
+    } catch (_) {
+      try {
+        final webLaunched = await launchUrl(
+          webUri,
+          mode: LaunchMode.externalApplication,
+        );
+        if (!webLaunched && context.mounted) {
+          AppSnackBar.show(
+            context,
+            message: widget.l10n.couldNotOpenUrl(webUri.toString()),
+          );
+        }
+      } catch (e, stack) {
+        AppCrashReporter.recordError(
+          e,
+          stack,
+          reason: 'Failed to launch Google Play Store review URL',
+          fatal: false,
+        );
+        if (context.mounted) {
+          AppSnackBar.show(
+            context,
+            message: widget.l10n.couldNotOpenUrl(webUri.toString()),
+          );
+        }
+      }
+    }
+  }
+
   Future<void> _openGitHub(BuildContext context) async {
     AppAnalytics.logSettingsViewOnGitHubClicked();
     final uri = Uri.parse('https://github.com/EKER-Studio/flutter_balance');
@@ -93,6 +145,12 @@ class HelpSectionState extends State<HelpSection> {
                 title: l10n.openSourceLicenses,
                 sectionLabel: l10n.helpSection,
                 onTap: widget.onLicensesTap,
+              ),
+              CustomSettingsTile(
+                icon: Icons.star_outline_rounded,
+                title: l10n.rateApp,
+                sectionLabel: l10n.helpSection,
+                onTap: () => _rateApp(context),
               ),
               CustomSettingsTile(
                 icon: Icons.code_rounded,

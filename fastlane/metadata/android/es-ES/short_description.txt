@@ -1,1 +1,1 @@
-Control privado de peso y BMI sin conexión. Sin cuenta y con Health Connect.
+Registro de peso y BMI offline y simple. Sin anuncios, sin cuenta, con widgets.

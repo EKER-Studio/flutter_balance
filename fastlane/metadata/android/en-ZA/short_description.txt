@@ -1,1 +1,1 @@
-Private offline weight & BMI tracker. No account needed, Health Connect sync.
+Simple offline weight tracker & BMI log. No ads, no account, home screen widget.

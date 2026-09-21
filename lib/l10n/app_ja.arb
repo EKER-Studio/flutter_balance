@@ -396,6 +396,7 @@
   "totalMeasurements": "総測定回数",
   "totalProgress": "全体の進捗",
   "unlock": "ロック解除",
+  "rateApp": "アプリを評価",
   "viewOnGitHub": "GitHubで見る",
   "vsYesterday": "昨日比 {delta}",
   "week": "週",

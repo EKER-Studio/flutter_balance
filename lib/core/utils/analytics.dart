@@ -1120,6 +1120,11 @@ class AppAnalytics {
     return logEvent(name: 'settings_view_on_github_clicked');
   }
 
+  /// Logs clicking the Rate App tile in settings.
+  static Future<void> logSettingsRateAppClicked() {
+    return logEvent(name: 'settings_rate_app_clicked');
+  }
+
   /// Logs switching main navigation tabs in the bottom bar.
   ///
   /// @param tabIndex The index of the selected tab (0-3).

@@ -1,1 +1,1 @@
-Prywatny monitor wagi i BMI offline. Bez konta, z obsługą Health Connect.
+Prosty dziennik wagi i kalkulator BMI offline. Bez reklam, z widżetem na pulpit.
