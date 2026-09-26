@@ -374,6 +374,10 @@ void main() {
     when(() => weightBloc.add(any())).thenAnswer((invocation) {
       final event = invocation.positionalArguments.first;
       if (event is RefreshWeightData) {
+        final completer = event.completer;
+        if (completer != null && !completer.isCompleted) {
+          completer.complete();
+        }
         controller.add(
           WeightLoaded(
             entries: [entry],
@@ -392,7 +396,7 @@ void main() {
     await tester.pump(const Duration(milliseconds: 500));
     await tester.pumpAndSettle();
 
-    verify(() => weightBloc.add(const RefreshWeightData())).called(1);
+    verify(() => weightBloc.add(any(that: isA<RefreshWeightData>()))).called(1);
   });
 
   testWidgets('shows an error snackbar and retries when an error arrives '

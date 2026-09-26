@@ -53,29 +53,30 @@ class WidgetSyncService {
     bool isDarkMode = false,
   }) async {
     try {
-      await HomeWidget.saveWidgetData<String>('theme_mode', themeMode.name);
-      await HomeWidget.saveWidgetData<bool>('is_dark_mode', isDarkMode);
+      await Future.wait([
+        HomeWidget.saveWidgetData<String>('theme_mode', themeMode.name),
+        HomeWidget.saveWidgetData<bool>('is_dark_mode', isDarkMode),
+      ]);
 
       if (entries.isEmpty) {
-        await HomeWidget.saveWidgetData<bool>('has_data', false);
-        await HomeWidget.saveWidgetData<String>(
-          'header_title',
-          'Ostatni pomiar',
-        );
-        await HomeWidget.saveWidgetData<String>('current_weight', '--');
-        await HomeWidget.saveWidgetData<String>('unit', unitLabelFor(unit));
-        await HomeWidget.saveWidgetData<String>('delta_text', '');
-        await HomeWidget.saveWidgetData<bool>('delta_is_loss', false);
-        await HomeWidget.saveWidgetData<String>('delta_type', '');
-        await HomeWidget.saveWidgetData<String>('target_weight', '');
-        await HomeWidget.saveWidgetData<int>('goal_progress_pct', 0);
-        await HomeWidget.saveWidgetData<bool>('is_goal_achieved', false);
-        await HomeWidget.saveWidgetData<String>('goal_status_text', '');
-        await HomeWidget.saveWidgetData<String>('bmi_value', '');
-        await HomeWidget.saveWidgetData<String>('bmi_category', '');
-        await HomeWidget.saveWidgetData<String>('bmi_category_label', '');
-        await HomeWidget.saveWidgetData<String>('goal_mode', goalMode.name);
-        await HomeWidget.saveWidgetData<String>('last_entry_date', '');
+        await Future.wait([
+          HomeWidget.saveWidgetData<bool>('has_data', false),
+          HomeWidget.saveWidgetData<String>('header_title', 'Ostatni pomiar'),
+          HomeWidget.saveWidgetData<String>('current_weight', '--'),
+          HomeWidget.saveWidgetData<String>('unit', unitLabelFor(unit)),
+          HomeWidget.saveWidgetData<String>('delta_text', ''),
+          HomeWidget.saveWidgetData<bool>('delta_is_loss', false),
+          HomeWidget.saveWidgetData<String>('delta_type', ''),
+          HomeWidget.saveWidgetData<String>('target_weight', ''),
+          HomeWidget.saveWidgetData<int>('goal_progress_pct', 0),
+          HomeWidget.saveWidgetData<bool>('is_goal_achieved', false),
+          HomeWidget.saveWidgetData<String>('goal_status_text', ''),
+          HomeWidget.saveWidgetData<String>('bmi_value', ''),
+          HomeWidget.saveWidgetData<String>('bmi_category', ''),
+          HomeWidget.saveWidgetData<String>('bmi_category_label', ''),
+          HomeWidget.saveWidgetData<String>('goal_mode', goalMode.name),
+          HomeWidget.saveWidgetData<String>('last_entry_date', ''),
+        ]);
       } else {
         final sorted = entries.toList()
           ..sort((a, b) => a.dateTime.compareTo(b.dateTime));
@@ -158,58 +159,44 @@ class WidgetSyncService {
             ? 'Dzisiaj, $timeStr'
             : '${DateFormat('d MMM').format(latest.dateTime)} • $timeStr';
 
-        await HomeWidget.saveWidgetData<bool>('has_data', true);
-        await HomeWidget.saveWidgetData<String>(
-          'header_title',
-          'Ostatni pomiar',
-        );
-        await HomeWidget.saveWidgetData<String>(
-          'current_weight',
-          latestWeightDisplay.toStringAsFixed(1),
-        );
-        await HomeWidget.saveWidgetData<String>('unit', unitLabel);
-        await HomeWidget.saveWidgetData<String>('delta_text', deltaText);
-        await HomeWidget.saveWidgetData<bool>('delta_is_loss', deltaIsLoss);
-        await HomeWidget.saveWidgetData<String>('delta_type', deltaType);
-        await HomeWidget.saveWidgetData<String>(
-          'target_weight',
-          targetWeightStr,
-        );
-        await HomeWidget.saveWidgetData<int>(
-          'goal_progress_pct',
-          goalProgressPct,
-        );
-        await HomeWidget.saveWidgetData<bool>(
-          'is_goal_achieved',
-          isGoalAchieved,
-        );
-        await HomeWidget.saveWidgetData<String>(
-          'goal_status_text',
-          goalStatusText,
-        );
-        await HomeWidget.saveWidgetData<String>('bmi_value', bmiValue);
-        await HomeWidget.saveWidgetData<String>('bmi_category', bmiCategory);
-        await HomeWidget.saveWidgetData<String>(
-          'bmi_category_label',
-          bmiCategoryLabel,
-        );
-        await HomeWidget.saveWidgetData<String>('goal_mode', goalMode.name);
-        await HomeWidget.saveWidgetData<String>(
-          'last_entry_date',
-          formattedDate,
-        );
+        await Future.wait([
+          HomeWidget.saveWidgetData<bool>('has_data', true),
+          HomeWidget.saveWidgetData<String>('header_title', 'Ostatni pomiar'),
+          HomeWidget.saveWidgetData<String>(
+            'current_weight',
+            latestWeightDisplay.toStringAsFixed(1),
+          ),
+          HomeWidget.saveWidgetData<String>('unit', unitLabel),
+          HomeWidget.saveWidgetData<String>('delta_text', deltaText),
+          HomeWidget.saveWidgetData<bool>('delta_is_loss', deltaIsLoss),
+          HomeWidget.saveWidgetData<String>('delta_type', deltaType),
+          HomeWidget.saveWidgetData<String>('target_weight', targetWeightStr),
+          HomeWidget.saveWidgetData<int>('goal_progress_pct', goalProgressPct),
+          HomeWidget.saveWidgetData<bool>('is_goal_achieved', isGoalAchieved),
+          HomeWidget.saveWidgetData<String>('goal_status_text', goalStatusText),
+          HomeWidget.saveWidgetData<String>('bmi_value', bmiValue),
+          HomeWidget.saveWidgetData<String>('bmi_category', bmiCategory),
+          HomeWidget.saveWidgetData<String>(
+            'bmi_category_label',
+            bmiCategoryLabel,
+          ),
+          HomeWidget.saveWidgetData<String>('goal_mode', goalMode.name),
+          HomeWidget.saveWidgetData<String>('last_entry_date', formattedDate),
+        ]);
       }
 
-      await HomeWidget.updateWidget(
-        name: androidWidgetName,
-        androidName: androidWidgetName,
-        iOSName: iOSWidgetName,
-      );
-      await HomeWidget.updateWidget(
-        name: androidFullWidgetName,
-        androidName: androidFullWidgetName,
-        iOSName: iOSWidgetName,
-      );
+      await Future.wait([
+        HomeWidget.updateWidget(
+          name: androidWidgetName,
+          androidName: androidWidgetName,
+          iOSName: iOSWidgetName,
+        ),
+        HomeWidget.updateWidget(
+          name: androidFullWidgetName,
+          androidName: androidFullWidgetName,
+          iOSName: iOSWidgetName,
+        ),
+      ]);
     } catch (e, stack) {
       AppCrashReporter.recordError(
         e,
@@ -223,27 +210,31 @@ class WidgetSyncService {
   /// Clears widget storage on database wipe or logout.
   Future<void> clearWidgetData() async {
     try {
-      await HomeWidget.saveWidgetData<bool>('has_data', false);
-      await HomeWidget.saveWidgetData<String>('current_weight', '--');
-      await HomeWidget.saveWidgetData<String>('delta_text', '');
-      await HomeWidget.saveWidgetData<String>('target_weight', '');
-      await HomeWidget.saveWidgetData<int>('goal_progress_pct', 0);
-      await HomeWidget.saveWidgetData<bool>('is_goal_achieved', false);
-      await HomeWidget.saveWidgetData<String>('goal_status_text', '');
-      await HomeWidget.saveWidgetData<String>('bmi_value', '');
-      await HomeWidget.saveWidgetData<String>('bmi_category_label', '');
-      await HomeWidget.saveWidgetData<String>('last_entry_date', '');
+      await Future.wait([
+        HomeWidget.saveWidgetData<bool>('has_data', false),
+        HomeWidget.saveWidgetData<String>('current_weight', '--'),
+        HomeWidget.saveWidgetData<String>('delta_text', ''),
+        HomeWidget.saveWidgetData<String>('target_weight', ''),
+        HomeWidget.saveWidgetData<int>('goal_progress_pct', 0),
+        HomeWidget.saveWidgetData<bool>('is_goal_achieved', false),
+        HomeWidget.saveWidgetData<String>('goal_status_text', ''),
+        HomeWidget.saveWidgetData<String>('bmi_value', ''),
+        HomeWidget.saveWidgetData<String>('bmi_category_label', ''),
+        HomeWidget.saveWidgetData<String>('last_entry_date', ''),
+      ]);
 
-      await HomeWidget.updateWidget(
-        name: androidWidgetName,
-        androidName: androidWidgetName,
-        iOSName: iOSWidgetName,
-      );
-      await HomeWidget.updateWidget(
-        name: androidFullWidgetName,
-        androidName: androidFullWidgetName,
-        iOSName: iOSWidgetName,
-      );
+      await Future.wait([
+        HomeWidget.updateWidget(
+          name: androidWidgetName,
+          androidName: androidWidgetName,
+          iOSName: iOSWidgetName,
+        ),
+        HomeWidget.updateWidget(
+          name: androidFullWidgetName,
+          androidName: androidFullWidgetName,
+          iOSName: iOSWidgetName,
+        ),
+      ]);
     } catch (e, stack) {
       AppCrashReporter.recordError(
         e,

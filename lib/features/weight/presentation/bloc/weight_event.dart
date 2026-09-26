@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:balance/features/weight/domain/entities/csv_import_analysis.dart';
 import 'package:balance/features/weight/domain/entities/weight_entry.dart';
 import 'package:balance/core/models/time_period.dart';
@@ -57,9 +59,13 @@ final class ChangeChartFilter extends WeightEvent {
 /// repository.
 ///
 /// Useful after external data mutations (e.g. CSV import) to ensure the
-/// UI reflects the latest database state.
+/// UI reflects the latest database state. When [completer] is provided
+/// (e.g. by a pull-to-refresh indicator), it is completed once the refresh
+/// finishes so the UI can stop its spinner without awaiting the bloc stream.
 final class RefreshWeightData extends WeightEvent {
-  const RefreshWeightData();
+  final Completer<void>? completer;
+
+  const RefreshWeightData({this.completer});
 }
 
 /// An event that clears all weight entries from the database.

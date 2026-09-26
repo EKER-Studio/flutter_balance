@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:balance/core/presentation/navigation/app_routes.dart';
@@ -132,10 +134,12 @@ class _TodayScreenState extends State<TodayScreen> {
   Future<void> _refreshWeightData(BuildContext context) async {
     AppAnalytics.logTodayPullToRefresh();
     final bloc = context.read<WeightBloc>();
-    bloc.add(const RefreshWeightData());
-    await bloc.stream
-        .firstWhere((state) => state is WeightLoaded || state is WeightError)
-        .timeout(const Duration(seconds: 2), onTimeout: () => bloc.state);
+    final completer = Completer<void>();
+    bloc.add(RefreshWeightData(completer: completer));
+    await completer.future.timeout(
+      const Duration(seconds: 2),
+      onTimeout: () {},
+    );
   }
 
   void _showErrorSnackBar(

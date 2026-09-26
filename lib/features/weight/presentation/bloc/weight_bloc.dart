@@ -446,6 +446,11 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
           filteredEntries: _filterEntries(entries, state.timePeriod),
         ),
       );
+    } finally {
+      final completer = event.completer;
+      if (completer != null && !completer.isCompleted) {
+        completer.complete();
+      }
     }
   }
 
