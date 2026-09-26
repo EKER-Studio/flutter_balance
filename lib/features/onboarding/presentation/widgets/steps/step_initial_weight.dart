@@ -125,10 +125,7 @@ class _StepInitialWeightState extends State<StepInitialWeight> {
     );
 
     if (pickedTime == null || !mounted) return;
-    AppAnalytics.logOnboardingInitialWeightTimeChanged(
-      hour: pickedTime.hour,
-      minute: pickedTime.minute,
-    );
+    AppAnalytics.logOnboardingInitialWeightTimeChanged();
 
     setState(() {
       _selectedTimestamp = DateTime(

@@ -214,16 +214,10 @@ class AppAnalytics {
 
   /// Logs selecting a custom time for the initial weight in onboarding.
   ///
-  /// @param hour Selected hour (0-23).
-  /// @param minute Selected minute (0-59).
-  static Future<void> logOnboardingInitialWeightTimeChanged({
-    required int hour,
-    required int minute,
-  }) {
-    return logEvent(
-      name: 'onboarding_initial_weight_time_changed',
-      parameters: {'hour': hour, 'minute': minute},
-    );
+  /// Intentionally parameter-free: the selected time is user routine data
+  /// and must not leave the device.
+  static Future<void> logOnboardingInitialWeightTimeChanged() {
+    return logEvent(name: 'onboarding_initial_weight_time_changed');
   }
 
   /// Logs a validation error when entering initial weight in onboarding.
@@ -335,16 +329,10 @@ class AppAnalytics {
 
   /// Logs selecting a reminder time in onboarding.
   ///
-  /// @param hour Selected hour (0-23).
-  /// @param minute Selected minute (0-59).
-  static Future<void> logOnboardingReminderTimeSelected({
-    required int hour,
-    required int minute,
-  }) {
-    return logEvent(
-      name: 'onboarding_reminder_time_selected',
-      parameters: {'hour': hour, 'minute': minute},
-    );
+  /// Intentionally parameter-free: the selected time is user routine data
+  /// and must not leave the device.
+  static Future<void> logOnboardingReminderTimeSelected() {
+    return logEvent(name: 'onboarding_reminder_time_selected');
   }
 
   /// Logs clicking the health sync toggle in onboarding.
@@ -485,12 +473,10 @@ class AppAnalytics {
 
   /// Logs tapping on the BMI badge to open the BMI legend.
   ///
-  /// @param category The classification category name.
-  static Future<void> logTodayBmiBadgeTapped({required String category}) {
-    return logEvent(
-      name: 'today_bmi_badge_tapped',
-      parameters: {'category': category},
-    );
+  /// Intentionally parameter-free: the BMI category is health data
+  /// and must not leave the device.
+  static Future<void> logTodayBmiBadgeTapped() {
+    return logEvent(name: 'today_bmi_badge_tapped');
   }
 
   /// Logs tapping on the goal progress bar to edit the target weight.
@@ -535,12 +521,10 @@ class AppAnalytics {
 
   /// Logs switching the calendar month view.
   ///
-  /// @param yearMonth Formatted string representing the new month (e.g. '2026-08').
-  static Future<void> logCalendarMonthChanged(String yearMonth) {
-    return logEvent(
-      name: 'calendar_month_changed',
-      parameters: {'year_month': yearMonth},
-    );
+  /// Intentionally parameter-free: the browsed month reveals usage patterns
+  /// and must not leave the device.
+  static Future<void> logCalendarMonthChanged() {
+    return logEvent(name: 'calendar_month_changed');
   }
 
   /// Logs selecting a specific day on the calendar grid.
@@ -892,26 +876,18 @@ class AppAnalytics {
 
   /// Logs clicking the reminder time selection tile in settings.
   ///
-  /// @param currentTime The currently scheduled time string.
-  static Future<void> logSettingsReminderTimeTileClicked(String currentTime) {
-    return logEvent(
-      name: 'settings_reminder_time_tile_clicked',
-      parameters: {'current_time': currentTime},
-    );
+  /// Intentionally parameter-free: the scheduled time is user routine data
+  /// and must not leave the device.
+  static Future<void> logSettingsReminderTimeTileClicked() {
+    return logEvent(name: 'settings_reminder_time_tile_clicked');
   }
 
   /// Logs opening the reminder time picker in settings.
   ///
-  /// @param hour Current hour.
-  /// @param minute Current minute.
-  static Future<void> logSettingsReminderTimePickerOpened({
-    required int hour,
-    required int minute,
-  }) {
-    return logEvent(
-      name: 'settings_reminder_time_picker_opened',
-      parameters: {'hour': hour, 'minute': minute},
-    );
+  /// Intentionally parameter-free: the scheduled time is user routine data
+  /// and must not leave the device.
+  static Future<void> logSettingsReminderTimePickerOpened() {
+    return logEvent(name: 'settings_reminder_time_picker_opened');
   }
 
   /// Logs cancelling the reminder time picker in settings.
@@ -921,16 +897,10 @@ class AppAnalytics {
 
   /// Logs changing the daily notification reminder time.
   ///
-  /// @param hour Target hour (0-23).
-  /// @param minute Target minute (0-59).
-  static Future<void> logSettingsReminderTimeChanged({
-    required int hour,
-    required int minute,
-  }) {
-    return logEvent(
-      name: 'settings_reminder_time_changed',
-      parameters: {'hour': hour, 'minute': minute},
-    );
+  /// Intentionally parameter-free: the scheduled time is user routine data
+  /// and must not leave the device.
+  static Future<void> logSettingsReminderTimeChanged() {
+    return logEvent(name: 'settings_reminder_time_changed');
   }
 
   /// Logs toggling biometric app lock in settings.
@@ -1170,12 +1140,10 @@ class AppAnalytics {
 
   /// Logs selecting a new measurement date in the add weight dialog.
   ///
-  /// @param date Selected date string (YYYY-MM-DD).
-  static Future<void> logDialogAddWeightDateChanged(String date) {
-    return logEvent(
-      name: 'dialog_add_weight_date_changed',
-      parameters: {'date': date},
-    );
+  /// Intentionally parameter-free: the measurement date is health metadata
+  /// and must not leave the device.
+  static Future<void> logDialogAddWeightDateChanged() {
+    return logEvent(name: 'dialog_add_weight_date_changed');
   }
 
   /// Logs opening the time picker in the add weight dialog.
@@ -1185,16 +1153,10 @@ class AppAnalytics {
 
   /// Logs selecting a new measurement time in the add weight dialog.
   ///
-  /// @param hour Selected hour.
-  /// @param minute Selected minute.
-  static Future<void> logDialogAddWeightTimeChanged({
-    required int hour,
-    required int minute,
-  }) {
-    return logEvent(
-      name: 'dialog_add_weight_time_changed',
-      parameters: {'hour': hour, 'minute': minute},
-    );
+  /// Intentionally parameter-free: the measurement time is user routine data
+  /// and must not leave the device.
+  static Future<void> logDialogAddWeightTimeChanged() {
+    return logEvent(name: 'dialog_add_weight_time_changed');
   }
 
   /// Logs a form validation failure in the add weight dialog.
@@ -1428,27 +1390,20 @@ class AppAnalytics {
 
   /// Logs tapping a specific BMI category item in the BMI legend dialog.
   ///
-  /// @param categoryName Name of the tapped BMI category.
-  static Future<void> logDialogBmiLegendCategoryTapped(String categoryName) {
-    return logEvent(
-      name: 'dialog_bmi_legend_category_tapped',
-      parameters: {'category_name': categoryName},
-    );
+  /// Intentionally parameter-free: the BMI category is health data
+  /// and must not leave the device.
+  static Future<void> logDialogBmiLegendCategoryTapped() {
+    return logEvent(name: 'dialog_bmi_legend_category_tapped');
   }
 
   /// Logs scheduling a daily reminder notification in the system service.
   ///
-  /// @param hour Scheduled reminder hour.
-  /// @param minute Scheduled reminder minute.
   /// @param isExact Flag indicating whether the alarm was scheduled with exact timing.
-  static Future<void> logNotificationScheduled({
-    required int hour,
-    required int minute,
-    required bool isExact,
-  }) {
+  /// The scheduled time itself is user routine data and is never logged.
+  static Future<void> logNotificationScheduled({required bool isExact}) {
     return logEvent(
       name: 'notification_scheduled',
-      parameters: {'hour': hour, 'minute': minute, 'is_exact': isExact},
+      parameters: {'is_exact': isExact},
     );
   }
 

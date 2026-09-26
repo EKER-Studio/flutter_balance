@@ -42,7 +42,7 @@ class BmiLegendItem extends StatelessWidget {
       child: InkWell(
         borderRadius: BorderRadius.circular(10),
         onTap: () {
-          AppAnalytics.logDialogBmiLegendCategoryTapped(category.name);
+          AppAnalytics.logDialogBmiLegendCategoryTapped();
         },
         child: Container(
           decoration: decoration,

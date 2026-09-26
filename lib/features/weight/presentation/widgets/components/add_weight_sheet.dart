@@ -131,9 +131,7 @@ class _AddWeightSheetState extends State<AddWeightSheet>
     if (!mounted) return;
 
     if (picked != null) {
-      AppAnalytics.logDialogAddWeightDateChanged(
-        picked.toIso8601String().substring(0, 10),
-      );
+      AppAnalytics.logDialogAddWeightDateChanged();
       setState(() {
         _selectedDate = picked;
         _validateDateTime();
@@ -151,10 +149,7 @@ class _AddWeightSheetState extends State<AddWeightSheet>
     if (!mounted) return;
 
     if (picked != null) {
-      AppAnalytics.logDialogAddWeightTimeChanged(
-        hour: picked.hour,
-        minute: picked.minute,
-      );
+      AppAnalytics.logDialogAddWeightTimeChanged();
       setState(() {
         _selectedTime = picked;
         _validateDateTime();

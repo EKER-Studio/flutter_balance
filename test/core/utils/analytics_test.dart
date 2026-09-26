@@ -55,10 +55,7 @@ void main() {
         await AppAnalytics.logOnboardingInitialWeightDatePickerOpened();
         await AppAnalytics.logOnboardingInitialWeightDateChanged();
         await AppAnalytics.logOnboardingInitialWeightTimePickerOpened();
-        await AppAnalytics.logOnboardingInitialWeightTimeChanged(
-          hour: 8,
-          minute: 30,
-        );
+        await AppAnalytics.logOnboardingInitialWeightTimeChanged();
         await AppAnalytics.logOnboardingInitialWeightValidationError(
           'required',
         );
@@ -77,10 +74,7 @@ void main() {
         await AppAnalytics.logOnboardingCsvImportSkipped();
         await AppAnalytics.logOnboardingReminderToggleClicked(true);
         await AppAnalytics.logOnboardingReminderTimePickerOpened();
-        await AppAnalytics.logOnboardingReminderTimeSelected(
-          hour: 7,
-          minute: 0,
-        );
+        await AppAnalytics.logOnboardingReminderTimeSelected();
         await AppAnalytics.logOnboardingHealthSyncToggleClicked(true);
         await AppAnalytics.logOnboardingHealthSyncToggled(
           enabled: true,
@@ -106,7 +100,7 @@ void main() {
         await AppAnalytics.logTodayFirstWeightButtonClicked();
         await AppAnalytics.logTodayEntryTap(entryId: 1, hasNote: true);
         await AppAnalytics.logTodayEntryDelete(1);
-        await AppAnalytics.logTodayBmiBadgeTapped(category: 'normal');
+        await AppAnalytics.logTodayBmiBadgeTapped();
         await AppAnalytics.logTodayGoalProgressBarTapped();
         await AppAnalytics.logTodaySetGoalTapped();
         await AppAnalytics.logTodayChartPointTouched();
@@ -115,7 +109,7 @@ void main() {
         await AppAnalytics.logTodayPullToRefresh();
 
         // Calendar
-        await AppAnalytics.logCalendarMonthChanged('2026-08');
+        await AppAnalytics.logCalendarMonthChanged();
         await AppAnalytics.logCalendarSwipeMonthChanged('left');
         await AppAnalytics.logCalendarDaySelected(hasEntry: true);
         await AppAnalytics.logCalendarAddMeasurementClicked();
@@ -160,13 +154,10 @@ void main() {
           enabled: true,
           permissionGranted: true,
         );
-        await AppAnalytics.logSettingsReminderTimeTileClicked('08:30');
-        await AppAnalytics.logSettingsReminderTimePickerOpened(
-          hour: 8,
-          minute: 30,
-        );
+        await AppAnalytics.logSettingsReminderTimeTileClicked();
+        await AppAnalytics.logSettingsReminderTimePickerOpened();
         await AppAnalytics.logSettingsReminderTimePickerCancelled();
-        await AppAnalytics.logSettingsReminderTimeChanged(hour: 8, minute: 30);
+        await AppAnalytics.logSettingsReminderTimeChanged();
         await AppAnalytics.logSettingsBiometricsToggled(true);
         await AppAnalytics.logSettingsBiometricsAuthStarted();
         await AppAnalytics.logSettingsBiometricsAuthSuccess();
@@ -204,9 +195,9 @@ void main() {
         );
         await AppAnalytics.logDialogAddWeightOpened('fab');
         await AppAnalytics.logDialogAddWeightDatePickerOpened();
-        await AppAnalytics.logDialogAddWeightDateChanged('2026-08-19');
+        await AppAnalytics.logDialogAddWeightDateChanged();
         await AppAnalytics.logDialogAddWeightTimePickerOpened();
-        await AppAnalytics.logDialogAddWeightTimeChanged(hour: 8, minute: 0);
+        await AppAnalytics.logDialogAddWeightTimeChanged();
         await AppAnalytics.logDialogAddWeightValidationError('range_error');
         await AppAnalytics.logDialogAddWeightSaved(
           hasNote: false,
@@ -236,7 +227,7 @@ void main() {
         await AppAnalytics.logAppInitErrorScreenViewed();
         await AppAnalytics.logDialogBmiLegendOpened();
         await AppAnalytics.logDialogBmiLegendClosed();
-        await AppAnalytics.logDialogBmiLegendCategoryTapped('normal');
+        await AppAnalytics.logDialogBmiLegendCategoryTapped();
         await AppAnalytics.logTodayErrorRetryClicked();
         await AppAnalytics.logTodayInlineBannerRetryClicked();
         await AppAnalytics.logTodayLatestWeightTapped(unit: 'kg');
@@ -246,11 +237,7 @@ void main() {
         await AppAnalytics.logStatisticsHabitMetricTapped('streak');
         await AppAnalytics.logStatisticsWeightDetailRowTapped('highest');
         await AppAnalytics.logSettingsAppVersionTapped('1.0.0');
-        await AppAnalytics.logNotificationScheduled(
-          hour: 8,
-          minute: 30,
-          isExact: true,
-        );
+        await AppAnalytics.logNotificationScheduled(isExact: true);
         await AppAnalytics.logNotificationCancelled();
         await AppAnalytics.logHealthSyncStarted();
         await AppAnalytics.logHealthSyncSuccess(

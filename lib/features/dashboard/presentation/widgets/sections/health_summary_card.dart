@@ -122,11 +122,8 @@ class HealthSummaryCard extends StatelessWidget {
                           BmiBadge(
                             bmi: bmi,
                             category: category,
-                            onTap: () => _openBmiLegendDialog(
-                              context,
-                              bmi: bmi,
-                              category: category?.name ?? 'unknown',
-                            ),
+                            onTap: () =>
+                                _openBmiLegendDialog(context, bmi: bmi),
                           ),
                       ],
                     ),
@@ -166,12 +163,8 @@ class HealthSummaryCard extends StatelessWidget {
     );
   }
 
-  void _openBmiLegendDialog(
-    BuildContext context, {
-    required double bmi,
-    required String category,
-  }) {
-    AppAnalytics.logTodayBmiBadgeTapped(category: category);
+  void _openBmiLegendDialog(BuildContext context, {required double bmi}) {
+    AppAnalytics.logTodayBmiBadgeTapped();
     AppAnalytics.logDialogBmiLegendOpened();
     showDialog<void>(
       context: context,

@@ -271,11 +271,7 @@ class NotificationService {
         payload: AppRoutes.todayWithAddAction(),
       );
 
-      AppAnalytics.logNotificationScheduled(
-        hour: time.hour,
-        minute: time.minute,
-        isExact: false,
-      );
+      AppAnalytics.logNotificationScheduled(isExact: false);
 
       if (kDebugMode) {
         debugPrint(

@@ -42,10 +42,7 @@ class _StepReminderNotificationState extends State<StepReminderNotification> {
     );
 
     if (picked != null && context.mounted) {
-      AppAnalytics.logOnboardingReminderTimeSelected(
-        hour: picked.hour,
-        minute: picked.minute,
-      );
+      AppAnalytics.logOnboardingReminderTimeSelected();
       context.read<AppSettingsBloc>().add(
         UpdateNotificationTime((hour: picked.hour, minute: picked.minute)),
       );

@@ -381,19 +381,13 @@ class SettingsDataCoordinator {
       hour: initialTimeRecord.hour,
       minute: initialTimeRecord.minute,
     );
-    AppAnalytics.logSettingsReminderTimePickerOpened(
-      hour: initialTimeRecord.hour,
-      minute: initialTimeRecord.minute,
-    );
+    AppAnalytics.logSettingsReminderTimePickerOpened();
     final newTime = await showSafeTimePicker(
       context: context,
       initialTime: initialTime,
     );
     if (newTime != null && context.mounted) {
-      AppAnalytics.logSettingsReminderTimeChanged(
-        hour: newTime.hour,
-        minute: newTime.minute,
-      );
+      AppAnalytics.logSettingsReminderTimeChanged();
       context.read<AppSettingsBloc>().add(
         UpdateNotificationTime((hour: newTime.hour, minute: newTime.minute)),
       );

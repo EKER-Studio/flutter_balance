@@ -56,9 +56,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
 
   void _previousMonth() {
     final newMonth = DateTime(_focusedMonth.year, _focusedMonth.month - 1, 1);
-    AppAnalytics.logCalendarMonthChanged(
-      '${newMonth.year}-${newMonth.month.toString().padLeft(2, '0')}',
-    );
+    AppAnalytics.logCalendarMonthChanged();
     setState(() {
       _focusedMonth = newMonth;
     });
@@ -66,9 +64,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
 
   void _nextMonth() {
     final newMonth = DateTime(_focusedMonth.year, _focusedMonth.month + 1, 1);
-    AppAnalytics.logCalendarMonthChanged(
-      '${newMonth.year}-${newMonth.month.toString().padLeft(2, '0')}',
-    );
+    AppAnalytics.logCalendarMonthChanged();
     setState(() {
       _focusedMonth = newMonth;
     });

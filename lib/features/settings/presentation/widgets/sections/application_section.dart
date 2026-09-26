@@ -99,9 +99,7 @@ class ApplicationSection extends StatelessWidget {
               subtitle: notificationTimeText,
               sectionLabel: l10n.applicationSection,
               onTap: () {
-                AppAnalytics.logSettingsReminderTimeTileClicked(
-                  notificationTimeText,
-                );
+                AppAnalytics.logSettingsReminderTimeTileClicked();
                 onNotificationTimeTap();
               },
             ),
