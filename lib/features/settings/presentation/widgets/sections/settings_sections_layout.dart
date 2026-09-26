@@ -5,6 +5,7 @@ import 'package:balance/features/settings/presentation/widgets/sections/applicat
 import 'package:balance/features/settings/presentation/widgets/sections/data_section.dart';
 import 'package:balance/features/settings/presentation/widgets/sections/help_section.dart';
 import 'package:balance/features/settings/presentation/widgets/sections/integrations_section.dart';
+import 'package:balance/features/settings/presentation/widgets/sections/privacy_section.dart';
 import 'package:balance/features/settings/presentation/widgets/sections/profile_section.dart';
 import 'package:balance/features/settings/presentation/widgets/components/section_header.dart';
 import 'package:balance/features/settings/presentation/widgets/sections/security_section.dart';
@@ -25,6 +26,8 @@ class SettingsSectionsLayout extends StatelessWidget {
   final ValueChanged<bool> onHealthSyncChanged;
   final VoidCallback onInstallHealthConnect;
   final ValueChanged<bool> onBiometricChanged;
+  final ValueChanged<bool> onAnalyticsChanged;
+  final ValueChanged<bool> onCrashReportingChanged;
   final VoidCallback onImportTap;
   final VoidCallback onExportTap;
   final VoidCallback onWipeTap;
@@ -47,6 +50,8 @@ class SettingsSectionsLayout extends StatelessWidget {
     required this.onHealthSyncChanged,
     required this.onInstallHealthConnect,
     required this.onBiometricChanged,
+    required this.onAnalyticsChanged,
+    required this.onCrashReportingChanged,
     required this.onImportTap,
     required this.onExportTap,
     required this.onWipeTap,
@@ -96,6 +101,14 @@ class SettingsSectionsLayout extends StatelessWidget {
       onBiometricChanged: onBiometricChanged,
       biometricsAvailableLabel: l10n.biometricDesc,
       biometricsNotAvailableLabel: l10n.biometricsNotAvailable,
+    );
+
+    final privacyHeader = SectionHeader(label: l10n.privacySection);
+    final privacySection = PrivacySection(
+      state: state,
+      l10n: l10n,
+      onAnalyticsChanged: onAnalyticsChanged,
+      onCrashReportingChanged: onCrashReportingChanged,
     );
 
     final dataHeader = SectionHeader(label: l10n.dataSection);
@@ -158,6 +171,10 @@ class SettingsSectionsLayout extends StatelessWidget {
                       securitySection,
                       const SizedBox(height: 24),
                     ],
+                    privacyHeader,
+                    const SizedBox(height: 8),
+                    privacySection,
+                    const SizedBox(height: 24),
                     dataHeader,
                     const SizedBox(height: 8),
                     dataSection,
@@ -192,6 +209,10 @@ class SettingsSectionsLayout extends StatelessWidget {
                 securitySection,
                 const SizedBox(height: 16),
               ],
+              privacyHeader,
+              const SizedBox(height: 8),
+              privacySection,
+              const SizedBox(height: 16),
               dataHeader,
               const SizedBox(height: 8),
               dataSection,

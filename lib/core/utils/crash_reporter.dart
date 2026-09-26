@@ -15,9 +15,20 @@ class AppCrashReporter {
 
   static bool _isFirebaseAvailable = false;
 
+  /// Whether the user opted into crash diagnostics (privacy-by-default).
+  ///
+  /// When false, errors are only written to the on-device log and never
+  /// uploaded. Mirrors the persisted `AppSettingsState.crashReportingEnabled`.
+  static bool _collectionEnabled = false;
+
   /// Sets whether Firebase Crashlytics is active and available.
   static void setFirebaseAvailable(bool available) {
     _isFirebaseAvailable = available;
+  }
+
+  /// Enables or disables Crashlytics upload without touching availability.
+  static void setCollectionEnabled(bool enabled) {
+    _collectionEnabled = enabled;
   }
 
   /// Records an [error] with optional [stack] trace and [reason] to Crashlytics
@@ -30,7 +41,7 @@ class AppCrashReporter {
   }) async {
     final effectiveStack = stack ?? StackTrace.current;
 
-    if (_isFirebaseAvailable) {
+    if (_isFirebaseAvailable && _collectionEnabled) {
       try {
         await FirebaseCrashlytics.instance.recordError(
           error,

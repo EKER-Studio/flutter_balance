@@ -202,11 +202,11 @@ void main() {
 
   testWidgets('shows theme selection dialog on theme tap', (tester) async {
     await tester.pumpWidget(createTestWidget());
-    await tester.pump();
-
-    await tester.drag(find.text('PROFILE'), const Offset(0, -500));
     await tester.pumpAndSettle();
-    await tester.tap(find.text('System'));
+
+    await tester.ensureVisible(find.text('Theme'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Theme'));
     await tester.pump();
 
     expect(find.text('Light'), findsOneWidget);

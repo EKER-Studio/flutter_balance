@@ -24,6 +24,8 @@ void main() {
       expect(state.isOnboardingCompleted, isFalse);
       expect(state.isHealthSyncEnabled, isFalse);
       expect(state.weeklyPaceWindowDays, 30);
+      expect(state.analyticsEnabled, isFalse);
+      expect(state.crashReportingEnabled, isFalse);
     });
 
     test(
@@ -64,6 +66,8 @@ void main() {
         isHealthSyncEnabled: true,
         lastHealthSyncTimestamp: syncTime,
         weeklyPaceWindowDays: 14,
+        analyticsEnabled: true,
+        crashReportingEnabled: true,
       );
 
       final json = state.toJson();
@@ -83,6 +87,15 @@ void main() {
       expect(restored.isHealthSyncEnabled, isTrue);
       expect(restored.lastHealthSyncTimestamp, syncTime);
       expect(restored.weeklyPaceWindowDays, 14);
+      expect(restored.analyticsEnabled, isTrue);
+      expect(restored.crashReportingEnabled, isTrue);
+    });
+
+    test('fromJson defaults privacy opt-ins to false for legacy payloads', () {
+      final restored = AppSettingsState.fromJson(const {'themeMode': 'system'});
+
+      expect(restored.analyticsEnabled, isFalse);
+      expect(restored.crashReportingEnabled, isFalse);
     });
 
     test(

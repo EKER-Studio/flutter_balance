@@ -93,6 +93,16 @@ final class AppSettingsState extends Equatable {
   /// The time window in days used to calculate the weekly weight change pace (default: 30).
   final int weeklyPaceWindowDays;
 
+  /// Whether anonymous usage telemetry (Firebase Analytics) is enabled.
+  ///
+  /// Privacy-by-default: off. Persisted across app restarts.
+  final bool analyticsEnabled;
+
+  /// Whether anonymous crash diagnostics (Firebase Crashlytics) are enabled.
+  ///
+  /// Privacy-by-default: off. Persisted across app restarts.
+  final bool crashReportingEnabled;
+
   /// The user's preferred first day of the week for the calendar.
   final FirstDayOfWeek firstDayOfWeek;
 
@@ -115,6 +125,8 @@ final class AppSettingsState extends Equatable {
     this.healthPermissionDenied = false,
     this.lastHealthSyncTimestamp,
     this.weeklyPaceWindowDays = 30,
+    this.analyticsEnabled = false,
+    this.crashReportingEnabled = false,
   });
 
   /// Creates a copy of this state with the given fields replaced.
@@ -140,6 +152,8 @@ final class AppSettingsState extends Equatable {
     bool? healthPermissionDenied,
     Object? lastHealthSyncTimestamp = _lastHealthSyncSentinel,
     int? weeklyPaceWindowDays,
+    bool? analyticsEnabled,
+    bool? crashReportingEnabled,
   }) {
     return AppSettingsState(
       themeMode: themeMode ?? this.themeMode,
@@ -169,6 +183,9 @@ final class AppSettingsState extends Equatable {
           ? this.lastHealthSyncTimestamp
           : lastHealthSyncTimestamp as DateTime?,
       weeklyPaceWindowDays: weeklyPaceWindowDays ?? this.weeklyPaceWindowDays,
+      analyticsEnabled: analyticsEnabled ?? this.analyticsEnabled,
+      crashReportingEnabled:
+          crashReportingEnabled ?? this.crashReportingEnabled,
     );
   }
 
@@ -192,6 +209,8 @@ final class AppSettingsState extends Equatable {
     healthPermissionDenied,
     lastHealthSyncTimestamp,
     weeklyPaceWindowDays,
+    analyticsEnabled,
+    crashReportingEnabled,
   ];
 
   /// Deserializes an [AppSettingsState] from a JSON map.
@@ -251,6 +270,8 @@ final class AppSettingsState extends Equatable {
           ? DateTime.tryParse(json['lastHealthSyncTimestamp'] as String)
           : null,
       weeklyPaceWindowDays: json['weeklyPaceWindowDays'] as int? ?? 30,
+      analyticsEnabled: json['analyticsEnabled'] as bool? ?? false,
+      crashReportingEnabled: json['crashReportingEnabled'] as bool? ?? false,
     );
   }
 
@@ -274,6 +295,8 @@ final class AppSettingsState extends Equatable {
       if (lastHealthSyncTimestamp != null)
         'lastHealthSyncTimestamp': lastHealthSyncTimestamp!.toIso8601String(),
       'weeklyPaceWindowDays': weeklyPaceWindowDays,
+      'analyticsEnabled': analyticsEnabled,
+      'crashReportingEnabled': crashReportingEnabled,
     };
   }
 }

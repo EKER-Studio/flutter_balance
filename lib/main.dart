@@ -46,13 +46,12 @@ Future<void> main() async {
     );
     AppCrashReporter.setFirebaseAvailable(true);
     AppAnalytics.setFirebaseAvailable(true);
-    if (kDebugMode) {
-      await FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(false);
-      await AppAnalytics.setAnalyticsCollectionEnabled(false);
-    } else {
-      await FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(true);
-      await AppAnalytics.setAnalyticsCollectionEnabled(true);
-    }
+    // Privacy-by-default: collection stays off until the user opts in via
+    // Settings → Privacy. Persisted preferences are applied below once the
+    // AppSettingsBloc is available.
+    AppCrashReporter.setCollectionEnabled(false);
+    await FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(false);
+    await AppAnalytics.setAnalyticsCollectionEnabled(false);
   } catch (error, stackTrace) {
     AppCrashReporter.setFirebaseAvailable(false);
     AppAnalytics.setFirebaseAvailable(false);
@@ -95,6 +94,23 @@ Future<void> main() async {
     await configureDependencies(environment: AppEnvironment.current.name);
 
     final settingsBloc = getIt<AppSettingsBloc>();
+
+    // Apply persisted privacy preferences (opt-in). Debug builds never
+    // collect, regardless of stored preferences.
+    if (!kDebugMode) {
+      try {
+        final prefs = settingsBloc.state;
+        AppCrashReporter.setCollectionEnabled(prefs.crashReportingEnabled);
+        await FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(
+          prefs.crashReportingEnabled,
+        );
+        await AppAnalytics.setAnalyticsCollectionEnabled(
+          prefs.analyticsEnabled,
+        );
+      } catch (_) {
+        // Privacy flags are best-effort; startup must never fail on them.
+      }
+    }
 
     runApp(
       BlocProvider<AppSettingsBloc>.value(

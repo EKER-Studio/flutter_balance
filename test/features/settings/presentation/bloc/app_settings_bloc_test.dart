@@ -931,6 +931,99 @@ void main() {
       expect: () => [const AppSettingsState(weeklyPaceWindowDays: 14)],
     );
 
+    group('Privacy opt-ins', () {
+      blocTest<AppSettingsBloc, AppSettingsState>(
+        'enables analytics and persists the flag on ToggleAnalytics(true)',
+        build: () => AppSettingsBloc(
+          notificationService: mockNotificationService,
+          healthService: mockHealthService,
+        ),
+        act: (bloc) => bloc.add(const ToggleAnalytics(true)),
+        expect: () => [
+          isA<AppSettingsState>().having(
+            (s) => s.analyticsEnabled,
+            'analyticsEnabled',
+            true,
+          ),
+        ],
+        verify: (_) {
+          final writes = verify(
+            () => storage.write(
+              'AppSettingsBloc',
+              captureAny<Map<String, dynamic>>(),
+            ),
+          ).captured;
+          expect(
+            (writes.last as Map<String, dynamic>)['analyticsEnabled'],
+            true,
+          );
+        },
+      );
+
+      blocTest<AppSettingsBloc, AppSettingsState>(
+        'disables analytics on ToggleAnalytics(false)',
+        build: () => AppSettingsBloc(
+          notificationService: mockNotificationService,
+          healthService: mockHealthService,
+        ),
+        seed: () => const AppSettingsState(analyticsEnabled: true),
+        act: (bloc) => bloc.add(const ToggleAnalytics(false)),
+        expect: () => [
+          isA<AppSettingsState>().having(
+            (s) => s.analyticsEnabled,
+            'analyticsEnabled',
+            false,
+          ),
+        ],
+      );
+
+      blocTest<AppSettingsBloc, AppSettingsState>(
+        'enables crash reporting and persists the flag on '
+        'ToggleCrashReporting(true)',
+        build: () => AppSettingsBloc(
+          notificationService: mockNotificationService,
+          healthService: mockHealthService,
+        ),
+        act: (bloc) => bloc.add(const ToggleCrashReporting(true)),
+        expect: () => [
+          isA<AppSettingsState>().having(
+            (s) => s.crashReportingEnabled,
+            'crashReportingEnabled',
+            true,
+          ),
+        ],
+        verify: (_) {
+          final writes = verify(
+            () => storage.write(
+              'AppSettingsBloc',
+              captureAny<Map<String, dynamic>>(),
+            ),
+          ).captured;
+          expect(
+            (writes.last as Map<String, dynamic>)['crashReportingEnabled'],
+            true,
+          );
+        },
+      );
+
+      blocTest<AppSettingsBloc, AppSettingsState>(
+        'disables crash reporting on ToggleCrashReporting(false)',
+        build: () => AppSettingsBloc(
+          notificationService: mockNotificationService,
+          healthService: mockHealthService,
+        ),
+        seed: () => const AppSettingsState(crashReportingEnabled: true),
+        act: (bloc) => bloc.add(const ToggleCrashReporting(false)),
+        expect: () => [
+          isA<AppSettingsState>().having(
+            (s) => s.crashReportingEnabled,
+            'crashReportingEnabled',
+            false,
+          ),
+        ],
+      );
+    });
+
     test('bloc fromJson override restores state from a json map', () {
       final bloc = AppSettingsBloc(
         notificationService: mockNotificationService,

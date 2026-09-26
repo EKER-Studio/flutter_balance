@@ -40,6 +40,12 @@ class FirebaseAnalyticsService implements AnalyticsService {
   bool _isFirebaseAvailable = false;
   FirebaseAnalytics? _analyticsInstance;
 
+  /// Whether the user opted into telemetry collection (privacy-by-default).
+  ///
+  /// When false, no event leaves the device even if Firebase initialized
+  /// successfully. Mirrors the persisted `AppSettingsState.analyticsEnabled`.
+  bool _collectionEnabled = false;
+
   /// Returns the underlying [FirebaseAnalytics] instance when available.
   FirebaseAnalytics? get rawInstance {
     if (!_isFirebaseAvailable) return null;
@@ -56,6 +62,7 @@ class FirebaseAnalyticsService implements AnalyticsService {
 
   @override
   Future<void> setAnalyticsCollectionEnabled(bool enabled) async {
+    _collectionEnabled = enabled;
     if (!_isFirebaseAvailable) return;
     try {
       await FirebaseAnalytics.instance.setAnalyticsCollectionEnabled(enabled);
@@ -71,7 +78,7 @@ class FirebaseAnalyticsService implements AnalyticsService {
 
   @override
   Future<void> setUserId(String? id) async {
-    if (!_isFirebaseAvailable) return;
+    if (!_isFirebaseAvailable || !_collectionEnabled) return;
     try {
       await FirebaseAnalytics.instance.setUserId(id: id);
     } catch (e, stack) {
@@ -89,7 +96,7 @@ class FirebaseAnalyticsService implements AnalyticsService {
     required String name,
     required String? value,
   }) async {
-    if (!_isFirebaseAvailable) return;
+    if (!_isFirebaseAvailable || !_collectionEnabled) return;
     try {
       await FirebaseAnalytics.instance.setUserProperty(
         name: name,
@@ -115,7 +122,7 @@ class FirebaseAnalyticsService implements AnalyticsService {
         '[AnalyticsService] ScreenView: $screenName (class: $screenClass)',
       );
     }
-    if (!_isFirebaseAvailable) return;
+    if (!_isFirebaseAvailable || !_collectionEnabled) return;
     try {
       await FirebaseAnalytics.instance.logScreenView(
         screenName: screenName,
@@ -139,7 +146,7 @@ class FirebaseAnalyticsService implements AnalyticsService {
     if (kDebugMode) {
       debugPrint('[AnalyticsService] Event: $name | Params: $parameters');
     }
-    if (!_isFirebaseAvailable) return;
+    if (!_isFirebaseAvailable || !_collectionEnabled) return;
     try {
       await FirebaseAnalytics.instance.logEvent(
         name: name,

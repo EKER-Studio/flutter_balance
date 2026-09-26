@@ -128,3 +128,20 @@ final class UpdateWeeklyPaceWindow extends AppSettingsEvent {
 
   const UpdateWeeklyPaceWindow(this.windowDays);
 }
+
+/// An event that opts anonymous usage telemetry (Firebase Analytics) in or out.
+///
+/// Persisted; takes effect immediately without an app restart.
+final class ToggleAnalytics extends AppSettingsEvent {
+  final bool enabled;
+  const ToggleAnalytics(this.enabled);
+}
+
+/// An event that opts anonymous crash diagnostics (Firebase Crashlytics)
+/// in or out.
+///
+/// Persisted; takes effect immediately without an app restart.
+final class ToggleCrashReporting extends AppSettingsEvent {
+  final bool enabled;
+  const ToggleCrashReporting(this.enabled);
+}

@@ -1,8 +1,11 @@
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:injectable/injectable.dart';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:balance/core/integrations/health/health_service.dart';
 import 'package:balance/core/integrations/notifications/notification_service.dart';
+import 'package:balance/core/utils/analytics.dart';
+import 'package:balance/core/utils/crash_reporter.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_event.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_state.dart';
 
@@ -48,6 +51,8 @@ class AppSettingsBloc extends HydratedBloc<AppSettingsEvent, AppSettingsState> {
     on<ResetAppSettings>(_onResetAppSettings, transformer: droppable());
     on<UpdateLastHealthSyncTimestamp>(_onUpdateLastHealthSyncTimestamp);
     on<UpdateWeeklyPaceWindow>(_onUpdateWeeklyPaceWindow);
+    on<ToggleAnalytics>(_onToggleAnalytics);
+    on<ToggleCrashReporting>(_onToggleCrashReporting);
   }
 
   void _onUpdateWeeklyPaceWindow(
@@ -264,6 +269,35 @@ class AppSettingsBloc extends HydratedBloc<AppSettingsEvent, AppSettingsState> {
     Emitter<AppSettingsState> emit,
   ) {
     emit(state.copyWith(lastHealthSyncTimestamp: event.timestamp));
+  }
+
+  /// Applies the analytics opt-in/out immediately to Firebase collection.
+  ///
+  /// Deliberately emits no analytics event itself: logging the privacy toggle
+  /// through the very pipeline being disabled would defeat its purpose.
+  Future<void> _onToggleAnalytics(
+    ToggleAnalytics event,
+    Emitter<AppSettingsState> emit,
+  ) async {
+    emit(state.copyWith(analyticsEnabled: event.enabled));
+    await AppAnalytics.setAnalyticsCollectionEnabled(event.enabled);
+  }
+
+  /// Applies the crash-reporting opt-in/out immediately to Crashlytics.
+  Future<void> _onToggleCrashReporting(
+    ToggleCrashReporting event,
+    Emitter<AppSettingsState> emit,
+  ) async {
+    emit(state.copyWith(crashReportingEnabled: event.enabled));
+    AppCrashReporter.setCollectionEnabled(event.enabled);
+    try {
+      await FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(
+        event.enabled,
+      );
+    } catch (_) {
+      // Collection flags are best-effort; a missing native binding must never
+      // break the settings toggle.
+    }
   }
 
   void _onResetAppSettings(

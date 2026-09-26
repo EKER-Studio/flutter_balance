@@ -169,6 +169,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                     context,
                                     v,
                                   ),
+                              onAnalyticsChanged: (v) {
+                                context.read<AppSettingsBloc>().add(
+                                  ToggleAnalytics(v),
+                                );
+                              },
+                              onCrashReportingChanged: (v) {
+                                context.read<AppSettingsBloc>().add(
+                                  ToggleCrashReporting(v),
+                                );
+                              },
                               onImportTap: () =>
                                   SettingsDataCoordinator.handleImportCsv(
                                     context,
