@@ -188,7 +188,7 @@ class IsarWeightRepository implements WeightRepository {
           type: isWrite
               ? WeightErrorType.writeFailed
               : WeightErrorType.readFailed,
-          message: 'Malformed encryption key: $e',
+          message: 'Malformed encryption key: ${e.runtimeType}',
         );
       }
     }
@@ -245,7 +245,7 @@ class IsarWeightRepository implements WeightRepository {
             ? error
             : WeightRepositoryException(
                 type: WeightErrorType.streamError,
-                message: 'Weight entry stream failure: $error',
+                message: 'Weight entry stream failure: ${error.runtimeType}',
                 sourceError: error,
               );
       },
@@ -380,7 +380,7 @@ class IsarWeightRepository implements WeightRepository {
       }
       throw WeightRepositoryException(
         type: WeightErrorType.writeFailed,
-        message: 'Unexpected error while adding entry: $e',
+        message: 'Unexpected error while adding entry: ${e.runtimeType}',
         sourceError: e,
       );
     }
@@ -415,7 +415,7 @@ class IsarWeightRepository implements WeightRepository {
       }
       throw WeightRepositoryException(
         type: WeightErrorType.deleteEntryFailed,
-        message: 'Unexpected error while deleting entry: $e',
+        message: 'Unexpected error while deleting entry: ${e.runtimeType}',
         sourceError: e,
       );
     }
@@ -556,7 +556,7 @@ class IsarWeightRepository implements WeightRepository {
       }
       throw WeightRepositoryException(
         type: WeightErrorType.writeFailed,
-        message: 'Unexpected error during bulk import: $e',
+        message: 'Unexpected error during bulk import: ${e.runtimeType}',
         sourceError: e,
       );
     }
@@ -638,7 +638,7 @@ class IsarWeightRepository implements WeightRepository {
       }
       throw WeightRepositoryException(
         type: WeightErrorType.writeFailed,
-        message: 'Sync error: $e',
+        message: 'Sync error: ${e.runtimeType}',
         sourceError: e,
       );
     }
@@ -673,7 +673,7 @@ class IsarWeightRepository implements WeightRepository {
       }
       throw WeightRepositoryException(
         type: WeightErrorType.wipeFailed,
-        message: 'Unexpected error while clearing data: $e',
+        message: 'Unexpected error while clearing data: ${e.runtimeType}',
         sourceError: e,
       );
     }
