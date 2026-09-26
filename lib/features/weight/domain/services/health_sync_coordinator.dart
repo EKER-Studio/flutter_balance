@@ -93,7 +93,7 @@ class HealthSyncCoordinator {
         pushedLocalCount: missingRemoteEntries.length,
       );
     } catch (e, stack) {
-      AppAnalytics.logHealthSyncFailed(e.toString());
+      AppAnalytics.logHealthSyncFailed(e.runtimeType.toString());
       AppCrashReporter.recordError(
         e,
         stack,

@@ -85,7 +85,7 @@ class _BiometricShieldScreenState extends State<BiometricShieldScreen> {
         }
       }
     } catch (e, stack) {
-      AppAnalytics.logBiometricShieldUnlockFailed(e.toString());
+      AppAnalytics.logBiometricShieldUnlockFailed(e.runtimeType.toString());
       AppCrashReporter.recordError(
         e,
         stack,

@@ -223,7 +223,7 @@ class SettingsDataCoordinator {
         type: isError ? SnackBarType.error : SnackBarType.success,
       );
     } catch (e, stack) {
-      AppAnalytics.logSettingsWipeFailed(e.toString());
+      AppAnalytics.logSettingsWipeFailed(e.runtimeType.toString());
       AppCrashReporter.recordError(
         e,
         stack,
@@ -287,7 +287,7 @@ class SettingsDataCoordinator {
         }
       }
     } catch (e, stack) {
-      AppAnalytics.logSettingsCsvExportFailed(e.toString());
+      AppAnalytics.logSettingsCsvExportFailed(e.runtimeType.toString());
       AppCrashReporter.recordError(
         e,
         stack,
