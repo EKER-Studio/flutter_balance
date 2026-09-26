@@ -27,6 +27,7 @@ import '../integrations/biometrics/biometric_service.dart' as _i957;
 import '../integrations/csv/csv_import_service.dart' as _i808;
 import '../integrations/health/health_service.dart' as _i330;
 import '../integrations/notifications/notification_service.dart' as _i141;
+import '../integrations/widgets/widget_sync_service.dart' as _i347;
 import 'register_module.dart' as _i291;
 
 extension GetItInjectableX on _i174.GetIt {
@@ -49,6 +50,9 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.lazySingleton<_i141.NotificationService>(
       () => registerModule.notificationService,
+    );
+    gh.lazySingleton<_i347.WidgetSyncService>(
+      () => registerModule.widgetSyncService,
     );
     gh.lazySingleton<_i808.CsvImportService>(
       () => registerModule.csvImportService,

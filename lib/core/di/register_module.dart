@@ -6,6 +6,7 @@ import 'package:balance/core/integrations/biometrics/biometric_service.dart';
 import 'package:balance/core/integrations/csv/csv_import_service.dart';
 import 'package:balance/core/integrations/health/health_service.dart';
 import 'package:balance/core/integrations/notifications/notification_service.dart';
+import 'package:balance/core/integrations/widgets/widget_sync_service.dart';
 import 'package:balance/features/weight/data/repositories/isar_weight_repository.dart';
 import 'package:balance/features/weight/domain/repositories/weight_repository.dart';
 import 'package:balance/features/weight/domain/services/csv_weight_importer.dart';
@@ -31,8 +32,14 @@ abstract class RegisterModule {
   NotificationService get notificationService => NotificationService.instance;
 
   /// Native Apple Health and Google Health Connect integration.
+  /// Shares the canonical [NativeHealthService.instance] so the DI graph and
+  /// the static fallbacks in blocs use a single object.
   @LazySingleton(as: HealthService)
-  NativeHealthService get healthService => NativeHealthService();
+  NativeHealthService get healthService => NativeHealthService.instance;
+
+  /// Home-screen widget synchronizer (single shared platform channel owner).
+  @lazySingleton
+  WidgetSyncService get widgetSyncService => WidgetSyncService.instance;
 
   /// CSV import file picker and parser service.
   @lazySingleton
