@@ -142,9 +142,9 @@ done
 
 # ------------------------------------------------------------------------------
 # Global verification – count all android screenshots
-# Expected: 8 features × ~440 total when locale=all:
-#   splash 1×20 + onboarding 8×20 + today 3×20 + calendar 2×20 + statistics 2×20
-#   + settings 3×20 + biometric 1×20 + home_widgets 2×20 = 22×20 = 440 per device
+# Expected: 8 features × ~460 total when locale=all:
+#   splash 1×20 + onboarding 9×20 + today 3×20 + calendar 2×20 + statistics 2×20
+#   + settings 3×20 + biometric 1×20 + home_widgets 2×20 = 23×20 = 460 per device
 # ------------------------------------------------------------------------------
 log_step "Global Verification (all devices)..."
 
