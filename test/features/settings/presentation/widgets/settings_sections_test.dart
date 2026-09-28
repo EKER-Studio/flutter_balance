@@ -13,7 +13,7 @@ import 'package:balance/features/settings/presentation/widgets/sections/help_sec
 import 'package:balance/features/settings/presentation/widgets/sections/integrations_section.dart';
 import 'package:balance/features/settings/presentation/widgets/sections/profile_section.dart';
 import 'package:balance/features/settings/presentation/widgets/components/section_header.dart';
-import 'package:balance/features/settings/presentation/widgets/sections/security_section.dart';
+import 'package:balance/features/settings/presentation/widgets/sections/privacy_security_section.dart';
 
 void main() {
   Future<void> pumpWithL10n(
@@ -481,30 +481,60 @@ void main() {
     });
   });
 
-  group('SecuritySection', () {
+  group('PrivacySecuritySection', () {
     testWidgets('enables the biometric toggle when hardware is available', (
       tester,
     ) async {
       await pumpWithL10n(
         tester,
         Builder(
-          builder: (context) => SecuritySection(
-            state: const AppSettingsState(isBiometricLockEnabled: true),
+          builder: (context) => PrivacySecuritySection(
+            state: const AppSettingsState(
+              isBiometricLockEnabled: true,
+              isBiometricSupported: true,
+            ),
             l10n: AppLocalizations.of(context),
             isBiometricAvailable: Future.value(true),
             onBiometricChanged: (_) {},
             biometricsAvailableLabel: 'Use your fingerprint',
             biometricsNotAvailableLabel: 'Not supported',
+            onAnalyticsChanged: (_) {},
+            onCrashReportingChanged: (_) {},
           ),
         ),
       );
 
       expect(find.text('Biometric Protection'), findsOneWidget);
       expect(find.text('Use your fingerprint'), findsOneWidget);
-      final toggle = tester.widget<CustomSettingsToggle>(
+      expect(find.text('Usage analytics'), findsOneWidget);
+      expect(find.text('Crash reports'), findsOneWidget);
+      final toggles = tester.widgetList<CustomSettingsToggle>(
         find.byType(CustomSettingsToggle),
       );
-      expect(toggle.value, isTrue);
+      expect(toggles, hasLength(3));
+      expect(toggles.first.value, isTrue);
+    });
+
+    testWidgets('hides the biometric toggle when unsupported', (tester) async {
+      await pumpWithL10n(
+        tester,
+        Builder(
+          builder: (context) => PrivacySecuritySection(
+            state: const AppSettingsState(isBiometricSupported: false),
+            l10n: AppLocalizations.of(context),
+            isBiometricAvailable: Future.value(true),
+            onBiometricChanged: (_) {},
+            biometricsAvailableLabel: 'Use your fingerprint',
+            biometricsNotAvailableLabel: 'Not supported',
+            onAnalyticsChanged: (_) {},
+            onCrashReportingChanged: (_) {},
+          ),
+        ),
+      );
+
+      expect(find.text('Biometric Protection'), findsNothing);
+      expect(find.text('Usage analytics'), findsOneWidget);
+      expect(find.text('Crash reports'), findsOneWidget);
     });
 
     testWidgets('disables and untoggles when hardware is unavailable', (
@@ -513,20 +543,25 @@ void main() {
       await pumpWithL10n(
         tester,
         Builder(
-          builder: (context) => SecuritySection(
-            state: const AppSettingsState(isBiometricLockEnabled: true),
+          builder: (context) => PrivacySecuritySection(
+            state: const AppSettingsState(
+              isBiometricLockEnabled: true,
+              isBiometricSupported: true,
+            ),
             l10n: AppLocalizations.of(context),
             isBiometricAvailable: Future.value(false),
             onBiometricChanged: (_) {},
             biometricsAvailableLabel: 'Use your fingerprint',
             biometricsNotAvailableLabel: 'Not supported',
+            onAnalyticsChanged: (_) {},
+            onCrashReportingChanged: (_) {},
           ),
         ),
       );
 
       expect(find.text('Not supported'), findsOneWidget);
       final toggle = tester.widget<CustomSettingsToggle>(
-        find.byType(CustomSettingsToggle),
+        find.byType(CustomSettingsToggle).first,
       );
       expect(toggle.value, isFalse);
       expect(toggle.onChanged, isNull);
@@ -543,13 +578,15 @@ void main() {
           supportedLocales: AppLocalizations.supportedLocales,
           home: Scaffold(
             body: Builder(
-              builder: (context) => SecuritySection(
-                state: const AppSettingsState(),
+              builder: (context) => PrivacySecuritySection(
+                state: const AppSettingsState(isBiometricSupported: true),
                 l10n: AppLocalizations.of(context),
                 isBiometricAvailable: completer.future,
                 onBiometricChanged: (_) {},
                 biometricsAvailableLabel: 'Use your fingerprint',
                 biometricsNotAvailableLabel: 'Not supported',
+                onAnalyticsChanged: (_) {},
+                onCrashReportingChanged: (_) {},
               ),
             ),
           ),
@@ -558,7 +595,7 @@ void main() {
       await tester.pump();
 
       final toggle = tester.widget<CustomSettingsToggle>(
-        find.byType(CustomSettingsToggle),
+        find.byType(CustomSettingsToggle).first,
       );
       expect(toggle.onChanged, isNull);
       expect(find.text('Not supported'), findsOneWidget);
@@ -567,7 +604,7 @@ void main() {
       await tester.pumpAndSettle();
 
       final resolved = tester.widget<CustomSettingsToggle>(
-        find.byType(CustomSettingsToggle),
+        find.byType(CustomSettingsToggle).first,
       );
       expect(resolved.onChanged, isNotNull);
     });

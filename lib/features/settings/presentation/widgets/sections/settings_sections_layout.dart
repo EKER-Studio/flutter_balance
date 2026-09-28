@@ -5,10 +5,9 @@ import 'package:balance/features/settings/presentation/widgets/sections/applicat
 import 'package:balance/features/settings/presentation/widgets/sections/data_section.dart';
 import 'package:balance/features/settings/presentation/widgets/sections/help_section.dart';
 import 'package:balance/features/settings/presentation/widgets/sections/integrations_section.dart';
-import 'package:balance/features/settings/presentation/widgets/sections/privacy_section.dart';
+import 'package:balance/features/settings/presentation/widgets/sections/privacy_security_section.dart';
 import 'package:balance/features/settings/presentation/widgets/sections/profile_section.dart';
 import 'package:balance/features/settings/presentation/widgets/components/section_header.dart';
-import 'package:balance/features/settings/presentation/widgets/sections/security_section.dart';
 import 'package:balance/l10n/app_localizations.dart';
 
 /// A responsive layout section that arranges settings sections in two columns on wide viewports or a single column on mobile.
@@ -93,20 +92,16 @@ class SettingsSectionsLayout extends StatelessWidget {
       onInstallHealthConnect: onInstallHealthConnect,
     );
 
-    final securityHeader = SectionHeader(label: l10n.securitySection);
-    final securitySection = SecuritySection(
+    final privacySecurityHeader = SectionHeader(
+      label: l10n.privacySecuritySection,
+    );
+    final privacySecuritySection = PrivacySecuritySection(
       state: state,
       l10n: l10n,
       isBiometricAvailable: isBiometricAvailable,
       onBiometricChanged: onBiometricChanged,
       biometricsAvailableLabel: l10n.biometricDesc,
       biometricsNotAvailableLabel: l10n.biometricsNotAvailable,
-    );
-
-    final privacyHeader = SectionHeader(label: l10n.privacySection);
-    final privacySection = PrivacySection(
-      state: state,
-      l10n: l10n,
       onAnalyticsChanged: onAnalyticsChanged,
       onCrashReportingChanged: onCrashReportingChanged,
     );
@@ -165,15 +160,9 @@ class SettingsSectionsLayout extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    if (state.isBiometricSupported) ...[
-                      securityHeader,
-                      const SizedBox(height: 8),
-                      securitySection,
-                      const SizedBox(height: 24),
-                    ],
-                    privacyHeader,
+                    privacySecurityHeader,
                     const SizedBox(height: 8),
-                    privacySection,
+                    privacySecuritySection,
                     const SizedBox(height: 24),
                     dataHeader,
                     const SizedBox(height: 8),
@@ -203,15 +192,9 @@ class SettingsSectionsLayout extends StatelessWidget {
               const SizedBox(height: 8),
               integrationsSection,
               const SizedBox(height: 16),
-              if (state.isBiometricSupported) ...[
-                securityHeader,
-                const SizedBox(height: 8),
-                securitySection,
-                const SizedBox(height: 16),
-              ],
-              privacyHeader,
+              privacySecurityHeader,
               const SizedBox(height: 8),
-              privacySection,
+              privacySecuritySection,
               const SizedBox(height: 16),
               dataHeader,
               const SizedBox(height: 8),

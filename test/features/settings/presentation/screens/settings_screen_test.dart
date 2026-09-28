@@ -217,7 +217,7 @@ void main() {
 
     expect(find.text('PROFILE'), findsOneWidget);
     expect(find.text('APPLICATION'), findsOneWidget);
-    expect(find.text('SECURITY'), findsOneWidget);
+    expect(find.text('PRIVACY & SECURITY'), findsOneWidget);
     expect(find.text('DATA'), findsOneWidget);
     expect(find.text('INTEGRATIONS'), findsOneWidget);
   });
@@ -788,7 +788,7 @@ void main() {
     expect(find.byType(Row), findsWidgets);
     expect(find.text('PROFILE'), findsOneWidget);
     expect(find.text('APPLICATION'), findsOneWidget);
-    expect(find.text('SECURITY'), findsOneWidget);
+    expect(find.text('PRIVACY & SECURITY'), findsOneWidget);
     expect(find.text('DATA'), findsOneWidget);
     expect(find.text('INTEGRATIONS'), findsOneWidget);
   });
