@@ -293,6 +293,8 @@
   "analyticsToggleDesc": "Firebase Analyticsによる匿名の操作イベント。デフォルトではオフ。",
   "crashToggle": "クラッシュレポート",
   "crashToggleDesc": "Firebase Crashlyticsによる匿名のクラッシュ診断。デフォルトではオフ。",
+  "privacyTelemetryStepOptionalTitle": "プライバシーと診断",
+  "privacyTelemetryStepSubtitle": "Balanceはローカルファーストで動作します。健康データが端末から送信されることはありません。品質向上のため匿名の診断データを共有することも可能です。",
   "profileSection": "プロフィール",
   "remainingWeightLabel": "目標まで: {weight}",
   "reminderTime": "リマインダー時刻",

@@ -293,6 +293,8 @@
   "analyticsToggleDesc": "Eventos de interação anónimos via Firebase Analytics. Desativado por defeito.",
   "crashToggle": "Relatórios de falhas",
   "crashToggleDesc": "Diagnóstico anónimo de falhas via Firebase Crashlytics. Desativado por defeito.",
+  "privacyTelemetryStepOptionalTitle": "Privacidade e diagnóstico",
+  "privacyTelemetryStepSubtitle": "O Balance funciona localmente. Os seus dados de saúde nunca saem do seu dispositivo. Pode partilhar opcionalmente diagnósticos anónimos para nos ajudar a melhorar a aplicação.",
   "profileSection": "PERFIL",
   "remainingWeightLabel": "Restante: {weight}",
   "reminderTime": "Horário do lembrete",

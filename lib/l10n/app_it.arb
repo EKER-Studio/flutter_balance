@@ -293,6 +293,8 @@
   "analyticsToggleDesc": "Eventi di interazione anonimi tramite Firebase Analytics. Disattivato per impostazione predefinita.",
   "crashToggle": "Segnalazioni di arresti anomali",
   "crashToggleDesc": "Diagnostica anonima degli arresti tramite Firebase Crashlytics. Disattivata per impostazione predefinita.",
+  "privacyTelemetryStepOptionalTitle": "Privacy e diagnostica",
+  "privacyTelemetryStepSubtitle": "Balance opera localmente. I tuoi dati sanitari non lasciano mai il tuo dispositivo. Puoi facoltativamente condividere dati diagnostici anonimi per aiutarci a migliorare l'app.",
   "profileSection": "PROFILO",
   "remainingWeightLabel": "Rimanente: {weight}",
   "reminderTime": "Orario del promemoria",

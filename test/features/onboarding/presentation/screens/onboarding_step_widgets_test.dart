@@ -1,18 +1,44 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:hydrated_bloc/hydrated_bloc.dart';
+import 'package:mocktail/mocktail.dart';
 import 'package:balance/core/models/measurement_unit.dart';
+import 'package:balance/features/settings/presentation/bloc/app_settings_bloc.dart';
 import 'package:balance/features/weight/domain/weight_goal_mode.dart';
 import 'package:balance/l10n/app_localizations.dart';
 import 'package:balance/features/onboarding/presentation/widgets/steps/step_initial_weight.dart';
+import 'package:balance/features/onboarding/presentation/widgets/steps/step_privacy_telemetry.dart';
 import 'package:balance/features/onboarding/presentation/widgets/steps/step_target_weight.dart';
 import 'package:balance/features/onboarding/presentation/widgets/steps/step_units_height.dart';
 
+class MockHydratedStorage extends Mock implements HydratedStorage {}
+
 void main() {
-  Widget buildApp(Widget child) {
-    return MaterialApp(
+  late MockHydratedStorage storage;
+  late AppSettingsBloc settingsBloc;
+
+  setUp(() {
+    storage = MockHydratedStorage();
+    HydratedBloc.storage = storage;
+    when(() => storage.read(any())).thenReturn(null);
+    when(() => storage.write(any(), any())).thenAnswer((_) async {});
+    settingsBloc = AppSettingsBloc();
+  });
+
+  tearDown(() {
+    settingsBloc.close();
+  });
+
+  Widget buildApp(Widget child, {AppSettingsBloc? customSettingsBloc}) {
+    final app = MaterialApp(
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
       home: Scaffold(body: child),
+    );
+    return BlocProvider<AppSettingsBloc>.value(
+      value: customSettingsBloc ?? settingsBloc,
+      child: app,
     );
   }
 
@@ -631,6 +657,11 @@ void main() {
             StepTargetWeight(unit: MeasurementUnit.metric, onNext: (_, _) {}),
           ),
         );
+        await tester.pump(const Duration(milliseconds: 300));
+        expect(tester.takeException(), isNull);
+
+        // StepPrivacyTelemetry
+        await tester.pumpWidget(buildApp(StepPrivacyTelemetry(onNext: () {})));
         await tester.pump(const Duration(milliseconds: 300));
         expect(tester.takeException(), isNull);
       },

@@ -293,6 +293,8 @@
   "analyticsToggleDesc": "Anonyme Interaktionsereignisse über Firebase Analytics. Standardmäßig deaktiviert.",
   "crashToggle": "Absturzberichte",
   "crashToggleDesc": "Anonyme Absturzdiagnose über Firebase Crashlytics. Standardmäßig deaktiviert.",
+  "privacyTelemetryStepOptionalTitle": "Datenschutz & Diagnose",
+  "privacyTelemetryStepSubtitle": "Balance arbeitet lokal. Ihre persönlichen Gesundheitsdaten verlassen niemals Ihr Gerät. Sie können optional anonyme Diagnosedaten teilen, um uns bei der Verbesserung zu helfen.",
   "profileSection": "PROFIL",
   "remainingWeightLabel": "Verbleibend: {weight}",
   "reminderTime": "Erinnerungszeit",

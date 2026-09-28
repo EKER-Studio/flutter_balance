@@ -293,6 +293,8 @@
   "analyticsToggleDesc": "Anonieme interactie-events via Firebase Analytics. Standaard uitgeschakeld.",
   "crashToggle": "Crashrapporten",
   "crashToggleDesc": "Anonieme crashdiagnose via Firebase Crashlytics. Standaard uitgeschakeld.",
+  "privacyTelemetryStepOptionalTitle": "Privacy & Diagnostiek",
+  "privacyTelemetryStepSubtitle": "Balance werkt lokaal. Je gezondheidsgegevens verlaten je apparaat nooit. Je kunt optioneel anonieme diagnostische gegevens delen om ons te helpen verbeteren.",
   "profileSection": "PROFIEL",
   "remainingWeightLabel": "Resterend: {weight}",
   "reminderTime": "Herinneringstijd",

@@ -293,6 +293,8 @@
   "analyticsToggleDesc": "Événements d’interaction anonymes via Firebase Analytics. Désactivé par défaut.",
   "crashToggle": "Rapports de plantage",
   "crashToggleDesc": "Diagnostics de plantage anonymes via Firebase Crashlytics. Désactivé par défaut.",
+  "privacyTelemetryStepOptionalTitle": "Confidentialité et diagnostic",
+  "privacyTelemetryStepSubtitle": "Balance fonctionne en local. Vos données de santé ne quittent jamais votre appareil. Vous pouvez éventuellement partager des diagnostics anonymes pour nous aider à améliorer l'application.",
   "profileSection": "PROFIL",
   "remainingWeightLabel": "Restant : {weight}",
   "reminderTime": "Heure du rappel",

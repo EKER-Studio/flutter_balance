@@ -638,6 +638,8 @@
   "analyticsToggleDesc": "Anonimowe zdarzenia interakcji w Firebase Analytics. Domyślnie wyłączone.",
   "crashToggle": "Raporty o awariach",
   "crashToggleDesc": "Anonimowa diagnostyka awarii w Firebase Crashlytics. Domyślnie wyłączona.",
+  "privacyTelemetryStepOptionalTitle": "Prywatność i diagnostyka",
+  "privacyTelemetryStepSubtitle": "Balance działa w modelu local-first. Twoje dane zdrowotne nigdy nie opuszczają urządzenia. Możesz opcjonalnie przesyłać anonimowe dane diagnostyczne, aby pomóc nam ulepszać aplikację.",
   "profileSection": "PROFIL",
   "remainingWeightLabel": "Zostało: {weight}",
   "reminderTime": "Godzina przypomnienia",

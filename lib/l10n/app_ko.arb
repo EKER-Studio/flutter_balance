@@ -293,6 +293,8 @@
   "analyticsToggleDesc": "Firebase Analytics를 통한 익명의 상호작용 이벤트. 기본적으로 꺼져 있음.",
   "crashToggle": "충돌 보고서",
   "crashToggleDesc": "Firebase Crashlytics를 통한 익명의 충돌 진단. 기본적으로 꺼져 있음.",
+  "privacyTelemetryStepOptionalTitle": "개인정보 보호 및 진단",
+  "privacyTelemetryStepSubtitle": "Balance는 로컬 우선으로 작동합니다. 개인 건강 데이터는 기기 외부로 전송되지 않습니다. 앱 개선을 위해 익명의 진단 데이터를 공유할 수 있습니다.",
   "profileSection": "프로필",
   "remainingWeightLabel": "목표까지: {weight}",
   "reminderTime": "알림 시간",

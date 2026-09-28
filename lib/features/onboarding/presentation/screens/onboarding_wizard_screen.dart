@@ -35,7 +35,7 @@ class OnboardingWizardScreen extends StatelessWidget {
       create: (context) {
         final settingsState = context.read<AppSettingsBloc>().state;
         return OnboardingBloc(
-          totalSteps: isBiometricSupported ? 8 : 7,
+          totalSteps: isBiometricSupported ? 9 : 8,
           initialUnit: settingsState.measurementUnit,
           initialTargetWeight: settingsState.targetWeight,
         )..add(const OnboardingStarted());

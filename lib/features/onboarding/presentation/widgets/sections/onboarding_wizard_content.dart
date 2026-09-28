@@ -10,6 +10,7 @@ import 'package:balance/features/onboarding/presentation/widgets/steps/step_biom
 import 'package:balance/features/onboarding/presentation/widgets/steps/step_csv_import.dart';
 import 'package:balance/features/onboarding/presentation/widgets/steps/step_health_sync.dart';
 import 'package:balance/features/onboarding/presentation/widgets/steps/step_initial_weight.dart';
+import 'package:balance/features/onboarding/presentation/widgets/steps/step_privacy_telemetry.dart';
 import 'package:balance/features/onboarding/presentation/widgets/steps/step_reminder_notification.dart';
 import 'package:balance/features/onboarding/presentation/widgets/steps/step_target_weight.dart';
 import 'package:balance/features/onboarding/presentation/widgets/steps/step_units_height.dart';
@@ -49,6 +50,7 @@ class _OnboardingWizardContentState extends State<OnboardingWizardContent> {
     'target_weight',
     'reminder_notification',
     'health_sync',
+    'privacy_telemetry',
     'biometric_lock',
   ];
 
@@ -174,6 +176,10 @@ class _OnboardingWizardContentState extends State<OnboardingWizardContent> {
     _goToNextStep();
   }
 
+  void _handlePrivacyTelemetryNext() {
+    _goToNextStep();
+  }
+
   void _handleBiometricNext() {
     final biometricEnabled = context
         .read<AppSettingsBloc>()
@@ -291,6 +297,7 @@ class _OnboardingWizardContentState extends State<OnboardingWizardContent> {
             ),
             StepReminderNotification(onNext: _handleReminderNext),
             StepHealthSync(onNext: _handleHealthSyncNext),
+            StepPrivacyTelemetry(onNext: _handlePrivacyTelemetryNext),
             if (isBiometricSupported)
               StepBiometricLock(onNext: _handleBiometricNext),
           ];

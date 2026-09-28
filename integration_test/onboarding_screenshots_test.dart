@@ -12,6 +12,7 @@ import 'package:balance/features/onboarding/presentation/widgets/components/onbo
 import 'package:balance/features/onboarding/presentation/widgets/steps/step_biometric_lock.dart';
 import 'package:balance/features/onboarding/presentation/widgets/steps/step_health_sync.dart';
 import 'package:balance/features/onboarding/presentation/widgets/steps/step_initial_weight.dart';
+import 'package:balance/features/onboarding/presentation/widgets/steps/step_privacy_telemetry.dart';
 import 'package:balance/features/onboarding/presentation/widgets/steps/step_reminder_notification.dart';
 import 'package:balance/features/onboarding/presentation/widgets/steps/step_target_weight.dart';
 import 'package:balance/features/onboarding/presentation/widgets/steps/step_units_height.dart';
@@ -67,8 +68,8 @@ void main() {
               buildScreenshotAppWrapper(
                 appBar: OnboardingAppBar(
                   displayStep: 1,
-                  displayTotalSteps: 7,
-                  progress: 1 / 7,
+                  displayTotalSteps: 8,
+                  progress: 1 / 8,
                   onBackPressed: () {},
                 ),
                 child: StepUnitsHeight(
@@ -100,8 +101,8 @@ void main() {
               buildScreenshotAppWrapper(
                 appBar: OnboardingAppBar(
                   displayStep: 2,
-                  displayTotalSteps: 7,
-                  progress: 2 / 7,
+                  displayTotalSteps: 8,
+                  progress: 2 / 8,
                   onBackPressed: () {},
                 ),
                 child: CsvImportSuccessView(
@@ -132,8 +133,8 @@ void main() {
               buildScreenshotAppWrapper(
                 appBar: OnboardingAppBar(
                   displayStep: 3,
-                  displayTotalSteps: 7,
-                  progress: 3 / 7,
+                  displayTotalSteps: 8,
+                  progress: 3 / 8,
                   onBackPressed: () {},
                 ),
                 child: StepInitialWeight(
@@ -165,8 +166,8 @@ void main() {
               buildScreenshotAppWrapper(
                 appBar: OnboardingAppBar(
                   displayStep: 4,
-                  displayTotalSteps: 7,
-                  progress: 4 / 7,
+                  displayTotalSteps: 8,
+                  progress: 4 / 8,
                   onBackPressed: () {},
                 ),
                 child: StepTargetWeight(
@@ -199,8 +200,8 @@ void main() {
               buildScreenshotAppWrapper(
                 appBar: OnboardingAppBar(
                   displayStep: 5,
-                  displayTotalSteps: 7,
-                  progress: 5 / 7,
+                  displayTotalSteps: 8,
+                  progress: 5 / 8,
                   onBackPressed: () {},
                 ),
                 child: StepReminderNotification(onNext: () {}),
@@ -227,8 +228,8 @@ void main() {
               buildScreenshotAppWrapper(
                 appBar: OnboardingAppBar(
                   displayStep: 6,
-                  displayTotalSteps: 7,
-                  progress: 6 / 7,
+                  displayTotalSteps: 8,
+                  progress: 6 / 8,
                   onBackPressed: () {},
                 ),
                 child: StepHealthSync(onNext: () {}),
@@ -247,15 +248,43 @@ void main() {
           tags: 'screenshot',
         );
 
-        // 01_onboarding / 08_biometric_lock
+        // 01_onboarding / 08_privacy_telemetry
         testWidgets(
-          'Capture 01_onboarding/08_biometric_lock [$localeCode] [$themeLabel]',
+          'Capture 01_onboarding/08_privacy_telemetry [$localeCode] [$themeLabel]',
           (WidgetTester tester) async {
             await tester.pumpWidget(
               buildScreenshotAppWrapper(
                 appBar: OnboardingAppBar(
                   displayStep: 7,
-                  displayTotalSteps: 7,
+                  displayTotalSteps: 8,
+                  progress: 7 / 8,
+                  onBackPressed: () {},
+                ),
+                child: StepPrivacyTelemetry(onNext: () {}),
+                locale: locale,
+                theme: theme,
+                themeMode: themeMode,
+                weightRepo: weightRepo,
+              ),
+            );
+
+            await tester.pumpAndSettle();
+            await binding.takeScreenshot(
+              '$prefix$localeCode/01_onboarding/08_privacy_telemetry_$themeLabel',
+            );
+          },
+          tags: 'screenshot',
+        );
+
+        // 01_onboarding / 09_biometric_lock
+        testWidgets(
+          'Capture 01_onboarding/09_biometric_lock [$localeCode] [$themeLabel]',
+          (WidgetTester tester) async {
+            await tester.pumpWidget(
+              buildScreenshotAppWrapper(
+                appBar: OnboardingAppBar(
+                  displayStep: 8,
+                  displayTotalSteps: 8,
                   progress: 1.0,
                   onBackPressed: () {},
                 ),
@@ -269,7 +298,7 @@ void main() {
 
             await tester.pumpAndSettle();
             await binding.takeScreenshot(
-              '$prefix$localeCode/01_onboarding/08_biometric_lock_$themeLabel',
+              '$prefix$localeCode/01_onboarding/09_biometric_lock_$themeLabel',
             );
           },
           tags: 'screenshot',

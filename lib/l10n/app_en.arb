@@ -644,6 +644,8 @@
   "crashToggle": "Crash reports",
   "crashToggleDesc": "Anonymous crash diagnostics via Firebase Crashlytics. Off by default.",
   "privacySecuritySection": "PRIVACY & SECURITY",
+  "privacyTelemetryStepOptionalTitle": "Privacy & Diagnostics",
+  "privacyTelemetryStepSubtitle": "Balance is built local-first. We never collect or share your personal health measurements. You can optionally share anonymous technical diagnostics to help us improve stability and features.",
   "profileSection": "PROFILE",
   "remainingWeightLabel": "Remaining: {weight}",
   "reminderTime": "Reminder Time",
