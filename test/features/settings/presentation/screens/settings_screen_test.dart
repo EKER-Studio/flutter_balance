@@ -11,7 +11,7 @@ import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:local_auth_platform_interface/local_auth_platform_interface.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:file_picker/file_picker.dart';
-import 'package:file_picker/src/platform/file_picker_platform_interface.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:balance/core/integrations/biometrics/biometric_service.dart';
 import 'package:balance/core/integrations/health/health_service.dart';
 import 'package:balance/core/integrations/notifications/notification_service.dart';
@@ -37,31 +37,61 @@ class MockNotificationService extends Mock implements NotificationService {}
 
 class MockHealthService extends Mock implements HealthService {}
 
+/// Minimal [PlatformFile] test double backed by a file [Uri].
+final class TestPlatformFile extends PlatformFile {
+  TestPlatformFile({required this.name, String? path})
+    : _uri = path != null ? Uri.file(path) : Uri.parse('about:blank');
+
+  @override
+  final String name;
+
+  final Uri _uri;
+
+  @override
+  Uri get uri => _uri;
+
+  @override
+  XFile get xFile => _uri.scheme == 'file'
+      ? XFile(_uri.toFilePath(), name: name)
+      : XFile.fromData(Uint8List(0), name: name);
+
+  @override
+  int? lengthSync() => null;
+
+  @override
+  Future<int?> length() async => null;
+
+  @override
+  Future<Uint8List> readAsBytes() async => Uint8List(0);
+
+  @override
+  Stream<Uint8List> readAsByteStream() => const Stream.empty();
+}
+
 /// Test double for [FilePickerPlatform] with a configurable result, so the
 /// platform token verification in `FilePickerPlatform.instance =` passes.
 class FakeFilePickerPlatform extends FilePickerPlatform {
   FakeFilePickerPlatform(this.onPickFiles);
 
-  final Future<FilePickerResult?> Function({
+  final Future<List<PlatformFile>> Function({
     required FileType type,
     List<String>? allowedExtensions,
   })
   onPickFiles;
 
   @override
-  Future<FilePickerResult?> pickFiles({
+  Future<List<PlatformFile>> pickFiles({
     String? dialogTitle,
     String? initialDirectory,
     FileType type = FileType.any,
     List<String>? allowedExtensions,
     Function(FilePickerStatus)? onFileLoading,
     int compressionQuality = 0,
-    bool allowMultiple = false,
-    bool withData = false,
-    bool withReadStream = false,
-    bool lockParentWindow = false,
-    bool readSequential = false,
-    bool cancelUploadOnWindowBlur = true,
+    AndroidOptions androidOptions = const AndroidOptions(),
+    DarwinOptions darwinOptions = const DarwinOptions(),
+    WindowsOptions windowsOptions = const WindowsOptions(),
+    LinuxOptions linuxOptions = const LinuxOptions(),
+    WebOptions webOptions = const WebOptions(),
   }) {
     return onPickFiles(type: type, allowedExtensions: allowedExtensions);
   }
@@ -995,7 +1025,7 @@ void main() {
       useNarrowSurface(tester);
       final previousPicker = FilePickerPlatform.instance;
       FilePickerPlatform.instance = FakeFilePickerPlatform(
-        ({required type, allowedExtensions}) async => null,
+        ({required type, allowedExtensions}) async => <PlatformFile>[],
       );
       addTearDown(() => FilePickerPlatform.instance = previousPicker);
 
@@ -1273,9 +1303,9 @@ void main() {
       final csvFile = File('${tempDir.path}/import.csv')
         ..writeAsStringSync('Date,Weight (kg)\n2026-07-25 08:30,69.0\n');
       FilePickerPlatform.instance = FakeFilePickerPlatform(
-        ({required type, allowedExtensions}) async => FilePickerResult([
-          PlatformFile(path: csvFile.path, name: 'import.csv', size: 1),
-        ]),
+        ({required type, allowedExtensions}) async => [
+          TestPlatformFile(path: csvFile.path, name: 'import.csv'),
+        ],
       );
 
       await tester.pumpWidget(createTestWidget());

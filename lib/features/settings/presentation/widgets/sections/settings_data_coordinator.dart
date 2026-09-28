@@ -162,18 +162,18 @@ class SettingsDataCoordinator {
   /// Shows the system file picker to select a CSV file.
   static Future<void> handleImportCsv(BuildContext context) async {
     AppAnalytics.logSettingsCsvImportClicked();
-    final result = await FilePicker.pickFiles(
+    final files = await FilePicker.pickFiles(
       type: FileType.custom,
       allowedExtensions: ['csv'],
     );
-    if (result == null || result.files.single.path == null) {
+    if (files.isEmpty || files.single.path == null) {
       AppAnalytics.logSettingsCsvImportPickerCancelled();
       return;
     }
     if (!context.mounted) return;
 
     context.read<WeightBloc>().add(
-      AnalyzeCsvFile(filePath: result.files.single.path!),
+      AnalyzeCsvFile(filePath: files.single.path!),
     );
   }
 
@@ -272,10 +272,12 @@ class SettingsDataCoordinator {
             ? box.localToGlobal(Offset.zero) & box.size
             : null;
 
-        await Share.shareXFiles(
-          [XFile(exportedFile.path)],
-          subject: AppLocalizations.of(context).csvExportShareSubject,
-          sharePositionOrigin: originRect,
+        await SharePlus.instance.share(
+          ShareParams(
+            files: [XFile(exportedFile.path)],
+            subject: AppLocalizations.of(context).csvExportShareSubject,
+            sharePositionOrigin: originRect,
+          ),
         );
 
         if (context.mounted) {

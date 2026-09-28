@@ -1,36 +1,67 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:file_picker/file_picker.dart';
-import 'package:file_picker/src/platform/file_picker_platform_interface.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:balance/features/weight/data/services/csv_import_service.dart';
+
+/// Minimal [PlatformFile] test double backed by a file [Uri].
+final class TestPlatformFile extends PlatformFile {
+  TestPlatformFile({required this.name, String? path})
+    : _uri = path != null ? Uri.file(path) : Uri.parse('about:blank');
+
+  @override
+  final String name;
+
+  final Uri _uri;
+
+  @override
+  Uri get uri => _uri;
+
+  @override
+  XFile get xFile => _uri.scheme == 'file'
+      ? XFile(_uri.toFilePath(), name: name)
+      : XFile.fromData(Uint8List(0), name: name);
+
+  @override
+  int? lengthSync() => null;
+
+  @override
+  Future<int?> length() async => null;
+
+  @override
+  Future<Uint8List> readAsBytes() async => Uint8List(0);
+
+  @override
+  Stream<Uint8List> readAsByteStream() => const Stream.empty();
+}
 
 /// A test double that extends [FilePickerPlatform] so the platform interface
 /// token verification in `FilePickerPlatform.instance =` passes.
 class FakeFilePickerPlatform extends FilePickerPlatform {
   FakeFilePickerPlatform(this.onPickFiles);
 
-  final Future<FilePickerResult?> Function({
+  final Future<List<PlatformFile>> Function({
     required FileType type,
     List<String>? allowedExtensions,
   })
   onPickFiles;
 
   @override
-  Future<FilePickerResult?> pickFiles({
+  Future<List<PlatformFile>> pickFiles({
     String? dialogTitle,
     String? initialDirectory,
     FileType type = FileType.any,
     List<String>? allowedExtensions,
     Function(FilePickerStatus)? onFileLoading,
     int compressionQuality = 0,
-    bool allowMultiple = false,
-    bool withData = false,
-    bool withReadStream = false,
-    bool lockParentWindow = false,
-    bool readSequential = false,
-    bool cancelUploadOnWindowBlur = true,
+    AndroidOptions androidOptions = const AndroidOptions(),
+    DarwinOptions darwinOptions = const DarwinOptions(),
+    WindowsOptions windowsOptions = const WindowsOptions(),
+    LinuxOptions linuxOptions = const LinuxOptions(),
+    WebOptions webOptions = const WebOptions(),
   }) {
     return onPickFiles(type: type, allowedExtensions: allowedExtensions);
   }
@@ -45,7 +76,7 @@ void main() {
   setUp(() {
     originalPlatform = FilePickerPlatform.instance;
     filePicker = FakeFilePickerPlatform(({required type, allowedExtensions}) {
-      return Future.value(null);
+      return Future.value(<PlatformFile>[]);
     });
     FilePickerPlatform.instance = filePicker;
     service = CsvImportService();
@@ -57,9 +88,9 @@ void main() {
     tempDir.deleteSync(recursive: true);
   });
 
-  FilePickerResult pickResult(String path) => FilePickerResult([
-    PlatformFile(name: 'weights.csv', size: 0, path: path),
-  ]);
+  List<PlatformFile> pickResult(String path) => [
+    TestPlatformFile(name: 'weights.csv', path: path),
+  ];
 
   File writeCsv(String content) {
     final file = File('${tempDir.path}/weights.csv');
@@ -98,7 +129,7 @@ void main() {
       }) async {
         requestedType = type;
         requestedExtensions = allowedExtensions;
-        return null;
+        return <PlatformFile>[];
       });
       FilePickerPlatform.instance = filePicker;
 
@@ -117,8 +148,9 @@ void main() {
 
     test('returns null when the picked file has no path', () async {
       filePicker = FakeFilePickerPlatform(
-        ({required type, allowedExtensions}) async =>
-            FilePickerResult([PlatformFile(name: 'weights.csv', size: 0)]),
+        ({required type, allowedExtensions}) async => [
+          TestPlatformFile(name: 'weights.csv'),
+        ],
       );
       FilePickerPlatform.instance = filePicker;
 

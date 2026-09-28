@@ -43,12 +43,13 @@ class CsvImportService {
   /// [maxFileSizeBytes]. Throws a [FormatException] when no valid weight-history
   /// header is found.
   Future<CsvImportResult?> pickAndImport() async {
-    final result = await FilePicker.pickFiles(
+    final files = await FilePicker.pickFiles(
       type: FileType.custom,
       allowedExtensions: ['csv'],
     );
 
-    final path = result?.files.single.path;
+    if (files.isEmpty) return null;
+    final path = files.single.path;
     if (path == null) return null;
 
     final file = File(path);

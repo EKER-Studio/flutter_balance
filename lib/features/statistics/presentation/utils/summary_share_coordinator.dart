@@ -49,10 +49,12 @@ class SummaryShareCoordinator {
         ? box.localToGlobal(Offset.zero) & box.size
         : null;
 
-    await Share.share(
-      summaryText,
-      subject: l10n.totalProgress,
-      sharePositionOrigin: originRect,
+    await SharePlus.instance.share(
+      ShareParams(
+        text: summaryText,
+        subject: l10n.totalProgress,
+        sharePositionOrigin: originRect,
+      ),
     );
   }
 }
