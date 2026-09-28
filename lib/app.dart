@@ -236,6 +236,7 @@ class _AppState extends State<App> {
                         unit: settingsState.measurementUnit,
                         themeMode: settingsState.themeMode,
                         isDarkMode: isDark,
+                        l10n: _l10n,
                       );
                       if (weightState.entries.isEmpty) {
                         _milestoneCoordinator.reset();
@@ -277,6 +278,7 @@ class _AppState extends State<App> {
                         unit: settingsState.measurementUnit,
                         themeMode: settingsState.themeMode,
                         isDarkMode: isDark,
+                        l10n: _l10n,
                       );
                     },
                   ),
@@ -468,6 +470,7 @@ class _HealthSyncLifecycleObserverState
         WidgetsBinding.instance.platformDispatcher.platformBrightness ==
             Brightness.dark,
     };
+    final l10n = AppLocalizations.of(context);
     WidgetSyncService.instance.updateWidgetData(
       entries: weightBloc.state.entries,
       targetWeight: settingsBloc.state.targetWeight,
@@ -476,6 +479,7 @@ class _HealthSyncLifecycleObserverState
       unit: settingsBloc.state.measurementUnit,
       themeMode: settingsBloc.state.themeMode,
       isDarkMode: isDark,
+      l10n: l10n,
     );
 
     if (!settingsBloc.state.isHealthSyncEnabled) return;
@@ -495,6 +499,7 @@ class _HealthSyncLifecycleObserverState
         WidgetsBinding.instance.platformDispatcher.platformBrightness ==
             Brightness.dark,
     };
+    final l10n = AppLocalizations.of(context);
     WidgetSyncService.instance.updateWidgetData(
       entries: weightBloc.state.entries,
       targetWeight: settingsBloc.state.targetWeight,
@@ -503,6 +508,7 @@ class _HealthSyncLifecycleObserverState
       unit: settingsBloc.state.measurementUnit,
       themeMode: settingsBloc.state.themeMode,
       isDarkMode: isDark,
+      l10n: l10n,
     );
   }
 

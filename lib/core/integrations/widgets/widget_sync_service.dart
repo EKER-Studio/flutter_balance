@@ -7,6 +7,7 @@ import 'package:balance/core/presentation/theme/app_theme_mode.dart';
 import 'package:balance/features/weight/domain/weight_goal_mode.dart';
 import 'package:balance/features/weight/domain/bmi_category.dart';
 import 'package:balance/features/weight/domain/entities/weight_entry.dart';
+import 'package:balance/l10n/app_localizations.dart';
 
 /// A service that synchronizes the user's latest weight data and goal progression
 /// with native home screen widgets on iOS (WidgetKit) and Android (AppWidgetProvider).
@@ -43,6 +44,7 @@ class WidgetSyncService {
   /// @param goalMode Active goal mode (lose, maintain, gain).
   /// @param themeMode App theme mode (system, light, dark).
   /// @param isDarkMode Whether dark theme is currently active.
+  /// @param l10n Optional active localization delegate for titles and status text.
   Future<void> updateWidgetData({
     required List<WeightEntry> entries,
     double? targetWeight,
@@ -51,8 +53,10 @@ class WidgetSyncService {
     MeasurementUnit unit = MeasurementUnit.metric,
     AppThemeMode themeMode = AppThemeMode.system,
     bool isDarkMode = false,
+    AppLocalizations? l10n,
   }) async {
     try {
+      final headerTitle = l10n?.lastMeasurementLabel ?? 'Ostatni pomiar';
       await Future.wait([
         HomeWidget.saveWidgetData<String>('theme_mode', themeMode.name),
         HomeWidget.saveWidgetData<bool>('is_dark_mode', isDarkMode),
@@ -61,7 +65,7 @@ class WidgetSyncService {
       if (entries.isEmpty) {
         await Future.wait([
           HomeWidget.saveWidgetData<bool>('has_data', false),
-          HomeWidget.saveWidgetData<String>('header_title', 'Ostatni pomiar'),
+          HomeWidget.saveWidgetData<String>('header_title', headerTitle),
           HomeWidget.saveWidgetData<String>('current_weight', '--'),
           HomeWidget.saveWidgetData<String>('unit', unitLabelFor(unit)),
           HomeWidget.saveWidgetData<String>('delta_text', ''),
@@ -131,7 +135,7 @@ class WidgetSyncService {
           );
           isGoalAchieved = goalProgressPct >= 100;
           goalStatusText = isGoalAchieved
-              ? 'Cel osiągnięty!'
+              ? (l10n?.goalAchieved ?? 'Cel osiągnięty!')
               : '$goalProgressPct%';
         }
 
@@ -145,7 +149,9 @@ class WidgetSyncService {
             bmiValue = bmi.toStringAsFixed(1);
             final category = BmiCategory.fromBmi(bmi);
             bmiCategory = category.name;
-            bmiCategoryLabel = _bmiCategoryLabel(category);
+            bmiCategoryLabel = l10n != null
+                ? _bmiCategoryLocalized(category, l10n)
+                : _bmiCategoryLabel(category);
           }
         }
 
@@ -155,13 +161,23 @@ class WidgetSyncService {
             latest.dateTime.month == now.month &&
             latest.dateTime.day == now.day;
         final timeStr = DateFormat('HH:mm').format(latest.dateTime);
+        final todayText = l10n?.today ?? 'Dzisiaj';
+        String dateFormatted;
+        try {
+          dateFormatted = DateFormat(
+            'd MMM',
+            l10n?.localeName,
+          ).format(latest.dateTime);
+        } catch (_) {
+          dateFormatted = DateFormat('d MMM').format(latest.dateTime);
+        }
         final formattedDate = isToday
-            ? 'Dzisiaj, $timeStr'
-            : '${DateFormat('d MMM').format(latest.dateTime)} • $timeStr';
+            ? '$todayText, $timeStr'
+            : '$dateFormatted • $timeStr';
 
         await Future.wait([
           HomeWidget.saveWidgetData<bool>('has_data', true),
-          HomeWidget.saveWidgetData<String>('header_title', 'Ostatni pomiar'),
+          HomeWidget.saveWidgetData<String>('header_title', headerTitle),
           HomeWidget.saveWidgetData<String>(
             'current_weight',
             latestWeightDisplay.toStringAsFixed(1),
@@ -242,6 +258,26 @@ class WidgetSyncService {
         reason: 'Failed to clear widget data',
         fatal: false,
       );
+    }
+  }
+
+  static String _bmiCategoryLocalized(
+    BmiCategory category,
+    AppLocalizations l10n,
+  ) {
+    switch (category) {
+      case BmiCategory.underweight:
+        return l10n.bmiCategoryUnderweight;
+      case BmiCategory.normal:
+        return l10n.bmiCategoryNormal;
+      case BmiCategory.overweight:
+        return l10n.bmiCategoryOverweight;
+      case BmiCategory.obeseClass1:
+        return l10n.bmiCategoryObeseClass1;
+      case BmiCategory.obeseClass2:
+        return l10n.bmiCategoryObeseClass2;
+      case BmiCategory.obeseClass3:
+        return l10n.bmiCategoryObeseClass3;
     }
   }
 

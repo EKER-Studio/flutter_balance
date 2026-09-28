@@ -1,9 +1,11 @@
+import 'dart:ui';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:balance/core/integrations/widgets/widget_sync_service.dart';
 import 'package:balance/core/models/measurement_unit.dart';
 import 'package:balance/features/weight/domain/weight_goal_mode.dart';
 import 'package:balance/features/weight/domain/entities/weight_entry.dart';
+import 'package:balance/l10n/app_localizations.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -186,5 +188,31 @@ void main() {
       expect(savedData['last_entry_date'], '');
       expect(updatedWidgets, isNotEmpty);
     });
+
+    test(
+      'updateWidgetData formats localized strings when l10n is provided',
+      () async {
+        final l10n = lookupAppLocalizations(const Locale('en'));
+        final entries = [
+          WeightEntry(id: 1, weightKg: 80.0, dateTime: DateTime.now()),
+        ];
+
+        await service.updateWidgetData(
+          entries: entries,
+          targetWeight: 80.0,
+          heightCm: 180.0,
+          goalMode: WeightGoalMode.lose,
+          unit: MeasurementUnit.metric,
+          l10n: l10n,
+        );
+
+        expect(savedData['has_data'], isTrue);
+        expect(savedData['header_title'], 'Last measurement');
+        expect(savedData['is_goal_achieved'], isTrue);
+        expect(savedData['goal_status_text'], 'Goal achieved!');
+        expect(savedData['bmi_category_label'], 'Normal');
+        expect(savedData['last_entry_date'], startsWith('Today, '));
+      },
+    );
   });
 }
