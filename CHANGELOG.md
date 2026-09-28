@@ -2,6 +2,14 @@
 
 ## [Unreleased]
 
+### 🇵🇱 Polski
+- 🔒 **Prywatność i diagnostyka w onboardingu:** Dodano dedykowany krok w kreatorze wdrożeniowym umożliwiający opcjonalne włączenie anonimowej analityki (Firebase Analytics) oraz raportów o błędach (Firebase Crashlytics). Funkcje są domyślnie wyłączone zgodnie z zasadą privacy-first i w pełni zlokalizowane w 10 językach.
+- 🧪 **Testy i zrzuty ekranu:** Dodano testy jednostkowe nowego kroku, zaktualizowano testy przepływu kreatora, testy zrzutów ekranu oraz zaktualizowano fixture'y golden testów ekranu ustawień.
+
+### 🇬🇧 English
+- 🔒 **Privacy & Diagnostics in Onboarding:** Added a dedicated step in the onboarding wizard allowing users to optionally opt into anonymous usage analytics (Firebase Analytics) and crash reporting (Firebase Crashlytics). The features adhere to privacy-by-default (opt-in) and are fully localized across all 10 supported languages.
+- 🧪 **Tests & Screenshots:** Added dedicated unit tests for the new step widget, updated wizard flow integration tests, screenshot generators, and refreshed golden screenshot fixtures for the settings screen.
+
 ---
 
 ## [1.2.0] — 2026-09-18
