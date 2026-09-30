@@ -1,0 +1,4 @@
+• 🛡️ Privacy voorop: Optionele toestemming voor anonieme analyses en crashrapporten bij eerste gebruik.
+• 📱 Startschermwidgets: Gelokaliseerde widgetlabels, BMI-categorieën en doelstatistieken.
+• 🤖 Android 15-ondersteuning: Volledige weergave van rand tot rand (edge-to-edge).
+• ⚡ Prestaties & kwaliteit: Geoptimaliseerde UI-rendering, verfijnde telemetrie en bugfixes.

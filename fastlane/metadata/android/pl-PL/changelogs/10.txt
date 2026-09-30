@@ -1,0 +1,4 @@
+• 🛡️ Prywatność na pierwszym miejscu: Opcjonalna zgoda na analitykę i raporty awarii w kreatorze wstępnym.
+• 📱 Widżety ekranu głównego: Zlokalizowane etykiety, kategorie BMI i wskaźniki celów.
+• 🤖 Obsługa Androida 15: Pełna zgodność z wyświetlaniem od krawędzi do krawędzi (edge-to-edge).
+• ⚡ Wydajność i jakość: Zoptymalizowane renderowanie interfejsu, dopracowana telemetria i poprawki błędów.

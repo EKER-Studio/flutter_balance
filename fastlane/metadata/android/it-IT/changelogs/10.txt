@@ -1,0 +1,4 @@
+• 🛡️ Privacy al primo posto: Consenso facoltativo per analisi anonime e segnalazioni arresti anomali.
+• 📱 Widget schermata iniziale: Etichette, categorie di BMI e metriche degli obiettivi localizzate.
+• 🤖 Supporto Android 15: Piena conformità con la visualizzazione da bordo a bordo (edge-to-edge).
+• ⚡ Prestazioni e qualità: Rendering dell'interfaccia ottimizzato e correzioni di stabilità.

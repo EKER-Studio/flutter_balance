@@ -1,0 +1,4 @@
+• 🛡️ Datenschutz im Fokus: Freiwillige Zustimmung für anonyme Analysen und Absturzberichte beim Onboarding.
+• 📱 Startbildschirm-Widgets: Lokalisierte Widget-Texte, BMI-Kategorien und Zielwerte.
+• 🤖 Android 15 Unterstützung: Vollständige Rand-zu-Rand-Anzeige (Edge-to-Edge) und Systemoptimierungen.
+• ⚡ Leistung & Stabilität: Optimiertes UI-Rendering, bereinigte Telemetrie und Fehlerbehebungen.

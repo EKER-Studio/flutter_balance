@@ -1,0 +1,4 @@
+• 🛡️ Privacidade por padrão: Controle opcional de diagnósticos e relatórios de falhas no onboarding.
+• 📱 Widgets da tela inicial: Rótulos, categorias de IMC e métricas de metas localizadas.
+• 🤖 Suporte ao Android 15: Total conformidade com exibição de ponta a ponta (edge-to-edge).
+• ⚡ Desempenho e qualidade: Renderização de interface otimizada e melhorias de estabilidade.

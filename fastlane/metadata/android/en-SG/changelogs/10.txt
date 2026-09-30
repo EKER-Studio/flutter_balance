@@ -1,0 +1,4 @@
+• 🛡️ Privacy by Default: Opt-in controls for anonymous analytics and crash reports during onboarding.
+• 📱 Home Screen Widgets: Localized widget labels, BMI categories, and goal metrics.
+• 🤖 Android 15 Support: Full edge-to-edge display compliance and system bar enhancements.
+• ⚡ Performance & Quality: Optimized UI rendering, refined telemetry, and stability improvements.

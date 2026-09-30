@@ -1,0 +1,4 @@
+• 🛡️ Confidentialité renforcée : Contrôle optionnel des analyses anonymes et rapports de plantage.
+• 📱 Widgets de l'écran d'accueil : Textes, catégories d'IMC et indicateurs d'objectifs traduits.
+• 🤖 Prise en charge d'Android 15 : Affichage bord à bord (edge-to-edge) totalement conforme.
+• ⚡ Performance et qualité : Rendu d'interface optimisé, télémétrie épurée et corrections de bugs.

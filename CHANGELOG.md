@@ -7,10 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+---
+
+## [1.3.0] — 2026-09-30
+
 ### Added
 - **Privacy & Diagnostics in Onboarding:** Dedicated onboarding wizard step allowing users to opt into anonymous usage analytics (Firebase Analytics) and crash reporting (Firebase Crashlytics), adhering to privacy-by-default (opt-in) across all 10 supported languages.
 - **Native Home Widget Localization:** Dynamic localization for header titles, BMI categories, dates, and goal achievement statuses in Android and iOS home screen widgets (`WidgetSyncService`).
 - **Tests & Screenshot Fixtures:** Unit tests for privacy step widget, updated wizard integration tests, screenshot generators, and golden screenshot fixtures for settings screen.
+
+### Changed
+- **Android 15 Edge-to-Edge Compliance:** Removed deprecated `LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES` from native styles, updated `androidx.activity:activity-ktx` to 1.10.1 with full support for Android 15 edge-to-edge window insets, and compiled against Android SDK 37.
+- **Linter & Code Optimization:** Enforced compile-time `const` constructors and immutable literals, optimized 94 widget declarations across the app, and removed legacy switch break statements per Dart 3 standards.
+- **Telemetry Sanitization:** Sanitized analytics event parameters to completely exclude sensitive health and routine values, logging only high-level error types and diagnostics.
 
 ---
 
