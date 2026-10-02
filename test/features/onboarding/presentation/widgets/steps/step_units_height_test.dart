@@ -48,7 +48,7 @@ void main() {
       final inches = tester.widget<TextField>(
         find.byKey(const Key('height_inches_input')),
       );
-      expect(inches.controller?.text, '9');
+      expect(inches.controller?.text, '8.9');
       expect(fieldFocused(tester, const Key('height_feet_input')), isTrue);
     });
 
@@ -370,6 +370,208 @@ void main() {
       await tester.pumpWidget(build(isCurrentPage: true));
       await tester.pump(const Duration(milliseconds: 300));
       expect(fieldFocused(tester, const Key('height_cm_input')), isTrue);
+    });
+  });
+
+  group('StepUnitsHeight locale decimals', () {
+    Future<void> pumpMetric(
+      WidgetTester tester, {
+      double? initialHeightCm,
+      required void Function(MeasurementUnit unit, double heightCm) onNext,
+    }) async {
+      await tester.pumpWidget(
+        buildApp(
+          StepUnitsHeight(
+            initialUnit: MeasurementUnit.metric,
+            initialHeightCm: initialHeightCm,
+            isCurrentPage: true,
+            onNext: onNext,
+          ),
+        ),
+      );
+      await tester.pump(const Duration(milliseconds: 300));
+    }
+
+    testWidgets('accepts comma decimal in metric (177,6)', (tester) async {
+      double? selectedHeight;
+
+      await pumpMetric(
+        tester,
+        onNext: (unit, height) => selectedHeight = height,
+      );
+
+      await tester.enterText(find.byKey(const Key('height_cm_input')), '177,6');
+      await tester.tap(find.text(l10nStrings(tester).$2));
+      await tester.pumpAndSettle();
+
+      expect(selectedHeight, closeTo(177.6, 0.001));
+    });
+
+    testWidgets('accepts dot decimal in metric (177.6)', (tester) async {
+      double? selectedHeight;
+
+      await pumpMetric(
+        tester,
+        onNext: (unit, height) => selectedHeight = height,
+      );
+
+      await tester.enterText(find.byKey(const Key('height_cm_input')), '177.6');
+      await tester.tap(find.text(l10nStrings(tester).$2));
+      await tester.pumpAndSettle();
+
+      expect(selectedHeight, closeTo(177.6, 0.001));
+    });
+
+    testWidgets('trims surrounding whitespace (  180  )', (tester) async {
+      double? selectedHeight;
+
+      await pumpMetric(
+        tester,
+        onNext: (unit, height) => selectedHeight = height,
+      );
+
+      await tester.enterText(
+        find.byKey(const Key('height_cm_input')),
+        '  180  ',
+      );
+      await tester.tap(find.text(l10nStrings(tester).$2));
+      await tester.pumpAndSettle();
+
+      expect(selectedHeight, 180.0);
+    });
+
+    testWidgets('rejects meters instead of centimeters (1,75)', (tester) async {
+      double? selectedHeight;
+
+      await pumpMetric(
+        tester,
+        onNext: (unit, height) => selectedHeight = height,
+      );
+      final (errorText, next) = l10nStrings(tester);
+
+      await tester.enterText(find.byKey(const Key('height_cm_input')), '1,75');
+      expect(find.text(errorText), findsNothing);
+      await tester.tap(find.text(next));
+      await tester.pumpAndSettle();
+
+      expect(find.text(errorText), findsWidgets);
+      expect(selectedHeight, isNull);
+    });
+
+    testWidgets('prefills decimal metric height without rounding (177.6)', (
+      tester,
+    ) async {
+      await pumpMetric(tester, initialHeightCm: 177.6, onNext: (_, _) {});
+
+      final cm = tester.widget<TextField>(
+        find.byKey(const Key('height_cm_input')),
+      );
+      expect(cm.controller?.text, '177.6');
+    });
+
+    testWidgets('prefills whole metric height without decimals (175)', (
+      tester,
+    ) async {
+      await pumpMetric(tester, initialHeightCm: 175.0, onNext: (_, _) {});
+
+      final cm = tester.widget<TextField>(
+        find.byKey(const Key('height_cm_input')),
+      );
+      expect(cm.controller?.text, '175');
+    });
+
+    testWidgets('prefills decimal imperial height without rounding (177.6)', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        buildApp(
+          StepUnitsHeight(
+            initialUnit: MeasurementUnit.imperial,
+            initialHeightCm: 177.6,
+            isCurrentPage: true,
+            onNext: (_, _) {},
+          ),
+        ),
+      );
+      await tester.pump(const Duration(milliseconds: 300));
+
+      final feet = tester.widget<TextField>(
+        find.byKey(const Key('height_feet_input')),
+      );
+      expect(feet.controller?.text, '5');
+      final inches = tester.widget<TextField>(
+        find.byKey(const Key('height_inches_input')),
+      );
+      expect(inches.controller?.text, '9.9');
+    });
+
+    testWidgets(
+      'keeps decimal height when switching metric to imperial and back',
+      (tester) async {
+        double? selectedHeight;
+
+        await pumpMetric(
+          tester,
+          onNext: (unit, height) => selectedHeight = height,
+        );
+
+        await tester.enterText(
+          find.byKey(const Key('height_cm_input')),
+          '177,6',
+        );
+        await tester.tap(find.text('Imperial (lb, ft/in)'));
+        await tester.pumpAndSettle();
+
+        final feet = tester.widget<TextField>(
+          find.byKey(const Key('height_feet_input')),
+        );
+        expect(feet.controller?.text, '5');
+        final inches = tester.widget<TextField>(
+          find.byKey(const Key('height_inches_input')),
+        );
+        expect(inches.controller?.text, '9.9');
+
+        await tester.tap(find.text('Metric (kg, cm)'));
+        await tester.pumpAndSettle();
+
+        final cm = tester.widget<TextField>(
+          find.byKey(const Key('height_cm_input')),
+        );
+        expect(cm.controller?.text, '177.5');
+
+        await tester.tap(find.text(l10nStrings(tester).$2));
+        await tester.pumpAndSettle();
+        // Next reads the rewritten metric field, so the 1-decimal inches
+        // round-trip settles at 177.5 instead of the original 177.6.
+        expect(selectedHeight, closeTo(177.5, 0.001));
+      },
+    );
+
+    testWidgets('accepts inches-only imperial input (empty feet)', (
+      tester,
+    ) async {
+      double? selectedHeight;
+
+      await tester.pumpWidget(
+        buildApp(
+          StepUnitsHeight(
+            initialUnit: MeasurementUnit.imperial,
+            initialHeightCm: null,
+            isCurrentPage: true,
+            onNext: (unit, height) => selectedHeight = height,
+          ),
+        ),
+      );
+      await tester.pump(const Duration(milliseconds: 300));
+
+      await tester.enterText(
+        find.byKey(const Key('height_inches_input')),
+        '70',
+      );
+      await tester.tap(find.text(l10nStrings(tester).$2));
+      await tester.pumpAndSettle();
+
+      expect(selectedHeight, closeTo(177.8, 0.01));
     });
   });
 }

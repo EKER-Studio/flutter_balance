@@ -39,7 +39,7 @@ class _HeightSheetState extends State<HeightSheet> {
 
     _cmController = TextEditingController(
       text: hasHeight && widget.measurementUnit == MeasurementUnit.metric
-          ? widget.currentValue!.toStringAsFixed(0)
+          ? formatHeightInput(widget.currentValue!)
           : '',
     );
 
@@ -51,7 +51,7 @@ class _HeightSheetState extends State<HeightSheet> {
     );
     _inchesController = TextEditingController(
       text: hasHeight && widget.measurementUnit == MeasurementUnit.imperial
-          ? ftIn[1].round().toString()
+          ? formatHeightInput(ftIn[1])
           : '',
     );
   }
@@ -65,31 +65,41 @@ class _HeightSheetState extends State<HeightSheet> {
   }
 
   double? _calculateHeightCm() {
+    final double? cm;
     if (widget.measurementUnit == MeasurementUnit.metric) {
-      final cm = double.tryParse(
-        _cmController.text.trim().replaceAll(',', '.'),
-      );
-      if (cm != null &&
-          cm >= AppSettingsState.minHeightCm &&
-          cm <= AppSettingsState.maxHeightCm) {
-        return cm;
-      }
-      return null;
+      cm = tryParseLocalizedNumber(_cmController.text);
     } else {
-      final feet = double.tryParse(
-        _feetController.text.trim().replaceAll(',', '.'),
+      cm = tryParseImperialHeightCm(
+        _feetController.text,
+        _inchesController.text,
       );
-      final inchesText = _inchesController.text.trim().replaceAll(',', '.');
-      final inches = inchesText.isEmpty ? 0.0 : double.tryParse(inchesText);
-      if (feet != null && inches != null && feet >= 0 && inches >= 0) {
-        final cm = ((feet * 12) + inches) * 2.54;
-        if (cm >= AppSettingsState.minHeightCm &&
-            cm <= AppSettingsState.maxHeightCm) {
-          return cm;
-        }
-      }
-      return null;
     }
+    if (cm != null &&
+        cm >= AppSettingsState.minHeightCm &&
+        cm <= AppSettingsState.maxHeightCm) {
+      return cm;
+    }
+    return null;
+  }
+
+  /// Classifies the current input for failure telemetry (categorical only,
+  /// never the raw value).
+  String _validationErrorType() {
+    if (widget.measurementUnit == MeasurementUnit.metric) {
+      return heightValidationErrorType(
+        isEmpty: _cmController.text.trim().isEmpty,
+        parsedValue: tryParseLocalizedNumber(_cmController.text),
+      );
+    }
+    return heightValidationErrorType(
+      isEmpty:
+          _feetController.text.trim().isEmpty &&
+          _inchesController.text.trim().isEmpty,
+      parsedValue: tryParseImperialHeightCm(
+        _feetController.text,
+        _inchesController.text,
+      ),
+    );
   }
 
   void _handleSave() {
@@ -98,7 +108,7 @@ class _HeightSheetState extends State<HeightSheet> {
       FocusScope.of(context).unfocus();
       Navigator.of(context).pop(height);
     } else {
-      AppAnalytics.logSettingsHeightValidationError('range_error');
+      AppAnalytics.logSettingsHeightValidationError(_validationErrorType());
       setState(() {
         _errorText = AppLocalizations.of(context).heightRangeError;
       });

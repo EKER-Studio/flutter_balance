@@ -73,7 +73,7 @@ class _StepUnitsHeightState extends State<StepUnitsHeight> {
     final hasHeight = initialCm != null && initialCm > 0;
 
     _cmController = TextEditingController(
-      text: hasHeight ? initialCm.toStringAsFixed(0) : '',
+      text: hasHeight ? formatHeightInput(initialCm) : '',
     );
 
     final [feet, inches] = cmToFeetInches(hasHeight ? initialCm : 0.0);
@@ -81,7 +81,7 @@ class _StepUnitsHeightState extends State<StepUnitsHeight> {
       text: hasHeight ? feet.toInt().toString() : '',
     );
     _inchesController = TextEditingController(
-      text: hasHeight ? inches.round().toString() : '',
+      text: hasHeight ? formatHeightInput(inches) : '',
     );
 
     if (widget.isCurrentPage) {
@@ -121,9 +121,7 @@ class _StepUnitsHeightState extends State<StepUnitsHeight> {
   /// Converts the active unit inputs into centimeters, or `null` when invalid.
   double? _calculateHeightCm() {
     if (_selectedUnit == MeasurementUnit.metric) {
-      final cm = double.tryParse(
-        _cmController.text.trim().replaceAll(',', '.'),
-      );
+      final cm = tryParseLocalizedNumber(_cmController.text);
       if (cm != null &&
           cm >= AppSettingsState.minHeightCm &&
           cm <= AppSettingsState.maxHeightCm) {
@@ -131,21 +129,37 @@ class _StepUnitsHeightState extends State<StepUnitsHeight> {
       }
       return null;
     } else {
-      final feet = double.tryParse(
-        _feetController.text.trim().replaceAll(',', '.'),
+      final cm = tryParseImperialHeightCm(
+        _feetController.text,
+        _inchesController.text,
       );
-      final inchesText = _inchesController.text.trim().replaceAll(',', '.');
-      final inches = inchesText.isEmpty ? 0.0 : double.tryParse(inchesText);
-      if (feet != null && inches != null && feet >= 0 && inches >= 0) {
-        final totalInches = (feet * 12) + inches;
-        final cm = totalInches * 2.54;
-        if (cm >= AppSettingsState.minHeightCm &&
-            cm <= AppSettingsState.maxHeightCm) {
-          return cm;
-        }
+      if (cm != null &&
+          cm >= AppSettingsState.minHeightCm &&
+          cm <= AppSettingsState.maxHeightCm) {
+        return cm;
       }
       return null;
     }
+  }
+
+  /// Classifies the current input for failure telemetry (categorical only,
+  /// never the raw value).
+  String _validationErrorType() {
+    if (_selectedUnit == MeasurementUnit.metric) {
+      return heightValidationErrorType(
+        isEmpty: _cmController.text.trim().isEmpty,
+        parsedValue: tryParseLocalizedNumber(_cmController.text),
+      );
+    }
+    return heightValidationErrorType(
+      isEmpty:
+          _feetController.text.trim().isEmpty &&
+          _inchesController.text.trim().isEmpty,
+      parsedValue: tryParseImperialHeightCm(
+        _feetController.text,
+        _inchesController.text,
+      ),
+    );
   }
 
   /// Switches the input fields between metric and imperial, converting the
@@ -163,9 +177,9 @@ class _StepUnitsHeightState extends State<StepUnitsHeight> {
         if (newUnit == MeasurementUnit.imperial) {
           final [feet, inches] = cmToFeetInches(currentCm);
           _feetController.text = feet.toInt().toString();
-          _inchesController.text = inches.round().toString();
+          _inchesController.text = formatHeightInput(inches);
         } else {
-          _cmController.text = currentCm.toStringAsFixed(0);
+          _cmController.text = formatHeightInput(currentCm);
         }
       }
     });
@@ -186,7 +200,7 @@ class _StepUnitsHeightState extends State<StepUnitsHeight> {
     if (heightCm != null) {
       widget.onNext(_selectedUnit, heightCm);
     } else {
-      AppAnalytics.logOnboardingHeightValidationError('range_error');
+      AppAnalytics.logOnboardingHeightValidationError(_validationErrorType());
       setState(() {
         if (_selectedUnit == MeasurementUnit.metric) {
           _cmErrorText = AppLocalizations.of(context).heightRangeError;

@@ -53,3 +53,60 @@ String formatHeight(double heightCm, MeasurementUnit unit) {
   }
   return '${heightCm.toStringAsFixed(0)} cm';
 }
+
+/// Formats a height value for editable input fields, preserving one decimal place.
+///
+/// Whole numbers render without decimals (`175.0` → `'175'`) so integer
+/// input is unchanged, while fractional values keep one decimal
+/// (`177.6` → `'177.6'`). Used for both metric (cm) and imperial (inches)
+/// fields so a stored height round-trips through the UI without silent
+/// rounding (e.g. `177.6` no longer reopens as `178`).
+String formatHeightInput(double value) {
+  final oneDecimal = value.toStringAsFixed(1);
+  return oneDecimal.endsWith('.0')
+      ? oneDecimal.substring(0, oneDecimal.length - 2)
+      : oneDecimal;
+}
+
+/// Parses a user-typed decimal accepting both `.` and `,` as separators.
+///
+/// Trims surrounding whitespace and treats `,` as the decimal separator
+/// (e.g. `'177,6'` → `177.6`), covering locales with either convention.
+/// Returns `null` for blank or unparseable input.
+double? tryParseLocalizedNumber(String raw) {
+  final normalized = raw.trim().replaceAll(',', '.');
+  if (normalized.isEmpty) return null;
+  return double.tryParse(normalized);
+}
+
+/// Converts imperial height fields into centimeters, or `null` when invalid.
+///
+/// Empty fields count as zero (inches-only input is accepted), while
+/// unparseable or negative values reject the whole input. Range checking
+/// against the allowed height bounds stays with the caller.
+double? tryParseImperialHeightCm(String feetRaw, String inchesRaw) {
+  final feet = feetRaw.trim().isEmpty ? 0.0 : tryParseLocalizedNumber(feetRaw);
+  final inches = inchesRaw.trim().isEmpty
+      ? 0.0
+      : tryParseLocalizedNumber(inchesRaw);
+  if (feet == null || inches == null || feet.isNaN || inches.isNaN) {
+    return null;
+  }
+  if (feet < 0 || inches < 0) return null;
+  return (feet * 12 + inches) * 2.54;
+}
+
+/// Classifies a height validation failure for analytics.
+///
+/// Returns only categorical values (`'empty'`, `'parse_error'`,
+/// `'out_of_range'`) — never the raw input — keeping telemetry
+/// privacy-compliant. Call with the parse result: when the parsed value is
+/// non-null here, the failure necessarily means out-of-range.
+String heightValidationErrorType({
+  required bool isEmpty,
+  required double? parsedValue,
+}) {
+  if (isEmpty) return 'empty';
+  if (parsedValue == null) return 'parse_error';
+  return 'out_of_range';
+}

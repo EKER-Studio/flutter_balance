@@ -149,6 +149,106 @@ void main() {
     });
   });
 
+  group('formatHeightInput', () {
+    test('formats whole numbers without decimals', () {
+      expect(formatHeightInput(175.0), '175');
+    });
+
+    test('preserves one decimal place', () {
+      expect(formatHeightInput(177.6), '177.6');
+    });
+
+    test('trims a second decimal place', () {
+      expect(formatHeightInput(177.64), '177.6');
+    });
+
+    test('formats zero without decimals', () {
+      expect(formatHeightInput(0.0), '0');
+    });
+
+    test('formats fractional inches without trailing zero', () {
+      expect(formatHeightInput(9.921259), '9.9');
+    });
+  });
+
+  group('tryParseLocalizedNumber', () {
+    test('parses dot decimals', () {
+      expect(tryParseLocalizedNumber('177.6'), closeTo(177.6, 0.001));
+    });
+
+    test('parses comma decimals (e.g. PL/DE keyboards)', () {
+      expect(tryParseLocalizedNumber('177,6'), closeTo(177.6, 0.001));
+    });
+
+    test('trims surrounding whitespace', () {
+      expect(tryParseLocalizedNumber('  180  '), 180.0);
+    });
+
+    test('returns null for blank input', () {
+      expect(tryParseLocalizedNumber(''), isNull);
+      expect(tryParseLocalizedNumber('   '), isNull);
+    });
+
+    test('returns null for unparseable input', () {
+      expect(tryParseLocalizedNumber('abc'), isNull);
+      expect(tryParseLocalizedNumber('180 cm'), isNull);
+    });
+  });
+
+  group('tryParseImperialHeightCm', () {
+    test('converts feet and inches to cm', () {
+      expect(tryParseImperialHeightCm('5', '9'), closeTo(175.26, 0.01));
+    });
+
+    test('parses comma decimals in imperial fields', () {
+      expect(tryParseImperialHeightCm('5,5', '0'), closeTo(167.64, 0.01));
+    });
+
+    test('treats empty feet as zero (inches-only input)', () {
+      expect(tryParseImperialHeightCm('', '70'), closeTo(177.8, 0.01));
+    });
+
+    test('treats empty inches as zero', () {
+      expect(tryParseImperialHeightCm('5', ''), closeTo(152.4, 0.01));
+    });
+
+    test('returns zero for a completely empty form', () {
+      expect(tryParseImperialHeightCm('', ''), 0.0);
+    });
+
+    test('returns null for negative values', () {
+      expect(tryParseImperialHeightCm('5', '-1'), isNull);
+      expect(tryParseImperialHeightCm('-1', '0'), isNull);
+    });
+
+    test('returns null for unparseable values', () {
+      expect(tryParseImperialHeightCm('five', '9'), isNull);
+    });
+  });
+
+  group('heightValidationErrorType', () {
+    test('reports empty for blank input', () {
+      expect(
+        heightValidationErrorType(isEmpty: true, parsedValue: null),
+        'empty',
+      );
+    });
+
+    test('reports parse_error for unparseable input', () {
+      expect(
+        heightValidationErrorType(isEmpty: false, parsedValue: null),
+        'parse_error',
+      );
+    });
+
+    test('reports out_of_range for parsed but invalid values', () {
+      expect(
+        heightValidationErrorType(isEmpty: false, parsedValue: 1.75),
+        'out_of_range',
+      );
+    });
+  });
+
   group('unitLabelFor', () {
     test('returns kg for metric', () {
       expect(unitLabelFor(MeasurementUnit.metric), 'kg');
