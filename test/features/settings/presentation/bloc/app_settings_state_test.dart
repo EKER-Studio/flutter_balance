@@ -68,6 +68,7 @@ void main() {
         weeklyPaceWindowDays: 14,
         analyticsEnabled: true,
         crashReportingEnabled: true,
+        hasDismissedWidgetPromo: true,
       );
 
       final json = state.toJson();
@@ -89,6 +90,7 @@ void main() {
       expect(restored.weeklyPaceWindowDays, 14);
       expect(restored.analyticsEnabled, isTrue);
       expect(restored.crashReportingEnabled, isTrue);
+      expect(restored.hasDismissedWidgetPromo, isTrue);
     });
 
     test('fromJson defaults privacy opt-ins to false for legacy payloads', () {

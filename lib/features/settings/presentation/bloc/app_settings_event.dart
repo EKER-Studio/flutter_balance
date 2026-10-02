@@ -83,6 +83,11 @@ final class CompleteOnboarding extends AppSettingsEvent {
   const CompleteOnboarding();
 }
 
+/// An event that permanently dismisses the home-screen widget promo card.
+final class DismissWidgetPromo extends AppSettingsEvent {
+  const DismissWidgetPromo();
+}
+
 /// An event that sets whether biometric authentication is supported on this
 /// device.
 final class UpdateBiometricSupport extends AppSettingsEvent {

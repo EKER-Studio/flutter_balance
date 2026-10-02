@@ -59,6 +59,12 @@ final class AppSettingsState extends Equatable {
   /// false).
   final bool isOnboardingCompleted;
 
+  /// Whether the home-screen widget promo card was dismissed (default: false).
+  ///
+  /// Persisted so the card stays hidden across restarts once the user
+  /// dismisses it or pins the widget.
+  final bool hasDismissedWidgetPromo;
+
   /// Whether the last notification permission request was denied.
   ///
   /// Transient: consumed by the UI to surface a permission-required message,
@@ -118,6 +124,7 @@ final class AppSettingsState extends Equatable {
     this.isBiometricLockEnabled = false,
     this.isLocked = false,
     this.isOnboardingCompleted = false,
+    this.hasDismissedWidgetPromo = false,
     this.notificationPermissionDenied = false,
     this.isBiometricSupported = true,
     this.isHealthSyncEnabled = false,
@@ -145,6 +152,7 @@ final class AppSettingsState extends Equatable {
     bool? isBiometricLockEnabled,
     bool? isLocked,
     bool? isOnboardingCompleted,
+    bool? hasDismissedWidgetPromo,
     bool? notificationPermissionDenied,
     bool? isBiometricSupported,
     bool? isHealthSyncEnabled,
@@ -171,6 +179,8 @@ final class AppSettingsState extends Equatable {
       isLocked: isLocked ?? this.isLocked,
       isOnboardingCompleted:
           isOnboardingCompleted ?? this.isOnboardingCompleted,
+      hasDismissedWidgetPromo:
+          hasDismissedWidgetPromo ?? this.hasDismissedWidgetPromo,
       notificationPermissionDenied:
           notificationPermissionDenied ?? this.notificationPermissionDenied,
       isBiometricSupported: isBiometricSupported ?? this.isBiometricSupported,
@@ -202,6 +212,7 @@ final class AppSettingsState extends Equatable {
     isBiometricLockEnabled,
     isLocked,
     isOnboardingCompleted,
+    hasDismissedWidgetPromo,
     notificationPermissionDenied,
     isBiometricSupported,
     isHealthSyncEnabled,
@@ -259,6 +270,8 @@ final class AppSettingsState extends Equatable {
           ? true
           : (json['isLocked'] as bool? ?? false),
       isOnboardingCompleted: json['isOnboardingCompleted'] as bool? ?? false,
+      hasDismissedWidgetPromo:
+          json['hasDismissedWidgetPromo'] as bool? ?? false,
       isHealthSyncEnabled: json['isHealthSyncEnabled'] as bool? ?? false,
       // Transient flags: never restored from storage.
       notificationPermissionDenied: false,
@@ -291,6 +304,7 @@ final class AppSettingsState extends Equatable {
       'isBiometricLockEnabled': isBiometricLockEnabled,
       'isLocked': isLocked,
       'isOnboardingCompleted': isOnboardingCompleted,
+      'hasDismissedWidgetPromo': hasDismissedWidgetPromo,
       'isHealthSyncEnabled': isHealthSyncEnabled,
       if (lastHealthSyncTimestamp != null)
         'lastHealthSyncTimestamp': lastHealthSyncTimestamp!.toIso8601String(),

@@ -166,7 +166,8 @@ class AppAnalytics {
 
   /// Logs a validation error when entering height in onboarding.
   ///
-  /// @param errorType Description of the validation error.
+  /// @param errorType Categorical failure reason: `empty`, `parse_error`,
+  /// or `out_of_range` (never raw user input).
   static Future<void> logOnboardingHeightValidationError(String errorType) {
     return logEvent(
       name: 'onboarding_height_validation_error',
@@ -499,6 +500,21 @@ class AppAnalytics {
     return logEvent(name: 'today_daily_tip_tapped');
   }
 
+  /// Logs showing the home-screen widget promo card.
+  static Future<void> logWidgetPromoShown() {
+    return logEvent(name: 'widget_promo_shown');
+  }
+
+  /// Logs tapping the widget promo card action requesting a home-screen pin.
+  static Future<void> logWidgetPromoPinClicked() {
+    return logEvent(name: 'widget_promo_pin_clicked');
+  }
+
+  /// Logs dismissing the home-screen widget promo card.
+  static Future<void> logWidgetPromoDismissed() {
+    return logEvent(name: 'widget_promo_dismissed');
+  }
+
   /// Logs changing the comparison period in the weight delta card.
   ///
   /// @param period Selected comparison period name.
@@ -700,7 +716,8 @@ class AppAnalytics {
 
   /// Logs a validation error in the height dialog.
   ///
-  /// @param errorType Description of the validation failure.
+  /// @param errorType Categorical failure reason: `empty`, `parse_error`,
+  /// or `out_of_range` (never raw user input).
   static Future<void> logSettingsHeightValidationError(String errorType) {
     return logEvent(
       name: 'settings_height_validation_error',

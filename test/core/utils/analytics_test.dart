@@ -105,6 +105,9 @@ void main() {
         await AppAnalytics.logTodaySetGoalTapped();
         await AppAnalytics.logTodayChartPointTouched();
         await AppAnalytics.logTodayDailyTipTapped();
+        await AppAnalytics.logWidgetPromoShown();
+        await AppAnalytics.logWidgetPromoPinClicked();
+        await AppAnalytics.logWidgetPromoDismissed();
         await AppAnalytics.logTodayDeltaPeriodSelected('week');
         await AppAnalytics.logTodayPullToRefresh();
 

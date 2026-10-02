@@ -27,6 +27,7 @@ void main() {
 
     test('flag-less events are constructible', () {
       expect(const CompleteOnboarding(), isA<CompleteOnboarding>());
+      expect(const DismissWidgetPromo(), isA<DismissWidgetPromo>());
       expect(const CheckHealthSyncStatus(), isA<CheckHealthSyncStatus>());
       expect(const ResetAppSettings(), isA<ResetAppSettings>());
     });

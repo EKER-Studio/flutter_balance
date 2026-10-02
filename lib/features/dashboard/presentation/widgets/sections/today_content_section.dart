@@ -5,6 +5,7 @@ import 'package:balance/features/dashboard/presentation/widgets/components/inlin
 import 'package:balance/features/dashboard/presentation/widgets/sections/daily_tip_card.dart';
 import 'package:balance/features/dashboard/presentation/widgets/sections/health_summary_card.dart';
 import 'package:balance/features/dashboard/presentation/widgets/sections/weight_trend_chart_card.dart';
+import 'package:balance/features/dashboard/presentation/widgets/sections/widget_promo_card.dart';
 import 'package:balance/features/weight/domain/entities/weight_entry.dart';
 import 'package:balance/core/models/time_period.dart';
 import 'package:balance/features/weight/domain/weight_error_type.dart';
@@ -84,6 +85,8 @@ class TodayContentSection extends StatelessWidget {
                     ),
                     const SizedBox(height: 16),
                     const DailyTipCard(),
+                    const SizedBox(height: 16),
+                    const WidgetPromoCard(),
                     const SizedBox(height: 80),
                   ],
                 ),
@@ -133,6 +136,8 @@ class TodayContentSection extends StatelessWidget {
               ),
               const SizedBox(height: 16),
               const DailyTipCard(),
+              const SizedBox(height: 16),
+              const WidgetPromoCard(),
               const SizedBox(height: 120),
             ],
           );

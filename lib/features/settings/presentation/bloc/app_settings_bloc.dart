@@ -43,6 +43,7 @@ class AppSettingsBloc extends HydratedBloc<AppSettingsEvent, AppSettingsState> {
     on<UpdateBiometricSupport>(_onUpdateBiometricSupport);
     on<SetLocked>(_onSetLocked);
     on<CompleteOnboarding>(_onCompleteOnboarding, transformer: droppable());
+    on<DismissWidgetPromo>(_onDismissWidgetPromo);
     on<ToggleHealthSync>(_onToggleHealthSync, transformer: droppable());
     on<CheckHealthSyncStatus>(
       _onCheckHealthSyncStatus,
@@ -184,6 +185,13 @@ class AppSettingsBloc extends HydratedBloc<AppSettingsEvent, AppSettingsState> {
     Emitter<AppSettingsState> emit,
   ) {
     emit(state.copyWith(isOnboardingCompleted: true));
+  }
+
+  void _onDismissWidgetPromo(
+    DismissWidgetPromo event,
+    Emitter<AppSettingsState> emit,
+  ) {
+    emit(state.copyWith(hasDismissedWidgetPromo: true));
   }
 
   /// Toggles health sync (HealthKit or Health Connect) on or off.

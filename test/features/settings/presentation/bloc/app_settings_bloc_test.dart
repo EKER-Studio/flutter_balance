@@ -692,6 +692,20 @@ void main() {
     );
 
     blocTest<AppSettingsBloc, AppSettingsState>(
+      'persists widget promo dismissal on DismissWidgetPromo',
+      build: () =>
+          AppSettingsBloc(notificationService: mockNotificationService),
+      act: (bloc) => bloc.add(const DismissWidgetPromo()),
+      expect: () => [
+        isA<AppSettingsState>().having(
+          (s) => s.hasDismissedWidgetPromo,
+          'hasDismissedWidgetPromo',
+          true,
+        ),
+      ],
+    );
+
+    blocTest<AppSettingsBloc, AppSettingsState>(
       'emits default state on ResetAppSettings',
       build: () =>
           AppSettingsBloc(notificationService: mockNotificationService),
