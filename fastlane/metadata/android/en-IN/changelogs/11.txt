@@ -1,0 +1,4 @@
+• 📱 Home Screen Widget Tip: Added a helpful recommendation card to discover and pin the Balance widget.
+• 🔒 Biometrics Grace Period: Seamless switching between apps without repeated biometric prompts (30s grace period).
+• 📏 Onboarding Height Input: Improved decimal input handling (, and .) and smoother validation.
+• ⚡ General performance optimizations and stability improvements.

@@ -1,0 +1,4 @@
+• 📱 Widget schermata iniziale: Scheda informativa per aggiungere il pratico widget Balance.
+• 🔒 Biometria più fluida: Margine di 30 secondi che evita richieste ripetute passando da un'app all'altra.
+• 📏 Inserimento altezza: Gestione migliorata di virgole e punti nell'onboarding con validazione ottimizzata.
+• ⚡ Miglioramenti generali delle prestazioni e della stabilità.

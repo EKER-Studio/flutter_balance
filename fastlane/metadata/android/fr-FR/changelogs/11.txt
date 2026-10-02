@@ -1,0 +1,4 @@
+• 📱 Widget écran d'accueil : Carte de recommandation pour ajouter le widget rapide Balance.
+• 🔒 Déverrouillage biométrique fluide : Période de grâce de 30s évitant les demandes répétées lors du changement d'app.
+• 📏 Saisie de la taille : Meilleure prise en charge des virgules et des points lors de l'accueil.
+• ⚡ Améliorations générales de la stabilité et des performances.

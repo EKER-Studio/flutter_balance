@@ -1,0 +1,4 @@
+• 📱 Startbildschirm-Widget: Hilfreiche Empfehlungskarte zum Hinzufügen des praktischen Balance-Widgets.
+• 🔒 Reibungslose Biometrie: 30-Sekunden-Puffer verhindert wiederholte Abfragen beim schnellen App-Wechsel.
+• 📏 Größeneingabe im Onboarding: Zuverlässige Unterstützung von Kommas und Punkten bei der Eingabe.
+• ⚡ Allgemeine Stabilitätsverbesserungen und Performance-Optimierungen.

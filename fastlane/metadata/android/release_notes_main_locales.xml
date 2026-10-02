@@ -1,70 +1,60 @@
 <en-US>
-• 🔒 Security: Database encryption key anchored in hardware Keystore/Keychain.
-• 🏗️ Architecture & Stability: Unified BMI calculation service and streamlined initial onboarding.
-• 🛡️ Reliability: Structured error reporting and enhanced background diagnostics.
-• 🌐 Localization: Polished translations and externalized settings strings.
-• ⚡ Minor bug fixes and general performance optimizations.
+• 📱 Home Screen Widget Tip: Added a helpful recommendation card to discover and pin the Balance widget.
+• 🔒 Biometrics Grace Period: Seamless switching between apps without repeated biometric prompts (30s grace period).
+• 📏 Onboarding Height Input: Improved decimal input handling (, and .) and smoother validation.
+• ⚡ General performance optimizations and stability improvements.
 </en-US>
 <pl-PL>
-• 🔒 Bezpieczeństwo: Sprzętowe szyfrowanie bazy danych w Android Keystore / iOS Keychain.
-• 🏗️ Stabilność i architektura: Zoptymalizowana logika obliczeń BMI i usprawniony onboarding.
-• 🛡️ Niezawodność: Ustrukturyzowane rejestrowanie awarii i diagnostyka błędów.
-• 🌐 Lokalizacja i interfejs: Uzupełnione tłumaczenia w ustawieniach i odświeżony wygląd.
-• ⚡ Drobne poprawki błędów i optymalizacje wydajności.
+• 📱 Wskazówka o widżecie: Karta polecająca dodanie szybkiego widżetu Balance na ekran główny.
+• 🔒 Płynna biometria: 30-sekundowy okres karencji zapobiega powtórnym pytaniom o odcisk palca przy szybkim przełączaniu apek.
+• 📏 Wprowadzanie wzrostu: Lepsza obsługa przecinków i kropek w onboarding oraz łagodniejsza walidacja.
+• ⚡ Ogólne poprawki stabilności i optymalizacje wydajności.
 </pl-PL>
 <de-DE>
-• 🔒 Sicherheit: Datenbank-Verschlüsselungsschlüssel hardwaregesichert im Keystore/Keychain.
-• 🏗️ Architektur & Stabilität: Vereinheitlichte BMI-Berechnung und optimiertes Onboarding.
-• 🛡️ Zuverlässigkeit: Strukturierte Fehlerberichterstattung und verbesserte Diagnose.
-• 🌐 Lokalisierung: Vollständige Übersetzungen in den Einstellungen.
-• ⚡ Allgemeine Leistungsverbesserungen und Fehlerbehebungen.
+• 📱 Startbildschirm-Widget: Hilfreiche Empfehlungskarte zum Hinzufügen des praktischen Balance-Widgets.
+• 🔒 Reibungslose Biometrie: 30-Sekunden-Puffer verhindert wiederholte Abfragen beim schnellen App-Wechsel.
+• 📏 Größeneingabe im Onboarding: Zuverlässige Unterstützung von Kommas und Punkten bei der Eingabe.
+• ⚡ Allgemeine Stabilitätsverbesserungen und Performance-Optimierungen.
 </de-DE>
 <es-ES>
-• 🔒 Seguridad: Clave de cifrado de la base de datos anclada en el Keystore/Keychain de hardware.
-• 🏗️ Arquitectura y estabilidad: Cálculo de IMC unificado y bienvenida inicial optimizada.
-• 🛡️ Confiabilidad: Notificación estructurada de errores y diagnóstico técnico mejorado.
-• 🌐 Localización: Cadenas de configuración traducidas y ajustes de interfaz.
-• ⚡ Corrección de errores y optimizaciones generales.
+• 📱 Widget de pantalla de inicio: Tarjeta de recomendación para anclar el widget rápido de Balance.
+• 🔒 Biometría fluida: Margen de 30 segundos que evita bloqueos innecesarios al alternar entre aplicaciones.
+• 📏 Entrada de altura: Soporte mejorado para comas y puntos en el onboarding con validación pulida.
+• ⚡ Mejoras generales de estabilidad y optimización de rendimiento.
 </es-ES>
 <fr-FR>
-• 🔒 Sécurité : Clé de chiffrement de la base de données ancrée dans le Keystore/Keychain matériel.
-• 🏗️ Architecture & Stabilité : Calcul d'IMC unifié et processus d'accueil optimisé.
-• 🛡️ Fiabilité : Rapport d'erreurs structuré et diagnostics techniques renforcés.
-• 🌐 Localisation : Traductions complétées dans les paramètres.
-• ⚡ Corrections de bugs et améliorations des performances.
+• 📱 Widget écran d'accueil : Carte de recommandation pour ajouter le widget rapide Balance.
+• 🔒 Déverrouillage biométrique fluide : Période de grâce de 30s évitant les demandes répétées lors du changement d'app.
+• 📏 Saisie de la taille : Meilleure prise en charge des virgules et des points lors de l'accueil.
+• ⚡ Améliorations générales de la stabilité et des performances.
 </fr-FR>
 <it-IT>
-• 🔒 Sicurezza: Chiave di crittografia del database ancorata nel Keystore/Keychain hardware.
-• 🏗️ Architettura e stabilità: Calcolo dell'IMC unificato e configurazione iniziale ottimizzata.
-• 🛡️ Affidabilità: Segnalazione strutturata degli errori e diagnostica migliorata.
-• 🌐 Localizzazione: Traduzioni perfezionate nelle impostazioni.
-• ⚡ Risoluzione di bug e ottimizzazioni delle prestazioni.
+• 📱 Widget schermata iniziale: Scheda informativa per aggiungere il pratico widget Balance.
+• 🔒 Biometria più fluida: Margine di 30 secondi che evita richieste ripetute passando da un'app all'altra.
+• 📏 Inserimento altezza: Gestione migliorata di virgole e punti nell'onboarding con validazione ottimizzata.
+• ⚡ Miglioramenti generali delle prestazioni e della stabilità.
 </it-IT>
 <nl-NL>
-• 🔒 Beveiliging: Versleutelingssleutel van de database beveiligd in hardware Keystore/Keychain.
-• 🏗️ Architectuur & Stabiliteit: Geünificeerde BMI-berekening en gestroomlijnde onboarding.
-• 🛡️ Betrouwbaarheid: Gestructureerde foutrapportage en verbeterde achtergronddiagnostiek.
-• 🌐 Lokalisatie: Verbeterde vertalingen in de instellingen.
-• ⚡ Kleine bugfixes en prestatieverbeteringen.
+• 📱 Startschermwidget: Handige tipkaart om de snelle Balance-widget op je startscherm te plaatsen.
+• 🔒 Vloeiende biometrie: 30 seconden bedenktijd voorkomt herhaald ontgrendelen bij kort wisselen van app.
+• 📏 Lengte-invoer: Verbeterde invoer van komma's en punten tijdens de onboarding.
+• ⚡ Algemene prestatieverbeteringen en stabiliteitsupdates.
 </nl-NL>
 <pt-BR>
-• 🔒 Segurança: Chave de criptografia do banco de dados ancorada no Keystore/Keychain de hardware.
-• 🏗️ Arquitetura e estabilidade: Cálculo de IMC unificado e fluxo de boas-vindas aprimorado.
-• 🛡️ Confiabilidade: Relatórios de erros estruturados e diagnósticos avançados.
-• 🌐 Localização: Traduções completas nas telas de configurações.
-• ⚡ Correções de bugs e otimizações de desempenho.
+• 📱 Widget da tela inicial: Cartão de dica para fixar o prático widget do Balance.
+• 🔒 Biometria inteligente: Período de tolerância de 30s evita bloqueios frequentes ao alternar apps.
+• 📏 Entrada de altura: Suporte aprimorado para vírgulas e pontos no onboarding com validação suave.
+• ⚡ Melhorias gerais de estabilidade e desempenho.
 </pt-BR>
 <ja-JP>
-• 🔒 セキュリティ：ハードウェアKeystore/Keychainによるデータベース暗号化キーの保護。
-• 🏗️ アーキテクチャと安定性：BMI計算ロジックの統一および初期設定フローの最適化。
-• 🛡️ 信頼性：構造化されたエラーレポートと診断機能の強化。
-• 🌐 多言語対応：設定画面の翻訳改善およびUI調整。
-• ⚡ パフォーマンスの最適化および軽微な不具合の修正。
+• 📱 ホーム画面ウィジェット：便利なBalanceウィジェットを配置するためのヒントカードを追加。
+• 🔒 生体認証の改善：アプリ切り替え時の再認証を抑える30秒の猶予期間を導入。
+• 📏 身長入力の安定性：初期設定でのカンマ・ピリオド入力の対応とバリデーションを改善。
+• ⚡ 全般的な安定性の向上とパフォーマンスの最適化。
 </ja-JP>
 <ko-KR>
-• 🔒 보안: 하드웨어 Keystore/Keychain에 안전하게 보관되는 데이터베이스 암호화 키.
-• 🏗️ 아키텍처 및 안정성: 일관된 BMI 계산 서비스 제공 및 온보딩 설정 플로우 최적화.
-• 🛡️ 안정성 향상: 구조화된 오류 보고 및 진단 기능 강화.
-• 🌐 다국어 지원: 설정 화면의 번역 보완 및 인터페이스 개선.
-• ⚡ 성능 최적화 및 기타 버그 수정.
+• 📱 홈 화면 위젯 안내: 편리한 Balance 위젯을 추가할 수 있는 추천 카드 추가.
+• 🔒 생체 인증 편의성 개선: 앱 전환 시 반복 인증을 방지하는 30초 유예 시간 적용.
+• 📏 키 입력 지원 개선: 온보딩 과정에서 쉼표(,) 및 마침표(.) 입력 처리 및 유효성 검사 안정화.
+• ⚡ 전반적인 성능 최적화 및 안정성 향상.
 </ko-KR>

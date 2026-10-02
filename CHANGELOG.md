@@ -9,6 +9,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.3.1] — 2026-10-02
+
+### Added
+- **Home Screen Widget Tip:** Added a dismissible recommendation card on the Today screen reminding users on supported devices to pin the quick-access Balance widget.
+
+### Fixed
+- **Biometric Lock Grace Period:** Added a 30-second grace period in `BiometricLockObserver` preventing disruptive re-authentication prompts during brief app switcher transitions or incoming system notifications.
+- **Onboarding Height Input Stability:** Sanitized decimal separators across locales (`.` and `,`) and ensured inline range errors only surface upon form submission rather than during typing.
+
+---
+
 ## [1.3.0] — 2026-09-30
 
 ### Added

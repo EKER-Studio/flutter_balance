@@ -1,0 +1,4 @@
+• 📱 Widget da tela inicial: Cartão de dica para fixar o prático widget do Balance.
+• 🔒 Biometria inteligente: Período de tolerância de 30s evita bloqueios frequentes ao alternar apps.
+• 📏 Entrada de altura: Suporte aprimorado para vírgulas e pontos no onboarding com validação suave.
+• ⚡ Melhorias gerais de estabilidade e desempenho.

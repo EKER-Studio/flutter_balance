@@ -1,0 +1,4 @@
+• 📱 Wskazówka o widżecie: Karta polecająca dodanie szybkiego widżetu Balance na ekran główny.
+• 🔒 Płynna biometria: 30-sekundowy okres karencji zapobiega powtórnym pytaniom o odcisk palca przy szybkim przełączaniu apek.
+• 📏 Wprowadzanie wzrostu: Lepsza obsługa przecinków i kropek w onboarding oraz łagodniejsza walidacja.
+• ⚡ Ogólne poprawki stabilności i optymalizacje wydajności.

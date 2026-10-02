@@ -1,0 +1,4 @@
+• 📱 Startschermwidget: Handige tipkaart om de snelle Balance-widget op je startscherm te plaatsen.
+• 🔒 Vloeiende biometrie: 30 seconden bedenktijd voorkomt herhaald ontgrendelen bij kort wisselen van app.
+• 📏 Lengte-invoer: Verbeterde invoer van komma's en punten tijdens de onboarding.
+• ⚡ Algemene prestatieverbeteringen en stabiliteitsupdates.

@@ -1,0 +1,4 @@
+• 📱 Widget de pantalla de inicio: Tarjeta de recomendación para anclar el widget rápido de Balance.
+• 🔒 Biometría fluida: Margen de 30 segundos que evita bloqueos innecesarios al alternar entre aplicaciones.
+• 📏 Entrada de altura: Soporte mejorado para comas y puntos en el onboarding con validación pulida.
+• ⚡ Mejoras generales de estabilidad y optimización de rendimiento.
