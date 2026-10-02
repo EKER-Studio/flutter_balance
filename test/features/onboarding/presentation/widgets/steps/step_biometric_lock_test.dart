@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
@@ -149,7 +150,26 @@ void main() {
       expect(find.byKey(const Key('biometric_step_switch')), findsOneWidget);
     });
 
-    testWidgets('shows a failure snackbar when authentication is canceled', (
+    testWidgets('shows a failure snackbar on genuine authentication errors', (
+      tester,
+    ) async {
+      platform.authenticateHandler = () async =>
+          throw PlatformException(code: 'LockedOut');
+
+      await tester.pumpWidget(buildSubject(onNext: () {}));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.byKey(const Key('biometric_step_switch')));
+      await tester.pumpAndSettle();
+
+      expect(
+        find.text('Biometric authentication failed or was canceled.'),
+        findsOneWidget,
+      );
+      expect(settingsBloc.state.isBiometricLockEnabled, isFalse);
+    });
+
+    testWidgets('stays silent when authentication is canceled by the user', (
       tester,
     ) async {
       platform.authenticateHandler = () async => false;
@@ -162,7 +182,7 @@ void main() {
 
       expect(
         find.text('Biometric authentication failed or was canceled.'),
-        findsOneWidget,
+        findsNothing,
       );
       expect(settingsBloc.state.isBiometricLockEnabled, isFalse);
     });

@@ -126,6 +126,7 @@ void main() {
         isAppLocked: () => false,
         localizedReason: () => 'Authenticate to access Balance',
         verifyDatabaseIntegrity: () async => (reopened: false),
+        gracePeriod: Duration.zero,
       );
 
       observer.didChangeAppLifecycleState(AppLifecycleState.paused);
@@ -145,6 +146,7 @@ void main() {
         isAppLocked: () => false,
         localizedReason: () => 'Authenticate to access Balance',
         verifyDatabaseIntegrity: () async => (reopened: false),
+        gracePeriod: Duration.zero,
       );
 
       observer.didChangeAppLifecycleState(AppLifecycleState.hidden);
@@ -171,6 +173,7 @@ void main() {
           isAppLocked: () => false,
           localizedReason: () => 'Authenticate to access Balance',
           verifyDatabaseIntegrity: () async => (reopened: false),
+          gracePeriod: Duration.zero,
         );
 
         final authFuture = BiometricService.instance.authenticate(
@@ -201,6 +204,7 @@ void main() {
         isAppLocked: () => false,
         localizedReason: () => 'Authenticate to access Balance',
         verifyDatabaseIntegrity: () async => (reopened: false),
+        gracePeriod: Duration.zero,
       );
 
       await BiometricService.instance.authenticate(localizedReason: 'unlock');
@@ -221,6 +225,7 @@ void main() {
         isAppLocked: () => true,
         localizedReason: () => 'Authenticate to access Balance',
         verifyDatabaseIntegrity: () async => (reopened: false),
+        gracePeriod: Duration.zero,
       );
 
       observer.didChangeAppLifecycleState(AppLifecycleState.paused);
@@ -265,6 +270,64 @@ void main() {
       observer.didChangeAppLifecycleState(AppLifecycleState.paused);
 
       expect(locked, isFalse);
+    });
+
+    test('resuming within grace period does not lock the app', () {
+      var locked = false;
+      var currentTime = DateTime(2026, 10, 1, 12, 0, 0);
+      BiometricService.resetForTesting();
+
+      final observer = BiometricLockObserver(
+        isBiometricLockEnabled: () => true,
+        onLockStateChanged: (isLocked) {
+          locked = isLocked;
+        },
+        isAppLocked: () => false,
+        localizedReason: () => 'Authenticate to access Balance',
+        verifyDatabaseIntegrity: () async => (reopened: false),
+        gracePeriod: const Duration(seconds: 30),
+        clock: () => currentTime,
+      );
+
+      // App is paused / inactive (e.g. notification shade or app switcher)
+      observer.didChangeAppLifecycleState(AppLifecycleState.inactive);
+      expect(locked, isFalse);
+
+      // Return 10 seconds later (< 30s grace period)
+      currentTime = currentTime.add(const Duration(seconds: 10));
+      observer.didChangeAppLifecycleState(AppLifecycleState.resumed);
+
+      expect(locked, isFalse);
+      observer.dispose();
+    });
+
+    test('resuming after grace period locks the app', () {
+      var locked = false;
+      var currentTime = DateTime(2026, 10, 1, 12, 0, 0);
+      BiometricService.resetForTesting();
+
+      final observer = BiometricLockObserver(
+        isBiometricLockEnabled: () => true,
+        onLockStateChanged: (isLocked) {
+          locked = isLocked;
+        },
+        isAppLocked: () => false,
+        localizedReason: () => 'Authenticate to access Balance',
+        verifyDatabaseIntegrity: () async => (reopened: false),
+        gracePeriod: const Duration(seconds: 30),
+        clock: () => currentTime,
+      );
+
+      // App is backgrounded
+      observer.didChangeAppLifecycleState(AppLifecycleState.paused);
+      expect(locked, isFalse);
+
+      // Return 35 seconds later (>= 30s grace period)
+      currentTime = currentTime.add(const Duration(seconds: 35));
+      observer.didChangeAppLifecycleState(AppLifecycleState.resumed);
+
+      expect(locked, isTrue);
+      observer.dispose();
     });
 
     test('dispose cancels the lock-enabled stream subscription', () async {

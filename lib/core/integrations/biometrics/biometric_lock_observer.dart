@@ -15,6 +15,9 @@ import 'package:balance/core/integrations/biometrics/biometric_service.dart';
 /// streams — and the shield then runs the biometric authentication flow to
 /// unlock the app.
 class BiometricLockObserver with WidgetsBindingObserver {
+  /// Default grace period (30 seconds) before requiring biometric re-authentication.
+  static const Duration defaultGracePeriod = Duration(seconds: 30);
+
   final bool Function() isBiometricLockEnabled;
 
   final bool Function()? isAppLocked;
@@ -32,8 +35,16 @@ class BiometricLockObserver with WidgetsBindingObserver {
 
   final Future<({bool reopened})> Function() verifyDatabaseIntegrity;
 
+  /// Duration the app may remain in the background before re-locking.
+  final Duration gracePeriod;
+
+  /// Clock function used to measure elapsed background time.
+  final DateTime Function() clock;
+
   bool _isLockEnabled = false;
   bool _disposed = false;
+  DateTime? _pausedAt;
+  Timer? _graceTimer;
   StreamSubscription<bool>? _subscription;
 
   /// [localizedReason] is resolved lazily at authentication time so it always
@@ -46,7 +57,9 @@ class BiometricLockObserver with WidgetsBindingObserver {
     this.lockEnabledStream,
     this.onDatabaseReopened,
     required this.verifyDatabaseIntegrity,
-  }) {
+    this.gracePeriod = defaultGracePeriod,
+    DateTime Function()? clock,
+  }) : clock = clock ?? DateTime.now {
     _isLockEnabled = isBiometricLockEnabled();
     WidgetsBinding.instance.addObserver(this);
     _subscription = lockEnabledStream?.listen((enabled) {
@@ -59,9 +72,46 @@ class BiometricLockObserver with WidgetsBindingObserver {
     if (_disposed) return;
     if (state == AppLifecycleState.resumed) {
       _verifyDatabaseIntegrity();
+      _handleResumed();
     } else if (state == AppLifecycleState.paused ||
         state == AppLifecycleState.hidden ||
         state == AppLifecycleState.inactive) {
+      _handleBackgrounded();
+    }
+  }
+
+  void _handleBackgrounded() {
+    if (!_isLockEnabled) return;
+
+    if (BiometricService.instance.isAuthenticating) return;
+    if (BiometricService.instance.wasAuthenticatingRecently) return;
+    if (isAppLocked?.call() == true) return;
+
+    if (gracePeriod == Duration.zero) {
+      _checkBiometricLock();
+      return;
+    }
+
+    _pausedAt ??= clock();
+    _graceTimer?.cancel();
+    _graceTimer = Timer(gracePeriod, () {
+      if (!_disposed && _pausedAt != null) {
+        _checkBiometricLock();
+      }
+    });
+  }
+
+  void _handleResumed() {
+    _graceTimer?.cancel();
+    _graceTimer = null;
+    if (!_isLockEnabled) return;
+    final pausedAt = _pausedAt;
+    _pausedAt = null;
+    if (pausedAt == null) return;
+    if (isAppLocked?.call() == true) return;
+
+    final elapsed = clock().difference(pausedAt);
+    if (elapsed >= gracePeriod) {
       _checkBiometricLock();
     }
   }
@@ -104,6 +154,9 @@ class BiometricLockObserver with WidgetsBindingObserver {
   void dispose() {
     if (_disposed) return;
     _disposed = true;
+    _graceTimer?.cancel();
+    _graceTimer = null;
+    _pausedAt = null;
     _subscription?.cancel();
     _subscription = null;
     WidgetsBinding.instance.removeObserver(this);

@@ -243,7 +243,33 @@ void main() {
       expect(bloc.state.isLocked, true);
     });
 
-    testWidgets('failed authentication shows a retry snackbar', (tester) async {
+    testWidgets('genuine failure shows a retry snackbar and stays locked', (
+      tester,
+    ) async {
+      setupMockChannel(
+        canCheckBiometrics: true,
+        isDeviceSupported: true,
+        authenticateResult: false,
+        errorCode: 'LockedOut',
+      );
+
+      await tester.pumpWidget(buildTestWidget());
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.byType(FilledButton));
+      await tester.pumpAndSettle();
+
+      expect(
+        find.text('Biometric authentication failed or was canceled.'),
+        findsOneWidget,
+      );
+      expect(bloc.state.isLocked, true);
+      expect(find.byType(AlertDialog), findsNothing);
+    });
+
+    testWidgets('canceled authentication stays locked without an error', (
+      tester,
+    ) async {
       setupMockChannel(
         canCheckBiometrics: true,
         isDeviceSupported: true,
@@ -258,8 +284,9 @@ void main() {
 
       expect(
         find.text('Biometric authentication failed or was canceled.'),
-        findsOneWidget,
+        findsNothing,
       );
+      expect(find.byType(AlertDialog), findsNothing);
       expect(bloc.state.isLocked, true);
     });
   });

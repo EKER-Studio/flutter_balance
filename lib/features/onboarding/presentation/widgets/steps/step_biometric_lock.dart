@@ -78,6 +78,9 @@ class _StepBiometricLockState extends State<StepBiometricLock> {
       if (success) {
         AppAnalytics.logOnboardingBiometricsToggled(true);
         bloc.add(const UpdateBiometricLock(true));
+      } else if (result == BiometricAuthResult.canceled) {
+        // The user dismissed the prompt: leave the switch off silently
+        // instead of reporting a failure.
       } else {
         if (context.mounted) {
           AppSnackBar.show(

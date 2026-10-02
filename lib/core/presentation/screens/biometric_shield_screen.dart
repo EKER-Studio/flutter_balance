@@ -20,7 +20,8 @@ import 'package:balance/features/settings/presentation/bloc/app_settings_state.d
 /// `BiometricLockObserver` lifecycle observer when the app is backgrounded.
 /// On mount it kicks off the biometric authentication flow right after the
 /// first frame. A successful authentication clears the lock state and removes
-/// the shield; retryable failures keep it mounted and surface a snack bar,
+/// the shield; user-dismissed prompts stay locked silently, retryable
+/// failures keep it mounted and surface a snack bar,
 /// while terminal failures (no enrolled credentials, unsupported device,
 /// permanent lockout, or missing passcode) offer a lock-recovery dialog that
 /// lets the user disable the biometric lock entirely.
@@ -66,6 +67,13 @@ class _BiometricShieldScreenState extends State<BiometricShieldScreen> {
       if (result == BiometricAuthResult.success) {
         AppAnalytics.logBiometricShieldUnlockSuccess();
         bloc.add(const SetLocked(false));
+      } else if (result == BiometricAuthResult.canceled) {
+        // The user dismissed the prompt (or the OS canceled it, e.g. on
+        // backgrounding): not an authentication failure, so stay locked
+        // silently without failure telemetry or an error message.
+        if (!bloc.state.isLocked) {
+          bloc.add(const SetLocked(true));
+        }
       } else if (BiometricService.isTerminalFailure(result) ||
           result == BiometricAuthResult.notAvailable) {
         AppAnalytics.logBiometricShieldUnlockFailed(result.name);

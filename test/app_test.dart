@@ -346,6 +346,7 @@ void main() {
       expect(find.byType(BiometricShieldScreen), findsNothing);
 
       tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.hidden);
+      await tester.pump(const Duration(seconds: 30));
       await tester.pumpAndSettle();
       expect(settingsBloc.state.isLocked, isTrue);
     });
