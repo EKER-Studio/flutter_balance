@@ -344,6 +344,54 @@ class IsarWeightRepository implements WeightRepository {
     }
   }
 
+  /// Fetches stored weight records whose measurement timestamp falls within the given range.
+  ///
+  /// [start] is the inclusive lower bound of the query window.
+  /// [end] is the inclusive upper bound of the query window.
+  @override
+  Future<List<WeightEntry>> getEntriesBetween(
+    DateTime start,
+    DateTime end,
+  ) async {
+    try {
+      final key = await _getOrLoadKey(isWrite: false);
+      final models = await liveIsar.weightEntryModels
+          .where()
+          .dateTimeBetween(start, end)
+          .sortByDateTimeDesc()
+          .findAll();
+      if (models.isEmpty) return [];
+      final payloads = models
+          .map((m) => (m.id, m.dateTime, m.encryptedWeight, m.encryptedNote))
+          .toList();
+      return await compute(_decryptPayloads, (payloads, key));
+    } on WeightRepositoryException {
+      rethrow;
+    } on IsarError catch (e) {
+      if (kDebugMode) {
+        debugPrint(
+          '[IsarWeightRepository] getEntriesBetween IsarError: ${e.runtimeType}',
+        );
+      }
+      throw WeightRepositoryException(
+        type: WeightErrorType.readFailed,
+        message: 'Database read failure: ${e.message}',
+        sourceError: e,
+      );
+    } catch (e) {
+      if (kDebugMode) {
+        debugPrint(
+          '[IsarWeightRepository] getEntriesBetween unexpected error: ${e.runtimeType}',
+        );
+      }
+      throw WeightRepositoryException(
+        type: WeightErrorType.readFailed,
+        message: 'Unexpected query failure: ${e.runtimeType}',
+        sourceError: e,
+      );
+    }
+  }
+
   /// Encrypts and persists [entry] within a single Isar write transaction.
   ///
   /// Assigns an auto-increment [WeightEntry.id] when it is unset.

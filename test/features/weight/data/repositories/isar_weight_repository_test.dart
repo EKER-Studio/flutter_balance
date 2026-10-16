@@ -334,6 +334,41 @@ void main() {
         expect(entries[2].dateTime, DateTime(2025, 1, 1));
       },
     );
+
+    test(
+      'getEntriesBetween returns only entries within the requested window sorted descending',
+      () async {
+        await repository.addEntry(
+          WeightEntry(weightKg: 70.0, dateTime: DateTime(2025, 1, 1)),
+        );
+        await repository.addEntry(
+          WeightEntry(weightKg: 71.0, dateTime: DateTime(2025, 1, 5)),
+        );
+        await repository.addEntry(
+          WeightEntry(weightKg: 72.0, dateTime: DateTime(2025, 1, 10)),
+        );
+        await repository.addEntry(
+          WeightEntry(weightKg: 73.0, dateTime: DateTime(2025, 1, 15)),
+        );
+
+        final entries = await repository.getEntriesBetween(
+          DateTime(2025, 1, 4),
+          DateTime(2025, 1, 11),
+        );
+
+        expect(entries.length, 2);
+        expect(entries[0].weightKg, 72.0);
+        expect(entries[0].dateTime, DateTime(2025, 1, 10));
+        expect(entries[1].weightKg, 71.0);
+        expect(entries[1].dateTime, DateTime(2025, 1, 5));
+
+        final emptyRange = await repository.getEntriesBetween(
+          DateTime(2025, 2, 1),
+          DateTime(2025, 2, 28),
+        );
+        expect(emptyRange, isEmpty);
+      },
+    );
   });
 
   group('IsarWeightRepository Stream Resilience', () {

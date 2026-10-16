@@ -23,6 +23,12 @@ abstract class WeightRepository {
   /// when local storage is unreadable.
   Future<List<WeightEntry>> getAllEntries();
 
+  /// Fetches stored weight records whose measurement timestamp falls within the given range.
+  ///
+  /// [start] is the inclusive lower bound of the query window.
+  /// [end] is the inclusive upper bound of the query window.
+  Future<List<WeightEntry>> getEntriesBetween(DateTime start, DateTime end);
+
   /// Persists a new or updated [entry] into the storage system.
   ///
   /// An unset id is assigned by the store. Throws a `WeightRepositoryException`

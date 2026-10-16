@@ -36,6 +36,9 @@ class HealthSyncCoordinator {
     required this.repository,
   });
 
+  /// The lookback window when synchronizing without a previous sync timestamp (2 years).
+  static const Duration defaultInitialLookback = Duration(days: 730);
+
   /// Synchronizes entries between the local database and platform health service.
   ///
   /// Scoped to [startDate] or [lastSyncTime] minus a 1-day overlap window to
@@ -51,7 +54,7 @@ class HealthSyncCoordinator {
       final start =
           startDate ??
           (lastSyncTime?.subtract(const Duration(days: 1)) ??
-              now.subtract(const Duration(days: 30)));
+              now.subtract(defaultInitialLookback));
 
       final remoteEntries = await healthService.fetchWeightHistory(
         start: start,
@@ -62,9 +65,7 @@ class HealthSyncCoordinator {
         await repository.syncRemoteEntries(remoteEntries);
       }
 
-      final localEntries = (await repository.getAllEntries())
-          .where((e) => e.dateTime.isAfter(start) && e.dateTime.isBefore(end))
-          .toList();
+      final localEntries = await repository.getEntriesBetween(start, end);
 
       final missingRemoteEntries = localEntries.where((local) {
         final lUtc = local.dateTime.toUtc();

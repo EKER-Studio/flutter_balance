@@ -48,7 +48,7 @@ void main() {
           () => mockRepository.syncRemoteEntries([remoteEntry]),
         ).thenAnswer((_) async => 1);
         when(
-          () => mockRepository.getAllEntries(),
+          () => mockRepository.getEntriesBetween(any(), any()),
         ).thenAnswer((_) async => [remoteEntry]);
 
         final result = await coordinator.sync();
@@ -74,7 +74,7 @@ void main() {
         ),
       ).thenAnswer((_) async => []);
       when(
-        () => mockRepository.getAllEntries(),
+        () => mockRepository.getEntriesBetween(any(), any()),
       ).thenAnswer((_) async => [localOnlyEntry]);
       when(
         () => mockHealthService.writeWeight(
@@ -91,6 +91,46 @@ void main() {
       expect(result!.remoteCount, 0);
       expect(result.pushedLocalCount, 1);
     });
+
+    test(
+      'uses 2-year lookback when lastSyncTime and startDate are null',
+      () async {
+        DateTime? capturedStart;
+        when(
+          () => mockHealthService.fetchWeightHistory(
+            start: any(named: 'start'),
+            end: any(named: 'end'),
+          ),
+        ).thenAnswer((invocation) async {
+          capturedStart = invocation.namedArguments[#start] as DateTime;
+          return [];
+        });
+        when(
+          () => mockRepository.getEntriesBetween(any(), any()),
+        ).thenAnswer((_) async => []);
+
+        final before = DateTime.now();
+        await coordinator.sync();
+        final after = DateTime.now();
+
+        expect(capturedStart, isNotNull);
+        final expectedMinStart = before.subtract(
+          HealthSyncCoordinator.defaultInitialLookback,
+        );
+        final expectedMaxStart = after.subtract(
+          HealthSyncCoordinator.defaultInitialLookback,
+        );
+        expect(
+          capturedStart!.isAfter(
+                expectedMinStart.subtract(const Duration(seconds: 1)),
+              ) &&
+              capturedStart!.isBefore(
+                expectedMaxStart.add(const Duration(seconds: 1)),
+              ),
+          isTrue,
+        );
+      },
+    );
 
     test('returns null when healthService throws during sync', () async {
       when(

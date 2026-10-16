@@ -25,6 +25,14 @@ class FakeWeightRepository implements WeightRepository {
   Future<List<WeightEntry>> getAllEntries() async => entries;
 
   @override
+  Future<List<WeightEntry>> getEntriesBetween(
+    DateTime start,
+    DateTime end,
+  ) async => entries
+      .where((e) => !e.dateTime.isBefore(start) && !e.dateTime.isAfter(end))
+      .toList();
+
+  @override
   Future<void> addEntry(WeightEntry entry) async {}
 
   @override

@@ -550,10 +550,11 @@ void main() {
     blocTest<WeightBloc, WeightState>(
       'correctly sorts aggregated daily entries chronologically across single and double digit days',
       build: () {
+        final futureYear = DateTime.now().year + 1;
         final entries = [
-          WeightEntry(id: 1, weightKg: 70.0, dateTime: DateTime(2026, 10, 10)),
-          WeightEntry(id: 2, weightKg: 71.0, dateTime: DateTime(2026, 10, 2)),
-          WeightEntry(id: 3, weightKg: 72.0, dateTime: DateTime(2026, 9, 30)),
+          WeightEntry(id: 1, weightKg: 70.0, dateTime: DateTime(futureYear, 10, 10)),
+          WeightEntry(id: 2, weightKg: 71.0, dateTime: DateTime(futureYear, 10, 2)),
+          WeightEntry(id: 3, weightKg: 72.0, dateTime: DateTime(futureYear, 9, 30)),
         ];
         when(
           () => repository.watchAllEntries(),
@@ -1137,6 +1138,15 @@ void main() {
               ),
             ],
           );
+          when(() => repository.getEntriesBetween(any(), any())).thenAnswer(
+            (_) async => [
+              WeightEntry(
+                id: 1,
+                weightKg: 74,
+                dateTime: DateTime(2026, 2, 1, 8),
+              ),
+            ],
+          );
           when(
             () => healthService.fetchWeightHistory(
               start: any(named: 'start'),
@@ -1193,6 +1203,29 @@ void main() {
                 dateTime: DateTime(2025, 10, 1, 8),
               ),
             ],
+          );
+          when(() => repository.getEntriesBetween(any(), any())).thenAnswer(
+            (invocation) async {
+              final start = invocation.positionalArguments[0] as DateTime;
+              final end = invocation.positionalArguments[1] as DateTime;
+              final all = [
+                WeightEntry(
+                  id: 1,
+                  weightKg: 74,
+                  dateTime: DateTime(2026, 2, 3, 8),
+                ),
+                WeightEntry(
+                  id: 2,
+                  weightKg: 71,
+                  dateTime: DateTime(2025, 10, 1, 8),
+                ),
+              ];
+              return all
+                  .where(
+                    (e) => !e.dateTime.isBefore(start) && !e.dateTime.isAfter(end),
+                  )
+                  .toList();
+            },
           );
           when(
             () => healthService.fetchWeightHistory(
@@ -1277,13 +1310,16 @@ void main() {
       );
 
       blocTest<WeightBloc, WeightState>(
-        'SyncHealthEntries uses a 30-day default window when lastHealthSyncTimestamp is null',
+        'SyncHealthEntries uses a 2-year (730-day) default window when lastHealthSyncTimestamp is null',
         build: () {
           when(
             () => healthService.fetchWeightHistory(
               start: any(named: 'start'),
               end: any(named: 'end'),
             ),
+          ).thenAnswer((_) async => const []);
+          when(
+            () => repository.getEntriesBetween(any(), any()),
           ).thenAnswer((_) async => const []);
           return WeightBloc(
             repository: repository,
@@ -1305,7 +1341,7 @@ void main() {
                   as DateTime;
 
           final diff = DateTime.now().difference(captured).inDays;
-          expect(diff, closeTo(30, 1));
+          expect(diff, closeTo(730, 1));
         },
       );
 
