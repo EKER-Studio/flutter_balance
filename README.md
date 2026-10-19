@@ -274,8 +274,10 @@ As part of our commitment to building in public and advancing agentic software e
 .agents/
 ├── agents/                     # Specialized runtime personas & system prompts
 │   ├── architect.md            # Orchestrator: task decomposition, intent routing & subagent management
-│   ├── coder.md                # Implementer: scoped Clean Architecture & BLoC development
-│   └── tester.md               # Validator: Mandatory Verification Pipeline execution
+│   ├── data-engineer.md        # Domain & Data: Isar persistence, AES encryption, sync coordinators & pure Dart
+│   ├── ui-engineer.md          # Presentation: Flutter widgets, BLoC reactivity, design tokens & accessibility
+│   ├── tester.md               # Quality: Mandatory Verification Pipeline execution & test generation
+│   └── devops.md               # DevOps & Automation: Git hooks, formatting enforcement & CI/CD workflows
 └── skills/                     # Auto-discovered executable runbooks (Antigravity & modern LLM harnesses)
     ├── bloc-audit/             # 12-dimension technical and architecture audit (Isar + BLoC)
     ├── unit-test-audit/        # Layer-by-layer test coverage auditor (Domain → Data → Presentation)
@@ -300,7 +302,8 @@ Simply instruct the AI agent in natural language inside any agentic workspace (A
 | **Full Architecture Audit** | *"Architekt, sprawdź architekturę BLoC"* or *"@architect run architecture audit"* | `@architect` partitions work across 3 subagents (Domain/Data, Presentation/BLoC, Infra/Security) and aggregates into a final Dashboard. |
 | **Unit Test Coverage Audit** | *"Sprawdź stan testów jednostkowych"* or *"audit unit test coverage"* | Runs `unit-test-audit` sequentially: Domain → Data → Presentation. |
 | **Localization Verification** | *"Sprawdź brakujące klucze tłumaczeń"* or *"audit i18n strings"* | Runs `i18n-audit` chunk-by-chunk on ARB files and UI strings. |
-| **Feature Development** | *"@architect add export to PDF feature"* | `@architect` creates technical specification ➡️ delegates to `@coder` ➡️ delegates to `@tester` ➡️ atomic commit. |
+| **Feature Development** | *"@architect add export to PDF feature"* | `@architect` decomposes specification ➡️ delegates logic to `@data-engineer` ➡️ delegates UI to `@ui-engineer` ➡️ validates via `@tester` ➡️ atomic commit. |
+| **DevOps & Formatting** | *"@devops enforce formatting guardrails"* | Configures Git hooks via `scripts/install_git_hooks.sh` to prevent unformatted code from being committed. |
 
 ## Branches
 
