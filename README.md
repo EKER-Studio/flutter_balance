@@ -266,18 +266,41 @@ ID,Date,Weight (kg),Note
 
 ## AI-Native Engineering & Multi-Agent Architecture (#built_in_public)
 
-As part of our commitment to building in public and advancing agentic workflows, this repository features a modular multi-agent system and executable skills in the [`.agents/`](.agents/) directory:
+As part of our commitment to building in public and advancing agentic software engineering, this repository has transitioned from monolithic, copy-pasted prompts to a modular **Multi-Agent System** and executable **Skills** located in [`.agents/`](.agents/).
 
-### Personas (`.agents/agents/`)
-- **[Architect (`architect.md`)](.agents/agents/architect.md)**: Main orchestrator that decomposes tasks, manages workflows, and coordinates sub-agents.
-- **[Coder (`coder.md`)](.agents/agents/coder.md)**: Implementation specialist adhering strictly to Clean Architecture, BLoC, and project boundary constraints.
-- **[Tester (`tester.md`)](.agents/agents/tester.md)**: Validation specialist responsible for running the mandatory verification pipeline and reporting status.
+### System Architecture
 
-### Specialized Skills (`.agents/skills/`)
-- **[BLoC Architecture Audit (`bloc-audit`)](.agents/skills/bloc-audit/SKILL.md)**: Exhaustive 12-dimension technical and architectural audit tailored for Flutter + BLoC + Isar.
-- **[Unit Test Auditor (`unit-test-audit`)](.agents/skills/unit-test-audit/SKILL.md)**: Iterative, bounded-context audit and test generation framework covering Domain → Data → Presentation.
-- **[i18n / L10n Localization Audit (`i18n-audit`)](.agents/skills/i18n-audit/SKILL.md)**: Chunked, stateful localization auditor for `.arb` + `flutter gen-l10n` toolchains.
-- **[Comments & DartDoc Cleanup (`dartdoc-cleanup`)](.agents/skills/dartdoc-cleanup/SKILL.md)**: Memory-safe, file-by-file comment translation and documentation refactoring skill.
+```text
+.agents/
+├── agents/                     # Specialized runtime personas & system prompts
+│   ├── architect.md            # Orchestrator: task decomposition, intent routing & subagent management
+│   ├── coder.md                # Implementer: scoped Clean Architecture & BLoC development
+│   └── tester.md               # Validator: Mandatory Verification Pipeline execution
+└── skills/                     # Auto-discovered executable runbooks (Antigravity & modern LLM harnesses)
+    ├── bloc-audit/             # 12-dimension technical and architecture audit (Isar + BLoC)
+    ├── unit-test-audit/        # Layer-by-layer test coverage auditor (Domain → Data → Presentation)
+    ├── i18n-audit/             # Chunked localization auditor (hardcoded strings, ARB consistency)
+    └── dartdoc-cleanup/        # Memory-safe, file-by-file comment translation & cleanup
+```
+
+### Key Principles
+
+1. **Separation of Concerns (Personas vs. Skills):** Personas define *who* executes and delegates work; Skills define *how* procedures are executed as reusable, objective runbooks.
+2. **Single Source of Truth (SSOT):** Subagents never maintain duplicate copies of build commands or architectural rules; they bind strictly to [`AGENTS.md`](AGENTS.md) and [`agents_project.md`](agents_project.md).
+3. **Multi-Subagent Decomposition:** Massive tasks (such as a 12-dimension code audit) are never forced into a single context window. The `@architect` partitions workloads across isolated subagents running in parallel or bounded sequential passes.
+4. **State Persistence & Resumability:** Audits persist incremental findings to disk (`.audit-*/findings.md`), enabling clean recovery from timeouts and zero token waste.
+5. **Natural Language Triggers:** Developers interact in natural language (English or Polish) without needing to memorize technical skill identifiers.
+
+### How to Run
+
+Simply instruct the AI agent in natural language inside any agentic workspace (Antigravity, Claude Code, Cursor, OpenCode):
+
+| Intent | Example Prompt | Execution Flow |
+| :--- | :--- | :--- |
+| **Full Architecture Audit** | *"Architekt, sprawdź architekturę BLoC"* or *"@architect run architecture audit"* | `@architect` partitions work across 3 subagents (Domain/Data, Presentation/BLoC, Infra/Security) and aggregates into a final Dashboard. |
+| **Unit Test Coverage Audit** | *"Sprawdź stan testów jednostkowych"* or *"audit unit test coverage"* | Runs `unit-test-audit` sequentially: Domain → Data → Presentation. |
+| **Localization Verification** | *"Sprawdź brakujące klucze tłumaczeń"* or *"audit i18n strings"* | Runs `i18n-audit` chunk-by-chunk on ARB files and UI strings. |
+| **Feature Development** | *"@architect add export to PDF feature"* | `@architect` creates technical specification ➡️ delegates to `@coder` ➡️ delegates to `@tester` ➡️ atomic commit. |
 
 ## Branches
 
