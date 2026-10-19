@@ -93,8 +93,9 @@ android/key.properties
 android/app/release.keystore
 crash_log.txt
 
-# Agent artifacts
-.ai*
+# Agent artifacts – ignore tool-specific dot-files but track the project's own .ai/ directory
+.aider*
+.aiexclude
 LOG_*.md
 .audit-*/
 
