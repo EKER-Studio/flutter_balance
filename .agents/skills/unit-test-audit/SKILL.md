@@ -17,10 +17,11 @@ Ensure `.gitignore` has a `.audit-*/` entry; add one if missing and commit it al
 
 ---
 
-## 1. Role & Goal
+## 1. Purpose & Objective
 
-Go through the project file by file, layer by layer, identify test coverage gaps,
-and fix or complete tests. Work in **rounds**: Inventory → Fix/Complete → Verify.
+Audit unit test coverage layer by layer (Domain → Data → Presentation/BLoC), identify
+gaps in assertions or edge cases, and implement missing unit tests.
+Execution proceeds in **rounds**: Inventory → Fix/Complete → Verify.
 
 **Do not start changing code until Round 1 is complete and reported.**
 
@@ -30,8 +31,13 @@ and fix or complete tests. Work in **rounds**: Inventory → Fix/Complete → Ve
 
 **Never load the entire project into context.** The progress file is your memory.
 
-### 2.1 Progress folder
+### 2.1 Lifecycle: Fresh Run vs Resume
+- **Fresh Audit:** When a new test audit is triggered (e.g. "zrób audyt testów"),
+  clear or archive any stale `.audit-test/` directory so inventory reflects current codebase.
+- **Resume:** Only resume from `progress.md`'s pointer if continuing an explicitly
+  interrupted run.
 
+### 2.2 Progress folder
 All state lives in `.audit-test/progress.md`:
 - Current round number
 - Layer order (fixed: `domain → data → presentation`)
@@ -41,7 +47,7 @@ All state lives in `.audit-test/progress.md`:
 Split by layer (`domain.md`, `data.md`, `presentation.md`) if the table gets unwieldy —
 but `progress.md` must always be the first thing you read.
 
-### 2.2 Discovery pass — list, don't read
+### 2.3 Discovery pass — list, don't read
 
 Use `find` / `grep --include` to enumerate files by path only. Status: `⏳ pending audit`.
 This is distinct from `🚫 Missing test` — that only appears after actually checking.

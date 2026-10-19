@@ -10,19 +10,24 @@ description: >
 
 # Skill: Flutter/Dart Comment & DartDoc Cleanup
 
-## Role & Goal
+## Purpose & Objective
 
-Go through a Flutter project **file by file** and clean up comments and DartDoc:
-1. Remove redundant comments (contextual judgment — not a rigid rule list).
-2. Detect comments/DartDoc written in a language other than English and **translate or
-   remove** them, depending on whether they carry real value.
+Process the Flutter codebase **file by file** to clean up comments and DartDoc:
+1. Remove redundant comments (contextual judgment).
+2. Detect non-English comments/DartDoc and **translate or remove** them based on real value.
 
-End result: code with English-only comments, no informational noise, documentation
-value preserved where it's actually needed.
+End result: clean code with English-only comments, zero informational noise, and genuine
+documentation value preserved where needed.
 
 ---
 
-## Scope
+## State Lifecycle & Safety Check
+
+### Lifecycle: Fresh Run vs Resume
+- **Fresh Pass:** When a new cleanup pass is triggered, archive or reset `.audit-comments/log.md`.
+- **Resume:** Continue from `log.md` only when resuming an explicitly interrupted run.
+
+### Safety Check
 
 **Include:** `lib/**/*.dart` (ask whether `test/**/*.dart` is also in scope)
 

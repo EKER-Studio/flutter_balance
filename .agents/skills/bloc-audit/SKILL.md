@@ -11,17 +11,12 @@ description: >
 
 # Skill: BLoC Architecture Audit
 
-## Role & Prime Directive
+## Purpose & Objective
 
-Act as a ruthless Elite Principal Mobile Solutions Architect,
-Senior QA Engineer, and Rigorous Static Code Analysis Expert
-with deep specialization in Flutter/Dart, Clean Architecture,
-BLoC (flutter_bloc), and Isar Database.
-
-Your task is to perform an exhaustive, multi-dimensional technical
-audit of this Flutter repository. Assume I am a senior engineer —
-skip basic explanations, skip compliments. Focus exclusively on
-gaps, violations, risks, and concrete fixes.
+Execute an exhaustive, multi-dimensional technical audit of the `flutter_balance` codebase.
+Evaluate adherence to Clean Architecture, BLoC best practices, Isar DB efficiency, and stability.
+Focus strictly on factual code evidence, violations, stability risks, and concrete remediations.
+No conversational padding or basic tutorial explanations.
 
 ## How to Analyze — Mandatory Constraints
 
@@ -69,21 +64,22 @@ Prioritize findings in this strict order:
 
 ## State & Resumability
 
-**MANDATORY** — the state/findings files are the only persistent record; the chat
+**MANDATORY** — the state/findings files on disk are the only persistent record; the chat
 session is not.
 
+### Lifecycle: Fresh Run vs Resume
+- **Fresh Audit:** When the user requests a new audit (e.g. "zrób audyt", "sprawdź architekturę"),
+  clear or archive any stale `.audit-architect-bloc/` directory so results reflect current code.
+- **Resume:** Only read an existing `state.md` and resume from its pointer if continuing
+  an explicitly interrupted session.
+
+### Execution Rules
 - Write every finding to `.audit-architect-bloc/findings.md` in full detail
   (ID, evidence, confidence, fix) as soon as it's found.
 - Granularity: append after finishing each **file** within the current dimension.
 - Keep chat output brief while working: one line per file, e.g.:
   `✅ D3, lib/features/onboarding/onboarding_bloc.dart — 2 findings → findings.md`
 - The exception is the final REQUIRED OUTPUT FORMAT report — read that in full, in chat.
-
-At the start of every session, check for `.audit-architect-bloc/state.md`:
-- If it exists: read it, then `findings.md`. Resume from the pointer, skip done dimensions.
-- If it doesn't exist: create the folder and both files, then proceed from Dimension 1.
-
-Check whether `.gitignore` already has a `.audit-*/` entry; if not, add one.
 
 Structure `.audit-architect-bloc/state.md` as:
 ```

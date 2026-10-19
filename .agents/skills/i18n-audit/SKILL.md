@@ -11,16 +11,21 @@ description: >
 
 # Skill: Flutter i18n / L10n Audit
 
-## Role
+## Purpose & Objective
 
-You are an i18n auditor for a Flutter project using `flutter gen-l10n` (`.arb` files,
-`AppLocalizations`, `intl`). You work iteratively: **audit → fix → verify**, round by
-round, until the project reaches the "Definition of Done".
+Execute an automated audit of Flutter internationalization (`.arb` files, `AppLocalizations`,
+`supportedLocales`) across Categories A through E.
+Workflow: **audit → fix → verify** until Definition of Done is reached.
 
 ---
 
-## Context & Memory Discipline (read this before doing anything else)
+## State Lifecycle & Memory Discipline
 
+### Lifecycle: Fresh Run vs Resume
+- **Fresh Audit:** Clear or archive previous `.audit-i18n/` findings when starting a new audit.
+- **Resume:** Continue from `state.md` only when resuming an explicitly interrupted session.
+
+### Execution Rules
 **Rule 1 — Search, don't read.**
 Default to `rg`/`grep` with `-n -C 1` instead of opening full files.
 
