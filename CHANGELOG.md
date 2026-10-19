@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- **Multi-Agent Architecture (`.agents/agents/`):** Introduced a modular multi-agent system with distinct runtime personas and system prompts:
+  - `@architect` (`architect.md`): Central orchestrator responsible for task decomposition, natural language intent translation (PL/EN), and subagent management without context overloading.
+  - `@coder` (`coder.md`): Scoped implementation agent operating strictly within Clean Architecture and BLoC layer boundaries.
+  - `@tester` (`tester.md`): Verification specialist executing the Mandatory Verification Pipeline with zero-compromise reporting.
+- **Workspace Skills (`.agents/skills/`):** Migrated legacy manual prompts into auto-discovered, executable runbooks compliant with modern agentic environments (Antigravity):
+  - `bloc-audit`: 12-dimension deep technical and architectural audit framework for Flutter + BLoC + Isar.
+  - `unit-test-audit`: Stateful, layer-by-layer test coverage and assertion auditor (Domain → Data → Presentation).
+  - `i18n-audit`: Chunked internationalization auditor covering UI hardcoded strings, ARB completeness, and `supportedLocales` sync.
+  - `dartdoc-cleanup`: Memory-safe, file-by-file comment translation (non-English to English) and documentation cleanup.
+- **State Persistence & Lifecycle Management:** Added clean state lifecycle rules (`.audit-*/`) supporting fresh audit runs alongside resumability across interrupted sessions.
+
+### Removed
+- **Legacy Prompts Suite:** Removed the `prompts/` directory (`flutter_architect_deep_bloc_audit.md`, `flutter_architect_deep_riverpod_audit.md`, `flutter_i18n_l10n_audit_en.md`, `flutter_unit_test_audit_framework_en.md`, `flutter_comments_dartdoc_cleanup_prompt_en.md`) in favor of modular skills.
+
 ---
 
 ## [1.3.1] — 2026-10-02
