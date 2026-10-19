@@ -264,15 +264,20 @@ ID,Date,Weight (kg),Note
 
 **Android**: Declare `<uses-permission android:name="android.permission.USE_BIOMETRIC" />` in `android/app/src/main/AndroidManifest.xml`.
 
-## AI-Native Engineering & Developer Resources (#built_in_public)
+## AI-Native Engineering & Multi-Agent Architecture (#built_in_public)
 
-As part of our commitment to building in public and advancing agentic workflows, this repository includes battle-tested, token-budget-safe audit frameworks and prompts in the [`prompts/`](prompts/) directory:
+As part of our commitment to building in public and advancing agentic workflows, this repository features a modular multi-agent system and executable skills in the [`.agents/`](.agents/) directory:
 
-- **[BLoC Architecture Deep Audit](prompts/flutter_architect_deep_bloc_audit.md)**: Exhaustive 12-dimension technical and architectural audit framework tailored for Flutter + BLoC + Isar apps.
-- **[Riverpod Architecture Deep Audit](prompts/flutter_architect_deep_riverpod_audit.md)**: Exhaustive 12-dimension technical and architectural audit framework tailored for Flutter + Riverpod + Isar apps.
-- **[Unit Test Auditor Framework](prompts/flutter_unit_test_audit_framework_en.md)**: Iterative, bounded-context audit and test generation framework for Flutter unit tests.
-- **[i18n / L10n Localization Audit](prompts/flutter_i18n_l10n_audit_en.md)**: Chunked, stateful localization auditor for `.arb` + `flutter gen-l10n` toolchains.
-- **[Comments & DartDoc Cleanup Prompt](prompts/flutter_comments_dartdoc_cleanup_prompt_en.md)**: Memory-safe, file-by-file comment translation and documentation refactoring prompt.
+### Personas (`.agents/agents/`)
+- **[Architect (`architect.md`)](.agents/agents/architect.md)**: Main orchestrator that decomposes tasks, manages workflows, and coordinates sub-agents.
+- **[Coder (`coder.md`)](.agents/agents/coder.md)**: Implementation specialist adhering strictly to Clean Architecture, BLoC, and project boundary constraints.
+- **[Tester (`tester.md`)](.agents/agents/tester.md)**: Validation specialist responsible for running the mandatory verification pipeline and reporting status.
+
+### Specialized Skills (`.agents/skills/`)
+- **[BLoC Architecture Audit (`bloc-audit`)](.agents/skills/bloc-audit/SKILL.md)**: Exhaustive 12-dimension technical and architectural audit tailored for Flutter + BLoC + Isar.
+- **[Unit Test Auditor (`unit-test-audit`)](.agents/skills/unit-test-audit/SKILL.md)**: Iterative, bounded-context audit and test generation framework covering Domain → Data → Presentation.
+- **[i18n / L10n Localization Audit (`i18n-audit`)](.agents/skills/i18n-audit/SKILL.md)**: Chunked, stateful localization auditor for `.arb` + `flutter gen-l10n` toolchains.
+- **[Comments & DartDoc Cleanup (`dartdoc-cleanup`)](.agents/skills/dartdoc-cleanup/SKILL.md)**: Memory-safe, file-by-file comment translation and documentation refactoring skill.
 
 ## Branches
 
