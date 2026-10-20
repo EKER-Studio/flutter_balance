@@ -17,6 +17,8 @@ subagentów (`invoke_subagent`), aby chronić budżet kontekstu i gwarantować z
 - Standardy kodowania i pracy: `AGENTS.md`
 - Architektura i Mandatory Verification Pipeline: `agents_project.md`
 - Procedury wykonawcze: `.agents/skills/*/SKILL.md`
+  - Skille projektowe: `bloc-audit`, `unit-test-audit`, `i18n-audit`, `dartdoc-cleanup`.
+  - Skille Flutter Team: `.agents/skills/flutter-*/` (vendored z `flutter/agent-plugins`; patrz `.agents/skills/README.md`).
 - Szablony subagentów:
   - `.agents/agents/data-engineer.md` (Domain & Data, Isar, encryption, sync)
   - `.agents/agents/ui-engineer.md` (Presentation, BLoC, widgets, a11y)
@@ -33,8 +35,30 @@ subagentów (`invoke_subagent`), aby chronić budżet kontekstu i gwarantować z
 | *"Sprawdź brakujące klucze tłumaczeń / sprawdź teksty"* | Audyt i18n / L10n | `i18n-audit` | Subagent analityk (Category A-E) + UI Engineer |
 | *"Zrób audyt testów jednostkowych / sprawdź pokrycie"* | Audyt i uzupełnianie testów | `unit-test-audit` | Subagent Tester per warstwa (Domain → Data → Presentation) |
 | *"Uporządkuj komentarze / przetłumacz na angielski"* | Porządkowanie komentarzy | `dartdoc-cleanup` | Subagent czyszczący plik po pliku |
+| *"Napraw overflow / unbounded height / zrób responsywny layout"* | Layout i responsywność | `flutter-fix-layout-issues`, `flutter-build-responsive-layout` | UI Engineer |
+| *"Dodaj test widgetu / test integracyjny / preview komponentu"* | Testy i podgląd UI | `flutter-add-widget-test`, `flutter-add-integration-test`, `flutter-add-widget-preview` | Tester → UI Engineer |
+| *"Dodaj routing / deep link / go_router"* | Nawigacja deklaratywna | `flutter-setup-declarative-routing` | UI Engineer |
+| *"Dodaj model / serializację JSON / klienta HTTP"* | Model, serializacja i sieć | `flutter-implement-json-serialization`, `flutter-use-http-package` | Data Engineer |
+| *"Zaprojektuj / zrefaktoruj architekturę feature'a"* | Granice warstw i struktura | `flutter-apply-architecture-best-practices` (tylko referencja) | Architect → Data/UI Engineer |
+| *"Skonfiguruj / zweryfikuj lokalizację"* | i18n / L10n | `i18n-audit`, `flutter-setup-localization` | Subagent analityk + UI Engineer |
 | *"Formatuj kod / zabezpiecz git / sprawdź CI"* | DevOps & Guardrails | `devops` | Subagent DevOps (Git hooks, formatting checks) |
 | *"Dodaj nową funkcjonalność X"* | Implementacja feature'a | Architektura + Kod | Architect (plan) → Data Engineer → UI Engineer → Tester |
+
+---
+
+## Precedencja Skilli
+
+1. **Nadrzędne są zawsze `AGENTS.md` i `agents_project.md`.** Skill nigdy nie może zmienić
+   obowiązującego stacku ani reguł projektu.
+2. **Skille projektowe > skille vendored.** `bloc-audit`, `unit-test-audit`, `i18n-audit` i
+   `dartdoc-cleanup` mają pierwszeństwo przed ogólnymi skillami Flutter Team.
+3. **BLoC jest obowiązkowy.** `flutter-apply-architecture-best-practices` promuje MVVM i
+   `ChangeNotifier` — używaj go wyłącznie jako referencji do granic warstw, nigdy do zamiany BLoC.
+4. **MCP jest opcjonalny.** Kroki skilli wymagające Dart/Flutter MCP wykonuj tylko, gdy MCP jest
+   skonfigurowany; w przeciwnym razie użyj `flutter` CLI oraz istniejących katalogów `test/` i
+   `integration_test/`.
+5. **Vendored skille są kopiowane bez modyfikacji.** Lokalne odstępstwa zapisuj w promptach
+   subagentów lub w `.agents/skills/README.md`, aby aktualizacje z upstreamu pozostały czyste.
 
 ---
 
