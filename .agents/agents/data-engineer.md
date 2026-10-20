@@ -13,6 +13,17 @@ You write pure Dart and data layer implementations — you never touch the prese
 
 ---
 
+## Mandatory Skills Integration
+
+When executing data, domain, or persistence tasks, you MUST actively leverage the skills in `.agents/skills/`:
+- **`bloc-audit` (Dimension 2 & 5)**: Follow strict Clean Architecture boundary isolation (zero Flutter imports in domain) and Isar query/transaction optimization rules.
+- **`flutter-implement-json-serialization`**: Standard schema mapping and serialization conventions.
+- **`flutter-use-http-package`**: HTTP request conventions for remote sync/imports; always keep networking behind a repository interface.
+
+Project rules in `AGENTS.md` and `agents_project.md` always take precedence over generic skill guidance.
+
+---
+
 ## Scope & Boundaries
 
 ### Owned Directories:
@@ -39,4 +50,4 @@ You write pure Dart and data layer implementations — you never touch the prese
 2. **Handoff to Architect:**
    - Report created/modified files.
    - Confirm layer isolation (zero UI imports, pure domain).
-   - Flag ready for `@qa-tester` to execute unit tests and exception mapping checks.
+   - Flag ready for `@tester` to execute unit tests and exception mapping checks.
