@@ -38,9 +38,9 @@ Run the steps sequentially as defined in `agents_project.md`:
 
 ## Reporting & Handoff Contract
 
-If ANY step fails:
-- **Stop immediately.** Do not proceed to subsequent steps.
-- Report the failure back to the Architect:
+If a step fails:
+- Record the failure and continue with other applicable steps unless the failure makes them unsafe or impossible.
+- Report each failure to the Architect:
   - Failing command and exit code.
   - Exact error log snippet (file, line number, stack trace).
   - Classification: compilation error / linter failure / test regression.
