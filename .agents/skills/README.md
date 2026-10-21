@@ -51,7 +51,8 @@ The following 10 skills are copied **verbatim** from
 
 ```bash
 UPSTREAM=/tmp/flutter-agent-plugins
-git clone --depth 1 https://github.com/flutter/agent-plugins "$UPSTREAM"
+git clone https://github.com/flutter/agent-plugins "$UPSTREAM"
+git -C "$UPSTREAM" checkout --detach 90fa51dc9d1bd6694cee226397e08ec8193e9e69
 for skill in "$UPSTREAM"/skills/flutter-*; do
   name=$(basename "$skill")
   mkdir -p ".agents/skills/$name"
