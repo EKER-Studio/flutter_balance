@@ -22,7 +22,8 @@ Workflow: **audit → fix → verify** until Definition of Done is reached.
 ## State Lifecycle & Memory Discipline
 
 ### Lifecycle: Fresh Run vs Resume
-- **Fresh Audit:** Clear or archive previous `.audit-i18n/` findings when starting a new audit.
+- **Fresh Audit:** Preserve existing `.audit-i18n/` findings. Ask before replacing them, or use a
+  separate run-specific location for a new audit.
 - **Resume:** Continue from `state.md` only when resuming an explicitly interrupted session.
 
 ### Execution Rules
@@ -59,8 +60,8 @@ grows too large. `state.md` must always be the first thing you read.
 
 ## Before You Start — Safety Check
 
-Run `git status`. If tree is not clean, **stop and ask**.
-Ensure `.gitignore` has a `.audit-*/` entry; add one if missing and commit it alone.
+Inspect the worktree before editing so existing changes are preserved. Do not stop solely because
+it is dirty, and do not modify `.gitignore` or commit audit setup files unless the user asks.
 
 ---
 
@@ -132,10 +133,11 @@ Find `MaterialApp`/`MaterialApp.router` and compare:
 **Round 1 — Audit.** Read and report only. Zero code changes. Output: report below.
 
 **Round 2 — Fix.** Apply fixes: externalize strings, fill translations, remove dead keys,
-fix placeholders. One chunk → verify → commit → next chunk.
+fix placeholders. One chunk → verify → next chunk. Do not commit during per-chunk processing;
+follow `AGENTS.md` for the required verification pipeline and commit authorization.
 
-**Round 3 — Verify.** Re-run A, B, C, E heuristics from scratch. Repeat Round 2 for
-any remaining issues.
+**Round 3 — Verify.** Re-run A, B, C, E heuristics from scratch and run the complete
+verification pipeline from `agents_project.md`. Repeat Round 2 for any remaining issues.
 
 ---
 
@@ -175,7 +177,8 @@ Critical: X | High: Y | Medium: Z | Low: W | Fixed: A | Remaining: B
 - Make `.arb` changes symmetrically across all languages in one step.
 - Always add `@key` metadata block when adding a new key.
 - Tag every self-proposed translation `needs-native-review: true`.
-- Commit per chunk: `chore(i18n): externalize strings in lib/features/onboarding`.
+- Do not commit per chunk. Follow `AGENTS.md` after the complete change passes the required
+  verification pipeline.
 
 ---
 
@@ -187,3 +190,4 @@ Critical: X | High: Y | Medium: Z | Low: W | Fixed: A | Remaining: B
 4. `flutter gen-l10n` runs clean.
 5. `.arb` file set matches `supportedLocales` exactly; `AppLocalizations.delegate` is registered.
 6. Every "needs manual review" item explicitly resolved.
+7. The complete verification pipeline from `agents_project.md` passes.
