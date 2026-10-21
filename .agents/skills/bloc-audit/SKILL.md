@@ -20,9 +20,11 @@ No conversational padding or basic tutorial explanations.
 
 ## How to Analyze — Mandatory Constraints
 
-- Analyze ONLY files explicitly provided in this conversation.
-- If a file is referenced but not provided, state:
-  `NOT PROVIDED — cannot verify` instead of assuming contents.
+- Analyze only files within the scope explicitly authorized by the user. When the user requests
+  an audit of this repository, inspect the relevant workspace files; do not require the user to
+  paste files that are already available in the workspace.
+- If a required file is unavailable or outside the authorized scope, state:
+  `NOT AVAILABLE — cannot verify` instead of assuming contents.
 - Do NOT hallucinate file structures, implementations,
   or package behaviors not visible in the provided code.
 - Do NOT suggest replacing the declared tech stack.
@@ -69,7 +71,8 @@ session is not.
 
 ### Lifecycle: Fresh Run vs Resume
 - **Fresh Audit:** When the user requests a new audit (e.g. "zrób audyt", "sprawdź architekturę"),
-  clear or archive any stale `.audit-architect-bloc/` directory so results reflect current code.
+  do not delete, clear, or overwrite existing `.audit-architect-bloc/` data. If prior state exists,
+  preserve it and ask before replacing it or choose a separate run-specific location.
 - **Resume:** Only read an existing `state.md` and resume from its pointer if continuing
   an explicitly interrupted session.
 
@@ -262,9 +265,12 @@ Generate the report in strict Markdown, in this exact order. Build every section
 
 Provide Option A (`.patch` snippet) when the fix is fully derivable from provided files.
 Provide Option B (manual instructions) when a clean patch isn't safe to generate.
-Never fabricate a diff against a file you don't have complete content for.
+Never fabricate a diff against a file you don't have complete content for. Follow `AGENTS.md`
+for scope, preservation of existing user changes, verification, and commit authorization; this
+skill does not authorize destructive cleanup or commits before the required pipeline passes.
 
 ---
 
-**If asked to apply patches:** applying a patch is a new task — switch to AGENTS.md's
-normal workflow: apply and verify one patch at a time, commit each one individually.
+**If asked to apply patches:** treat patching as a separate task. Apply focused changes and follow
+`AGENTS.md` for the complete verification pipeline and commit authorization; do not commit before
+all required verification steps pass.
