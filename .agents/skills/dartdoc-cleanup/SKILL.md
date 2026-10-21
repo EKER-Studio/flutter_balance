@@ -24,7 +24,8 @@ documentation value preserved where needed.
 ## State Lifecycle & Safety Check
 
 ### Lifecycle: Fresh Run vs Resume
-- **Fresh Pass:** When a new cleanup pass is triggered, archive or reset `.audit-comments/log.md`.
+- **Fresh Pass:** Preserve any existing `.audit-comments/log.md`. Ask before replacing it, or use a
+   separate run-specific location for a new pass.
 - **Resume:** Continue from `log.md` only when resuming an explicitly interrupted run.
 
 ### Safety Check
@@ -41,10 +42,8 @@ documentation value preserved where needed.
 
 ## Before You Start — Safety Check
 
-Run `git status`. If not clean, **stop and ask** — this task should produce one clean,
-reviewable diff. Ideally runs on a dedicated branch.
-
-Ensure `.gitignore` has a `.audit-*/` entry; add one if missing and commit it alone.
+Inspect the worktree before editing so existing changes are preserved. Do not stop solely because
+it is dirty, and do not modify `.gitignore` or commit audit setup files unless the user asks.
 
 ---
 
@@ -60,8 +59,8 @@ Ensure `.gitignore` has a `.audit-*/` entry; add one if missing and commit it al
    - Pass 1: `grep -n "^\s*///"` — extract DartDoc blocks only
    - Pass 2: `grep -n "//"` — extract inline comments only
    Read only the surrounding lines needed to judge a given comment.
-7. **Commit per file.** After each file is edited, logged, commit it alone:
-   `chore: clean up comments in lib/foo/bar.dart`
+7. **Verify before commit.** Do not commit during per-file processing. Follow `AGENTS.md` for the
+   required verification pipeline and commit authorization after the complete change is verified.
 
 ---
 
@@ -125,7 +124,7 @@ folder and keep only the unprocessed tail plus a one-line pointer in `log.md`.
 
 ## Step-by-Step Process
 
-1. Check git status is clean.
+1. Inspect git status and preserve existing user changes; do not stop solely because the worktree is dirty.
 2. List all in-scope `.dart` file paths.
 3. Read `.audit-comments/log.md` if it exists; skip files already marked `done`.
 4. For each remaining file, in path-alphabetical order:
@@ -135,13 +134,9 @@ folder and keep only the unprocessed tail plus a one-line pointer in `log.md`.
    - Apply the edits.
    - Save the file.
    - Append one line to the log.
-   - Commit the change for this file alone.
-5. After the whole project is processed, run:
-   ```bash
-   dart format lib test
-   flutter analyze
-   ```
-   Report any new errors/warnings introduced by the changes.
+   - Continue to the next file without committing.
+5. After the whole project is processed, run the complete verification pipeline from
+   `agents_project.md`. Report any new errors or warnings introduced by the changes.
 6. Print the final summary. Don't delete `.audit-comments/` automatically — leave it
    for manual review of the `notes:` entries.
 
