@@ -20,6 +20,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `unit-test-audit`: Stateful, layer-by-layer test coverage and assertion auditor (Domain → Data → Presentation).
   - `i18n-audit`: Chunked internationalization auditor covering UI hardcoded strings, ARB completeness, and `supportedLocales` sync.
   - `dartdoc-cleanup`: Memory-safe, file-by-file comment translation (non-English to English) and documentation cleanup.
+- **Vendored Flutter Team Skills (`.agents/skills/flutter-*/`):** Imported the 10 official Flutter skills from [`flutter/agent-plugins`](https://github.com/flutter/agent-plugins) at commit `90fa51d` (BSD-3-Clause, see `.agents/skills/LICENSE.flutter-agent-plugins`):
+  - Layout & UI: `flutter-build-responsive-layout`, `flutter-fix-layout-issues`, `flutter-add-widget-preview`.
+  - Architecture & data: `flutter-apply-architecture-best-practices`, `flutter-setup-declarative-routing`, `flutter-use-http-package`, `flutter-implement-json-serialization`.
+  - Testing & localization: `flutter-add-widget-test`, `flutter-add-integration-test`, `flutter-setup-localization`.
+  - Added `.agents/skills/README.md` with provenance, precedence rules (project BLoC/Clean Architecture rules override generic MVVM guidance) and an upstream sync procedure.
+- **Subagent Skill Routing:** Extended `@data-engineer`, `@ui-engineer` and `@tester` prompts with mandatory skill selection, and added new intent routes for layout, testing, routing, serialization, networking and architecture tasks in the `@architect` orchestrator.
 - **State Persistence & Lifecycle Management:** Added clean state lifecycle rules (`.audit-*/`) supporting fresh audit runs alongside resumability across interrupted sessions.
 
 ### Removed

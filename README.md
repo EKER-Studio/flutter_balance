@@ -282,8 +282,32 @@ As part of our commitment to building in public and advancing agentic software e
     ├── bloc-audit/             # 12-dimension technical and architecture audit (Isar + BLoC)
     ├── unit-test-audit/        # Layer-by-layer test coverage auditor (Domain → Data → Presentation)
     ├── i18n-audit/             # Chunked localization auditor (hardcoded strings, ARB consistency)
-    └── dartdoc-cleanup/        # Memory-safe, file-by-file comment translation & cleanup
+    ├── dartdoc-cleanup/        # Memory-safe, file-by-file comment translation & cleanup
+    └── flutter-*/              # 10 official Flutter Team skills (vendored, see below)
 ```
+
+### Vendored Flutter Team Skills
+
+The 10 official skills from [`flutter/agent-plugins`](https://github.com/flutter/agent-plugins) are
+vendored verbatim in `.agents/skills/flutter-*/` so that every agent workspace (OpenCode, Cursor,
+Claude Code, Antigravity) discovers them without an external plugin installation:
+
+| Skill | Use it for |
+| :--- | :--- |
+| `flutter-add-integration-test` | Flutter Driver / `integration_test` E2E flows. |
+| `flutter-add-widget-preview` | Interactive `@Preview` widgets. |
+| `flutter-add-widget-test` | Component tests with `WidgetTester`. |
+| `flutter-apply-architecture-best-practices` | Layer-boundary reference (BLoC remains mandatory). |
+| `flutter-build-responsive-layout` | Adaptive layouts for phones, tablets and foldables. |
+| `flutter-fix-layout-issues` | Overflow and unbounded-constraint diagnostics. |
+| `flutter-implement-json-serialization` | Manual `fromJson` / `toJson` mapping. |
+| `flutter-setup-declarative-routing` | `go_router` navigation and deep linking. |
+| `flutter-setup-localization` | `flutter_localizations`, ARB and `gen-l10n` reference. |
+| `flutter-use-http-package` | HTTP requests with the `http` package. |
+
+Vendored skills are BSD-3-Clause; attribution and sync instructions live in
+[`.agents/skills/README.md`](.agents/skills/README.md). Project rules in `AGENTS.md` and
+`agents_project.md` always take precedence over generic skill guidance.
 
 ### Key Principles
 
