@@ -104,7 +104,7 @@ lib/
 | **Biometrics** | local_auth | Native biometric authentication (Face ID, Touch ID, fingerprint) |
 | **Health** | health | Integration with Apple HealthKit & Android Health Connect |
 | **Home Widgets** | home_widget | Android home screen glanceable widgets (2x1, 3x2) |
-| **CSV Handling** | csv, file_picker | CSV encoding, streaming parser, and native Storage Access Framework file picker |
+| **CSV Handling** | csv, file_picker | CSV encoding, background-isolate parsing, and native Storage Access Framework file picker |
 | **Localization** | flutter_localizations + gen-l10n | Internationalization (10 languages: EN, DE, JA, FR, ES, PL, PT-BR, NL, IT, KO) |
 | **Notifications** | flutter_local_notifications, timezone | Local scheduled daily reminders & timezone resolution |
 | **Diagnostics & Crash Reporting** | firebase_crashlytics | Anonymous crash reporting and technical diagnostics |
@@ -134,7 +134,7 @@ lib/
 - **Unit System**: Seamless switching between Metric (kg, cm) and Imperial (lb, ft/in).
 
 ### Settings, Onboarding & Security
-- **Declarative Navigation & Deep Linking**: Powered by `go_router` 14.x with persistent `StatefulShellRoute` multi-tab state preservation, URI query parsing (`/today?action=add`, `/calendar?date=YYYY-MM-DD`), and reactive auth/onboarding redirection guards.
+- **Declarative Navigation & Deep Linking**: Powered by `go_router` 18.x with persistent `StatefulShellRoute` multi-tab state preservation, URI query parsing (`/today?action=add`, `/calendar?date=YYYY-MM-DD`), and reactive auth/onboarding redirection guards.
 - **Android 15 Edge-to-Edge & Display Cutouts**: Full compliance with Android 15 (API 35) edge-to-edge drawing, transparent system bars (`enableEdgeToEdge`), camera cutout/notch adaptation (`shortEdges`), and responsive `SafeArea` boundary guards.
 - **Predictive Back & Per-App Language**: Modern predictive back gesture support (`PopScope`) and native per-app language configuration (`locales_config.xml`) for Android 13+.
 - **Step-by-Step Onboarding**: A comprehensive wizard guiding users through unit selection, initial logging, CSV imports, and permission setups.
@@ -145,7 +145,7 @@ lib/
 
 ### Privacy, Analytics & Diagnostics
 - **100% Local-First Health Data**: All weight entries, target goals, height settings, BMI calculations, and calendar history are stored exclusively in the local on-device database (`isar_community`). No health measurements are sent to external servers or cloud databases.
-- **Hardware-Isolated AES-256 Encryption**: Security keys are anchored in hardware-backed Android Keystore / iOS Keychain via `flutter_secure_storage`.
+- **Hardware-Isolated AES-256 Field Encryption**: Weight values and notes are encrypted before they are written to Isar; encryption keys are anchored in hardware-backed Android Keystore / iOS Keychain via `flutter_secure_storage`. Record IDs and measurement timestamps remain plaintext to support indexed queries, the Isar file itself is not encrypted, and hydrated settings (such as height and target weight) are not covered by this encryption.
 - **Firebase Analytics (`AppAnalytics`)**: Tracks non-sensitive usage metrics (screen navigations, UI interactions, feature engagement) to improve application UX. In strict adherence to privacy principles, **all raw health measurements (weights, heights, BMI numbers, goal targets) are omitted from telemetry payloads**. Analytics collection is automatically disabled in debug mode (`kDebugMode`).
 - **Firebase Crashlytics (`AppCrashReporter`)**: Captures non-fatal error reports and fatal crash stack traces for real-time defect diagnosis and performance stability. Crash logs contain technical error diagnostics and stack traces without any identifiable user health information.
 
@@ -160,7 +160,7 @@ lib/
 
 ```bash
 flutter pub get
-dart run build_runner build --delete-conflicting-outputs
+dart run build_runner build
 ```
 
 ### Run
@@ -172,19 +172,19 @@ flutter run
 ## Project Conventions
 
 ### Database Engine
-- Isar schema configuration uses the `balance_v1` store name (encrypted schema; legacy `pure_weight_v1` and `pure_weight_v2` stores are quarantined on first launch).
+- Isar schema configuration uses the `balance_v1` store name (field-encrypted schema; legacy `pure_weight_v1` and `pure_weight_v2` stores are quarantined on first launch).
 - `DatabaseModule` manages initialization, integrity verification, and fallback database recovery (`.isar.bak`).
 - Native database-level sorting via `.where().sortByDateTimeDesc()` runs directly inside Isar query streams.
 
 ### State Management
 - **`WeightBloc`**: Controls weight entries, chart period filtering, and platform sync pipelines.
-  - Events: `SubscribeToWeightChanges`, `AddWeight`, `DeleteWeight`, `ChangeChartFilter`, `RefreshWeightData`, `SyncHealthEntries`, `ImportCsvEntries`
+  - Events: `SubscribeToWeightChanges`, `UpdateUserHeight`, `AddWeight`, `UpdateWeight`, `DeleteWeight`, `ChangeChartFilter`, `RefreshWeightData`, `ClearAllWeightData`, `ImportWeightEntries`, `SyncHealthEntries`, `AnalyzeCsvFile`, `ConfirmCsvImport`
   - States: `WeightInitial`, `WeightLoading`, `WeightLoaded`, `WeightError`
 - **`AppSettingsBloc`**: Manages persistent user preferences via `HydratedBloc`.
-  - Events: `UpdateTheme`, `UpdateMeasurementUnit`, `UpdateHeight`, `TargetWeightChanged`, `UpdateBiometricLock`, `ToggleNotifications`, `UpdateNotificationTime`, `ToggleHealthSync`, `SetLocked`, `ClearAllData`
-  - State: `AppSettingsState` (hydrated and encrypted on-device).
+  - Events: `UpdateTheme`, `UpdateFirstDayOfWeek`, `UpdateMeasurementUnit`, `UpdateHeight`, `UpdateWeightGoalMode`, `TargetWeightChanged`, `ToggleNotifications`, `UpdateNotificationTime`, `UpdateBiometricLock`, `UpdateBiometricSupport`, `SetLocked`, `ToggleHealthSync`, `CheckHealthSyncStatus`, `UpdateLastHealthSyncTimestamp`, `UpdateWeeklyPaceWindow`, `ToggleAnalytics`, `ToggleCrashReporting`, `CompleteOnboarding`, `DismissWidgetPromo`, `ResetAppSettings`
+  - State: `AppSettingsState` (persisted on-device via `HydratedBloc`; see the encryption scope above).
 - **`OnboardingBloc`**: Controls the ephemeral multi-step initial setup wizard state machine.
-  - Events: `OnboardingStarted`, `OnboardingStepChanged`, `OnboardingUnitSelected`, `OnboardingInitialWeightSet`, `OnboardingTargetWeightSet`, `OnboardingNotificationsToggled`, `OnboardingHealthSyncToggled`, `OnboardingCompleted`
+  - Events: `OnboardingStarted`, `OnboardingStepAdvanced`, `OnboardingStepRewound`, `OnboardingUnitSelected`, `OnboardingCsvImported`, `OnboardingInitialWeightSet`, `OnboardingTargetWeightSet`, `OnboardingHealthSyncToggled`, `OnboardingBiometricsToggled`, `OnboardingCompleted`
   - State: `OnboardingState` (holds temporary wizard draft values and emits UI states; decoupled from sibling BLoCs with persistence orchestrated by the wizard presentation layer upon completion).
 
 ### Code Generation
@@ -192,7 +192,7 @@ flutter run
 Generate code for Isar schema models and dependency injection:
 
 ```bash
-dart run build_runner build --delete-conflicting-outputs
+dart run build_runner build
 ```
 
 Regenerate the app icon (light, dark, monochrome, and adaptive variants) and the native splash screen after updating the source images in `assets/icon/`:
@@ -217,9 +217,9 @@ The script automatically executes and validates:
 1. `flutter pub get` — Resolves workspace dependencies
 2. `flutter gen-l10n` — Regenerates localization classes
 3. `dart run build_runner build` — Regenerates Isar and Injectable code
-4. `dart format --set-exit-if-changed lib test integration_test test_driver` — Strict formatting verification
+4. `dart format lib test integration_test test_driver` — Applies formatting and rejects unstaged changes
 5. `flutter analyze` — Static linter verification (0 warnings/errors)
-6. `flutter test --exclude-tags golden,screenshot` — Comprehensive automated test suite (1177 passing tests)
+6. `flutter test --coverage --exclude-tags golden,screenshot` — Comprehensive automated test suite (1241 passing tests)
 7. `flutter build apk --debug` — Android compilation integrity check
 
 Or execute unit/widget tests directly:
@@ -264,21 +264,21 @@ ID,Date,Weight (kg),Note
 
 **Android**: Declare `<uses-permission android:name="android.permission.USE_BIOMETRIC" />` in `android/app/src/main/AndroidManifest.xml`.
 
-## AI-Native Engineering & Multi-Agent Architecture (#built_in_public)
+## AI-Native Engineering & Agent Toolkit (#built_in_public)
 
-As part of our commitment to building in public and advancing agentic software engineering, this repository has transitioned from monolithic, copy-pasted prompts to a modular **Multi-Agent System** and executable **Skills** located in [`.agents/`](.agents/).
+As part of our commitment to building in public and advancing agentic software engineering, this repository has transitioned from monolithic, copy-pasted prompts to a modular toolkit of role prompts and executable **Skills** located in [`.agents/`](.agents/).
 
 ### System Architecture
 
 ```text
 .agents/
-├── agents/                     # Specialized runtime personas & system prompts
-│   ├── architect.md            # Orchestrator: task decomposition, intent routing & subagent management
+├── agents/                     # Portable role prompts (not runtime registrations)
+│   ├── architect.md            # Orchestrator: task decomposition, intent routing & delegation guidance
 │   ├── data-engineer.md        # Domain & Data: Isar persistence, AES encryption, sync coordinators & pure Dart
 │   ├── ui-engineer.md          # Presentation: Flutter widgets, BLoC reactivity, design tokens & accessibility
 │   ├── tester.md               # Quality: Mandatory Verification Pipeline execution & test generation
 │   └── devops.md               # DevOps & Automation: Git hooks, formatting enforcement & CI/CD workflows
-└── skills/                     # Auto-discovered executable runbooks (Antigravity & modern LLM harnesses)
+└── skills/                     # Executable runbooks (`<name>/SKILL.md`; discovery depends on harness)
     ├── bloc-audit/             # 12-dimension technical and architecture audit (Isar + BLoC)
     ├── unit-test-audit/        # Layer-by-layer test coverage auditor (Domain → Data → Presentation)
     ├── i18n-audit/             # Chunked localization auditor (hardcoded strings, ARB consistency)
@@ -286,11 +286,27 @@ As part of our commitment to building in public and advancing agentic software e
     └── flutter-*/              # 10 official Flutter Team skills (vendored, see below)
 ```
 
+### Runtime Support
+
+The files in `.agents/` are portable prompts and runbooks, not a runtime plugin. Native custom-agent
+registrations (such as `.agent.md` manifests or plugin packages) are not checked in, so an agent only
+delegates work when the active harness exposes subagents. Skill discovery likewise depends on the
+harness supporting the `.agents/skills/<name>/SKILL.md` convention.
+
+| Runtime | Project rules | Agent roles | Skills |
+| :--- | :--- | :--- | :--- |
+| OpenCode | `AGENTS.md` + `agents_project.md` | Load `.agents/agents/*.md` as prompts; delegation via available subagents | Discovered from `.agents/skills/` |
+| Cursor | `.cursor/rules/agents.mdc` forwards to `AGENTS.md` | Reference `.agents/agents/*.md` manually | Reference `SKILL.md` files manually |
+| Claude Code | `CLAUDE.md` imports `AGENTS.md` | Reference `.agents/agents/*.md` manually | Reference `SKILL.md` files manually |
+| Gemini | `GEMINI.md` imports `AGENTS.md` | Reference `.agents/agents/*.md` manually | Reference `SKILL.md` files manually |
+| Other harnesses | Follow `AGENTS.md` | Reference `.agents/agents/*.md` manually | Reference `SKILL.md` files manually |
+
 ### Vendored Flutter Team Skills
 
 The 10 official skills from [`flutter/agent-plugins`](https://github.com/flutter/agent-plugins) are
-vendored verbatim in `.agents/skills/flutter-*/` so that every agent workspace (OpenCode, Cursor,
-Claude Code, Antigravity) discovers them without an external plugin installation:
+vendored verbatim in `.agents/skills/flutter-*/` so that harnesses which discover the `.agents/skills/`
+convention (for example OpenCode in this workspace) can use them without an external plugin
+installation. In harnesses without that convention, reference the relevant `SKILL.md` file explicitly.
 
 | Skill | Use it for |
 | :--- | :--- |
@@ -313,20 +329,20 @@ Vendored skills are BSD-3-Clause; attribution and sync instructions live in
 
 1. **Separation of Concerns (Personas vs. Skills):** Personas define *who* executes and delegates work; Skills define *how* procedures are executed as reusable, objective runbooks.
 2. **Single Source of Truth (SSOT):** Subagents never maintain duplicate copies of build commands or architectural rules; they bind strictly to [`AGENTS.md`](AGENTS.md) and [`agents_project.md`](agents_project.md).
-3. **Multi-Subagent Decomposition:** Massive tasks (such as a 12-dimension code audit) are never forced into a single context window. The `@architect` partitions workloads across isolated subagents running in parallel or bounded sequential passes.
+3. **Bounded Work Partitioning:** Massive tasks (such as a 12-dimension code audit) are never forced into a single context window. They are split into bounded passes over the repository; when the runtime exposes subagents, the passes can run as parallel or sequential jobs, and otherwise they run sequentially in one context. The `@architect` role defines the split.
 4. **State Persistence & Resumability:** Audits persist incremental findings to disk (`.audit-*/findings.md`), enabling clean recovery from timeouts and zero token waste.
 5. **Natural Language Triggers:** Developers interact in natural language (English or Polish) without needing to memorize technical skill identifiers.
 
 ### How to Run
 
-Simply instruct the AI agent in natural language inside any agentic workspace (Antigravity, Claude Code, Cursor, OpenCode):
+Simply instruct the AI agent in natural language inside an agentic workspace (OpenCode, Cursor, Claude Code, Gemini, Antigravity). The role and skill files are available as reference everywhere; automatic skill discovery and subagent delegation depend on the harness.
 
 | Intent | Example Prompt | Execution Flow |
 | :--- | :--- | :--- |
-| **Full Architecture Audit** | *"Architekt, sprawdź architekturę BLoC"* or *"@architect run architecture audit"* | `@architect` partitions work across 3 subagents (Domain/Data, Presentation/BLoC, Infra/Security) and aggregates into a final Dashboard. |
+| **Full Architecture Audit** | *"Architekt, sprawdź architekturę BLoC"* or *"@architect run architecture audit"* | `@architect` partitions the audit into 3 bounded workstreams (Domain/Data, Presentation/BLoC, Infra/Security) and aggregates them into a final dashboard. Subagents are used only when the runtime supports delegation. |
 | **Unit Test Coverage Audit** | *"Sprawdź stan testów jednostkowych"* or *"audit unit test coverage"* | Runs `unit-test-audit` sequentially: Domain → Data → Presentation. |
 | **Localization Verification** | *"Sprawdź brakujące klucze tłumaczeń"* or *"audit i18n strings"* | Runs `i18n-audit` chunk-by-chunk on ARB files and UI strings. |
-| **Feature Development** | *"@architect add export to PDF feature"* | `@architect` decomposes specification ➡️ delegates logic to `@data-engineer` ➡️ delegates UI to `@ui-engineer` ➡️ validates via `@tester` ➡️ atomic commit. |
+| **Feature Development** | *"@architect add export to PDF feature"* | `@architect` decomposes the specification, then applies the data, UI and test roles in order, delegating only where the runtime exposes those agents, and commits atomically at the end. |
 | **DevOps & Formatting** | *"@devops enforce formatting guardrails"* | Configures Git hooks via `scripts/install_git_hooks.sh` to prevent unformatted code from being committed. |
 
 ## Branches
