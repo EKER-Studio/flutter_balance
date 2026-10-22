@@ -23,5 +23,6 @@ If you believe you have discovered a security vulnerability in Balance, please d
 ## Security Architecture Highlights
 
 - **Local-First & Offline:** Health data (weight records, heights, notes) never leaves the device unless explicitly exported by the user.
-- **AES-256 Encryption:** Database storage is encrypted with AES-256 using platform-native hardware keychains (Android Keystore / iOS Keychain).
+- **AES-256 Field Encryption:** Weight values and notes are encrypted with AES-256 before they are written to Isar; encryption keys are isolated in platform-native hardware keychains (Android Keystore / iOS Keychain). The Isar database file itself is not encrypted, and record IDs plus measurement timestamps remain stored in plaintext to support indexed queries.
+- **Local Settings:** UI preferences persisted through `HydratedBloc` (including height and target weight) are stored unencrypted on the device and are not covered by the field-level encryption above.
 - **Privacy-First Analytics:** Telemetry events never log sensitive biometric or health indicators (weight values, BMI, target goals).

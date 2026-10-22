@@ -9,9 +9,10 @@ EKER Studio ("we", "our", or "us") built the **Balance: BMI & Weight Tracker** a
 - **Personal & Health Data:** All health-related metrics (such as weight entries, height, BMI calculations, target weight, and calendar logs) entered into the app are stored exclusively **locally on your device**. We do not operate external databases or servers that collect, store, or transmit your health measurements.
 - **Biometric Data:** If you enable biometric lock (Fingerprint or Face Unlock), authentication is processed entirely by your device's operating system. The app does not access, collect, or store your biometric data.
 
-### 2. Google Health Connect Integration
-- If you grant explicit permission, Balance: BMI & Weight Tracker integrates with Google Health Connect to read and sync body weight and height measurements.
-- Health Connect data is accessed only with your direct consent and is used strictly to display metrics within the app.
+### 2. Health Platform Integration (Health Connect & Apple Health)
+- If you grant explicit permission, Balance: BMI & Weight Tracker reads body weight measurements from Google Health Connect (Android) or Apple Health (iOS) and mirrors weight entries you create in the app back to that platform.
+- Height and target weight are stored only in the app's local settings and are never read from or written to Health Connect or Apple Health.
+- Health platform data is accessed only with your direct consent and is used strictly to display metrics within the app.
 - We do not sell, transfer, or share your Health Connect data with any third parties, advertisers, or data brokers.
 
 ### 3. Crash Reporting and Diagnostics
