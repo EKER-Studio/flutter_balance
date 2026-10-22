@@ -966,5 +966,25 @@ void main() {
         );
       },
     );
+
+    test(
+      'deduplicates duplicate entries within a single remote batch',
+      () async {
+        final timestamp = DateTime(2026, 1, 2, 9);
+
+        final writtenCount = await repository.syncRemoteEntries([
+          WeightEntry(weightKg: 75.0, dateTime: timestamp),
+          WeightEntry(
+            weightKg: 75.03,
+            dateTime: timestamp.add(const Duration(seconds: 30)),
+          ),
+        ]);
+
+        expect(writtenCount, 1);
+        final all = await repository.getAllEntries();
+        expect(all, hasLength(1));
+        expect(all.single.weightKg, 75.0);
+      },
+    );
   });
 }

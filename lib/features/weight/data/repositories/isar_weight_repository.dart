@@ -84,6 +84,69 @@ List<_EncryptionPayload> _encryptPayloads((List<WeightEntry>, Uint8List) args) {
   }).toList();
 }
 
+/// Minute bucket used to narrow timestamp comparisons to nearby records.
+int _minuteBucket(DateTime dateTime) =>
+    dateTime.toUtc().millisecondsSinceEpoch ~/ 60000;
+
+/// Centi-kilogram bucket used to narrow weight comparisons to nearby records.
+int _weightBucket(double weightKg) => (weightKg * 100).round();
+
+/// Adds [entry] at [index] to [indexesByBucket] for tolerance-based lookup.
+void _indexWeightEntry(
+  Map<(int, int), List<int>> indexesByBucket,
+  int index,
+  WeightEntry entry,
+) {
+  final bucket = (_minuteBucket(entry.dateTime), _weightBucket(entry.weightKg));
+  (indexesByBucket[bucket] ??= <int>[]).add(index);
+}
+
+/// Finds an entry matching [candidate] within ±60 seconds and ±0.05 kg.
+///
+/// Indices below `localEntries.length` refer to [localEntries]; higher indices
+/// refer to [acceptedEntries], which holds entries accepted earlier in the same
+/// batch. Local matches take precedence over batch matches.
+int? _findDuplicateIndex({
+  required WeightEntry candidate,
+  required List<WeightEntry> localEntries,
+  required List<WeightEntry> acceptedEntries,
+  required Map<(int, int), List<int>> indexesByBucket,
+}) {
+  final localEntryCount = localEntries.length;
+  final candidateMinuteBucket = _minuteBucket(candidate.dateTime);
+  final candidateWeightBucket = _weightBucket(candidate.weightKg);
+  final candidateUtc = candidate.dateTime.toUtc();
+  int? acceptedIndex;
+
+  for (int minuteOffset = -2; minuteOffset <= 2; minuteOffset++) {
+    for (int weightOffset = -5; weightOffset <= 5; weightOffset++) {
+      final indexes =
+          indexesByBucket[(
+            candidateMinuteBucket + minuteOffset,
+            candidateWeightBucket + weightOffset,
+          )];
+      if (indexes == null) continue;
+
+      for (final index in indexes) {
+        final matchedEntry = index < localEntryCount
+            ? localEntries[index]
+            : acceptedEntries[index - localEntryCount];
+        final timeDifference = candidateUtc
+            .difference(matchedEntry.dateTime.toUtc())
+            .inSeconds
+            .abs();
+        if ((candidate.weightKg - matchedEntry.weightKg).abs() <= 0.05 &&
+            timeDifference <= 60) {
+          if (index < localEntryCount) return index;
+          acceptedIndex ??= index;
+        }
+      }
+    }
+  }
+
+  return acceptedIndex;
+}
+
 /// An Isar-backed implementation of [WeightRepository] using field-level AES-256 encryption.
 ///
 /// Weight and note values are encrypted with [FieldCipher] before persistence
@@ -525,65 +588,25 @@ class IsarWeightRepository implements WeightRepository {
       final localEntryCount = localEntries.length;
       final entryIndexesByBucket = <(int, int), List<int>>{};
 
-      int minuteBucket(DateTime dateTime) =>
-          dateTime.toUtc().millisecondsSinceEpoch ~/ 60000;
-
-      int weightBucket(double weightKg) => (weightKg * 100).round();
-
-      void indexEntry(int index, WeightEntry entry) {
-        final bucket = (
-          minuteBucket(entry.dateTime),
-          weightBucket(entry.weightKg),
-        );
-        (entryIndexesByBucket[bucket] ??= <int>[]).add(index);
-      }
-
       for (int i = 0; i < localEntries.length; i++) {
-        indexEntry(i, localEntries[i]);
+        _indexWeightEntry(entryIndexesByBucket, i, localEntries[i]);
       }
 
       for (final candidate in entries) {
-        final cUtc = candidate.dateTime.toUtc();
-        final candidateMinuteBucket = minuteBucket(candidate.dateTime);
-        final candidateWeightBucket = weightBucket(candidate.weightKg);
-        int? duplicateExistingIndex;
-        int? duplicateImportedIndex;
+        final duplicateIndex = _findDuplicateIndex(
+          candidate: candidate,
+          localEntries: localEntries,
+          acceptedEntries: entriesToInsert,
+          indexesByBucket: entryIndexesByBucket,
+        );
 
-        for (int minuteOffset = -2; minuteOffset <= 2; minuteOffset++) {
-          for (int weightOffset = -5; weightOffset <= 5; weightOffset++) {
-            final indexes =
-                entryIndexesByBucket[(
-                  candidateMinuteBucket + minuteOffset,
-                  candidateWeightBucket + weightOffset,
-                )];
-            if (indexes == null) continue;
-
-            for (final index in indexes) {
-              final matchedEntry = index < localEntryCount
-                  ? localEntries[index]
-                  : entriesToInsert[index - localEntryCount];
-              final timeDifference = cUtc
-                  .difference(matchedEntry.dateTime.toUtc())
-                  .inSeconds
-                  .abs();
-              if ((candidate.weightKg - matchedEntry.weightKg).abs() <= 0.05 &&
-                  timeDifference <= 60) {
-                if (index < localEntryCount) {
-                  duplicateExistingIndex = index;
-                  break;
-                }
-                duplicateImportedIndex ??= index;
-              }
-            }
-            if (duplicateExistingIndex != null) break;
-          }
-          if (duplicateExistingIndex != null) break;
-        }
-
-        final duplicateIndex = duplicateExistingIndex ?? duplicateImportedIndex;
         if (duplicateIndex == null) {
           entriesToInsert.add(candidate);
-          indexEntry(localEntryCount + entriesToInsert.length - 1, candidate);
+          _indexWeightEntry(
+            entryIndexesByBucket,
+            localEntryCount + entriesToInsert.length - 1,
+            candidate,
+          );
           continue;
         }
 
@@ -705,19 +728,27 @@ class IsarWeightRepository implements WeightRepository {
       }
 
       final newEntries = <WeightEntry>[];
+      final localEntryCount = localEntries.length;
+      final entryIndexesByBucket = <(int, int), List<int>>{};
+
+      for (int i = 0; i < localEntries.length; i++) {
+        _indexWeightEntry(entryIndexesByBucket, i, localEntries[i]);
+      }
+
       for (final remote in remoteEntries) {
-        final rUtc = remote.dateTime.toUtc();
-        bool isDuplicate = false;
-        for (final local in localEntries) {
-          final lUtc = local.dateTime.toUtc();
-          if ((remote.weightKg - local.weightKg).abs() <= 0.05 &&
-              rUtc.difference(lUtc).inSeconds.abs() <= 60) {
-            isDuplicate = true;
-            break;
-          }
-        }
-        if (!isDuplicate) {
+        final duplicateIndex = _findDuplicateIndex(
+          candidate: remote,
+          localEntries: localEntries,
+          acceptedEntries: newEntries,
+          indexesByBucket: entryIndexesByBucket,
+        );
+        if (duplicateIndex == null) {
           newEntries.add(remote);
+          _indexWeightEntry(
+            entryIndexesByBucket,
+            localEntryCount + newEntries.length - 1,
+            remote,
+          );
         }
       }
 
