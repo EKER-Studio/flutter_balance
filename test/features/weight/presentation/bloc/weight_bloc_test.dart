@@ -1401,6 +1401,10 @@ void main() {
         },
       );
 
+      final firstFetchStarted = Completer<void>();
+      final releaseFirstFetch = Completer<void>();
+      var fetchCount = 0;
+
       blocTest<WeightBloc, WeightState>(
         'SyncHealthEntries drops concurrent events (droppable concurrency)',
         build: () {
@@ -1410,7 +1414,11 @@ void main() {
               end: any(named: 'end'),
             ),
           ).thenAnswer((_) async {
-            await Future.delayed(const Duration(milliseconds: 50));
+            fetchCount++;
+            if (fetchCount == 1) {
+              firstFetchStarted.complete();
+              await releaseFirstFetch.future;
+            }
             return const [];
           });
           return WeightBloc(
@@ -1421,11 +1429,14 @@ void main() {
         },
         seed: () =>
             const WeightLoaded(entries: [], filteredEntries: [], heightCm: 170),
-        act: (bloc) {
+        act: (bloc) async {
           bloc.add(const SyncHealthEntries());
+          await firstFetchStarted.future;
           bloc.add(const SyncHealthEntries());
+          releaseFirstFetch.complete();
+          await Future<void>.delayed(Duration.zero);
+          await Future<void>.delayed(Duration.zero);
         },
-        wait: const Duration(milliseconds: 100),
         verify: (_) {
           verify(
             () => healthService.fetchWeightHistory(
