@@ -552,9 +552,21 @@ void main() {
       build: () {
         final futureYear = DateTime.now().year + 1;
         final entries = [
-          WeightEntry(id: 1, weightKg: 70.0, dateTime: DateTime(futureYear, 10, 10)),
-          WeightEntry(id: 2, weightKg: 71.0, dateTime: DateTime(futureYear, 10, 2)),
-          WeightEntry(id: 3, weightKg: 72.0, dateTime: DateTime(futureYear, 9, 30)),
+          WeightEntry(
+            id: 1,
+            weightKg: 70.0,
+            dateTime: DateTime(futureYear, 10, 10),
+          ),
+          WeightEntry(
+            id: 2,
+            weightKg: 71.0,
+            dateTime: DateTime(futureYear, 10, 2),
+          ),
+          WeightEntry(
+            id: 3,
+            weightKg: 72.0,
+            dateTime: DateTime(futureYear, 9, 30),
+          ),
         ];
         when(
           () => repository.watchAllEntries(),
@@ -1204,29 +1216,30 @@ void main() {
               ),
             ],
           );
-          when(() => repository.getEntriesBetween(any(), any())).thenAnswer(
-            (invocation) async {
-              final start = invocation.positionalArguments[0] as DateTime;
-              final end = invocation.positionalArguments[1] as DateTime;
-              final all = [
-                WeightEntry(
-                  id: 1,
-                  weightKg: 74,
-                  dateTime: DateTime(2026, 2, 3, 8),
-                ),
-                WeightEntry(
-                  id: 2,
-                  weightKg: 71,
-                  dateTime: DateTime(2025, 10, 1, 8),
-                ),
-              ];
-              return all
-                  .where(
-                    (e) => !e.dateTime.isBefore(start) && !e.dateTime.isAfter(end),
-                  )
-                  .toList();
-            },
-          );
+          when(() => repository.getEntriesBetween(any(), any())).thenAnswer((
+            invocation,
+          ) async {
+            final start = invocation.positionalArguments[0] as DateTime;
+            final end = invocation.positionalArguments[1] as DateTime;
+            final all = [
+              WeightEntry(
+                id: 1,
+                weightKg: 74,
+                dateTime: DateTime(2026, 2, 3, 8),
+              ),
+              WeightEntry(
+                id: 2,
+                weightKg: 71,
+                dateTime: DateTime(2025, 10, 1, 8),
+              ),
+            ];
+            return all
+                .where(
+                  (e) =>
+                      !e.dateTime.isBefore(start) && !e.dateTime.isAfter(end),
+                )
+                .toList();
+          });
           when(
             () => healthService.fetchWeightHistory(
               start: any(named: 'start'),
