@@ -471,10 +471,10 @@ class IsarWeightRepository implements WeightRepository {
 
   /// Idempotently imports [entries] in a single all-or-nothing transaction.
   ///
-  /// **Deduplication:** A candidate entry is considered a duplicate when an
-  /// existing record's UTC timestamp is within ±60 seconds AND its weight
-  /// is within ±0.05 kg of the candidate. Only newly inserted records count
-  /// toward the returned value.
+  /// **Deduplication:** A candidate entry is considered a duplicate when a
+  /// stored record or an earlier candidate accepted into the same batch has a
+  /// UTC timestamp within ±60 seconds AND a weight within ±0.05 kg of it.
+  /// Only newly inserted records count toward the returned value.
   ///
   /// **Note backfill:** When a duplicate match is found and the existing record
   /// has no note but the candidate has one, the existing record is updated with
@@ -522,35 +522,98 @@ class IsarWeightRepository implements WeightRepository {
       // Step 4 — In-memory deduplication and note-backfill classification.
       final entriesToInsert = <WeightEntry>[];
       final modelsToUpdate = <WeightEntryModel>[];
+      final localEntryCount = localEntries.length;
+      final entryIndexesByBucket = <(int, int), List<int>>{};
+
+      int minuteBucket(DateTime dateTime) =>
+          dateTime.toUtc().millisecondsSinceEpoch ~/ 60000;
+
+      int weightBucket(double weightKg) => (weightKg * 100).round();
+
+      void indexEntry(int index, WeightEntry entry) {
+        final bucket = (
+          minuteBucket(entry.dateTime),
+          weightBucket(entry.weightKg),
+        );
+        (entryIndexesByBucket[bucket] ??= <int>[]).add(index);
+      }
+
+      for (int i = 0; i < localEntries.length; i++) {
+        indexEntry(i, localEntries[i]);
+      }
 
       for (final candidate in entries) {
         final cUtc = candidate.dateTime.toUtc();
-        bool isDuplicate = false;
+        final candidateMinuteBucket = minuteBucket(candidate.dateTime);
+        final candidateWeightBucket = weightBucket(candidate.weightKg);
+        int? duplicateExistingIndex;
+        int? duplicateImportedIndex;
 
-        for (int li = 0; li < localEntries.length; li++) {
-          final local = localEntries[li];
-          final lUtc = local.dateTime.toUtc();
+        for (int minuteOffset = -2; minuteOffset <= 2; minuteOffset++) {
+          for (int weightOffset = -5; weightOffset <= 5; weightOffset++) {
+            final indexes =
+                entryIndexesByBucket[(
+                  candidateMinuteBucket + minuteOffset,
+                  candidateWeightBucket + weightOffset,
+                )];
+            if (indexes == null) continue;
 
-          if ((candidate.weightKg - local.weightKg).abs() <= 0.05 &&
-              cUtc.difference(lUtc).inSeconds.abs() <= 60) {
-            isDuplicate = true;
-
-            // Note backfill: existing entry has no note, candidate has one.
-            final localNote = local.note;
-            final candidateNote = candidate.note;
-            if ((localNote == null || localNote.isEmpty) &&
-                candidateNote != null &&
-                candidateNote.isNotEmpty) {
-              final updatedModel = existingModels[li]
-                ..encryptedNote = FieldCipher.encrypt(candidateNote, key);
-              modelsToUpdate.add(updatedModel);
+            for (final index in indexes) {
+              final matchedEntry = index < localEntryCount
+                  ? localEntries[index]
+                  : entriesToInsert[index - localEntryCount];
+              final timeDifference = cUtc
+                  .difference(matchedEntry.dateTime.toUtc())
+                  .inSeconds
+                  .abs();
+              if ((candidate.weightKg - matchedEntry.weightKg).abs() <= 0.05 &&
+                  timeDifference <= 60) {
+                if (index < localEntryCount) {
+                  duplicateExistingIndex = index;
+                  break;
+                }
+                duplicateImportedIndex ??= index;
+              }
             }
-            break;
+            if (duplicateExistingIndex != null) break;
           }
+          if (duplicateExistingIndex != null) break;
         }
 
-        if (!isDuplicate) {
+        final duplicateIndex = duplicateExistingIndex ?? duplicateImportedIndex;
+        if (duplicateIndex == null) {
           entriesToInsert.add(candidate);
+          indexEntry(localEntryCount + entriesToInsert.length - 1, candidate);
+          continue;
+        }
+
+        final duplicateEntry = duplicateIndex < localEntryCount
+            ? localEntries[duplicateIndex]
+            : entriesToInsert[duplicateIndex - localEntryCount];
+        final duplicateNote = duplicateEntry.note;
+        final candidateNote = candidate.note;
+        if ((duplicateNote == null || duplicateNote.isEmpty) &&
+            candidateNote != null &&
+            candidateNote.isNotEmpty) {
+          if (duplicateIndex < localEntryCount) {
+            final updatedModel = existingModels[duplicateIndex]
+              ..encryptedNote = FieldCipher.encrypt(candidateNote, key);
+            modelsToUpdate.add(updatedModel);
+            localEntries[duplicateIndex] = WeightEntry(
+              id: duplicateEntry.id,
+              weightKg: duplicateEntry.weightKg,
+              dateTime: duplicateEntry.dateTime,
+              note: candidateNote,
+            );
+          } else {
+            final insertionIndex = duplicateIndex - localEntryCount;
+            entriesToInsert[insertionIndex] = WeightEntry(
+              id: duplicateEntry.id,
+              weightKg: duplicateEntry.weightKg,
+              dateTime: duplicateEntry.dateTime,
+              note: candidateNote,
+            );
+          }
         }
       }
 

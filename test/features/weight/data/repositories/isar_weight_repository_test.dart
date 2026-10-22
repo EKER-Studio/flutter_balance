@@ -296,6 +296,64 @@ void main() {
       },
     );
 
+    test(
+      'bulkImportEntries deduplicates within a batch and preserves a later note',
+      () async {
+        final firstTimestamp = DateTime(2025, 6, 1, 12);
+        final entries = [
+          WeightEntry(weightKg: 70.0, dateTime: firstTimestamp),
+          WeightEntry(
+            weightKg: 70.04,
+            dateTime: firstTimestamp.add(const Duration(seconds: 45)),
+            note: 'Batch note',
+          ),
+          WeightEntry(
+            weightKg: 70.06,
+            dateTime: firstTimestamp.add(const Duration(seconds: 20)),
+          ),
+        ];
+
+        final insertedCount = await repository.bulkImportEntries(entries);
+        final storedEntries = await repository.getAllEntries();
+
+        expect(insertedCount, 2);
+        expect(storedEntries, hasLength(2));
+        final backfilled = storedEntries.singleWhere(
+          (entry) => entry.weightKg == 70.0,
+        );
+        expect(backfilled.note, 'Batch note');
+        expect(storedEntries.any((entry) => entry.weightKg == 70.06), isTrue);
+      },
+    );
+
+    test(
+      'bulkImportEntries keeps the first note when several candidates match one entry',
+      () async {
+        final timestamp = DateTime(2025, 7, 1, 9);
+        await repository.addEntry(
+          WeightEntry(weightKg: 80.0, dateTime: timestamp),
+        );
+
+        final insertedCount = await repository.bulkImportEntries([
+          WeightEntry(
+            weightKg: 80.02,
+            dateTime: timestamp.add(const Duration(seconds: 10)),
+            note: 'First note',
+          ),
+          WeightEntry(
+            weightKg: 79.98,
+            dateTime: timestamp.add(const Duration(seconds: 20)),
+            note: 'Second note',
+          ),
+        ]);
+
+        final stored = await repository.getAllEntries();
+        expect(insertedCount, 0);
+        expect(stored, hasLength(1));
+        expect(stored.single.note, 'First note');
+      },
+    );
+
     test('clearAllData removes all entries', () async {
       await repository.addEntry(
         WeightEntry(weightKg: 90.0, dateTime: DateTime(2025, 5, 1)),
