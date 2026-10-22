@@ -132,7 +132,7 @@ void main() {
       },
     );
 
-    test('returns null when healthService throws during sync', () async {
+    test('aborts sync when healthService throws during fetch', () async {
       when(
         () => mockHealthService.fetchWeightHistory(
           start: any(named: 'start'),
@@ -143,6 +143,14 @@ void main() {
       final result = await coordinator.sync();
 
       expect(result, isNull);
+      verifyNever(() => mockRepository.getEntriesBetween(any(), any()));
+      verifyNever(() => mockRepository.syncRemoteEntries(any()));
+      verifyNever(
+        () => mockHealthService.writeWeight(
+          weightKg: any(named: 'weightKg'),
+          timestamp: any(named: 'timestamp'),
+        ),
+      );
     });
 
     test('mirrorWrite invokes healthService.writeWeight', () async {

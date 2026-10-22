@@ -578,23 +578,27 @@ void main() {
       expect(entries, isEmpty);
     });
 
-    test('returns an empty list when the plugin errors out', () async {
-      when(
-        () => health.getHealthDataFromTypes(
-          types: any(named: 'types'),
-          preferredUnits: any(named: 'preferredUnits'),
-          startTime: any(named: 'startTime'),
-          endTime: any(named: 'endTime'),
-        ),
-      ).thenThrow(Exception('Native query failed'));
+    test(
+      'rethrows plugin errors so callers can distinguish failed reads',
+      () async {
+        when(
+          () => health.getHealthDataFromTypes(
+            types: any(named: 'types'),
+            preferredUnits: any(named: 'preferredUnits'),
+            startTime: any(named: 'startTime'),
+            endTime: any(named: 'endTime'),
+          ),
+        ).thenThrow(Exception('Native query failed'));
 
-      final entries = await service.fetchWeightHistory(
-        start: DateTime(2026, 1, 1),
-        end: DateTime(2026, 1, 2),
-      );
-
-      expect(entries, isEmpty);
-    });
+        await expectLater(
+          service.fetchWeightHistory(
+            start: DateTime(2026, 1, 1),
+            end: DateTime(2026, 1, 2),
+          ),
+          throwsA(isA<Exception>()),
+        );
+      },
+    );
 
     test('filters out entries below minimum weight threshold', () async {
       final date = DateTime(2026, 1, 1, 8, 30);

@@ -81,9 +81,9 @@ abstract class HealthService {
 
 /// A native implementation of [HealthService] backed by the `health` plugin.
 ///
-/// All plugin calls are wrapped in try-catch blocks so missing Health Connect
-/// installations, revoked permissions, or platform errors degrade to `false`
-/// or an empty result instead of throwing unhandled exceptions. Permission
+/// Plugin calls report failures through the crash reporter. Permission and
+/// write operations degrade to `false`; history reads rethrow errors so a
+/// failed fetch cannot be confused with a successful empty result. Permission
 /// and settings calls are additionally bounded by a five-second timeout
 /// ([_operationTimeout]) whose expiry is treated as a failure.
 ///
@@ -359,7 +359,7 @@ class NativeHealthService implements HealthService {
   /// Non-numeric points and readings outside the plausible 20-300 kg range are
   /// discarded; duplicate readings within the same minute with the same weight
   /// are collapsed into a single entry; surviving entries are sorted newest first.
-  /// Any plugin error degrades to an empty list.
+  /// Plugin errors are reported and rethrown so sync callers can abort safely.
   /// [start] is the inclusive start of the query window.
   /// [end] is the inclusive end of the query window.
   @override
@@ -405,7 +405,7 @@ class NativeHealthService implements HealthService {
         reason: '[HealthService] fetchWeightHistory error',
         fatal: false,
       );
-      return const [];
+      rethrow;
     }
   }
 
