@@ -107,8 +107,15 @@ Future<void> main() async {
         await AppAnalytics.setAnalyticsCollectionEnabled(
           prefs.analyticsEnabled,
         );
-      } catch (_) {
-        // Privacy flags are best-effort; startup must never fail on them.
+      } catch (e, stack) {
+        // Privacy flags are best-effort; startup must never fail on them, but
+        // the failure must remain diagnosable.
+        await AppCrashReporter.recordError(
+          e,
+          stack,
+          reason: 'Failed to apply persisted privacy preferences',
+          fatal: false,
+        );
       }
     }
 

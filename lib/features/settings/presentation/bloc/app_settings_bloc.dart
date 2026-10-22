@@ -302,9 +302,15 @@ class AppSettingsBloc extends HydratedBloc<AppSettingsEvent, AppSettingsState> {
       await FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(
         event.enabled,
       );
-    } catch (_) {
+    } catch (e, stack) {
       // Collection flags are best-effort; a missing native binding must never
-      // break the settings toggle.
+      // break the settings toggle, but the failure must remain diagnosable.
+      await AppCrashReporter.recordError(
+        e,
+        stack,
+        reason: 'Failed to apply Crashlytics collection preference',
+        fatal: false,
+      );
     }
   }
 

@@ -48,8 +48,15 @@ class _WidgetPromoCardState extends State<WidgetPromoCard> {
       if (!mounted || installed.isNotEmpty) return;
       AppAnalytics.logWidgetPromoShown();
       setState(() => _eligible = true);
-    } catch (_) {
-      // Native widget integration unavailable: stay hidden.
+    } catch (e, stack) {
+      // Native widget integration unavailable: stay hidden, but keep the
+      // failure diagnosable.
+      await AppCrashReporter.recordError(
+        e,
+        stack,
+        reason: 'Widget promo eligibility check failed',
+        fatal: false,
+      );
     }
   }
 
