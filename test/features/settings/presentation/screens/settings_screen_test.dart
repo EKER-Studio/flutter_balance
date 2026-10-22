@@ -222,6 +222,17 @@ void main() {
     expect(find.text('INTEGRATIONS'), findsOneWidget);
   });
 
+  testWidgets('renders without overflow at 2.5x text scale', (tester) async {
+    tester.platformDispatcher.textScaleFactorTestValue = 2.5;
+    addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
+
+    await tester.pumpWidget(createTestWidget());
+    await tester.pumpAndSettle();
+
+    expect(tester.takeException(), isNull);
+    expect(find.text('PROFILE'), findsOneWidget);
+  });
+
   testWidgets('renders height value from settings', (tester) async {
     settingsBloc.add(const UpdateHeight(170.0));
     await tester.pumpWidget(createTestWidget());

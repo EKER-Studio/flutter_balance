@@ -138,6 +138,18 @@ class PillSegmentedControl<T> extends StatelessWidget {
       ),
     );
 
-    return expand ? container : Center(child: container);
+    if (expand) return container;
+
+    // Keep the control centered when it fits, but allow horizontal scrolling
+    // instead of overflowing when large text scaling makes it wider.
+    return LayoutBuilder(
+      builder: (context, constraints) => SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: ConstrainedBox(
+          constraints: BoxConstraints(minWidth: constraints.maxWidth),
+          child: Center(child: container),
+        ),
+      ),
+    );
   }
 }

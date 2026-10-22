@@ -98,6 +98,28 @@ void main() {
     },
   );
 
+  testWidgets('App honors large system text scale without clamping', (
+    tester,
+  ) async {
+    tester.platformDispatcher.textScaleFactorTestValue = 2.5;
+    addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
+
+    final settingsBloc = AppSettingsBloc();
+
+    await tester.pumpWidget(
+      BlocProvider<AppSettingsBloc>.value(
+        value: settingsBloc,
+        child: App(repositoryOverride: repository),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    final context = tester.element(find.text('Welcome to Balance'));
+    expect(MediaQuery.textScalerOf(context).scale(10), closeTo(25, 0.01));
+
+    settingsBloc.close();
+  });
+
   testWidgets('App renders MainNavigationScreen when onboarding is completed', (
     tester,
   ) async {

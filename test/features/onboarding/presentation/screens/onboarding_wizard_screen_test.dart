@@ -354,6 +354,19 @@ void main() {
       expect(tester.takeException(), isNull);
     });
 
+    testWidgets('renders cleanly at 2.5x text scale without overflow', (
+      tester,
+    ) async {
+      tester.platformDispatcher.textScaleFactorTestValue = 2.5;
+      addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
+
+      await tester.pumpWidget(buildSubject());
+      await tester.pumpAndSettle();
+
+      expect(find.text('Welcome to Balance'), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    });
+
     testWidgets(
       'shows validation error when height is invalid (e.g. 20 cm) and Next is pressed',
       (tester) async {

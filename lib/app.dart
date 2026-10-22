@@ -316,18 +316,6 @@ class _AppState extends State<App> {
             if (AppAnalytics.instance != null)
               FirebaseAnalyticsObserver(analytics: AppAnalytics.instance!),
           ],
-          builder: (context, child) {
-            final mediaQuery = MediaQuery.of(context);
-            return MediaQuery(
-              data: mediaQuery.copyWith(
-                textScaler: mediaQuery.textScaler.clamp(
-                  minScaleFactor: 0.85,
-                  maxScaleFactor: 2.0,
-                ),
-              ),
-              child: child ?? const SizedBox.shrink(),
-            );
-          },
           home: widget.repositoryOverride != null
               ? _buildAppContent(
                   widget.repositoryOverride!,

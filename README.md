@@ -219,7 +219,7 @@ The script automatically executes and validates:
 3. `dart run build_runner build` — Regenerates Isar and Injectable code
 4. `dart format lib test integration_test test_driver` — Applies formatting and rejects unstaged changes
 5. `flutter analyze` — Static linter verification (0 warnings/errors)
-6. `flutter test --coverage --exclude-tags golden,screenshot` — Comprehensive automated test suite (1241 passing tests)
+6. `flutter test --coverage --exclude-tags golden,screenshot` — Comprehensive automated test suite (1246 passing tests)
 7. `flutter build apk --debug` — Android compilation integrity check
 
 Or execute unit/widget tests directly:

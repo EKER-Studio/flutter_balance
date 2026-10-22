@@ -934,5 +934,53 @@ void main() {
         expect(find.text('Weight', skipOffstage: false), findsOneWidget);
       },
     );
+
+    testWidgets('renders loaded content without overflow at 2.5x text scale', (
+      tester,
+    ) async {
+      tester.view.physicalSize = const Size(800, 3000);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+
+      final entries = [
+        WeightEntry(id: 1, weightKg: 70.0, dateTime: DateTime(2026, 8, 1)),
+        WeightEntry(id: 2, weightKg: 71.0, dateTime: DateTime(2026, 8, 2)),
+        WeightEntry(id: 3, weightKg: 72.0, dateTime: DateTime(2026, 8, 3)),
+      ];
+
+      when(() => weightBloc.state).thenReturn(
+        WeightLoaded(
+          entries: entries,
+          filteredEntries: entries,
+          timePeriod: TimePeriod.week,
+          heightCm: 175.0,
+        ),
+      );
+      when(() => weightBloc.stream).thenAnswer(
+        (_) => Stream.value(
+          WeightLoaded(
+            entries: entries,
+            filteredEntries: entries,
+            timePeriod: TimePeriod.week,
+            heightCm: 175.0,
+          ),
+        ),
+      );
+
+      await tester.pumpWidget(
+        createTestWidget(
+          const MediaQuery(
+            data: MediaQueryData(textScaler: TextScaler.linear(2.5)),
+            child: TodayScreen(),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(tester.takeException(), isNull);
+      expect(find.text('7-day avg', skipOffstage: false), findsOneWidget);
+      expect(find.text('Weight', skipOffstage: false), findsOneWidget);
+    });
   });
 }
