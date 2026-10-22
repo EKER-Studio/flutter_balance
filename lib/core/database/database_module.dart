@@ -65,10 +65,14 @@ class DatabaseModule {
             '[DatabaseModule] Failed to read encryption key from secure storage',
         fatal: false,
       );
+      rethrow;
     }
 
-    if (stored != null && stored.isNotEmpty) {
+    if (stored != null) {
       try {
+        if (stored.isEmpty) {
+          throw const FormatException('Stored encryption key is empty');
+        }
         final decoded = base64Decode(stored);
         if (decoded.length == 32) {
           return Uint8List.fromList(decoded);
@@ -82,53 +86,44 @@ class DatabaseModule {
     }
 
     // 2. Migration: Check for legacy unencrypted file on disk
-    File? legacyKeyFile;
-    try {
-      final dirPath =
-          directoryPath ?? (await getApplicationDocumentsDirectory()).path;
-      legacyKeyFile = File('$dirPath/$_legacyEncryptionKeyFileName');
+    final dirPath =
+        directoryPath ?? (await getApplicationDocumentsDirectory()).path;
+    final legacyKeyFile = File('$dirPath/$_legacyEncryptionKeyFileName');
 
-      if (await legacyKeyFile.exists()) {
-        final content = (await legacyKeyFile.readAsString()).trim();
-        if (content.isNotEmpty) {
-          final decoded = base64Decode(content);
-          if (decoded.length == 32) {
-            try {
-              await _secureStorage.write(
-                key: _encryptionKeyKey,
-                value: content,
-              );
-            } catch (e, stack) {
-              AppCrashReporter.recordError(
-                e,
-                stack,
-                reason:
-                    '[DatabaseModule] Failed to migrate legacy key to secure storage',
-                fatal: false,
-              );
-            }
-            try {
-              await legacyKeyFile.delete();
-            } catch (e, stack) {
-              AppCrashReporter.recordError(
-                e,
-                stack,
-                reason:
-                    '[DatabaseModule] Failed to delete legacy key file after migration',
-                fatal: false,
-              );
-            }
-            return Uint8List.fromList(decoded);
-          }
-        }
+    if (await legacyKeyFile.exists()) {
+      final content = (await legacyKeyFile.readAsString()).trim();
+      final decoded = base64Decode(content);
+      if (decoded.length != 32) {
+        throw FormatException(
+          'Malformed legacy encryption key: expected 32 bytes, got ${decoded.length}',
+        );
       }
-    } catch (e, stack) {
-      AppCrashReporter.recordError(
-        e,
-        stack,
-        reason: '[DatabaseModule] Error checking legacy encryption key file',
-        fatal: false,
-      );
+
+      try {
+        await _secureStorage.write(key: _encryptionKeyKey, value: content);
+      } catch (e, stack) {
+        AppCrashReporter.recordError(
+          e,
+          stack,
+          reason:
+              '[DatabaseModule] Failed to migrate legacy key to secure storage',
+          fatal: false,
+        );
+        rethrow;
+      }
+
+      try {
+        await legacyKeyFile.delete();
+      } catch (e, stack) {
+        AppCrashReporter.recordError(
+          e,
+          stack,
+          reason:
+              '[DatabaseModule] Failed to delete legacy key file after migration',
+          fatal: false,
+        );
+      }
+      return Uint8List.fromList(decoded);
     }
 
     // 3. Generate fresh 256-bit key and persist exclusively to secure storage
@@ -147,6 +142,7 @@ class DatabaseModule {
             '[DatabaseModule] Failed to write new encryption key to secure storage',
         fatal: false,
       );
+      rethrow;
     }
 
     return key;

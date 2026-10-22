@@ -360,6 +360,69 @@ void main() {
         throwsA(isA<FormatException>()),
       );
     });
+
+    test('does not replace a key when secure storage read fails', () async {
+      final log = <MethodCall>[];
+      messenger.setMockMethodCallHandler(secureStorageChannel, (
+        MethodCall call,
+      ) async {
+        log.add(call);
+        if (call.method == 'read') {
+          throw PlatformException(code: 'read-failed');
+        }
+        return null;
+      });
+
+      await expectLater(
+        DatabaseModule.getEncryptionKey(tempDir.path),
+        throwsA(isA<PlatformException>()),
+      );
+      expect(log.map((call) => call.method), ['read']);
+    });
+
+    test(
+      'preserves the legacy key when secure storage migration fails',
+      () async {
+        final legacyKey = List<int>.generate(32, (i) => i + 20);
+        final keyFile = File('${tempDir.path}/balance_v1.key')
+          ..writeAsStringSync(base64Encode(legacyKey));
+
+        messenger.setMockMethodCallHandler(secureStorageChannel, (
+          MethodCall call,
+        ) async {
+          if (call.method == 'write') {
+            throw PlatformException(code: 'write-failed');
+          }
+          return null;
+        });
+
+        await expectLater(
+          DatabaseModule.getEncryptionKey(tempDir.path),
+          throwsA(isA<PlatformException>()),
+        );
+        expect(keyFile.existsSync(), isTrue);
+        expect(base64Decode(keyFile.readAsStringSync()), legacyKey);
+      },
+    );
+
+    test(
+      'does not return an unpersisted new key when secure storage write fails',
+      () async {
+        messenger.setMockMethodCallHandler(secureStorageChannel, (
+          MethodCall call,
+        ) async {
+          if (call.method == 'write') {
+            throw PlatformException(code: 'write-failed');
+          }
+          return null;
+        });
+
+        await expectLater(
+          DatabaseModule.getEncryptionKey(tempDir.path),
+          throwsA(isA<PlatformException>()),
+        );
+      },
+    );
   });
 
   group('DatabaseModule initialize', () {
