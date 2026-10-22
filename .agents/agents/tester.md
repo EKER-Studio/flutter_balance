@@ -29,7 +29,7 @@ Project rules in `AGENTS.md` and `agents_project.md` always take precedence over
 Run the steps sequentially as defined in `agents_project.md`:
 1. `flutter pub get` (if `pubspec.yaml` was modified)
 2. `flutter gen-l10n` (if `l10n.yaml` is present)
-3. `dart run build_runner build --delete-conflicting-outputs` (if generated code is affected)
+3. `dart run build_runner build` (if generated code is affected)
 4. `dart format lib test`
 5. `flutter analyze`
 6. `flutter test --exclude-tags golden`

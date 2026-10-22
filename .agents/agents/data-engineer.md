@@ -45,7 +45,7 @@ Project rules in `AGENTS.md` and `agents_project.md` always take precedence over
 
 1. **Local verification:**
    - When modifying schemas or injectable modules, run:
-     `dart run build_runner build --delete-conflicting-outputs`
+     `dart run build_runner build`
    - Format modified files: `dart format lib test`
 2. **Handoff to Architect:**
    - Report created/modified files.
