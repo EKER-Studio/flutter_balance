@@ -29,7 +29,13 @@ import 'package:balance/features/settings/presentation/widgets/sections/settings
 /// measurement unit, daily reminder, biometric lock, and managing CSV import/export/wipe functionality.
 /// On wide layouts, the sections are arranged in a two-column grid.
 class SettingsScreen extends StatefulWidget {
-  const SettingsScreen({super.key});
+  /// Whether device authentication is available, or `null` to query the platform.
+  final Future<bool>? biometricAvailability;
+
+  /// Creates the settings screen.
+  ///
+  /// [biometricAvailability] can override the native capability check.
+  const SettingsScreen({super.key, this.biometricAvailability});
 
   @override
   State<SettingsScreen> createState() => _SettingsScreenState();
@@ -43,7 +49,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
   @override
   void initState() {
     super.initState();
-    _isBiometricAvailable = BiometricService.instance.canAuthenticate();
+    _isBiometricAvailable =
+        widget.biometricAvailability ??
+        BiometricService.instance.canAuthenticate();
   }
 
   @override
