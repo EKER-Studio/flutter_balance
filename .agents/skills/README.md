@@ -45,6 +45,9 @@ The following 10 skills are copied **verbatim** from
    - `flutter-add-integration-test` includes Flutter Driver setup. This project uses `integration_test`;
      do not enable a Flutter Driver extension unless explicitly migrating legacy `flutter_driver` tests
      and confirming the extension is needed.
+   - `flutter-use-http-package` includes a `FutureBuilder` UI example and suggests adding `http`.
+     Use only its transport guidance here: keep requests in the data layer, map errors to domain
+     `Failure`s, expose state through BLoC, and flag dependency changes before adding a package.
    - `flutter-setup-localization` describes bootstrapping a new app. This project already uses
      `l10n.yaml`, ARB files and `flutter gen-l10n`; use the skill as a reference only.
    - Steps that require Dart/Flutter MCP tools are optional. When MCP is not configured, use the

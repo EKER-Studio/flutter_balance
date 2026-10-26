@@ -18,7 +18,7 @@ You write pure Dart and data layer implementations — you never touch the prese
 When executing data, domain, or persistence tasks, you MUST actively leverage the skills in `.agents/skills/`:
 - **`bloc-audit`**: Load only when the user requests an architecture audit; it is an audit procedure, not an implementation guide.
 - **`flutter-implement-json-serialization`**: Standard schema mapping and serialization conventions.
-- **`flutter-use-http-package`**: HTTP request conventions for remote sync/imports; always keep networking behind a repository interface.
+- **`flutter-use-http-package`**: Use only for HTTP transport details. Keep requests behind data sources and repository interfaces, map failures to domain `Failure`s, and expose asynchronous state through BLoC. Check `pubspec.yaml` first and flag any dependency addition per `AGENTS.md`.
 
 Project rules in `AGENTS.md` and `agents_project.md` always take precedence over generic skill guidance.
 
