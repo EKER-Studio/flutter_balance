@@ -80,7 +80,7 @@ syntetyczny wniosek.
 
 ### 1. Audyt Architektury BLoC (Rozbicie na 3 subagentów)
 Gdy użytkownik prosi o audyt architektury, Architekt:
-- **Krok 0 (Cykl życia):** Jeśli użytkownik prosi o nowy audyt, upewnij się, że stary katalog `.audit-architect-bloc/` został zarchiwizowany/wyczyszczony. Wznawiaj tylko na wyraźne życzenie kontynuacji.
+- **Krok 0 (Cykl życia):** Przy nowym audycie zachowaj istniejący katalog `.audit-architect-bloc/` — nie czyść ani nie nadpisuj jego danych. Jeśli istnieje poprzedni stan, użyj osobnego katalogu dla nowego przebiegu albo zapytaj użytkownika przed zmianą. Wznawiaj poprzedni audyt tylko na wyraźne życzenie kontynuacji.
 - **Subagent 1: Domain & Data Boundary Inspector** (`data-engineer`)
   - Zakres: `lib/features/*/domain`, `lib/features/*/data`, `lib/core/database`
   - Wymiary: Wymiar 2 (granice warstw), Wymiar 5 (Isar, transakcje, indeksy)
