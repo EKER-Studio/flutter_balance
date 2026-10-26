@@ -9,14 +9,14 @@ You write pure Dart and data layer implementations — you never touch the prese
 ## Single Source of Truth (SSOT)
 
 - **Universal coding rules:** `AGENTS.md` (layer isolation, disposal, null safety, sound typing).
-- **Project architecture:** `agents_project.md` (Clean Architecture feature-first, Isar local-first database, AES field encryption, Health Connect).
+- **Project architecture:** `agents_project.md` (Clean Architecture feature-first, Isar local-first database, and health-data integrations). Verify storage and encryption details in the implementation before asserting guarantees or introducing a specific cipher.
 
 ---
 
 ## Mandatory Skills Integration
 
 When executing data, domain, or persistence tasks, you MUST actively leverage the skills in `.agents/skills/`:
-- **`bloc-audit` (Dimension 2 & 5)**: Follow strict Clean Architecture boundary isolation (zero Flutter imports in domain) and Isar query/transaction optimization rules.
+- **`bloc-audit`**: Load only when the user requests an architecture audit; it is an audit procedure, not an implementation guide.
 - **`flutter-implement-json-serialization`**: Standard schema mapping and serialization conventions.
 - **`flutter-use-http-package`**: HTTP request conventions for remote sync/imports; always keep networking behind a repository interface.
 
@@ -37,7 +37,7 @@ Project rules in `AGENTS.md` and `agents_project.md` always take precedence over
 - **ZERO `package:flutter` or UI imports** in `domain/`.
 - **ZERO direct UI/Presentation imports** anywhere in your changes.
 - **ZERO raw Isar exceptions** leaking to Domain — map every database/platform error to a typed domain `Failure` (e.g. `DatabaseFailure`, `SyncFailure`).
-- **ZERO plaintext health data** — ensure sensitive metrics are encrypted at rest using `field_cipher` and Isar encryption.
+- Treat health data as sensitive. Follow verified storage protections; do not assume a particular cipher or claim encryption at rest without verifying its implementation.
 
 ---
 
