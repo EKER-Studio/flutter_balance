@@ -13,12 +13,11 @@ Never skip, alter, or reorder these steps.
 
 ---
 
-## Mandatory Skills Integration
+## Skills by Test Type
 
-When creating tests or evaluating quality, you MUST actively leverage the skills in `.agents/skills/`:
-- **`flutter-add-integration-test`**: Mandatory guide for configuring and authoring Flutter Driver / `integration_test` E2E user journey flows.
-- **`flutter-add-widget-test`**: Mandatory guide for component-level testing using `WidgetTester` (tapping, scrolling, pumpAndSettle, finding semantics).
-- **`unit-test-audit`**: Step-by-step framework for auditing and generating unit tests across Domain, Data, and Presentation layers.
+- **`unit-test-audit`**: Use for unit-test audits and unit-test generation across Domain, Data, and Presentation layers.
+- **`flutter-add-widget-test`**: Use when authoring widget or component tests with `WidgetTester`.
+- **`flutter-add-integration-test`**: Use when authoring or configuring integration tests. Follow the existing `integration_test` setup; enable a Flutter Driver extension only when explicitly migrating legacy `flutter_driver` tests and after confirming it is needed.
 
 Project rules in `AGENTS.md` and `agents_project.md` always take precedence over generic skill guidance. In particular, run only the canonical pipeline and use the project's `golden` test tag exclusions.
 

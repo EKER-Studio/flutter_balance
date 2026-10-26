@@ -42,6 +42,9 @@ The following 10 skills are copied **verbatim** from
    - `flutter-apply-architecture-best-practices` recommends MVVM with `ChangeNotifier`. This project
      mandates **Clean Architecture + BLoC (`flutter_bloc`)**; use the skill only for layer-boundary
      concepts, never to replace BLoC.
+   - `flutter-add-integration-test` includes Flutter Driver setup. This project uses `integration_test`;
+     do not enable a Flutter Driver extension unless explicitly migrating legacy `flutter_driver` tests
+     and confirming the extension is needed.
    - `flutter-setup-localization` describes bootstrapping a new app. This project already uses
      `l10n.yaml`, ARB files and `flutter gen-l10n`; use the skill as a reference only.
    - Steps that require Dart/Flutter MCP tools are optional. When MCP is not configured, use the
