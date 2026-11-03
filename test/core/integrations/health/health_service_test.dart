@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:health/health.dart';
@@ -26,12 +28,10 @@ class _ThrowingPermissionHandler extends PermissionHandlerPlatform {
       throw Exception('Native settings channel unavailable');
 }
 
-/// Permission platform stub whose [openAppSettings] delays beyond the service
-/// timeout threshold, simulating an unresponsive native channel.
-class _SlowPermissionHandler extends PermissionHandlerPlatform {
+/// Permission platform stub whose settings request never completes.
+class _PendingPermissionHandler extends PermissionHandlerPlatform {
   @override
-  Future<bool> openAppSettings() async =>
-      Future.delayed(const Duration(seconds: 6), () => true);
+  Future<bool> openAppSettings() => Completer<bool>().future;
 }
 
 /// Permission platform stub that tracks invocation count.
@@ -477,42 +477,50 @@ void main() {
   });
 
   group('NativeHealthService timeout behavior', () {
+    NativeHealthService serviceWithImmediateTimeout() =>
+        NativeHealthService.withTimeout(
+          health: health,
+          platformDetector: platformDetector,
+          operationTimeout: Duration.zero,
+        );
+
     test(
-      'hasPermissions falls back to false when plugin exceeds timeout',
+      'hasPermissions falls back to false when plugin does not complete',
       () async {
+        final timedService = serviceWithImmediateTimeout();
         when(
           () => health.hasPermissions(
             any(),
             permissions: any(named: 'permissions'),
           ),
-        ).thenAnswer((_) async => Future.delayed(const Duration(seconds: 6)));
+        ).thenAnswer((_) => Completer<bool>().future);
 
-        expect(await service.hasPermissions(), isFalse);
+        expect(await timedService.hasPermissions(), isFalse);
       },
     );
 
     test(
-      'requestPermissions falls back to false when plugin exceeds timeout',
+      'requestPermissions falls back to false when plugin does not complete',
       () async {
+        final timedService = serviceWithImmediateTimeout();
         when(
           () => health.requestAuthorization(
             any(),
             permissions: any(named: 'permissions'),
           ),
-        ).thenAnswer(
-          (_) async => Future.delayed(const Duration(seconds: 6), () => true),
-        );
+        ).thenAnswer((_) => Completer<bool>().future);
 
-        expect(await service.requestPermissions(), isFalse);
+        expect(await timedService.requestPermissions(), isFalse);
       },
     );
 
     test(
-      'openSystemSettings falls back to false when plugin exceeds timeout',
+      'openSystemSettings falls back to false when platform does not complete',
       () async {
-        PermissionHandlerPlatform.instance = _SlowPermissionHandler();
+        final timedService = serviceWithImmediateTimeout();
+        PermissionHandlerPlatform.instance = _PendingPermissionHandler();
 
-        expect(await service.openSystemSettings(), isFalse);
+        expect(await timedService.openSystemSettings(), isFalse);
       },
     );
   });
