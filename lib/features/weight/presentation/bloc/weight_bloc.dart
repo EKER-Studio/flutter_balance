@@ -348,14 +348,32 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
   /// best-effort basis; failures are logged and reported to Crashlytics but never propagated.
   Future<void> _mirrorWriteToHealth(WeightEntry entry) async {
     if (!_isHealthSyncEnabled) return;
-    await _healthSyncCoordinator.mirrorWrite(entry);
+    try {
+      await _healthSyncCoordinator.mirrorWrite(entry);
+    } catch (e, stack) {
+      AppCrashReporter.recordError(
+        e,
+        stack,
+        reason: '[WeightBloc] Failed to mirror weight to health service',
+        fatal: false,
+      );
+    }
   }
 
   /// Mirrors a local deletion of [entry] to the health platform on a
   /// best-effort basis; failures are logged and reported to Crashlytics but never propagated.
   Future<void> _mirrorDeleteToHealth(WeightEntry entry) async {
     if (!_isHealthSyncEnabled) return;
-    await _healthSyncCoordinator.mirrorDelete(entry.weightKg, entry.dateTime);
+    try {
+      await _healthSyncCoordinator.mirrorDelete(entry.weightKg, entry.dateTime);
+    } catch (e, stack) {
+      AppCrashReporter.recordError(
+        e,
+        stack,
+        reason: '[WeightBloc] Failed to delete weight from health service',
+        fatal: false,
+      );
+    }
   }
 
   /// Mirrors an updated [newEntry] to the health platform by removing the
@@ -370,12 +388,22 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
     final isWeightChanged = oldEntry.weightKg != newEntry.weightKg;
     final isTimeChanged = oldEntry.dateTime != newEntry.dateTime;
 
-    if (isWeightChanged || isTimeChanged) {
-      await _healthSyncCoordinator.mirrorDelete(
-        oldEntry.weightKg,
-        oldEntry.dateTime,
+    try {
+      if (isWeightChanged || isTimeChanged) {
+        await _healthSyncCoordinator.mirrorDelete(
+          oldEntry.weightKg,
+          oldEntry.dateTime,
+        );
+        await _healthSyncCoordinator.mirrorWrite(newEntry);
+      }
+    } catch (e, stack) {
+      AppCrashReporter.recordError(
+        e,
+        stack,
+        reason:
+            '[WeightBloc] Failed to mirror updated weight to health service',
+        fatal: false,
       );
-      await _healthSyncCoordinator.mirrorWrite(newEntry);
     }
   }
 
@@ -387,12 +415,26 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
   ) async {
     if (!_isHealthSyncEnabled || _settingsBloc == null) return;
     AppAnalytics.logHealthSyncStarted();
-    final result = await _healthSyncCoordinator.sync(
-      startDate: event.startDate,
-      lastSyncTime: _settingsBloc.state.lastHealthSyncTimestamp,
-    );
-    if (result != null) {
-      _settingsBloc.add(UpdateLastHealthSyncTimestamp(result.syncTimestamp));
+    try {
+      final result = await _healthSyncCoordinator.sync(
+        startDate: event.startDate,
+        lastSyncTime: _settingsBloc.state.lastHealthSyncTimestamp,
+      );
+      if (result != null) {
+        AppAnalytics.logHealthSyncSuccess(
+          remoteCount: result.remoteCount,
+          pushedLocalCount: result.pushedLocalCount,
+        );
+        _settingsBloc.add(UpdateLastHealthSyncTimestamp(result.syncTimestamp));
+      }
+    } catch (e, stack) {
+      AppAnalytics.logHealthSyncFailed(e.runtimeType.toString());
+      AppCrashReporter.recordError(
+        e,
+        stack,
+        reason: '[WeightBloc] Health synchronization failed',
+        fatal: false,
+      );
     }
   }
 
