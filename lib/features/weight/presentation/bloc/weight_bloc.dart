@@ -636,7 +636,8 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
   /// from the hydrated JSON map, defaulting to [TimePeriod.week].
   @override
   WeightState? fromJson(Map<String, dynamic> json) {
-    final periodString = json['timePeriod'] as String?;
+    final periodValue = json['timePeriod'];
+    final periodString = periodValue is String ? periodValue : null;
     final period = periodString != null
         ? TimePeriod.values.firstWhere(
             (e) => e.name == periodString,
@@ -645,7 +646,9 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
         : TimePeriod.week;
 
     return WeightInitial(
-      heightCm: (json['heightCm'] as num?)?.toDouble(),
+      heightCm: json['heightCm'] is num
+          ? (json['heightCm'] as num).toDouble()
+          : null,
       timePeriod: period,
     );
   }

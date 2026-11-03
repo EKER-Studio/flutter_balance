@@ -759,6 +759,15 @@ void main() {
       },
     );
 
+    test('fromJson defaults fields with unexpected JSON types', () {
+      final bloc = WeightBloc(repository: repository);
+      final state = bloc.fromJson({'heightCm': '170', 'timePeriod': 42});
+
+      expect(state, isA<WeightInitial>());
+      expect(state!.heightCm, isNull);
+      expect(state.timePeriod, TimePeriod.week);
+    });
+
     test('close cancels stream subscription cleanly', () async {
       final bloc = WeightBloc(repository: repository);
       await bloc.close();
