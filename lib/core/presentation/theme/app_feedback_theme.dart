@@ -21,4 +21,28 @@ abstract final class AppFeedbackTheme {
   static const Color infoBackgroundDark = Color(0xFF121C2B);
   static const Color infoForegroundLight = Color(0xFF0A56D1);
   static const Color infoForegroundDark = Color(0xFFA8C7FA);
+
+  /// Returns the success background for the requested theme brightness.
+  static Color successBackgroundFor({required bool isDark}) =>
+      isDark ? successBackgroundDark : successBackgroundLight;
+
+  /// Returns the success foreground for the requested theme brightness.
+  static Color successForegroundFor({required bool isDark}) =>
+      isDark ? successForegroundDark : successForegroundLight;
+
+  /// Returns the warning background for the requested theme brightness.
+  static Color warningBackgroundFor({required bool isDark}) =>
+      isDark ? warningBackgroundDark : warningBackgroundLight;
+
+  /// Returns the warning foreground for the requested theme brightness.
+  static Color warningForegroundFor({required bool isDark}) =>
+      isDark ? warningForegroundDark : warningForegroundLight;
+
+  /// Returns the informational foreground for the requested theme brightness.
+  static Color infoForegroundFor({required bool isDark}) =>
+      isDark ? infoForegroundDark : infoForegroundLight;
+
+  /// Returns the error foreground for the requested theme brightness.
+  static Color errorForegroundFor({required bool isDark}) =>
+      isDark ? errorForegroundDark : errorForegroundLight;
 }

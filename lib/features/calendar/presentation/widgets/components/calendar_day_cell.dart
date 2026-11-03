@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:balance/core/presentation/theme/app_feedback_theme.dart';
 import 'package:balance/features/weight/domain/weight_goal_mode.dart';
 import 'package:balance/features/weight/domain/entities/weight_entry.dart';
 import 'package:balance/l10n/app_localizations.dart';
@@ -91,7 +92,7 @@ class CalendarDayCell extends StatelessWidget {
 
     final isDark = theme.brightness == Brightness.dark;
 
-    final green = isDark ? Colors.green.shade300 : Colors.green.shade700;
+    final green = AppFeedbackTheme.successForegroundFor(isDark: isDark);
     final blue = colorScheme.primary;
 
     bool isEntryGoalAchieved(WeightEntry e) {

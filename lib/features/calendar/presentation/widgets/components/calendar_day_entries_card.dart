@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import 'package:balance/core/presentation/theme/app_feedback_theme.dart';
 import 'package:balance/core/models/measurement_unit.dart';
 import 'package:balance/core/utils/analytics.dart';
 import 'package:balance/core/utils/unit_converter.dart';
@@ -73,11 +74,12 @@ class CalendarDayEntriesCard extends StatelessWidget {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
             decoration: BoxDecoration(
-              color: Colors.green.withValues(alpha: 0.15),
+              color: AppFeedbackTheme.successBackgroundFor(isDark: isDark),
               borderRadius: BorderRadius.circular(16),
               border: Border.all(
-                color: (isDark ? Colors.green.shade300 : Colors.green.shade700)
-                    .withValues(alpha: 0.4),
+                color: AppFeedbackTheme.successForegroundFor(
+                  isDark: isDark,
+                ).withValues(alpha: 0.4),
                 width: 1,
               ),
             ),
@@ -86,9 +88,9 @@ class CalendarDayEntriesCard extends StatelessWidget {
                 ExcludeSemantics(
                   child: Icon(
                     Icons.check_circle_outline,
-                    color: isDark
-                        ? Colors.green.shade300
-                        : Colors.green.shade700,
+                    color: AppFeedbackTheme.successForegroundFor(
+                      isDark: isDark,
+                    ),
                     size: 22,
                   ),
                 ),
@@ -98,9 +100,9 @@ class CalendarDayEntriesCard extends StatelessWidget {
                     l10n.goalAchievedOnDayBanner,
                     style: Theme.of(context).textTheme.labelMedium?.copyWith(
                       fontWeight: FontWeight.bold,
-                      color: isDark
-                          ? Colors.green.shade300
-                          : Colors.green.shade700,
+                      color: AppFeedbackTheme.successForegroundFor(
+                        isDark: isDark,
+                      ),
                     ),
                   ),
                 ),
@@ -174,8 +176,10 @@ class CalendarDayEntriesCard extends StatelessWidget {
                                       decoration: BoxDecoration(
                                         color: meetsGoal
                                             ? (isDark
-                                                  ? Colors.green.shade300
-                                                  : Colors.green.shade700)
+                                                  ? AppFeedbackTheme
+                                                        .successForegroundDark
+                                                  : AppFeedbackTheme
+                                                        .successForegroundLight)
                                             : cs.primary,
                                         shape: BoxShape.circle,
                                       ),

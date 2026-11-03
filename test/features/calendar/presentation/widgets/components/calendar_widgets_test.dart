@@ -4,6 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:balance/core/models/measurement_unit.dart';
+import 'package:balance/core/presentation/theme/app_feedback_theme.dart';
 import 'package:balance/features/weight/domain/entities/weight_entry.dart';
 import 'package:balance/features/settings/presentation/bloc/first_day_of_week.dart';
 import 'package:balance/features/weight/domain/repositories/weight_repository.dart';
@@ -206,7 +207,7 @@ void main() {
           (c) => c.constraints?.maxWidth == 4 && c.constraints?.maxHeight == 4,
         );
     final decoration = dotContainer.decoration as BoxDecoration;
-    expect(decoration.color, Colors.green.shade700);
+    expect(decoration.color, AppFeedbackTheme.successForegroundLight);
   });
 
   testWidgets(
@@ -614,7 +615,7 @@ void main() {
       final settingsBloc = MockAppSettingsBloc();
       when(() => settingsBloc.state).thenReturn(const AppSettingsState());
       final weightBloc = MockWeightBloc();
-      when(() => weightBloc.state).thenReturn(const WeightInitial());
+      when(() => weightBloc.state).thenReturn(WeightInitial());
 
       await tester.pumpWidget(
         MultiBlocProvider(
@@ -667,7 +668,7 @@ void main() {
     final settingsBloc = MockAppSettingsBloc();
     when(() => settingsBloc.state).thenReturn(const AppSettingsState());
     final weightBloc = MockWeightBloc();
-    when(() => weightBloc.state).thenReturn(const WeightInitial());
+    when(() => weightBloc.state).thenReturn(WeightInitial());
 
     await tester.pumpWidget(
       MultiBlocProvider(
