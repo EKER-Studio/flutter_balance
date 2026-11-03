@@ -105,6 +105,23 @@ void main() {
   });
 
   group('legacy fallback (pre-HMAC payload)', () {
+    test('identifies legacy and authenticated payload formats', () {
+      final keyBytes = makeKey(42);
+      final encKey = enc.Key(keyBytes);
+      final iv = enc.IV.fromSecureRandom(16);
+      final encrypter = enc.Encrypter(enc.AES(encKey, mode: enc.AESMode.cbc));
+      final encrypted = encrypter.encrypt('legacy', iv: iv);
+      final legacyBytes = Uint8List(16 + encrypted.bytes.length)
+        ..setRange(0, 16, iv.bytes)
+        ..setRange(16, 16 + encrypted.bytes.length, encrypted.bytes);
+
+      expect(FieldCipher.isLegacyPayload(base64Encode(legacyBytes)), isTrue);
+      expect(
+        FieldCipher.isLegacyPayload(FieldCipher.encrypt('current', keyBytes)),
+        isFalse,
+      );
+    });
+
     test('decrypts a legacy IV+ciphertext payload', () {
       final keyBytes = makeKey(42);
       final encKey = enc.Key(keyBytes);

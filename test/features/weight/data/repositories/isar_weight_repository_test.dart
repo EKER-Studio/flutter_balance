@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:isar_community/isar.dart';
+import 'package:encrypt/encrypt.dart' as enc;
 import 'package:mocktail/mocktail.dart';
 import 'package:balance/core/utils/field_cipher.dart';
 import 'package:balance/features/weight/data/models/weight_entry_model.dart';
@@ -29,6 +30,18 @@ Future<void> waitUntil(
     }
     await Future<void>.delayed(const Duration(milliseconds: 50));
   }
+}
+
+String encryptLegacy(String value, Uint8List keyBytes) {
+  final iv = enc.IV.fromSecureRandom(16);
+  final encrypter = enc.Encrypter(
+    enc.AES(enc.Key(keyBytes), mode: enc.AESMode.cbc),
+  );
+  final encrypted = encrypter.encrypt(value, iv: iv);
+  final combined = Uint8List(16 + encrypted.bytes.length)
+    ..setRange(0, 16, iv.bytes)
+    ..setRange(16, 16 + encrypted.bytes.length, encrypted.bytes);
+  return base64Encode(combined);
 }
 
 void main() {
@@ -71,6 +84,30 @@ void main() {
   });
 
   group('IsarWeightRepository Cryptographic & Fallback Tests', () {
+    test('upgrades legacy ciphertext after a successful read', () async {
+      final legacyModel = WeightEntryModel()
+        ..encryptedWeight = encryptLegacy('77.5', testKeyA)
+        ..encryptedNote = encryptLegacy('legacy note', testKeyA)
+        ..dateTime = DateTime(2026, 7, 29, 10);
+      await isar.writeTxn(() async {
+        await isar.weightEntryModels.put(legacyModel);
+      });
+
+      final entries = await repository.getAllEntries();
+      final stored = await isar.weightEntryModels.get(legacyModel.id);
+
+      expect(entries.single.weightKg, 77.5);
+      expect(entries.single.note, 'legacy note');
+      expect(stored, isNotNull);
+      expect(FieldCipher.isLegacyPayload(stored!.encryptedWeight), isFalse);
+      expect(FieldCipher.isLegacyPayload(stored.encryptedNote!), isFalse);
+      expect(FieldCipher.decrypt(stored.encryptedWeight, testKeyA), '77.5');
+      expect(
+        FieldCipher.decrypt(stored.encryptedNote!, testKeyA),
+        'legacy note',
+      );
+    });
+
     test(
       'CASE 1 (Happy Path): Write encrypts data as Base64 ciphertext on disk and decrypts to original entity on read',
       () async {
@@ -134,7 +171,7 @@ void main() {
     );
 
     test(
-      'CASE 2 (Corrupted/Changed Key): Read with wrong key does not crash and returns fallback object',
+      'CASE 2 (Corrupted/Changed Key): Read with wrong key returns a typed read failure',
       () async {
         final repoKeyA = IsarWeightRepository(
           isar: isar,
@@ -153,10 +190,16 @@ void main() {
 
         await repoKeyA.addEntry(entry);
 
-        final entries = await repoKeyB.getAllEntries();
-        expect(entries.length, 1);
-        expect(entries.first.weightKg, 0.0);
-        expect(entries.first.note, contains('Decryption Error'));
+        await expectLater(
+          repoKeyB.getAllEntries(),
+          throwsA(
+            isA<WeightDatabaseFailure>().having(
+              (error) => error.type,
+              'type',
+              WeightErrorType.readFailed,
+            ),
+          ),
+        );
       },
     );
 
@@ -190,7 +233,7 @@ void main() {
     );
 
     test(
-      'CASE 4 (Malformed Data in DB): Handles non-Base64 malformed payload safely with fallback object',
+      'CASE 4 (Malformed Data in DB): Maps malformed ciphertext to a typed read failure',
       () async {
         final malformedModel = WeightEntryModel()
           ..encryptedWeight = r'%%%THIS_IS_NOT_BASE64$$$'
@@ -201,10 +244,16 @@ void main() {
           await isar.weightEntryModels.put(malformedModel);
         });
 
-        final entries = await repository.getAllEntries();
-        expect(entries.length, 1);
-        expect(entries.first.weightKg, 0.0);
-        expect(entries.first.note, contains('Decryption Error'));
+        await expectLater(
+          repository.getAllEntries(),
+          throwsA(
+            isA<WeightDatabaseFailure>().having(
+              (error) => error.type,
+              'type',
+              WeightErrorType.readFailed,
+            ),
+          ),
+        );
       },
     );
   });

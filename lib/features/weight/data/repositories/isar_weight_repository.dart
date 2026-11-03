@@ -18,41 +18,54 @@ typedef _DecryptionPayload = (
   String? encryptedNote,
 );
 
-List<WeightEntry> _decryptPayloads((List<_DecryptionPayload>, Uint8List) args) {
+typedef _EncryptedEntryUpdate = (
+  int id,
+  String encryptedWeight,
+  String? encryptedNote,
+);
+
+typedef _DecryptionBatch = (List<WeightEntry>, List<_EncryptedEntryUpdate>);
+
+_DecryptionBatch _decryptPayloads((List<_DecryptionPayload>, Uint8List) args) {
   final payloads = args.$1;
   final key = args.$2;
+  final entries = <WeightEntry>[];
+  final upgrades = <_EncryptedEntryUpdate>[];
 
-  return payloads.map((p) {
-    double weight = 0.0;
+  for (final p in payloads) {
+    final legacyWeight = FieldCipher.isLegacyPayload(p.$3);
+    final decryptedWeight = FieldCipher.decrypt(p.$3, key);
+    final weight = double.tryParse(decryptedWeight);
+    if (weight == null ||
+        !weight.isFinite ||
+        weight < WeightEntry.minWeightKg ||
+        weight > WeightEntry.maxWeightKg) {
+      throw const FormatException('Decrypted weight is invalid');
+    }
+
     String? note;
-
-    try {
-      final decryptedStr = FieldCipher.decrypt(p.$3, key);
-      weight = double.tryParse(decryptedStr) ?? 0.0;
-    } catch (e) {
-      if (kDebugMode) {
-        debugPrint(
-          '[IsarWeightRepository] Decryption failed for weight (id: ${p.$1}, dateTime: ${p.$2}): ${e.runtimeType}',
-        );
-      }
-      weight = 0.0;
+    var upgradedWeight = p.$3;
+    var upgradedNote = p.$4;
+    if (legacyWeight) {
+      upgradedWeight = FieldCipher.encrypt(decryptedWeight, key);
     }
-
     if (p.$4 != null && p.$4!.isNotEmpty) {
-      try {
-        note = FieldCipher.decrypt(p.$4!, key);
-      } catch (e) {
-        if (kDebugMode) {
-          debugPrint(
-            '[IsarWeightRepository] Decryption failed for note (id: ${p.$1}, dateTime: ${p.$2}): ${e.runtimeType}',
-          );
-        }
-        note = '[Decryption Error]';
+      final legacyNote = FieldCipher.isLegacyPayload(p.$4!);
+      note = FieldCipher.decrypt(p.$4!, key);
+      if (legacyNote) {
+        upgradedNote = FieldCipher.encrypt(note, key);
       }
     }
 
-    return WeightEntry(id: p.$1, weightKg: weight, dateTime: p.$2, note: note);
-  }).toList();
+    entries.add(
+      WeightEntry(id: p.$1, weightKg: weight, dateTime: p.$2, note: note),
+    );
+    if (legacyWeight || upgradedNote != p.$4) {
+      upgrades.add((p.$1, upgradedWeight, upgradedNote));
+    }
+  }
+
+  return (entries, upgrades);
 }
 
 typedef _EncryptionPayload = (
@@ -277,6 +290,36 @@ class IsarWeightRepository implements WeightRepository {
     return model;
   }
 
+  Future<List<WeightEntry>> _decryptAndUpgrade(
+    List<WeightEntryModel> models,
+    Uint8List key,
+  ) async {
+    final payloads = models
+        .map(
+          (model) => (
+            model.id,
+            model.dateTime,
+            model.encryptedWeight,
+            model.encryptedNote,
+          ),
+        )
+        .toList();
+    final batch = await compute(_decryptPayloads, (payloads, key));
+    if (batch.$2.isNotEmpty) {
+      final modelsById = {for (final model in models) model.id: model};
+      final upgradedModels = batch.$2.map((upgrade) {
+        final model = modelsById[upgrade.$1]!;
+        return model
+          ..encryptedWeight = upgrade.$2
+          ..encryptedNote = upgrade.$3;
+      }).toList();
+      await liveIsar.writeTxn(() async {
+        await liveIsar.weightEntryModels.putAll(upgradedModels);
+      });
+    }
+    return batch.$1;
+  }
+
   /// Emits decrypted weight entries in real time, newest first, bounded by
   /// [maxEntriesLoaded].
   ///
@@ -338,12 +381,7 @@ class IsarWeightRepository implements WeightRepository {
           try {
             final key = await _getOrLoadKey(isWrite: false);
             if (models.isEmpty) return [];
-            final payloads = models
-                .map(
-                  (m) => (m.id, m.dateTime, m.encryptedWeight, m.encryptedNote),
-                )
-                .toList();
-            return await compute(_decryptPayloads, (payloads, key));
+            return await _decryptAndUpgrade(models, key);
           } on WeightRepositoryException {
             rethrow;
           } catch (e) {
@@ -376,10 +414,7 @@ class IsarWeightRepository implements WeightRepository {
           .limit(maxEntriesLoaded)
           .findAll();
       if (models.isEmpty) return [];
-      final payloads = models
-          .map((m) => (m.id, m.dateTime, m.encryptedWeight, m.encryptedNote))
-          .toList();
-      return await compute(_decryptPayloads, (payloads, key));
+      return await _decryptAndUpgrade(models, key);
     } on WeightRepositoryException {
       rethrow;
     } on IsarError catch (e) {
@@ -424,10 +459,7 @@ class IsarWeightRepository implements WeightRepository {
           .sortByDateTimeDesc()
           .findAll();
       if (models.isEmpty) return [];
-      final payloads = models
-          .map((m) => (m.id, m.dateTime, m.encryptedWeight, m.encryptedNote))
-          .toList();
-      return await compute(_decryptPayloads, (payloads, key));
+      return await _decryptAndUpgrade(models, key);
     } on WeightRepositoryException {
       rethrow;
     } on IsarError catch (e) {
@@ -576,10 +608,7 @@ class IsarWeightRepository implements WeightRepository {
       // Step 3 — Decrypt existing entries in a compute isolate.
       List<WeightEntry> localEntries = [];
       if (existingModels.isNotEmpty) {
-        final payloads = existingModels
-            .map((m) => (m.id, m.dateTime, m.encryptedWeight, m.encryptedNote))
-            .toList();
-        localEntries = await compute(_decryptPayloads, (payloads, key));
+        localEntries = await _decryptAndUpgrade(existingModels, key);
       }
 
       // Step 4 — In-memory deduplication and note-backfill classification.
@@ -721,10 +750,7 @@ class IsarWeightRepository implements WeightRepository {
 
       List<WeightEntry> localEntries = [];
       if (existingModels.isNotEmpty) {
-        final existingPayloads = existingModels
-            .map((m) => (m.id, m.dateTime, m.encryptedWeight, m.encryptedNote))
-            .toList();
-        localEntries = await compute(_decryptPayloads, (existingPayloads, key));
+        localEntries = await _decryptAndUpgrade(existingModels, key);
       }
 
       final newEntries = <WeightEntry>[];

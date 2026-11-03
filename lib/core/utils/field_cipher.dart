@@ -12,6 +12,15 @@ class FieldCipher {
   static const int _ivLength = 16;
   static const int _macLength = 32;
 
+  /// Reports whether [base64String] uses the unauthenticated pre-HMAC format.
+  static bool isLegacyPayload(String base64String) {
+    final combined = base64Decode(base64String);
+    if (combined.length < _ivLength) {
+      throw const FormatException('Encrypted payload too short');
+    }
+    return combined.length < _ivLength + _macLength + 16;
+  }
+
   /// Encrypts [plainText] using AES-256 CBC with a fresh random IV and a 32-byte HMAC-SHA256 trailer.
   ///
   /// Payload format: `Base64(IV [16 B] + HMAC [32 B] + Ciphertext [N B])`.
