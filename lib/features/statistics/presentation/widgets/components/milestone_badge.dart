@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:balance/core/presentation/theme/app_feedback_theme.dart';
 import 'package:balance/core/utils/analytics.dart';
 import 'package:balance/features/statistics/domain/entities/milestone.dart';
 import 'package:balance/features/statistics/presentation/utils/milestone_icon_resolver.dart';
@@ -22,10 +23,8 @@ class MilestoneBadge extends StatelessWidget {
     final isUnlocked = milestone.isUnlocked;
 
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final successColor = isDark ? Colors.green.shade400 : Colors.green.shade600;
-    final inProgressColor = isDark
-        ? Colors.blue.shade400
-        : Colors.blue.shade600;
+    final successColor = AppFeedbackTheme.successForegroundFor(isDark: isDark);
+    final inProgressColor = AppFeedbackTheme.infoForegroundFor(isDark: isDark);
 
     return Semantics(
       button: true,
@@ -185,7 +184,7 @@ class MilestoneBadge extends StatelessWidget {
                   l10n.localeName,
                 ).format(milestone.unlockedDate!),
                 style: Theme.of(ctx).textTheme.labelMedium?.copyWith(
-                  color: isDark ? Colors.green.shade400 : Colors.green.shade700,
+                  color: AppFeedbackTheme.successForegroundFor(isDark: isDark),
                   fontWeight: FontWeight.w600,
                 ),
               ),
@@ -195,7 +194,7 @@ class MilestoneBadge extends StatelessWidget {
                 child: Container(
                   height: 6,
                   width: double.infinity,
-                  color: isDark ? Colors.green.shade400 : Colors.green.shade600,
+                  color: AppFeedbackTheme.successForegroundFor(isDark: isDark),
                 ),
               ),
             ] else if (!milestone.isUnlocked) ...[
@@ -211,9 +210,9 @@ class MilestoneBadge extends StatelessWidget {
                       child: FractionallySizedBox(
                         widthFactor: milestone.progress.clamp(0.0, 1.0),
                         child: Container(
-                          color: isDark
-                              ? Colors.blue.shade400
-                              : Colors.blue.shade600,
+                          color: AppFeedbackTheme.infoForegroundFor(
+                            isDark: isDark,
+                          ),
                         ),
                       ),
                     ),
@@ -222,9 +221,7 @@ class MilestoneBadge extends StatelessWidget {
                   Text(
                     '${(milestone.progress * 100).toInt()}%',
                     style: Theme.of(ctx).textTheme.labelSmall?.copyWith(
-                      color: isDark
-                          ? Colors.blue.shade400
-                          : Colors.blue.shade600,
+                      color: AppFeedbackTheme.infoForegroundFor(isDark: isDark),
                       fontWeight: FontWeight.w600,
                     ),
                   ),

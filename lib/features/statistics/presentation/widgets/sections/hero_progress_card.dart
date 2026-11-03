@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:balance/core/presentation/theme/app_feedback_theme.dart';
 import 'package:balance/core/models/measurement_unit.dart';
 import 'package:balance/core/utils/analytics.dart';
 import 'package:balance/core/utils/unit_converter.dart';
@@ -160,11 +161,11 @@ class HeroProgressCard extends StatelessWidget {
 
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final badgeBg = isSuccessBadge
-        ? Colors.green.withValues(alpha: 0.15)
-        : Colors.orange.withValues(alpha: 0.15);
+        ? AppFeedbackTheme.successBackgroundFor(isDark: isDark)
+        : AppFeedbackTheme.warningBackgroundFor(isDark: isDark);
     final badgeFg = isSuccessBadge
-        ? (isDark ? Colors.green.shade300 : Colors.green.shade700)
-        : (isDark ? Colors.orange.shade300 : Colors.orange.shade700);
+        ? AppFeedbackTheme.successForegroundFor(isDark: isDark)
+        : AppFeedbackTheme.warningForegroundFor(isDark: isDark);
 
     return Semantics(
       container: true,

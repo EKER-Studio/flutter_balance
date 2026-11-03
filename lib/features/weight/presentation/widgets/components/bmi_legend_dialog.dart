@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:balance/core/models/measurement_unit.dart';
+import 'package:balance/core/presentation/theme/app_feedback_theme.dart';
 import 'package:balance/core/utils/analytics.dart';
 import 'package:balance/core/utils/unit_converter.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_bloc.dart';
@@ -99,7 +100,7 @@ class _BmiLegendDialogState extends State<BmiLegendDialog> {
       final displayMin = isImperial ? kgToLbs(minWeightKg) : minWeightKg;
       final displayMax = isImperial ? kgToLbs(maxWeightKg) : maxWeightKg;
 
-      final greenColor = isDark ? Colors.green.shade300 : Colors.green.shade700;
+      final greenColor = AppFeedbackTheme.successForegroundFor(isDark: isDark);
 
       healthyWeightWidget = MergeSemantics(
         child: Container(
