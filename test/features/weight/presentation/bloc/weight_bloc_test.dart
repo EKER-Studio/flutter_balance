@@ -78,6 +78,10 @@ void main() {
     when(
       () => settingsBloc.state,
     ).thenReturn(AppSettingsState(isHealthSyncEnabled: isHealthSyncEnabled));
+    when(
+      () => settingsBloc.isHealthSyncEnabled,
+    ).thenReturn(isHealthSyncEnabled);
+    when(() => settingsBloc.lastHealthSyncTimestamp).thenReturn(null);
     return settingsBloc;
   }
 
@@ -212,8 +216,11 @@ void main() {
         appSettingsBloc: buildSettingsBloc(isHealthSyncEnabled: false),
         healthService: healthService,
       ),
-      seed: () =>
-          const WeightLoaded(entries: [], filteredEntries: [], heightCm: 170),
+      seed: () => WeightLoaded(
+        entries: const [],
+        filteredEntries: const [],
+        heightCm: 170,
+      ),
       act: (bloc) => bloc.add(
         ImportWeightEntries([
           WeightEntry(id: 0, weightKg: 80.0, dateTime: DateTime(2026, 1, 1)),
@@ -236,8 +243,11 @@ void main() {
         appSettingsBloc: buildSettingsBloc(),
         healthService: healthService,
       ),
-      seed: () =>
-          const WeightLoaded(entries: [], filteredEntries: [], heightCm: 170),
+      seed: () => WeightLoaded(
+        entries: const [],
+        filteredEntries: const [],
+        heightCm: 170,
+      ),
       act: (bloc) async {
         bloc.add(
           ImportWeightEntries([
@@ -279,8 +289,11 @@ void main() {
     blocTest<WeightBloc, WeightState>(
       'emits [WeightLoaded] with updated heightCm after UpdateUserHeight',
       build: () => WeightBloc(repository: repository),
-      seed: () =>
-          const WeightLoaded(entries: [], filteredEntries: [], heightCm: null),
+      seed: () => WeightLoaded(
+        entries: const [],
+        filteredEntries: const [],
+        heightCm: null,
+      ),
       act: (bloc) => bloc.add(const UpdateUserHeight(175)),
       expect: () => [
         isA<WeightLoaded>().having((s) => s.heightCm, 'heightCm', 175),
@@ -310,8 +323,11 @@ void main() {
     blocTest<WeightBloc, WeightState>(
       'calls repository.addEntry with correct BMI on AddWeight when height is set',
       build: () => WeightBloc(repository: repository),
-      seed: () =>
-          const WeightLoaded(entries: [], filteredEntries: [], heightCm: 170),
+      seed: () => WeightLoaded(
+        entries: const [],
+        filteredEntries: const [],
+        heightCm: 170,
+      ),
       act: (bloc) => bloc.add(const AddWeight(weightKg: 72)),
       verify: (_) {
         final captured = verify(
@@ -330,8 +346,11 @@ void main() {
         ).thenThrow(Exception('Write failed'));
         return WeightBloc(repository: repository);
       },
-      seed: () =>
-          const WeightLoaded(entries: [], filteredEntries: [], heightCm: 170),
+      seed: () => WeightLoaded(
+        entries: const [],
+        filteredEntries: const [],
+        heightCm: 170,
+      ),
       act: (bloc) => bloc.add(const AddWeight(weightKg: 72)),
       expect: () => [
         isA<WeightLoading>(),
@@ -346,8 +365,11 @@ void main() {
     blocTest<WeightBloc, WeightState>(
       'calls repository.addEntry with updated entry on UpdateWeight when height is set',
       build: () => WeightBloc(repository: repository),
-      seed: () =>
-          const WeightLoaded(entries: [], filteredEntries: [], heightCm: 170),
+      seed: () => WeightLoaded(
+        entries: const [],
+        filteredEntries: const [],
+        heightCm: 170,
+      ),
       act: (bloc) => bloc.add(
         UpdateWeight(
           WeightEntry(
@@ -375,7 +397,7 @@ void main() {
         when(() => repository.addEntry(any())).thenAnswer((_) async {});
         return WeightBloc(repository: repository);
       },
-      seed: () => const WeightInitial(),
+      seed: () => WeightInitial(),
       act: (bloc) => bloc.add(
         UpdateWeight(
           WeightEntry(id: 1, weightKg: 74, dateTime: DateTime(2026, 7, 15, 9)),
@@ -394,8 +416,11 @@ void main() {
         ).thenThrow(Exception('Write failed'));
         return WeightBloc(repository: repository);
       },
-      seed: () =>
-          const WeightLoaded(entries: [], filteredEntries: [], heightCm: 170),
+      seed: () => WeightLoaded(
+        entries: const [],
+        filteredEntries: const [],
+        heightCm: 170,
+      ),
       act: (bloc) => bloc.add(
         UpdateWeight(
           WeightEntry(id: 1, weightKg: 74, dateTime: DateTime(2026, 7, 15, 9)),
@@ -418,8 +443,11 @@ void main() {
         ).thenThrow(Exception('Delete failed'));
         return WeightBloc(repository: repository);
       },
-      seed: () =>
-          const WeightLoaded(entries: [], filteredEntries: [], heightCm: 170),
+      seed: () => WeightLoaded(
+        entries: const [],
+        filteredEntries: const [],
+        heightCm: 170,
+      ),
       act: (bloc) => bloc.add(const DeleteWeight(1)),
       expect: () => [
         isA<WeightError>().having(
@@ -433,8 +461,11 @@ void main() {
     blocTest<WeightBloc, WeightState>(
       'updates timePeriod on ChangeChartFilter',
       build: () => WeightBloc(repository: repository),
-      seed: () =>
-          const WeightLoaded(entries: [], filteredEntries: [], heightCm: 170),
+      seed: () => WeightLoaded(
+        entries: const [],
+        filteredEntries: const [],
+        heightCm: 170,
+      ),
       act: (bloc) => bloc.add(const ChangeChartFilter(TimePeriod.year)),
       expect: () => [
         isA<WeightLoaded>().having(
@@ -455,8 +486,11 @@ void main() {
         );
         return WeightBloc(repository: repository);
       },
-      seed: () =>
-          const WeightLoaded(entries: [], filteredEntries: [], heightCm: 170),
+      seed: () => WeightLoaded(
+        entries: const [],
+        filteredEntries: const [],
+        heightCm: 170,
+      ),
       act: (bloc) => bloc.add(const RefreshWeightData()),
       expect: () => [
         isA<WeightLoaded>().having(
@@ -475,8 +509,11 @@ void main() {
         ).thenThrow(Exception('Read failed'));
         return WeightBloc(repository: repository);
       },
-      seed: () =>
-          const WeightLoaded(entries: [], filteredEntries: [], heightCm: 170),
+      seed: () => WeightLoaded(
+        entries: const [],
+        filteredEntries: const [],
+        heightCm: 170,
+      ),
       act: (bloc) => bloc.add(const RefreshWeightData()),
       expect: () => [
         isA<WeightError>().having(
@@ -495,8 +532,11 @@ void main() {
         ).thenThrow(Exception('Wipe failed'));
         return WeightBloc(repository: repository);
       },
-      seed: () =>
-          const WeightLoaded(entries: [], filteredEntries: [], heightCm: 170),
+      seed: () => WeightLoaded(
+        entries: const [],
+        filteredEntries: const [],
+        heightCm: 170,
+      ),
       act: (bloc) => bloc.add(const ClearAllWeightData()),
       expect: () => [
         isA<WeightError>().having(
@@ -515,8 +555,11 @@ void main() {
         ).thenThrow(Exception('Import failed'));
         return WeightBloc(repository: repository);
       },
-      seed: () =>
-          const WeightLoaded(entries: [], filteredEntries: [], heightCm: 170),
+      seed: () => WeightLoaded(
+        entries: const [],
+        filteredEntries: const [],
+        heightCm: 170,
+      ),
       act: (bloc) => bloc.add(
         ImportWeightEntries([
           WeightEntry(id: 1, weightKg: 80.0, dateTime: DateTime(2026)),
@@ -537,7 +580,7 @@ void main() {
         when(() => repository.addEntry(any())).thenAnswer((_) async {});
         return WeightBloc(repository: repository);
       },
-      seed: () => const WeightInitial(),
+      seed: () => WeightInitial(),
       act: (bloc) => bloc.add(const AddWeight(weightKg: 72)),
       expect: () => [
         isA<WeightLoading>().having((s) => s.heightCm, 'heightCm', isNull),
@@ -730,8 +773,11 @@ void main() {
           appSettingsBloc: buildSettingsBloc(),
           healthService: healthService,
         ),
-        seed: () =>
-            const WeightLoaded(entries: [], filteredEntries: [], heightCm: 170),
+        seed: () => WeightLoaded(
+          entries: const [],
+          filteredEntries: const [],
+          heightCm: 170,
+        ),
         act: (bloc) => bloc.add(const AddWeight(weightKg: 72)),
         verify: (_) {
           verify(
@@ -885,8 +931,11 @@ void main() {
           appSettingsBloc: buildSettingsBloc(isHealthSyncEnabled: false),
           healthService: healthService,
         ),
-        seed: () =>
-            const WeightLoaded(entries: [], filteredEntries: [], heightCm: 170),
+        seed: () => WeightLoaded(
+          entries: const [],
+          filteredEntries: const [],
+          heightCm: 170,
+        ),
         act: (bloc) => bloc.add(const AddWeight(weightKg: 72)),
         verify: (_) {
           verifyNever(
@@ -913,8 +962,11 @@ void main() {
             healthService: healthService,
           );
         },
-        seed: () =>
-            const WeightLoaded(entries: [], filteredEntries: [], heightCm: 170),
+        seed: () => WeightLoaded(
+          entries: const [],
+          filteredEntries: const [],
+          heightCm: 170,
+        ),
         act: (bloc) => bloc.add(const AddWeight(weightKg: 72)),
         expect: () => [isA<WeightLoading>()],
         verify: (_) {
@@ -1038,8 +1090,11 @@ void main() {
             healthService: healthService,
           );
         },
-        seed: () =>
-            const WeightLoaded(entries: [], filteredEntries: [], heightCm: 170),
+        seed: () => WeightLoaded(
+          entries: const [],
+          filteredEntries: const [],
+          heightCm: 170,
+        ),
         act: (bloc) => bloc.add(const SyncHealthEntries()),
         verify: (_) {
           final imported =
@@ -1123,8 +1178,11 @@ void main() {
             healthService: healthService,
           );
         },
-        seed: () =>
-            const WeightLoaded(entries: [], filteredEntries: [], heightCm: 170),
+        seed: () => WeightLoaded(
+          entries: const [],
+          filteredEntries: const [],
+          heightCm: 170,
+        ),
         act: (bloc) => bloc.add(const SyncHealthEntries()),
         expect: () => <WeightState>[],
         verify: (_) {
@@ -1171,8 +1229,11 @@ void main() {
             healthService: healthService,
           );
         },
-        seed: () =>
-            const WeightLoaded(entries: [], filteredEntries: [], heightCm: 170),
+        seed: () => WeightLoaded(
+          entries: const [],
+          filteredEntries: const [],
+          heightCm: 170,
+        ),
         act: (bloc) async {
           bloc.add(SyncHealthEntries(startDate: DateTime(2026, 1, 1)));
           await Future<void>.delayed(Duration.zero);
@@ -1252,8 +1313,11 @@ void main() {
             healthService: healthService,
           );
         },
-        seed: () =>
-            const WeightLoaded(entries: [], filteredEntries: [], heightCm: 170),
+        seed: () => WeightLoaded(
+          entries: const [],
+          filteredEntries: const [],
+          heightCm: 170,
+        ),
         act: (bloc) async {
           bloc.add(SyncHealthEntries(startDate: DateTime(2026, 2, 1)));
           await Future<void>.delayed(Duration.zero);
@@ -1284,8 +1348,11 @@ void main() {
           appSettingsBloc: buildSettingsBloc(isHealthSyncEnabled: false),
           healthService: healthService,
         ),
-        seed: () =>
-            const WeightLoaded(entries: [], filteredEntries: [], heightCm: 170),
+        seed: () => WeightLoaded(
+          entries: const [],
+          filteredEntries: const [],
+          heightCm: 170,
+        ),
         act: (bloc) => bloc.add(const SyncHealthEntries()),
         expect: () => [],
         verify: (_) {
@@ -1313,8 +1380,11 @@ void main() {
             healthService: healthService,
           );
         },
-        seed: () =>
-            const WeightLoaded(entries: [], filteredEntries: [], heightCm: 170),
+        seed: () => WeightLoaded(
+          entries: const [],
+          filteredEntries: const [],
+          heightCm: 170,
+        ),
         act: (bloc) => bloc.add(const SyncHealthEntries()),
         expect: () => [],
         verify: (_) {
@@ -1340,8 +1410,11 @@ void main() {
             healthService: healthService,
           );
         },
-        seed: () =>
-            const WeightLoaded(entries: [], filteredEntries: [], heightCm: 170),
+        seed: () => WeightLoaded(
+          entries: const [],
+          filteredEntries: const [],
+          heightCm: 170,
+        ),
         act: (bloc) => bloc.add(const SyncHealthEntries()),
         verify: (_) {
           final captured =
@@ -1369,6 +1442,8 @@ void main() {
               lastHealthSyncTimestamp: lastSync,
             ),
           );
+          when(() => settingsBloc.isHealthSyncEnabled).thenReturn(true);
+          when(() => settingsBloc.lastHealthSyncTimestamp).thenReturn(lastSync);
           when(
             () => healthService.fetchWeightHistory(
               start: any(named: 'start'),
@@ -1381,8 +1456,11 @@ void main() {
             healthService: healthService,
           );
         },
-        seed: () =>
-            const WeightLoaded(entries: [], filteredEntries: [], heightCm: 170),
+        seed: () => WeightLoaded(
+          entries: const [],
+          filteredEntries: const [],
+          heightCm: 170,
+        ),
         act: (bloc) => bloc.add(const SyncHealthEntries()),
         verify: (_) {
           final captured =
@@ -1427,8 +1505,11 @@ void main() {
             healthService: healthService,
           );
         },
-        seed: () =>
-            const WeightLoaded(entries: [], filteredEntries: [], heightCm: 170),
+        seed: () => WeightLoaded(
+          entries: const [],
+          filteredEntries: const [],
+          heightCm: 170,
+        ),
         act: (bloc) async {
           bloc.add(const SyncHealthEntries());
           await firstFetchStarted.future;
@@ -1462,8 +1543,11 @@ void main() {
             healthService: healthService,
           );
         },
-        seed: () =>
-            const WeightLoaded(entries: [], filteredEntries: [], heightCm: 170),
+        seed: () => WeightLoaded(
+          entries: const [],
+          filteredEntries: const [],
+          heightCm: 170,
+        ),
         act: (bloc) =>
             bloc.add(SyncHealthEntries(startDate: DateTime(2026, 3, 1))),
         verify: (_) {
@@ -1487,8 +1571,11 @@ void main() {
         });
         return WeightBloc(repository: repository);
       },
-      seed: () =>
-          const WeightLoaded(entries: [], filteredEntries: [], heightCm: 170),
+      seed: () => WeightLoaded(
+        entries: const [],
+        filteredEntries: const [],
+        heightCm: 170,
+      ),
       act: (bloc) {
         bloc.add(const AddWeight(weightKg: 70));
         bloc.add(const AddWeight(weightKg: 71)); // Should be dropped
@@ -1527,8 +1614,11 @@ void main() {
         });
         return WeightBloc(repository: repository);
       },
-      seed: () =>
-          const WeightLoaded(entries: [], filteredEntries: [], heightCm: 170),
+      seed: () => WeightLoaded(
+        entries: const [],
+        filteredEntries: const [],
+        heightCm: 170,
+      ),
       act: (bloc) {
         bloc.add(const DeleteWeight(1));
         bloc.add(const DeleteWeight(2));
@@ -1544,6 +1634,8 @@ void main() {
     blocTest<WeightBloc, WeightState>(
       'ConfirmCsvImport bulk imports entries, emits WeightImportSuccess then WeightLoaded',
       build: () {
+        final importer = MockCsvWeightImporter();
+        when(() => importer.confirmImport(any())).thenAnswer((_) async => 2);
         when(
           () => repository.bulkImportEntries(any()),
         ).thenAnswer((_) async => 2);
@@ -1553,10 +1645,13 @@ void main() {
             WeightEntry(id: 2, weightKg: 74.5, dateTime: DateTime(2026, 8, 21)),
           ],
         );
-        return WeightBloc(repository: repository);
+        return WeightBloc(repository: repository, csvWeightImporter: importer);
       },
-      seed: () =>
-          const WeightLoaded(entries: [], filteredEntries: [], heightCm: 180),
+      seed: () => WeightLoaded(
+        entries: const [],
+        filteredEntries: const [],
+        heightCm: 180,
+      ),
       act: (bloc) => bloc.add(
         ConfirmCsvImport(
           validEntries: [
@@ -1593,8 +1688,11 @@ void main() {
         );
         return WeightBloc(repository: repository, csvWeightImporter: importer);
       },
-      seed: () =>
-          const WeightLoaded(entries: [], filteredEntries: [], heightCm: 175),
+      seed: () => WeightLoaded(
+        entries: const [],
+        filteredEntries: const [],
+        heightCm: 175,
+      ),
       act: (bloc) =>
           bloc.add(const AnalyzeCsvFile(filePath: '/path/to/valid.csv')),
       expect: () => [
@@ -1618,8 +1716,11 @@ void main() {
         );
         return WeightBloc(repository: repository, csvWeightImporter: importer);
       },
-      seed: () =>
-          const WeightLoaded(entries: [], filteredEntries: [], heightCm: 175),
+      seed: () => WeightLoaded(
+        entries: const [],
+        filteredEntries: const [],
+        heightCm: 175,
+      ),
       act: (bloc) =>
           bloc.add(const AnalyzeCsvFile(filePath: '/path/to/invalid.csv')),
       expect: () => [

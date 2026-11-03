@@ -53,9 +53,9 @@ void main() {
     settingsBloc = AppSettingsBloc();
     weightBloc = MockWeightBloc();
     when(() => weightBloc.state).thenReturn(
-      const WeightLoaded(
-        entries: [],
-        filteredEntries: [],
+      WeightLoaded(
+        entries: const [],
+        filteredEntries: const [],
         timePeriod: TimePeriod.month,
         heightCm: 170.0,
       ),

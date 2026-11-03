@@ -32,7 +32,7 @@ Widget addWeightSheetKeyboardPreview() =>
 Widget _addWeightSheetPreview({double keyboardInset = 0}) =>
     withDashboardPreviewBlocs(
       settingsState: dashboardPreviewSettingsState,
-      weightState: const WeightLoaded(entries: [], filteredEntries: []),
+      weightState: WeightLoaded(entries: const [], filteredEntries: const []),
       child: _AddWeightSheetPreviewHost(keyboardInset: keyboardInset),
     );
 

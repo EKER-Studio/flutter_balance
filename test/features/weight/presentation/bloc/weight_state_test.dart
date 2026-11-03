@@ -14,7 +14,7 @@ void main() {
     );
 
     test('WeightInitial initializes with standard defaults', () {
-      const state = WeightInitial();
+      final state = WeightInitial();
       expect(state.heightCm, isNull);
       expect(state.timePeriod, TimePeriod.week);
       expect(state.entries, isEmpty);
@@ -51,6 +51,13 @@ void main() {
 
       expect(state1, state2);
       expect(state1.hashCode, state2.hashCode);
+    });
+
+    test('WeightLoaded exposes read-only entry collections', () {
+      final state = WeightLoaded(entries: [entry1], filteredEntries: [entry1]);
+
+      expect(() => state.entries.add(entry1), throwsUnsupportedError);
+      expect(() => state.filteredEntries.clear(), throwsUnsupportedError);
     });
 
     test('WeightError contains typed errorType and last-known entries', () {

@@ -43,7 +43,7 @@ Widget calendarScreenDarkPreview() {
   wrapper: lightPreviewWrapper,
 )
 Widget calendarScreenEmptyPreview() => _calendarScreenPreview(
-  const WeightLoaded(entries: [], filteredEntries: []),
+  WeightLoaded(entries: const [], filteredEntries: const []),
 );
 
 Widget _calendarScreenPreview(

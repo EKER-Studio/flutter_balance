@@ -68,10 +68,10 @@ void main() {
     addTearDown(tester.view.resetPhysicalSize);
     addTearDown(tester.view.resetDevicePixelRatio);
 
-    when(() => weightBloc.state).thenReturn(const WeightLoading());
+    when(() => weightBloc.state).thenReturn(WeightLoading());
     when(
       () => weightBloc.stream,
-    ).thenAnswer((_) => Stream.value(const WeightLoading()));
+    ).thenAnswer((_) => Stream.value(WeightLoading()));
 
     await tester.pumpWidget(createTestWidget(const TodayScreen()));
     await tester.pump();
@@ -89,18 +89,18 @@ void main() {
       addTearDown(tester.view.resetDevicePixelRatio);
 
       when(() => weightBloc.state).thenReturn(
-        const WeightError(
+        WeightError(
           errorType: WeightErrorType.readFailed,
-          entries: [],
-          filteredEntries: [],
+          entries: const [],
+          filteredEntries: const [],
         ),
       );
       when(() => weightBloc.stream).thenAnswer(
         (_) => Stream.value(
-          const WeightError(
+          WeightError(
             errorType: WeightErrorType.readFailed,
-            entries: [],
-            filteredEntries: [],
+            entries: const [],
+            filteredEntries: const [],
           ),
         ),
       );
@@ -170,18 +170,18 @@ void main() {
     addTearDown(tester.view.resetDevicePixelRatio);
 
     when(() => weightBloc.state).thenReturn(
-      const WeightLoaded(
-        entries: [],
-        filteredEntries: [],
+      WeightLoaded(
+        entries: const [],
+        filteredEntries: const [],
         timePeriod: TimePeriod.month,
         heightCm: 175.0,
       ),
     );
     when(() => weightBloc.stream).thenAnswer(
       (_) => Stream.value(
-        const WeightLoaded(
-          entries: [],
-          filteredEntries: [],
+        WeightLoaded(
+          entries: const [],
+          filteredEntries: const [],
           timePeriod: TimePeriod.month,
           heightCm: 170.0,
         ),
@@ -211,18 +211,18 @@ void main() {
     addTearDown(tester.view.resetDevicePixelRatio);
 
     when(() => weightBloc.state).thenReturn(
-      const WeightLoaded(
-        entries: [],
-        filteredEntries: [],
+      WeightLoaded(
+        entries: const [],
+        filteredEntries: const [],
         timePeriod: TimePeriod.month,
         heightCm: 175.0,
       ),
     );
     when(() => weightBloc.stream).thenAnswer(
       (_) => Stream.value(
-        const WeightLoaded(
-          entries: [],
-          filteredEntries: [],
+        WeightLoaded(
+          entries: const [],
+          filteredEntries: const [],
           timePeriod: TimePeriod.month,
           heightCm: 170.0,
         ),
@@ -327,18 +327,18 @@ void main() {
     addTearDown(tester.view.resetDevicePixelRatio);
 
     when(() => weightBloc.state).thenReturn(
-      const WeightError(
+      WeightError(
         errorType: WeightErrorType.readFailed,
-        entries: [],
-        filteredEntries: [],
+        entries: const [],
+        filteredEntries: const [],
       ),
     );
     when(() => weightBloc.stream).thenAnswer(
       (_) => Stream.value(
-        const WeightError(
+        WeightError(
           errorType: WeightErrorType.readFailed,
-          entries: [],
-          filteredEntries: [],
+          entries: const [],
+          filteredEntries: const [],
         ),
       ),
     );

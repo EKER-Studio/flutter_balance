@@ -38,18 +38,18 @@ void main() {
 
     weightBloc = MockWeightBloc();
     when(() => weightBloc.state).thenReturn(
-      const WeightLoaded(
-        entries: [],
-        filteredEntries: [],
+      WeightLoaded(
+        entries: const [],
+        filteredEntries: const [],
         timePeriod: TimePeriod.month,
         heightCm: 175.0,
       ),
     );
     when(() => weightBloc.stream).thenAnswer(
       (_) => Stream.value(
-        const WeightLoaded(
-          entries: [],
-          filteredEntries: [],
+        WeightLoaded(
+          entries: const [],
+          filteredEntries: const [],
           timePeriod: TimePeriod.month,
           heightCm: 175.0,
         ),

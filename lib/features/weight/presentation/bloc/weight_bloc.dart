@@ -57,7 +57,7 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
     CsvWeightImporter? csvWeightImporter,
   }) : _settingsBloc = appSettingsBloc,
        _healthService = healthService ?? NativeHealthService.instance,
-       super(const WeightInitial()) {
+       super(WeightInitial()) {
     _healthSyncCoordinator =
         healthSyncCoordinator ??
         HealthSyncCoordinator(

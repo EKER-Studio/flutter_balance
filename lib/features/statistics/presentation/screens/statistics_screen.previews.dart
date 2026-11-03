@@ -33,7 +33,7 @@ Widget statisticsScreenDarkPreview() =>
   wrapper: lightPreviewWrapper,
 )
 Widget statisticsScreenEmptyPreview() => _statisticsScreenPreview(
-  const WeightLoaded(entries: [], filteredEntries: []),
+  WeightLoaded(entries: const [], filteredEntries: const []),
 );
 
 Widget _statisticsScreenPreview(WeightState weightState) =>

@@ -26,7 +26,7 @@ void main() {
     mockWeightBloc = MockWeightBloc();
     when(() => mockSettingsBloc.stream).thenAnswer((_) => const Stream.empty());
     when(() => mockWeightBloc.stream).thenAnswer((_) => const Stream.empty());
-    when(() => mockWeightBloc.state).thenReturn(const WeightInitial());
+    when(() => mockWeightBloc.state).thenReturn(WeightInitial());
   });
 
   Widget buildTestableApp(GoRouter router) {

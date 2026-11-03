@@ -60,9 +60,9 @@ void main() {
     ) async {
       await tester.pumpWidget(
         buildSubject(
-          const WeightLoaded(
-            entries: [],
-            filteredEntries: [],
+          WeightLoaded(
+            entries: const [],
+            filteredEntries: const [],
             timePeriod: TimePeriod.week,
             heightCm: null,
           ),
@@ -103,9 +103,9 @@ void main() {
 
       await tester.pumpWidget(
         buildSubject(
-          const WeightLoaded(
-            entries: [],
-            filteredEntries: [],
+          WeightLoaded(
+            entries: const [],
+            filteredEntries: const [],
             timePeriod: TimePeriod.week,
             heightCm: null,
           ),
@@ -153,9 +153,9 @@ void main() {
       (tester) async {
         await tester.pumpWidget(
           buildSubject(
-            const WeightLoaded(
-              entries: [],
-              filteredEntries: [],
+            WeightLoaded(
+              entries: const [],
+              filteredEntries: const [],
               timePeriod: TimePeriod.month,
               heightCm: null,
             ),
@@ -182,10 +182,10 @@ void main() {
     ) async {
       await tester.pumpWidget(
         buildSubject(
-          const WeightError(
+          WeightError(
             errorType: WeightErrorType.readFailed,
-            entries: [],
-            filteredEntries: [],
+            entries: const [],
+            filteredEntries: const [],
           ),
         ),
       );
@@ -202,9 +202,9 @@ void main() {
             BlocProvider.value(value: AppSettingsBloc()),
             BlocProvider.value(
               value: createBloc(
-                const WeightLoaded(
-                  entries: [],
-                  filteredEntries: [],
+                WeightLoaded(
+                  entries: const [],
+                  filteredEntries: const [],
                   timePeriod: TimePeriod.week,
                   heightCm: null,
                 ),
@@ -337,9 +337,9 @@ void main() {
 
         await tester.pumpWidget(
           buildSubject(
-            const WeightLoaded(
-              entries: [],
-              filteredEntries: [],
+            WeightLoaded(
+              entries: const [],
+              filteredEntries: const [],
               timePeriod: TimePeriod.week,
               heightCm: null,
             ),

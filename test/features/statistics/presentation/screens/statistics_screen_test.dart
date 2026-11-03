@@ -72,9 +72,9 @@ void main() {
   ) async {
     final settingsBloc = AppSettingsBloc();
     final weightBloc = createBloc(
-      const WeightLoaded(
-        entries: [],
-        filteredEntries: [],
+      WeightLoaded(
+        entries: const [],
+        filteredEntries: const [],
         timePeriod: TimePeriod.week,
         heightCm: null,
       ),
@@ -422,10 +422,10 @@ void main() {
     (tester) async {
       final settingsBloc = AppSettingsBloc();
       final weightBloc = createBloc(
-        const WeightError(
+        WeightError(
           errorType: WeightErrorType.readFailed,
-          entries: [],
-          filteredEntries: [],
+          entries: const [],
+          filteredEntries: const [],
         ),
       );
 
@@ -444,9 +444,9 @@ void main() {
     (tester) async {
       final settingsBloc = AppSettingsBloc();
       final weightBloc = createBloc(
-        const WeightLoaded(
-          entries: [],
-          filteredEntries: [],
+        WeightLoaded(
+          entries: const [],
+          filteredEntries: const [],
           timePeriod: TimePeriod.week,
           heightCm: null,
         ),
@@ -697,9 +697,9 @@ void main() {
 
       final settingsBloc = AppSettingsBloc();
       final weightBloc = createBloc(
-        const WeightLoaded(
-          entries: [],
-          filteredEntries: [],
+        WeightLoaded(
+          entries: const [],
+          filteredEntries: const [],
           timePeriod: TimePeriod.week,
           heightCm: null,
         ),
@@ -836,9 +836,9 @@ void main() {
     ) async {
       final settingsBloc = AppSettingsBloc();
       final weightBloc = createBloc(
-        const WeightLoaded(
-          entries: [],
-          filteredEntries: [],
+        WeightLoaded(
+          entries: const [],
+          filteredEntries: const [],
           timePeriod: TimePeriod.week,
           heightCm: null,
         ),

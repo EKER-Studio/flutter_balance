@@ -46,9 +46,11 @@ void main() {
     weightBloc = MockWeightBloc();
     when(
       () => weightBloc.state,
-    ).thenReturn(const WeightLoaded(entries: [], filteredEntries: []));
+    ).thenReturn(WeightLoaded(entries: const [], filteredEntries: const []));
     when(() => weightBloc.stream).thenAnswer(
-      (_) => Stream.value(const WeightLoaded(entries: [], filteredEntries: [])),
+      (_) => Stream.value(
+        WeightLoaded(entries: const [], filteredEntries: const []),
+      ),
     );
 
     settingsBloc = AppSettingsBloc();

@@ -158,9 +158,11 @@ void main() {
     weightBloc = MockWeightBloc();
     when(
       () => weightBloc.state,
-    ).thenReturn(const WeightLoaded(entries: [], filteredEntries: []));
+    ).thenReturn(WeightLoaded(entries: const [], filteredEntries: const []));
     when(() => weightBloc.stream).thenAnswer(
-      (_) => Stream.value(const WeightLoaded(entries: [], filteredEntries: [])),
+      (_) => Stream.value(
+        WeightLoaded(entries: const [], filteredEntries: const []),
+      ),
     );
 
     healthService = MockHealthService();
@@ -460,7 +462,9 @@ void main() {
     tester,
   ) async {
     when(() => weightBloc.stream).thenAnswer(
-      (_) => Stream.value(const WeightLoaded(entries: [], filteredEntries: [])),
+      (_) => Stream.value(
+        WeightLoaded(entries: const [], filteredEntries: const []),
+      ),
     );
 
     await tester.pumpWidget(createTestWidget());
@@ -483,10 +487,10 @@ void main() {
   testWidgets('shows error snackbar when the wipe fails', (tester) async {
     when(() => weightBloc.stream).thenAnswer(
       (_) => Stream.value(
-        const WeightError(
+        WeightError(
           errorType: WeightErrorType.wipeFailed,
-          entries: [],
-          filteredEntries: [],
+          entries: const [],
+          filteredEntries: const [],
         ),
       ),
     );
@@ -771,7 +775,7 @@ void main() {
   testWidgets('shows empty export snackbar for a non-loaded weight state', (
     tester,
   ) async {
-    when(() => weightBloc.state).thenReturn(const WeightInitial());
+    when(() => weightBloc.state).thenReturn(WeightInitial());
 
     await tester.pumpWidget(createTestWidget());
     await tester.pumpAndSettle();
@@ -1361,9 +1365,9 @@ void main() {
       expect(captured2.last, isA<ConfirmCsvImport>());
 
       stateController.add(
-        const WeightImportSuccess(
-          entries: [],
-          filteredEntries: [],
+        WeightImportSuccess(
+          entries: const [],
+          filteredEntries: const [],
           importedCount: 1,
         ),
       );
@@ -1385,9 +1389,9 @@ void main() {
       await tester.pumpAndSettle();
 
       stateController.add(
-        const CsvAnalysisError(
-          entries: [],
-          filteredEntries: [],
+        CsvAnalysisError(
+          entries: const [],
+          filteredEntries: const [],
           errorType: CsvErrorType.noEntries,
         ),
       );
@@ -1412,9 +1416,9 @@ void main() {
       await tester.pumpAndSettle();
 
       stateController.add(
-        const CsvAnalysisError(
-          entries: [],
-          filteredEntries: [],
+        CsvAnalysisError(
+          entries: const [],
+          filteredEntries: const [],
           errorType: CsvErrorType.invalidFormat,
         ),
       );
@@ -1545,10 +1549,10 @@ void main() {
     ) async {
       when(() => weightBloc.stream).thenAnswer(
         (_) => Stream.value(
-          const WeightError(
+          WeightError(
             errorType: WeightErrorType.wipeFailed,
-            entries: [],
-            filteredEntries: [],
+            entries: const [],
+            filteredEntries: const [],
           ),
         ),
       );
@@ -1572,7 +1576,7 @@ void main() {
     ) async {
       when(
         () => weightBloc.stream,
-      ).thenAnswer((_) => Stream.fromIterable(const [WeightLoading()]));
+      ).thenAnswer((_) => Stream.fromIterable([WeightLoading()]));
 
       await tester.pumpWidget(createTestWidget());
       await tester.pump();
