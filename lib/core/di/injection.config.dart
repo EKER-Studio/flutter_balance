@@ -17,6 +17,9 @@ import 'package:isar_community/isar.dart' as _i214;
 
 import '../../features/settings/presentation/bloc/app_settings_bloc.dart'
     as _i388;
+import '../../features/weight/data/services/csv_weight_importer.dart' as _i849;
+import '../../features/weight/domain/repositories/health_sync_settings.dart'
+    as _i593;
 import '../../features/weight/domain/repositories/weight_repository.dart'
     as _i627;
 import '../../features/weight/domain/services/csv_weight_importer.dart' as _i98;
@@ -74,20 +77,23 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i524.WeightBloc>(
       () => _i524.WeightBloc(
         repository: gh<_i627.WeightRepository>(),
-        appSettingsBloc: gh<_i388.AppSettingsBloc>(),
+        appSettingsBloc: gh<_i593.HealthSyncSettings>(),
         healthService: gh<_i330.HealthService>(),
         healthSyncCoordinator: gh<_i491.HealthSyncCoordinator>(),
         csvWeightImporter: gh<_i98.CsvWeightImporter>(),
       ),
+    );
+    gh.lazySingleton<_i593.HealthSyncSettings>(
+      () => registerModule.healthSyncSettings(gh<_i388.AppSettingsBloc>()),
+    );
+    gh.lazySingleton<_i849.CsvWeightImporter>(
+      () => registerModule.csvWeightImporter(gh<_i627.WeightRepository>()),
     );
     gh.lazySingleton<_i491.HealthSyncCoordinator>(
       () => registerModule.healthSyncCoordinator(
         gh<_i330.HealthService>(),
         gh<_i627.WeightRepository>(),
       ),
-    );
-    gh.lazySingleton<_i98.CsvWeightImporter>(
-      () => registerModule.csvWeightImporter(gh<_i627.WeightRepository>()),
     );
     return this;
   }

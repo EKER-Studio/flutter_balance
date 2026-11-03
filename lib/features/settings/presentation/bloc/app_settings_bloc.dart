@@ -8,12 +8,14 @@ import 'package:balance/core/utils/analytics.dart';
 import 'package:balance/core/utils/crash_reporter.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_event.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_state.dart';
+import 'package:balance/features/weight/domain/repositories/health_sync_settings.dart';
 
 /// A BLoC responsible for managing persistent app settings.
 ///
 /// All settings are persisted across app restarts via `HydratedBloc`.
 @lazySingleton
-class AppSettingsBloc extends HydratedBloc<AppSettingsEvent, AppSettingsState> {
+class AppSettingsBloc extends HydratedBloc<AppSettingsEvent, AppSettingsState>
+    implements HealthSyncSettings {
   final NotificationService _notificationService;
   final HealthService _healthService;
 
@@ -54,6 +56,17 @@ class AppSettingsBloc extends HydratedBloc<AppSettingsEvent, AppSettingsState> {
     on<UpdateWeeklyPaceWindow>(_onUpdateWeeklyPaceWindow);
     on<ToggleAnalytics>(_onToggleAnalytics);
     on<ToggleCrashReporting>(_onToggleCrashReporting);
+  }
+
+  @override
+  bool get isHealthSyncEnabled => state.isHealthSyncEnabled;
+
+  @override
+  DateTime? get lastHealthSyncTimestamp => state.lastHealthSyncTimestamp;
+
+  @override
+  void updateLastHealthSyncTimestamp(DateTime timestamp) {
+    add(UpdateLastHealthSyncTimestamp(timestamp));
   }
 
   void _onUpdateWeeklyPaceWindow(

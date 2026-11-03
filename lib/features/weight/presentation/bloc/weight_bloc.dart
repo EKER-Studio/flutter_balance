@@ -4,11 +4,10 @@ import 'package:injectable/injectable.dart';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:balance/features/weight/domain/entities/weight_entry.dart';
 import 'package:balance/features/weight/domain/repositories/weight_repository.dart';
+import 'package:balance/features/weight/domain/repositories/health_sync_settings.dart';
 import 'package:balance/features/weight/domain/weight_error_type.dart';
 import 'package:balance/features/weight/presentation/bloc/weight_event.dart';
 import 'package:balance/features/weight/presentation/bloc/weight_state.dart';
-import 'package:balance/features/settings/presentation/bloc/app_settings_bloc.dart';
-import 'package:balance/features/settings/presentation/bloc/app_settings_event.dart';
 import 'package:balance/core/integrations/health/health_service.dart';
 import 'package:balance/core/utils/analytics.dart';
 import 'package:balance/core/utils/crash_reporter.dart';
@@ -37,7 +36,7 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
 
   /// An optional settings BLoC used to gate health synchronization; when null,
   /// all health-sync behavior is dormant.
-  final AppSettingsBloc? _settingsBloc;
+  final HealthSyncSettings? _healthSyncSettings;
 
   /// The backend used for every HealthKit / Health Connect interaction.
   final HealthService _healthService;
@@ -51,11 +50,11 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
 
   WeightBloc({
     required this.repository,
-    AppSettingsBloc? appSettingsBloc,
+    HealthSyncSettings? appSettingsBloc,
     HealthService? healthService,
     HealthSyncCoordinator? healthSyncCoordinator,
     CsvWeightImporter? csvWeightImporter,
-  }) : _settingsBloc = appSettingsBloc,
+  }) : _healthSyncSettings = appSettingsBloc,
        _healthService = healthService ?? NativeHealthService.instance,
        super(WeightInitial()) {
     _healthSyncCoordinator =
@@ -86,7 +85,7 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
 
   /// Whether health synchronization is currently enabled in app settings.
   bool get _isHealthSyncEnabled =>
-      _settingsBloc?.state.isHealthSyncEnabled ?? false;
+      _healthSyncSettings?.isHealthSyncEnabled ?? false;
 
   static List<WeightEntry> _entriesFromState(WeightState state) =>
       state.entries;
@@ -413,19 +412,20 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
     SyncHealthEntries event,
     Emitter<WeightState> emit,
   ) async {
-    if (!_isHealthSyncEnabled || _settingsBloc == null) return;
+    final syncSettings = _healthSyncSettings;
+    if (!_isHealthSyncEnabled || syncSettings == null) return;
     AppAnalytics.logHealthSyncStarted();
     try {
       final result = await _healthSyncCoordinator.sync(
         startDate: event.startDate,
-        lastSyncTime: _settingsBloc.state.lastHealthSyncTimestamp,
+        lastSyncTime: syncSettings.lastHealthSyncTimestamp,
       );
       if (result != null) {
         AppAnalytics.logHealthSyncSuccess(
           remoteCount: result.remoteCount,
           pushedLocalCount: result.pushedLocalCount,
         );
-        _settingsBloc.add(UpdateLastHealthSyncTimestamp(result.syncTimestamp));
+        syncSettings.updateLastHealthSyncTimestamp(result.syncTimestamp);
       }
     } catch (e, stack) {
       AppAnalytics.logHealthSyncFailed(e.runtimeType.toString());

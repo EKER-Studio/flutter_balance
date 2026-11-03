@@ -8,10 +8,10 @@ import 'package:balance/core/integrations/health/health_service.dart';
 import 'package:balance/core/integrations/notifications/notification_service.dart';
 import 'package:balance/core/integrations/widgets/widget_sync_service.dart';
 import 'package:balance/features/weight/data/repositories/isar_weight_repository.dart';
-import 'package:balance/features/weight/data/services/csv_weight_importer.dart'
-    show CsvFileWeightImporter;
+import 'package:balance/features/weight/data/services/csv_weight_importer.dart';
 import 'package:balance/features/weight/domain/repositories/weight_repository.dart';
-import 'package:balance/features/weight/domain/services/csv_weight_importer.dart';
+import 'package:balance/features/weight/domain/repositories/health_sync_settings.dart';
+import 'package:balance/features/settings/presentation/bloc/app_settings_bloc.dart';
 import 'package:balance/features/weight/domain/services/health_sync_coordinator.dart';
 
 /// Module registering third-party services, platform singletons, and asynchronous resources.
@@ -73,4 +73,9 @@ abstract class RegisterModule {
   @LazySingleton(as: CsvWeightImporter)
   CsvFileWeightImporter csvWeightImporter(WeightRepository repository) =>
       CsvFileWeightImporter(repository: repository);
+
+  /// Exposes settings needed for platform health synchronization via a domain port.
+  @lazySingleton
+  HealthSyncSettings healthSyncSettings(AppSettingsBloc appSettingsBloc) =>
+      appSettingsBloc;
 }
