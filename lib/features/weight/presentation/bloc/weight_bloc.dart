@@ -65,7 +65,7 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
           repository: repository,
         );
     _csvWeightImporter =
-        csvWeightImporter ?? CsvWeightImporter(repository: repository);
+        csvWeightImporter ?? const _UnavailableCsvWeightImporter();
 
     on<SubscribeToWeightChanges>(
       _onSubscribeToWeightChanges,
@@ -659,5 +659,18 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
   @override
   Map<String, dynamic>? toJson(WeightState state) {
     return {'heightCm': state.heightCm, 'timePeriod': state.timePeriod.name};
+  }
+}
+
+final class _UnavailableCsvWeightImporter implements CsvWeightImporter {
+  const _UnavailableCsvWeightImporter();
+
+  @override
+  Future<CsvAnalysisOutcome> analyzeFile(String filePath) async =>
+      const CsvAnalysisFailure(CsvErrorType.invalidFormat);
+
+  @override
+  Future<int> confirmImport(List<WeightEntry> entries) async {
+    throw StateError('CsvWeightImporter was not provided.');
   }
 }

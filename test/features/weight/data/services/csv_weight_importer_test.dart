@@ -12,12 +12,12 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   late MockWeightRepository mockRepository;
-  late CsvWeightImporter importer;
+  late CsvFileWeightImporter importer;
   late Directory tempDir;
 
   setUp(() async {
     mockRepository = MockWeightRepository();
-    importer = CsvWeightImporter(repository: mockRepository);
+    importer = CsvFileWeightImporter(repository: mockRepository);
     tempDir = await Directory.systemTemp.createTemp('csv_importer_test');
   });
 
