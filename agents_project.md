@@ -46,15 +46,16 @@ Local-First, AI-Native boilerplate utilizing Clean Architecture under a Feature-
 - All Isar dynamic query streams properly closed or managed via BLoC lifecycle.
 
 ### Mandatory Verification Pipeline (concrete commands)
-Implements `AGENTS.md` → Mandatory Verification Pipeline (7 steps):
-1. `flutter pub get` — install/refresh dependencies (if `pubspec.yaml` changed)
-2. `flutter gen-l10n` — regenerate localization (if `l10n.yaml` present)
-3. `dart run build_runner build` — regenerate generated code (if `build_runner` configured)
-4. `dart format lib test` — format
+The canonical local script and CI run these seven configured phases:
+1. `flutter pub get` — resolve workspace dependencies
+2. `flutter gen-l10n` — regenerate localization classes
+3. `dart run build_runner build` — regenerate generated code
+4. `dart format lib test integration_test test_driver` — format Dart source and test directories
 5. `flutter analyze` — static analysis
-6. `dart run custom_lint` — state-management lints (**not configured in this project — skipped**)
-7. `flutter test --exclude-tags golden` — tests (golden tests excluded by tag; coverage excludes `.g.dart` and `l10n`)
+6. `flutter test --coverage --exclude-tags "golden,screenshot"` — tests with coverage, excluding tagged visual tests
+7. `flutter build apk --debug` — verify Android debug compilation
 
-Canonical local script is `scripts/before_push.sh` / CI `/.github/workflows/ci.yml` which follow the same ordering.
+`dart run custom_lint` is not configured in this project. Exact commands are maintained in
+`scripts/before_push.sh` and `/.github/workflows/ci.yml`.
 Once all applicable steps are green and the Resource Lifecycle checklist above is verified, commit per `AGENTS.md` →
 Git & Version Control (autonomous commit is enabled for this repo, since this file exists).

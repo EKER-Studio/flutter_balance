@@ -179,13 +179,13 @@ flutter run
 ### State Management
 - **`WeightBloc`**: Controls weight entries, chart period filtering, and platform sync pipelines.
   - Events: `SubscribeToWeightChanges`, `UpdateUserHeight`, `AddWeight`, `UpdateWeight`, `DeleteWeight`, `ChangeChartFilter`, `RefreshWeightData`, `ClearAllWeightData`, `ImportWeightEntries`, `SyncHealthEntries`, `AnalyzeCsvFile`, `ConfirmCsvImport`
-  - States: `WeightInitial`, `WeightLoading`, `WeightLoaded`, `WeightError`
+  - States: `WeightInitial`, `WeightLoading`, `WeightLoaded`, `WeightError`, `CsvAnalysisInProgress`, `CsvAnalysisReady`, `CsvAnalysisError`, `WeightImportSuccess`
 - **`AppSettingsBloc`**: Manages persistent user preferences via `HydratedBloc`.
   - Events: `UpdateTheme`, `UpdateFirstDayOfWeek`, `UpdateMeasurementUnit`, `UpdateHeight`, `UpdateWeightGoalMode`, `TargetWeightChanged`, `ToggleNotifications`, `UpdateNotificationTime`, `UpdateBiometricLock`, `UpdateBiometricSupport`, `SetLocked`, `ToggleHealthSync`, `CheckHealthSyncStatus`, `UpdateLastHealthSyncTimestamp`, `UpdateWeeklyPaceWindow`, `ToggleAnalytics`, `ToggleCrashReporting`, `CompleteOnboarding`, `DismissWidgetPromo`, `ResetAppSettings`
   - State: `AppSettingsState` (persisted on-device via `HydratedBloc`; see the encryption scope above).
 - **`OnboardingBloc`**: Controls the ephemeral multi-step initial setup wizard state machine.
   - Events: `OnboardingStarted`, `OnboardingStepAdvanced`, `OnboardingStepRewound`, `OnboardingUnitSelected`, `OnboardingCsvImported`, `OnboardingInitialWeightSet`, `OnboardingTargetWeightSet`, `OnboardingHealthSyncToggled`, `OnboardingBiometricsToggled`, `OnboardingCompleted`
-  - State: `OnboardingState` (holds temporary wizard draft values and emits UI states; decoupled from sibling BLoCs with persistence orchestrated by the wizard presentation layer upon completion).
+  - State: `OnboardingState` (holds temporary wizard draft values and emits UI states; the completion coordinator applies the resulting persistence plan).
 
 ### Code Generation
 
@@ -217,9 +217,9 @@ The script automatically executes and validates:
 1. `flutter pub get` — Resolves workspace dependencies
 2. `flutter gen-l10n` — Regenerates localization classes
 3. `dart run build_runner build` — Regenerates Isar and Injectable code
-4. `dart format lib test integration_test test_driver` — Applies formatting and rejects unstaged changes
+4. `dart format lib test integration_test test_driver` — Formats all Dart source and test directories
 5. `flutter analyze` — Static linter verification (0 warnings/errors)
-6. `flutter test --coverage --exclude-tags golden,screenshot` — Comprehensive automated test suite (1246 passing tests)
+6. `flutter test --coverage --exclude-tags "golden,screenshot"` — Automated test suite with coverage, excluding tagged visual tests
 7. `flutter build apk --debug` — Android compilation integrity check
 
 Or execute unit/widget tests directly:
