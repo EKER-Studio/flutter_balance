@@ -105,7 +105,7 @@ void main() {
         ),
       ];
 
-      final file = await CsvExporter.exportToFile(entries);
+      final file = await CsvExportService.exportToFile(entries);
       expect(await file.exists(), isTrue);
 
       final content = await file.readAsString();
@@ -126,7 +126,7 @@ void main() {
         ),
       ];
 
-      final file = await CsvExporter.exportToFile(entries);
+      final file = await CsvExportService.exportToFile(entries);
 
       expect(file.path, matches(RegExp(r'balance_export_\d{8}_\d{6}\.csv$')));
 

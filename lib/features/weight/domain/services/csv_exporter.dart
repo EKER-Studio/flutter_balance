@@ -1,7 +1,5 @@
-import 'dart:io';
 import 'package:csv/csv.dart';
 import 'package:intl/intl.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:balance/features/weight/domain/entities/weight_entry.dart';
 
 /// Exports weight measurements as shareable CSV files.
@@ -30,17 +28,5 @@ class CsvExporter {
     }
 
     return const CsvEncoder(lineDelimiter: '\n').convert(rows);
-  }
-
-  /// Writes [entries] as a timestamped CSV file in the system temp directory.
-  ///
-  /// The file is named `balance_export_<yyyyMMdd_HHmmss>.csv` and is ready
-  /// for sharing via the `share_plus` plugin.
-  static Future<File> exportToFile(List<WeightEntry> entries) async {
-    final csvData = generateCsv(entries);
-    final tempDir = await getTemporaryDirectory();
-    final timestamp = DateFormat('yyyyMMdd_HHmmss').format(DateTime.now());
-    final file = File('${tempDir.path}/balance_export_$timestamp.csv');
-    return file.writeAsString(csvData);
   }
 }
