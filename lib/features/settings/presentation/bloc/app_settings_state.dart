@@ -7,6 +7,16 @@ import 'package:balance/features/weight/domain/bmi_category.dart';
 import 'package:balance/features/weight/domain/services/bmi_calculator.dart';
 import 'package:balance/core/models/measurement_unit.dart';
 
+bool _jsonBool(Map<String, dynamic> json, String key) =>
+    json[key] is bool ? json[key] as bool : false;
+
+double? _jsonDouble(Object? value) => value is num ? value.toDouble() : null;
+
+int? _jsonInt(Object? value) => value is int ? value : null;
+
+DateTime? _jsonDateTime(Object? value) =>
+    value is String ? DateTime.tryParse(value) : null;
+
 /// A persistent app settings state.
 ///
 /// All fields are persisted across app restarts via `HydratedBloc`.
@@ -230,8 +240,7 @@ final class AppSettingsState extends Equatable {
   /// names and transient flags fall back to their defaults.
   factory AppSettingsState.fromJson(Map<String, dynamic> json) {
     final heightValue = json['heightCm'] ?? json['height'];
-    final biometricLockEnabled =
-        json['isBiometricLockEnabled'] as bool? ?? false;
+    final biometricLockEnabled = _jsonBool(json, 'isBiometricLockEnabled');
 
     return AppSettingsState(
       themeMode: AppThemeMode.values.firstWhere(
@@ -246,8 +255,8 @@ final class AppSettingsState extends Equatable {
         (e) => e.name == json['measurementUnit'],
         orElse: () => MeasurementUnit.metric,
       ),
-      height: (heightValue as num?)?.toDouble(),
-      notificationsEnabled: json['notificationsEnabled'] as bool? ?? false,
+      height: _jsonDouble(heightValue),
+      notificationsEnabled: _jsonBool(json, 'notificationsEnabled'),
       notificationTime: (() {
         final notifTime = json['notificationTime'];
         if (notifTime == null || notifTime is! Map<String, dynamic>) {
@@ -260,31 +269,26 @@ final class AppSettingsState extends Equatable {
         }
         return const (hour: 8, minute: 0);
       })(),
-      targetWeight: (json['targetWeight'] as num?)?.toDouble(),
+      targetWeight: _jsonDouble(json['targetWeight']),
       weightGoalMode: WeightGoalMode.values.firstWhere(
         (e) => e.name == json['weightGoalMode'],
         orElse: () => WeightGoalMode.lose,
       ),
       isBiometricLockEnabled: biometricLockEnabled,
-      isLocked: biometricLockEnabled
-          ? true
-          : (json['isLocked'] as bool? ?? false),
-      isOnboardingCompleted: json['isOnboardingCompleted'] as bool? ?? false,
-      hasDismissedWidgetPromo:
-          json['hasDismissedWidgetPromo'] as bool? ?? false,
-      isHealthSyncEnabled: json['isHealthSyncEnabled'] as bool? ?? false,
+      isLocked: biometricLockEnabled ? true : _jsonBool(json, 'isLocked'),
+      isOnboardingCompleted: _jsonBool(json, 'isOnboardingCompleted'),
+      hasDismissedWidgetPromo: _jsonBool(json, 'hasDismissedWidgetPromo'),
+      isHealthSyncEnabled: _jsonBool(json, 'isHealthSyncEnabled'),
       // Transient flags: never restored from storage.
       notificationPermissionDenied: false,
       isBiometricSupported: true,
       // Transient flags: never restored from storage.
       isHealthApiAvailable: true,
       healthPermissionDenied: false,
-      lastHealthSyncTimestamp: json['lastHealthSyncTimestamp'] != null
-          ? DateTime.tryParse(json['lastHealthSyncTimestamp'] as String)
-          : null,
-      weeklyPaceWindowDays: json['weeklyPaceWindowDays'] as int? ?? 30,
-      analyticsEnabled: json['analyticsEnabled'] as bool? ?? false,
-      crashReportingEnabled: json['crashReportingEnabled'] as bool? ?? false,
+      lastHealthSyncTimestamp: _jsonDateTime(json['lastHealthSyncTimestamp']),
+      weeklyPaceWindowDays: _jsonInt(json['weeklyPaceWindowDays']) ?? 30,
+      analyticsEnabled: _jsonBool(json, 'analyticsEnabled'),
+      crashReportingEnabled: _jsonBool(json, 'crashReportingEnabled'),
     );
   }
 

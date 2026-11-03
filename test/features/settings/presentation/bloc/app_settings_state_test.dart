@@ -100,6 +100,36 @@ void main() {
       expect(restored.crashReportingEnabled, isFalse);
     });
 
+    test('fromJson defaults fields with unexpected JSON types', () {
+      final restored = AppSettingsState.fromJson(const {
+        'heightCm': '180',
+        'notificationsEnabled': 'yes',
+        'targetWeight': [],
+        'isBiometricLockEnabled': 'true',
+        'isLocked': [],
+        'isOnboardingCompleted': 1,
+        'hasDismissedWidgetPromo': 'yes',
+        'isHealthSyncEnabled': 1,
+        'lastHealthSyncTimestamp': 123,
+        'weeklyPaceWindowDays': '14',
+        'analyticsEnabled': 'true',
+        'crashReportingEnabled': 1,
+      });
+
+      expect(restored.height, isNull);
+      expect(restored.notificationsEnabled, isFalse);
+      expect(restored.targetWeight, isNull);
+      expect(restored.isBiometricLockEnabled, isFalse);
+      expect(restored.isLocked, isFalse);
+      expect(restored.isOnboardingCompleted, isFalse);
+      expect(restored.hasDismissedWidgetPromo, isFalse);
+      expect(restored.isHealthSyncEnabled, isFalse);
+      expect(restored.lastHealthSyncTimestamp, isNull);
+      expect(restored.weeklyPaceWindowDays, 30);
+      expect(restored.analyticsEnabled, isFalse);
+      expect(restored.crashReportingEnabled, isFalse);
+    });
+
     test(
       'calculateBmi returns 0.0 when height is null and accurate BMI when set',
       () {
