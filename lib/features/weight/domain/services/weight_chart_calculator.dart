@@ -1,3 +1,5 @@
+import 'dart:collection';
+
 import 'package:balance/core/models/time_period.dart';
 import 'package:balance/features/weight/domain/entities/weight_entry.dart';
 
@@ -23,7 +25,7 @@ abstract final class WeightChartCalculator {
             )
             .toList(),
     };
-    return _aggregateByDay(filtered);
+    return UnmodifiableListView(_aggregateByDay(filtered));
   }
 
   /// Collapses multiple measurements on the same calendar day into one averaged entry.
