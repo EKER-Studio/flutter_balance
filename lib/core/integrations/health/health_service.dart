@@ -6,6 +6,10 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:balance/core/utils/crash_reporter.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:balance/features/weight/domain/entities/weight_entry.dart';
+import 'package:balance/features/weight/domain/repositories/health_service.dart';
+
+export 'package:balance/features/weight/domain/repositories/health_service.dart'
+    show HealthService;
 
 /// Allows platform-specific behaviour to be mocked in tests without modifying global state.
 abstract class PlatformDetector {
@@ -22,61 +26,6 @@ class NativePlatformDetector implements PlatformDetector {
   bool get isAndroid => Platform.isAndroid;
   @override
   bool get isIOS => Platform.isIOS;
-}
-
-/// A platform-neutral abstraction for querying and modifying body weight records.
-///
-/// Backed by Apple HealthKit (iOS) or Google Health Connect (Android),
-/// hiding the underlying plugin details from the rest of the app.
-abstract class HealthService {
-  /// Checks if HealthKit (iOS) or Health Connect (Android) is available on the device.
-  Future<bool> isHealthApiAvailable();
-
-  /// Checks if read/write permissions for WEIGHT are already granted.
-  Future<bool> hasPermissions();
-
-  /// Requests native OS permissions for WEIGHT (read and write).
-  Future<bool> requestPermissions();
-
-  /// Opens the native app system settings so the user can manage permissions manually.
-  Future<bool> openSystemSettings();
-
-  /// Opens the Google Play Store listing for Health Connect on Android.
-  ///
-  /// Intended for devices where [isHealthApiAvailable] reports `false`;
-  /// a no-op on other platforms.
-  Future<void> installHealthConnect();
-
-  /// Fetches weight entries within a date range.
-  ///
-  /// Only readings between 20 kg and 300 kg are returned; out-of-range or
-  /// non-numeric points are discarded. Entries are sorted newest first.
-  /// [start] is the inclusive start of the query window.
-  /// [end] is the inclusive end of the query window.
-  Future<List<WeightEntry>> fetchWeightHistory({
-    required DateTime start,
-    required DateTime end,
-  });
-
-  /// Writes a weight entry to HealthKit / Health Connect.
-  ///
-  /// [weightKg] is the weight value in kilograms.
-  /// [timestamp] is the instant the measurement was recorded.
-  Future<bool> writeWeight({
-    required double weightKg,
-    required DateTime timestamp,
-  });
-
-  /// Deletes a weight entry from HealthKit / Health Connect if supported.
-  ///
-  /// Deletes the entry matching [weightKg] within the minute around
-  /// [timestamp] on a best-effort basis.
-  /// [weightKg] is the weight value in kilograms of the entry to delete.
-  /// [timestamp] is the instant the entry to delete was recorded.
-  Future<bool> deleteWeight({
-    required double weightKg,
-    required DateTime timestamp,
-  });
 }
 
 /// A native implementation of [HealthService] backed by the `health` plugin.
@@ -106,8 +55,28 @@ class NativeHealthService implements HealthService {
   ///
   /// [platformDetector] defaults to the native implementation.
   NativeHealthService({Health? health, PlatformDetector? platformDetector})
-    : _health = health ?? Health(),
-      _platformDetector = platformDetector ?? NativePlatformDetector();
+    : this.withTimeout(
+        health: health,
+        platformDetector: platformDetector,
+        operationTimeout: defaultOperationTimeout,
+      );
+
+  /// Creates a service with an explicit timeout, primarily for deterministic tests.
+  NativeHealthService.withTimeout({
+    Health? health,
+    PlatformDetector? platformDetector,
+    required Duration operationTimeout,
+  }) : this._withTimeout(
+         health ?? Health(),
+         platformDetector ?? NativePlatformDetector(),
+         operationTimeout,
+       );
+
+  NativeHealthService._withTimeout(
+    this._health,
+    this._platformDetector,
+    this._operationTimeout,
+  );
 
   /// The single shared instance of [NativeHealthService].
   static final NativeHealthService instance = NativeHealthService();
@@ -140,7 +109,9 @@ class NativeHealthService implements HealthService {
   static const double _maxWeightKg = 300.0;
 
   /// The maximum time allowed for permission and settings calls before fallback.
-  static const Duration _operationTimeout = Duration(seconds: 5);
+  static const Duration defaultOperationTimeout = Duration(seconds: 5);
+
+  final Duration _operationTimeout;
 
   /// The package name of the official Google Health Connect app.
   static const String _healthConnectPackageId =

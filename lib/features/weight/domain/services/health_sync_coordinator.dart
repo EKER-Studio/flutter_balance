@@ -1,8 +1,4 @@
-import 'dart:async';
-
-import 'package:balance/core/integrations/health/health_service.dart';
-import 'package:balance/core/utils/analytics.dart';
-import 'package:balance/core/utils/crash_reporter.dart';
+import 'package:balance/features/weight/domain/repositories/health_service.dart';
 import 'package:balance/features/weight/domain/entities/weight_entry.dart';
 import 'package:balance/features/weight/domain/repositories/weight_repository.dart';
 
@@ -48,94 +44,52 @@ class HealthSyncCoordinator {
     DateTime? startDate,
     DateTime? lastSyncTime,
   }) async {
-    try {
-      final now = DateTime.now();
-      final end = now;
-      final start =
-          startDate ??
-          (lastSyncTime?.subtract(const Duration(days: 1)) ??
-              now.subtract(defaultInitialLookback));
+    final now = DateTime.now();
+    final end = now;
+    final start =
+        startDate ??
+        (lastSyncTime?.subtract(const Duration(days: 1)) ??
+            now.subtract(defaultInitialLookback));
 
-      final remoteEntries = await healthService.fetchWeightHistory(
-        start: start,
-        end: end,
-      );
+    final remoteEntries = await healthService.fetchWeightHistory(
+      start: start,
+      end: end,
+    );
 
-      if (remoteEntries.isNotEmpty) {
-        await repository.syncRemoteEntries(remoteEntries);
-      }
-
-      final localEntries = await repository.getEntriesBetween(start, end);
-
-      final missingRemoteEntries = localEntries.where((local) {
-        final lUtc = local.dateTime.toUtc();
-        return !remoteEntries.any((remote) {
-          final rUtc = remote.dateTime.toUtc();
-          return (remote.weightKg - local.weightKg).abs() <= 0.05 &&
-              rUtc.difference(lUtc).inSeconds.abs() <= 60;
-        });
-      }).toList();
-
-      if (missingRemoteEntries.isNotEmpty) {
-        unawaited(
-          Future.forEach(missingRemoteEntries, (entry) => mirrorWrite(entry)),
-        );
-      }
-
-      final syncTimestamp = DateTime.now().toUtc();
-      AppAnalytics.logHealthSyncSuccess(
-        remoteCount: remoteEntries.length,
-        pushedLocalCount: missingRemoteEntries.length,
-      );
-
-      return HealthSyncResult(
-        syncTimestamp: syncTimestamp,
-        remoteCount: remoteEntries.length,
-        pushedLocalCount: missingRemoteEntries.length,
-      );
-    } catch (e, stack) {
-      AppAnalytics.logHealthSyncFailed(e.runtimeType.toString());
-      AppCrashReporter.recordError(
-        e,
-        stack,
-        reason: '[HealthSyncCoordinator] Health sync background failure',
-        fatal: false,
-      );
-      return null;
+    if (remoteEntries.isNotEmpty) {
+      await repository.syncRemoteEntries(remoteEntries);
     }
+
+    final localEntries = await repository.getEntriesBetween(start, end);
+
+    final missingRemoteEntries = localEntries.where((local) {
+      final lUtc = local.dateTime.toUtc();
+      return !remoteEntries.any((remote) {
+        final rUtc = remote.dateTime.toUtc();
+        return (remote.weightKg - local.weightKg).abs() <= 0.05 &&
+            rUtc.difference(lUtc).inSeconds.abs() <= 60;
+      });
+    }).toList();
+
+    await Future.forEach(missingRemoteEntries, mirrorWrite);
+
+    return HealthSyncResult(
+      syncTimestamp: DateTime.now().toUtc(),
+      remoteCount: remoteEntries.length,
+      pushedLocalCount: missingRemoteEntries.length,
+    );
   }
 
   /// Best-effort write to the platform health service when sync is enabled.
   Future<void> mirrorWrite(WeightEntry entry) async {
-    try {
-      await healthService.writeWeight(
-        weightKg: entry.weightKg,
-        timestamp: entry.dateTime,
-      );
-    } catch (e, stack) {
-      AppCrashReporter.recordError(
-        e,
-        stack,
-        reason: '[HealthSyncCoordinator] Health mirror write failed',
-        fatal: false,
-      );
-    }
+    await healthService.writeWeight(
+      weightKg: entry.weightKg,
+      timestamp: entry.dateTime,
+    );
   }
 
   /// Best-effort delete from the platform health service when sync is enabled.
   Future<void> mirrorDelete(double weightKg, DateTime timestamp) async {
-    try {
-      await healthService.deleteWeight(
-        weightKg: weightKg,
-        timestamp: timestamp,
-      );
-    } catch (e, stack) {
-      AppCrashReporter.recordError(
-        e,
-        stack,
-        reason: '[HealthSyncCoordinator] Health mirror delete failed',
-        fatal: false,
-      );
-    }
+    await healthService.deleteWeight(weightKg: weightKg, timestamp: timestamp);
   }
 }

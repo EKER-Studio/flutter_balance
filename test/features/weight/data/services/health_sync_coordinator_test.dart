@@ -132,7 +132,7 @@ void main() {
       },
     );
 
-    test('aborts sync when healthService throws during fetch', () async {
+    test('propagates sync failures when healthService fetch throws', () async {
       when(
         () => mockHealthService.fetchWeightHistory(
           start: any(named: 'start'),
@@ -140,9 +140,7 @@ void main() {
         ),
       ).thenThrow(Exception('Health service unavailable'));
 
-      final result = await coordinator.sync();
-
-      expect(result, isNull);
+      await expectLater(coordinator.sync(), throwsA(isA<Exception>()));
       verifyNever(() => mockRepository.getEntriesBetween(any(), any()));
       verifyNever(() => mockRepository.syncRemoteEntries(any()));
       verifyNever(
@@ -177,7 +175,7 @@ void main() {
     });
 
     test(
-      'mirrorWrite catches error when healthService.writeWeight throws',
+      'mirrorWrite propagates errors from healthService.writeWeight',
       () async {
         when(
           () => mockHealthService.writeWeight(
@@ -191,7 +189,10 @@ void main() {
           dateTime: DateTime(2026, 8, 24, 10, 0),
         );
 
-        await expectLater(coordinator.mirrorWrite(entry), completes);
+        await expectLater(
+          coordinator.mirrorWrite(entry),
+          throwsA(isA<Exception>()),
+        );
       },
     );
 
@@ -215,7 +216,7 @@ void main() {
     });
 
     test(
-      'mirrorDelete catches error when healthService.deleteWeight throws',
+      'mirrorDelete propagates errors from healthService.deleteWeight',
       () async {
         when(
           () => mockHealthService.deleteWeight(
@@ -225,7 +226,10 @@ void main() {
         ).thenThrow(Exception('Delete failed'));
 
         final timestamp = DateTime(2026, 8, 24, 10, 0);
-        await expectLater(coordinator.mirrorDelete(72.5, timestamp), completes);
+        await expectLater(
+          coordinator.mirrorDelete(72.5, timestamp),
+          throwsA(isA<Exception>()),
+        );
       },
     );
   });
