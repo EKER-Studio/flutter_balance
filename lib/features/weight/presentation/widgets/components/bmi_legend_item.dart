@@ -25,14 +25,14 @@ class BmiLegendItem extends StatelessWidget {
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
     final label = category.localizedName(l10n);
-    final bgColor = category.chipBackgroundColor();
+    final bgColor = category.chipBackgroundColor(isDark: isDark);
     final textColor = category.chipContentColor(isDark: isDark);
 
     final decoration = isCurrent
         ? BoxDecoration(
-            color: category.chipBackgroundColor().withValues(
-              alpha: isDark ? 0.35 : 0.22,
-            ),
+            color: category
+                .chipBackgroundColor(isDark: isDark)
+                .withValues(alpha: isDark ? 0.35 : 0.22),
             borderRadius: BorderRadius.circular(10),
             border: Border.all(color: textColor, width: 1.5),
           )

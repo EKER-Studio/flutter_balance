@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:balance/core/presentation/theme/app_feedback_theme.dart';
 import 'package:balance/core/models/measurement_unit.dart';
 import 'package:balance/core/utils/analytics.dart';
 import 'package:balance/core/utils/unit_converter.dart';
@@ -150,7 +151,7 @@ class BmiStatusCard extends StatelessWidget {
                           vertical: 4,
                         ),
                         decoration: BoxDecoration(
-                          color: category.chipBackgroundColor(),
+                          color: category.chipBackgroundColor(isDark: isDark),
                           borderRadius: BorderRadius.circular(8),
                           border: Border.all(
                             color: category
@@ -255,7 +256,9 @@ class BmiStatusCard extends StatelessWidget {
                               Icon(
                                 Icons.check_circle_outline,
                                 size: 16,
-                                color: Colors.green.shade600,
+                                color: AppFeedbackTheme.successForegroundFor(
+                                  isDark: isDark,
+                                ),
                               ),
                               const SizedBox(width: 8),
                               Expanded(
@@ -282,6 +285,7 @@ class BmiStatusCard extends StatelessWidget {
 
   Widget _buildSpectrumBar(BuildContext context, {required double bmi}) {
     final cs = Theme.of(context).colorScheme;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     // Proportional fraction across BMI 15.0 to 35.0 spectrum
     final normalized = ((bmi - 15.0) / (35.0 - 15.0)).clamp(0.02, 0.98);
@@ -318,7 +322,9 @@ class BmiStatusCard extends StatelessWidget {
                 flex: 35, // 15.0 to 18.5
                 child: Container(
                   height: 8,
-                  color: Colors.blue.withValues(alpha: 0.75),
+                  color: AppFeedbackTheme.infoForegroundFor(
+                    isDark: isDark,
+                  ).withValues(alpha: 0.75),
                 ),
               ),
               const SizedBox(width: 2),
@@ -326,7 +332,9 @@ class BmiStatusCard extends StatelessWidget {
                 flex: 64, // 18.5 to 24.9
                 child: Container(
                   height: 8,
-                  color: Colors.green.withValues(alpha: 0.75),
+                  color: AppFeedbackTheme.successForegroundFor(
+                    isDark: isDark,
+                  ).withValues(alpha: 0.75),
                 ),
               ),
               const SizedBox(width: 2),
@@ -334,7 +342,9 @@ class BmiStatusCard extends StatelessWidget {
                 flex: 50, // 25.0 to 29.9
                 child: Container(
                   height: 8,
-                  color: Colors.orange.withValues(alpha: 0.75),
+                  color: AppFeedbackTheme.warningForegroundFor(
+                    isDark: isDark,
+                  ).withValues(alpha: 0.75),
                 ),
               ),
               const SizedBox(width: 2),
@@ -342,7 +352,9 @@ class BmiStatusCard extends StatelessWidget {
                 flex: 51, // 30.0 to 35.0+
                 child: Container(
                   height: 8,
-                  color: Colors.red.withValues(alpha: 0.75),
+                  color: AppFeedbackTheme.errorForegroundFor(
+                    isDark: isDark,
+                  ).withValues(alpha: 0.75),
                 ),
               ),
             ],
