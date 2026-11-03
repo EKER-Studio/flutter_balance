@@ -5,6 +5,7 @@ import 'package:balance/core/models/measurement_unit.dart';
 import 'package:balance/features/onboarding/presentation/bloc/onboarding_bloc.dart';
 import 'package:balance/features/onboarding/presentation/bloc/onboarding_event.dart';
 import 'package:balance/features/onboarding/presentation/bloc/onboarding_state.dart';
+import 'package:balance/features/onboarding/presentation/coordinators/onboarding_completion_coordinator.dart';
 import 'package:balance/features/onboarding/presentation/widgets/components/onboarding_app_bar.dart';
 import 'package:balance/features/onboarding/presentation/widgets/steps/step_biometric_lock.dart';
 import 'package:balance/features/onboarding/presentation/widgets/steps/step_csv_import.dart';
@@ -206,25 +207,11 @@ class _OnboardingWizardContentState extends State<OnboardingWizardContent> {
   }
 
   void _handleWizardCompleted(OnboardingState state) {
-    final latest = state.latestImportedEntry;
-    final remainingImported = latest == null
-        ? const <WeightEntry>[]
-        : state.importedCsvEntries.where((entry) => entry != latest).toList();
-    if (remainingImported.isNotEmpty) {
-      context.read<WeightBloc>().add(ImportWeightEntries(remainingImported));
-    }
-
-    final settingsBloc = context.read<AppSettingsBloc>();
-    final settingsState = settingsBloc.state;
-    if (state.isHealthSyncRequested && !settingsState.isHealthSyncEnabled) {
-      settingsBloc.add(const ToggleHealthSync(true));
-    }
-    if (state.isBiometricEnabled && !settingsState.isBiometricLockEnabled) {
-      settingsBloc.add(const UpdateBiometricLock(true));
-    }
-    settingsBloc.add(const CompleteOnboarding());
-
-    widget.onWizardCompleted?.call();
+    OnboardingCompletionCoordinator(
+      settingsBloc: context.read<AppSettingsBloc>(),
+      weightBloc: context.read<WeightBloc>(),
+      onCompleted: widget.onWizardCompleted,
+    ).complete(state);
   }
 
   @override

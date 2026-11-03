@@ -1,6 +1,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:balance/core/models/measurement_unit.dart';
 import 'package:balance/features/weight/domain/entities/weight_entry.dart';
+import 'package:balance/features/onboarding/domain/services/onboarding_completion_plan.dart';
 
 /// Ephemeral state of the onboarding wizard.
 ///
@@ -57,22 +58,7 @@ final class OnboardingState extends Equatable {
   /// from the bulk import on completion (it is persisted separately via
   /// [draftInitialWeight]).
   WeightEntry? get latestImportedEntry {
-    if (importedCsvEntries.isEmpty) return null;
-    final now = DateTime.now();
-    final todayEntries = importedCsvEntries.where(
-      (e) =>
-          e.dateTime.year == now.year &&
-          e.dateTime.month == now.month &&
-          e.dateTime.day == now.day,
-    );
-    if (todayEntries.isNotEmpty) {
-      return todayEntries.reduce(
-        (a, b) => a.dateTime.isAfter(b.dateTime) ? a : b,
-      );
-    }
-    return importedCsvEntries.reduce(
-      (a, b) => a.dateTime.isAfter(b.dateTime) ? a : b,
-    );
+    return OnboardingCompletionPlan.latestImportedEntry(importedCsvEntries);
   }
 
   /// Creates a copy of this state with the given fields replaced.

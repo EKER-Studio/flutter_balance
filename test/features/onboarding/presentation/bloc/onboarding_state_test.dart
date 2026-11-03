@@ -1,10 +1,46 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:balance/core/models/measurement_unit.dart';
+import 'package:balance/features/onboarding/domain/services/onboarding_completion_plan.dart';
 import 'package:balance/features/onboarding/presentation/bloc/onboarding_state.dart';
 import 'package:balance/features/weight/domain/entities/weight_entry.dart';
 
 void main() {
   group('OnboardingState Unit Tests', () {
+    test(
+      'completion plan keeps today’s latest entry for separate persistence',
+      () {
+        final now = DateTime(2026, 6, 1, 18);
+        final yesterday = WeightEntry(
+          id: 1,
+          weightKg: 76,
+          dateTime: DateTime(2026, 5, 31, 8),
+        );
+        final todayEarlier = WeightEntry(
+          id: 2,
+          weightKg: 75.5,
+          dateTime: DateTime(2026, 6, 1, 8),
+        );
+        final todayLatest = WeightEntry(
+          id: 3,
+          weightKg: 75,
+          dateTime: DateTime(2026, 6, 1, 17),
+        );
+
+        final plan = OnboardingCompletionPlan.fromDraft(
+          importedEntries: [yesterday, todayEarlier, todayLatest],
+          healthSyncRequested: true,
+          biometricLockRequested: true,
+          healthSyncEnabled: false,
+          biometricLockEnabled: true,
+          now: now,
+        );
+
+        expect(plan.entriesToImport, [yesterday, todayEarlier]);
+        expect(plan.enableHealthSync, isTrue);
+        expect(plan.enableBiometricLock, isFalse);
+      },
+    );
+
     test('default constructor initializes standard defaults', () {
       const state = OnboardingState();
 
