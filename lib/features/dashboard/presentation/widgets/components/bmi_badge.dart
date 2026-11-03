@@ -27,7 +27,7 @@ class BmiBadge extends StatelessWidget {
         ? category!.chipContentColor(isDark: isDark)
         : colorScheme.primary;
     final categoryBackground = category != null
-        ? category!.chipBackgroundColor()
+        ? category!.chipBackgroundColor(isDark: isDark)
         : colorScheme.primary.withValues(alpha: 0.15);
 
     final categoryLabel = category?.localizedName(l10n) ?? '';

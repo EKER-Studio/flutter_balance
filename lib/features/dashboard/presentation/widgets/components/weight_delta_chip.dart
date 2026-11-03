@@ -46,7 +46,7 @@ class WeightDeltaChip extends StatelessWidget {
         ? bCategory.chipContentColor(isDark: isDark)
         : Theme.of(context).colorScheme.onSurfaceVariant;
     final backgroundColor = bCategory != null
-        ? bCategory.chipBackgroundColor()
+        ? bCategory.chipBackgroundColor(isDark: isDark)
         : Theme.of(context).colorScheme.surfaceContainerHigh;
     final icon = isLoss
         ? Icons.trending_down_rounded

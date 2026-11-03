@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:balance/core/presentation/theme/app_feedback_theme.dart';
 import 'package:balance/l10n/app_localizations.dart';
 
 /// A presentational widget displaying the latest recorded weight and its timestamp.
@@ -119,11 +120,11 @@ class LatestMeasurementInfo extends StatelessWidget {
     final isImprovement = delta <= 0;
 
     final Color badgeBg = isImprovement
-        ? Colors.green.withValues(alpha: 0.15)
-        : Colors.orange.withValues(alpha: 0.15);
+        ? AppFeedbackTheme.successBackgroundFor(isDark: isDark)
+        : AppFeedbackTheme.warningBackgroundFor(isDark: isDark);
     final Color badgeFg = isImprovement
-        ? (isDark ? Colors.green.shade300 : Colors.green.shade700)
-        : (isDark ? Colors.orange.shade300 : Colors.orange.shade700);
+        ? AppFeedbackTheme.successForegroundFor(isDark: isDark)
+        : AppFeedbackTheme.warningForegroundFor(isDark: isDark);
 
     final String sign = delta > 0 ? '+' : '';
     final String valStr = delta.toStringAsFixed(1);
