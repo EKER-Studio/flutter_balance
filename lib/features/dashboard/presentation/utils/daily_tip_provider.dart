@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:balance/l10n/app_localizations.dart';
 
+/// Represents an inspirational or practical health tip displayed to the user.
 class DailyTip {
   final String title;
   final String text;
@@ -8,6 +9,7 @@ class DailyTip {
   const DailyTip(this.title, this.text);
 }
 
+/// Provides localized daily wellness and weight management tips based on calendar date.
 class DailyTipProvider {
   static DailyTip getDailyTip(BuildContext context) {
     final l10n = AppLocalizations.of(context);

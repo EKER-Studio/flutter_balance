@@ -170,4 +170,4 @@ DURATION=$((END_TIME - START_TIME))
 echo -e "\n=============================================================================="
 log_success "Full screenshots suite completed in ${DURATION}s (devices: $DEVICE_INPUT, locale: ${LOCALE_FILTER:-all})"
 echo -e "=============================================================================="
-echo -e "${BLUE}ℹ️  [INFO] For single-module runs use e.g.: ./scripts/generate_calendar.sh $DEVICE_INPUT ${LOCALE_FILTER:-}${NC}"
+echo -e "${BLUE}ℹ️  [INFO] For single-module runs use e.g.: ./scripts/screenshots/generate_calendar.sh $DEVICE_INPUT ${LOCALE_FILTER:-}${NC}"
