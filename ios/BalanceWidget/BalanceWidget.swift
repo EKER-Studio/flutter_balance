@@ -12,7 +12,7 @@ struct Provider: TimelineProvider {
             deltaIsLoss: true,
             targetWeight: "75.0 kg",
             goalProgressPct: 70,
-            lastEntryDate: "Dzisiaj, 08:30"
+            lastEntryDate: "Today, 08:30"
         )
     }
 
@@ -76,10 +76,10 @@ struct BalanceWidgetEntryView : View {
                     .fontWeight(.bold)
                     .foregroundColor(Color.blue)
                 Spacer()
-                Text("Brak pomiarów")
+                Text(String(localized: "Brak pomiarów"))
                     .font(.subheadline)
                     .foregroundColor(.secondary)
-                Text("Dotknij, aby dodać")
+                Text(String(localized: "Dotknij, aby dodać"))
                     .font(.caption2)
                     .foregroundColor(.secondary)
                 Spacer()
@@ -134,7 +134,7 @@ struct SmallWidgetView: View {
                 ProgressView(value: Double(entry.goalProgressPct), total: 100)
                     .progressViewStyle(LinearProgressViewStyle(tint: Color.blue))
                 HStack {
-                    Text("Cel: \(entry.targetWeight)")
+                    Text("\(String(localized: "Cel:")) \(entry.targetWeight)")
                         .font(.system(size: 9))
                         .foregroundColor(.secondary)
                         .lineLimit(1)
@@ -189,7 +189,7 @@ struct MediumWidgetView: View {
                 Spacer()
 
                 if !entry.targetWeight.isEmpty {
-                    Text("Postęp celu")
+                    Text(String(localized: "Postęp celu"))
                         .font(.caption)
                         .fontWeight(.semibold)
                         .foregroundColor(.secondary)
@@ -198,7 +198,7 @@ struct MediumWidgetView: View {
                         .progressViewStyle(LinearProgressViewStyle(tint: Color.blue))
 
                     HStack {
-                        Text("Cel: \(entry.targetWeight)")
+                        Text("\(String(localized: "Cel:")) \(entry.targetWeight)")
                             .font(.caption2)
                             .foregroundColor(.secondary)
                         Spacer()
@@ -208,10 +208,10 @@ struct MediumWidgetView: View {
                             .foregroundColor(.primary)
                     }
                 } else {
-                    Text("Brak ustalonego celu")
+                    Text(String(localized: "Brak ustalonego celu"))
                         .font(.caption)
                         .foregroundColor(.secondary)
-                    Text("Ustaw cel wagi w ustawieniach aplikacji.")
+                    Text(String(localized: "Ustaw cel wagi w ustawieniach aplikacji."))
                         .font(.caption2)
                         .foregroundColor(.secondary)
                 }
@@ -232,7 +232,7 @@ struct BalanceWidget: Widget {
             BalanceWidgetEntryView(entry: entry)
         }
         .configurationDisplayName("Balance")
-        .description("Wyświetla ostatni pomiar wagi oraz postęp w realizacji celu.")
+        .description(String(localized: "Wyświetla ostatni pomiar wagi oraz postęp w realizacji celu."))
         .supportedFamilies([.systemSmall, .systemMedium])
     }
 }
