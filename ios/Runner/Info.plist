@@ -49,6 +49,19 @@
 		</dict>
 		<key>UIApplicationSupportsIndirectInputEvents</key>
 		<true/>
+		<key>CFBundleURLTypes</key>
+		<array>
+			<dict>
+				<key>CFBundleTypeRole</key>
+				<string>Editor</string>
+				<key>CFBundleURLName</key>
+				<string>com.ekerstudio.balance</string>
+				<key>CFBundleURLSchemes</key>
+				<array>
+					<string>balance</string>
+				</array>
+			</dict>
+		</array>
 		<key>NSFaceIDUsageDescription</key>
 		<string>Unlock the app with Face ID for faster and more secure access.</string>
 		<key>NSHealthShareUsageDescription</key>
