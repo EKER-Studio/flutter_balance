@@ -75,8 +75,10 @@ android {
     }
 
     bundle {
+        // Keep all language resources in the AAB so in-app language switching
+        // via AppSettingsBloc works even for home-screen widgets and notifications.
         language {
-            enableSplit = true
+            enableSplit = false
         }
         density {
             enableSplit = true
