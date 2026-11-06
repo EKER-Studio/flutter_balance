@@ -223,7 +223,6 @@ struct MediumWidgetView: View {
     }
 }
 
-@main
 struct BalanceWidget: Widget {
     let kind: String = "BalanceWidget"
 
@@ -234,5 +233,12 @@ struct BalanceWidget: Widget {
         .configurationDisplayName("Balance")
         .description(String(localized: "Wyświetla ostatni pomiar wagi oraz postęp w realizacji celu."))
         .supportedFamilies([.systemSmall, .systemMedium])
+    }
+}
+
+@main
+struct BalanceWidgetBundle: WidgetBundle {
+    var body: some Widget {
+        BalanceWidget()
     }
 }
