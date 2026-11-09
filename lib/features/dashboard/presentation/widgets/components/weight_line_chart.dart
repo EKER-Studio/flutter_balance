@@ -77,194 +77,196 @@ class WeightLineChart extends StatelessWidget {
       container: true,
       label:
           '${l10n.weightTrend}, ${l10n.weightTrendChartSemantics(entries.length)}',
-      child: LineChart(
-        LineChartData(
-          minX: 0,
-          maxX: math.max(0, sortedEntries.length - 1).toDouble(),
-          minY: minY,
-          maxY: maxY,
-          gridData: AppChartTheme.gridData(
-            colorScheme: colorScheme,
-            horizontalInterval: verticalInterval,
-          ),
-          borderData: AppChartTheme.borderData(),
-          extraLinesData: ExtraLinesData(
-            horizontalLines: [
-              if (normalBmiThresholdDisplay != null &&
-                  normalBmiThresholdDisplay <= maxY &&
-                  normalBmiThresholdDisplay >= minY)
-                HorizontalLine(
-                  y: normalBmiThresholdDisplay,
-                  color: colorScheme.tertiary.withValues(alpha: 0.5),
-                  strokeWidth: 1.5,
-                  dashArray: [8, 4],
-                  label: HorizontalLineLabel(
-                    show: true,
-                    alignment: Alignment.topRight,
-                    padding: const EdgeInsets.only(right: 4, bottom: 4),
-                    style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                      color: colorScheme.tertiary,
-                    ),
-                    labelResolver: (_) => l10n.bmiValueShortLabel('24.9'),
-                  ),
-                ),
-            ],
-          ),
-          titlesData: FlTitlesData(
-            rightTitles: const AxisTitles(
-              sideTitles: SideTitles(showTitles: false),
+      child: RepaintBoundary(
+        child: LineChart(
+          LineChartData(
+            minX: 0,
+            maxX: math.max(0, sortedEntries.length - 1).toDouble(),
+            minY: minY,
+            maxY: maxY,
+            gridData: AppChartTheme.gridData(
+              colorScheme: colorScheme,
+              horizontalInterval: verticalInterval,
             ),
-            topTitles: const AxisTitles(
-              sideTitles: SideTitles(showTitles: false),
-            ),
-            bottomTitles: AxisTitles(
-              sideTitles: SideTitles(
-                showTitles: true,
-                reservedSize: 30,
-                interval: AppChartTheme.bottomInterval(
-                  sortedEntries.length,
-                  period,
-                ),
-                getTitlesWidget: (value, meta) {
-                  return _buildBottomTitle(
-                    context,
-                    value,
-                    sortedEntries,
-                    period,
-                  );
-                },
-              ),
-            ),
-            leftTitles: AxisTitles(
-              sideTitles: SideTitles(
-                showTitles: true,
-                reservedSize: 46,
-                interval: verticalInterval,
-                getTitlesWidget: (value, meta) {
-                  return Padding(
-                    padding: const EdgeInsets.only(right: 6),
-                    child: Text(
-                      isWholeInterval
-                          ? value.toStringAsFixed(0)
-                          : value.toStringAsFixed(1),
-                      textAlign: TextAlign.end,
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: Theme.of(context).colorScheme.onSurfaceVariant,
-                        fontSize: 11,
-                        fontWeight: FontWeight.w500,
+            borderData: AppChartTheme.borderData(),
+            extraLinesData: ExtraLinesData(
+              horizontalLines: [
+                if (normalBmiThresholdDisplay != null &&
+                    normalBmiThresholdDisplay <= maxY &&
+                    normalBmiThresholdDisplay >= minY)
+                  HorizontalLine(
+                    y: normalBmiThresholdDisplay,
+                    color: colorScheme.tertiary.withValues(alpha: 0.5),
+                    strokeWidth: 1.5,
+                    dashArray: [8, 4],
+                    label: HorizontalLineLabel(
+                      show: true,
+                      alignment: Alignment.topRight,
+                      padding: const EdgeInsets.only(right: 4, bottom: 4),
+                      style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                        color: colorScheme.tertiary,
                       ),
+                      labelResolver: (_) => l10n.bmiValueShortLabel('24.9'),
                     ),
-                  );
-                },
+                  ),
+              ],
+            ),
+            titlesData: FlTitlesData(
+              rightTitles: const AxisTitles(
+                sideTitles: SideTitles(showTitles: false),
+              ),
+              topTitles: const AxisTitles(
+                sideTitles: SideTitles(showTitles: false),
+              ),
+              bottomTitles: AxisTitles(
+                sideTitles: SideTitles(
+                  showTitles: true,
+                  reservedSize: 30,
+                  interval: AppChartTheme.bottomInterval(
+                    sortedEntries.length,
+                    period,
+                  ),
+                  getTitlesWidget: (value, meta) {
+                    return _buildBottomTitle(
+                      context,
+                      value,
+                      sortedEntries,
+                      period,
+                    );
+                  },
+                ),
+              ),
+              leftTitles: AxisTitles(
+                sideTitles: SideTitles(
+                  showTitles: true,
+                  reservedSize: 46,
+                  interval: verticalInterval,
+                  getTitlesWidget: (value, meta) {
+                    return Padding(
+                      padding: const EdgeInsets.only(right: 6),
+                      child: Text(
+                        isWholeInterval
+                            ? value.toStringAsFixed(0)
+                            : value.toStringAsFixed(1),
+                        textAlign: TextAlign.end,
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                          fontSize: 11,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    );
+                  },
+                ),
               ),
             ),
-          ),
-          lineTouchData: LineTouchData(
-            touchCallback: (FlTouchEvent event, LineTouchResponse? response) {
-              if (event is FlTapUpEvent &&
-                  response != null &&
-                  response.lineBarSpots != null &&
-                  response.lineBarSpots!.isNotEmpty) {
-                final spot = response.lineBarSpots!.first;
-                final index = spot.spotIndex;
-                if (index >= 0 && index < sortedEntries.length) {
-                  AppAnalytics.logTodayChartPointTouched();
-                }
-              }
-            },
-            getTouchedSpotIndicator: (barData, spotIndexes) {
-              return spotIndexes.map((index) {
-                return TouchedSpotIndicatorData(
-                  const FlLine(strokeWidth: 0),
-                  FlDotData(
-                    getDotPainter: (spot, percent, barData, index) {
-                      return FlDotCirclePainter(
-                        radius: 6,
-                        color: colorScheme.primary,
-                        strokeWidth: 2,
-                        strokeColor: colorScheme.surface,
-                      );
-                    },
-                  ),
-                );
-              }).toList();
-            },
-            touchTooltipData: LineTouchTooltipData(
-              getTooltipColor: (spot) => colorScheme.secondaryContainer,
-              getTooltipItems: (spots) {
-                return spots.map((spot) {
-                  final isSmaBar = showMovingAverage && spot.barIndex == 0;
-                  final weightDisplay = spot.y;
-                  final weightKg = measurementUnit == MeasurementUnit.imperial
-                      ? lbsToKg(weightDisplay)
-                      : weightDisplay;
-                  final prefix = isSmaBar
-                      ? '${l10n.movingAverage7dLegend}: '
-                      : '';
-
-                  String text =
-                      '$prefix${formatWeight(weightKg, measurementUnit)}';
-                  if (!isSmaBar && heightM != null) {
-                    final bmi = weightKg / (heightM * heightM);
-                    text +=
-                        '\n${l10n.bmiValueShortLabel(bmi.toStringAsFixed(1))}';
+            lineTouchData: LineTouchData(
+              touchCallback: (FlTouchEvent event, LineTouchResponse? response) {
+                if (event is FlTapUpEvent &&
+                    response != null &&
+                    response.lineBarSpots != null &&
+                    response.lineBarSpots!.isNotEmpty) {
+                  final spot = response.lineBarSpots!.first;
+                  final index = spot.spotIndex;
+                  if (index >= 0 && index < sortedEntries.length) {
+                    AppAnalytics.logTodayChartPointTouched();
                   }
-
-                  return LineTooltipItem(
-                    text,
-                    TextStyle(
-                      color: isSmaBar
-                          ? colorScheme.tertiary
-                          : colorScheme.onSecondaryContainer,
-                      fontWeight: FontWeight.w700,
+                }
+              },
+              getTouchedSpotIndicator: (barData, spotIndexes) {
+                return spotIndexes.map((index) {
+                  return TouchedSpotIndicatorData(
+                    const FlLine(strokeWidth: 0),
+                    FlDotData(
+                      getDotPainter: (spot, percent, barData, index) {
+                        return FlDotCirclePainter(
+                          radius: 6,
+                          color: colorScheme.primary,
+                          strokeWidth: 2,
+                          strokeColor: colorScheme.surface,
+                        );
+                      },
                     ),
                   );
                 }).toList();
               },
+              touchTooltipData: LineTouchTooltipData(
+                getTooltipColor: (spot) => colorScheme.secondaryContainer,
+                getTooltipItems: (spots) {
+                  return spots.map((spot) {
+                    final isSmaBar = showMovingAverage && spot.barIndex == 0;
+                    final weightDisplay = spot.y;
+                    final weightKg = measurementUnit == MeasurementUnit.imperial
+                        ? lbsToKg(weightDisplay)
+                        : weightDisplay;
+                    final prefix = isSmaBar
+                        ? '${l10n.movingAverage7dLegend}: '
+                        : '';
+
+                    String text =
+                        '$prefix${formatWeight(weightKg, measurementUnit)}';
+                    if (!isSmaBar && heightM != null) {
+                      final bmi = weightKg / (heightM * heightM);
+                      text +=
+                          '\n${l10n.bmiValueShortLabel(bmi.toStringAsFixed(1))}';
+                    }
+
+                    return LineTooltipItem(
+                      text,
+                      TextStyle(
+                        color: isSmaBar
+                            ? colorScheme.tertiary
+                            : colorScheme.onSecondaryContainer,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    );
+                  }).toList();
+                },
+              ),
             ),
-          ),
-          lineBarsData: [
-            if (showMovingAverage)
+            lineBarsData: [
+              if (showMovingAverage)
+                LineChartBarData(
+                  spots: [
+                    for (var index = 0; index < sortedEntries.length; index++)
+                      FlSpot(index.toDouble(), displaySmaWeights[index]),
+                  ],
+                  isCurved: true,
+                  curveSmoothness: 0.35,
+                  color: colorScheme.tertiary,
+                  barWidth: 2,
+                  dashArray: [6, 4],
+                  isStrokeCapRound: true,
+                  dotData: const FlDotData(show: false),
+                ),
               LineChartBarData(
                 spots: [
                   for (var index = 0; index < sortedEntries.length; index++)
-                    FlSpot(index.toDouble(), displaySmaWeights[index]),
+                    FlSpot(index.toDouble(), displayWeights[index]),
                 ],
                 isCurved: true,
                 curveSmoothness: 0.35,
-                color: colorScheme.tertiary,
-                barWidth: 2,
-                dashArray: [6, 4],
+                color: colorScheme.primary,
+                barWidth: 3,
                 isStrokeCapRound: true,
-                dotData: const FlDotData(show: false),
+                dotData: FlDotData(
+                  show: sortedEntries.length == 1,
+                  getDotPainter: (spot, percent, barData, index) {
+                    return FlDotCirclePainter(
+                      radius: sortedEntries.length <= 14 ? 3.5 : 2.5,
+                      color: colorScheme.primary,
+                      strokeWidth: 1.5,
+                      strokeColor: colorScheme.surface,
+                    );
+                  },
+                ),
+                belowBarData: BarAreaData(
+                  show: true,
+                  gradient: AppChartTheme.belowBarGradient(colorScheme.primary),
+                ),
               ),
-            LineChartBarData(
-              spots: [
-                for (var index = 0; index < sortedEntries.length; index++)
-                  FlSpot(index.toDouble(), displayWeights[index]),
-              ],
-              isCurved: true,
-              curveSmoothness: 0.35,
-              color: colorScheme.primary,
-              barWidth: 3,
-              isStrokeCapRound: true,
-              dotData: FlDotData(
-                show: sortedEntries.length == 1,
-                getDotPainter: (spot, percent, barData, index) {
-                  return FlDotCirclePainter(
-                    radius: sortedEntries.length <= 14 ? 3.5 : 2.5,
-                    color: colorScheme.primary,
-                    strokeWidth: 1.5,
-                    strokeColor: colorScheme.surface,
-                  );
-                },
-              ),
-              belowBarData: BarAreaData(
-                show: true,
-                gradient: AppChartTheme.belowBarGradient(colorScheme.primary),
-              ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

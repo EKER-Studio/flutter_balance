@@ -61,122 +61,124 @@ class BmiLineChart extends StatelessWidget {
       child: SizedBox(
         height: 190,
         child: ExcludeSemantics(
-          child: LineChart(
-            LineChartData(
-              minX: 0,
-              maxX: math.max(0, sortedEntries.length - 1).toDouble(),
-              minY: minY,
-              maxY: maxY,
-              gridData: AppChartTheme.gridData(
-                colorScheme: cs,
-                horizontalInterval: yInterval,
-              ),
-              borderData: AppChartTheme.borderData(),
-              titlesData: FlTitlesData(
-                rightTitles: const AxisTitles(
-                  sideTitles: SideTitles(showTitles: false),
+          child: RepaintBoundary(
+            child: LineChart(
+              LineChartData(
+                minX: 0,
+                maxX: math.max(0, sortedEntries.length - 1).toDouble(),
+                minY: minY,
+                maxY: maxY,
+                gridData: AppChartTheme.gridData(
+                  colorScheme: cs,
+                  horizontalInterval: yInterval,
                 ),
-                topTitles: const AxisTitles(
-                  sideTitles: SideTitles(showTitles: false),
-                ),
-                bottomTitles: AxisTitles(
-                  sideTitles: SideTitles(
-                    showTitles: true,
-                    reservedSize: 30,
-                    interval: AppChartTheme.bottomInterval(
-                      sortedEntries.length,
-                      period,
-                    ),
-                    getTitlesWidget: (value, meta) => _buildBottomTitle(
-                      context,
-                      value,
-                      sortedEntries,
-                      period,
-                    ),
+                borderData: AppChartTheme.borderData(),
+                titlesData: FlTitlesData(
+                  rightTitles: const AxisTitles(
+                    sideTitles: SideTitles(showTitles: false),
                   ),
-                ),
-                leftTitles: AxisTitles(
-                  sideTitles: SideTitles(
-                    showTitles: true,
-                    reservedSize: 35,
-                    interval: yInterval,
-                    getTitlesWidget: (value, meta) => Text(
-                      value.toStringAsFixed(0),
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: cs.onSurfaceVariant,
-                        fontSize: 11,
+                  topTitles: const AxisTitles(
+                    sideTitles: SideTitles(showTitles: false),
+                  ),
+                  bottomTitles: AxisTitles(
+                    sideTitles: SideTitles(
+                      showTitles: true,
+                      reservedSize: 30,
+                      interval: AppChartTheme.bottomInterval(
+                        sortedEntries.length,
+                        period,
+                      ),
+                      getTitlesWidget: (value, meta) => _buildBottomTitle(
+                        context,
+                        value,
+                        sortedEntries,
+                        period,
                       ),
                     ),
                   ),
-                ),
-              ),
-              lineTouchData: LineTouchData(
-                touchCallback:
-                    (FlTouchEvent event, LineTouchResponse? response) {
-                      if (event is FlTapUpEvent &&
-                          response != null &&
-                          response.lineBarSpots != null &&
-                          response.lineBarSpots!.isNotEmpty) {
-                        final spot = response.lineBarSpots!.first;
-                        final index = spot.spotIndex;
-                        if (index >= 0 && index < sortedEntries.length) {
-                          AppAnalytics.logStatisticsBmiPointTouched();
-                        }
-                      }
-                    },
-                getTouchedSpotIndicator: (barData, spotIndexes) {
-                  return spotIndexes.map((index) {
-                    return TouchedSpotIndicatorData(
-                      const FlLine(strokeWidth: 0),
-                      FlDotData(
-                        getDotPainter: (spot, percent, barData, index) =>
-                            FlDotCirclePainter(
-                              radius: 6,
-                              color: cs.primary,
-                              strokeWidth: 2,
-                              strokeColor: cs.surface,
-                            ),
-                      ),
-                    );
-                  }).toList();
-                },
-                touchTooltipData: LineTouchTooltipData(
-                  getTooltipColor: (_) => cs.secondaryContainer,
-                  getTooltipItems: (touchedSpots) => touchedSpots.map((spot) {
-                    return LineTooltipItem(
-                      l10n.bmiValueLabel(spot.y.toStringAsFixed(1)),
-                      TextStyle(
-                        color: cs.onSecondaryContainer,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    );
-                  }).toList(),
-                ),
-              ),
-              lineBarsData: [
-                LineChartBarData(
-                  spots: spots,
-                  isCurved: true,
-                  curveSmoothness: 0.4,
-                  color: cs.primary,
-                  barWidth: 3,
-                  isStrokeCapRound: true,
-                  dotData: FlDotData(
-                    show: sortedEntries.length == 1,
-                    getDotPainter: (spot, percent, barData, index) =>
-                        FlDotCirclePainter(
-                          radius: 5,
-                          color: cs.primary,
-                          strokeWidth: 2,
-                          strokeColor: cs.surface,
+                  leftTitles: AxisTitles(
+                    sideTitles: SideTitles(
+                      showTitles: true,
+                      reservedSize: 35,
+                      interval: yInterval,
+                      getTitlesWidget: (value, meta) => Text(
+                        value.toStringAsFixed(0),
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: cs.onSurfaceVariant,
+                          fontSize: 11,
                         ),
-                  ),
-                  belowBarData: BarAreaData(
-                    show: true,
-                    gradient: AppChartTheme.belowBarGradient(cs.primary),
+                      ),
+                    ),
                   ),
                 ),
-              ],
+                lineTouchData: LineTouchData(
+                  touchCallback:
+                      (FlTouchEvent event, LineTouchResponse? response) {
+                        if (event is FlTapUpEvent &&
+                            response != null &&
+                            response.lineBarSpots != null &&
+                            response.lineBarSpots!.isNotEmpty) {
+                          final spot = response.lineBarSpots!.first;
+                          final index = spot.spotIndex;
+                          if (index >= 0 && index < sortedEntries.length) {
+                            AppAnalytics.logStatisticsBmiPointTouched();
+                          }
+                        }
+                      },
+                  getTouchedSpotIndicator: (barData, spotIndexes) {
+                    return spotIndexes.map((index) {
+                      return TouchedSpotIndicatorData(
+                        const FlLine(strokeWidth: 0),
+                        FlDotData(
+                          getDotPainter: (spot, percent, barData, index) =>
+                              FlDotCirclePainter(
+                                radius: 6,
+                                color: cs.primary,
+                                strokeWidth: 2,
+                                strokeColor: cs.surface,
+                              ),
+                        ),
+                      );
+                    }).toList();
+                  },
+                  touchTooltipData: LineTouchTooltipData(
+                    getTooltipColor: (_) => cs.secondaryContainer,
+                    getTooltipItems: (touchedSpots) => touchedSpots.map((spot) {
+                      return LineTooltipItem(
+                        l10n.bmiValueLabel(spot.y.toStringAsFixed(1)),
+                        TextStyle(
+                          color: cs.onSecondaryContainer,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      );
+                    }).toList(),
+                  ),
+                ),
+                lineBarsData: [
+                  LineChartBarData(
+                    spots: spots,
+                    isCurved: true,
+                    curveSmoothness: 0.4,
+                    color: cs.primary,
+                    barWidth: 3,
+                    isStrokeCapRound: true,
+                    dotData: FlDotData(
+                      show: sortedEntries.length == 1,
+                      getDotPainter: (spot, percent, barData, index) =>
+                          FlDotCirclePainter(
+                            radius: 5,
+                            color: cs.primary,
+                            strokeWidth: 2,
+                            strokeColor: cs.surface,
+                          ),
+                    ),
+                    belowBarData: BarAreaData(
+                      show: true,
+                      gradient: AppChartTheme.belowBarGradient(cs.primary),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ),
