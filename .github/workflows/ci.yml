@@ -145,6 +145,15 @@ jobs:
               echo "| :--- | :--- |" >> $GITHUB_STEP_SUMMARY
               echo "| **Line Coverage** | \`$PCT%\` |" >> $GITHUB_STEP_SUMMARY
               echo "| **Lines Hit / Total** | \`$TOTAL_LH\` / \`$TOTAL_LF\` |" >> $GITHUB_STEP_SUMMARY
+
+              COVERAGE_MIN="${COVERAGE_MIN:-80}"
+              BELOW=$(awk "BEGIN {print ($PCT < $COVERAGE_MIN) ? 1 : 0}")
+              if [ "$BELOW" -eq 1 ]; then
+                echo "| **Status** | ❌ **FAIL** — below \`$COVERAGE_MIN%\` threshold |" >> $GITHUB_STEP_SUMMARY
+                echo "::error::Line coverage $PCT% is below the required $COVERAGE_MIN% threshold."
+                exit 1
+              fi
+              echo "| **Status** | ✅ PASS (≥ \`$COVERAGE_MIN%\`) |" >> $GITHUB_STEP_SUMMARY
             fi
           fi
 
