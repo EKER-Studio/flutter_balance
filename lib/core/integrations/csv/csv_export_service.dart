@@ -15,4 +15,21 @@ abstract final class CsvExportService {
     final file = File('${tempDir.path}/balance_export_$timestamp.csv');
     return file.writeAsString(csvData);
   }
+
+  /// Best-effort deletion of a temporary export file.
+  ///
+  /// The file created by [exportToFile] lives in the app's cache/temp
+  /// directory and is only needed while it is handed to the share sheet; once
+  /// shared it should be removed so repeated exports do not accumulate files
+  /// there. Failures are swallowed because cleanup is best-effort and must
+  /// never surface to the user or break the export flow.
+  static Future<void> deleteTempFile(File file) async {
+    try {
+      if (await file.exists()) {
+        await file.delete();
+      }
+    } catch (_) {
+      // Best-effort cleanup; ignore failures.
+    }
+  }
 }

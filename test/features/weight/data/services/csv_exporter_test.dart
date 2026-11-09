@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:balance/features/weight/data/services/csv_exporter.dart';
@@ -133,6 +135,45 @@ void main() {
       if (await file.exists()) {
         await file.delete();
       }
+    });
+  });
+
+  group('CsvExportService.deleteTempFile', () {
+    String uniquePath(String suffix) {
+      final stamp = DateTime.now().microsecondsSinceEpoch;
+      return '${Directory.systemTemp.path}/balance_export_${suffix}_$stamp';
+    }
+
+    test('deletes an existing file', () async {
+      final file = File('${uniquePath('delete')}.csv');
+      await file.writeAsString('ID,Date,Weight (kg),Note\n');
+      expect(await file.exists(), isTrue);
+
+      await CsvExportService.deleteTempFile(file);
+
+      expect(await file.exists(), isFalse);
+    });
+
+    test('is a no-op for a missing file', () async {
+      final file = File('${uniquePath('missing')}.csv');
+      expect(await file.exists(), isFalse);
+
+      // Must not throw even though the file does not exist.
+      await CsvExportService.deleteTempFile(file);
+
+      expect(await file.exists(), isFalse);
+    });
+
+    test('swallows deletion errors (e.g. a directory at the path)', () async {
+      final dir = Directory(uniquePath('dir'));
+      await dir.create();
+
+      // Passing a directory where a file is expected makes file.delete()
+      // throw; deleteTempFile must swallow it and complete normally.
+      await CsvExportService.deleteTempFile(File(dir.path));
+
+      expect(await dir.exists(), isTrue);
+      await dir.delete(recursive: true);
     });
   });
 }

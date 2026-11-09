@@ -268,27 +268,42 @@ class SettingsDataCoordinator {
       );
       AppAnalytics.logSettingsCsvExportSuccess(entries.length);
 
-      if (context.mounted) {
-        final box = context.findRenderObject() as RenderBox?;
-        final originRect = box != null
-            ? box.localToGlobal(Offset.zero) & box.size
-            : null;
-
-        await SharePlus.instance.share(
-          ShareParams(
-            files: [XFile(exportedFile.path)],
-            subject: AppLocalizations.of(context).csvExportShareSubject,
-            sharePositionOrigin: originRect,
-          ),
-        );
-
+      try {
         if (context.mounted) {
-          AppSnackBar.show(
-            context,
-            message: l10n.exportSuccess,
-            type: SnackBarType.success,
+          final box = context.findRenderObject() as RenderBox?;
+          final originRect = box != null
+              ? box.localToGlobal(Offset.zero) & box.size
+              : null;
+
+          await SharePlus.instance.share(
+            ShareParams(
+              files: [XFile(exportedFile.path)],
+              subject: AppLocalizations.of(context).csvExportShareSubject,
+              sharePositionOrigin: originRect,
+            ),
           );
+
+          if (context.mounted) {
+            AppSnackBar.show(
+              context,
+              message: l10n.exportSuccess,
+              type: SnackBarType.success,
+            );
+          }
         }
+      } finally {
+        // The temp file lives in the app's cache/temp dir and is no longer
+        // needed once handed to the share sheet, but on Android the share
+        // target may read it via a FileProvider URI after share() returns, so
+        // defer the cleanup slightly. Run it fire-and-forget so it never
+        // blocks the success snackbar or error propagation to the outer catch,
+        // and repeated exports don't accumulate files.
+        final file = exportedFile;
+        unawaited(
+          Future.delayed(
+            const Duration(seconds: 2),
+          ).then((_) => CsvExportService.deleteTempFile(file)),
+        );
       }
     } catch (e, stack) {
       AppAnalytics.logSettingsCsvExportFailed(e.runtimeType.toString());
