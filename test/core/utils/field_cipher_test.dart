@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:balance/core/utils/field_cipher.dart';
+import 'package:crypto/crypto.dart';
 import 'package:encrypt/encrypt.dart' as enc;
 import 'package:flutter_test/flutter_test.dart';
 
@@ -12,6 +13,30 @@ void main() {
       bytes[i] = (seed + i) % 256;
     }
     return bytes;
+  }
+
+  /// Builds an authenticated `IV || HMAC || Ciphertext` payload that used the
+  /// *raw* master key for **both** AES-256-CBC and HMAC-SHA256 — i.e. the
+  /// on-disk format written before HKDF key separation was introduced.
+  String encryptRawKey(String plainText, Uint8List key) {
+    final iv = enc.IV.fromSecureRandom(16);
+    final encrypter = enc.Encrypter(
+      enc.AES(enc.Key(key), mode: enc.AESMode.cbc),
+    );
+    final encrypted = encrypter.encrypt(plainText, iv: iv);
+
+    final ivAndCiphertext = Uint8List(16 + encrypted.bytes.length)
+      ..setRange(0, 16, iv.bytes)
+      ..setRange(16, 16 + encrypted.bytes.length, encrypted.bytes);
+
+    final mac = Hmac(sha256, key).convert(ivAndCiphertext).bytes;
+
+    final totalLength = 16 + 32 + encrypted.bytes.length;
+    final combined = Uint8List(totalLength)
+      ..setRange(0, 16, iv.bytes)
+      ..setRange(16, 16 + 32, mac)
+      ..setRange(16 + 32, totalLength, encrypted.bytes);
+    return base64Encode(combined);
   }
 
   group('encrypt', () {
@@ -158,6 +183,47 @@ void main() {
       corrupted[lastByte] ^= 1;
       expect(
         () => FieldCipher.decrypt(base64Encode(corrupted), key),
+        throwsFormatException,
+      );
+    });
+  });
+
+  group('raw-key backward compatibility (pre key-separation)', () {
+    test('decrypts an authenticated payload that used the raw key for both '
+        'AES and HMAC', () {
+      final key = makeKey(42);
+      final payload = encryptRawKey('75.4', key);
+      expect(FieldCipher.decrypt(payload, key), '75.4');
+    });
+
+    test('does not accept a raw-key payload under a different key', () {
+      final key1 = makeKey(42);
+      final key2 = makeKey(99);
+      final payload = encryptRawKey('secret', key1);
+      expect(() => FieldCipher.decrypt(payload, key2), throwsFormatException);
+    });
+  });
+
+  group('key separation', () {
+    test('new payload MAC is computed with a derived key, not the raw master '
+        'key', () {
+      final key = makeKey(42);
+      final payload = FieldCipher.encrypt('75.4', key);
+      final decoded = Uint8List.fromList(base64Decode(payload));
+      // Layout: IV[16] | MAC[32] | Ciphertext[N].
+      final iv = decoded.sublist(0, 16);
+      final cipherBytes = decoded.sublist(16 + 32);
+      final ivAndCiphertext = Uint8List(16 + cipherBytes.length)
+        ..setRange(0, 16, iv)
+        ..setRange(16, 16 + cipherBytes.length, cipherBytes);
+      // Recompute the MAC under the *raw* master key and substitute it.
+      final rawMac = Hmac(sha256, key).convert(ivAndCiphertext).bytes;
+      final tampered = Uint8List.fromList(decoded)
+        ..setRange(16, 16 + 32, rawMac);
+      // If the MAC key were the raw master key, this substitution would verify;
+      // it must instead fail, proving the MAC uses an independent derived key.
+      expect(
+        () => FieldCipher.decrypt(base64Encode(tampered), key),
         throwsFormatException,
       );
     });
