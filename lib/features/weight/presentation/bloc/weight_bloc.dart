@@ -83,6 +83,24 @@ class WeightBloc extends HydratedBloc<WeightEvent, WeightState> {
     on<ConfirmCsvImport>(_onConfirmCsvImport, transformer: droppable());
   }
 
+  /// Releases the in-memory memo cache held by [_filterEntries] and then
+  /// closes the bloc.
+  ///
+  /// The bloc itself owns no external resources: the repository watch stream
+  /// is managed by the `restartable()` transformer (cancelled automatically
+  /// when the bloc is closed), and the health-sync coordinator / importer only
+  /// reference dependencies that live in the DI container. The one piece of
+  /// state worth clearing explicitly is the memo cache, which can hold a copy
+  /// of the full entry list between recomputations; dropping those references
+  /// on close lets the garbage collector reclaim them promptly instead of
+  /// keeping the last chart's data alive for the bloc's lifetime.
+  @override
+  Future<void> close() async {
+    _memoEntries = null;
+    _memoResult = const [];
+    await super.close();
+  }
+
   /// Whether health synchronization is currently enabled in app settings.
   bool get _isHealthSyncEnabled =>
       _healthSyncSettings?.isHealthSyncEnabled ?? false;
