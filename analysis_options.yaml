@@ -30,6 +30,13 @@ analyzer:
     unused_import: error
     unused_local_variable: warning
     dead_code: warning
+    # Flutter 3.47 deprecates package:flutter/material.dart in favour of
+    # package:material_ui/material_ui.dart (a transitive dependency, not a valid
+    # migration target for core Material usage). CI's fresh 3.47.8 install
+    # reports 222 info-level deprecated_member_use diagnostics that a slightly
+    # older local SDK does not; silence them until a real material_ui migration
+    # is warranted so CI and local analysis stay consistent.
+    deprecated_member_use: ignore
 
 linter:
   rules:
