@@ -28,6 +28,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Subagent Skill Routing:** Extended `@data-engineer`, `@ui-engineer` and `@tester` prompts with mandatory skill selection, and added new intent routes for layout, testing, routing, serialization, networking and architecture tasks in the `@architect` orchestrator.
 - **State Persistence & Lifecycle Management:** Added clean state lifecycle rules (`.audit-*/`) supporting fresh audit runs alongside resumability across interrupted sessions.
 
+### Changed
+- **CI & Build Tooling:** Pinned the Flutter SDK `3.47.1` → `3.47.8` to clear the spurious `material_ui`/`cupertino_ui` `deprecated_member_use` diagnostics that broke `flutter analyze` in CI, and bumped the Android Gradle Plugin `8.11.1` → `9.1.0`, Kotlin `2.2.20` → `2.3.20`, and Gradle `9.1.0` → `9.3.1` to satisfy `androidx.core:1.19.0` pulled in by the dependency bump.
+
 ### Removed
 - **Legacy Prompts Suite:** Removed the `prompts/` directory (`flutter_architect_deep_bloc_audit.md`, `flutter_architect_deep_riverpod_audit.md`, `flutter_i18n_l10n_audit_en.md`, `flutter_unit_test_audit_framework_en.md`, `flutter_comments_dartdoc_cleanup_prompt_en.md`) in favor of modular skills.
 
