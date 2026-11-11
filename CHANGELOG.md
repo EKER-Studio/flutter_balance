@@ -29,7 +29,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **State Persistence & Lifecycle Management:** Added clean state lifecycle rules (`.audit-*/`) supporting fresh audit runs alongside resumability across interrupted sessions.
 
 ### Changed
-- **CI & Build Tooling:** Pinned the Flutter SDK `3.47.1` → `3.47.8` to clear the spurious `material_ui`/`cupertino_ui` `deprecated_member_use` diagnostics that broke `flutter analyze` in CI, and bumped the Android Gradle Plugin `8.11.1` → `9.1.0`, Kotlin `2.2.20` → `2.3.20`, and Gradle `9.1.0` → `9.3.1` to satisfy `androidx.core:1.19.0` pulled in by the dependency bump.
+- **CI & Build Tooling:** Pinned the Flutter SDK `3.47.1` → `3.47.8` and bumped the Android Gradle Plugin `8.11.1` → `9.1.0`, Kotlin `2.2.20` → `2.3.20`, and Gradle `9.1.0` → `9.3.1` to satisfy `androidx.core:1.19.0` pulled in by the dependency bump.
+- **Static Analysis:** Flutter 3.47 deprecates `package:flutter/material.dart` in favour of `package:material_ui/material_ui.dart` (a transitive dependency, not a valid migration target for core Material usage), so a fresh 3.47.8 install reports 222 `info`-level `deprecated_member_use` diagnostics that a slightly older local SDK does not. Silenced the diagnostic via `deprecated_member_use: ignore` in `analysis_options.yaml` so CI and local `flutter analyze` stay consistent; a real `material_ui` migration can be revisited later.
 
 ### Removed
 - **Legacy Prompts Suite:** Removed the `prompts/` directory (`flutter_architect_deep_bloc_audit.md`, `flutter_architect_deep_riverpod_audit.md`, `flutter_i18n_l10n_audit_en.md`, `flutter_unit_test_audit_framework_en.md`, `flutter_comments_dartdoc_cleanup_prompt_en.md`) in favor of modular skills.
