@@ -95,5 +95,67 @@ void main() {
 
       expect(returned, isFalse);
     });
+
+    testWidgets('renders a warning row when rows were skipped', (tester) async {
+      final analysis = (
+        validEntries: [
+          WeightEntry(weightKg: 70.0, dateTime: DateTime(2026, 1, 1)),
+        ],
+        skippedRowCount: 3,
+        earliestDate: DateTime(2026, 1, 1),
+        latestDate: DateTime(2026, 1, 1),
+      );
+
+      await tester.pumpWidget(createTestWidget(analysis: analysis));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('Open'));
+      await tester.pumpAndSettle();
+
+      expect(find.byIcon(Icons.warning_amber_rounded), findsOneWidget);
+      expect(find.textContaining('Skipped'), findsOneWidget);
+    });
+
+    testWidgets('does not render a warning row when no rows were skipped', (
+      tester,
+    ) async {
+      final analysis = (
+        validEntries: [
+          WeightEntry(weightKg: 70.0, dateTime: DateTime(2026, 1, 1)),
+        ],
+        skippedRowCount: 0,
+        earliestDate: DateTime(2026, 1, 1),
+        latestDate: DateTime(2026, 1, 1),
+      );
+
+      await tester.pumpWidget(createTestWidget(analysis: analysis));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('Open'));
+      await tester.pumpAndSettle();
+
+      expect(find.byIcon(Icons.warning_amber_rounded), findsNothing);
+    });
+
+    testWidgets('renders the date range when earliest and latest differ', (
+      tester,
+    ) async {
+      final analysis = (
+        validEntries: [
+          WeightEntry(weightKg: 70.0, dateTime: DateTime(2026, 1, 1)),
+        ],
+        skippedRowCount: 0,
+        earliestDate: DateTime(2026, 1, 1),
+        latestDate: DateTime(2026, 6, 15),
+      );
+
+      await tester.pumpWidget(createTestWidget(analysis: analysis));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('Open'));
+      await tester.pumpAndSettle();
+
+      expect(find.textContaining('Range:'), findsOneWidget);
+    });
   });
 }
