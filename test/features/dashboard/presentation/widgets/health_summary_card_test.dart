@@ -5,28 +5,59 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:balance/core/models/measurement_unit.dart';
+import 'package:balance/core/models/time_period.dart';
 import 'package:balance/features/dashboard/presentation/widgets/sections/health_summary_card.dart';
 import 'package:balance/l10n/app_localizations.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_bloc.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_event.dart';
 import 'package:balance/features/settings/presentation/widgets/components/target_weight_sheet.dart';
+import 'package:balance/features/dashboard/presentation/widgets/components/latest_measurement_info.dart';
+import 'package:balance/features/weight/presentation/bloc/weight_bloc.dart';
+import 'package:balance/features/weight/presentation/bloc/weight_state.dart';
+import 'package:balance/features/weight/presentation/widgets/components/add_weight_sheet.dart';
 import 'package:balance/features/weight/presentation/widgets/components/bmi_legend_dialog.dart';
 
 class MockHydratedStorage extends Mock implements HydratedStorage {}
 
+class MockWeightBloc extends Mock implements WeightBloc {}
+
 void main() {
   late MockHydratedStorage storage;
+  late MockWeightBloc weightBloc;
 
   setUp(() {
     storage = MockHydratedStorage();
     HydratedBloc.storage = storage;
     when(() => storage.read(any())).thenReturn(null);
     when(() => storage.write(any(), any())).thenAnswer((_) async {});
+
+    weightBloc = MockWeightBloc();
+    when(() => weightBloc.state).thenReturn(
+      WeightLoaded(
+        entries: const [],
+        filteredEntries: const [],
+        timePeriod: TimePeriod.month,
+        heightCm: 175.0,
+      ),
+    );
+    when(() => weightBloc.stream).thenAnswer(
+      (_) => Stream.value(
+        WeightLoaded(
+          entries: const [],
+          filteredEntries: const [],
+          timePeriod: TimePeriod.month,
+          heightCm: 175.0,
+        ),
+      ),
+    );
   });
 
   Widget createTestWidget(Widget child, AppSettingsBloc bloc) {
-    return BlocProvider.value(
-      value: bloc,
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider.value(value: bloc),
+        BlocProvider<WeightBloc>.value(value: weightBloc),
+      ],
       child: MaterialApp(
         localizationsDelegates: const [
           AppLocalizations.delegate,
@@ -257,4 +288,28 @@ void main() {
 
     expect(find.textContaining('Today, '), findsOneWidget);
   });
+
+  testWidgets(
+    'opens the AddWeightSheet when the latest-measurement tile is tapped',
+    (tester) async {
+      final bloc = AppSettingsBloc();
+      bloc.add(const UpdateHeight(180));
+      await tester.pumpAndSettle();
+
+      await tester.pumpWidget(
+        createTestWidget(const HealthSummaryCard(latestWeightKg: 72.0), bloc),
+      );
+      await tester.pumpAndSettle();
+
+      await tester.tap(
+        find.ancestor(
+          of: find.byType(LatestMeasurementInfo),
+          matching: find.byType(InkWell),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.byType(AddWeightSheet), findsOneWidget);
+    },
+  );
 }
