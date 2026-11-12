@@ -1739,5 +1739,104 @@ void main() {
             .having((s) => s.errorType, 'errorType', CsvErrorType.fileTooLarge),
       ],
     );
+
+    blocTest<WeightBloc, WeightState>(
+      'ConfirmCsvImport mirrors valid entries to the health service when sync is enabled',
+      build: () {
+        final importer = MockCsvWeightImporter();
+        when(() => importer.confirmImport(any())).thenAnswer((_) async => 2);
+        when(() => repository.getAllEntries()).thenAnswer(
+          (_) async => [
+            WeightEntry(id: 1, weightKg: 75.0, dateTime: DateTime(2026, 8, 20)),
+            WeightEntry(id: 2, weightKg: 74.5, dateTime: DateTime(2026, 8, 21)),
+          ],
+        );
+        return WeightBloc(
+          repository: repository,
+          appSettingsBloc: buildSettingsBloc(isHealthSyncEnabled: true),
+          healthService: healthService,
+          csvWeightImporter: importer,
+        );
+      },
+      seed: () => WeightLoaded(
+        entries: const [],
+        filteredEntries: const [],
+        heightCm: 180,
+      ),
+      act: (bloc) async {
+        bloc.add(
+          ConfirmCsvImport(
+            validEntries: [
+              WeightEntry(
+                id: 1,
+                weightKg: 75.0,
+                dateTime: DateTime(2026, 8, 20),
+              ),
+              WeightEntry(
+                id: 2,
+                weightKg: 74.5,
+                dateTime: DateTime(2026, 8, 21),
+              ),
+            ],
+          ),
+        );
+        // Let the fire-and-forget health-sync mirror writes settle.
+        await Future<void>.delayed(Duration.zero);
+      },
+      expect: () => [
+        isA<WeightImportSuccess>()
+            .having((s) => s.importedCount, 'importedCount', 2)
+            .having((s) => s.entries.length, 'entries.length', 2),
+        isA<WeightLoaded>().having(
+          (s) => s.entries.length,
+          'entries.length',
+          2,
+        ),
+      ],
+      verify: (_) {
+        verify(
+          () => healthService.writeWeight(
+            weightKg: 75.0,
+            timestamp: DateTime(2026, 8, 20),
+          ),
+        ).called(1);
+        verify(
+          () => healthService.writeWeight(
+            weightKg: 74.5,
+            timestamp: DateTime(2026, 8, 21),
+          ),
+        ).called(1);
+      },
+    );
+
+    blocTest<WeightBloc, WeightState>(
+      'ConfirmCsvImport emits WeightError.writeFailed when the import throws',
+      build: () {
+        final importer = MockCsvWeightImporter();
+        when(
+          () => importer.confirmImport(any()),
+        ).thenThrow(Exception('Import failed'));
+        return WeightBloc(repository: repository, csvWeightImporter: importer);
+      },
+      seed: () => WeightLoaded(
+        entries: const [],
+        filteredEntries: const [],
+        heightCm: 180,
+      ),
+      act: (bloc) => bloc.add(
+        ConfirmCsvImport(
+          validEntries: [
+            WeightEntry(id: 1, weightKg: 75.0, dateTime: DateTime(2026, 8, 20)),
+          ],
+        ),
+      ),
+      expect: () => [
+        isA<WeightError>().having(
+          (s) => s.errorType,
+          'errorType',
+          WeightErrorType.writeFailed,
+        ),
+      ],
+    );
   });
 }
