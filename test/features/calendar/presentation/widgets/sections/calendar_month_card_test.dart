@@ -74,5 +74,43 @@ void main() {
 
       expect(selected, DateTime(2026, 7, 15));
     });
+
+    testWidgets('flinging right triggers onPreviousMonth only', (tester) async {
+      var prevCalled = false;
+      var nextCalled = false;
+
+      await tester.pumpWidget(
+        createTestWidget(
+          onPreviousMonth: () => prevCalled = true,
+          onNextMonth: () => nextCalled = true,
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      await tester.fling(find.byType(CalendarGrid), const Offset(200, 0), 500);
+      await tester.pumpAndSettle();
+
+      expect(prevCalled, isTrue);
+      expect(nextCalled, isFalse);
+    });
+
+    testWidgets('flinging left triggers onNextMonth only', (tester) async {
+      var prevCalled = false;
+      var nextCalled = false;
+
+      await tester.pumpWidget(
+        createTestWidget(
+          onPreviousMonth: () => prevCalled = true,
+          onNextMonth: () => nextCalled = true,
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      await tester.fling(find.byType(CalendarGrid), const Offset(-200, 0), 500);
+      await tester.pumpAndSettle();
+
+      expect(nextCalled, isTrue);
+      expect(prevCalled, isFalse);
+    });
   });
 }
