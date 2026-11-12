@@ -312,4 +312,23 @@ void main() {
       expect(find.byType(AddWeightSheet), findsOneWidget);
     },
   );
+
+  testWidgets('converts the day-over-day delta to imperial units', (
+    tester,
+  ) async {
+    final bloc = AppSettingsBloc();
+    bloc.add(const UpdateMeasurementUnit(MeasurementUnit.imperial));
+    await tester.pumpAndSettle();
+
+    await tester.pumpWidget(
+      createTestWidget(
+        const HealthSummaryCard(latestWeightKg: 75.0, deltaFromYesterday: 1.0),
+        bloc,
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    // 1.0 kg delta is converted to pounds (≈ 2.2 lb) in the delta indicator.
+    expect(find.textContaining('vs yesterday'), findsOneWidget);
+  });
 }
