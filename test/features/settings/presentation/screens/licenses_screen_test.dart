@@ -245,5 +245,22 @@ void main() {
 
       expect(find.text('2 licencje'), findsOneWidget);
     });
+
+    testWidgets('uses the dark header surface in dark theme', (tester) async {
+      LicenseRegistry.addLicense(
+        () => Stream<LicenseEntry>.value(
+          const LicenseEntryWithLineBreaks(<String>['dark_pkg'], 'Dark text'),
+        ),
+      );
+
+      await tester.pumpWidget(createTestWidget(theme: AppTheme.darkTheme));
+      await tester.pumpAndSettle();
+
+      final headerCard = tester.widgetList<Card>(find.byType(Card)).first;
+      expect(
+        headerCard.color,
+        AppTheme.darkColorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
+      );
+    });
   });
 }
