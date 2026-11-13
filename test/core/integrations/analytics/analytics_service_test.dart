@@ -108,15 +108,73 @@ void main() {
     });
 
     group('methods swallow platform failures when Firebase is unavailable', () {
+      setUp(() async {
+        FirebaseAnalyticsService.instance.setAvailable(true);
+        // Enable collection so guards pass and execution enters the try blocks
+        await FirebaseAnalyticsService.instance.setAnalyticsCollectionEnabled(
+          true,
+        );
+      });
+
+      tearDown(() {
+        FirebaseAnalyticsService.instance.setAvailable(false);
+      });
+
       test(
         'logEvent still completes when Firebase is not initialized',
         () async {
-          FirebaseAnalyticsService.instance.setAvailable(true);
           await expectLater(
             FirebaseAnalyticsService.instance.logEvent(name: 'some_event'),
             completes,
           );
-          FirebaseAnalyticsService.instance.setAvailable(false);
+        },
+      );
+
+      test(
+        'logScreenView still completes when Firebase is not initialized',
+        () async {
+          await expectLater(
+            FirebaseAnalyticsService.instance.logScreenView(
+              screenName: 'some_screen',
+              screenClass: 'SomeClass',
+            ),
+            completes,
+          );
+        },
+      );
+
+      test(
+        'setUserId still completes when Firebase is not initialized',
+        () async {
+          await expectLater(
+            FirebaseAnalyticsService.instance.setUserId('user_123'),
+            completes,
+          );
+        },
+      );
+
+      test(
+        'setUserProperty still completes when Firebase is not initialized',
+        () async {
+          await expectLater(
+            FirebaseAnalyticsService.instance.setUserProperty(
+              name: 'tier',
+              value: 'pro',
+            ),
+            completes,
+          );
+        },
+      );
+
+      test(
+        'setAnalyticsCollectionEnabled records error when platform throws',
+        () async {
+          await expectLater(
+            FirebaseAnalyticsService.instance.setAnalyticsCollectionEnabled(
+              false,
+            ),
+            completes,
+          );
         },
       );
     });
