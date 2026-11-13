@@ -159,4 +159,22 @@ void main() {
       },
     );
   });
+
+  testWidgets('uses the dark header surface in dark theme', (tester) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.darkTheme,
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: const PrivacyPolicyScreen(),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    final headerCard = tester.widgetList<Card>(find.byType(Card)).first;
+    expect(
+      headerCard.color,
+      AppTheme.darkColorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
+    );
+  });
 }
