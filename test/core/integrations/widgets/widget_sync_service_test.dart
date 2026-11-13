@@ -17,13 +17,18 @@ void main() {
   final Map<String, dynamic> savedData = {};
   final List<String> updatedWidgets = [];
   String? appGroupId;
+  var shouldFail = false;
 
   setUp(() {
     savedData.clear();
     updatedWidgets.clear();
     appGroupId = null;
+    shouldFail = false;
 
     messenger.setMockMethodCallHandler(widgetChannel, (call) async {
+      if (shouldFail) {
+        throw PlatformException(code: 'test_failure');
+      }
       switch (call.method) {
         case 'setAppGroupId':
           appGroupId =
@@ -212,6 +217,150 @@ void main() {
         expect(savedData['goal_status_text'], 'Goal achieved!');
         expect(savedData['bmi_category_label'], 'Normal');
         expect(savedData['last_entry_date'], startsWith('Today, '));
+      },
+    );
+
+    test('initialize swallows platform failures', () async {
+      shouldFail = true;
+
+      await expectLater(service.initialize(), completes);
+    });
+
+    test('clearWidgetData swallows platform failures', () async {
+      shouldFail = true;
+
+      await expectLater(service.clearWidgetData(), completes);
+    });
+
+    test(
+      'updateWidgetData reports a neutral delta for equal weights',
+      () async {
+        final entries = [
+          WeightEntry(
+            id: 1,
+            weightKg: 75.0,
+            dateTime: DateTime(2026, 8, 30, 8, 0),
+          ),
+          WeightEntry(
+            id: 2,
+            weightKg: 75.0,
+            dateTime: DateTime(2026, 8, 31, 8, 0),
+          ),
+        ];
+
+        await service.updateWidgetData(
+          entries: entries,
+          unit: MeasurementUnit.metric,
+        );
+
+        expect(savedData['delta_text'], '0.0 kg');
+        expect(savedData['delta_type'], 'neutral');
+        expect(savedData['delta_is_loss'], isFalse);
+      },
+    );
+
+    test(
+      'updateWidgetData falls back to built-in BMI labels without l10n',
+      () async {
+        // heightCm 200 -> BMI = weight / 4, so weights map to the target BMIs.
+        const expectations = <(double, String)>[
+          (68.0, 'Niedowaga'),
+          (88.0, 'W normie'),
+          (108.0, 'Nadwaga'),
+          (128.0, 'Otyłość I'),
+          (148.0, 'Otyłość II'),
+          (168.0, 'Otyłość III'),
+        ];
+
+        for (final (weightKg, label) in expectations) {
+          await service.updateWidgetData(
+            entries: [
+              WeightEntry(
+                id: 1,
+                weightKg: weightKg,
+                dateTime: DateTime(2026, 8, 31, 8, 0),
+              ),
+            ],
+            heightCm: 200.0,
+            unit: MeasurementUnit.metric,
+          );
+
+          expect(savedData['bmi_category_label'], label);
+        }
+      },
+    );
+
+    test(
+      'updateWidgetData localizes every BMI category when l10n is provided',
+      () async {
+        final l10n = lookupAppLocalizations(const Locale('en'));
+        const expectations = <(double, String)>[
+          (68.0, 'Underweight'),
+          (88.0, 'Normal'),
+          (108.0, 'Overweight'),
+          (128.0, 'Obesity class I'),
+          (148.0, 'Obesity class II'),
+          (168.0, 'Obesity class III'),
+        ];
+
+        for (final (weightKg, label) in expectations) {
+          await service.updateWidgetData(
+            entries: [
+              WeightEntry(
+                id: 1,
+                weightKg: weightKg,
+                dateTime: DateTime(2026, 8, 31, 8, 0),
+              ),
+            ],
+            heightCm: 200.0,
+            unit: MeasurementUnit.metric,
+            l10n: l10n,
+          );
+
+          expect(savedData['bmi_category_label'], label);
+        }
+      },
+    );
+
+    test(
+      'updateWidgetData computes partial maintain progress in metric',
+      () async {
+        await service.updateWidgetData(
+          entries: [
+            WeightEntry(
+              id: 1,
+              weightKg: 78.0,
+              dateTime: DateTime(2026, 8, 31, 8, 0),
+            ),
+          ],
+          targetWeight: 75.0,
+          goalMode: WeightGoalMode.maintain,
+          unit: MeasurementUnit.metric,
+        );
+
+        // 3 kg off target -> 1 - (3 / 5) = 40%.
+        expect(savedData['goal_progress_pct'], 40);
+      },
+    );
+
+    test(
+      'updateWidgetData computes partial maintain progress in imperial',
+      () async {
+        await service.updateWidgetData(
+          entries: [
+            WeightEntry(
+              id: 1,
+              weightKg: 77.0,
+              dateTime: DateTime(2026, 8, 31, 8, 0),
+            ),
+          ],
+          targetWeight: 75.0,
+          goalMode: WeightGoalMode.maintain,
+          unit: MeasurementUnit.imperial,
+        );
+
+        // 2 kg off target exceeds the 2.2 lb threshold -> 1 - (2 / 10) = 80%.
+        expect(savedData['goal_progress_pct'], 80);
       },
     );
   });
