@@ -1,9 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:balance/core/presentation/theme/app_layout_tokens.dart';
+import 'package:balance/core/presentation/theme/app_theme.dart';
 import 'package:balance/core/presentation/widgets/clamped_layout.dart';
 import 'package:balance/features/settings/presentation/screens/privacy_policy_screen.dart';
 import 'package:balance/l10n/app_localizations.dart';
+
+const MethodChannel _urlLauncherChannel = MethodChannel(
+  'plugins.flutter.io/url_launcher',
+);
 
 void main() {
   Widget createTestWidget({Locale locale = const Locale('en')}) {
@@ -79,4 +85,78 @@ void main() {
       );
     },
   );
+
+  group('contact email', () {
+    tearDown(() {
+      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+          .setMockMethodCallHandler(_urlLauncherChannel, null);
+    });
+
+    Future<void> tapContactButton(WidgetTester tester) async {
+      await tester.scrollUntilVisible(
+        find.text('contact@ekerstudio.com'),
+        300,
+        scrollable: find.byType(Scrollable),
+      );
+      await tester.ensureVisible(find.text('contact@ekerstudio.com'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('contact@ekerstudio.com'));
+      await tester.pumpAndSettle();
+    }
+
+    testWidgets('tapping the contact button launches a mailto URL', (
+      tester,
+    ) async {
+      final launchedUrls = <String>[];
+      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+          .setMockMethodCallHandler(_urlLauncherChannel, (call) async {
+            launchedUrls.add(call.arguments['url'] as String);
+            return true;
+          });
+
+      await tester.pumpWidget(createTestWidget());
+      await tester.pumpAndSettle();
+      await tapContactButton(tester);
+
+      expect(launchedUrls, hasLength(1));
+      expect(launchedUrls.single, startsWith('mailto:contact@ekerstudio.com'));
+      expect(launchedUrls.single, contains('subject='));
+      expect(find.byType(SnackBar), findsNothing);
+    });
+
+    testWidgets('shows a snackbar when the email client cannot open', (
+      tester,
+    ) async {
+      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+          .setMockMethodCallHandler(_urlLauncherChannel, (call) async => false);
+
+      await tester.pumpWidget(createTestWidget());
+      await tester.pumpAndSettle();
+      await tapContactButton(tester);
+
+      expect(
+        find.text('Could not open email client for contact@ekerstudio.com'),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets(
+      'reports the error and shows a snackbar when launching throws',
+      (tester) async {
+        TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+            .setMockMethodCallHandler(_urlLauncherChannel, (call) async {
+              throw PlatformException(code: 'launch_failed');
+            });
+
+        await tester.pumpWidget(createTestWidget());
+        await tester.pumpAndSettle();
+        await tapContactButton(tester);
+
+        expect(
+          find.text('Could not open email client for contact@ekerstudio.com'),
+          findsOneWidget,
+        );
+      },
+    );
+  });
 }
