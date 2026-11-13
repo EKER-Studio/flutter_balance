@@ -7,14 +7,18 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:local_auth_platform_interface/local_auth_platform_interface.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:balance/core/integrations/biometrics/biometric_service.dart';
 import 'package:balance/core/integrations/health/health_service.dart';
 import 'package:balance/core/integrations/notifications/notification_service.dart';
+import 'package:balance/core/presentation/navigation/app_routes.dart';
+import 'package:balance/features/settings/presentation/screens/licenses_screen.dart';
 import 'package:balance/features/weight/domain/entities/weight_entry.dart';
 import 'package:balance/core/presentation/widgets/clamped_layout.dart';
 import 'package:balance/features/weight/presentation/bloc/weight_bloc.dart';
@@ -24,6 +28,7 @@ import 'package:balance/l10n/app_localizations.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_bloc.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_event.dart';
 import 'package:balance/features/settings/presentation/screens/privacy_policy_screen.dart';
+import 'package:balance/features/settings/presentation/widgets/components/first_day_of_week_selection_dialog.dart';
 import 'package:balance/features/weight/presentation/bloc/weight_state.dart';
 import 'package:balance/features/settings/presentation/screens/settings_screen.dart';
 import 'package:balance/features/settings/presentation/bloc/app_theme_mode.dart';
@@ -1610,5 +1615,142 @@ void main() {
         expect(clampedLayout.maxWidth, 480);
       },
     );
+  });
+
+  group('SettingsScreen callbacks', () {
+    void useWideSurface(WidgetTester tester) {
+      tester.view.physicalSize = const Size(1000, 1600);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+    }
+
+    setUp(() {
+      LocalAuthPlatform.instance = MutableLocalAuthPlatform();
+      BiometricService.resetForTesting();
+    });
+
+    testWidgets('first day of week tile opens the selection dialog', (
+      tester,
+    ) async {
+      useWideSurface(tester);
+      await tester.pumpWidget(createTestWidget());
+      await tester.pumpAndSettle();
+
+      await tester.ensureVisible(find.text('First day of week'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('First day of week'));
+      await tester.pumpAndSettle();
+
+      expect(find.byType(FirstDayOfWeekSelectionDialog), findsOneWidget);
+      expect(find.text('Monday'), findsOneWidget);
+      expect(find.text('Sunday'), findsOneWidget);
+    });
+
+    testWidgets('analytics toggle enables analytics in the settings bloc', (
+      tester,
+    ) async {
+      useWideSurface(tester);
+      await tester.pumpWidget(createTestWidget());
+      await tester.pumpAndSettle();
+
+      expect(settingsBloc.state.analyticsEnabled, isFalse);
+
+      await tester.ensureVisible(find.text('Usage analytics'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Usage analytics'));
+      await tester.pumpAndSettle();
+
+      expect(settingsBloc.state.analyticsEnabled, isTrue);
+    });
+
+    testWidgets(
+      'crash reporting toggle enables crash reporting in the settings bloc',
+      (tester) async {
+        useWideSurface(tester);
+        await tester.pumpWidget(createTestWidget());
+        await tester.pumpAndSettle();
+
+        expect(settingsBloc.state.crashReportingEnabled, isFalse);
+
+        await tester.ensureVisible(find.text('Crash reports'));
+        await tester.pumpAndSettle();
+        await tester.tap(find.text('Crash reports'));
+        await tester.pumpAndSettle();
+
+        expect(settingsBloc.state.crashReportingEnabled, isTrue);
+      },
+    );
+
+    testWidgets('BMI categories tile opens the legend dialog', (tester) async {
+      useWideSurface(tester);
+      await tester.pumpWidget(createTestWidget());
+      await tester.pumpAndSettle();
+
+      expect(find.text('BMI Categories'), findsOneWidget);
+
+      await tester.ensureVisible(find.text('BMI Categories'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('BMI Categories'));
+      await tester.pumpAndSettle();
+
+      // The tile and the dialog title share the same localized label.
+      expect(find.text('BMI Categories'), findsNWidgets(2));
+    });
+
+    testWidgets('licenses tile navigates to the licenses screen', (
+      tester,
+    ) async {
+      useWideSurface(tester);
+      PackageInfo.setMockInitialValues(
+        appName: 'Balance',
+        packageName: 'com.ekerstudio.balance',
+        version: '1.0.0',
+        buildNumber: '1',
+        buildSignature: '',
+      );
+
+      final router = GoRouter(
+        initialLocation: AppRoutes.settings,
+        routes: [
+          GoRoute(
+            path: AppRoutes.settings,
+            builder: (context, state) => const SettingsScreen(),
+          ),
+          GoRoute(
+            path: AppRoutes.licenses,
+            builder: (context, state) => const LicensesScreen(),
+          ),
+        ],
+      );
+      addTearDown(router.dispose);
+
+      await tester.pumpWidget(
+        MultiBlocProvider(
+          providers: [
+            BlocProvider<WeightBloc>.value(value: weightBloc),
+            BlocProvider<AppSettingsBloc>.value(value: settingsBloc),
+          ],
+          child: MaterialApp.router(
+            routerConfig: router,
+            localizationsDelegates: const [
+              AppLocalizations.delegate,
+              GlobalMaterialLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+            ],
+            supportedLocales: AppLocalizations.supportedLocales,
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      await tester.ensureVisible(find.text('Open Source Licenses'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Open Source Licenses'));
+      await tester.pumpAndSettle();
+
+      expect(find.byType(LicensesScreen), findsOneWidget);
+    });
   });
 }
