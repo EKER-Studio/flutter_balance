@@ -902,5 +902,80 @@ void main() {
         contains('Balance'),
       );
     });
+
+    testWidgets('error retry button dispatches SubscribeToWeightChanges', (
+      tester,
+    ) async {
+      final controller = StreamController<WeightState>.broadcast();
+      addTearDown(controller.close);
+
+      final weightBloc = MockWeightBloc();
+      when(() => weightBloc.state).thenReturn(
+        WeightError(
+          errorType: WeightErrorType.readFailed,
+          entries: const [],
+          filteredEntries: const [],
+        ),
+      );
+      when(() => weightBloc.stream).thenAnswer((_) => controller.stream);
+
+      await tester.pumpWidget(
+        buildSubject(settingsBloc: AppSettingsBloc(), weightBloc: weightBloc),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.text('Błąd odczytu bazy danych'), findsOneWidget);
+
+      await tester.tap(find.text('Spróbuj ponownie'));
+      await tester.pumpAndSettle();
+
+      verify(() => weightBloc.add(const SubscribeToWeightChanges())).called(1);
+    });
+
+    testWidgets('pace window tap opens the dialog and persists the selection', (
+      tester,
+    ) async {
+      tester.view.physicalSize = const Size(800, 3000);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+
+      final now = DateTime.now();
+      final entries = [
+        WeightEntry(id: 2, weightKg: 74.0, dateTime: now),
+        WeightEntry(
+          id: 1,
+          weightKg: 78.0,
+          dateTime: now.subtract(const Duration(days: 20)),
+        ),
+      ];
+      final settingsBloc = AppSettingsBloc();
+      final weightBloc = createBloc(
+        WeightLoaded(
+          entries: entries,
+          filteredEntries: entries,
+          timePeriod: TimePeriod.week,
+          heightCm: null,
+        ),
+      );
+
+      await tester.pumpWidget(
+        buildSubject(settingsBloc: settingsBloc, weightBloc: weightBloc),
+      );
+      await tester.pumpAndSettle();
+
+      expect(settingsBloc.state.weeklyPaceWindowDays, 30);
+
+      await tester.tap(find.byIcon(Icons.edit_outlined));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Okno obliczania tempa'), findsOneWidget);
+
+      await tester.tap(find.text('Ostatnie 7 dni'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Okno obliczania tempa'), findsNothing);
+      expect(settingsBloc.state.weeklyPaceWindowDays, 7);
+    });
   });
 }
