@@ -1752,5 +1752,49 @@ void main() {
 
       expect(find.byType(LicensesScreen), findsOneWidget);
     });
+
+    testWidgets('CSV analysis in progress shows the loading snackbar', (
+      tester,
+    ) async {
+      useWideSurface(tester);
+      final stateController = StreamController<WeightState>.broadcast();
+      when(() => weightBloc.stream).thenAnswer((_) => stateController.stream);
+
+      await tester.pumpWidget(createTestWidget());
+      await tester.pumpAndSettle();
+
+      stateController.add(
+        CsvAnalysisInProgress(entries: const [], filteredEntries: const []),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.text('Processing CSV file...'), findsOneWidget);
+
+      await stateController.close();
+    });
+
+    testWidgets('CSV file-too-large error shows the size snackbar', (
+      tester,
+    ) async {
+      useWideSurface(tester);
+      final stateController = StreamController<WeightState>.broadcast();
+      when(() => weightBloc.stream).thenAnswer((_) => stateController.stream);
+
+      await tester.pumpWidget(createTestWidget());
+      await tester.pumpAndSettle();
+
+      stateController.add(
+        CsvAnalysisError(
+          entries: const [],
+          filteredEntries: const [],
+          errorType: CsvErrorType.fileTooLarge,
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.text('File is too large (max 5 MB)'), findsOneWidget);
+
+      await stateController.close();
+    });
   });
 }
