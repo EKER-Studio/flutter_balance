@@ -117,6 +117,26 @@ void main() {
       expect(find.byType(AppSplashScreen), findsOneWidget);
     });
 
+    testWidgets(
+      'renders the initialization error route and retries to splash',
+      (tester) async {
+        final router = createAppRouter(
+          settingsBloc: mockSettingsBloc,
+          initialLocation: AppRoutes.error,
+        );
+
+        await tester.pumpWidget(buildTestableApp(router));
+        await tester.pumpAndSettle();
+
+        expect(find.text('Failed to Start Balance'), findsOneWidget);
+
+        await tester.tap(find.text('Retry Startup'));
+        await tester.pumpAndSettle();
+
+        expect(find.byType(AppSplashScreen), findsOneWidget);
+      },
+    );
+
     testWidgets('renders the privacy policy route', (tester) async {
       final router = createAppRouter(
         settingsBloc: mockSettingsBloc,
