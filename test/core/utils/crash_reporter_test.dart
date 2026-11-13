@@ -21,6 +21,7 @@ void main() {
     tempDir = await Directory.systemTemp.createTemp('crash_reporter_test_');
     PathProviderPlatform.instance = _FakePathProviderPlatform(tempDir.path);
     AppCrashReporter.setFirebaseAvailable(false);
+    AppCrashReporter.setCollectionEnabled(false);
   });
 
   tearDown(() async {
@@ -95,5 +96,56 @@ void main() {
       final content = await logFile.readAsString();
       expect(content, contains('Fatal Crash'));
     });
+
+    test('recordError captures the current stack when none is given', () async {
+      await AppCrashReporter.recordError(StateError('No stack provided'), null);
+
+      final logFile = File('${tempDir.path}/$crashLogFileName');
+      final content = await logFile.readAsString();
+      expect(content, contains('No stack provided'));
+    });
+
+    test(
+      'recordError attempts Crashlytics and keeps logging when it fails',
+      () async {
+        AppCrashReporter.setFirebaseAvailable(true);
+        AppCrashReporter.setCollectionEnabled(true);
+
+        await AppCrashReporter.recordError(
+          StateError('Crashlytics unavailable'),
+          StackTrace.current,
+          reason: 'Firebase attempt',
+        );
+
+        final logFile = File('${tempDir.path}/$crashLogFileName');
+        final content = await logFile.readAsString();
+        expect(content, contains('Crashlytics unavailable'));
+        expect(content, contains('Firebase attempt'));
+      },
+    );
+
+    test(
+      'writeCrashLog swallows trimming failures for a read-only log file',
+      () async {
+        final logFile = File('${tempDir.path}/$crashLogFileName');
+        final largeChunk = 'B' * (512 * 1024);
+        await logFile.writeAsString('$largeChunk\n\n$largeChunk\n\n');
+
+        expect(await logFile.length(), greaterThan(1024 * 1024));
+
+        // Make the file read-only so the trim rewrite fails, exercising the
+        // suppression branch. Restore permissions so tearDown can delete it.
+        await Process.run('chmod', ['444', logFile.path]);
+        addTearDown(() => Process.run('chmod', ['644', logFile.path]));
+
+        await AppCrashReporter.writeCrashLog(
+          'Trim failure error',
+          StackTrace.current,
+          reason: 'Read-only file',
+        );
+
+        expect(await logFile.exists(), isTrue);
+      },
+    );
   });
 }
