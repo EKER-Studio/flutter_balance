@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
@@ -850,6 +851,56 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.byIcon(Icons.share_outlined), findsNothing);
+    });
+  });
+
+  group('StatisticsScreen interactions', () {
+    testWidgets('share button sends the formatted progress summary', (
+      tester,
+    ) async {
+      final messenger =
+          TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger;
+      const channel = MethodChannel('dev.fluttercommunity.plus/share');
+      final calls = <MethodCall>[];
+      messenger.setMockMethodCallHandler(channel, (call) async {
+        calls.add(call);
+        return 'dev.fluttercommunity.plus/share/success';
+      });
+      addTearDown(() => messenger.setMockMethodCallHandler(channel, null));
+
+      final now = DateTime.now();
+      final entries = [
+        WeightEntry(id: 2, weightKg: 74.0, dateTime: now),
+        WeightEntry(
+          id: 1,
+          weightKg: 80.0,
+          dateTime: now.subtract(const Duration(days: 10)),
+        ),
+      ];
+      final settingsBloc = AppSettingsBloc();
+      final weightBloc = createBloc(
+        WeightLoaded(
+          entries: entries,
+          filteredEntries: entries,
+          timePeriod: TimePeriod.week,
+          heightCm: null,
+        ),
+      );
+
+      await tester.pumpWidget(
+        buildSubject(settingsBloc: settingsBloc, weightBloc: weightBloc),
+      );
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.byIcon(Icons.share_outlined));
+      await tester.pumpAndSettle();
+
+      expect(calls, hasLength(1));
+      expect(calls.single.method, 'share');
+      expect(
+        (calls.single.arguments as Map<Object?, Object?>)['text'],
+        contains('Balance'),
+      );
     });
   });
 }
