@@ -7,6 +7,7 @@ import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:balance/features/weight/domain/entities/weight_entry.dart';
 import 'package:balance/features/weight/domain/weight_error_type.dart';
+import 'package:balance/core/presentation/navigation/app_routes.dart';
 import 'package:balance/features/weight/presentation/bloc/weight_bloc.dart';
 import 'package:balance/features/weight/presentation/bloc/weight_event.dart';
 import 'package:balance/features/weight/presentation/bloc/weight_state.dart';
@@ -981,6 +982,84 @@ void main() {
       expect(tester.takeException(), isNull);
       expect(find.text('7-day avg', skipOffstage: false), findsOneWidget);
       expect(find.text('Weight', skipOffstage: false), findsOneWidget);
+    });
+  });
+
+  group('TodayScreen deep links and refresh timeout', () {
+    void useTallSurface(WidgetTester tester) {
+      tester.view.physicalSize = const Size(800, 3000);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+    }
+
+    void stubLoadedState() {
+      final entry = WeightEntry(
+        id: 1,
+        weightKg: 72.5,
+        dateTime: DateTime.now(),
+      );
+      when(() => weightBloc.state).thenReturn(
+        WeightLoaded(
+          entries: [entry],
+          filteredEntries: [entry],
+          timePeriod: TimePeriod.month,
+          heightCm: 175.0,
+        ),
+      );
+      when(() => weightBloc.stream).thenAnswer(
+        (_) => Stream.value(
+          WeightLoaded(
+            entries: [entry],
+            filteredEntries: [entry],
+            timePeriod: TimePeriod.month,
+            heightCm: 175.0,
+          ),
+        ),
+      );
+    }
+
+    testWidgets('opens the add-weight sheet for an initial add action', (
+      tester,
+    ) async {
+      useTallSurface(tester);
+      stubLoadedState();
+
+      await tester.pumpWidget(
+        createTestWidget(
+          const TodayScreen(initialAction: AppRouteParams.actionAdd),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.byType(AddWeightSheet), findsOneWidget);
+    });
+
+    testWidgets('opens the add-weight sheet when the action arrives later', (
+      tester,
+    ) async {
+      useTallSurface(tester);
+      stubLoadedState();
+
+      final action = ValueNotifier<String?>(null);
+      addTearDown(action.dispose);
+
+      await tester.pumpWidget(
+        createTestWidget(
+          ValueListenableBuilder<String?>(
+            valueListenable: action,
+            builder: (context, value, _) => TodayScreen(initialAction: value),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.byType(AddWeightSheet), findsNothing);
+
+      action.value = AppRouteParams.actionAdd;
+      await tester.pumpAndSettle();
+
+      expect(find.byType(AddWeightSheet), findsOneWidget);
     });
   });
 }
