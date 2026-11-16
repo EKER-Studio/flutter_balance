@@ -99,6 +99,20 @@ void main() {
       expect(success.analysis.validEntries.first.weightKg, 75.5);
     });
 
+    test(
+      'analyzeFile returns invalidFormat when the file has no header',
+      () async {
+        final file = File('${tempDir.path}/headerless.csv');
+        await file.writeAsString('not a csv file\n1,2,3,4');
+
+        final result = await importer.analyzeFile(file.path);
+
+        expect(result, isA<CsvAnalysisFailure>());
+        final failure = result as CsvAnalysisFailure;
+        expect(failure.errorType, CsvErrorType.invalidFormat);
+      },
+    );
+
     test('confirmImport invokes repository.bulkImportEntries', () async {
       final entries = [
         WeightEntry(weightKg: 75.0, dateTime: DateTime(2026, 8, 24)),
