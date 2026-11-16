@@ -17,7 +17,12 @@ class PackageLicense {
 class LicensesScreen extends StatefulWidget {
   final PackageInfo? packageInfo;
 
-  const LicensesScreen({super.key, this.packageInfo});
+  /// Optional override for the license-loading future, used in tests to inject
+  /// a failure without depending on [LicenseRegistry] internals.
+  @visibleForTesting
+  final Future<List<PackageLicense>> Function()? licensesLoader;
+
+  const LicensesScreen({super.key, this.packageInfo, this.licensesLoader});
 
   @override
   State<LicensesScreen> createState() => _LicensesScreenState();
@@ -33,7 +38,9 @@ class _LicensesScreenState extends State<LicensesScreen> {
     _packageInfoFuture = widget.packageInfo != null
         ? Future.value(widget.packageInfo!)
         : PackageInfo.fromPlatform();
-    _licensesFuture = _loadLicenses();
+    _licensesFuture = widget.licensesLoader != null
+        ? widget.licensesLoader!()
+        : _loadLicenses();
   }
 
   static Future<List<PackageLicense>> _loadLicenses() async {
@@ -72,6 +79,15 @@ class _LicensesScreenState extends State<LicensesScreen> {
           child: FutureBuilder<List<dynamic>>(
             future: Future.wait([_packageInfoFuture, _licensesFuture]),
             builder: (context, snapshot) {
+              if (snapshot.hasError) {
+                return Center(
+                  child: Padding(
+                    padding: const EdgeInsets.all(24),
+                    child: Text(l10n.databaseErrorDefaultMessage),
+                  ),
+                );
+              }
+
               if (!snapshot.hasData) {
                 final packageInfo = snapshot.data?[0] as PackageInfo?;
                 return Center(
@@ -93,15 +109,6 @@ class _LicensesScreenState extends State<LicensesScreen> {
                         const CircularProgressIndicator(),
                       ],
                     ),
-                  ),
-                );
-              }
-
-              if (snapshot.hasError) {
-                return Center(
-                  child: Padding(
-                    padding: const EdgeInsets.all(24),
-                    child: Text(l10n.databaseErrorDefaultMessage),
                   ),
                 );
               }

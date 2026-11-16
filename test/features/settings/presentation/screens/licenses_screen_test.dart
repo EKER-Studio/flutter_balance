@@ -32,7 +32,8 @@ void main() {
 
   testWidgets('renders LicensesScreen in English', (tester) async {
     await tester.pumpWidget(createTestWidget(locale: const Locale('en')));
-    await tester.pumpAndSettle();
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 100));
 
     expect(find.text('Open Source Licenses'), findsOneWidget);
     expect(find.text('Balance'), findsOneWidget);
@@ -43,7 +44,8 @@ void main() {
 
   testWidgets('renders LicensesScreen in Polish', (tester) async {
     await tester.pumpWidget(createTestWidget(locale: const Locale('pl')));
-    await tester.pumpAndSettle();
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 100));
 
     expect(find.text('Licencje open source'), findsOneWidget);
     expect(find.text('Balance'), findsOneWidget);
@@ -61,7 +63,8 @@ void main() {
       addTearDown(tester.view.resetDevicePixelRatio);
 
       await tester.pumpWidget(createTestWidget());
-      await tester.pumpAndSettle();
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 100));
 
       final clampedLayoutFinder = find.byType(ClampedLayout);
       expect(clampedLayoutFinder, findsOneWidget);
@@ -88,7 +91,8 @@ void main() {
       expect(tester.takeException(), isNull);
 
       // Settle full async license loading
-      await tester.pumpAndSettle();
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 100));
       expect(tester.takeException(), isNull);
       expect(find.text('Balance'), findsOneWidget);
     },
@@ -124,7 +128,8 @@ void main() {
       // of the resolved snapshot yet.
       expect(find.text('v1.1.0'), findsNothing);
 
-      await tester.pumpAndSettle();
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 100));
 
       expect(find.byType(CircularProgressIndicator), findsNothing);
       expect(find.text('slow_pkg'), findsOneWidget);
@@ -154,7 +159,8 @@ void main() {
           home: LicensesScreen(),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 100));
 
       expect(find.text('v2.3.4'), findsOneWidget);
     });
@@ -174,7 +180,8 @@ void main() {
       );
 
       await tester.pumpWidget(createTestWidget());
-      await tester.pumpAndSettle();
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 100));
 
       expect(find.text('Alpha_pkg'), findsOneWidget);
       expect(find.text('beta_pkg'), findsOneWidget);
@@ -197,12 +204,14 @@ void main() {
       );
 
       await tester.pumpWidget(createTestWidget());
-      await tester.pumpAndSettle();
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 100));
 
       expect(find.byType(SelectableText), findsNothing);
 
       await tester.tap(find.text('expandable_pkg'));
-      await tester.pumpAndSettle();
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 100));
 
       final selectableText = tester.widget<SelectableText>(
         find.byType(SelectableText),
@@ -221,7 +230,8 @@ void main() {
       );
 
       await tester.pumpWidget(createTestWidget());
-      await tester.pumpAndSettle();
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 100));
 
       expect(find.text('1 licencja'), findsOneWidget);
     });
@@ -241,7 +251,8 @@ void main() {
       );
 
       await tester.pumpWidget(createTestWidget());
-      await tester.pumpAndSettle();
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 100));
 
       expect(find.text('2 licencje'), findsOneWidget);
     });
@@ -254,12 +265,41 @@ void main() {
       );
 
       await tester.pumpWidget(createTestWidget(theme: AppTheme.darkTheme));
-      await tester.pumpAndSettle();
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 100));
 
       final headerCard = tester.widgetList<Card>(find.byType(Card)).first;
       expect(
         headerCard.color,
         AppTheme.darkColorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
+      );
+    });
+
+    testWidgets('renders error message when loading licenses fails', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          locale: const Locale('en'),
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: LicensesScreen(
+            packageInfo: testPackageInfo,
+            licensesLoader: () => Future.error(Exception('load failed')),
+          ),
+        ),
+      );
+      // One pump starts the FutureBuilder; second lets the rejected Future
+      // propagate through the microtask queue.
+      await tester.pump();
+      await tester.pump();
+
+      expect(find.byType(CircularProgressIndicator), findsNothing);
+      expect(
+        find.text(
+          'Failed to load weight history from the local database. Please try again.',
+        ),
+        findsOneWidget,
       );
     });
   });
