@@ -452,7 +452,7 @@ String getMockRunNote(String localeCode) {
     case 'es':
       return 'Medición después de una carrera alrededor del lago Malta (5 km). ¡Ayer hice dos vueltas a este circuito!';
     case 'pt':
-      return 'Medição após uma corrida ao redor do Lago Malta (5 km). Yesterday fiz duas vezes esse percurso!';
+      return 'Medição após uma corrida ao redor do Lago Malta (5 km). Ontem fiz duas vezes esse percurso!';
     case 'it':
       return 'Misurazione dopo una corsa intorno al lago Malta (5 km). Ieri ho fatto due volte questo giro!';
     case 'nl':
