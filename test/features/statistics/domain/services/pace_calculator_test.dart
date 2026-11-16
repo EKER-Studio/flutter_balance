@@ -91,6 +91,19 @@ void main() {
         final pace = PaceCalculator.calculateWeeklyPace(entries, now: now);
         expect(pace, 0.0);
       });
+
+      test('defaults the reference date to the current time', () {
+        final current = DateTime.now();
+        final entries = [
+          makeEntry(current.subtract(const Duration(days: 7)), 75.0),
+          makeEntry(current, 74.0),
+        ];
+
+        final pace = PaceCalculator.calculateWeeklyPace(entries);
+
+        expect(pace, isNotNull);
+        expect(pace!, closeTo(-1.0, 0.001));
+      });
     });
   });
 }
