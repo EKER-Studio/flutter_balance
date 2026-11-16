@@ -20,13 +20,10 @@ import 'package:balance/l10n/app_localizations.dart';
 
 /// A screen displaying the daily summary, BMI, goal progress, and weight trend.
 class TodayScreen extends StatefulWidget {
-  /// An optional callback to navigate to settings when the profile icon is pressed.
-  final VoidCallback? onNavigateToSettings;
-
   /// Optional deep link action key (e.g. 'add' from notification / URL).
   final String? initialAction;
 
-  const TodayScreen({super.key, this.onNavigateToSettings, this.initialAction});
+  const TodayScreen({super.key, this.initialAction});
 
   @override
   State<TodayScreen> createState() => _TodayScreenState();

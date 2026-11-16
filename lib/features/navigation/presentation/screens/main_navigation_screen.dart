@@ -79,7 +79,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
       body = widget.navigationShell!;
     } else {
       final screens = [
-        TodayScreen(onNavigateToSettings: () => _onTabSelected(3)),
+        const TodayScreen(),
         const CalendarScreen(),
         const StatisticsScreen(),
         const SettingsScreen(),

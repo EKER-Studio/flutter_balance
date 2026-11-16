@@ -25,7 +25,6 @@ class StatisticsContentSection extends StatelessWidget {
   final WeightGoalMode goalMode;
   final MeasurementUnit unit;
   final int weeklyPaceWindowDays;
-  final ValueChanged<TimePeriod> onPeriodChanged;
   final VoidCallback? onPaceWindowTap;
 
   const StatisticsContentSection({
@@ -38,7 +37,6 @@ class StatisticsContentSection extends StatelessWidget {
     this.goalMode = WeightGoalMode.lose,
     required this.unit,
     this.weeklyPaceWindowDays = 30,
-    required this.onPeriodChanged,
     this.onPaceWindowTap,
   });
 

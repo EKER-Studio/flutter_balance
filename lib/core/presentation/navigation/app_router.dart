@@ -108,10 +108,7 @@ GoRouter createAppRouter({
                 builder: (context, state) {
                   final action =
                       state.uri.queryParameters[AppRouteParams.action];
-                  return TodayScreen(
-                    initialAction: action,
-                    onNavigateToSettings: () => context.go(AppRoutes.settings),
-                  );
+                  return TodayScreen(initialAction: action);
                 },
               ),
             ],

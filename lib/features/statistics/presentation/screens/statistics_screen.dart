@@ -171,14 +171,6 @@ class StatisticsScreen extends StatelessWidget {
                                     },
                                   );
                                 },
-                                onPeriodChanged: (period) {
-                                  AppAnalytics.logStatisticsFilterChanged(
-                                    period.name,
-                                  );
-                                  context.read<WeightBloc>().add(
-                                    ChangeChartFilter(period),
-                                  );
-                                },
                               ),
                             );
                           },
