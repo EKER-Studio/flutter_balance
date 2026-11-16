@@ -1061,5 +1061,29 @@ void main() {
 
       expect(find.byType(AddWeightSheet), findsOneWidget);
     });
+
+    testWidgets('pull-to-refresh completes when the refresh times out', (
+      tester,
+    ) async {
+      useTallSurface(tester);
+      stubLoadedState();
+      when(() => weightBloc.add(any())).thenAnswer((_) {});
+
+      await tester.pumpWidget(createTestWidget(const TodayScreen()));
+      await tester.pumpAndSettle();
+
+      await tester.drag(find.byType(CustomScrollView), const Offset(0, 900));
+      await tester.pump(const Duration(milliseconds: 500));
+
+      // The completer never completes, so the two-second timeout must unblock
+      // the refresh indicator and complete the gesture without an exception.
+      await tester.pump(const Duration(seconds: 3));
+      await tester.pumpAndSettle();
+
+      expect(tester.takeException(), isNull);
+      verify(
+        () => weightBloc.add(any(that: isA<RefreshWeightData>())),
+      ).called(1);
+    });
   });
 }
