@@ -661,11 +661,6 @@ class AppAnalytics {
     );
   }
 
-  /// Logs tapping the Period Comparison card in statistics.
-  static Future<void> logStatisticsPeriodComparisonCardTapped() {
-    return logEvent(name: 'statistics_period_comparison_card_tapped');
-  }
-
   /// Logs clicking the share progress summary action in statistics.
   ///
   /// @param entryCount Total number of measurements included in summary.
