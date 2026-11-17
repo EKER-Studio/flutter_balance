@@ -114,7 +114,7 @@ class _LicensesScreenState extends State<LicensesScreen> {
               }
 
               final data = snapshot.data;
-              if (data == null || data.length < 2) {
+              if (data == null) {
                 return Center(
                   child: Padding(
                     padding: const EdgeInsets.all(24),
