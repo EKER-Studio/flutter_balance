@@ -209,12 +209,6 @@ class HealthSummaryCard extends StatelessWidget {
         context.read<AppSettingsBloc>().add(
           TargetWeightChanged(targetKg, result.mode),
         );
-      } else if (result is double) {
-        final targetKg = unit == MeasurementUnit.imperial
-            ? lbsToKg(result)
-            : result;
-        AppAnalytics.logSettingsTargetWeightSaved();
-        context.read<AppSettingsBloc>().add(TargetWeightChanged(targetKg));
       }
     }
   }

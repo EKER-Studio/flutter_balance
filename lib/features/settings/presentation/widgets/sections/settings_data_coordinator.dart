@@ -94,12 +94,6 @@ class SettingsDataCoordinator {
       context.read<AppSettingsBloc>().add(
         TargetWeightChanged(targetKg, result.mode),
       );
-    } else if (result is double) {
-      final targetKg = settingsState.measurementUnit == MeasurementUnit.imperial
-          ? lbsToKg(result)
-          : result;
-      AppAnalytics.logSettingsTargetWeightSaved();
-      context.read<AppSettingsBloc>().add(TargetWeightChanged(targetKg));
     }
   }
 
