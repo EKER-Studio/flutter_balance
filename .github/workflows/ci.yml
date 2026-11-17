@@ -146,7 +146,9 @@ jobs:
               echo "| **Line Coverage** | \`$PCT%\` |" >> $GITHUB_STEP_SUMMARY
               echo "| **Lines Hit / Total** | \`$TOTAL_LH\` / \`$TOTAL_LF\` |" >> $GITHUB_STEP_SUMMARY
 
-              COVERAGE_MIN="${COVERAGE_MIN:-80}"
+              # Ratchet: keep the gate within ~2pp of the current ~97% so new
+              # untested code fails CI instead of silently lowering coverage.
+              COVERAGE_MIN="${COVERAGE_MIN:-95}"
               BELOW=$(awk "BEGIN {print ($PCT < $COVERAGE_MIN) ? 1 : 0}")
               if [ "$BELOW" -eq 1 ]; then
                 echo "| **Status** | ❌ **FAIL** — below \`$COVERAGE_MIN%\` threshold |" >> $GITHUB_STEP_SUMMARY
