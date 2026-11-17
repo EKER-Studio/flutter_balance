@@ -27,13 +27,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Added `.agents/skills/README.md` with provenance, precedence rules (project BLoC/Clean Architecture rules override generic MVVM guidance) and an upstream sync procedure.
 - **Subagent Skill Routing:** Extended `@data-engineer`, `@ui-engineer` and `@tester` prompts with mandatory skill selection, and added new intent routes for layout, testing, routing, serialization, networking and architecture tasks in the `@architect` orchestrator.
 - **State Persistence & Lifecycle Management:** Added clean state lifecycle rules (`.audit-*/`) supporting fresh audit runs alongside resumability across interrupted sessions.
+- **iOS Home Screen Widgets:** Registered the `BalanceWidget` WidgetKit extension target and the `balance://` deep-link scheme, bringing the native home-screen widget experience to iOS.
 
 ### Changed
-- **CI & Build Tooling:** Pinned the Flutter SDK `3.47.1` → `3.47.8` and bumped the Android Gradle Plugin `8.11.1` → `9.1.0`, Kotlin `2.2.20` → `2.3.20`, and Gradle `9.1.0` → `9.3.1` to satisfy `androidx.core:1.19.0` pulled in by the dependency bump.
-- **Static Analysis:** Flutter 3.47 deprecates `package:flutter/material.dart` in favour of `package:material_ui/material_ui.dart` (a transitive dependency, not a valid migration target for core Material usage), so a fresh 3.47.8 install reports 222 `info`-level `deprecated_member_use` diagnostics that a slightly older local SDK does not. Silenced the diagnostic via `deprecated_member_use: ignore` in `analysis_options.yaml` so CI and local `flutter analyze` stay consistent; a real `material_ui` migration can be revisited later.
+- **CI & Build Tooling:** Pinned the Flutter SDK `3.47.1` → `3.50.0` via FVM (`.fvmrc`), and bumped the Android Gradle Plugin `8.11.1` → `9.3.1`, Kotlin `2.2.20` → `2.4.20`, and Gradle `9.1.0` → `9.5.0`.
+- **Static Analysis:** Flutter 3.47+ deprecates `package:flutter/material.dart` in favour of `package:material_ui/material_ui.dart` (a transitive dependency, not a valid migration target for core Material usage), so a fresh Flutter 3.50 install reports 232 `info`-level `deprecated_member_use` diagnostics that a slightly older local SDK does not. Silenced the diagnostic via `deprecated_member_use: ignore` in `analysis_options.yaml` so CI and local `flutter analyze` stay consistent; a real `material_ui` migration can be revisited later.
+- **WeightBloc Decomposition:** Extracted per-domain event delegates (`_CoreCrudDelegate`, `_CsvImportDelegate`, `_HealthSyncDelegate`) from the 717-line `WeightBloc`, reducing the bloc to 350 lines while keeping the public event/state API unchanged.
+- **Test Coverage Gate:** Raised the CI line-coverage threshold from 80% to 95% (generated `.g.dart` and `app_localizations` files excluded); the suite now runs 1434 tests at 96.89% line coverage.
+- **Dependency Majors:** Bumped `equatable`, `firebase_core`, `firebase_crashlytics`, `firebase_analytics`, and `flutter_local_notifications` to their latest major versions.
+- **Dependency Patch/Minor Refresh:** Upgraded 37 direct and transitive packages to their latest patch/minor releases (e.g. `file_picker` 13.4.0, `go_router` 18.1.4, `fl_chart` 1.3.1); `pointycastle` remains on 3.9.x pending a coordinated major migration.
+- **Chart Rendering:** Wrapped the `fl_chart` line chart in a `RepaintBoundary` to isolate chart repaints from the surrounding dashboard.
 
 ### Removed
 - **Legacy Prompts Suite:** Removed the `prompts/` directory (`flutter_architect_deep_bloc_audit.md`, `flutter_architect_deep_riverpod_audit.md`, `flutter_i18n_l10n_audit_en.md`, `flutter_unit_test_audit_framework_en.md`, `flutter_comments_dartdoc_cleanup_prompt_en.md`) in favor of modular skills.
+- **Dead Code:** Removed the unused `BmiDeltaChip` and `BmiLineChart` widgets, dead navigation/period callbacks, unreachable `LicensesScreen` and `TargetWeightSheet` branches, and the unused `AppAnalytics.logStatisticsPeriodComparisonCardTapped` method.
+
+### Fixed
+- **iOS Widget Principal Class:** Aligned the `BalanceWidget` WidgetKit extension principal class with `Info.plist`.
+- **Android Release Packaging:** Disabled language split in the AAB build and excluded health data from Android backups and device-to-device transfers.
+- **Data Integrity:** Rejected corrupt readings during migration and upgraded legacy encrypted payloads in place.
+- **CSV Export:** Deleted the temporary export file after the native share sheet completes.
+- **Health Sync:** Confined sync failures to the app boundary instead of leaking them into the domain.
+- **WeightBloc Lifecycle:** Cleared the memo cache on `close()` and guarded against malformed hydrated values.
+- **Settings:** Fixed the `LicensesScreen` `FutureBuilder` to check `hasError` before `hasData`.
+
+### Security
+- **Key Separation (HKDF-SHA256):** The field cipher now derives independent AES and HMAC sub-keys from the master key using HKDF-SHA256 (RFC 5869) with distinct `info` contexts, providing defense-in-depth against cross-protocol key reuse. Payloads written with the previous raw-key scheme remain readable via a transparent fallback.
 
 ---
 

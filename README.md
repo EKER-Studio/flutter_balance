@@ -16,6 +16,7 @@
 
 <p align="center">
   <img src="https://img.shields.io/badge/Flutter-3.50.0-02569B?logo=flutter" alt="Flutter" />
+  <img src="https://img.shields.io/badge/Coverage-%E2%89%A595%25-brightgreen" alt="Coverage" />
   <img src="https://img.shields.io/badge/Architecture-Clean%20%2F%20Feature--First-blue" alt="Architecture" />
   <img src="https://img.shields.io/badge/State-BLoC-blueviolet" alt="State Management" />
   <img src="https://img.shields.io/badge/Storage-Isar%20NoSQL-green" alt="Storage" />
@@ -145,7 +146,7 @@ lib/
 
 ### Privacy, Analytics & Diagnostics
 - **100% Local-First Health Data**: All weight entries, target goals, height settings, BMI calculations, and calendar history are stored exclusively in the local on-device database (`isar_community`). No health measurements are sent to external servers or cloud databases.
-- **Hardware-Isolated AES-256 Field Encryption**: Weight values and notes are encrypted before they are written to Isar; encryption keys are anchored in hardware-backed Android Keystore / iOS Keychain via `flutter_secure_storage`. Record IDs and measurement timestamps remain plaintext to support indexed queries, the Isar file itself is not encrypted, and hydrated settings (such as height and target weight) are not covered by this encryption.
+- **Hardware-Isolated AES-256 Field Encryption**: Weight values and notes are encrypted before they are written to Isar; encryption keys are anchored in hardware-backed Android Keystore / iOS Keychain via `flutter_secure_storage`. The cipher derives separate AES (encryption) and HMAC (integrity) sub-keys from the master key with HKDF-SHA256 (RFC 5869), preventing key reuse across protocols. Record IDs and measurement timestamps remain plaintext to support indexed queries, the Isar file itself is not encrypted, and hydrated settings (such as height and target weight) are not covered by this encryption.
 - **Firebase Analytics (`AppAnalytics`)**: Tracks non-sensitive usage metrics (screen navigations, UI interactions, feature engagement) to improve application UX. In strict adherence to privacy principles, **all raw health measurements (weights, heights, BMI numbers, goal targets) are omitted from telemetry payloads**. Analytics collection is automatically disabled in debug mode (`kDebugMode`).
 - **Firebase Crashlytics (`AppCrashReporter`)**: Captures non-fatal error reports and fatal crash stack traces for real-time defect diagnosis and performance stability. Crash logs contain technical error diagnostics and stack traces without any identifiable user health information.
 
@@ -221,6 +222,8 @@ The script automatically executes and validates:
 5. `flutter analyze` — Static linter verification (0 warnings/errors)
 6. `flutter test --coverage --exclude-tags "golden,screenshot"` — Automated test suite with coverage, excluding tagged visual tests
 7. `flutter build apk --debug` — Android compilation integrity check
+
+CI enforces a **95% line-coverage gate** (`COVERAGE_MIN`) on the test suite, excluding generated `.g.dart` and `app_localizations` sources.
 
 Or execute unit/widget tests directly:
 
