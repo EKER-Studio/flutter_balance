@@ -405,30 +405,27 @@ Cze 14, 2026,,,,,,,
       },
     );
 
-    test(
-      'parses Zepp Life / Garmin export with 24-hour and PM times and Polish months',
-      () async {
-        const csvContent = '''
+    test('parses Zepp Life / Garmin export with 24-hour and PM times and Polish months', () async {
+      const csvContent = '''
 Czas,Waga,Notatka
 15 Paź 2025 14:30,78,5 kg,Popołudniowy
 16 Lis 2025 1:48 PM,79.1 kg,Po treningu
 ''';
 
-        final result = await CsvImporter.parse(csvContent);
-        final entries = result.validEntries;
+      final result = await CsvImporter.parse(csvContent);
+      final entries = result.validEntries;
 
-        expect(entries.length, 2);
-        expect(result.skippedRowCount, 0);
+      expect(entries.length, 2);
+      expect(result.skippedRowCount, 0);
 
-        expect(entries[0].dateTime, DateTime(2025, 10, 15, 14, 30));
-        expect(entries[0].weightKg, 78.5);
-        expect(entries[0].note, 'Popołudniowy');
+      expect(entries[0].dateTime, DateTime(2025, 10, 15, 14, 30));
+      expect(entries[0].weightKg, 78.5);
+      expect(entries[0].note, 'Popołudniowy');
 
-        expect(entries[1].dateTime, DateTime(2025, 11, 16, 13, 48));
-        expect(entries[1].weightKg, 79.1);
-        expect(entries[1].note, 'Po treningu');
-      },
-    );
+      expect(entries[1].dateTime, DateTime(2025, 11, 16, 13, 48));
+      expect(entries[1].weightKg, 79.1);
+      expect(entries[1].note, 'Po treningu');
+    });
 
     test('parses CSV with body mass header and lbs/g sanitization', () async {
       const csvContent = '''
@@ -450,10 +447,8 @@ Timestamp,Body Mass,Memo
       expect(entries[1].note, 'No unit');
     });
 
-    test(
-      'parses multiple measurements per hierarchical date group with corrupted rows',
-      () async {
-        const csvContent = '''
+    test('parses multiple measurements per hierarchical date group with corrupted rows', () async {
+      const csvContent = '''
 Activities export
 Data,Ciężar
 Cze 15, 2026,
@@ -465,22 +460,21 @@ Cze 16, 2026,
 07:15,84.8
 ''';
 
-        final result = await CsvImporter.parse(csvContent);
-        final entries = result.validEntries;
+      final result = await CsvImporter.parse(csvContent);
+      final entries = result.validEntries;
 
-        expect(entries.length, 3);
-        expect(result.skippedRowCount, 2);
+      expect(entries.length, 3);
+      expect(result.skippedRowCount, 2);
 
-        expect(entries[0].dateTime, DateTime(2026, 6, 15, 0, 0));
-        expect(entries[0].weightKg, 85.0);
+      expect(entries[0].dateTime, DateTime(2026, 6, 15, 0, 0));
+      expect(entries[0].weightKg, 85.0);
 
-        expect(entries[1].dateTime, DateTime(2026, 6, 15, 12, 0));
-        expect(entries[1].weightKg, 85.5);
+      expect(entries[1].dateTime, DateTime(2026, 6, 15, 12, 0));
+      expect(entries[1].weightKg, 85.5);
 
-        expect(entries[2].dateTime, DateTime(2026, 6, 16, 7, 15));
-        expect(entries[2].weightKg, 84.8);
-      },
-    );
+      expect(entries[2].dateTime, DateTime(2026, 6, 16, 7, 15));
+      expect(entries[2].weightKg, 84.8);
+    });
 
     test('parses tab-delimited CSV', () async {
       const csvContent =

@@ -36,24 +36,18 @@ void main() {
     HydratedBloc.storage = storage;
     when(() => storage.read(any())).thenReturn(null);
     when(() => storage.write(any(), any())).thenAnswer((_) async {});
-    when(
-      () => mockHealthService.isHealthApiAvailable(),
-    ).thenAnswer((_) async => true);
-    when(
-      () => mockHealthService.requestPermissions(),
-    ).thenAnswer((_) async => true);
-    when(
-      () => mockHealthService.hasPermissions(),
-    ).thenAnswer((_) async => true);
-    when(
-      () => mockNotificationService.requestPermissions(),
-    ).thenAnswer((_) async => true);
-    when(
-      () => mockNotificationService.scheduleDailyReminder(any()),
-    ).thenAnswer((_) async => true);
-    when(
-      () => mockNotificationService.cancelDailyReminder(),
-    ).thenAnswer((_) async {});
+    when(() => mockHealthService.isHealthApiAvailable())
+        .thenAnswer((_) async => true);
+    when(() => mockHealthService.requestPermissions())
+        .thenAnswer((_) async => true);
+    when(() => mockHealthService.hasPermissions())
+        .thenAnswer((_) async => true);
+    when(() => mockNotificationService.requestPermissions())
+        .thenAnswer((_) async => true);
+    when(() => mockNotificationService.scheduleDailyReminder(any()))
+        .thenAnswer((_) async => true);
+    when(() => mockNotificationService.cancelDailyReminder())
+        .thenAnswer((_) async {});
   });
 
   group('AppSettingsBloc', () {
@@ -207,9 +201,8 @@ void main() {
     blocTest<AppSettingsBloc, AppSettingsState>(
       'emits notificationsEnabled false and denied flag on ToggleNotifications(true) when permission denied',
       setUp: () {
-        when(
-          () => mockNotificationService.requestPermissions(),
-        ).thenAnswer((_) async => false);
+        when(() => mockNotificationService.requestPermissions())
+            .thenAnswer((_) async => false);
       },
       build: () =>
           AppSettingsBloc(notificationService: mockNotificationService),
@@ -406,9 +399,8 @@ void main() {
         'emits healthPermissionDenied and keeps sync disabled when '
         'permission request is denied',
         setUp: () {
-          when(
-            () => mockHealthService.requestPermissions(),
-          ).thenAnswer((_) async => false);
+          when(() => mockHealthService.requestPermissions())
+              .thenAnswer((_) async => false);
         },
         build: () => AppSettingsBloc(
           notificationService: mockNotificationService,
@@ -450,9 +442,8 @@ void main() {
       blocTest<AppSettingsBloc, AppSettingsState>(
         'does not request permissions and emits denied when the platform lacks the health API',
         setUp: () {
-          when(
-            () => mockHealthService.isHealthApiAvailable(),
-          ).thenAnswer((_) async => false);
+          when(() => mockHealthService.isHealthApiAvailable())
+              .thenAnswer((_) async => false);
         },
         build: () => AppSettingsBloc(
           notificationService: mockNotificationService,
@@ -534,9 +525,8 @@ void main() {
         'revokes and persists sync when native permissions were revoked '
         'outside the app',
         setUp: () {
-          when(
-            () => mockHealthService.hasPermissions(),
-          ).thenAnswer((_) async => false);
+          when(() => mockHealthService.hasPermissions())
+              .thenAnswer((_) async => false);
         },
         build: () => AppSettingsBloc(
           notificationService: mockNotificationService,
@@ -633,9 +623,8 @@ void main() {
       blocTest<AppSettingsBloc, AppSettingsState>(
         'updates availability when the health API is unavailable',
         setUp: () {
-          when(
-            () => mockHealthService.isHealthApiAvailable(),
-          ).thenAnswer((_) async => false);
+          when(() => mockHealthService.isHealthApiAvailable())
+              .thenAnswer((_) async => false);
         },
         build: () => AppSettingsBloc(
           notificationService: mockNotificationService,

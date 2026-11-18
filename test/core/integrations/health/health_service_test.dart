@@ -159,9 +159,8 @@ void main() {
       // Simulate Android platform with Health Connect available
       when(() => platformDetector.isAndroid).thenReturn(true);
       when(() => platformDetector.isIOS).thenReturn(false);
-      when(
-        () => health.getHealthConnectSdkStatus(),
-      ).thenAnswer((_) async => HealthConnectSdkStatus.sdkAvailable);
+      when(() => health.getHealthConnectSdkStatus())
+          .thenAnswer((_) async => HealthConnectSdkStatus.sdkAvailable);
       final available = await service.isHealthApiAvailable();
 
       expect(available, isTrue);
@@ -175,9 +174,8 @@ void main() {
         // Simulate Android platform with Health Connect unavailable
         when(() => platformDetector.isAndroid).thenReturn(true);
         when(() => platformDetector.isIOS).thenReturn(false);
-        when(
-          () => health.getHealthConnectSdkStatus(),
-        ).thenAnswer((_) async => HealthConnectSdkStatus.sdkUnavailable);
+        when(() => health.getHealthConnectSdkStatus())
+            .thenAnswer((_) async => HealthConnectSdkStatus.sdkUnavailable);
 
         final available = await service.isHealthApiAvailable();
 
@@ -191,9 +189,8 @@ void main() {
       // Simulate Android platform with Health Connect check throwing
       when(() => platformDetector.isAndroid).thenReturn(true);
       when(() => platformDetector.isIOS).thenReturn(false);
-      when(
-        () => health.getHealthConnectSdkStatus(),
-      ).thenThrow(Exception('Health Connect unavailable'));
+      when(() => health.getHealthConnectSdkStatus())
+          .thenThrow(Exception('Health Connect unavailable'));
 
       final available = await service.isHealthApiAvailable();
 
@@ -958,55 +955,52 @@ void main() {
       ).called(1);
     });
 
-    test(
-      'deletes a point within the tolerance window and skips non-numeric points',
-      () async {
-        final timestamp = DateTime(2026, 1, 1, 8, 30);
-        when(
-          () => health.getHealthDataFromTypes(
-            types: any(named: 'types'),
-            preferredUnits: any(named: 'preferredUnits'),
-            startTime: any(named: 'startTime'),
-            endTime: any(named: 'endTime'),
-          ),
-        ).thenAnswer(
-          (_) async => [
-            HealthDataPoint(
-              uuid: 'non-numeric',
-              value: HealthValue(),
-              type: HealthDataType.WEIGHT,
-              unit: HealthDataUnit.KILOGRAM,
-              dateFrom: timestamp,
-              dateTo: timestamp,
-              sourcePlatform: HealthPlatformType.appleHealth,
-              sourceDeviceId: 'device-1',
-              sourceId: 'source-1',
-              sourceName: 'Balance',
-            ),
-            point(uuid: 'tolerance-match', value: 72.505, dateFrom: timestamp),
-          ],
-        );
-        when(
-          () => health.deleteByUUID(
-            uuid: any(named: 'uuid'),
-            type: any(named: 'type'),
-          ),
-        ).thenAnswer((_) async => true);
-
-        final deleted = await service.deleteWeight(
-          weightKg: 72.5,
-          timestamp: timestamp,
-        );
-
-        expect(deleted, isTrue);
-        verify(
-          () => health.deleteByUUID(
-            uuid: 'tolerance-match',
+    test('deletes a point within the tolerance window and skips non-numeric points', () async {
+      final timestamp = DateTime(2026, 1, 1, 8, 30);
+      when(
+        () => health.getHealthDataFromTypes(
+          types: any(named: 'types'),
+          preferredUnits: any(named: 'preferredUnits'),
+          startTime: any(named: 'startTime'),
+          endTime: any(named: 'endTime'),
+        ),
+      ).thenAnswer(
+        (_) async => [
+          HealthDataPoint(
+            uuid: 'non-numeric',
+            value: HealthValue(),
             type: HealthDataType.WEIGHT,
+            unit: HealthDataUnit.KILOGRAM,
+            dateFrom: timestamp,
+            dateTo: timestamp,
+            sourcePlatform: HealthPlatformType.appleHealth,
+            sourceDeviceId: 'device-1',
+            sourceId: 'source-1',
+            sourceName: 'Balance',
           ),
-        ).called(1);
-      },
-    );
+          point(uuid: 'tolerance-match', value: 72.505, dateFrom: timestamp),
+        ],
+      );
+      when(
+        () => health.deleteByUUID(
+          uuid: any(named: 'uuid'),
+          type: any(named: 'type'),
+        ),
+      ).thenAnswer((_) async => true);
+
+      final deleted = await service.deleteWeight(
+        weightKg: 72.5,
+        timestamp: timestamp,
+      );
+
+      expect(deleted, isTrue);
+      verify(
+        () => health.deleteByUUID(
+          uuid: 'tolerance-match',
+          type: HealthDataType.WEIGHT,
+        ),
+      ).called(1);
+    });
   });
 
   group('NativePlatformDetector', () {
@@ -1034,9 +1028,8 @@ void main() {
         when(() => platformDetector.isAndroid).thenReturn(true);
         when(() => platformDetector.isIOS).thenReturn(false);
         when(() => health.configure()).thenThrow(Exception('Configure failed'));
-        when(
-          () => health.getHealthConnectSdkStatus(),
-        ).thenAnswer((_) async => HealthConnectSdkStatus.sdkAvailable);
+        when(() => health.getHealthConnectSdkStatus())
+            .thenAnswer((_) async => HealthConnectSdkStatus.sdkAvailable);
 
         final available = await service.isHealthApiAvailable();
         expect(available, isTrue);
@@ -1052,9 +1045,8 @@ void main() {
             permissions: any(named: 'permissions'),
           ),
         ).thenAnswer((_) async => true);
-        when(
-          () => platformDetector.isIOS,
-        ).thenThrow(Exception('Platform detector crashed'));
+        when(() => platformDetector.isIOS)
+            .thenThrow(Exception('Platform detector crashed'));
 
         final granted = await service.requestPermissions();
         expect(granted, isFalse);
@@ -1094,9 +1086,8 @@ void main() {
       () async {
         when(() => platformDetector.isAndroid).thenReturn(true);
         when(() => platformDetector.isIOS).thenReturn(false);
-        when(
-          () => health.getHealthConnectSdkStatus(),
-        ).thenAnswer((_) async => HealthConnectSdkStatus.sdkAvailable);
+        when(() => health.getHealthConnectSdkStatus())
+            .thenAnswer((_) async => HealthConnectSdkStatus.sdkAvailable);
 
         await service.isHealthApiAvailable();
         await service.isHealthApiAvailable();

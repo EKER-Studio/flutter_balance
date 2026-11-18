@@ -1,4 +1,5 @@
 import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -70,9 +71,8 @@ void main() {
     addTearDown(tester.view.resetDevicePixelRatio);
 
     when(() => weightBloc.state).thenReturn(WeightLoading());
-    when(
-      () => weightBloc.stream,
-    ).thenAnswer((_) => Stream.value(WeightLoading()));
+    when(() => weightBloc.stream)
+        .thenAnswer((_) => Stream.value(WeightLoading()));
 
     await tester.pumpWidget(createTestWidget(const TodayScreen()));
     await tester.pump();
@@ -639,9 +639,8 @@ void main() {
 
     final entry = WeightEntry(id: 1, weightKg: 72.5, dateTime: DateTime.now());
 
-    when(
-      () => storage.read(any()),
-    ).thenReturn({'height': 170.0, 'measurementUnit': 'imperial'});
+    when(() => storage.read(any()))
+        .thenReturn({'height': 170.0, 'measurementUnit': 'imperial'});
     settingsBloc = AppSettingsBloc();
 
     when(() => weightBloc.state).thenReturn(
@@ -1081,9 +1080,8 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(tester.takeException(), isNull);
-      verify(
-        () => weightBloc.add(any(that: isA<RefreshWeightData>())),
-      ).called(1);
+      verify(() => weightBloc.add(any(that: isA<RefreshWeightData>())))
+          .called(1);
     });
   });
 }

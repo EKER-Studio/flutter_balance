@@ -55,9 +55,8 @@ void main() {
     testWidgets(
       'routes to OnboardingWizardScreen when onboarding is incomplete',
       (tester) async {
-        when(
-          () => mockSettingsBloc.state,
-        ).thenReturn(const AppSettingsState(isOnboardingCompleted: false));
+        when(() => mockSettingsBloc.state)
+            .thenReturn(const AppSettingsState(isOnboardingCompleted: false));
 
         final router = createAppRouter(
           settingsBloc: mockSettingsBloc,
@@ -92,9 +91,8 @@ void main() {
 
   group('AppRouter route builders', () {
     setUp(() {
-      when(
-        () => mockSettingsBloc.state,
-      ).thenReturn(const AppSettingsState(isOnboardingCompleted: true));
+      when(() => mockSettingsBloc.state)
+          .thenReturn(const AppSettingsState(isOnboardingCompleted: true));
       when(() => mockWeightBloc.state).thenReturn(
         WeightLoaded(
           entries: const [],

@@ -24,9 +24,8 @@ MockAppSettingsBloc _buildMockSettingsBloc({
       crashReportingEnabled: crashReportingEnabled,
     ),
   );
-  when(
-    () => bloc.stream,
-  ).thenAnswer((_) => Stream<AppSettingsState>.multi((controller) {}));
+  when(() => bloc.stream)
+      .thenAnswer((_) => Stream<AppSettingsState>.multi((controller) {}));
   return bloc;
 }
 

@@ -507,36 +507,30 @@ void main() {
       }
     });
 
-    test(
-      'recovers from an unopenable database by backing it up and reopening fresh',
-      () async {
-        if (!await _guardIsarAvailable()) return;
+    test('recovers from an unopenable database by backing it up and reopening fresh', () async {
+      if (!await _guardIsarAvailable()) return;
 
-        final dbFile = File('${tempDir.path}/${DatabaseModule.dbName}.isar');
-        dbFile.writeAsBytesSync(List.filled(8192, 0x21));
-        final chmodFile = await Process.run('chmod', ['0444', dbFile.path]);
-        if (chmodFile.exitCode != 0) {
-          markTestSkipped('chmod not supported in this environment');
-          return;
-        }
+      final dbFile = File('${tempDir.path}/${DatabaseModule.dbName}.isar');
+      dbFile.writeAsBytesSync(List.filled(8192, 0x21));
+      final chmodFile = await Process.run('chmod', ['0444', dbFile.path]);
+      if (chmodFile.exitCode != 0) {
+        markTestSkipped('chmod not supported in this environment');
+        return;
+      }
 
-        final isar = await DatabaseModule.initialize();
-        openedInstances.add(isar);
-        await Process.run('chmod', ['0644', dbFile.path]);
+      final isar = await DatabaseModule.initialize();
+      openedInstances.add(isar);
+      await Process.run('chmod', ['0644', dbFile.path]);
 
-        expect(isar.isOpen, isTrue);
-        expect(
-          identical(Isar.getInstance(DatabaseModule.dbName), isar),
-          isTrue,
-        );
-        final bakFiles = tempDir
-            .listSync()
-            .where((e) => e.path.endsWith('.isar.bak'))
-            .toList();
-        expect(bakFiles, hasLength(1));
-        expect(bakFiles.first.path, contains('corrupted'));
-      },
-    );
+      expect(isar.isOpen, isTrue);
+      expect(identical(Isar.getInstance(DatabaseModule.dbName), isar), isTrue);
+      final bakFiles = tempDir
+          .listSync()
+          .where((e) => e.path.endsWith('.isar.bak'))
+          .toList();
+      expect(bakFiles, hasLength(1));
+      expect(bakFiles.first.path, contains('corrupted'));
+    });
   });
 
   group('DatabaseModule quarantineLegacyDatabaseForTesting', () {

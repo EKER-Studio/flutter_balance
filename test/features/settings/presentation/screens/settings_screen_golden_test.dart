@@ -44,9 +44,8 @@ void main() {
     when(() => storage.write(any(), any())).thenAnswer((_) async {});
 
     weightBloc = MockWeightBloc();
-    when(
-      () => weightBloc.state,
-    ).thenReturn(WeightLoaded(entries: const [], filteredEntries: const []));
+    when(() => weightBloc.state)
+        .thenReturn(WeightLoaded(entries: const [], filteredEntries: const []));
     when(() => weightBloc.stream).thenAnswer(
       (_) => Stream.value(
         WeightLoaded(entries: const [], filteredEntries: const []),

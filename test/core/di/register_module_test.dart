@@ -56,12 +56,9 @@ void main() {
       },
     );
 
-    test(
-      'notificationService resolves to the shared NotificationService singleton',
-      () {
-        expect(module.notificationService, same(NotificationService.instance));
-      },
-    );
+    test('notificationService resolves to the shared NotificationService singleton', () {
+      expect(module.notificationService, same(NotificationService.instance));
+    });
 
     test(
       'healthService resolves to the shared NativeHealthService singleton',

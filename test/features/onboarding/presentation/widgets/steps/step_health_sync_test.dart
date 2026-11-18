@@ -28,9 +28,8 @@ MockAppSettingsBloc _buildMockSettingsBloc({bool isHealthSyncEnabled = false}) {
       isHealthSyncEnabled: isHealthSyncEnabled,
     ),
   );
-  when(
-    () => bloc.stream,
-  ).thenAnswer((_) => Stream<AppSettingsState>.multi((controller) {}));
+  when(() => bloc.stream)
+      .thenAnswer((_) => Stream<AppSettingsState>.multi((controller) {}));
   return bloc;
 }
 
@@ -140,12 +139,10 @@ void main() {
     testWidgets('enables sync and reflects it in the switch when permissions '
         'are granted', (tester) async {
       healthService = MockHealthService();
-      when(
-        () => healthService.isHealthApiAvailable(),
-      ).thenAnswer((_) async => true);
-      when(
-        () => healthService.requestPermissions(),
-      ).thenAnswer((_) async => true);
+      when(() => healthService.isHealthApiAvailable())
+          .thenAnswer((_) async => true);
+      when(() => healthService.requestPermissions())
+          .thenAnswer((_) async => true);
       final bloc = AppSettingsBloc(healthService: healthService);
 
       await tester.pumpWidget(buildSubject(onNext: () {}, bloc: bloc));
@@ -162,12 +159,10 @@ void main() {
       tester,
     ) async {
       healthService = MockHealthService();
-      when(
-        () => healthService.isHealthApiAvailable(),
-      ).thenAnswer((_) async => true);
-      when(
-        () => healthService.requestPermissions(),
-      ).thenAnswer((_) async => false);
+      when(() => healthService.isHealthApiAvailable())
+          .thenAnswer((_) async => true);
+      when(() => healthService.requestPermissions())
+          .thenAnswer((_) async => false);
       final bloc = AppSettingsBloc(healthService: healthService);
 
       await tester.pumpWidget(buildSubject(onNext: () {}, bloc: bloc));
@@ -188,12 +183,10 @@ void main() {
       tester,
     ) async {
       healthService = MockHealthService();
-      when(
-        () => healthService.isHealthApiAvailable(),
-      ).thenAnswer((_) async => true);
-      when(
-        () => healthService.requestPermissions(),
-      ).thenAnswer((_) async => false);
+      when(() => healthService.isHealthApiAvailable())
+          .thenAnswer((_) async => true);
+      when(() => healthService.requestPermissions())
+          .thenAnswer((_) async => false);
       final bloc = AppSettingsBloc(healthService: healthService);
 
       await tester.pumpWidget(buildSubject(onNext: () {}, bloc: bloc));
@@ -208,9 +201,8 @@ void main() {
       );
 
       // Second toggle grants the permission and clears the warning.
-      when(
-        () => healthService.requestPermissions(),
-      ).thenAnswer((_) async => true);
+      when(() => healthService.requestPermissions())
+          .thenAnswer((_) async => true);
       await tester.tap(switchFinder);
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 500));
@@ -227,12 +219,10 @@ void main() {
       'API check reports unavailable',
       (tester) async {
         healthService = MockHealthService();
-        when(
-          () => healthService.isHealthApiAvailable(),
-        ).thenAnswer((_) async => false);
-        when(
-          () => healthService.requestPermissions(),
-        ).thenAnswer((_) async => false);
+        when(() => healthService.isHealthApiAvailable())
+            .thenAnswer((_) async => false);
+        when(() => healthService.requestPermissions())
+            .thenAnswer((_) async => false);
         final bloc = AppSettingsBloc(healthService: healthService);
 
         await tester.pumpWidget(buildSubject(onNext: () {}, bloc: bloc));

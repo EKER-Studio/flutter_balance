@@ -161,9 +161,8 @@ void main() {
         );
 
     weightBloc = MockWeightBloc();
-    when(
-      () => weightBloc.state,
-    ).thenReturn(WeightLoaded(entries: const [], filteredEntries: const []));
+    when(() => weightBloc.state)
+        .thenReturn(WeightLoaded(entries: const [], filteredEntries: const []));
     when(() => weightBloc.stream).thenAnswer(
       (_) => Stream.value(
         WeightLoaded(entries: const [], filteredEntries: const []),
@@ -171,9 +170,8 @@ void main() {
     );
 
     healthService = MockHealthService();
-    when(
-      () => healthService.isHealthApiAvailable(),
-    ).thenAnswer((_) async => true);
+    when(() => healthService.isHealthApiAvailable())
+        .thenAnswer((_) async => true);
 
     settingsBloc = AppSettingsBloc(healthService: healthService);
   });
@@ -374,12 +372,10 @@ void main() {
     (tester) async {
       final mockNotificationService = MockNotificationService();
       registerFallbackValue(const (hour: 8, minute: 0));
-      when(
-        () => mockNotificationService.requestPermissions(),
-      ).thenAnswer((_) async => false);
-      when(
-        () => mockNotificationService.scheduleDailyReminder(any()),
-      ).thenAnswer((_) async => true);
+      when(() => mockNotificationService.requestPermissions())
+          .thenAnswer((_) async => false);
+      when(() => mockNotificationService.scheduleDailyReminder(any()))
+          .thenAnswer((_) async => true);
 
       settingsBloc = AppSettingsBloc(
         notificationService: mockNotificationService,
@@ -405,12 +401,10 @@ void main() {
     (tester) async {
       final mockNotificationService = MockNotificationService();
       registerFallbackValue(const (hour: 8, minute: 0));
-      when(
-        () => mockNotificationService.requestPermissions(),
-      ).thenAnswer((_) async => true);
-      when(
-        () => mockNotificationService.scheduleDailyReminder(any()),
-      ).thenAnswer((_) async => true);
+      when(() => mockNotificationService.requestPermissions())
+          .thenAnswer((_) async => true);
+      when(() => mockNotificationService.scheduleDailyReminder(any()))
+          .thenAnswer((_) async => true);
 
       settingsBloc = AppSettingsBloc(
         notificationService: mockNotificationService,
@@ -424,9 +418,8 @@ void main() {
       await tester.tap(find.byType(Switch).first);
       await tester.pumpAndSettle();
 
-      verify(
-        () => mockNotificationService.scheduleDailyReminder(any()),
-      ).called(1);
+      verify(() => mockNotificationService.scheduleDailyReminder(any()))
+          .called(1);
     },
   );
 
@@ -539,9 +532,8 @@ void main() {
       tester,
     ) async {
       settingsBloc = AppSettingsBloc(healthService: healthService);
-      when(
-        () => healthService.requestPermissions(),
-      ).thenAnswer((_) async => true);
+      when(() => healthService.requestPermissions())
+          .thenAnswer((_) async => true);
 
       settingsBloc.add(const ToggleHealthSync(true));
       await tester.pumpWidget(createTestWidget());
@@ -557,9 +549,8 @@ void main() {
       tester,
     ) async {
       settingsBloc = AppSettingsBloc(healthService: healthService);
-      when(
-        () => healthService.requestPermissions(),
-      ).thenAnswer((_) async => true);
+      when(() => healthService.requestPermissions())
+          .thenAnswer((_) async => true);
 
       await tester.pumpWidget(createTestWidget());
       await tester.pump();
@@ -577,9 +568,8 @@ void main() {
       'dispatches SyncHealthEntries when sync is enabled with granted permissions',
       (tester) async {
         settingsBloc = AppSettingsBloc(healthService: healthService);
-        when(
-          () => healthService.requestPermissions(),
-        ).thenAnswer((_) async => true);
+        when(() => healthService.requestPermissions())
+            .thenAnswer((_) async => true);
 
         await tester.pumpWidget(createTestWidget());
         await tester.pump();
@@ -597,9 +587,8 @@ void main() {
       'does not dispatch SyncHealthEntries when permissions are denied',
       (tester) async {
         settingsBloc = AppSettingsBloc(healthService: healthService);
-        when(
-          () => healthService.requestPermissions(),
-        ).thenAnswer((_) async => false);
+        when(() => healthService.requestPermissions())
+            .thenAnswer((_) async => false);
 
         await tester.pumpWidget(createTestWidget());
         await tester.pump();
@@ -617,9 +606,8 @@ void main() {
       'shows info snackbar with system settings hint when toggled off',
       (tester) async {
         settingsBloc = AppSettingsBloc(healthService: healthService);
-        when(
-          () => healthService.requestPermissions(),
-        ).thenAnswer((_) async => true);
+        when(() => healthService.requestPermissions())
+            .thenAnswer((_) async => true);
 
         settingsBloc.add(const ToggleHealthSync(true));
         await tester.pumpWidget(createTestWidget());
@@ -638,9 +626,8 @@ void main() {
       'shows permission denied snackbar with settings action when denied',
       (tester) async {
         settingsBloc = AppSettingsBloc(healthService: healthService);
-        when(
-          () => healthService.requestPermissions(),
-        ).thenAnswer((_) async => false);
+        when(() => healthService.requestPermissions())
+            .thenAnswer((_) async => false);
 
         await tester.pumpWidget(createTestWidget());
         await tester.pump();
@@ -671,12 +658,10 @@ void main() {
       (tester) async {
         debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
         try {
-          when(
-            () => healthService.isHealthApiAvailable(),
-          ).thenAnswer((_) async => false);
-          when(
-            () => healthService.hasPermissions(),
-          ).thenAnswer((_) async => false);
+          when(() => healthService.isHealthApiAvailable())
+              .thenAnswer((_) async => false);
+          when(() => healthService.hasPermissions())
+              .thenAnswer((_) async => false);
 
           settingsBloc = AppSettingsBloc(healthService: healthService);
           settingsBloc.add(const CheckHealthSyncStatus());
@@ -700,12 +685,10 @@ void main() {
       (tester) async {
         debugDefaultTargetPlatformOverride = TargetPlatform.android;
         try {
-          when(
-            () => healthService.isHealthApiAvailable(),
-          ).thenAnswer((_) async => false);
-          when(
-            () => healthService.hasPermissions(),
-          ).thenAnswer((_) async => false);
+          when(() => healthService.isHealthApiAvailable())
+              .thenAnswer((_) async => false);
+          when(() => healthService.hasPermissions())
+              .thenAnswer((_) async => false);
 
           settingsBloc = AppSettingsBloc(healthService: healthService);
           settingsBloc.add(const CheckHealthSyncStatus());
@@ -935,12 +918,10 @@ void main() {
       useNarrowSurface(tester);
       final mockNotificationService = MockNotificationService();
       registerFallbackValue(const (hour: 8, minute: 0));
-      when(
-        () => mockNotificationService.requestPermissions(),
-      ).thenAnswer((_) async => true);
-      when(
-        () => mockNotificationService.scheduleDailyReminder(any()),
-      ).thenAnswer((_) async => true);
+      when(() => mockNotificationService.requestPermissions())
+          .thenAnswer((_) async => true);
+      when(() => mockNotificationService.scheduleDailyReminder(any()))
+          .thenAnswer((_) async => true);
       settingsBloc = AppSettingsBloc(
         notificationService: mockNotificationService,
       );
@@ -967,12 +948,10 @@ void main() {
       debugDefaultTargetPlatformOverride = TargetPlatform.android;
       try {
         settingsBloc = AppSettingsBloc(healthService: healthService);
-        when(
-          () => healthService.isHealthApiAvailable(),
-        ).thenAnswer((_) async => false);
-        when(
-          () => healthService.hasPermissions(),
-        ).thenAnswer((_) async => false);
+        when(() => healthService.isHealthApiAvailable())
+            .thenAnswer((_) async => false);
+        when(() => healthService.hasPermissions())
+            .thenAnswer((_) async => false);
         settingsBloc.add(const CheckHealthSyncStatus());
 
         await tester.pumpWidget(createTestWidget());
@@ -1008,9 +987,8 @@ void main() {
 
       expect(find.text('Set Height'), findsNothing);
       expect(settingsBloc.state.height, 175.0);
-      verify(
-        () => weightBloc.add(any(that: isA<UpdateUserHeight>())),
-      ).called(1);
+      verify(() => weightBloc.add(any(that: isA<UpdateUserHeight>())))
+          .called(1);
     });
 
     testWidgets('health sync switch enables sync in narrow layout', (
@@ -1018,9 +996,8 @@ void main() {
     ) async {
       useNarrowSurface(tester);
       settingsBloc = AppSettingsBloc(healthService: healthService);
-      when(
-        () => healthService.requestPermissions(),
-      ).thenAnswer((_) async => true);
+      when(() => healthService.requestPermissions())
+          .thenAnswer((_) async => true);
       when(() => healthService.hasPermissions()).thenAnswer((_) async => true);
       final syncSwitch = find.descendant(
         of: find.widgetWithText(ListTile, 'Health Connect'),
@@ -1116,12 +1093,10 @@ void main() {
 
       final mockNotificationService = MockNotificationService();
       registerFallbackValue(const (hour: 8, minute: 0));
-      when(
-        () => mockNotificationService.requestPermissions(),
-      ).thenAnswer((_) async => true);
-      when(
-        () => mockNotificationService.scheduleDailyReminder(any()),
-      ).thenAnswer((_) async => true);
+      when(() => mockNotificationService.requestPermissions())
+          .thenAnswer((_) async => true);
+      when(() => mockNotificationService.scheduleDailyReminder(any()))
+          .thenAnswer((_) async => true);
       settingsBloc = AppSettingsBloc(
         notificationService: mockNotificationService,
       );
@@ -1579,9 +1554,8 @@ void main() {
     testWidgets('shows error snackbar when the wipe stream times out', (
       tester,
     ) async {
-      when(
-        () => weightBloc.stream,
-      ).thenAnswer((_) => Stream.fromIterable([WeightLoading()]));
+      when(() => weightBloc.stream)
+          .thenAnswer((_) => Stream.fromIterable([WeightLoading()]));
 
       await tester.pumpWidget(createTestWidget());
       await tester.pump();

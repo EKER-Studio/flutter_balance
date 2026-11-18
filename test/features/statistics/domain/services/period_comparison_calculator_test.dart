@@ -4,21 +4,18 @@ import 'package:balance/features/weight/domain/entities/weight_entry.dart';
 
 void main() {
   group('PeriodComparisonCalculator', () {
-    test(
-      'returns empty summaries and hasComparisonData=false when entries is empty',
-      () {
-        final result = PeriodComparisonCalculator.compareMonths(
-          entries: [],
-          now: DateTime(2026, 8, 15),
-        );
+    test('returns empty summaries and hasComparisonData=false when entries is empty', () {
+      final result = PeriodComparisonCalculator.compareMonths(
+        entries: [],
+        now: DateTime(2026, 8, 15),
+      );
 
-        expect(result.hasComparisonData, isFalse);
-        expect(result.currentPeriod.entryCount, 0);
-        expect(result.previousPeriod.entryCount, 0);
-        expect(result.deltaNetChange, isNull);
-        expect(result.deltaAverage, isNull);
-      },
-    );
+      expect(result.hasComparisonData, isFalse);
+      expect(result.currentPeriod.entryCount, 0);
+      expect(result.previousPeriod.entryCount, 0);
+      expect(result.deltaNetChange, isNull);
+      expect(result.deltaAverage, isNull);
+    });
 
     test(
       'returns hasComparisonData=false when only current month has entries',
@@ -81,26 +78,23 @@ void main() {
       expect(result.deltaEntryCount, 0);
     });
 
-    test(
-      'handles January reference date rolling over to December of previous year',
-      () {
-        final entries = [
-          // December 2025
-          WeightEntry(id: 1, weightKg: 85.0, dateTime: DateTime(2025, 12, 10)),
-          // January 2026
-          WeightEntry(id: 2, weightKg: 84.0, dateTime: DateTime(2026, 1, 5)),
-        ];
+    test('handles January reference date rolling over to December of previous year', () {
+      final entries = [
+        // December 2025
+        WeightEntry(id: 1, weightKg: 85.0, dateTime: DateTime(2025, 12, 10)),
+        // January 2026
+        WeightEntry(id: 2, weightKg: 84.0, dateTime: DateTime(2026, 1, 5)),
+      ];
 
-        final result = PeriodComparisonCalculator.compareMonths(
-          entries: entries,
-          now: DateTime(2026, 1, 15),
-        );
+      final result = PeriodComparisonCalculator.compareMonths(
+        entries: entries,
+        now: DateTime(2026, 1, 15),
+      );
 
-        expect(result.hasComparisonData, isTrue);
-        expect(result.currentPeriod.entryCount, 1);
-        expect(result.previousPeriod.entryCount, 1);
-      },
-    );
+      expect(result.hasComparisonData, isTrue);
+      expect(result.currentPeriod.entryCount, 1);
+      expect(result.previousPeriod.entryCount, 1);
+    });
 
     test('compareRollingDays calculates rolling window metrics accurately', () {
       final now = DateTime(2026, 9, 1, 12, 0);

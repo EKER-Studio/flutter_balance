@@ -550,22 +550,19 @@ void main() {
       },
     );
 
-    test(
-      'wasAuthenticatingRecently is false before any authentication or after reset',
-      () async {
-        final service = BiometricService.instance;
+    test('wasAuthenticatingRecently is false before any authentication or after reset', () async {
+      final service = BiometricService.instance;
 
-        expect(service.wasAuthenticatingRecently, isFalse);
+      expect(service.wasAuthenticatingRecently, isFalse);
 
-        await service.authenticate(
-          localizedReason: 'Unlock to view your weight data',
-        );
-        expect(service.wasAuthenticatingRecently, isTrue);
+      await service.authenticate(
+        localizedReason: 'Unlock to view your weight data',
+      );
+      expect(service.wasAuthenticatingRecently, isTrue);
 
-        BiometricService.resetForTesting();
-        expect(service.wasAuthenticatingRecently, isFalse);
-      },
-    );
+      BiometricService.resetForTesting();
+      expect(service.wasAuthenticatingRecently, isFalse);
+    });
 
     test(
       'reuses the in-flight future for concurrent authentication calls',

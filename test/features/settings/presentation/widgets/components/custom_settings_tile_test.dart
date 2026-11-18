@@ -90,9 +90,9 @@ void main() {
         ),
       );
 
-      final errorColor = Theme.of(
-        tester.element(find.text('Test Title')),
-      ).colorScheme.error;
+      final errorColor = Theme.of(tester.element(find.text('Test Title')))
+          .colorScheme
+          .error;
       expect(
         tester.widget<Text>(find.text('Test Title')).style?.color,
         errorColor,

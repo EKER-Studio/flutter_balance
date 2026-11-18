@@ -43,12 +43,10 @@ void main() {
 
   Widget buildEnabledSubject() {
     final mockNotificationService = MockNotificationService();
-    when(
-      () => mockNotificationService.requestPermissions(),
-    ).thenAnswer((_) async => true);
-    when(
-      () => mockNotificationService.scheduleDailyReminder(any()),
-    ).thenAnswer((_) async => true);
+    when(() => mockNotificationService.requestPermissions())
+        .thenAnswer((_) async => true);
+    when(() => mockNotificationService.scheduleDailyReminder(any()))
+        .thenAnswer((_) async => true);
     settingsBloc = AppSettingsBloc(
       notificationService: mockNotificationService,
     );
@@ -115,12 +113,10 @@ void main() {
       'toggling with denied permission shows the permission denied warning',
       (tester) async {
         final mockNotificationService = MockNotificationService();
-        when(
-          () => mockNotificationService.requestPermissions(),
-        ).thenAnswer((_) async => false);
-        when(
-          () => mockNotificationService.scheduleDailyReminder(any()),
-        ).thenAnswer((_) async => true);
+        when(() => mockNotificationService.requestPermissions())
+            .thenAnswer((_) async => false);
+        when(() => mockNotificationService.scheduleDailyReminder(any()))
+            .thenAnswer((_) async => true);
 
         settingsBloc = AppSettingsBloc(
           notificationService: mockNotificationService,

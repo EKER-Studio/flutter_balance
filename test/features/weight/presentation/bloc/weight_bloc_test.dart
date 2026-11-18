@@ -42,9 +42,8 @@ void main() {
     storage = MockHydratedStorage();
     streamController = StreamController<List<WeightEntry>>.broadcast();
 
-    when(
-      () => repository.watchAllEntries(),
-    ).thenAnswer((_) => streamController.stream);
+    when(() => repository.watchAllEntries())
+        .thenAnswer((_) => streamController.stream);
     when(() => repository.getAllEntries()).thenAnswer((_) async => []);
     when(() => repository.addEntry(any())).thenAnswer((_) async {});
     when(() => repository.deleteEntry(any())).thenAnswer((_) async {});
@@ -75,12 +74,10 @@ void main() {
 
   MockAppSettingsBloc buildSettingsBloc({bool isHealthSyncEnabled = true}) {
     final settingsBloc = MockAppSettingsBloc();
-    when(
-      () => settingsBloc.state,
-    ).thenReturn(AppSettingsState(isHealthSyncEnabled: isHealthSyncEnabled));
-    when(
-      () => settingsBloc.isHealthSyncEnabled,
-    ).thenReturn(isHealthSyncEnabled);
+    when(() => settingsBloc.state)
+        .thenReturn(AppSettingsState(isHealthSyncEnabled: isHealthSyncEnabled));
+    when(() => settingsBloc.isHealthSyncEnabled)
+        .thenReturn(isHealthSyncEnabled);
     when(() => settingsBloc.lastHealthSyncTimestamp).thenReturn(null);
     return settingsBloc;
   }
@@ -330,9 +327,8 @@ void main() {
       ),
       act: (bloc) => bloc.add(const AddWeight(weightKg: 72)),
       verify: (_) {
-        final captured = verify(
-          () => repository.addEntry(captureAny()),
-        ).captured;
+        final captured = verify(() => repository.addEntry(captureAny()))
+            .captured;
         final entry = captured.single as WeightEntry;
         expect(entry.weightKg, 72);
       },
@@ -341,9 +337,8 @@ void main() {
     blocTest<WeightBloc, WeightState>(
       'emits WeightError when repository.addEntry fails',
       build: () {
-        when(
-          () => repository.addEntry(any()),
-        ).thenThrow(Exception('Write failed'));
+        when(() => repository.addEntry(any()))
+            .thenThrow(Exception('Write failed'));
         return WeightBloc(repository: repository);
       },
       seed: () => WeightLoaded(
@@ -381,9 +376,8 @@ void main() {
         ),
       ),
       verify: (_) {
-        final captured = verify(
-          () => repository.addEntry(captureAny()),
-        ).captured;
+        final captured = verify(() => repository.addEntry(captureAny()))
+            .captured;
         final entry = captured.single as WeightEntry;
         expect(entry.id, 1);
         expect(entry.weightKg, 74);
@@ -411,9 +405,8 @@ void main() {
     blocTest<WeightBloc, WeightState>(
       'emits WeightError when repository.addEntry fails on UpdateWeight',
       build: () {
-        when(
-          () => repository.addEntry(any()),
-        ).thenThrow(Exception('Write failed'));
+        when(() => repository.addEntry(any()))
+            .thenThrow(Exception('Write failed'));
         return WeightBloc(repository: repository);
       },
       seed: () => WeightLoaded(
@@ -438,9 +431,8 @@ void main() {
     blocTest<WeightBloc, WeightState>(
       'emits WeightError when repository.deleteEntry fails',
       build: () {
-        when(
-          () => repository.deleteEntry(any()),
-        ).thenThrow(Exception('Delete failed'));
+        when(() => repository.deleteEntry(any()))
+            .thenThrow(Exception('Delete failed'));
         return WeightBloc(repository: repository);
       },
       seed: () => WeightLoaded(
@@ -504,9 +496,8 @@ void main() {
     blocTest<WeightBloc, WeightState>(
       'emits WeightError when repository.getAllEntries fails on RefreshWeightData',
       build: () {
-        when(
-          () => repository.getAllEntries(),
-        ).thenThrow(Exception('Read failed'));
+        when(() => repository.getAllEntries())
+            .thenThrow(Exception('Read failed'));
         return WeightBloc(repository: repository);
       },
       seed: () => WeightLoaded(
@@ -527,9 +518,8 @@ void main() {
     blocTest<WeightBloc, WeightState>(
       'emits WeightError when repository.clearAllData fails on ClearAllWeightData',
       build: () {
-        when(
-          () => repository.clearAllData(),
-        ).thenThrow(Exception('Wipe failed'));
+        when(() => repository.clearAllData())
+            .thenThrow(Exception('Wipe failed'));
         return WeightBloc(repository: repository);
       },
       seed: () => WeightLoaded(
@@ -550,9 +540,8 @@ void main() {
     blocTest<WeightBloc, WeightState>(
       'emits WeightError when repository.bulkImportEntries fails on ImportWeightEntries',
       build: () {
-        when(
-          () => repository.bulkImportEntries(any()),
-        ).thenThrow(Exception('Import failed'));
+        when(() => repository.bulkImportEntries(any()))
+            .thenThrow(Exception('Import failed'));
         return WeightBloc(repository: repository);
       },
       seed: () => WeightLoaded(
@@ -611,9 +600,8 @@ void main() {
             dateTime: DateTime(futureYear, 9, 30),
           ),
         ];
-        when(
-          () => repository.watchAllEntries(),
-        ).thenAnswer((_) => Stream.value(entries));
+        when(() => repository.watchAllEntries())
+            .thenAnswer((_) => Stream.value(entries));
         return WeightBloc(repository: repository);
       },
       act: (bloc) => bloc.add(const SubscribeToWeightChanges()),
@@ -649,56 +637,53 @@ void main() {
       },
     );
 
-    test(
-      'reuses memoized filteredEntries when equal content arrives in new instances',
-      () async {
-        final bloc = WeightBloc(repository: repository);
-        final states = <WeightState>[];
-        final subscription = bloc.stream.listen(states.add);
-        addTearDown(subscription.cancel);
-        addTearDown(bloc.close);
+    test('reuses memoized filteredEntries when equal content arrives in new instances', () async {
+      final bloc = WeightBloc(repository: repository);
+      final states = <WeightState>[];
+      final subscription = bloc.stream.listen(states.add);
+      addTearDown(subscription.cancel);
+      addTearDown(bloc.close);
 
-        final now = DateTime.now();
-        final first = [
-          WeightEntry(
-            id: 1,
-            weightKg: 70,
-            dateTime: now.subtract(const Duration(days: 2)),
-          ),
-          WeightEntry(
-            id: 2,
-            weightKg: 71,
-            dateTime: now.subtract(const Duration(days: 1)),
-          ),
-        ];
-        final second = [
-          WeightEntry(
-            id: 1,
-            weightKg: 70,
-            dateTime: now.subtract(const Duration(days: 2)),
-          ),
-          WeightEntry(
-            id: 2,
-            weightKg: 71,
-            dateTime: now.subtract(const Duration(days: 1)),
-          ),
-        ];
+      final now = DateTime.now();
+      final first = [
+        WeightEntry(
+          id: 1,
+          weightKg: 70,
+          dateTime: now.subtract(const Duration(days: 2)),
+        ),
+        WeightEntry(
+          id: 2,
+          weightKg: 71,
+          dateTime: now.subtract(const Duration(days: 1)),
+        ),
+      ];
+      final second = [
+        WeightEntry(
+          id: 1,
+          weightKg: 70,
+          dateTime: now.subtract(const Duration(days: 2)),
+        ),
+        WeightEntry(
+          id: 2,
+          weightKg: 71,
+          dateTime: now.subtract(const Duration(days: 1)),
+        ),
+      ];
 
-        bloc.add(const SubscribeToWeightChanges());
-        await Future(() {});
-        streamController.add(first);
-        await Future(() {});
-        streamController.add(second);
-        await Future(() {});
+      bloc.add(const SubscribeToWeightChanges());
+      await Future(() {});
+      streamController.add(first);
+      await Future(() {});
+      streamController.add(second);
+      await Future(() {});
 
-        final loaded = states.whereType<WeightLoaded>().toList();
-        expect(loaded.length, 2);
-        expect(
-          identical(loaded[0].filteredEntries, loaded[1].filteredEntries),
-          isTrue,
-        );
-      },
-    );
+      final loaded = states.whereType<WeightLoaded>().toList();
+      expect(loaded.length, 2);
+      expect(
+        identical(loaded[0].filteredEntries, loaded[1].filteredEntries),
+        isTrue,
+      );
+    });
 
     test('refilters when entry content changes between emissions', () async {
       final bloc = WeightBloc(repository: repository);
@@ -1107,9 +1092,9 @@ void main() {
         act: (bloc) => bloc.add(const SyncHealthEntries()),
         verify: (_) {
           final imported =
-              verify(
-                    () => repository.syncRemoteEntries(captureAny()),
-                  ).captured.single
+              verify(() => repository.syncRemoteEntries(captureAny()))
+                      .captured
+                      .single
                   as List<WeightEntry>;
           expect(imported.length, 2);
           expect(imported[0].weightKg, 80);
@@ -1196,9 +1181,9 @@ void main() {
         expect: () => <WeightState>[],
         verify: (_) {
           final imported =
-              verify(
-                    () => repository.syncRemoteEntries(captureAny()),
-                  ).captured.single
+              verify(() => repository.syncRemoteEntries(captureAny()))
+                      .captured
+                      .single
                   as List<WeightEntry>;
           expect(imported.length, 3);
         },
@@ -1410,9 +1395,8 @@ void main() {
               end: any(named: 'end'),
             ),
           ).thenAnswer((_) async => const []);
-          when(
-            () => repository.getEntriesBetween(any(), any()),
-          ).thenAnswer((_) async => const []);
+          when(() => repository.getEntriesBetween(any(), any()))
+              .thenAnswer((_) async => const []);
           return WeightBloc(
             repository: repository,
             appSettingsBloc: buildSettingsBloc(),
@@ -1645,9 +1629,8 @@ void main() {
       build: () {
         final importer = MockCsvWeightImporter();
         when(() => importer.confirmImport(any())).thenAnswer((_) async => 2);
-        when(
-          () => repository.bulkImportEntries(any()),
-        ).thenAnswer((_) async => 2);
+        when(() => repository.bulkImportEntries(any()))
+            .thenAnswer((_) async => 2);
         when(() => repository.getAllEntries()).thenAnswer(
           (_) async => [
             WeightEntry(id: 1, weightKg: 75.0, dateTime: DateTime(2026, 8, 20)),
@@ -1813,9 +1796,8 @@ void main() {
       'ConfirmCsvImport emits WeightError.writeFailed when the import throws',
       build: () {
         final importer = MockCsvWeightImporter();
-        when(
-          () => importer.confirmImport(any()),
-        ).thenThrow(Exception('Import failed'));
+        when(() => importer.confirmImport(any()))
+            .thenThrow(Exception('Import failed'));
         return WeightBloc(repository: repository, csvWeightImporter: importer);
       },
       seed: () => WeightLoaded(

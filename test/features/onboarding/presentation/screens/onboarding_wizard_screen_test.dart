@@ -148,9 +148,8 @@ void main() {
 
       // Sync height to WeightBloc to prevent heightNotSet errors
       // during initial weight entry.
-      verify(
-        () => weightBloc.add(any(that: isA<UpdateUserHeight>())),
-      ).called(1);
+      verify(() => weightBloc.add(any(that: isA<UpdateUserHeight>())))
+          .called(1);
 
       // Step 3 (CSV Import) -> Skip
       await tester.tap(find.byKey(const Key('csv_import_next_button')));

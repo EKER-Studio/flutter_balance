@@ -1,4 +1,5 @@
 import 'dart:io';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:path_provider_platform_interface/path_provider_platform_interface.dart';
@@ -91,9 +92,8 @@ void main() {
 
         await Future<void>.delayed(const Duration(milliseconds: 50));
 
-        final content = await File(
-          '${tempDir.path}/$crashLogFileName',
-        ).readAsString();
+        final content = await File('${tempDir.path}/$crashLogFileName')
+            .readAsString();
         expect(content, contains('Bad state: state failure'));
         expect(content, contains('Unhandled error in _TestCubit'));
 
@@ -110,9 +110,8 @@ void main() {
 
       await Future<void>.delayed(const Duration(milliseconds: 50));
 
-      final content = await File(
-        '${tempDir.path}/$crashLogFileName',
-      ).readAsString();
+      final content = await File('${tempDir.path}/$crashLogFileName')
+          .readAsString();
       expect(content, contains('Invalid argument(s): bad argument'));
       expect(content, contains('Unhandled error in _TestBloc'));
 
@@ -128,9 +127,8 @@ void main() {
 
       await Future<void>.delayed(const Duration(milliseconds: 50));
 
-      final content = await File(
-        '${tempDir.path}/$crashLogFileName',
-      ).readAsString();
+      final content = await File('${tempDir.path}/$crashLogFileName')
+          .readAsString();
       expect(content, contains('Instance of'));
       expect(content, contains('Unhandled error in _TestCubit'));
 

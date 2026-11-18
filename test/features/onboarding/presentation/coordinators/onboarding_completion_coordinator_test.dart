@@ -122,39 +122,35 @@ void main() {
 
         coordinator.complete(state);
 
-        verify(
-          () => settingsBloc.add(const UpdateBiometricLock(true)),
-        ).called(1);
+        verify(() => settingsBloc.add(const UpdateBiometricLock(true)))
+            .called(1);
         verify(() => settingsBloc.add(const CompleteOnboarding())).called(1);
       },
     );
 
-    test(
-      'does not dispatch duplicate enable events if settings already had them enabled',
-      () {
-        when(() => settingsBloc.state).thenReturn(
-          const AppSettingsState(
-            isHealthSyncEnabled: true,
-            isBiometricLockEnabled: true,
-          ),
-        );
+    test('does not dispatch duplicate enable events if settings already had them enabled', () {
+      when(() => settingsBloc.state).thenReturn(
+        const AppSettingsState(
+          isHealthSyncEnabled: true,
+          isBiometricLockEnabled: true,
+        ),
+      );
 
-        final state = const OnboardingState().copyWith(
-          isHealthSyncRequested: true,
-          isBiometricEnabled: true,
-        );
+      final state = const OnboardingState().copyWith(
+        isHealthSyncRequested: true,
+        isBiometricEnabled: true,
+      );
 
-        final coordinator = OnboardingCompletionCoordinator(
-          settingsBloc: settingsBloc,
-          weightBloc: weightBloc,
-        );
+      final coordinator = OnboardingCompletionCoordinator(
+        settingsBloc: settingsBloc,
+        weightBloc: weightBloc,
+      );
 
-        coordinator.complete(state);
+      coordinator.complete(state);
 
-        verifyNever(() => settingsBloc.add(const ToggleHealthSync(true)));
-        verifyNever(() => settingsBloc.add(const UpdateBiometricLock(true)));
-        verify(() => settingsBloc.add(const CompleteOnboarding())).called(1);
-      },
-    );
+      verifyNever(() => settingsBloc.add(const ToggleHealthSync(true)));
+      verifyNever(() => settingsBloc.add(const UpdateBiometricLock(true)));
+      verify(() => settingsBloc.add(const CompleteOnboarding())).called(1);
+    });
   });
 }

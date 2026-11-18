@@ -72,34 +72,31 @@ void main() {
       expect(state.latestImportedEntry, newEntry);
     });
 
-    test(
-      'copyWith replaces specified values and supports explicit nulls with sentinel',
-      () {
-        final initialDate = DateTime(2026, 3, 1);
-        final state = OnboardingState(
-          currentStepIndex: 2,
-          draftInitialWeight: 75.0,
-          draftInitialTimestamp: initialDate,
-          draftTargetWeight: 70.0,
-          isHealthSyncRequested: true,
-        );
+    test('copyWith replaces specified values and supports explicit nulls with sentinel', () {
+      final initialDate = DateTime(2026, 3, 1);
+      final state = OnboardingState(
+        currentStepIndex: 2,
+        draftInitialWeight: 75.0,
+        draftInitialTimestamp: initialDate,
+        draftTargetWeight: 70.0,
+        isHealthSyncRequested: true,
+      );
 
-        final updated = state.copyWith(
-          currentStepIndex: 3,
-          draftInitialWeight: null,
-          draftTargetWeight: null,
-          isHealthSyncRequested: false,
-          isCompleted: true,
-        );
+      final updated = state.copyWith(
+        currentStepIndex: 3,
+        draftInitialWeight: null,
+        draftTargetWeight: null,
+        isHealthSyncRequested: false,
+        isCompleted: true,
+      );
 
-        expect(updated.currentStepIndex, 3);
-        expect(updated.draftInitialWeight, isNull);
-        expect(updated.draftInitialTimestamp, initialDate);
-        expect(updated.draftTargetWeight, isNull);
-        expect(updated.isHealthSyncRequested, isFalse);
-        expect(updated.isCompleted, isTrue);
-      },
-    );
+      expect(updated.currentStepIndex, 3);
+      expect(updated.draftInitialWeight, isNull);
+      expect(updated.draftInitialTimestamp, initialDate);
+      expect(updated.draftTargetWeight, isNull);
+      expect(updated.isHealthSyncRequested, isFalse);
+      expect(updated.isCompleted, isTrue);
+    });
 
     test('props equality holds across identical instances', () {
       final date = DateTime(2026, 3, 1);

@@ -44,12 +44,10 @@ void main() {
             end: any(named: 'end'),
           ),
         ).thenAnswer((_) async => [remoteEntry]);
-        when(
-          () => mockRepository.syncRemoteEntries([remoteEntry]),
-        ).thenAnswer((_) async => 1);
-        when(
-          () => mockRepository.getEntriesBetween(any(), any()),
-        ).thenAnswer((_) async => [remoteEntry]);
+        when(() => mockRepository.syncRemoteEntries([remoteEntry]))
+            .thenAnswer((_) async => 1);
+        when(() => mockRepository.getEntriesBetween(any(), any()))
+            .thenAnswer((_) async => [remoteEntry]);
 
         final result = await coordinator.sync();
 
@@ -73,9 +71,8 @@ void main() {
           end: any(named: 'end'),
         ),
       ).thenAnswer((_) async => []);
-      when(
-        () => mockRepository.getEntriesBetween(any(), any()),
-      ).thenAnswer((_) async => [localOnlyEntry]);
+      when(() => mockRepository.getEntriesBetween(any(), any()))
+          .thenAnswer((_) async => [localOnlyEntry]);
       when(
         () => mockHealthService.writeWeight(
           weightKg: any(named: 'weightKg'),
@@ -105,9 +102,8 @@ void main() {
           capturedStart = invocation.namedArguments[#start] as DateTime;
           return [];
         });
-        when(
-          () => mockRepository.getEntriesBetween(any(), any()),
-        ).thenAnswer((_) async => []);
+        when(() => mockRepository.getEntriesBetween(any(), any()))
+            .thenAnswer((_) async => []);
 
         final before = DateTime.now();
         await coordinator.sync();

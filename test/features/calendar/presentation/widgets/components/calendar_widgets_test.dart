@@ -59,9 +59,8 @@ void main() {
     when(() => storage.read(any())).thenReturn(null);
     when(() => storage.write(any(), any())).thenAnswer((_) async {});
 
-    when(
-      () => repository.watchAllEntries(),
-    ).thenAnswer((_) => Stream.value(<WeightEntry>[]));
+    when(() => repository.watchAllEntries())
+        .thenAnswer((_) => Stream.value(<WeightEntry>[]));
     when(() => repository.deleteEntry(any())).thenAnswer((_) async {});
     when(
       () => healthService.fetchWeightHistory(
@@ -423,9 +422,8 @@ void main() {
   testWidgets('CalendarScreen renders error card during WeightError state', (
     tester,
   ) async {
-    when(
-      () => repository.watchAllEntries(),
-    ).thenAnswer((_) => Stream.error(Exception('Database error')));
+    when(() => repository.watchAllEntries())
+        .thenAnswer((_) => Stream.error(Exception('Database error')));
 
     await tester.pumpWidget(
       MultiBlocProvider(

@@ -31,9 +31,8 @@ void main() {
     when(() => storage.write(any(), any())).thenAnswer((_) async {});
     HydratedBloc.storage = storage;
 
-    when(
-      () => repository.watchAllEntries(),
-    ).thenAnswer((_) => Stream.value(<WeightEntry>[]));
+    when(() => repository.watchAllEntries())
+        .thenAnswer((_) => Stream.value(<WeightEntry>[]));
   });
 
   Widget buildSubject() {

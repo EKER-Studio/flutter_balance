@@ -59,9 +59,8 @@ void main() {
     when(() => storage.write(any(), any())).thenAnswer((_) async {});
     HydratedBloc.storage = storage;
 
-    when(
-      () => repository.watchAllEntries(),
-    ).thenAnswer((_) => Stream.value(<WeightEntry>[]));
+    when(() => repository.watchAllEntries())
+        .thenAnswer((_) => Stream.value(<WeightEntry>[]));
   });
 
   Future<void> pumpForInitialization(
@@ -187,17 +186,15 @@ void main() {
 
     void stubRepositoryForSync() {
       when(() => repository.getAllEntries()).thenAnswer((_) async => []);
-      when(
-        () => repository.syncRemoteEntries(any()),
-      ).thenAnswer((_) async => 1);
+      when(() => repository.syncRemoteEntries(any()))
+          .thenAnswer((_) async => 1);
     }
 
     testWidgets(
       'App dispatches SyncHealthEntries at startup when health sync was persisted as enabled',
       (tester) async {
-        when(
-          () => storage.read('AppSettingsBloc'),
-        ).thenReturn({'isHealthSyncEnabled': true});
+        when(() => storage.read('AppSettingsBloc'))
+            .thenReturn({'isHealthSyncEnabled': true});
         final settingsBloc = AppSettingsBloc();
         final healthService = healthServiceWithEntries();
         stubRepositoryForSync();
@@ -215,9 +212,9 @@ void main() {
         await tester.pump(const Duration(milliseconds: 300));
 
         final imported =
-            verify(
-                  () => repository.syncRemoteEntries(captureAny()),
-                ).captured.single
+            verify(() => repository.syncRemoteEntries(captureAny()))
+                    .captured
+                    .single
                 as List<WeightEntry>;
         expect(imported.single.weightKg, 76.5);
         expect(imported.single.dateTime, DateTime(2026, 1, 5));
@@ -254,9 +251,8 @@ void main() {
     testWidgets(
       'App pulls health entries again when resumed with sync enabled',
       (tester) async {
-        when(
-          () => storage.read('AppSettingsBloc'),
-        ).thenReturn({'isHealthSyncEnabled': true});
+        when(() => storage.read('AppSettingsBloc'))
+            .thenReturn({'isHealthSyncEnabled': true});
         final settingsBloc = AppSettingsBloc();
         final healthService = healthServiceWithEntries();
         stubRepositoryForSync();
@@ -342,9 +338,8 @@ void main() {
     testWidgets('locks the app at startup when biometric lock is enabled', (
       tester,
     ) async {
-      when(
-        () => storage.read('AppSettingsBloc'),
-      ).thenReturn({'isBiometricLockEnabled': true});
+      when(() => storage.read('AppSettingsBloc'))
+          .thenReturn({'isBiometricLockEnabled': true});
       settingsBloc = AppSettingsBloc();
 
       await tester.pumpWidget(

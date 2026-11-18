@@ -28,26 +28,23 @@ void main() {
       expect(state.crashReportingEnabled, isFalse);
     });
 
-    test(
-      'copyWith modifies specified fields and supports nulling targetWeight and height',
-      () {
-        const initial = AppSettingsState(
-          height: 180.0,
-          targetWeight: 75.0,
-          themeMode: AppThemeMode.light,
-        );
+    test('copyWith modifies specified fields and supports nulling targetWeight and height', () {
+      const initial = AppSettingsState(
+        height: 180.0,
+        targetWeight: 75.0,
+        themeMode: AppThemeMode.light,
+      );
 
-        final updated = initial.copyWith(
-          height: null,
-          targetWeight: null,
-          themeMode: AppThemeMode.dark,
-        );
+      final updated = initial.copyWith(
+        height: null,
+        targetWeight: null,
+        themeMode: AppThemeMode.dark,
+      );
 
-        expect(updated.height, isNull);
-        expect(updated.targetWeight, isNull);
-        expect(updated.themeMode, AppThemeMode.dark);
-      },
-    );
+      expect(updated.height, isNull);
+      expect(updated.targetWeight, isNull);
+      expect(updated.themeMode, AppThemeMode.dark);
+    });
 
     test('toJson and fromJson perform complete roundtrip serialization', () {
       final syncTime = DateTime(2026, 7, 1, 14, 30);

@@ -74,9 +74,8 @@ void main() {
         await tester.tap(find.text('Toggle Off'));
         await tester.pumpAndSettle();
 
-        verify(
-          () => settingsBloc.add(const UpdateBiometricLock(false)),
-        ).called(1);
+        verify(() => settingsBloc.add(const UpdateBiometricLock(false)))
+            .called(1);
       },
     );
 
@@ -84,9 +83,8 @@ void main() {
       final entries = [
         WeightEntry(id: 1, weightKg: 78.5, dateTime: DateTime(2026, 1, 1)),
       ];
-      when(
-        () => weightBloc.state,
-      ).thenReturn(WeightLoaded(entries: entries, filteredEntries: entries));
+      when(() => weightBloc.state)
+          .thenReturn(WeightLoaded(entries: entries, filteredEntries: entries));
 
       await tester.pumpWidget(
         buildTestableWidget(

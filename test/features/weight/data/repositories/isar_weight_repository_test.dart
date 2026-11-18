@@ -108,154 +108,138 @@ void main() {
       );
     });
 
-    test(
-      'CASE 1 (Happy Path): Write encrypts data as Base64 ciphertext on disk and decrypts to original entity on read',
-      () async {
-        final entry = WeightEntry(
-          weightKg: 78.5,
-          dateTime: DateTime(2026, 7, 29, 10, 0),
-          note: 'Valid Note',
-        );
+    test('CASE 1 (Happy Path): Write encrypts data as Base64 ciphertext on disk and decrypts to original entity on read', () async {
+      final entry = WeightEntry(
+        weightKg: 78.5,
+        dateTime: DateTime(2026, 7, 29, 10, 0),
+        note: 'Valid Note',
+      );
 
-        await repository.addEntry(entry);
+      await repository.addEntry(entry);
 
-        final rawModels = await isar.weightEntryModels.where().findAll();
-        expect(rawModels.length, 1);
-        expect(rawModels.first.encryptedWeight, isNot(contains('78.5')));
-        expect(rawModels.first.encryptedNote, isNot(contains('Valid Note')));
-        expect(
-          () => base64Decode(rawModels.first.encryptedWeight),
-          returnsNormally,
-        );
-        expect(
-          () => base64Decode(rawModels.first.encryptedNote!),
-          returnsNormally,
-        );
+      final rawModels = await isar.weightEntryModels.where().findAll();
+      expect(rawModels.length, 1);
+      expect(rawModels.first.encryptedWeight, isNot(contains('78.5')));
+      expect(rawModels.first.encryptedNote, isNot(contains('Valid Note')));
+      expect(
+        () => base64Decode(rawModels.first.encryptedWeight),
+        returnsNormally,
+      );
+      expect(
+        () => base64Decode(rawModels.first.encryptedNote!),
+        returnsNormally,
+      );
 
-        final entries = await repository.getAllEntries();
-        expect(entries.length, 1);
-        expect(entries.first.weightKg, 78.5);
-        expect(entries.first.note, 'Valid Note');
-        expect(entries.first.dateTime, DateTime(2026, 7, 29, 10, 0));
-      },
-    );
+      final entries = await repository.getAllEntries();
+      expect(entries.length, 1);
+      expect(entries.first.weightKg, 78.5);
+      expect(entries.first.note, 'Valid Note');
+      expect(entries.first.dateTime, DateTime(2026, 7, 29, 10, 0));
+    });
 
-    test(
-      'CASE 1.5 (Full FieldCipher round-trip): On-disk ciphertext decrypts via FieldCipher and repository read matches the exact original inputs',
-      () async {
-        final original = WeightEntry(
-          weightKg: 87.25,
-          dateTime: DateTime(2026, 7, 29, 23, 59, 30, 123),
-          note: 'Stretki ąśćżźł — ünïcödé 🎯',
-        );
+    test('CASE 1.5 (Full FieldCipher round-trip): On-disk ciphertext decrypts via FieldCipher and repository read matches the exact original inputs', () async {
+      final original = WeightEntry(
+        weightKg: 87.25,
+        dateTime: DateTime(2026, 7, 29, 23, 59, 30, 123),
+        note: 'Stretki ąśćżźł — ünïcödé 🎯',
+      );
 
-        await repository.addEntry(original);
+      await repository.addEntry(original);
 
-        final rawModels = await isar.weightEntryModels.where().findAll();
-        expect(rawModels.length, 1);
-        expect(
-          FieldCipher.decrypt(rawModels.first.encryptedWeight, testKeyA),
-          '87.25',
-        );
-        expect(
-          FieldCipher.decrypt(rawModels.first.encryptedNote!, testKeyA),
-          original.note,
-        );
+      final rawModels = await isar.weightEntryModels.where().findAll();
+      expect(rawModels.length, 1);
+      expect(
+        FieldCipher.decrypt(rawModels.first.encryptedWeight, testKeyA),
+        '87.25',
+      );
+      expect(
+        FieldCipher.decrypt(rawModels.first.encryptedNote!, testKeyA),
+        original.note,
+      );
 
-        final entries = await repository.getAllEntries();
-        expect(entries.length, 1);
-        expect(entries.first.weightKg, original.weightKg);
-        expect(entries.first.note, original.note);
-        expect(entries.first.dateTime, original.dateTime);
-      },
-    );
+      final entries = await repository.getAllEntries();
+      expect(entries.length, 1);
+      expect(entries.first.weightKg, original.weightKg);
+      expect(entries.first.note, original.note);
+      expect(entries.first.dateTime, original.dateTime);
+    });
 
-    test(
-      'CASE 2 (Corrupted/Changed Key): Read with wrong key returns a typed read failure',
-      () async {
-        final repoKeyA = IsarWeightRepository(
-          isar: isar,
-          encryptionKey: testKeyA,
-        );
-        final repoKeyB = IsarWeightRepository(
-          isar: isar,
-          encryptionKey: testKeyB,
-        );
+    test('CASE 2 (Corrupted/Changed Key): Read with wrong key returns a typed read failure', () async {
+      final repoKeyA = IsarWeightRepository(
+        isar: isar,
+        encryptionKey: testKeyA,
+      );
+      final repoKeyB = IsarWeightRepository(
+        isar: isar,
+        encryptionKey: testKeyB,
+      );
 
-        final entry = WeightEntry(
-          weightKg: 85.0,
-          dateTime: DateTime(2026, 7, 29),
-          note: 'Encrypted with Key A',
-        );
+      final entry = WeightEntry(
+        weightKg: 85.0,
+        dateTime: DateTime(2026, 7, 29),
+        note: 'Encrypted with Key A',
+      );
 
-        await repoKeyA.addEntry(entry);
+      await repoKeyA.addEntry(entry);
 
-        await expectLater(
-          repoKeyB.getAllEntries(),
-          throwsA(
-            isA<WeightDatabaseFailure>().having(
-              (error) => error.type,
-              'type',
-              WeightErrorType.readFailed,
-            ),
+      await expectLater(
+        repoKeyB.getAllEntries(),
+        throwsA(
+          isA<WeightDatabaseFailure>().having(
+            (error) => error.type,
+            'type',
+            WeightErrorType.readFailed,
           ),
-        );
-      },
-    );
+        ),
+      );
+    });
 
-    test(
-      'CASE 3 (Missing Key): Throws WeightDatabaseFailure when key supplier returns null',
-      () async {
-        when(
-          () => mockSecureStorage.read(key: 'isar_encryption_key'),
-        ).thenAnswer((_) async => null);
+    test('CASE 3 (Missing Key): Throws WeightDatabaseFailure when key supplier returns null', () async {
+      when(() => mockSecureStorage.read(key: 'isar_encryption_key'))
+          .thenAnswer((_) async => null);
 
-        final repoMissingKey = IsarWeightRepository(
-          isar: isar,
-          secureStorage: mockSecureStorage,
-        );
+      final repoMissingKey = IsarWeightRepository(
+        isar: isar,
+        secureStorage: mockSecureStorage,
+      );
 
-        final entry = WeightEntry(
-          weightKg: 70.0,
-          dateTime: DateTime(2026, 7, 29),
-        );
+      final entry = WeightEntry(
+        weightKg: 70.0,
+        dateTime: DateTime(2026, 7, 29),
+      );
 
-        expect(
-          () => repoMissingKey.addEntry(entry),
-          throwsA(isA<WeightDatabaseFailure>()),
-        );
+      expect(
+        () => repoMissingKey.addEntry(entry),
+        throwsA(isA<WeightDatabaseFailure>()),
+      );
 
-        expect(
-          () => repoMissingKey.getAllEntries(),
-          throwsA(isA<WeightDatabaseFailure>()),
-        );
-      },
-    );
+      expect(
+        () => repoMissingKey.getAllEntries(),
+        throwsA(isA<WeightDatabaseFailure>()),
+      );
+    });
 
-    test(
-      'CASE 4 (Malformed Data in DB): Maps malformed ciphertext to a typed read failure',
-      () async {
-        final malformedModel = WeightEntryModel()
-          ..encryptedWeight = r'%%%THIS_IS_NOT_BASE64$$$'
-          ..encryptedNote = r'@@@GARBAGE_PAYLOAD###'
-          ..dateTime = DateTime(2026, 7, 29);
+    test('CASE 4 (Malformed Data in DB): Maps malformed ciphertext to a typed read failure', () async {
+      final malformedModel = WeightEntryModel()
+        ..encryptedWeight = r'%%%THIS_IS_NOT_BASE64$$$'
+        ..encryptedNote = r'@@@GARBAGE_PAYLOAD###'
+        ..dateTime = DateTime(2026, 7, 29);
 
-        await isar.writeTxn(() async {
-          await isar.weightEntryModels.put(malformedModel);
-        });
+      await isar.writeTxn(() async {
+        await isar.weightEntryModels.put(malformedModel);
+      });
 
-        await expectLater(
-          repository.getAllEntries(),
-          throwsA(
-            isA<WeightDatabaseFailure>().having(
-              (error) => error.type,
-              'type',
-              WeightErrorType.readFailed,
-            ),
+      await expectLater(
+        repository.getAllEntries(),
+        throwsA(
+          isA<WeightDatabaseFailure>().having(
+            (error) => error.type,
+            'type',
+            WeightErrorType.readFailed,
           ),
-        );
-      },
-    );
+        ),
+      );
+    });
   });
 
   group('IsarWeightRepository Standard Operations', () {
@@ -311,97 +295,88 @@ void main() {
       expect(stored[2].weightKg, 60.0);
     });
 
-    test(
-      'bulkImportEntries is idempotent, prevents duplicates, and backfills notes',
-      () async {
-        final initialEntries = [
-          WeightEntry(weightKg: 85.0, dateTime: DateTime(2025, 4, 1, 12, 0)),
-          WeightEntry(weightKg: 85.5, dateTime: DateTime(2025, 4, 2, 12, 0)),
-        ];
+    test('bulkImportEntries is idempotent, prevents duplicates, and backfills notes', () async {
+      final initialEntries = [
+        WeightEntry(weightKg: 85.0, dateTime: DateTime(2025, 4, 1, 12, 0)),
+        WeightEntry(weightKg: 85.5, dateTime: DateTime(2025, 4, 2, 12, 0)),
+      ];
 
-        final count1 = await repository.bulkImportEntries(initialEntries);
-        expect(count1, 2);
+      final count1 = await repository.bulkImportEntries(initialEntries);
+      expect(count1, 2);
 
-        final count2 = await repository.bulkImportEntries(initialEntries);
-        expect(count2, 0);
+      final count2 = await repository.bulkImportEntries(initialEntries);
+      expect(count2, 0);
 
-        final newBatch = [
-          WeightEntry(
-            weightKg: 85.5,
-            dateTime: DateTime(2025, 4, 2, 12, 0),
-            note: 'Backfilled Note',
-          ),
-          WeightEntry(weightKg: 86.0, dateTime: DateTime(2025, 4, 3, 12, 0)),
-        ];
+      final newBatch = [
+        WeightEntry(
+          weightKg: 85.5,
+          dateTime: DateTime(2025, 4, 2, 12, 0),
+          note: 'Backfilled Note',
+        ),
+        WeightEntry(weightKg: 86.0, dateTime: DateTime(2025, 4, 3, 12, 0)),
+      ];
 
-        final count3 = await repository.bulkImportEntries(newBatch);
-        expect(count3, 1);
+      final count3 = await repository.bulkImportEntries(newBatch);
+      expect(count3, 1);
 
-        final stored = await repository.getAllEntries();
-        expect(stored.length, 3);
+      final stored = await repository.getAllEntries();
+      expect(stored.length, 3);
 
-        final backfilledEntry = stored.firstWhere((e) => e.weightKg == 85.5);
-        expect(backfilledEntry.note, 'Backfilled Note');
-      },
-    );
+      final backfilledEntry = stored.firstWhere((e) => e.weightKg == 85.5);
+      expect(backfilledEntry.note, 'Backfilled Note');
+    });
 
-    test(
-      'bulkImportEntries deduplicates within a batch and preserves a later note',
-      () async {
-        final firstTimestamp = DateTime(2025, 6, 1, 12);
-        final entries = [
-          WeightEntry(weightKg: 70.0, dateTime: firstTimestamp),
-          WeightEntry(
-            weightKg: 70.04,
-            dateTime: firstTimestamp.add(const Duration(seconds: 45)),
-            note: 'Batch note',
-          ),
-          WeightEntry(
-            weightKg: 70.06,
-            dateTime: firstTimestamp.add(const Duration(seconds: 20)),
-          ),
-        ];
+    test('bulkImportEntries deduplicates within a batch and preserves a later note', () async {
+      final firstTimestamp = DateTime(2025, 6, 1, 12);
+      final entries = [
+        WeightEntry(weightKg: 70.0, dateTime: firstTimestamp),
+        WeightEntry(
+          weightKg: 70.04,
+          dateTime: firstTimestamp.add(const Duration(seconds: 45)),
+          note: 'Batch note',
+        ),
+        WeightEntry(
+          weightKg: 70.06,
+          dateTime: firstTimestamp.add(const Duration(seconds: 20)),
+        ),
+      ];
 
-        final insertedCount = await repository.bulkImportEntries(entries);
-        final storedEntries = await repository.getAllEntries();
+      final insertedCount = await repository.bulkImportEntries(entries);
+      final storedEntries = await repository.getAllEntries();
 
-        expect(insertedCount, 2);
-        expect(storedEntries, hasLength(2));
-        final backfilled = storedEntries.singleWhere(
-          (entry) => entry.weightKg == 70.0,
-        );
-        expect(backfilled.note, 'Batch note');
-        expect(storedEntries.any((entry) => entry.weightKg == 70.06), isTrue);
-      },
-    );
+      expect(insertedCount, 2);
+      expect(storedEntries, hasLength(2));
+      final backfilled = storedEntries.singleWhere(
+        (entry) => entry.weightKg == 70.0,
+      );
+      expect(backfilled.note, 'Batch note');
+      expect(storedEntries.any((entry) => entry.weightKg == 70.06), isTrue);
+    });
 
-    test(
-      'bulkImportEntries keeps the first note when several candidates match one entry',
-      () async {
-        final timestamp = DateTime(2025, 7, 1, 9);
-        await repository.addEntry(
-          WeightEntry(weightKg: 80.0, dateTime: timestamp),
-        );
+    test('bulkImportEntries keeps the first note when several candidates match one entry', () async {
+      final timestamp = DateTime(2025, 7, 1, 9);
+      await repository.addEntry(
+        WeightEntry(weightKg: 80.0, dateTime: timestamp),
+      );
 
-        final insertedCount = await repository.bulkImportEntries([
-          WeightEntry(
-            weightKg: 80.02,
-            dateTime: timestamp.add(const Duration(seconds: 10)),
-            note: 'First note',
-          ),
-          WeightEntry(
-            weightKg: 79.98,
-            dateTime: timestamp.add(const Duration(seconds: 20)),
-            note: 'Second note',
-          ),
-        ]);
+      final insertedCount = await repository.bulkImportEntries([
+        WeightEntry(
+          weightKg: 80.02,
+          dateTime: timestamp.add(const Duration(seconds: 10)),
+          note: 'First note',
+        ),
+        WeightEntry(
+          weightKg: 79.98,
+          dateTime: timestamp.add(const Duration(seconds: 20)),
+          note: 'Second note',
+        ),
+      ]);
 
-        final stored = await repository.getAllEntries();
-        expect(insertedCount, 0);
-        expect(stored, hasLength(1));
-        expect(stored.single.note, 'First note');
-      },
-    );
+      final stored = await repository.getAllEntries();
+      expect(insertedCount, 0);
+      expect(stored, hasLength(1));
+      expect(stored.single.note, 'First note');
+    });
 
     test('clearAllData removes all entries', () async {
       await repository.addEntry(
@@ -442,100 +417,88 @@ void main() {
       },
     );
 
-    test(
-      'getEntriesBetween returns only entries within the requested window sorted descending',
-      () async {
-        await repository.addEntry(
-          WeightEntry(weightKg: 70.0, dateTime: DateTime(2025, 1, 1)),
-        );
-        await repository.addEntry(
-          WeightEntry(weightKg: 71.0, dateTime: DateTime(2025, 1, 5)),
-        );
-        await repository.addEntry(
-          WeightEntry(weightKg: 72.0, dateTime: DateTime(2025, 1, 10)),
-        );
-        await repository.addEntry(
-          WeightEntry(weightKg: 73.0, dateTime: DateTime(2025, 1, 15)),
-        );
+    test('getEntriesBetween returns only entries within the requested window sorted descending', () async {
+      await repository.addEntry(
+        WeightEntry(weightKg: 70.0, dateTime: DateTime(2025, 1, 1)),
+      );
+      await repository.addEntry(
+        WeightEntry(weightKg: 71.0, dateTime: DateTime(2025, 1, 5)),
+      );
+      await repository.addEntry(
+        WeightEntry(weightKg: 72.0, dateTime: DateTime(2025, 1, 10)),
+      );
+      await repository.addEntry(
+        WeightEntry(weightKg: 73.0, dateTime: DateTime(2025, 1, 15)),
+      );
 
-        final entries = await repository.getEntriesBetween(
-          DateTime(2025, 1, 4),
-          DateTime(2025, 1, 11),
-        );
+      final entries = await repository.getEntriesBetween(
+        DateTime(2025, 1, 4),
+        DateTime(2025, 1, 11),
+      );
 
-        expect(entries.length, 2);
-        expect(entries[0].weightKg, 72.0);
-        expect(entries[0].dateTime, DateTime(2025, 1, 10));
-        expect(entries[1].weightKg, 71.0);
-        expect(entries[1].dateTime, DateTime(2025, 1, 5));
+      expect(entries.length, 2);
+      expect(entries[0].weightKg, 72.0);
+      expect(entries[0].dateTime, DateTime(2025, 1, 10));
+      expect(entries[1].weightKg, 71.0);
+      expect(entries[1].dateTime, DateTime(2025, 1, 5));
 
-        final emptyRange = await repository.getEntriesBetween(
-          DateTime(2025, 2, 1),
-          DateTime(2025, 2, 28),
-        );
-        expect(emptyRange, isEmpty);
-      },
-    );
+      final emptyRange = await repository.getEntriesBetween(
+        DateTime(2025, 2, 1),
+        DateTime(2025, 2, 28),
+      );
+      expect(emptyRange, isEmpty);
+    });
   });
 
   group('IsarWeightRepository Stream Resilience', () {
-    test(
-      'watchAllEntries surfaces errors as domain exceptions and recovers after the unlock signal fires',
-      () async {
-        final unlockSignal = StreamController<void>.broadcast();
-        final repo = IsarWeightRepository(
-          isar: isar,
-          secureStorage: mockSecureStorage,
-          unlockSignal: unlockSignal.stream,
-        );
-        when(
-          () => mockSecureStorage.read(key: 'isar_encryption_key'),
-        ).thenAnswer((_) async => null);
+    test('watchAllEntries surfaces errors as domain exceptions and recovers after the unlock signal fires', () async {
+      final unlockSignal = StreamController<void>.broadcast();
+      final repo = IsarWeightRepository(
+        isar: isar,
+        secureStorage: mockSecureStorage,
+        unlockSignal: unlockSignal.stream,
+      );
+      when(() => mockSecureStorage.read(key: 'isar_encryption_key'))
+          .thenAnswer((_) async => null);
 
-        final keyedWriter = IsarWeightRepository(
-          isar: isar,
-          encryptionKey: testKeyA,
-        );
-        await keyedWriter.addEntry(
-          WeightEntry(weightKg: 82.0, dateTime: DateTime(2025, 6, 1)),
-        );
+      final keyedWriter = IsarWeightRepository(
+        isar: isar,
+        encryptionKey: testKeyA,
+      );
+      await keyedWriter.addEntry(
+        WeightEntry(weightKg: 82.0, dateTime: DateTime(2025, 6, 1)),
+      );
 
-        final events = <Object>[];
-        final streamDone = Completer<void>();
-        final subscription = repo.watchAllEntries().listen(
-          (entries) => events.add(entries),
-          onError: (Object error, StackTrace stackTrace) => events.add(error),
-          onDone: streamDone.complete,
-        );
-        addTearDown(subscription.cancel);
-        addTearDown(unlockSignal.close);
+      final events = <Object>[];
+      final streamDone = Completer<void>();
+      final subscription = repo.watchAllEntries().listen(
+        (entries) => events.add(entries),
+        onError: (Object error, StackTrace stackTrace) => events.add(error),
+        onDone: streamDone.complete,
+      );
+      addTearDown(subscription.cancel);
+      addTearDown(unlockSignal.close);
 
-        await waitUntil(
-          () => events.any((e) => e is WeightRepositoryException),
-        );
+      await waitUntil(() => events.any((e) => e is WeightRepositoryException));
 
-        when(
-          () => mockSecureStorage.read(key: 'isar_encryption_key'),
-        ).thenAnswer((_) async => base64Encode(testKeyA));
-        unlockSignal.add(null);
+      when(() => mockSecureStorage.read(key: 'isar_encryption_key'))
+          .thenAnswer((_) async => base64Encode(testKeyA));
+      unlockSignal.add(null);
 
-        await waitUntil(() => events.any((e) => e is List<WeightEntry>));
+      await waitUntil(() => events.any((e) => e is List<WeightEntry>));
 
-        final recovered =
-            events.firstWhere((e) => e is List<WeightEntry>)
-                as List<WeightEntry>;
-        expect(recovered.length, 1);
-        expect(recovered.first.weightKg, 82.0);
-        expect(streamDone.isCompleted, isFalse);
-      },
-    );
+      final recovered =
+          events.firstWhere((e) => e is List<WeightEntry>) as List<WeightEntry>;
+      expect(recovered.length, 1);
+      expect(recovered.first.weightKg, 82.0);
+      expect(streamDone.isCompleted, isFalse);
+    });
   });
 
   group('IsarWeightRepository Failure Paths', () {
     test('secure storage read errors surface as domain exceptions', () async {
-      when(
-        () => mockSecureStorage.read(key: 'isar_encryption_key'),
-      ).thenThrow(PlatformException(code: 'keystore_locked'));
+      when(() => mockSecureStorage.read(key: 'isar_encryption_key'))
+          .thenThrow(PlatformException(code: 'keystore_locked'));
 
       final repo = IsarWeightRepository(
         isar: isar,
@@ -569,9 +532,8 @@ void main() {
     test(
       'corrupt stored key string maps to unexpected-error exceptions',
       () async {
-        when(
-          () => mockSecureStorage.read(key: 'isar_encryption_key'),
-        ).thenAnswer((_) async => 'not-valid-base64!!');
+        when(() => mockSecureStorage.read(key: 'isar_encryption_key'))
+            .thenAnswer((_) async => 'not-valid-base64!!');
 
         final repo = IsarWeightRepository(
           isar: isar,
@@ -696,9 +658,8 @@ void main() {
     test(
       'watchAllEntries decryption failures surface as read-failed exceptions',
       () async {
-        when(
-          () => mockSecureStorage.read(key: 'isar_encryption_key'),
-        ).thenAnswer((_) async => 'not-valid-base64!!');
+        when(() => mockSecureStorage.read(key: 'isar_encryption_key'))
+            .thenAnswer((_) async => 'not-valid-base64!!');
 
         final repo = IsarWeightRepository(
           isar: isar,
@@ -796,44 +757,41 @@ void main() {
       expect(stored.last.note, 'First note');
     });
 
-    test(
-      'watchAllEntries on a closed database surfaces a retried stream error instead of throwing synchronously',
-      () async {
-        final closedDir = Directory.systemTemp.createTempSync(
-          'isar_watch_closed_',
-        );
-        addTearDown(() {
-          if (closedDir.existsSync()) {
-            closedDir.deleteSync(recursive: true);
-          }
-        });
-        final closedIsar = await Isar.open(
-          [WeightEntryModelSchema],
-          directory: closedDir.path,
-          name: 'isar_repo_watch_fail_test',
-          inspector: false,
-        );
-        await closedIsar.close();
-        final repo = IsarWeightRepository(
-          isar: closedIsar,
-          encryptionKey: testKeyA,
-        );
+    test('watchAllEntries on a closed database surfaces a retried stream error instead of throwing synchronously', () async {
+      final closedDir = Directory.systemTemp.createTempSync(
+        'isar_watch_closed_',
+      );
+      addTearDown(() {
+        if (closedDir.existsSync()) {
+          closedDir.deleteSync(recursive: true);
+        }
+      });
+      final closedIsar = await Isar.open(
+        [WeightEntryModelSchema],
+        directory: closedDir.path,
+        name: 'isar_repo_watch_fail_test',
+        inspector: false,
+      );
+      await closedIsar.close();
+      final repo = IsarWeightRepository(
+        isar: closedIsar,
+        encryptionKey: testKeyA,
+      );
 
-        final errors = <Object>[];
-        final subscription = repo.watchAllEntries().listen(
-          (_) {},
-          onError: (Object error, StackTrace stackTrace) => errors.add(error),
-        );
-        addTearDown(subscription.cancel);
+      final errors = <Object>[];
+      final subscription = repo.watchAllEntries().listen(
+        (_) {},
+        onError: (Object error, StackTrace stackTrace) => errors.add(error),
+      );
+      addTearDown(subscription.cancel);
 
-        await waitUntil(() => errors.isNotEmpty);
-        expect(errors.first, isA<WeightRepositoryException>());
-        expect(
-          (errors.first as WeightRepositoryException).type,
-          WeightErrorType.streamError,
-        );
-      },
-    );
+      await waitUntil(() => errors.isNotEmpty);
+      expect(errors.first, isA<WeightRepositoryException>());
+      expect(
+        (errors.first as WeightRepositoryException).type,
+        WeightErrorType.streamError,
+      );
+    });
   });
 
   group('resilientStream retry logic', () {

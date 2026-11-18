@@ -161,40 +161,37 @@ void main() {
       );
     });
 
-    test(
-      'configures elevated, outlined, text button, fab, chip, and snackbar in dark theme',
-      () {
-        final elevated = AppTheme.darkTheme.elevatedButtonTheme.style;
-        expect(elevated?.elevation?.resolve({}), 1);
+    test('configures elevated, outlined, text button, fab, chip, and snackbar in dark theme', () {
+      final elevated = AppTheme.darkTheme.elevatedButtonTheme.style;
+      expect(elevated?.elevation?.resolve({}), 1);
 
-        final outlined = AppTheme.darkTheme.outlinedButtonTheme.style;
-        expect(outlined?.minimumSize?.resolve({}), const Size(64, 48));
+      final outlined = AppTheme.darkTheme.outlinedButtonTheme.style;
+      expect(outlined?.minimumSize?.resolve({}), const Size(64, 48));
 
-        final text = AppTheme.darkTheme.textButtonTheme.style;
-        expect(text?.shape?.resolve({}), isA<RoundedRectangleBorder>());
+      final text = AppTheme.darkTheme.textButtonTheme.style;
+      expect(text?.shape?.resolve({}), isA<RoundedRectangleBorder>());
 
-        final fab = AppTheme.darkTheme.floatingActionButtonTheme;
-        expect(fab.backgroundColor, AppTheme.darkColorScheme.primary);
+      final fab = AppTheme.darkTheme.floatingActionButtonTheme;
+      expect(fab.backgroundColor, AppTheme.darkColorScheme.primary);
 
-        final chip = AppTheme.darkTheme.chipTheme;
-        expect(chip.selectedColor, AppTheme.darkColorScheme.primaryContainer);
+      final chip = AppTheme.darkTheme.chipTheme;
+      expect(chip.selectedColor, AppTheme.darkColorScheme.primaryContainer);
 
-        final snack = AppTheme.darkTheme.snackBarTheme;
-        expect(snack.behavior, SnackBarBehavior.floating);
-        expect(
-          snack.backgroundColor,
-          AppTheme.darkColorScheme.secondaryContainer,
-        );
+      final snack = AppTheme.darkTheme.snackBarTheme;
+      expect(snack.behavior, SnackBarBehavior.floating);
+      expect(
+        snack.backgroundColor,
+        AppTheme.darkColorScheme.secondaryContainer,
+      );
 
-        final appBar = AppTheme.darkTheme.appBarTheme;
-        expect(appBar.elevation, 0);
-        expect(appBar.systemOverlayStyle?.statusBarColor, Colors.transparent);
-        expect(
-          appBar.systemOverlayStyle?.systemNavigationBarColor,
-          Colors.transparent,
-        );
-      },
-    );
+      final appBar = AppTheme.darkTheme.appBarTheme;
+      expect(appBar.elevation, 0);
+      expect(appBar.systemOverlayStyle?.statusBarColor, Colors.transparent);
+      expect(
+        appBar.systemOverlayStyle?.systemNavigationBarColor,
+        Colors.transparent,
+      );
+    });
 
     test('configures light theme appBarTheme with transparent overlays', () {
       final appBar = AppTheme.lightTheme.appBarTheme;

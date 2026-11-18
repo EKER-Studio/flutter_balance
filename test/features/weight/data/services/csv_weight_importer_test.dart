@@ -1,4 +1,5 @@
 import 'dart:io';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:balance/features/weight/domain/csv_error_type.dart';
@@ -44,48 +45,39 @@ void main() {
       },
     );
 
-    test(
-      'analyzeFile returns CsvAnalysisFailure with noEntries when file is empty',
-      () async {
-        final file = File('${tempDir.path}/empty.csv');
-        await file.writeAsString('Date,Weight\n');
+    test('analyzeFile returns CsvAnalysisFailure with noEntries when file is empty', () async {
+      final file = File('${tempDir.path}/empty.csv');
+      await file.writeAsString('Date,Weight\n');
 
-        final result = await importer.analyzeFile(file.path);
+      final result = await importer.analyzeFile(file.path);
 
-        expect(result, isA<CsvAnalysisFailure>());
-        final failure = result as CsvAnalysisFailure;
-        expect(failure.errorType, CsvErrorType.noEntries);
-      },
-    );
+      expect(result, isA<CsvAnalysisFailure>());
+      final failure = result as CsvAnalysisFailure;
+      expect(failure.errorType, CsvErrorType.noEntries);
+    });
 
-    test(
-      'analyzeFile returns CsvAnalysisFailure with fileTooLarge when file exceeds size limit',
-      () async {
-        final file = File('${tempDir.path}/large.csv');
-        final raf = file.openSync(mode: FileMode.write);
-        raf.truncateSync(5 * 1024 * 1024 + 10);
-        raf.closeSync();
+    test('analyzeFile returns CsvAnalysisFailure with fileTooLarge when file exceeds size limit', () async {
+      final file = File('${tempDir.path}/large.csv');
+      final raf = file.openSync(mode: FileMode.write);
+      raf.truncateSync(5 * 1024 * 1024 + 10);
+      raf.closeSync();
 
-        final result = await importer.analyzeFile(file.path);
+      final result = await importer.analyzeFile(file.path);
 
-        expect(result, isA<CsvAnalysisFailure>());
-        final failure = result as CsvAnalysisFailure;
-        expect(failure.errorType, CsvErrorType.fileTooLarge);
-      },
-    );
+      expect(result, isA<CsvAnalysisFailure>());
+      final failure = result as CsvAnalysisFailure;
+      expect(failure.errorType, CsvErrorType.fileTooLarge);
+    });
 
-    test(
-      'analyzeFile returns CsvAnalysisFailure with invalidFormat when file does not exist',
-      () async {
-        final result = await importer.analyzeFile(
-          '${tempDir.path}/non_existent.csv',
-        );
+    test('analyzeFile returns CsvAnalysisFailure with invalidFormat when file does not exist', () async {
+      final result = await importer.analyzeFile(
+        '${tempDir.path}/non_existent.csv',
+      );
 
-        expect(result, isA<CsvAnalysisFailure>());
-        final failure = result as CsvAnalysisFailure;
-        expect(failure.errorType, CsvErrorType.invalidFormat);
-      },
-    );
+      expect(result, isA<CsvAnalysisFailure>());
+      final failure = result as CsvAnalysisFailure;
+      expect(failure.errorType, CsvErrorType.invalidFormat);
+    });
 
     test('analyzeFile strips UTF-8 BOM and parses valid entries', () async {
       final file = File('${tempDir.path}/bom.csv');
@@ -117,9 +109,8 @@ void main() {
       final entries = [
         WeightEntry(weightKg: 75.0, dateTime: DateTime(2026, 8, 24)),
       ];
-      when(
-        () => mockRepository.bulkImportEntries(entries),
-      ).thenAnswer((_) async => 1);
+      when(() => mockRepository.bulkImportEntries(entries))
+          .thenAnswer((_) async => 1);
 
       final count = await importer.confirmImport(entries);
 
