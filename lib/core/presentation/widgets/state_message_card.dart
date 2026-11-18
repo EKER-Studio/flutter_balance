@@ -81,9 +81,8 @@ class StateMessageCard extends StatelessWidget {
                 constraints: const BoxConstraints(maxWidth: 340),
                 child: Text(
                   subtitle,
-                  style: Theme.of(
-                    context,
-                  ).textTheme.bodyMedium?.copyWith(color: cs.onSurfaceVariant),
+                  style: Theme.of(context).textTheme.bodyMedium
+                      ?.copyWith(color: cs.onSurfaceVariant),
                   textAlign: TextAlign.center,
                 ),
               ),

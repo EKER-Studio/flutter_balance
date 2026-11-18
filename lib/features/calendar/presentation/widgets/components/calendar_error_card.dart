@@ -54,9 +54,8 @@ class CalendarErrorCard extends StatelessWidget {
               errorMessage.isNotEmpty
                   ? errorMessage
                   : l10n.databaseErrorDefaultMessage,
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: cs.onErrorContainer.withValues(alpha: 0.8),
-              ),
+              style: Theme.of(context).textTheme.bodyMedium
+                  ?.copyWith(color: cs.onErrorContainer.withValues(alpha: 0.8)),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 20),

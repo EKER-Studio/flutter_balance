@@ -35,9 +35,8 @@ class PrivacyPolicyScreen extends StatelessWidget {
       if (context.mounted) {
         AppSnackBar.show(
           context,
-          message: AppLocalizations.of(
-            context,
-          ).couldNotOpenEmailClient('contact@ekerstudio.com'),
+          message: AppLocalizations.of(context)
+              .couldNotOpenEmailClient('contact@ekerstudio.com'),
         );
       }
     }

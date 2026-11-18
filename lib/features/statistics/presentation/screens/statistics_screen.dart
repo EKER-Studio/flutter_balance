@@ -97,9 +97,9 @@ class StatisticsScreen extends StatelessWidget {
                               child: StateMessageCard(
                                 icon: Icons.error_outline,
                                 iconColor: Theme.of(context).colorScheme.error,
-                                iconContainerColor: Theme.of(
-                                  context,
-                                ).colorScheme.errorContainer,
+                                iconContainerColor: Theme.of(context)
+                                    .colorScheme
+                                    .errorContainer,
                                 title: l10n.databaseErrorTitle,
                                 subtitle: weightState.errorType
                                     .localizedMessage(l10n),
@@ -125,9 +125,9 @@ class StatisticsScreen extends StatelessWidget {
                             child: StateMessageCard(
                               icon: Icons.bar_chart,
                               iconColor: Theme.of(context).colorScheme.primary,
-                              iconContainerColor: Theme.of(
-                                context,
-                              ).colorScheme.surfaceContainerHigh,
+                              iconContainerColor: Theme.of(context)
+                                  .colorScheme
+                                  .surfaceContainerHigh,
                               title: l10n.noDataToAnalyze,
                               subtitle: l10n.noDataToAnalyzeSubtitle,
                               buttonLabel: l10n.addFirstMeasurement,

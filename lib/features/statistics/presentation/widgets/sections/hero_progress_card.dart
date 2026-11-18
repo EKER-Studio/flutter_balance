@@ -274,9 +274,8 @@ class HeroProgressCard extends StatelessWidget {
                         l10n.sinceEntryDate(
                           _formatEntryDate(context, firstEntry.dateTime, l10n),
                         ),
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: cs.onSurfaceVariant,
-                        ),
+                        style: Theme.of(context).textTheme.bodyMedium
+                            ?.copyWith(color: cs.onSurfaceVariant),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),

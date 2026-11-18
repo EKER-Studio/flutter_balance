@@ -1,4 +1,5 @@
 import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:file_picker/file_picker.dart';
@@ -294,9 +295,8 @@ class SettingsDataCoordinator {
         // and repeated exports don't accumulate files.
         final file = exportedFile;
         unawaited(
-          Future.delayed(
-            const Duration(seconds: 2),
-          ).then((_) => CsvExportService.deleteTempFile(file)),
+          Future.delayed(const Duration(seconds: 2))
+              .then((_) => CsvExportService.deleteTempFile(file)),
         );
       }
     } catch (e, stack) {

@@ -61,8 +61,7 @@ class DatabaseModule {
       AppCrashReporter.recordError(
         e,
         stack,
-        reason:
-            '[DatabaseModule] Failed to read encryption key from secure storage',
+        reason: '[DatabaseModule] Failed to read encryption key from secure storage',
         fatal: false,
       );
       rethrow;
@@ -118,8 +117,7 @@ class DatabaseModule {
         AppCrashReporter.recordError(
           e,
           stack,
-          reason:
-              '[DatabaseModule] Failed to delete legacy key file after migration',
+          reason: '[DatabaseModule] Failed to delete legacy key file after migration',
           fatal: false,
         );
       }
@@ -138,8 +136,7 @@ class DatabaseModule {
       AppCrashReporter.recordError(
         e,
         stack,
-        reason:
-            '[DatabaseModule] Failed to write new encryption key to secure storage',
+        reason: '[DatabaseModule] Failed to write new encryption key to secure storage',
         fatal: false,
       );
       rethrow;
@@ -230,8 +227,7 @@ class DatabaseModule {
       AppCrashReporter.recordError(
         e,
         stack,
-        reason:
-            '[DatabaseModule] Error verifying Isar instance integrity on resumption',
+        reason: '[DatabaseModule] Error verifying Isar instance integrity on resumption',
         fatal: false,
       );
       return (instance: await initialize(), reopened: true);

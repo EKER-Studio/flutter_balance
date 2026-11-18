@@ -1,4 +1,5 @@
 import 'dart:math' as math;
+
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:balance/core/models/measurement_unit.dart';
@@ -103,9 +104,8 @@ class WeightLineChart extends StatelessWidget {
                       show: true,
                       alignment: Alignment.topRight,
                       padding: const EdgeInsets.only(right: 4, bottom: 4),
-                      style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                        color: colorScheme.tertiary,
-                      ),
+                      style: Theme.of(context).textTheme.labelSmall
+                          ?.copyWith(color: colorScheme.tertiary),
                       labelResolver: (_) => l10n.bmiValueShortLabel('24.9'),
                     ),
                   ),

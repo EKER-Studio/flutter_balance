@@ -1,5 +1,6 @@
 import 'dart:isolate';
 import 'dart:math' as math;
+
 import 'package:csv/csv.dart';
 import 'package:intl/intl.dart';
 import 'package:balance/features/weight/domain/entities/csv_import_analysis.dart';

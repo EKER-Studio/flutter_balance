@@ -64,12 +64,10 @@ class ProgressSummaryFormatter {
     buffer.writeln('');
 
     buffer.writeln('⚖️ ${l10n.summaryProgressTitle}');
-    final startDateFormatted = DateFormat.yMMMd(
-      l10n.localeName,
-    ).format(first.dateTime);
-    final latestDateFormatted = DateFormat.yMMMd(
-      l10n.localeName,
-    ).format(latest.dateTime);
+    final startDateFormatted = DateFormat.yMMMd(l10n.localeName)
+        .format(first.dateTime);
+    final latestDateFormatted = DateFormat.yMMMd(l10n.localeName)
+        .format(latest.dateTime);
 
     buffer.writeln(
       '• ${l10n.summaryStartLabel}: $startWeightDisplay $unitLabel ($startDateFormatted)',
@@ -148,16 +146,14 @@ class ProgressSummaryFormatter {
     buffer.writeln('📈 ${l10n.summaryRangeTitle}');
     final maxEntry = entries.reduce((a, b) => a.weightKg > b.weightKg ? a : b);
     final maxDisplay = _formatValue(maxEntry.weightKg, unit);
-    final maxDateText = DateFormat.yMMMd(
-      l10n.localeName,
-    ).format(maxEntry.dateTime);
+    final maxDateText = DateFormat.yMMMd(l10n.localeName)
+        .format(maxEntry.dateTime);
     buffer.writeln('• ${l10n.highest}: $maxDisplay $unitLabel ($maxDateText)');
 
     final minEntry = entries.reduce((a, b) => a.weightKg < b.weightKg ? a : b);
     final minDisplay = _formatValue(minEntry.weightKg, unit);
-    final minDateText = DateFormat.yMMMd(
-      l10n.localeName,
-    ).format(minEntry.dateTime);
+    final minDateText = DateFormat.yMMMd(l10n.localeName)
+        .format(minEntry.dateTime);
     buffer.writeln('• ${l10n.lowest}: $minDisplay $unitLabel ($minDateText)');
 
     final weights = entries.map((e) => e.weightKg).toList();

@@ -22,9 +22,8 @@ class CalendarWeekdayHeader extends StatelessWidget {
       case FirstDayOfWeek.sunday:
         baseDay = DateTime(2026, 1, 4); // Sunday
       case FirstDayOfWeek.system:
-        final systemFirstDayIndex = MaterialLocalizations.of(
-          context,
-        ).firstDayOfWeekIndex;
+        final systemFirstDayIndex = MaterialLocalizations.of(context)
+            .firstDayOfWeekIndex;
         if (systemFirstDayIndex == 1) {
           baseDay = DateTime(2026, 1, 5);
         } else {

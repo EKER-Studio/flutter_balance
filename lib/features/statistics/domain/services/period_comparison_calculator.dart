@@ -149,9 +149,8 @@ class PeriodComparisonCalculator {
 
     final currentSummary = _summarize(
       entries: currentEntries,
-      label: DateFormat.MMMM(
-        locale,
-      ).format(DateTime(currentYear, currentMonth)),
+      label: DateFormat.MMMM(locale)
+          .format(DateTime(currentYear, currentMonth)),
     );
 
     final previousSummary = _summarize(

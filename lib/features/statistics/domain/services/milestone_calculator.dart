@@ -1,4 +1,5 @@
 import 'dart:math' as math;
+
 import 'package:balance/features/weight/domain/weight_goal_mode.dart';
 import 'package:balance/features/statistics/domain/entities/milestone.dart';
 import 'package:balance/features/weight/domain/entities/weight_entry.dart';

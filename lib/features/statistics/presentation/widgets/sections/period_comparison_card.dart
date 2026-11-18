@@ -241,9 +241,8 @@ class _PeriodComparisonCardState extends State<PeriodComparisonCard> {
               const SizedBox(height: 2),
               Text(
                 '$currentVal (vs $previousVal)',
-                style: Theme.of(
-                  context,
-                ).textTheme.bodySmall?.copyWith(color: cs.onSurfaceVariant),
+                style: Theme.of(context).textTheme.bodySmall
+                    ?.copyWith(color: cs.onSurfaceVariant),
               ),
             ],
           ),

@@ -99,16 +99,14 @@ class LatestMeasurementInfo extends StatelessWidget {
     final now = DateTime.now();
     final isToday =
         date.year == now.year && date.month == now.month && date.day == now.day;
-    final timeStr = DateFormat.jm(
-      Localizations.localeOf(context).toString(),
-    ).format(date);
+    final timeStr = DateFormat.jm(Localizations.localeOf(context).toString())
+        .format(date);
 
     if (isToday) {
       return l10n.todayAtTime(timeStr);
     }
-    final dateStr = DateFormat.MMMd(
-      Localizations.localeOf(context).toString(),
-    ).format(date);
+    final dateStr = DateFormat.MMMd(Localizations.localeOf(context).toString())
+        .format(date);
     return '$dateStr • $timeStr';
   }
 
@@ -137,10 +135,8 @@ class LatestMeasurementInfo extends StatelessWidget {
       ),
       child: Text(
         l10n.vsYesterday('$sign$valStr $unitLabel'),
-        style: Theme.of(context).textTheme.labelSmall?.copyWith(
-          color: badgeFg,
-          fontWeight: FontWeight.bold,
-        ),
+        style: Theme.of(context).textTheme.labelSmall
+            ?.copyWith(color: badgeFg, fontWeight: FontWeight.bold),
       ),
     );
   }

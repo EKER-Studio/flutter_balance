@@ -173,16 +173,14 @@ class MilestoneBadge extends StatelessWidget {
             Text(
               description,
               textAlign: TextAlign.center,
-              style: Theme.of(
-                ctx,
-              ).textTheme.bodyMedium?.copyWith(color: cs.onSurfaceVariant),
+              style: Theme.of(ctx).textTheme.bodyMedium
+                  ?.copyWith(color: cs.onSurfaceVariant),
             ),
             const SizedBox(height: 16),
             if (milestone.isUnlocked && milestone.unlockedDate != null) ...[
               Text(
-                DateFormat.yMMMMd(
-                  l10n.localeName,
-                ).format(milestone.unlockedDate!),
+                DateFormat.yMMMMd(l10n.localeName)
+                    .format(milestone.unlockedDate!),
                 style: Theme.of(ctx).textTheme.labelMedium?.copyWith(
                   color: AppFeedbackTheme.successForegroundFor(isDark: isDark),
                   fontWeight: FontWeight.w600,

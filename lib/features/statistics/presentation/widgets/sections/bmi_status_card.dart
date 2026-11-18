@@ -322,9 +322,8 @@ class BmiStatusCard extends StatelessWidget {
                 flex: 35, // 15.0 to 18.5
                 child: Container(
                   height: 8,
-                  color: AppFeedbackTheme.infoForegroundFor(
-                    isDark: isDark,
-                  ).withValues(alpha: 0.75),
+                  color: AppFeedbackTheme.infoForegroundFor(isDark: isDark)
+                      .withValues(alpha: 0.75),
                 ),
               ),
               const SizedBox(width: 2),
@@ -332,9 +331,8 @@ class BmiStatusCard extends StatelessWidget {
                 flex: 64, // 18.5 to 24.9
                 child: Container(
                   height: 8,
-                  color: AppFeedbackTheme.successForegroundFor(
-                    isDark: isDark,
-                  ).withValues(alpha: 0.75),
+                  color: AppFeedbackTheme.successForegroundFor(isDark: isDark)
+                      .withValues(alpha: 0.75),
                 ),
               ),
               const SizedBox(width: 2),
@@ -342,9 +340,8 @@ class BmiStatusCard extends StatelessWidget {
                 flex: 50, // 25.0 to 29.9
                 child: Container(
                   height: 8,
-                  color: AppFeedbackTheme.warningForegroundFor(
-                    isDark: isDark,
-                  ).withValues(alpha: 0.75),
+                  color: AppFeedbackTheme.warningForegroundFor(isDark: isDark)
+                      .withValues(alpha: 0.75),
                 ),
               ),
               const SizedBox(width: 2),
@@ -352,9 +349,8 @@ class BmiStatusCard extends StatelessWidget {
                 flex: 51, // 30.0 to 35.0+
                 child: Container(
                   height: 8,
-                  color: AppFeedbackTheme.errorForegroundFor(
-                    isDark: isDark,
-                  ).withValues(alpha: 0.75),
+                  color: AppFeedbackTheme.errorForegroundFor(isDark: isDark)
+                      .withValues(alpha: 0.75),
                 ),
               ),
             ],
@@ -366,31 +362,23 @@ class BmiStatusCard extends StatelessWidget {
           children: [
             Text(
               '< 18.5',
-              style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                fontSize: 10,
-                color: cs.onSurfaceVariant,
-              ),
+              style: Theme.of(context).textTheme.labelSmall
+                  ?.copyWith(fontSize: 10, color: cs.onSurfaceVariant),
             ),
             Text(
               '18.5 – 24.9',
-              style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                fontSize: 10,
-                color: cs.onSurfaceVariant,
-              ),
+              style: Theme.of(context).textTheme.labelSmall
+                  ?.copyWith(fontSize: 10, color: cs.onSurfaceVariant),
             ),
             Text(
               '25 – 29.9',
-              style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                fontSize: 10,
-                color: cs.onSurfaceVariant,
-              ),
+              style: Theme.of(context).textTheme.labelSmall
+                  ?.copyWith(fontSize: 10, color: cs.onSurfaceVariant),
             ),
             Text(
               '≥ 30',
-              style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                fontSize: 10,
-                color: cs.onSurfaceVariant,
-              ),
+              style: Theme.of(context).textTheme.labelSmall
+                  ?.copyWith(fontSize: 10, color: cs.onSurfaceVariant),
             ),
           ],
         ),
@@ -417,9 +405,8 @@ class BmiStatusCard extends StatelessWidget {
           Expanded(
             child: Text(
               message,
-              style: Theme.of(
-                context,
-              ).textTheme.bodySmall?.copyWith(color: cs.onSurfaceVariant),
+              style: Theme.of(context).textTheme.bodySmall
+                  ?.copyWith(color: cs.onSurfaceVariant),
             ),
           ),
         ],

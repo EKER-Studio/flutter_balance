@@ -22,9 +22,8 @@ Future<TimeOfDay?> showSafeTimePicker({
       if (child == null) return const SizedBox.shrink();
 
       return MediaQuery(
-        data: MediaQuery.of(
-          context,
-        ).copyWith(alwaysUse24HourFormat: alwaysUse24HourFormat),
+        data: MediaQuery.of(context)
+            .copyWith(alwaysUse24HourFormat: alwaysUse24HourFormat),
         child: Dialog(
           insetPadding: EdgeInsets.symmetric(
             horizontal: isLandscape ? 24 : 16,

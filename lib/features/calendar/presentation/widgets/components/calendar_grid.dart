@@ -53,9 +53,8 @@ class CalendarGrid extends StatelessWidget {
       case FirstDayOfWeek.sunday:
         startingOffset = firstDayOfMonth.weekday % 7;
       case FirstDayOfWeek.system:
-        final systemFirstDayIndex = MaterialLocalizations.of(
-          context,
-        ).firstDayOfWeekIndex;
+        final systemFirstDayIndex = MaterialLocalizations.of(context)
+            .firstDayOfWeekIndex;
         startingOffset =
             (firstDayOfMonth.weekday % 7 - systemFirstDayIndex + 7) % 7;
     }

@@ -77,9 +77,8 @@ class CalendarDayEntriesCard extends StatelessWidget {
               color: AppFeedbackTheme.successBackgroundFor(isDark: isDark),
               borderRadius: BorderRadius.circular(16),
               border: Border.all(
-                color: AppFeedbackTheme.successForegroundFor(
-                  isDark: isDark,
-                ).withValues(alpha: 0.4),
+                color: AppFeedbackTheme.successForegroundFor(isDark: isDark)
+                    .withValues(alpha: 0.4),
                 width: 1,
               ),
             ),

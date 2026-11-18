@@ -1,4 +1,5 @@
 import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:balance/core/utils/analytics.dart';
 import 'package:balance/core/utils/crash_reporter.dart';
@@ -126,8 +127,7 @@ class BiometricLockObserver with WidgetsBindingObserver {
       AppCrashReporter.recordError(
         e,
         stack,
-        reason:
-            '[BiometricLockObserver] Database integrity check on resumption failed',
+        reason: '[BiometricLockObserver] Database integrity check on resumption failed',
         fatal: false,
       );
     }

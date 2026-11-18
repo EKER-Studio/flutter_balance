@@ -22,9 +22,8 @@ class DateTimePickerRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final dateStr = DateFormat.yMd(
-      Localizations.localeOf(context).toString(),
-    ).format(selectedDate);
+    final dateStr = DateFormat.yMd(Localizations.localeOf(context).toString())
+        .format(selectedDate);
     final timeStr = selectedTime.format(context);
 
     return Column(
