@@ -20,6 +20,7 @@ import 'package:balance/features/weight/presentation/bloc/weight_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:balance/features/weight/presentation/bloc/weight_event.dart';
 import 'package:balance/l10n/app_localizations.dart';
+
 import 'helpers/screenshot_test_helper.dart';
 
 void main() {
@@ -269,9 +270,8 @@ void main() {
                                     if (milestone.isUnlocked &&
                                         milestone.unlockedDate != null) ...[
                                       Text(
-                                        DateFormat.yMMMMd(
-                                          l10n.localeName,
-                                        ).format(milestone.unlockedDate!),
+                                        DateFormat.yMMMMd(l10n.localeName)
+                                            .format(milestone.unlockedDate!),
                                         style: Theme.of(context)
                                             .textTheme
                                             .labelMedium
@@ -300,9 +300,8 @@ void main() {
                                   TextButton(
                                     onPressed: () {},
                                     child: Text(
-                                      MaterialLocalizations.of(
-                                        context,
-                                      ).okButtonLabel,
+                                      MaterialLocalizations.of(context)
+                                          .okButtonLabel,
                                     ),
                                   ),
                                 ],

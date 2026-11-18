@@ -11,6 +11,7 @@ import 'package:balance/core/presentation/theme/app_theme.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_bloc.dart';
 import 'package:balance/features/settings/presentation/bloc/app_settings_event.dart';
 import 'package:balance/l10n/app_localizations.dart';
+
 import 'helpers/screenshot_test_helper.dart';
 
 void main() {

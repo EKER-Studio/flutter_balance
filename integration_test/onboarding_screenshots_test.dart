@@ -18,6 +18,7 @@ import 'package:balance/features/onboarding/presentation/widgets/steps/step_targ
 import 'package:balance/features/onboarding/presentation/widgets/steps/step_units_height.dart';
 import 'package:balance/features/onboarding/presentation/widgets/steps/step_welcome.dart';
 import 'package:balance/features/weight/domain/weight_goal_mode.dart';
+
 import 'helpers/screenshot_test_helper.dart';
 
 void main() {

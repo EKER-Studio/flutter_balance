@@ -39,61 +39,62 @@ void main() {
       await isar.close(deleteFromDisk: true);
     });
 
-    testWidgets('Full-Cycle E2E Test: Encrypt, Write, Raw Verify, Read, Delete', (
-      tester,
-    ) async {
-      // Step A (Write): Add a WeightEntry
-      final entry = WeightEntry(
-        weightKg: 78.4,
-        dateTime: DateTime(2026, 8, 10, 12, 0),
-        note: "E2E Test Note",
-      );
+    testWidgets(
+      'Full-Cycle E2E Test: Encrypt, Write, Raw Verify, Read, Delete',
+      (tester) async {
+        // Step A (Write): Add a WeightEntry
+        final entry = WeightEntry(
+          weightKg: 78.4,
+          dateTime: DateTime(2026, 8, 10, 12, 0),
+          note: "E2E Test Note",
+        );
 
-      await repository.addEntry(entry);
+        await repository.addEntry(entry);
 
-      // Step B (Raw Physical Verification): Query the raw Isar collection directly
-      final rawModels = await isar.weightEntryModels.where().findAll();
+        // Step B (Raw Physical Verification): Query the raw Isar collection directly
+        final rawModels = await isar.weightEntryModels.where().findAll();
 
-      expect(rawModels.length, 1);
-      final rawModel = rawModels.first;
+        expect(rawModels.length, 1);
+        final rawModel = rawModels.first;
 
-      // Verify that the stored fields are encrypted Base64 strings and DO NOT contain plain text
-      expect(rawModel.encryptedWeight, isNot(contains('78.4')));
-      expect(rawModel.encryptedNote, isNot(contains('E2E Test Note')));
+        // Verify that the stored fields are encrypted Base64 strings and DO NOT contain plain text
+        expect(rawModel.encryptedWeight, isNot(contains('78.4')));
+        expect(rawModel.encryptedNote, isNot(contains('E2E Test Note')));
 
-      // Ensure they are valid base64 strings containing the IV + MAC + Ciphertext
-      expect(() => base64Decode(rawModel.encryptedWeight), returnsNormally);
-      expect(() => base64Decode(rawModel.encryptedNote!), returnsNormally);
+        // Ensure they are valid base64 strings containing the IV + MAC + Ciphertext
+        expect(() => base64Decode(rawModel.encryptedWeight), returnsNormally);
+        expect(() => base64Decode(rawModel.encryptedNote!), returnsNormally);
 
-      // Verify that FieldCipher can decrypt the raw model using the test key
-      final decryptedRawWeight = FieldCipher.decrypt(
-        rawModel.encryptedWeight,
-        testKey,
-      );
-      final decryptedRawNote = FieldCipher.decrypt(
-        rawModel.encryptedNote!,
-        testKey,
-      );
+        // Verify that FieldCipher can decrypt the raw model using the test key
+        final decryptedRawWeight = FieldCipher.decrypt(
+          rawModel.encryptedWeight,
+          testKey,
+        );
+        final decryptedRawNote = FieldCipher.decrypt(
+          rawModel.encryptedNote!,
+          testKey,
+        );
 
-      expect(decryptedRawWeight, '78.4');
-      expect(decryptedRawNote, 'E2E Test Note');
+        expect(decryptedRawWeight, '78.4');
+        expect(decryptedRawNote, 'E2E Test Note');
 
-      // Step C (Stream & Read): Fetch entries via repository stream / getAllEntries()
-      final entries = await repository.getAllEntries();
+        // Step C (Stream & Read): Fetch entries via repository stream / getAllEntries()
+        final entries = await repository.getAllEntries();
 
-      expect(entries.length, 1);
-      final fetchedEntry = entries.first;
+        expect(entries.length, 1);
+        final fetchedEntry = entries.first;
 
-      // Assert that decrypted domain entity correctly restores values
-      expect(fetchedEntry.weightKg, 78.4);
-      expect(fetchedEntry.note, 'E2E Test Note');
-      expect(fetchedEntry.dateTime, DateTime(2026, 8, 10, 12, 0));
+        // Assert that decrypted domain entity correctly restores values
+        expect(fetchedEntry.weightKg, 78.4);
+        expect(fetchedEntry.note, 'E2E Test Note');
+        expect(fetchedEntry.dateTime, DateTime(2026, 8, 10, 12, 0));
 
-      // Step D (Cleanup): Delete the entry
-      await repository.deleteEntry(fetchedEntry.id);
+        // Step D (Cleanup): Delete the entry
+        await repository.deleteEntry(fetchedEntry.id);
 
-      final finalModels = await repository.getAllEntries();
-      expect(finalModels, isEmpty);
-    });
+        final finalModels = await repository.getAllEntries();
+        expect(finalModels, isEmpty);
+      },
+    );
   });
 }

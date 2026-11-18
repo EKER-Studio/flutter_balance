@@ -8,6 +8,7 @@ import 'package:integration_test/integration_test.dart';
 import 'package:balance/core/presentation/screens/app_splash_screen.dart';
 import 'package:balance/core/presentation/theme/app_theme.dart';
 import 'package:balance/l10n/app_localizations.dart';
+
 import 'helpers/screenshot_test_helper.dart';
 
 void main() {

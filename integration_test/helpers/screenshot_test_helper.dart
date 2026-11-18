@@ -320,15 +320,11 @@ class ScreenshotDeviceFrame extends StatelessWidget {
                                 height: 17.0,
                                 color: fgColor.withValues(alpha: 0.9),
                                 colorBlendMode: BlendMode.srcIn,
-                                errorBuilder:
-                                    (
-                                      BuildContext context,
-                                      Object error,
-                                      StackTrace? stackTrace,
-                                    ) => const SizedBox(
-                                      width: 17.0,
-                                      height: 17.0,
-                                    ),
+                                errorBuilder: (
+                                  BuildContext context,
+                                  Object error,
+                                  StackTrace? stackTrace,
+                                ) => const SizedBox(width: 17.0, height: 17.0),
                               ),
                             ),
                           ],

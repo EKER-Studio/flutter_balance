@@ -9,6 +9,7 @@ import 'package:balance/core/presentation/theme/app_theme.dart';
 import 'package:balance/features/weight/domain/bmi_category.dart';
 import 'package:balance/features/weight/presentation/utils/bmi_category_localizer.dart';
 import 'package:balance/l10n/app_localizations.dart';
+
 import 'helpers/screenshot_test_helper.dart';
 
 void main() {
